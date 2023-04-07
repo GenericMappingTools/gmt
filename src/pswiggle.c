@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pswiggle_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pswiggle"
 #define THIS_MODULE_MODERN_NAME	"wiggle"
@@ -39,28 +40,6 @@
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxyw" GMT_OPT("EHMmc")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "azimuth",           "", "", "", "" },
-	{ 0, 'C', "center",            "", "", "", "" },
-	{ 0, 'D', "mapscale",
-	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "w,j,a,o,l",         "length,janchor,side,anchoroffset,label" },
-	{ 0, 'F', "frmpen",
-	          "",                  "",
-	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
-	{ 0, 'G', "fill",
-                  "",                  "",
-                  "n,p",               "negative,positive" },
-	{ 0, 'I', "fixedazimuth",      "", "", "", "" },
-	{ 0, 'T', "trackpen",          "", "", "", "" },
-	{ 0, 'W', "outlinepen",        "", "", "", "" },
-	{ 0, 'Z', "anomalyscale",      "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 #define PSWIGGLE_POS	0
 #define PSWIGGLE_NEG	1
@@ -401,7 +380,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 			case 'S':
 				if (gmt_M_compat_check (GMT, 5)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use -D instead.\n");
-					Ctrl->S.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 					j = 0;
 					if (opt->arg[0] == 'x') Ctrl->S.cartesian = true, j = 1;
 					k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);

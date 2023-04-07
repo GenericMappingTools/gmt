@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psscale_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psscale"
 #define THIS_MODULE_MODERN_NAME	"colorbar"
@@ -439,7 +440,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 						sprintf (p, "+c%gi/%gi/%gi/%gi", off[XLO], off[XHI], off[YLO], off[YHI]);
 						strcat (extra, p);
 					}
-					Ctrl->F.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 					if (gmt_getpanel (GMT, opt->option, extra, &(Ctrl->F.panel))) {
 						gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 						n_errors++;
@@ -1875,7 +1876,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	strcpy (GMT->current.setting.map_frame_axes, "WESN");
 	GMT->current.map.frame.draw = false;	/* No -B parsed explicitly yet */

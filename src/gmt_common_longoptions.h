@@ -4,8 +4,9 @@
      * without having to rewrite 150+ parsers.  The game-plan is instead to examine the given
      * options for long-option syntax and then replace them with the corresponding short-option
      * syntax that the parsers expect. For this to work correctly there needs to be a one-to-one
-     * translation for each case. Thus, this aspect assumes all GMT module and common options
-     * follow a simple standardized syntax:
+     * translation (at least in the long-to-short direction) for each case.
+     *
+     * This translation process assumes all GMT module and common options follow a standardized syntax:
      *
      * General short-option syntax:
      *        -<short_option>[<short_directives>][+<short_modifier1>[<argument1>]][+<short_modifier2>[<argument2>]][...]
@@ -44,6 +45,19 @@
      * { separator, short_option, long_option,
      *                            short_directives, long_directives,
      *                            short_modifiers,  long_modifiers }
+     *
+     * Aliases may be specified within the above-defined entry structure for any <long_option>,
+     * <long_directives> or <long_modifierN> via the '|' character. For example, you could specify
+     * two aliases for the "--region" long option and a single alias for its "rectangular"
+     * long-modifier via the entry
+     *
+     *     {   0, 'R', "region|reg|domain",
+     *                 "",                      "",
+     *                 "r,u",                   "rectangular|rect,unit" },
+     *
+     * Blank spaces (but not tabs or other whitespace) around the '|' character are permitted
+     * for legibility as desired, e.g., "region | reg | domain".
+     *
      */
 
     {   0, 'B', "frame",
@@ -52,15 +66,15 @@
     {   0, 'B', "axis",
                 "x,y,z",                 "x,y,z",
                 "a,f,l,L,p,s,S,u",       "angle,fancy,label,hlabel,prefix,alt_label,alt_hlabel,unit" },
-    {   0, 'J', "projection",
+    {   0, 'J', "projection|proj",
                 "",                      "",
                 "d,a,t,v,w,z,f,k,r",     "d,a,t,v,w,z,f,k,r" },
-    {   0, 'R', "region",
+    {   0, 'R', "region|limits",
                 "",                      "",
-                "r,u",                   "rectangular,unit" },
+                "r,u",                   "rectangular|rect,unit" },
     {   0, 'U', "timestamp",
                 "",                      "",
-                "c,j,o",                 "command,justify,offset" },
+                "c,j,o,t",               "command,justify,offset,text" },
     {   0, 'V', "verbosity",
                 "q,e,w,t,i,c,d",         "quiet,error,warning,timing,info,compat,debug",
                 "",                      "" },
@@ -107,12 +121,16 @@
     {   0, 'p', "perspective",
                 "x,y,z",                 "x,y,z",
                 "v,w",                   "view,world" },
+
+    /* do not add any long-options aliases to the "inrows" and "outrows" entries
+       defined here or you will break the specialized code which handles them! */
     { ',', 'q', "inrows",                /* also note special -qi code in gmtinit_translate_to_short_options()!! */
                 "~",                     "invert",
                 "a,c,t,s",               "byset,column,bytable,bysegment" },
     { ',', 'q', "outrows",               /* also note special -qo code in gmtinit_translate_to_short_options()!! */
                 "~",                     "invert",
                 "a,c,t,s",               "byset,column,bytable,bysegment" },
+
     {   0, 'r', "registration",
                 "g,p",                   "gridline,pixel",
                 "",                      "" },

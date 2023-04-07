@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2013-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2013-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ PostScript code is written to stdout.
  */
 
 #include "gmt_dev.h"
+#include "longopt/psmeca_inc.h"
 #include "meca.h"
 #include "utilmeca.h"
 
@@ -400,7 +401,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
-						Ctrl->A2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->A2.active);
 						strncpy (txt, &opt->arg[1], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
@@ -417,45 +418,45 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						}
 						break;
 					case 'e':	/* Set color for T axis symbol */
-						Ctrl->E2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E2.active);
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fe", " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
-						Ctrl->G2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G2.active);
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fg", " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
-						Ctrl->P2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->P2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Fp", " ", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
-						Ctrl->R2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->R2.active);
 						if (opt->arg[1] && gmt_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fr", " ");
 							n_errors++;
 						}
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
-						Ctrl->T2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->T2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Ft", " ", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'o':	/* use psvelomeca format (without depth in 3rd column) */
-						Ctrl->O2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->O2.active);
 						break;
 					case 'z':	/* overlay zerotrace moment tensor */
-						Ctrl->Z2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Z2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->Z2.pen)) { /* Set pen attributes */
 							gmt_pen_syntax (GMT, ' ', "Fz", " ", NULL, 0);
 							n_errors++;
@@ -698,7 +699,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

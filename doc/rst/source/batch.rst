@@ -340,7 +340,7 @@ we combine all the individual PDFs into a single PDF file and delete the individ
     gmt end
     EOF
     cat << EOF > post.sh
-    gs -dQUIET -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=\${BATCH_PREFIX}.pdf -dBATCH \${BATCH_PREFIX}_*.pdf
+    gmt psconvert -TF -F\${BATCH_PREFIX} \${BATCH_PREFIX}_*.pdf
     rm -f \${BATCH_PREFIX}_*.pdf
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs

@@ -10,7 +10,7 @@ codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
 :term:`PS_CHAR_ENCODING` to Standard+ or ISOLatin1+ in your :doc:`/gmt.conf` file [29]_.
 
-**Download PDF version:** :download:`GMT Standard+ and ISOLation+ octal codes </_images/GMT_App_F_stand+_iso+.pdf>`
+**Download PDF version:** :download:`GMT Standard+ and ISOLatin1+ octal codes </_images/GMT_App_F_stand+_iso+.pdf>`
 
 .. _Octal_codes_stand_iso:
 

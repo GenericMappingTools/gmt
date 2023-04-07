@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/makecpt_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"makecpt"
 #define THIS_MODULE_MODERN_NAME	"makecpt"
@@ -71,7 +72,7 @@ struct MAKECPT_CTRL {
 		bool active;
 		unsigned int levels;
 	} E;
-	struct MAKECPT_F {	/* -F[r|R|h|c][+c[<label>]][+k<keys>] */
+	struct MAKECPT_F {	/* -F[r|R|h|c|x][+c[<label>]][+k<keys>] */
 		bool active;
 		bool cat;
 		unsigned int model;
@@ -145,7 +146,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E[<nlevels>]] "
-		"[-F[R|r|h|c][+c[<label>]][+k<keys>]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-M] [-N] [-Q] [-S<mode>] "
+		"[-F[R|r|h|c|x][+c[<label>]][+k<keys>]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-M] [-N] [-Q] [-S<mode>] "
 		"[-T<min>/<max>[/<inc>[+b|i|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]] [-Z] [%s] [%s] [%s] [%s] [%s]\n",
 		name, H_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_ho_OPT, GMT_i_OPT, GMT_PAR_OPT);
 
@@ -170,6 +171,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "r: Output r/g/b only.");
 	GMT_Usage (API, 3, "h: Output h-s-v.");
 	GMT_Usage (API, 3, "c: Output c/m/y/k.");
+	GMT_Usage (API, 3, "x: Output hex #rrggbb only.");
 	GMT_Usage (API, -2, "Two modifiers control generation of categorical labels:");
 	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
 		"The <label>, if appended, sets the labels for each category. It may be a "
@@ -302,6 +304,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
 					case 'c': Ctrl->F.model = GMT_CMYK; break;
+					case 'x': Ctrl->F.model = GMT_RGB + GMT_HEX_COLOR; break;
 					default: Ctrl->F.model = GMT_RGB; break;
 				}
 				break;
@@ -463,7 +466,7 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

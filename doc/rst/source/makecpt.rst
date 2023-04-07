@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -110,10 +110,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
-    codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
+    codes (**h**), or c/m/y/k codes (**c**), or #rrggbb hex codes (**x**).
+    Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
     If *label* is appended then we create labels for each category to be used
     when the CPT is plotted. The *label* may be a comma-separated list of
@@ -200,9 +201,9 @@ Optional Arguments
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If |-T| is
     not given, the existing range in the master CPT will be used intact.
-    The values produces defines the color slice boundaries.  If **+n** is
+    The values produced defines the color slice boundaries. If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
-    For details on array creation, see `Generate 1D Array`_.  **Note**: To set
+    For details on array creation, see `Generate 1-D Array`_. **Note**: To set
     up categorical CPTs with string keys you can also give a comma-separated
     list of your keys.
 
@@ -279,21 +280,17 @@ changes every 25, and using a polar blue-white-red colortable:
     gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
 
 To make an equidistant CPT from z = -2 to 6 using the
-continuous default turbo rainbow of colors:
-
-   ::
+continuous default turbo rainbow of colors::
 
     gmt makecpt -T-2/6 > colors.cpt
 
-To use the GEBCO look-alike CPT with its default range for bathymetry, run
-
-   ::
+To use the GEBCO look-alike CPT with its default range for bathymetry, run::
 
     gmt makecpt -Cgebco > my_gebco.cpt
 
 or simply use -Cgebco directly in the application that needs the color table.
 To create a 24-level color table suitable for plotting the depths in
-the remote ata table v3206_06.txt (with lon, lat, depths), run
+the remote data table v3206_06.txt (with lon, lat, depths), run
 
    ::
 
@@ -330,17 +327,23 @@ we always get a color regardless of the *z* value, try
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
 To build a categorical table with 3 categories and add specific category
-names to them, try::
+names to them, try
+
+   ::
 
     gmt makecpt -Ccubhelix -T0/2/1 -F+cClouds,Trees,Water > cat.cpt
 
-To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
+To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try
+
+   ::
 
     gmt makecpt -Cjet -T0/10/1 -F+cA
 
-To make a categorical CPT with string keys instead of numerical lookup values, try::
+To make a categorical CPT with string keys instead of numerical lookup values, try
 
-    gmt makecpt -Ccategorical -Twood,water,gold 
+   ::
+
+    gmt makecpt -Ccategorical -Twood,water,gold
 
 .. include:: cpt_notes.rst_
 

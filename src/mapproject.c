@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/mapproject_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mapproject"
 #define THIS_MODULE_MODERN_NAME	"mapproject"
@@ -47,49 +48,6 @@
 #define THIS_MODULE_KEYS	"<D{,LD(=,>D},W-("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>JRVbdefghijopqs" GMT_OPT("HMm")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,          long_directives,
-	          short_modifiers,           long_modifiers */
-	{ 0, 'A', "azimuth",
-	          "b,B,f,F,o,O",             "back,backgeodetic,forward,forwardgeodetic,orient,orientgeodetic",
-	          "v",                       "variable" },
-	{ 0, 'C', "center",
-	          "",                        "",
-	          "m",                       "merclat" },
-	{ 0, 'D', "lengthunit",
-	          "c,i,p",                   "cm,inch,point",
-	          "",                        "" },
-	{ 0, 'E', "ecef",                    "", "", "", "" },
-	{ 0, 'F', "projunit",
-	          "d,m,s,e,f,k,M,n,u,c,i,p", "deg,min,sec,meter,foot,km,smile,nmile,ussft,cm,inch,point",
-	          "",                        "" },
-	{ 0, 'G', "stride",
-	          "",                        "",
-	          "a,i,u,v",                 "accumulated,incremental,unit,variable" },
-	{ 0, 'I', "inverse",                 "", "", "", "" },
-	{ 0, 'L', "proximity",
-	          "",                        "",
-	          "p,u",                     "segmentpoint,unit" },
-	{ 0, 'N', "latconvert",
-	          "a,c,g,m",                 "authalic,conformal,geocentric,meridional",
-	          "",                        "" },
-	{ 0, 'Q', "listprojparams",
-	          "d,e",                     "datums,ellipsoids",
-	          "",                        "" },
-	{ 0, 'S', "suppress",                "", "", "", "" },
-	{ 0, 'Q', "transformdatum",
-	          "h",                       "height",
-	          "",                        "" },
-	{ 0, 'W', "mapinfo",
-	          "e,E,g,h,j,n,o,O,r,R,w,x", "encompass,encompasstext,plotcoords,height,justify,normalize,cornercoords,regiontext,width,xy",
-	          "n",                       "npoints" },
-	{ 0, 'Z', "traveltime",
-	          "",                        "",
-	          "a,i,f,t",                 "accumulated,incremental,isoformat,epochtime" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 enum GMT_mp_Gcodes {	/* Support for -G parsing */
 	GMT_MP_VAR_POINT   = 1,	/* Compute distances from points given along a track */
@@ -515,7 +473,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 
 	unsigned int n_slash, k, n_errors = 0, pos;
 	int n;
-	bool geodetic_calc = false, will_need_RJ = false;
+	bool geodetic_calc = false, will_need_RJ = false, isoldL = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	char c, *p = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -681,7 +639,18 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				if (!(gmt_found_modifier (GMT, opt->arg, "pu") || strchr (opt->arg, '/')))
+				if (!(gmt_found_modifier (GMT, opt->arg, "pu"))) {
+					isoldL = opt->arg[strlen(opt->arg)-1] == '+';
+					if (!isoldL) {
+						char *pch;
+						if ((pch = strrchr(opt->arg, '/')) != NULL) {
+							isoldL = (*(++pch) == '+' || *pch == '-');
+							if (!isoldL)
+								isoldL = (strchr (GMT_LEN_UNITS "cC", *pch) != NULL); 
+						}
+					}
+				}
+				if (isoldL)
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
 					char *m = NULL;

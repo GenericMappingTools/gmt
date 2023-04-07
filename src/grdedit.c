@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdedit_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdedit"
 #define THIS_MODULE_MODERN_NAME	"grdedit"
@@ -292,7 +293,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -460,7 +461,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	else if (Ctrl->E.active) {	/* Transpose, flip, or rotate the matrix and possibly exchange x and y info */
 		struct GMT_GRID_HEADER *h_tr = NULL;
 		uint64_t ij, ij_tr = 0;
-		gmt_grdfloat *a_tr = NULL, *save_grid_pointer = NULL;
+		gmt_grdfloat *a_tr = NULL;
 
 		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
@@ -505,7 +506,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 			gmt_M_doublep_swap (G->x, G->y);
 		}
 
-		/* Now transpose the matrix */
+		/* Now transpose, rotate, or flip the matrix depending on option */
 
 		a_tr = gmt_M_memory (GMT, NULL, G->header->size, gmt_grdfloat);
 		gmt_M_grd_loop (GMT, G, row, col, ij) {
@@ -532,18 +533,15 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 					ij_tr = gmt_M_ijp (h_tr, G->header->n_rows-1-row, col);
 					break;
 			}
-			a_tr[ij_tr] = G->data[ij];
+			a_tr[ij_tr] = G->data[ij];	/* Fill out the new matrix */
 		}
-		save_grid_pointer = G->data;	/* Save original grid pointer and hook on the modified grid instead */
-		G->data = a_tr;
-		gmt_copy_gridheader (GMT, G->header, h_tr);	/* Update to the new header */
-		gmt_M_free (GMT, h_tr->hidden);
-		gmt_M_free (GMT, h_tr);
+		G->data = a_tr;					/* G now points to the new matrix in memory */
+		gmt_copy_gridheader (GMT, G->header, h_tr);	/* Update the grid header via the temporary header */
+		gmt_M_free (GMT, h_tr->hidden);	/* Free the hidden part of the temporary header */
+		gmt_M_free (GMT, h_tr);			/* Free the temporary header */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		G->data = save_grid_pointer;
-		gmt_M_free (GMT, a_tr);
 	}
 	else if (Ctrl->L.active) {	/* Wrap the longitude boundaries */
 		double wesn[4];

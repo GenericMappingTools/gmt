@@ -6,7 +6,7 @@ gmt begin splinefill ps
 	gmt makecpt -Csealand -T-5000/5000 -H > t.cpt
 	# Now replace NaN holes with cubic spline solutions
 	gmt grdfill islands.nc -As -Gnew.nc
-	gmt grdimage islands.nc -JQ6i -Ct.cpt -B -BWSne -Xc -Y0.75i
+	gmt grdimage islands.nc -JQ6i -Ct.cpt -B -BWSne -Y0.75i
 	gmt grdimage new.nc -Ct.cpt -B -BWSne -Y5.15i
 	gmt text -F+f24p+cTR+t"-As" -Dj0.2i -Gwhite
 gmt end show

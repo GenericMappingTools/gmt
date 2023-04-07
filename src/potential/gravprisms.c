@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gravprisms_inc.h"
 #include "newton.h"
 #include "talwani.h"
 
@@ -686,7 +687,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -708,7 +709,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Need to create prisms from two surfaces first */
 		bool flip_order = false;
 		struct GMT_GRID *B = NULL, *T = NULL, *H = NULL, *Rho = NULL;
-		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid, z_max, rs = 0.0, ws = 0.0, s = 1.0;
+		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_max, rs = 0.0, ws = 0.0, s = 1.0;
 		size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 
 		if (Ctrl->L.active) {	/* Specified layer base */
@@ -780,7 +781,6 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 					z_next = (floor (z_prev / Ctrl->C.dz) + 1.0) * Ctrl->C.dz;	/* Presumably next regular z-spacing */
 					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
 					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
-					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density from model */
 					rho = gravprisms_mean_density (Ctrl, z_max, z_prev, z_next) - Ctrl->D.rho;	/* Get density or density contrast (if -D is set) */
 				}
 				else {	/* Constant density rho (set above via -D) or by Rho (via -W), just need a single prism per location */
@@ -1063,7 +1063,10 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Dealing with a grid */
-		openmp_int th = 0, row, col, n_columns = (openmp_int)G->header->n_columns, n_rows = (openmp_int)G->header->n_rows;	/* To shut up compiler warnings */
+#ifdef _OPENMP
+		openmp_int th = 0;
+#endif
+		openmp_int row, col, n_columns = (openmp_int)G->header->n_columns, n_rows = (openmp_int)G->header->n_rows;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
 		for (col = 0; col < n_columns; col++) {
 			x_obs[col] = scl_xy * gmt_M_grd_col_to_x (GMT, col, G->header);

@@ -104,8 +104,8 @@ Optional Arguments
 
 **-L**\ *a*\ /*b*\ /*c*
     Set the labels for the three diagram vertices where the component is 100% [none].
-    These are placed a distance of three times the :term:`MAP_LABEL_OFFSET`
-    setting from their respective corners.  To skip any one of then, specify that
+    These are placed at a distance of three times the :term:`MAP_LABEL_OFFSET`
+    setting from their respective corners.  To skip any one of them, specify that
     label as -.
 
 .. _-M:
@@ -118,7 +118,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip symbols that fall outside map border [Default plots points
+    Do **not** clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only].
 
 .. _-R:
@@ -188,14 +188,14 @@ Optional Arguments
 Examples
 --------
 
-To plot circles (diameter = 0.1 cm) on a 6-inch-wide ternary diagram at the positions listed
+To plot circles (diameter = 0.1 cm) on a 15-centimeter-wide ternary diagram at the positions listed
 in the file ternary.txt, with default annotations and gridline spacings, using the
 specified labeling, try::
 
     gmt begin map
     gmt makecpt -Cturbo -T0/80/10
-    gmt ternary @ternary.txt -R0/100/0/100/0/100 -JX6i -Sc0.1c -C -LWater/Air/Limestone \
-        -Baafg+l"Water component"+u" %" -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %" \
+    gmt ternary @ternary.txt -R0/100/0/100/0/100 -JX15c -Sc0.1c -C -LLimestone/Water/Air \
+        -Baafg+l"Limestone component"+u" %" -Bbafg+l"Water component"+u" %" -Bcagf+l"Air component"+u" %" \
         -B+givory+t"Example data from MATLAB Central"
     gmt end show
 

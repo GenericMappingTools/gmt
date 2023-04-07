@@ -53,7 +53,7 @@ and *z* is all remaining columns in the input (beyond the required :math:`x`
 and :math:`y` columns).
 
 Alternatively, **project** may be used to generate (:math:`r,s,p`)
-triples at equal increments *dist* along a profile using |-G|. In this case, no input is read.
+triplets at equal increments *dist* along a profile using |-G|. In this case, no input is read.
 
 Projections are defined in one of three ways:
 
@@ -89,7 +89,7 @@ to the endpoint (|-E|).
 
 Flat Earth (Cartesian) coordinate transformations can also be made. Set
 |-N| and remember that *azimuth* is clockwise from North (the :math:`y`
-axis), NOT the usual cartesian theta, which is counterclockwise from the
+axis), **not** the usual cartesian theta, which is counterclockwise from the
 :math:`x` axis. (i.e., :math:`azimuth = 90 - theta`).
 
 No assumptions are made regarding the units for :math:`x, y, r, s, p, q`, *dist*,

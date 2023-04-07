@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,45 +27,15 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdtrack_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdtrack"
 #define THIS_MODULE_MODERN_NAME	"grdtrack"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
+#define THIS_MODULE_PURPOSE	"Sample one or more grids at specified locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVabdefghijnoqsw" GMT_OPT("HMmQ")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,          long_directives,
-	          short_modifiers,           long_modifiers */
-	{ 0, 'A', "resample",
-	          "f,p,m,r,R",               "keeporig,pmfollow,mpfollow,equidistant,exactfit",
-	          "l",                       "rhumb" },
-	{ 0, 'C', "crossing",
-	          "",                        "",
-	          "a,v,d,f,l,r",             "alternate,wesn,deviant,fixed,left,right" },
-	{ 0, 'D', "linefile",                "", "", "", "" },
-	{ 0, 'E', "linesegs",
-	          "",                        "",
-	          "a,c,d,g,i,l,n,o,r",       "azimuth,connect,distance,degrees,incr,length,npoints,origin,radius" },
-	{ 0, 'F', "findcross",
-	          "",                        "",
-	          "b,n,r,z",                 "balance,negative,rms,zvalue" },
-	{ 0, 'G', "grid",
-	          "",                        "",
-	          "l",                       "list" },
-	{ 0, 'N', "noskip",                  "", "", "", "" },
-	{ 0, 'S', "singleprofile",
-	          "a,m,p,l,L,u,U",           "average,median,mode,lower,lowerpos,upper,upperneg",
-	          "a,d,r,s,c",               "values,deviations,residuals,save,envelope" },
-	{ 0, 'T', "nearestnode",
-	          "",                        "",
-	          "e,p",                     "report,replace" },
-	{ 0, 'Z', "zvalues",                 "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
@@ -567,6 +537,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Option -C: Cannot chose both +l and +r modifiers.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->C.active, "Option -F: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && ng > 1, "Option -F: Can only accept a single grid.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->F.z0 < 0.0, "Option -F: z0 must be zero or positive (see +n if looking for troughs).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Option -S: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] ||
 	                                   Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]),

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmt2kml_inc.h"
 #include <stdarg.h>
 
 #define THIS_MODULE_CLASSIC_NAME	"gmt2kml"
@@ -434,7 +435,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 					snprintf (buffer, GMT_LEN256, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 					Ctrl->I.file = strdup (buffer);
 				}
-				else if (opt->arg[0])
+				else if (opt->arg[0] == '-' && opt->arg[0] == '\0')	/* Flag for no icon */
+					n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->I.file));
+				else if (opt->arg[0])	/* Alternative icon file */
 					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->I.file));
 				break;
 			case 'L':	/* Extended data */
@@ -478,7 +481,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'R':	/* Region setting */
-				Ctrl->R2.active = GMT->common.R.active[RSET] = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->R2.active);
+				GMT->common.R.active[RSET] = true;
 				if (opt->arg[0] == 'e' || opt->arg[0] == 'a')	/* Get args from data domain (used to be -Ra but in modern mdoe -Re is what is meant) */
 					Ctrl->R2.automatic = true;
 				else if (opt->arg[0])
@@ -863,7 +867,7 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

@@ -170,7 +170,7 @@ Optional Arguments
     available in a Google Earth balloon when the item is selected.
     The data file must have enough data columns and trailing text to
     accommodate the number of columns requested.  If the number of extended
-    data is one larger than the number of available numerical columns then
+    data columns is one larger than the number of available numerical columns then
     the entire trailing text is set as the last extended data column.
     Otherwise, the trailing text is split into individual words and
     set as separate extended columns.
@@ -247,7 +247,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines, wiggles or polygon outlines. Append pen
-    attributes to use [Defaults: width = default, color = black, style =
+    attributes to use [Defaults: width = 0.25p, color = black, style =
     solid]. If the modifier **+cl** is appended then the color of the line
     are taken from the CPT (see |-C|). If instead modifier **+cf** is
     appended then the color from the cpt file is applied to symbol fill.

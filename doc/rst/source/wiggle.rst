@@ -46,7 +46,7 @@ Description
 -----------
 
 Reads (*x*,\ *y*,\ *z*) triplets from files [or standard
-input] and plots z as a function of distance along track. This means
+input] and plots *z* as a function of distance along track. This means
 that two consecutive (*x*,\ *y*) points define the local distance axis,
 and the local *z* axis is then perpendicular to the distance axis,
 forming a right-handed coordinate system. The
@@ -148,7 +148,7 @@ Optional Arguments
 **-I**\ *fix_az*
     Set a fixed azimuth projection for wiggles [Default uses track
     azimuth, but see |-A|]. With this option, the calculated
-    track-normal azimuths are overridden by *fixed_az*.
+    track-normal azimuths are overridden by *fix_az*.
 
 .. _-T:
 
@@ -249,7 +249,7 @@ and obtain
 Bugs
 ----
 
-Sometimes the (x,y) coordinates are not printed with enough significant
+Sometimes the (*x,y*) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 

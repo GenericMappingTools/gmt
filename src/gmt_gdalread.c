@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -759,8 +759,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   just_copy = false, copy_flipud = false, UDflip_Y = false;
 	int	   *whichBands = NULL;
 	int64_t *rowVec = NULL, *colVec = NULL;
-	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, col_indent = 0, nXSize_withPad = 0, nYSize_withPad;
+	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, nXSize_withPad = 0, nYSize_withPad;
 	int64_t  n_alloc, n, m, nn, mm, ij, layer_size, layer_offset = 0;
+	//int64_t  col_indent = 0;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
 	double	adfGeoTransform[6];
@@ -1404,10 +1405,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		gmt_M_free (GMT, rowVec);
 		if (!(just_copy || copy_flipud))
 			gmt_M_str_free (tmp);
-		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		indent = pad_w[piece] + nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		layer_offset += layer_size;	/* As of now, this is never used after increment for float images */
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
+		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
 			for (m = startRow, mm = 0; m < endRow ; m++, mm++) {
 				nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;

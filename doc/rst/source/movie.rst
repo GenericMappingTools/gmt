@@ -112,7 +112,7 @@ Required Arguments
     number of records equals the number of frames. Note that the *background* script is allowed to create
     *timefile*, hence we check for its existence both before *and* after the background script has completed.
     **Note**: If just *nframes* is given then only **MOVIE_FRAME** is available as no data file is available.
-    For details on array creation, see `Generate 1D Array`_.  Several modifiers are also available:
+    For details on array creation, see `Generate 1-D Array`_.  Several modifiers are also available:
 
     - **+n** indicates that *inc* is the desired *number* of frames from *min* to *max* instead of an increment.
     - **+p** can be used to set the tag *width* of the frame number format used in naming frames.  For
