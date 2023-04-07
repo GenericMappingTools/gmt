@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -536,12 +536,18 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		}
 
 		if (is_cube) {
+			if (U && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {	/* Delete any previous cubes */
+				Return (API->error);
+			}
 			if ((U = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 				Return (API->error);
 			}
 			header = U->header;
 		}
 		else {
+			if (G && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Delete any previous grids */
+				Return (API->error);
+			}
 			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -717,12 +723,6 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				}
 				here += header->size;
 			}
-			if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
-				Return (API->error);
-			}
-			else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
-				Return (API->error);
-			}
 			pass = true;
 			if (Ctrl->N.mode == GRDSELECT_LESS_NANS && n_nan > Ctrl->N.n_nans) pass = false;	/* Skip this item */
 			else if (Ctrl->N.mode == GRDSELECT_MORE_NANS && n_nan < Ctrl->N.n_nans) pass = false;	/* Skip this item */
@@ -820,6 +820,13 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			sprintf (record, "%s", opt->arg);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
+	}
+
+	if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
+		Return (API->error);
+	}
+	else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
+		Return (API->error);
 	}
 
 	if (gmt_M_is_geographic (GMT, GMT_IN))	/* Turn on geo for GMT_OUT as well */

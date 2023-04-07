@@ -203,7 +203,7 @@ Optional Arguments
     not given, the existing range in the master CPT will be used intact.
     The values produced defines the color slice boundaries. If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
-    For details on array creation, see `Generate 1D Array`_. **Note**: To set
+    For details on array creation, see `Generate 1-D Array`_. **Note**: To set
     up categorical CPTs with string keys you can also give a comma-separated
     list of your keys.
 

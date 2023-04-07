@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1024,7 +1024,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] <= 0.0) {	/* Temporarily shift boundaries */
 		GMT->common.R.wesn[XLO] += 360.0;
 		GMT->common.R.wesn[XHI] += 360.0;
-		if (GMT->current.proj.central_meridian < 0.0) GMT->current.proj.central_meridian += 360.0;
+		if (GMT->current.proj.central_meridian <= 0.0) GMT->current.proj.central_meridian += 360.0;
 	}
 	if (need_coast_base) {
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;

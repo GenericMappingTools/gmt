@@ -15,8 +15,11 @@
     **+e**
        Delay the plotting of the text. This is used to build a clip path
        based on the text, then lay down other overlays while that clip path
-       is in effect, then turning off clipping with clip **-Cs** which
-       finally plots the original text.
+       is in effect, then turning off clipping with :doc:`clip` **-C** which
+       finally plots the original text. Note that the clip path may 
+       truncate other regions where there is no text overlap. Double check 
+       to ensure the correct result is obtained as expected. Carefully selecting 
+       the right place to run :doc:`clip` manually after each use of **+e** is recommended.
 
     **+f**\ *font*
        Sets the desired font [Default :term:`FONT_ANNOT_PRIMARY` with its

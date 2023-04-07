@@ -54,6 +54,8 @@ the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
 
+.. include:: RPN_info.rst_
+
 Required Arguments
 ------------------
 
@@ -276,11 +278,11 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CURV**      | 1 1   | Curvature of A (Laplacian)                                                                             |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **D2DX2**     | 1 1   | d^2(A)/dx^2 2nd derivative                                                                             |
+| **D2DX2**     | 1 1   | d^2(A)/dx^2 Central 2nd derivative                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **D2DY2**     | 1 1   | d^2(A)/dy^2 2nd derivative                                                                             |
+| **D2DY2**     | 1 1   | d^2(A)/dy^2 Central 2nd derivative                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **D2DXY**     | 1 1   | d^2(A)/dxdy 2nd derivative                                                                             |
+| **D2DXY**     | 1 1   | d^2(A)/dxdy Central 2nd derivative                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **D2R**       | 1 1   | Converts Degrees to Radians                                                                            |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -322,7 +324,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FACT**      | 1 1   | A! (A factorial)                                                                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **EXTREMA**   | 1 1   | Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere                        |
+| **EXTREMA**   | 1 1   | Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere                          |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FCDF**      | 3 1   | F cumulative distribution function for F = A, nu1 = B, and nu2 = C                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -344,7 +346,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **GT**        | 2 1   | 1 if A > B, else 0                                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **HSV2RGB**   | 3 3   | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (both in 0-1)            |
+| **HSV2LAB**   | 3 3   | Convert h,s,v triplets to l,a,b triplets, with h = A (0-360), s = B and v = C (0-1)                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **HSV2RGB**   | 3 3   | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -524,13 +526,15 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROTY**      | 2 1   | Rotate A by the (constant) shift B in y-direction                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
-+---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
+| **SADDLE**    | 1 1   | -1/+1 indicates a saddle point, with (local) minimum (-1) or maximum (+1) in x-direction, 0 elsewhere  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SAZ**       | 2 1   | Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SBAZ**      | 2 1   | Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SEC**       | 1 1   | sec (A) (A in radians)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -857,7 +861,7 @@ the imaginary amplitude 1.1, use::
 
 To extract the locations of local maxima that exceed 100 mGal in the file faa.nc, use::
 
-    gmt grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
+    gmt grdmath faa.nc DUP EXTREMA 1 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
     gmt grd2xyz z.nc -s > max.xyz
 
 To demonstrate the use of named variables, consider this radial wave
@@ -902,6 +906,8 @@ Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 
 Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*, Hemisphere
 Publishing Corp.
+
+.. include:: RPN_MoreOn.rst_
 
 See Also
 --------

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -204,8 +204,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Convolution filters:");
 	GMT_Usage (API, 3, "b: Boxcar : Weights are equal.");
 	GMT_Usage (API, 3, "c: Cosine arch : Weights given by cosine arch.");
-	GMT_Usage (API, 3, "g: Gaussian : Weights given by Gaussian function.");
 	GMT_Usage (API, 3, "f: Custom : Weights given in one-column file <name>.");
+	GMT_Usage (API, 3, "g: Gaussian : Weights given by Gaussian function.");
 	GMT_Usage (API, -2, "Non-convolution filters:");
 	GMT_Usage (API, 3, "m: Median : Return the median value.");
 	GMT_Usage (API, 3, "p: Maximum likelihood probability (mode) estimator : Return the mode:");
@@ -215,7 +215,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "L: Lower+ : Return minimum of all positive points.");
 	GMT_Usage (API, 3, "u: Upper : Return maximum of all points.n");
 	GMT_Usage (API, 3, "U: Upper- : Return maximum of all negative points.");
-	GMT_Usage (API, -2, "Upper case type B, C, G, M, P, F will use robust filter versions, "
+	GMT_Usage (API, -2, "Upper case type B, C, F, G, M and P will use robust filter versions, "
 		"i.e., replace outliers (2.5 L1 scale (MAD) of median) with median during filtering.");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");

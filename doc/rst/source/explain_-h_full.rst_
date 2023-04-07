@@ -21,7 +21,7 @@ using **-h**\ [**o**] and the optional modifiers:
 - **+t** to add a *title* comment to the output [default is no title]. The *title* string may contain \\n to indicate
   line-breaks.
 
-**Note**: Blank lines and lines starting with # are always skipped. To use another leading character for indicating
+**Notes**: (1) Blank lines and lines starting with # are always skipped. To use another leading character for indicating
 header records, set :term:`IO_HEADER_MARKER`. With **-h** in effect the first *n* records are taken verbatim as headers
-and not skipped even if any is starting with #. **Note**: If used with native binary data (using **-b**) we interpret
+and not skipped even if any is starting with #. (2) If used with native binary data (using **-b**) we interpret
 *n* to instead mean the number of bytes to skip on input or pad on output.

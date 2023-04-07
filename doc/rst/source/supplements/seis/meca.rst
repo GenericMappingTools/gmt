@@ -203,7 +203,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes for all lines and the outline of symbols
-    [Defaults: default,black,solid]. This
+    [Defaults: 0.25p,black,solid]. This
     setting applies to |-A|, |-L|, |-T|, **-Fp**, **-Ft**, and
     **-Fz**, unless overruled by options to those arguments.
 

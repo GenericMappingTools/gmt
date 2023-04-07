@@ -53,7 +53,7 @@ and *z* is all remaining columns in the input (beyond the required :math:`x`
 and :math:`y` columns).
 
 Alternatively, **project** may be used to generate (:math:`r,s,p`)
-triples at equal increments *dist* along a profile using |-G|. In this case, no input is read.
+triplets at equal increments *dist* along a profile using |-G|. In this case, no input is read.
 
 Projections are defined in one of three ways:
 

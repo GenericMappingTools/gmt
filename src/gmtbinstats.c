@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -277,7 +277,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify a method for the processing");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify a method for the processing\n");
 	if (Ctrl->T.active) {
 		if (Ctrl->T.mode == GMTBINSTATS_HEXAGONAL) {
 			n_errors += gmt_M_check_condition (GMT, gmt_M_is_geographic (GMT, GMT_IN), "Option -Th: Hexagonal tiling is a Cartesian operation\n");
@@ -497,7 +497,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			nx = gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.inc[GMT_X], 0.0);
 			xmax = GMT->common.R.wesn[XLO] + (nx - 1) * GMT->common.R.inc[GMT_X];
 			if (!doubleAlmostEqualZero (GMT->common.R.wesn[XHI], xmax)) {
-				GMT_Report (API, GMT_MSG_WARNING, "Hexagonal geometry requires xmax to be adjusted from %g to %g\n", GMT->common.R.wesn[XHI], xmax);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Hexagonal geometry requires xmax to be adjusted from %g to %g\n", GMT->common.R.wesn[XHI], xmax);
 				GMT->common.R.wesn[XHI] = xmax;
 			}
 			/* Divide grid spacings by two for the pseudo-grid parameters. We do this to ensure every hexagonal center

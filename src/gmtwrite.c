@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Write GMT objects from external API"
 #define THIS_MODULE_KEYS	"-T-,<?{,>?}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RV"
+#define THIS_MODULE_OPTIONS "->RVf"
 
 /* Control structure for gmtwrite */
 
@@ -129,12 +129,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 							n_errors++;
 						}
 						break;
-					case 'd': Ctrl->T.mode = GMT_IS_DATASET; break;
-					case 'g': Ctrl->T.mode = GMT_IS_GRID;	 break;
-					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;	 break;
-					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
-					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
-					case 'u': Ctrl->T.mode = GMT_IS_CUBE;	 break;
+					case 'd': Ctrl->T.mode = GMT_IS_DATASET;     break;
+					case 'g': Ctrl->T.mode = GMT_IS_GRID;        break;
+					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;     break;
+					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;       break;
+					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;  break;
+					case 'u': Ctrl->T.mode = GMT_IS_CUBE;        break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
 						n_errors++;

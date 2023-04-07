@@ -176,7 +176,7 @@ Optional Arguments
 
 **-I**\ *river*\ [/*pen*]
     Draw rivers. Specify the type of rivers and [optionally] append pen
-    attributes [Default pen: width = default, color = black, style =
+    attributes [Default pen: width = 0.25p, color = black, style =
     solid].
 
     Choose from the list of river types below; repeat option |-I| as
@@ -223,7 +223,7 @@ Optional Arguments
 
 **-N**\ *border*\ [/*pen*]
     Draw political boundaries. Specify the type of boundary and
-    [optionally] append pen attributes [Default pen: width = default,
+    [optionally] append pen attributes [Default pen: width = 0.25p,
     color = black, style = solid].
 
     Choose from the list of boundaries below. Repeat option |-N| as
@@ -263,7 +263,7 @@ Optional Arguments
 
 **-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
-    [Defaults: width = default, color = black, style = solid] which
+    [Defaults: width = 0.25p, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
     prepend *level*/, where *level* is 1-4 and represent coastline,
     lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.

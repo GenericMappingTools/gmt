@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,11 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdinterpolate reads a 3D netcdf spatial data cube with
+ * Brief synopsis: grdinterpolate reads a 3-D netcdf spatial data cube with
  * the 3rd dimension either depth/height or time.  It then interpolates
  * the cube at arbitrary depth z (or time) values and writes either a single
  * slice 2-D grid or another multi-level 3-D data cube.  Alternatively,
- * we can read a stack of input 2-D grids instead of the 3D cube.  Finally,
+ * we can read a stack of input 2-D grids instead of the 3-D cube.  Finally,
  * we may sample time-series (-S) or extract a vertical slice (-E) rather
  * than write gridded horizontal output slice(s).
  *
@@ -116,7 +116,6 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {	/*
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	static char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "
@@ -130,7 +129,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 
-	GMT_Usage (API, 1, "\n<cube> is the name of the input 3D netCDF data cube. However, with -Z we instead expect a "
+	GMT_Usage (API, 1, "\n<cube> is the name of the input 3-D netCDF data cube. However, with -Z we instead expect a "
 		"series of 2-D grids.");
 	GMT_Usage (API, 1, "\n-G<outfile>");
 	GMT_Usage (API, -2, "Specify a single output file name (or a filename format template; also see -S) To write a "
@@ -299,7 +298,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 	if (Ctrl->In.n_files) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, Ctrl->In.n_files + 1, char *);	/* One extra so we have a NULL-terminated array */
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files < 1, "Error: No input grid(s) specified.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active && Ctrl->In.n_files != 1, "Must specify a single input 3D grid cube file unless -Z is set\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active && Ctrl->In.n_files != 1, "Must specify a single input 3-D grid cube file unless -Z is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 	if (!(Ctrl->S.active || Ctrl->E.active)) {	/* Under -S and -E, the -T and -G are optional */
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
@@ -409,7 +408,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else {	/* See if we got a 3D netCDF data cube; if so return number of layers and and the levels array */
+	else {	/* See if we got a 3-D netCDF data cube; if so return number of layers and and the levels array */
 		nc_z_named = strchr (Ctrl->In.file[0], '?');	/* Maybe given a specific variable? */
 		if (nc_z_named) {	/* Gave a specific variable. Keep variable name and remove from filename */
 			strcpy (cube_layer, &nc_z_named[1]);
@@ -505,7 +504,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			/* Need to get dx,dy from one grid */
 			if (Ctrl->Z.active)	/* Get the first file */
 				sprintf (file, "%s", Ctrl->In.file[0]);
-			else	/* Get the first layer from 3D cube possibly via a selected variable */
+			else	/* Get the first layer from 3-D cube possibly via a selected variable */
 				sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
 			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
@@ -601,7 +600,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			GMT_Init_VirtualFile (API, 0, i_file);	/* Reset so it can be read again */
 			if (Ctrl->Z.active)	/* Get the k'th file */
 				sprintf (grid, "%s", Ctrl->In.file[k]);
-			else	/* Get the k'th layer from 3D cube */
+			else	/* Get the k'th layer from 3-D cube */
 				sprintf (grid, "%s?%s[%" PRIu64 "]", Ctrl->In.file[0], cube_layer, k);
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT|GMT_IS_REFERENCE, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");

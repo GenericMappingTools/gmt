@@ -38,7 +38,7 @@ registration (via |-T|). In this way, one may have "extra space" in
 the input data so that the edges will not be used and the output can be
 within one half-width of the input edges. If the filter is low-pass,
 then the output may be less frequently sampled than the input.  **Note**:
-For filtering in the frequency (or wavenumber) domain instead, see doc:`grdfft`.
+For filtering in the frequency (or wavenumber) domain instead, see :doc:`grdfft`.
 
 Required Arguments
 ------------------

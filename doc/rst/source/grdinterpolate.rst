@@ -61,7 +61,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outfile*
-    This is the output 3D data cube file.  If |-T| only selects a
+    This is the output 3-D data cube file.  If |-T| only selects a
     single layer then the data cube collapses to a regular 2-D grid file.
     If *outfile* contains a C-language format statement for a floating
     point number (e.g., layer_%6.6f.grd) then we write a series of 2-D
@@ -140,7 +140,7 @@ Optional Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.  **Note**: If |-Z| is set
+    For details on array creation, see `Generate 1-D Array`_.  **Note**: If |-Z| is set
     and no output times are set with |-T| we simply rewrite the grid-produced cube as
     a 3-D data cube file and exit. Also, for |-E| and |-S| you may also just give
     a range via |-T|\ *min/max* to limit the layers considered, with no interpolation

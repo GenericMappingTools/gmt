@@ -24,7 +24,7 @@ gmt begin ex33
 	gmt convert stack.txt -o0,6 -I -T >> env.txt
 	gmt plot -R-200/200/-3500/-2000 -JX6i/3i -Glightgray env.txt -Yh+3c
 	gmt plot -W3p stack.txt -Bxafg1000+l"Distance from ridge (km)" -Byaf+l"Depth (m)" -BWSne
-	echo 0 -2000 MEDIAN STACKED PROFILE | gmt text -Gwhite -F+jTC+f14p -Dj8p
+	echo MEDIAN STACKED PROFILE | gmt text -Gwhite -F+cTC+f14p -Dj8p
 	REM cleanup
 	del ridge.txt table.txt env.txt stack.txt
 gmt end show
