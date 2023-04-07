@@ -2472,10 +2472,6 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 		return GMT_PARSE_ERROR;
 	}
 	if (k == 1) { GMT->common.p.do_z_rotation = true; el = 90.0;}
-	if (el <= 0.0 || el > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -p: Elevation must be in 0-90 range\n");
-		return GMT_PARSE_ERROR;
-	}
 	if (c) {	/* Now process any modifiers */
 		pos = 0;
 		c[0] = '+';	/* Restore that character */
