@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -120,7 +120,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 		return NULL;
 
 	txt_in = strdup (in);
-	args = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	if ((args = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return NULL;
 
 	/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 	 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
@@ -145,7 +145,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 
 		if (n_args == n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
-			args = gmt_M_memory(GMT, args, n_alloc, char *);
+			if ((args = gmt_M_memory(GMT, args, n_alloc, char *)) == NULL) return NULL;
 		}
 	}
 	for (k = 0; txt_in[k]; k++)	/* Restore input string to prestine condition */
@@ -288,10 +288,10 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 
 			if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, GDLL->fname_in, NULL)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read input grid.\n");
-				return -1;
+				return GMT_NOTSET;
 			}
 
-			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+			if ((to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL)) == NULL) return GMT_NOTSET;
 			if (G->header->ProjRefPROJ4) {to_GDALW->P.ProjRefPROJ4 = G->header->ProjRefPROJ4;	to_GDALW->P.active = true;}
 			if (G->header->ProjRefWKT)   {to_GDALW->P.ProjRefWKT   = G->header->ProjRefWKT;	to_GDALW->P.active = true;}
 			if (G->header->ProjRefEPSG)   to_GDALW->P.ProjRefEPSG  = G->header->ProjRefEPSG;	// Not yet used

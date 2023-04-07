@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -135,46 +135,47 @@ struct GMT_GRID_ROWBYROW {
 #undef I /* Because otherwise we are in trouble with, e.g., struct GMT_IMAGE *I */
 #endif
 
-/*! Routine that scales and offsets the data in a vector */
+/*! Inline routine that scales and/or offsets the data in a vector */
 static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_grdfloat scale, gmt_grdfloat offset) {
-	/*  data:   Single-precision real input vector
-	 *  length: The number of elements to process
-	 * This function uses the vDSP portion of the Accelerate framework if possible */
-#ifndef __APPLE__
-	size_t n;
-#endif
+	/*  data:   gmt_grdfloat (single or double) precision real input vector
+	 *  length: size_t number of elements to process
+	 *	scale:	gmt_grdfloat number to multiply each element of data
+	 *	offset:	gmt_grdfloat number to add to each scaled element of data
+	 */
+#ifdef __APPLE__ /*	We can take advantage of the Accelerate framework on macOS */
+	/* Must use different vDSP functions depending on size of grid type gmt_grdfloat */
 	if (scale == 1) /* offset only */
-#ifdef __APPLE__ /* Accelerate framework */
-#ifdef DOUBLE_PRECISION_GRID
-		vDSP_vsaddD (data, 1, &offset, data, 1, length);
-#else
-		vDSP_vsadd (data, 1, &offset, data, 1, length);
-#endif
-#else
+		#ifdef DOUBLE_PRECISION_GRID
+		vDSP_vsaddD (data, 1L, &offset, data, 1L, length);
+		#else
+		vDSP_vsadd (data, 1L, &offset, data, 1L, length);
+		#endif
+	else if (offset == 0) /* scale only */
+		#ifdef DOUBLE_PRECISION_GRID
+		vDSP_vsmulD (data, 1L, &scale, data, 1L, length);
+		#else
+		vDSP_vsmul (data, 1L, &scale, data, 1L, length);
+		#endif
+	else /* scale + offset */
+		#ifdef DOUBLE_PRECISION_GRID
+		vDSP_vsmsaD (data, 1L, &scale, &offset, data, 1L, length);
+		#else
+		vDSP_vsmsa (data, 1L, &scale, &offset, data, 1L, length);
+		#endif
+#else	/* Anything but Apple */
+	size_t n;
+	if (scale == 1) { /* offset only */
 		for (n = 0; n < length; ++n)
 			data[n] += offset;
-#endif
-	else if (offset == 0) /* scale only */
-#ifdef __APPLE__ /* Accelerate framework */
-#ifdef DOUBLE_PRECISION_GRID
-		vDSP_vsmulD (data, 1, &scale, data, 1, length);
-#else
-		vDSP_vsmul (data, 1, &scale, data, 1, length);
-#endif
-#else
+	}
+	else if (offset == 0) { /* scale only */
 		for (n = 0; n < length; ++n)
 			data[n] *= scale;
-#endif
-	else /* scale + offset */
-#ifdef __APPLE__ /* Accelerate framework */
-#ifdef DOUBLE_PRECISION_GRID
-		vDSP_vsmsaD (data, 1, &scale, &offset, data, 1, length);
-#else
-		vDSP_vsmsa (data, 1, &scale, &offset, data, 1, length);
-#endif
-#else
+	}
+	else { /* scale + offset */
 		for (n = 0; n < length; ++n)
 			data[n] = data[n] * scale + offset;
+	}
 #endif
 }
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -263,7 +263,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
 
-	tmp = gmt_M_memory (GMT, NULL, header->n_columns, gmt_grdfloat);
+	if ((tmp = gmt_M_memory (GMT, NULL, header->n_columns, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
 
 	edge[0] = header->n_columns;
 	ij = imag_offset + pad[YHI] * width_out + pad[XLO];
@@ -387,7 +387,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	/* Store z-variable */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		tmp_f = gmt_M_memory (GMT, NULL, width_in, gmt_grdfloat);
+		if ((tmp_f = gmt_M_memory (GMT, NULL, width_in, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
@@ -412,7 +412,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		gmt_M_free (GMT, tmp_f);
 	}
 	else {
-		tmp_i = gmt_M_memory (GMT, NULL, width_in, long);
+		if ((tmp_i = gmt_M_memory (GMT, NULL, width_in, long)) == NULL) return GMT_MEMORY_ERROR;
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {

@@ -63,7 +63,7 @@ Optional Arguments
 
 **-C**
     Convert from NCEI two-file data sets \*.h77, \*.a77 to single file
-    \*.mgd77. No other options (except **-V**) are allowed. Give one or
+    \*.mgd77. No other options (except |-V|) are allowed. Give one or
     more names of \*.h77 files, \*.a77 files, or just the file prefixes.
 
 .. _-D:
@@ -170,7 +170,6 @@ See Also
 References
 ----------
 
-ncBrowse, see `<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_
 ncView, see `<https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_
 The Marine Geophysical Data Exchange Format - "MGD77", see
 `<https://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

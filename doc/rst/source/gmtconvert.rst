@@ -72,8 +72,8 @@ Optional Arguments
 **-A**
     The records from the input files should be pasted horizontally, not
     appended vertically [Default]. All files must have the same number
-    of segments and number of rows per segment. Note for binary input,
-    all the files you want to paste must have the same number of columns
+    of segments and number of rows per segment. **Note**: For binary input,
+    all the files you want to paste must have the *same* number of columns
     (as set with **-bi**); ASCII tables can have different number of columns.
 
 .. _-C:
@@ -91,8 +91,9 @@ Optional Arguments
 **-D**\ [*template*\ [**+o**\ *orig*]]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a multiple segment file to standard output]. Append a
-    format template for the individual file names; this template
-    **must** contain a C format specifier that can format an integer
+    format template for the individual file names; this template **must**
+    contain a C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_
+    format specifier that can format an integer
     argument (the running segment number across all tables); this is
     usually %d but could be %08d which gives leading zeros, etc.
     [Default is gmtconvert_segment\_%d.{txt\|bin}, depending on
@@ -112,7 +113,9 @@ Optional Arguments
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract every *stride* records;
-    use **M** to also include the last record.
+    use **M** to also include the last record if not on the stride. **Note**: This option operates
+    on the input records and if combined with |-N| the latter only sorts
+    the reduced data set. See **-qo** for limiting the output records after sorting.
 
 .. _-F:
 
@@ -158,15 +161,17 @@ Optional Arguments
     Numerically sort each segment based on values in column *col*.
     The data records will be sorted such that the chosen column will
     fall into ascending order [**+a**\ , which is Default].  Append **+d**
-    to sort into descending order instead.  The **-N** option can be
-    combined with any other ordering scheme except **-F** (segmentation)
-    and is applied at the end.
+    to sort into descending order instead.  The |-N| option can be
+    combined with any other ordering scheme except |-F| (segmentation)
+    and is applied at the end. **Note**: If |-E| is used then be aware its effect
+    is applied *before* the sorting, not after.  For limiting the output
+    of records after sorting, see **qo**.
 
 .. _-Q:
 
 **-Q**\ [**~**]\ *selection*
     Only write segments whose number is included in *selection* and skip
-    all others. Cannot be used with **-S**. The *selection* syntax is
+    all others. Cannot be used with |-S|. The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     segment *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
     (*step* is optional and defaults to 1). A leading **~** will
@@ -181,8 +186,8 @@ Optional Arguments
     segments whose headers do *not* contain the specified pattern, use
     **-S~**. Should your pattern happen to start with ~ you need to
     escape this character with a backslash [Default output all
-    segments]. Cannot be used with **-Q**. For matching segments based
-    on aspatial values (via OGR/GMT format), give the search string as
+    segments]. Cannot be used with |-Q|. For matching segments based
+    on aspatial values (via :ref:`OGR/GMT <OGR_compat>` format), give the search string as
     *varname*\ =\ *value* and we will compare *value* against the value
     of *varname* for each segment. **Note**: If the features are polygons
     then a match of a particular polygon perimeter also means that any
@@ -317,7 +322,8 @@ To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try::
     gmt convert lots_of_segments.txt -Q0,20:2:40 > my_segments.txt
 
 
-To extract the attribute ELEVATION from an ogr gmt file like this::
+To extract the attribute ELEVATION from an :ref:`OGR/GMT <OGR_compat>` format
+file like this::
 
     # @VGMT1.0 @GPOINT
     ...

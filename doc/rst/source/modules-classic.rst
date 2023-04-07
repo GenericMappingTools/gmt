@@ -1,3 +1,5 @@
+:orphan:
+
 Modules (Classic Mode)
 ======================
 
@@ -580,8 +582,6 @@ Miscellaneous
 | :doc:`gmt2kml`        | |gmt2kml_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`grdgdal`        | |grdgdal_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+
 | :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+

@@ -1,3 +1,5 @@
+:orphan:
+
 .. set default highlighting language for this document:
 .. highlight:: c
 
@@ -778,6 +780,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Parse_           | Parse argument with FFT options and modifiers         |
     +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Reset_           | Manually demultiplex output of inverse FFT            |
+    +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Wavenumber_      | Return wavenumber given data index                    |
     +--------------------------+-------------------------------------------------------+
     | GMT_Find_Option_         | Find an option in the linked list                     |
@@ -855,6 +859,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     | GMT_Register_IO_         | Register a resources for i/o                          |
     +--------------------------+-------------------------------------------------------+
     | GMT_Report_              | Issue a message contingent upon verbosity level       |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Set_AllocMode_       | Set allocation mode of object to external             |
     +--------------------------+-------------------------------------------------------+
     | GMT_Set_Default_         | Set one of the API or GMT default settings            |
     +--------------------------+-------------------------------------------------------+
@@ -1178,7 +1184,9 @@ unique resource ID, or ``GMT_NOTSET`` if there was an error.
     +----------------+-----------------------------------------+
     | GMT_IS_LINE    | Geographic or Cartesian line segments   |
     +----------------+-----------------------------------------+
-    | GMT_IS_POLYGON | Geographic or Cartesian closed polygons |
+    | GMT_IS_POLY    | Geographic or Cartesian closed polygons |
+    +----------------+-----------------------------------------+
+    | GMT_IS_LP      | Either lines or polygons                |
     +----------------+-----------------------------------------+
     | GMT_IS_PLP     | Either points, lines, or polygons       |
     +----------------+-----------------------------------------+
@@ -1303,7 +1311,7 @@ Users wishing to pass their own data matrices and vectors to GMT modules will ne
 the **GMT_IS_MATRIX** and **GMT_IS_VECTOR** containers.  However, no module deals with such containers
 directly (they either expect **GMT_IS_GRID** or **GMT_IS_DATASET**, for instance).
 The solution is to specify the container type the GMT module expects but add in the special
-flags **GMT_VIA_MATRIX** or **GMT_VIA*VECTOR**.  This will create the **GMT_IS_MATRIX** or
+flags **GMT_VIA_MATRIX** or **GMT_VIA_VECTOR**.  This will create the **GMT_IS_MATRIX** or
 **GMT_IS_VECTOR** container the user needs to add the user data, but will also tell GMT how
 they should be considered by the module. **Note**: When creating your own geographic data
 (dataset, grid, image, matrix, or vector) you may add ``GMT_DATA_IS_GEO`` to ``mode`` so that
@@ -2848,6 +2856,22 @@ You can change this information via
 where the ``header`` is the header of either a grid or image, and ``code`` is a three-character
 code indication ...
 
+Change allocation mode
+~~~~~~~~~~~~~~~~~~~~~~
+
+When external programs supply their own allocated memory (e.g., grid arrays, matrices) that
+are then hooked into the GMT containers data pointer, we need to flag the allocation mode as
+being external to GMT via
+
+.. _GMT_Set_AllocMode:
+
+  ::
+
+    int GMT_Set_AllocMode (void *API, unsigned int family, void *object);
+
+where :ref:`family <tbl-family>` sets the object type and and ``object`` is the container.
+This change prevents GMT from trying to free memory it did not allocate.
+
 .. _sec-func:
 
 Call a module
@@ -3323,6 +3347,10 @@ version of your data. The FFT is fully normalized so that calling
 forward followed by inverse yields the original data set. The information
 passed via ``K`` determines if a 1-D or 2-D transform takes place; the
 key work is done via ``GMT_FFT_1D`` or ``GMT_FFT_2D``, as explained below.
+**Note**: When ``direction`` is ``GMT_FFT_INV`` we will remove the space for
+the temporary imaginary components so that the result is real-valued only;
+this is the most common use in spectral analysis.  However, you can add
+``GMT_FFT_NO_DEMUX`` to ``mode`` which will prevent this adjustment.
 
 Taking the 1-D FFT
 ------------------
@@ -3424,6 +3452,22 @@ differently), and set up the loop this way:
         Grid->data[im] *= 2.0 * wave;
     }
 
+Manual demultiplexing
+---------------------
+
+For almost all applications this step will be done automatically for you when you
+take the inverse FFT.  However, if you need to have the result of the inverse
+transform still occupy a real/imaginary layout you will need to pass the special
+mode flag ``GMT_FFT_NO_DEMUX`` to ``GMT_FFT`` and then call
+
+.. _GMT_FFT_Reset:
+
+  ::
+
+    int GMT_FFT_Reset (void *API, void *data, unsigned int dim, unsigned int mode);
+
+which does the delayed demultiplexing of the data.
+
 Destroying the FFT machinery
 ----------------------------
 
@@ -3433,7 +3477,7 @@ When done you terminate the FFT machinery with
 
   ::
 
-    double GMT_FFT_Destroy (void *API, void *K);
+    int GMT_FFT_Destroy (void *API, void *K);
 
 which simply frees up the memory allocated by the FFT machinery with GMT_FFT_Create_.
 

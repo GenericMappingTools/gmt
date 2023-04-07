@@ -33,12 +33,12 @@ Description
 the selected convolution or non-convolution isotropic or rectangular
 filters and compute distances using Cartesian or Spherical geometries.
 The output grid can optionally be generated as a sub-region of the
-input (via **-R**) and/or with new increment (via **-I**) or
-registration (via **-T**). In this way, one may have "extra space" in
+input (via |-R|) and/or with new increment (via |-I|) or
+registration (via |-T|). In this way, one may have "extra space" in
 the input data so that the edges will not be used and the output can be
 within one half-width of the input edges. If the filter is low-pass,
 then the output may be less frequently sampled than the input.  **Note**:
-For filtering in the frequency (or wavenumber) domain instead, see doc:`grdfft`.
+For filtering in the frequency (or wavenumber) domain instead, see :doc:`grdfft`.
 
 Required Arguments
 ------------------
@@ -57,7 +57,7 @@ Required Arguments
     - *flag* = p: grid (px,py) with *width* an odd number of pixels;
       Cartesian distances.
     - *flag* = 0: grid (x,y) same units as *width*, Cartesian distances.
-    - *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian
+    - *flag* = 1: grid (x,y) in degrees, *width* in km, Cartesian
       distances.
     - *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
       cos(middle y), Cartesian distances.
@@ -120,7 +120,7 @@ Required Arguments
     - (**l**) Lower: Return the minimum of all values.
     - (**L**) Lower: Return minimum of all positive values only.
     - (**u**) Upper: Return maximum of all values.
-    - (**U**) Upper: Return maximum or all negative values only.
+    - (**U**) Upper: Return maximum of all negative values only.
 
     In the case of **L**\|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return NaN.
@@ -222,9 +222,9 @@ Limitations
 -----------
 
 #. To use the **-D**\ 5 option the input Mercator grid must be created by
-   img2mercgrd using the **-C** option so the origin of the y-values is the
+   img2mercgrd using the |-C| option so the origin of the y-values is the
    Equator (i.e., x = y = 0 correspond to lon = lat = 0).
-#. If the new *x\_inc*, *y\_inc* set with **-I** are NOT integer multiples
+#. If the new *x\_inc*, *y\_inc* set with |-I| are **not** integer multiples
    of the increments in the input data, filtering will be considerably slower.
    [Default increments: Same as input.]
 

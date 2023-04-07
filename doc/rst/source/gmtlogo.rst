@@ -55,7 +55,7 @@ Optional Arguments
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+    (inches, cm, etc.).  All but **-Dx** requires both |-R| and |-J| to be specified.
     Use **+w**\ *width* to set the width of the GMT logo in plot coordinates
     (inches, cm, etc.).
     By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
@@ -93,7 +93,7 @@ Optional Arguments
 
 **-S**\ [**l**\|\ **n**\|\ **u**]
     Control what is written beneath the map portion of the logo.
-    Append **l** (or skip **-S** entirely) to plot the text label "The Generic Mapping Tools"
+    Append **l** (or skip |-S| entirely) to plot the text label "The Generic Mapping Tools"
     beneath the logo.  Append **n** to skip the label placement, and append
     **u** to place the URL to the GMT site instead [plot the label].
 
@@ -138,7 +138,7 @@ scaled up to be 6 cm wide and offset by 0.25 cm from the border, try::
 Notes
 -----
 
-To instead plot the GMT QR code that links to www.generic-mapping-tools.org, just plot the
+To instead plot the GMT QR code that links to https://www.generic-mapping-tools.org/ just plot the
 custom symbols **QR** or **QR_transparent** in :doc:`plot`.
 
 See Also

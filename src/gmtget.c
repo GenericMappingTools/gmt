@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtget_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtget"
 #define THIS_MODULE_MODERN_NAME	"gmtget"
@@ -91,7 +92,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Note: Run \"gmt docs data\" to learn about available data sets.");
 	GMT_Usage (API, 1, "\n-G<defaultsfile>");
 	GMT_Usage (API, -2, "Set name of specific %s file to process "
-		"Default looks for file in current directory.  If not found, n"
+		"Default looks for file in current directory.  If not found, "
 		"it looks in the home directory, if not found it uses the GMT defaults].", GMT_SETTINGS_FILE);
 	GMT_Usage (API, 1, "\n-I<inc>");
 	GMT_Usage (API, -2, "Limit the download of data sets to grid spacing of <inc> or larger [0].");
@@ -125,35 +126,31 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 
 			case 'D':	/* Optional defaults file on input and output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.dir = strdup (opt->arg);
 				break;
 			case 'G':	/* Optional defaults file on input and output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Set increment limitation */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (gmt_getincn (GMT, opt->arg, &Ctrl->I.inc, 1) != 1)
 					n_errors++;
 
 				break;
 			case 'L':	/* One per line */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Leave JP2 as is */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Report data sets available */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
@@ -204,7 +201,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

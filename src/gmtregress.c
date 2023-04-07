@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtregress_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtregress"
 #define THIS_MODULE_MODERN_NAME	"gmtregress"
@@ -226,28 +227,25 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 
 	char *c = NULL;
 	bool scan_slopes = false;
-	unsigned int n_errors = 0, j, k, n, col, n_files = 0;
+	unsigned int n_errors = 0, j, k, n, col;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Explore E vs slope or force a limited angle range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if ((c = strstr (opt->arg, "+f"))) {
 					Ctrl->A.force = true;
 					if (c[2] == 'n') Ctrl->A.max = 0.0;	/* -90 to 0 */
@@ -262,12 +260,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Set confidence level in %, convert to fraction */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				Ctrl->C.value = atof (opt->arg) * 0.01;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
+				Ctrl->C.value *= 0.01;
 				break;
 			case 'E':	/* Select regression type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'x': Ctrl->E.mode = GMTREGRESS_X;   break; /* Regress on x */
 					case 'y': Ctrl->E.mode = GMTREGRESS_Y;   break; /* Regress on y */
@@ -281,7 +278,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Select output columns */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (!strcmp (opt->arg, "p")) {	/* Just want to return model parameters */
 					Ctrl->F.param = true;
 					break;
@@ -304,7 +300,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':	/* Select Norm for misfit calculations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case '1': Ctrl->N.mode = GMTREGRESS_NORM_L1;	break;
 					case '2': Ctrl->N.mode = GMTREGRESS_NORM_L2;	break;
@@ -318,12 +313,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 			case 'S':	/* Restrict output records */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.mode = (opt->arg[0] == 'r') ? GMTREGRESS_OUTPUT_BAD : GMTREGRESS_OUTPUT_GOOD;
 				break;
 			case 'T':	/* Output lattice or length */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (!strcmp (opt->arg, "0"))	/* -T0 means no model evaluation */
 					Ctrl->T.no_eval = true;
 				else
@@ -331,7 +324,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Weights or not */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.type = 1;	/* Got weights; determine their column position */
 				for (k = Ctrl->W.type, col = GMT_Z; opt->arg[k]; k++) {
 					if (opt->arg[k] == 'x') Ctrl->W.col[GMT_X] = col++;
@@ -350,12 +342,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 			case 'Z':	/* Set new zscore limit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				Ctrl->Z.limit = fabs (atof (opt->arg));
 				switch (opt->arg[0]) {	/* Look for one-sided outliers */
 					case '-': Ctrl->Z.mode = -1;	break;
 					case '+': Ctrl->Z.mode = +1;	break;
-					default: Ctrl->Z.mode = 0;		break;
+					default:  Ctrl->Z.mode = 0;		break;
 				}
 				break;
 
@@ -384,7 +375,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2,
 	                                   "Binary input data (-bi) must have at least 2 columns.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -568,6 +558,7 @@ GMT_LOCAL double gmtregress_L2_scale (struct GMT_CTRL *GMT, double *ey, double *
 	gmt_M_unused(GMT); gmt_M_unused(ey);
 	W_sum = gmtregress_gmt_sum (W, n);
 	scale = sqrt ((par[GMTREGRESS_N_EFF] - 2)*par[GMTREGRESS_MISFT] / par[GMTREGRESS_N_EFF]);	/* Undo the previous (n_eff-2)/n_eff division */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtregress_L2_scale: W_sum = %lg scale = %lg\n", W_sum, scale);
 	return (scale);
 }
 
@@ -810,6 +801,7 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 	b[0] = (part1 + part2) / (2.0 * sum_uv);
 	b[1] = (part1 - part2) / (2.0 * sum_uv);
 	r = sum_uv / sqrt (sum_u2 * sum_v2);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtregress_LSxy_regress1D_basic: r = %lg\n", r);
 	gmtregress_ones (W, n);			/* Unit weights */
 	for (p = 0; p < 2; p++) {	/* Compute E from vertical y-residuals for both solutions to the slope */
 		a[p] = mean_y - b[p] * mean_x;	/* Trial intercept */
@@ -848,6 +840,7 @@ GMT_LOCAL double gmtregress_LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, do
 	sy = gmt_std_weighted (GMT, V, w[GMT_Y], 0.0, n);
 	gmtregress_eval_product (U, U, Q, n);	/* Compute Q[i] = u[i] * u[i] */
 	sum_u2 = gmtregress_gmt_sum (Q, n);	/* Get sum of u*u */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtregress_LSRMA_regress1D: sum_u2 = %lg\n", sum_u2);
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	if (r < 0.0) par[GMTREGRESS_SLOPE] = -par[GMTREGRESS_SLOPE];	/* Negative correlation means negative slope */
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
@@ -1248,7 +1241,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

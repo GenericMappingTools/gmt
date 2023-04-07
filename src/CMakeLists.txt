@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -375,6 +375,8 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
+AUX_SOURCE_DIRECTORY (longopt GMT_LONG_OPT_H)
+
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.h gmt_common_string.h clear.c begin.c
@@ -400,7 +402,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_sharedlibs.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
-	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
+	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h ${GMT_LONG_OPT_H}
 	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${EXTRA_SOURCES})
 
 # source codes for testing API
@@ -530,9 +532,9 @@ if (HAVE_DLADDR AND HAVE_LIBDL)
 	target_link_libraries (gmtlib dl)
 endif (HAVE_DLADDR AND HAVE_LIBDL)
 
-if (MSVC AND FFTW3_FOUND)
+if ((MSVC OR MINGW) AND FFTW3_FOUND)
 	target_link_libraries (gmtlib ws2_32)
-endif (MSVC AND FFTW3_FOUND)
+endif ((MSVC OR MINGW) AND FFTW3_FOUND)
 
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (gmtlib

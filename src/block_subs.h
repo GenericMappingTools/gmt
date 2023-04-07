@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ struct BLOCK_CTRL {
 		bool active;
 		unsigned int mode;
 	} S;
-	struct W {	/* -W[i][o][+s] */
+	struct W {	/* -W[i|o][+s] */
 		bool active;
 		bool weighted[2];
 		bool sigma[2];
@@ -163,13 +163,15 @@ struct BLK_SLHG {
 #define BLK_DO_INDEX_HI	8
 #define BLK_DO_SRC_ID	16
 
-enum GMT_enum_blks {BLK_Z	= 2,
-		BLK_W		= 3};
+enum GMT_enum_blks {
+	BLK_Z	= 2,
+	BLK_W	= 3
+};
 
 struct BLK_DATA {
 	double a[4];		/* < a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
 	uint64_t ij;		/* < Grid index for data value */
-#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
+#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has the -Q option */
 	uint64_t src_id;	/* < Source id [Data record] on input */
 #endif
 };
@@ -202,12 +204,48 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	gmt_M_free (GMT, C);
 }
 
-static void strip_commas (const char *in, char out[]) {
+static void BLK_strip_commas (const char *in, char out[]) {
 	/* Remove the commas in the input and return the remaining characters via out */
 	size_t i, o = 0;
 	for (i = 0; in[i]; i++)
 		if (in[i] != ',') out[o++] = in[i];
 	out[o] = '\0';	/* Terminate string */
+}
+
+static unsigned int BLK_parse_weight_opt (struct GMTAPI_CTRL *API, char *arg, bool weighted[], bool sigma[]) {
+	/* Common parser for the -W option in the three modules */
+	bool def_sigma = false;
+	char *c = NULL;
+	unsigned int n_errors = 0;
+
+	if ((c = strstr (arg, "+s"))) {	/* Gave +s */
+		def_sigma = true;
+		c[0] = '\0';	/* Hide modifier */
+	}
+	else if ((c = strstr (arg, "+w"))) {	/* Gave +w explicitly [which is the default] */
+		def_sigma = false;
+		c[0] = '\0';	/* Hide modifier */
+	}
+	switch (arg[0]) {	/* Check for -Wi or -Wo as well after hiding the modifier */
+		case '\0':
+			weighted[GMT_IN] = weighted[GMT_OUT] = true;
+			sigma[GMT_IN] = sigma[GMT_OUT] = def_sigma;
+			break;
+		case 'i': case 'I':
+			weighted[GMT_IN] = true;
+			sigma[GMT_IN] = def_sigma;
+			break;
+		case 'o': case 'O':
+			weighted[GMT_OUT] = true;
+			sigma[GMT_OUT] = def_sigma;
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_ERROR, "Option -W: Unrecognized argument %s!\n", arg);
+			n_errors++;
+			break;
+	}
+	if (c) c[0] = '+';	/* Restore modifier */
+	return (n_errors);	/* Return any parsing error counts */
 }
 
 #if !defined(BLOCKMEAN)	/* Not used by blockmean */

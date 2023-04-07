@@ -1,6 +1,12 @@
 # Installing GMT
 
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
+![Ubuntu package](https://img.shields.io/ubuntu/v/gmt)
+![Debian package](https://img.shields.io/debian/v/gmt)
+![Fedora package](https://img.shields.io/fedora/v/GMT)
+![Arch Linux package](https://img.shields.io/archlinux/v/community/x86_64/gmt)
+![homebrew version](https://img.shields.io/homebrew/v/gmt)
+![Conda](https://img.shields.io/conda/v/conda-forge/gmt)
 
 GMT is available on Windows, macOS, Linux and FreeBSD.
 Source and binary packages are provided for the latest release,
@@ -80,6 +86,7 @@ version requires a computer with the M1 Apple Silicon chip.
 
 | **GMT Version** | **Minimum MacOS** |
 |-------------|-------------|
+| 6.4         | macOS 12 |
 | 6.3         | macOS 10.15 |
 | 6.2         | macOS 10.15 |
 | 6.1         | macOS 10.15 |
@@ -159,7 +166,7 @@ Install GMT via:
 You may also install other optional dependencies for more capabilities within GMT:
 
     sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
-    sudo dnf install ffmpeg
+    sudo dnf install ffmpeg GraphicsMagick
 
 ### RHEL/CentOS
 
@@ -178,7 +185,7 @@ Install GMT via:
 You may also install other optional dependencies for more capabilities within GMT:
 
     sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
-    sudo yum install ffmpeg
+    sudo yum install ffmpeg GraphicsMagick
 
 ### Ubuntu/Debian
 
@@ -228,7 +235,7 @@ You can use the [conda package manager](https://conda.io/) that comes with the
    This will give you access to the conda package manager. **Make sure you select to
    have conda added to your `PATH` when asked by the installer**. If you have
    the Anaconda Python distribution installed, you won't need to do this step.
-2. Install GMT and its dependencies (including ghostscript, gdal, ffmpeg and graphicsmagick)
+2. Install GMT and its dependencies (including ghostscript and gdal)
    by running the following in a terminal:
 
    ```
@@ -244,6 +251,12 @@ You can use the [conda package manager](https://conda.io/) that comes with the
 4. If you want to install the weekly snapshot of the GMT master branch, use:
    ```
    conda install gmt -c conda-forge/label/dev
+   ```
+
+5. Install other optional dependencies if you want to create animated GIFs or MP4:
+
+   ```
+   conda install ffmpeg graphicsmagick -c conda-forge
    ```
 
 ## FreeBSD
@@ -262,7 +275,7 @@ The FreeBSD Ports Collection is a diverse collection of utility and application 
 Install precompiled gmt binaries with
 
 ```
-$ pkg install gmt
+pkg install gmt
 ```
 
 **Compile from Ports**

@@ -61,22 +61,22 @@ Required Arguments
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* instead (by default *D* is computed from *Te*, Young's
-    modulus, and Poisson's ratio; see **-C** to change these values).
+    modulus, and Poisson's ratio; see |-C| to change these values).
     Alternatively, supply a *file* with variable plate thicknesses or rigidities.
-    The file must be co-registered with any file given via **-Q**.
+    The file must be co-registered with any file given via |-Q|.
 
 .. _-Q:
 
 **-Qn**\|\ **q**\|\ **t**\ [*args*]
     Sets the vertical load specification. Choose among these three options:
     **-Qn** means there is no input load file and that any deformation is
-    simply driven by the boundary conditions set via **-A**.  If no rigidity or
-    elastic thickness file is given via **-E** then you must also append arguments
+    simply driven by the boundary conditions set via |-A|.  If no rigidity or
+    elastic thickness file is given via |-E| then you must also append arguments
     to create the locations used for the calculations; for details on array creation,
     see `Generate 1D Array`_.
     **-Qq**\ [*loadfile*] is a file (or standard input if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
-    (or standard input if not given) with (x,load in m or km, positive up); see **-M** for
+    (or standard input if not given) with (x,load in m or km, positive up); see |-M| for
     topography unit used [m].
 
 Optional Arguments
@@ -98,7 +98,7 @@ Optional Arguments
 
 **-C**\ **p**\|\ **y**\ *value*
     Append **p** or **y** to change the current value of Poisson's ratio [0.25]
-    or Young's modulus [7.0e10 N/m^2], respectively.
+    or Young's modulus [7.0e10 N/m\ :sup:`2`], respectively.
 
 .. _-F:
 
@@ -137,7 +137,7 @@ Optional Arguments
 
 **-W**\ *wd*\ [**k**]
     Specify water depth in m; append **k** for km.  Must be positive [0].
-    Any subaerial topography will be scaled via the densities set in **-D**
+    Any subaerial topography will be scaled via the densities set in |-D|
     to compensate for the larger density contrast with air.
 
 .. _-Z:
@@ -172,9 +172,9 @@ Optional Arguments
 Note on Units
 -------------
 
-The **-M** option controls the units used in all input and output files.
+The |-M| option controls the units used in all input and output files.
 However, this option does *not* control values given on the command line
-to the **-E**, **-W**, and **-Z** options.  These are assumed to be in
+to the |-E|, |-W|, and |-Z| options.  These are assumed to be in
 meters unless an optional **k** for km is appended.
 
 Plate Flexure Notes

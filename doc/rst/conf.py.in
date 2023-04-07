@@ -29,7 +29,7 @@ if tags.has("nosphinxpanels"):
 
 # -- Project configuration ------------------------------------------------
 project = 'GMT'
-copyright = "@GMT_VERSION_YEAR@, The GMT Team."
+copyright = "@GMT_VERSION_YEAR@, The GMT Team"
 # The version shown at the top of the sidebar
 version = '@GMT_PACKAGE_VERSION_MAJOR@.@GMT_PACKAGE_VERSION_MINOR@'
 # The full version shown in the page title

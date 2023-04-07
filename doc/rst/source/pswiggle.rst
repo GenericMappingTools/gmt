@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ *fill*\ [**+n**][**+p**] ]
 [ |-I|\ *fix_az* ]
 [ |-K| ]
-[ |-O| ] [ **-P** ]
+[ |-O| ] [ |-P| ]
 [ |-T|\ *pen* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -70,8 +70,8 @@ points, use
                  -C32000 -P -Gred -T0.25p,blue -DjRM+w1000+lnT -V > track_xym.ps
 
 and the positive anomalies will in general point in the north direction.
-We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
-To instead enforce a fixed azimuth of 45 for the positive wiggles, we add **-I**
+We used |-D| to place a vertical scale bar indicating a 1000 nT anomaly.
+To instead enforce a fixed azimuth of 45 for the positive wiggles, we add |-I|
 and obtain
 
    ::
@@ -82,7 +82,7 @@ and obtain
 Bugs
 ----
 
-Sometimes the (x,y) coordinates are not printed with enough significant
+Sometimes the (*x,y*) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 

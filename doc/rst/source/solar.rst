@@ -58,7 +58,7 @@ Optional Arguments
 .. _-C:
 
 **-C**
-    Formats the report selected by **-I** using tab-separated fields on a single line. The
+    Formats the report selected by |-I| using tab-separated fields on a single line. The
     output is Sun *Lon Lat Azimuth Elevation* in degrees, *Sunrise Sunset Noon* in decimal days,
     *day length* in minutes, *SolarElevationCorrected* corrected for the effect of refraction index
     and *Equation of time* in minutes. Note that if no position is provided in **-I**\ *lon/lat* the
@@ -68,7 +68,7 @@ Optional Arguments
 
 **-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of terminators, or give no argument for clipping [Default is no fill or clipping].
-    Deactivate clipping by appending the output of gmt :doc:`clip` **-C**.
+    Deactivate clipping by appending the output of gmt :doc:`clip` |-C|.
 
 .. _-I:
 
@@ -93,7 +93,7 @@ Optional Arguments
 
 **-N**
     Invert the sense of what is inside and outside the terminator.  Only
-    used with clipping (**-G**) and cannot be used together with **-B**.
+    used with clipping (|-G|) and cannot be used together with |-B|.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -124,7 +124,7 @@ Optional Arguments
 
 **-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid].
+    width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_

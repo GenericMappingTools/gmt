@@ -64,7 +64,7 @@ The input files should contain the following columns:
 *lon* *lat* [ *alt* ] [ *timestart* [ *timestop* ] ]
 
 where *lon* and *lat* are required for all features, *alt* is optional
-for all features (see also **-A** and **-C**), and *timestart* and
+for all features (see also |-A| and |-C|), and *timestart* and
 *timestop* apply to events and timespan features.   For wiggles,
 the *alt* column is required but is expected to represent an along-track
 data anomaly such as gravity, magnetics, etc.  These values will be
@@ -123,7 +123,7 @@ Optional Arguments
     **s**\ ymbol, or **t**\ imespan), **l**\ ine, **p**\ olygon, or
     **w**\ iggle [symbol]. The first two columns of the input file should contain
     (*lon*, *lat*). When altitude or value is required (i.e., no
-    *altitude* value was given with **-A**, or **-C** is set), the third
+    *altitude* value was given with |-A|, or |-C| is set), the third
     column needs to contain the *altitude* (in m) or *value*. The event
     (**-Fe**) is a symbol that should only be active at a particular
     *time*, given in the next column. Timespan (**-Ft**) is a symbol
@@ -165,12 +165,12 @@ Optional Arguments
     Extended data given. Append one or more column names separated by
     commas. We will expect the listed data columns to exist in the input
     immediately following the data coordinates required for the selected
-    feature set by **-F**, and they will be encoded
+    feature set by |-F|, and they will be encoded
     in the KML file as Extended Data sets, whose attributes will be
     available in a Google Earth balloon when the item is selected.
     The data file must have enough data columns and trailing text to
     accommodate the number of columns requested.  If the number of extended
-    data is one larger than the number of available numerical columns then
+    data columns is one larger than the number of available numerical columns then
     the entire trailing text is set as the last extended data column.
     Otherwise, the trailing text is split into individual words and
     set as separate extended columns.
@@ -233,7 +233,7 @@ Optional Arguments
 
 **-T**\ *title*\ [/*foldername*]
     Sets the document title [default is unset]. Optionally, append
-    /*FolderName*; this allows you, with **-O**, **-K**, to group
+    /*FolderName*; this allows you, with |-O|, |-K|, to group
     features into folders within the KML document. [The default folder
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
     Line, Polygon or Wiggle].
@@ -247,9 +247,9 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines, wiggles or polygon outlines. Append pen
-    attributes to use [Defaults: width = default, color = black, style =
+    attributes to use [Defaults: width = 0.25p, color = black, style =
     solid]. If the modifier **+cl** is appended then the color of the line
-    are taken from the CPT (see **-C**). If instead modifier **+cf** is
+    are taken from the CPT (see |-C|). If instead modifier **+cf** is
     appended then the color from the cpt file is applied to symbol fill.
     Use just **+c** for both effects.  Note that for KML the pen width is
     given in (fractional) pixels and not in points (1/72 inch).
@@ -385,7 +385,7 @@ a KML file and any data files, icons, or images referenced by the KML,
 contained in a zip archive. One way to organize large data sets is to
 split them into groups called Folders. A Document can contain any number
 of folders. Using scripts you can create a composite KML file using the
-**-K**, **-O** options just like you do with GMT plots. See **-T** for
+**-K**, |-O| options just like you do with GMT plots. See |-T| for
 switching between folders and documents.  The gmt_shell_scripts.sh
 contains function gmt_build_kmz that can assist in building a KMZ file
 from any number of KML files (and optionally images they may refer to).
@@ -401,13 +401,13 @@ Kml Hierarchy
 -------------
 
 GMT stores the different features in hierarchical folders by feature
-type (when using **-O**, **-K** or **-T/**\ *foldername*), by input file
+type (when using |-O|, |-K| or **-T/**\ *foldername*), by input file
 (if not standard input), and by line segment (using the name from the
-segment header, or **-N**). This makes it more easy in Google Earth to
+segment header, or |-N|). This makes it more easy in Google Earth to
 switch on or off parts of the contents of the Document. The following is
 a crude example:
 
-[ KML header information; not present if **-O** was used ]
+[ KML header information; not present if |-O| was used ]
 
 <Document><name>GMT Data Document</name>
 
@@ -457,13 +457,13 @@ a crude example:
 
 </Document>
 
-[ KML trailer information; not present if **-K** was used ]
+[ KML trailer information; not present if |-K| was used ]
 
 Segment Information
 -------------------
 
 **2kml** will scan the segment headers for substrings of the form
-**-L**"*some label*\ " [also see **-N** discussion] and **-T**"*some
+**-L**"*some label*\ " [also see |-N| discussion] and **-T**"*some
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.
 

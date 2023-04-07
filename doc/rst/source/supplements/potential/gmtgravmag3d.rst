@@ -23,6 +23,10 @@ Synopsis
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ **-fg**]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -40,7 +44,7 @@ Required Arguments (not all)
 .. _-C:
 
 **-C**\ *density*
-    Sets body density in SI. This option is mutually exclusive with **-H**.
+    Sets body density in SI. This option is mutually exclusive with |-H|.
 
 .. _-H:
 
@@ -53,7 +57,7 @@ Required Arguments (not all)
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
-    option is mutually exclusive with **-G**.
+    option is mutually exclusive with |-G|.
 
 .. _-G:
 
@@ -97,9 +101,9 @@ Required Arguments (not all)
     Gives names of a xyz and vertex (**-Tv**\ *vert_file*) files defining a close surface.
     The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
     The *xyz* file can have 3, 4, 5, 6 or 8 columns. In first case (3 columns) the magnetization (or density) are
-    assumed constant (controlled by **-C** or **-H**). Following cases are: 4 columns -> 4rth col magnetization intensity;
+    assumed constant (controlled by |-C| or |-H|). Following cases are: 4 columns -> 4rth col magnetization intensity;
     5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
-    When n columns > 3 the third argument of the **-H** option is ignored. A *raw* format (selected by the **-Tr** option)
+    When n columns > 3 the third argument of the |-H| option is ignored. A *raw* format (selected by the **-Tr** option)
     is a file with N rows (one per triangle) and 9 columns corresponding to the x,y,x coordinates of each of the three
     vertex of each triangle. Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL
     (Stereo Lithographic) format. These two type of files are used to provide a closed surface.
@@ -145,6 +149,16 @@ Optional Arguments
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
+.. |Add_-h| replace:: Not used with binary data.
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-icols.rst_
+
+.. include:: ../../explain_-ocols.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
+
 .. include:: ../../explain_help.rst_
 
 Grid Distance Units
@@ -166,12 +180,13 @@ See Also
 --------
 
 :doc:`gmt </gmt>`, :doc:`grdgravmag3d`,
+:doc:`gravprisms </supplements/potential/gravprisms>`,
 :doc:`talwani2d </supplements/potential/talwani2d>`,
 :doc:`talwani3d </supplements/potential/talwani3d>`
 
 Reference
 ---------
 
-Okabe, M., Analytical expressions for gravity anomalies due to
+Okabe, M., 1979, Analytical expressions for gravity anomalies due to
 polyhedral bodies and translation into magnetic anomalies, *Geophysics*,
-44, (1979), p 730-741.
+44, 730-741.

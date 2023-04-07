@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,7 @@ const char *gmt_get_full_name (struct GMTAPI_CTRL *API, const char *module) {
 
 	/* Look for classic modules that now have a different modern mode name */
 	if      (!strcmp (module, "2kml"))      return "gmt2kml";
+	else if (!strcmp (module, "binstats"))  return "gmtbinstats";
 	else if (!strcmp (module, "connect"))   return "gmtconnect";
 	else if (!strcmp (module, "convert"))   return "gmtconvert";
 	else if (!strcmp (module, "defaults"))  return "gmtdefaults";

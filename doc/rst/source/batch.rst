@@ -15,6 +15,8 @@ Synopsis
 **gmt batch** *mainscript*
 |-N|\ *prefix*
 |-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-D| ]
+[ |-F|\ *template* ]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -82,12 +84,36 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-D:
+
+**-D**
+    Select this option if (1) the main script does not produce products named using the prefix **BATCH_NAME**,
+    so we should not attempt to move such files to the top directory, or (2) the main script will handle the
+    placement of any such product files directly.
+
+.. _-F:
+
+**-F**\ *template*
+    Rather than build product file names from the **BATCH_NAME** prefix based on a single running number,
+    use this `C-format <https://en.wikipedia.org/wiki/Printf_format_string>`_ *template* instead and create
+    unique names by formatting the data columns given by *timefile*.  Some limitations apply: (1) If *timefile*
+    has trailing text then it may be used with a single %s code as the *last* format statement in *template*.
+    If no %s is found then any trailing text present will not be used.  (2) The previous *N* format statements
+    will be used to convert the first *N* data columns in *timefile*; there is no option to skip a column or
+    to specify a specific order of columns in the template (but see |SYN_OPT-i| to rearrange the input order).
+    (3) Up to five numerical statements may be used (provided the *timefile* has enough columns),
+    including none.  E.g., **-F**\ my_data_%05.2lf_%07.0lf_%s will use the first two numerical columns in *timefile*
+    as well as the trailing text to create a unique product prefix. **Note**: Since a GMT data set internally
+    is using double precision variables you must use floating point format statements even if some or all
+    of your data columns are integers. Finally, if your choice of format statement and trailing text yield
+    tabs or spaces in the final prefix we will automatically replace those with underscores.
+
 .. _-I:
 
 **-I**\ *includefile*
     Insert the contents of *includefile* into the batch_init.sh script that is accessed by all batch scripts.
     This mechanism is used to add information (typically constant variable assignments) that the *mainscript*
-    and any optional **-S** scripts can rely on.
+    and any optional |-S| scripts can rely on.
 
 .. _-M:
 
@@ -128,18 +154,18 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [*dir*]
-    By default, all temporary files and job products are created in the subdirectory *prefix* set via **-N**.
+    By default, all temporary files and job products are created in the subdirectory *prefix* set via |-N|.
     You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
     problems related to low space in the main directory.  The product files will still be placed in the *prefix*
-    directory.  The *dir* is removed unless **-Q** is specified for debugging.
+    directory.  The *dir* is removed unless |-Q| is specified for debugging.
 
 .. _-Z:
 
 **-Z**
-    Erase the *mainscript* and all input scripts given via **-I** and **-S** upon completion.  Not compatible
-    with **-Q**.
+    Erase the *mainscript* and all input scripts given via |-I| and |-S| upon completion.  Not compatible
+    with |-Q|.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -162,24 +188,25 @@ Parameters
 Several parameters are automatically assigned and can be used when composing the *mainscript* and the
 optional *preflight* and *postflight* scripts. There are two sets of parameters: Those that are constants
 and those that change with the job number.  The constants are accessible by all the scripts:
-**BATCH_PREFIX**\ : The common prefix of the batch jobs (it is set with **-N**). **BATCH_NJOBS**\ : The
-total number of jobs (given or inferred from **-T**). Also, if **-I** was used then any static parameters
+**BATCH_PREFIX**\ : The common prefix of the batch jobs (it is set with |-N|). **BATCH_NJOBS**\ : The
+total number of jobs (given or inferred from |-T|). Also, if |-I| was used then any static parameters
 listed therein will be available to all the scripts as well. In addition, the *mainscript* also has access
 to parameters that vary with the job counter: **BATCH_JOB**\ : The current job number (an integer, e.g., 136),
 **BATCH_ITEM**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
 The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_ITEM**), Furthermore, if a *timefile*
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
-**BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing
+**BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to |-T| then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
-will be automatically moved up to the starting directory upon completion.
+will be automatically moved up to the starting directory upon completion (unless |-D| is in effect). However,
+note that |-F| can be used to select more diverse product names based on the input parameters given via |-T|.
 
 Data Files
 ----------
 
 The batch scripts will be able to find any files present in the starting directory when **batch** was initiated,
-as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
+as well as any new files produced by *mainscript* or the optional scripts set via |-S|.
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
 
@@ -187,7 +214,7 @@ Custom gmt.conf files
 ---------------------
 
 If you have a gmt.conf file in the top directory with your main script prior to running **batch** then it will be
-used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+used and shared across all the scripts created and executed *unless* your scripts use |-C| when starting a new
 modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
 **Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
 script to be used by other scripts is futile.
@@ -200,7 +227,7 @@ to have your *mainscript* either access a *different* data set as the job number
 only a varying *subset* of a data set, or the processing parameters need to change, or all of the above.  There
 are several strategies you can use to accomplish these effects:
 
-#. Your *timefile* passed to **-T** may list names of specific data files and you simply have your *mainscript*
+#. Your *timefile* passed to |-T| may list names of specific data files and you simply have your *mainscript*
    use the relevant **BATCH_TEXT** or **BATCH_WORD?** to access the job-specific file name.
 #. You have a 3-D grid (or a stack of 2-D grids) and you want to interpolate along the axis perpendicular to the
    2-D slices (e.g., time, or it could be depth).  In this situation you will use the module :doc:`grdinterpolate`
@@ -221,9 +248,9 @@ The **batch** module creates several hidden script files that are used in the ge
 (optional since it derives from **-Sf** and processes files once all the batch job complete), *batch_job*
 (accepts a job counter argument and processes data for those parameters), and *batch_cleanup* (removes temporary
 files at the end of the process). For each job, there is a separate *batch_params_######* script that provides
-job-specific variables (e.g., job number and anything given via **-T**).  The *preflight* and *postflight* scripts
+job-specific variables (e.g., job number and anything given via |-T|).  The *preflight* and *postflight* scripts
 have access to the information in *batch_init*, while the *batch_job* script in addition has access to the job-specific
-parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
+parameter file.  Using the |-Q| option will just produce these scripts which you can then examine.
 **Note**: The *mainscript* is duplicated per job and many of these are run simultaneously on all available cores.
 Multi-treaded GMT modules will therefore be limited to a single core per call.  Because we do not know how
 many products each batch job makes, we ensure each job creates a unique file when it is finished.  Checking for
@@ -250,14 +277,14 @@ Composing batch jobs is relatively simple, but you have to think in terms of *va
 we describe.  Then, start by making a single script (i.e., your *mainscript*) and identify which
 things should change with time (i.e., with the job number).  Create variables for these values. If they
 are among the listed parameters that **batch** creates automatically then use those names.  Unless you only
-require the job number you will need to make a file that you can pass via **-T**.  This file should
+require the job number you will need to make a file that you can pass via |-T|.  This file should
 then have all the values you need, per job (i.e., per row), with values across all the columns you need.
 If you need to assign various *fixed* variables that do not change with time, then your *mainscript*
-will look shorter and cleaner if you offload those assignments to a separate *includefile* (via **-I**).
+will look shorter and cleaner if you offload those assignments to a separate *includefile* (via |-I|).
 To test your *mainscript*, start by using options **-Q -M** to ensure that your master job results are correct.
-The **-M** option simply runs one job of your batch sequence (you can select which one via the **-M**
+The |-M| option simply runs one job of your batch sequence (you can select which one via the |-M|
 arguments [0]).  Fix any issues with your use of variables and options until this works.  You can then try
-to remove **-Q**. We recommend you make a very short (i.e., via **-T**) and small batch sequence so you don't
+to remove |-Q|. We recommend you make a very short (i.e., via |-T|) and small batch sequence so you don't
 have to wait very long to see the result.  Once things are working you can beef up number of jobs.
 
 
@@ -313,7 +340,7 @@ we combine all the individual PDFs into a single PDF file and delete the individ
     gmt end
     EOF
     cat << EOF > post.sh
-    gs -dQUIET -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=\${BATCH_PREFIX}.pdf -dBATCH \${BATCH_PREFIX}_*.pdf
+    gmt psconvert -TF -F\${BATCH_PREFIX} \${BATCH_PREFIX}_*.pdf
     rm -f \${BATCH_PREFIX}_*.pdf
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs

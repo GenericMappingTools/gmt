@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
+[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -65,7 +65,7 @@ Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
 azimuth, distances, distances to other lines, and travel-times
 along lines can all be computed by using one or more of the options
-**-A**, **-G**, **-L**, and **-Z**.
+|-A|, |-G|, |-L|, and |-Z|.
 
 Required Arguments
 ------------------
@@ -78,7 +78,7 @@ Required Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-R| replace:: Special case for the UTM projection: If **-C** is used and **-R** is not given then the
+.. |Add_-R| replace:: Special case for the UTM projection: If |-C| is used and |-R| is not given then the
     region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
     (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -92,17 +92,17 @@ Optional Arguments
 
 **-Ab**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
-    with *lon0/lat0*.  **-Af** calculates the (forward) azimuth
-    to each data point. Use **-Ab** to get back-azimuth from data points
-    to fixed point. Use **-Ao** to get orientations (-90/90) rather than
+    with *lon0/lat0*.  |-A|\ **f** calculates the (forward) azimuth
+    to each data point. Use |-A|\ **b** to get back-azimuth from data points
+    to fixed point. Use |-A|\ **o** to get orientations (-90/90) rather than
     azimuths (0/360). Upper case **F**, **B** or **O** will convert from
     geodetic to geocentric latitudes and estimate azimuth of geodesics
     (assuming the current ellipsoid is not a sphere). If no fixed point
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See `Output Order`_ for how **-A** affects the output record.  If **-R**
-    and **-J** are given the we project the coordinates first and then
+    See `Output Order`_ for how |-A| affects the output record.  If |-R|
+    and |-J| are given the we project the coordinates first and then
     compute Cartesian angles instead.
 
 .. _-C:
@@ -110,11 +110,11 @@ Optional Arguments
 **-C**\ [*dx*/*dy*][**+m**]
     Set center of projected coordinates to be at map projection center
     [Default is lower left corner]. Optionally, add offsets in the
-    projected units to be added (or subtracted when **-I** is set) to
+    projected units to be added (or subtracted when |-I| is set) to
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0]. The unit used for
     the offsets is the plot distance unit in effect (see
-    :term:`PROJ_LENGTH_UNIT`) unless **-F** is used, in which case the
+    :term:`PROJ_LENGTH_UNIT`) unless |-F| is used, in which case the
     offsets are in meters.  Alternatively, for the Mercator projection
     only, append **+m** to set the origin of the projected *y* coordinates
     to coincide with the standard parallel [Equator].
@@ -123,36 +123,36 @@ Optional Arguments
 
 **-Dc**\|\ **i**\|\ **p**
     Temporarily override :term:`PROJ_LENGTH_UNIT` and use **c** (cm),
-    **i** (inch), or **p** (points) instead. Cannot be used with **-F**.
+    **i** (inch), or **p** (points) instead. Cannot be used with |-F|.
 
 .. _-E:
 
 **-E**\ [*datum*]
     Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
-    (add **-I** for the inverse conversion). Append datum ID (see **-Qd**) or give
+    (add |-I| for the inverse conversion). Append datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
+    ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84.
 
 .. _-F:
 
 **-F**\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**]
-    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
+    Force 1:1 scaling, i.e., output (or input, see |-I|) data are in
     actual projected meters. To specify other units, append the desired
-    unit (see `Units`_). Without **-F**, the output (or input, see **-I**)
+    unit (see `Units`_). Without |-F|, the output (or input, see |-I|)
     are in the units specified by :term:`PROJ_LENGTH_UNIT` (but see
-    **-D**).
+    |-D|).
 
 .. _-G:
 
 **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
+    with |-G|\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic
     radius]), including **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
-    requires **-R** and **-J** to be set and all output coordinates will be
+    requires |-R| and |-J| to be set and all output coordinates will be
     reported as projected. If no fixed point is given
     we calculate *accumulated* distances whereas if a fixed point is given
     we calculate *incremental* distances.  You can override these defaults
@@ -161,7 +161,7 @@ Optional Arguments
     Append **+v** to obtain a *variable* 2nd point (*lon0*/*lat0*) via columns
     3-4 in the input file; this updates the fixed point per record and thus the
     selection defaults to incremental distances.
-    See `Output Order`_ for how **-G** affects the output record.
+    See `Output Order`_ for how |-G| affects the output record.
 
 .. _-I:
 
@@ -179,12 +179,12 @@ Optional Arguments
     including **c** (Cartesian distance using input coordinates) or
     **C** (Cartesian distance using projected coordinates). Note that these **c** and **C** are
     not listed in  `Units`_ and would be used for example as **+uc**. The **C**
-    unit requires **-R** and **-J** to be set. Finally, append **+p** to
+    unit requires |-R| and |-J| to be set. Finally, append **+p** to
     report the line segment id and the fractional point number instead
     of lon/lat of the nearest point.
-    See `Output Order`_ for how **-L** affects the output record.
+    See `Output Order`_ for how |-L| affects the output record.
     **Note**: Calculation mode for geographic data is spherical, hence **-je**
-    cannot be used in combination with **-L**.
+    cannot be used in combination with |-L|.
 
 .. _-N:
 
@@ -193,14 +193,14 @@ Optional Arguments
     :term:`PROJ_ELLIPSOID`) to one of four different auxiliary latitudes
     (longitudes are unaffected). Choose from **a**\ uthalic,
     **c**\ onformal, **g**\ eocentric, and **m**\ eridional latitudes
-    [geocentric]. Use **-I** to convert from auxiliary latitudes to
+    [geocentric]. Use |-I| to convert from auxiliary latitudes to
     geodetic latitudes.
 
 .. _-Q:
 
 **-Q**\ [**d**\|\ **e**]
-    List all projection parameters. To only list datums, use **-Qd**. To
-    only list ellipsoids, use **-Qe**.
+    List all projection parameters. To only list datums, use |-Q|\d. To
+    only list ellipsoids, use |-Q|\e.
 
 .. _-S:
 
@@ -211,15 +211,15 @@ Optional Arguments
 
 **-T**\ [**h**]\ *from*\ [/*to*]
     Coordinate conversions between datums *from* and *to* using the
-    standard Molodensky transformation. Use **-Th** if 3rd input column
+    standard Molodensky transformation. Use |-T|\ **h** if 3rd input column
     has height above ellipsoid [Default assumes height = 0, i.e., on the
-    ellipsoid]. Specify datums using the datum ID (see **-Qd**) or give
+    ellipsoid]. Specify datums using the datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
+    ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
-    omitted). If *datum* is - or not given we assume WGS-84. **-T** may
-    be used in conjunction with **-R** **-J** to change the datum before
-    coordinate projection (add **-I** to apply the datum conversion
+    omitted). If *datum* is - or not given we assume WGS-84. |-T| may
+    be used in conjunction with |-R| |-J| to change the datum before
+    coordinate projection (add |-I| to apply the datum conversion
     after the inverse projection). Make sure that the
     :term:`PROJ_ELLIPSOID` setting is correct for your case.
 
@@ -230,29 +230,44 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
+**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
-    The units of reported plot dimensions may be changed via **-D**.
+    The units of reported plot dimensions may be changed via |-D|.
     To output the map coordinates of a reference point, select **j**\ *code* (with
     standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
     where a plot point is given directly. To output the rectangular domain that
-    covers an oblique area as defined by **-R -J**, append **r**,
-    or use **R** to get the result in -Rw/e/s/n string format. Similarly, if an
-    oblique domain is set via **-R**\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
+    covers an oblique area as defined by |-R| |-J|, append **r**,
+    or use |-R| to get the result in -Rw/e/s/n string format. Similarly, if an
+    oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
     use **o** to return the diagonal corner coordinates in degrees (in the order
-    *llx urx lly ury*) or use **O** to get the equivalent **-R** string as trailing
-    text [Default returns the width and height of the map].
+    *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
+    text. To return the coordinates of the rectangular area encompassing the non-rectangular
+    area defined by your |-R| |-J|, use **e**, or **E** for the trailing text string.
+    Alternatively (for **e** or **r**), append **+n** to set how many points [100]
+    you want along each side for a closed polygon of the oblique area instead
+    [Default returns the width and height of the map].
+
+.. figure:: /_images/GMT_obl_regions.*
+   :width: 600 px
+   :align: center
+
+   Comparing oblique (red outline) and regular (just meridians and parallels; black outline) regions.
+   (left) Some domains are oblique (their perimeters are not following meridians and parallels).
+   We can use |-W|\ **r**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |-R| string
+   for that region. (right) Other domains are not oblique but their enclosing rectangular box in
+   the map projection will be.  We can explore |-W|\ **e**\ \|\ **E** to obtain the geographic coordinates
+   of the encompassing oblique rectangle or the |-R| string for that region.
 
 .. _-Z:
 
 **-Z**\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*]
-    Calculate travel times along track as specified with **-G**.
+    Calculate travel times along track as specified with |-G|.
     Append a constant speed unit; if missing we expect to read
     a variable speed from column 3.  The speed is expected to be
-    in the distance units set via **-G** per time unit controlled
+    in the distance units set via |-G| per time unit controlled
     by :term:`TIME_UNIT` [m/s].  Append **+i** to output
     *incremental* travel times between successive points, **+a**
     to obtain *accumulated* travel times, or both to get both kinds
@@ -262,9 +277,9 @@ Optional Arguments
     consult the :term:`FORMAT_CLOCK_OUT`
     setting. Finally, append **+t**\ *epoch* to report absolute
     times (ETA) for successive points. Finally, because of the
-    need for incremental distances the **-G** option with the
+    need for incremental distances the |-G| option with the
     **+i** modifier is required.
-    See `Output Order`_ for how **-Z** affects the output record.
+    See `Output Order`_ for how |-Z| affects the output record.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -363,8 +378,8 @@ assuming a fixed speed of 12 knots.  We do this with
     gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
 where :term:`TIME_UNIT` is set to hour so that the speed is
-measured in nm (set by **-G**) per hour (set by :term:`TIME_UNIT`).
-Elapsed times will be reported in hours (unless **+f** is added to **-Z**
+measured in nm (set by |-G|) per hour (set by :term:`TIME_UNIT`).
+Elapsed times will be reported in hours (unless **+f** is added to |-Z|
 for ISO elapsed time).
 
 To determine the geographic coordinates of the mid-point of this transverse Mercator map, try
@@ -387,11 +402,24 @@ To determine the oblique region string (in degrees) that corresponds to a rectan
 
     gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
 
+To instead get a closed polygon of the oblique area in geographical coordinates, try
+
+   ::
+
+    gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Wr+n > polygon.txt
+
+To find the region string that corresponds to the rectangular region that encompasses
+the projected region defined by a stereographic projection, try
+
+   ::
+
+    gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
+
 Restrictions
 ------------
 
-The rectangular input region set with **-R** will in general be mapped
-into a non-rectangular grid. Unless **-C** is set, the leftmost point on
+The rectangular input region set with |-R| will in general be mapped
+into a non-rectangular grid. Unless |-C| is set, the leftmost point on
 this grid has xvalue = 0.0, and the lowermost point will have yvalue =
 0.0. Thus, before you digitize a map, run the extreme map coordinates
 through **mapproject** using the appropriate scale and see what (x,y)
@@ -401,13 +429,13 @@ or alternatively, use **awk** to scale and shift the (x,y) values before
 transforming.
 
 For some projection, a spherical solution may be used despite the user
-having selected an ellipsoid. This occurs when the users **-R** setting
+having selected an ellipsoid. This occurs when the users |-R| setting
 implies a region that exceeds the domain in which the ellipsoidal series
 expansions are valid. These are the conditions: (1) Lambert Conformal
 Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical
 solution when the map scale exceeds 1.0E7. (2) Transverse Mercator
 (**-JT**) and UTM (**-JU**) will will use the spherical solution when
-either the west or east boundary given in **-R** is more than 10 degrees
+either the west or east boundary given in |-R| is more than 10 degrees
 from the central meridian, and (3) same for Cassini
 (**-JC**) but with a limit of only 4 degrees.
 
@@ -448,7 +476,7 @@ Output Order
 ------------
 
 The production order for the geodetic and temporal columns produced by the
-options **-A**, **-G**, **-L**, and **-Z** is fixed and follows the
+options |-A|, |-G|, |-L|, and |-Z| is fixed and follows the
 alphabetical order of the options.  Hence, the order these options
 appear on the command line is irrelevant.  The actual output order
 can of course be modulated via **-o**.

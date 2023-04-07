@@ -46,7 +46,7 @@ Description
 -----------
 
 Reads (*x*,\ *y*,\ *z*) triplets from files [or standard
-input] and plots z as a function of distance along track. This means
+input] and plots *z* as a function of distance along track. This means
 that two consecutive (*x*,\ *y*) points define the local distance axis,
 and the local *z* axis is then perpendicular to the distance axis,
 forming a right-handed coordinate system. The
@@ -140,15 +140,15 @@ Optional Arguments
     wiggles [Default is no fill]. Optionally, append **+p** to fill
     positive areas (this is the default behavior). Append **+n** to fill
     negative areas. Append **+n+p** to fill both positive and negative
-    areas with the same fill.  **Note**: You will need to repeat the **-G** option
+    areas with the same fill.  **Note**: You will need to repeat the |-G| option
     to select different fills for the positive and negative wiggles.
 
 .. _-I:
 
 **-I**\ *fix_az*
     Set a fixed azimuth projection for wiggles [Default uses track
-    azimuth, but see **-A**]. With this option, the calculated
-    track-normal azimuths are overridden by *fixed_az*.
+    azimuth, but see |-A|]. With this option, the calculated
+    track-normal azimuths are overridden by *fix_az*.
 
 .. _-T:
 
@@ -237,8 +237,8 @@ points, use
                  -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 and the positive anomalies will in general point in the north direction.
-We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
-To instead enforce a fixed azimuth of 45 for the positive wiggles, we add **-I**
+We used |-D| to place a vertical scale bar indicating a 1000 nT anomaly.
+To instead enforce a fixed azimuth of 45 for the positive wiggles, we add |-I|
 and obtain
 
    ::
@@ -249,7 +249,7 @@ and obtain
 Bugs
 ----
 
-Sometimes the (x,y) coordinates are not printed with enough significant
+Sometimes the (*x,y*) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 

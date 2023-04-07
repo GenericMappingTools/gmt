@@ -1,12 +1,12 @@
 #
 # This workflow checks if Scientific Colour Maps has a new release.
-# If a new release if found, it will open an issue automatically.
+# If a new release is found, it will open an issue automatically.
 #
-# http://www.fabiocrameri.ch/colourmaps.php
+# https://www.fabiocrameri.ch/colourmaps.php
 #
 name: SCM Check
 on:
-  # uncomment the 'pull_request' line to enable testing in PRs
+  # uncomment the 'pull_request' line to test the workflow in PRs
   # pull_request:
   schedule:
     # weekly cron job
@@ -33,7 +33,7 @@ jobs:
           echo "::set-output name=scm_version::${scm_version}"
           echo "::set-output name=scm_version_date::${scm_version_date}"
           if [ "${scm_version}" != ${scm_version_in_gmt} ]; then
-            echo "The latest SCM version (${scm_version}) is different the one in GMT (${scm_version_in_gmt})!"
+            echo "The latest SCM version (${scm_version}) is different from the one in GMT (${scm_version_in_gmt})!"
             echo "::set-output name=error_code::2"
           fi
 
@@ -46,7 +46,7 @@ jobs:
           body: |
             A new Scientific Colour Maps release was found.
 
-            - website: http://www.fabiocrameri.ch/colourmaps.php
+            - website: https://www.fabiocrameri.ch/colourmaps.php
             - version: ${{ steps.scm.outputs.scm_version }}
             - date: ${{ steps.scm.outputs.scm_version_date }}
 

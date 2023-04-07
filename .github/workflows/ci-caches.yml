@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
 
@@ -33,13 +33,13 @@ jobs:
       - name: Download remote data
         run: |
           # list of datasets used in tests
-          data="@earth_relief_01d earth_relief_01d_g \
+          data="@earth_relief_01d_p earth_relief_01d_g \
                 @earth_relief_30m \
                 @earth_relief_20m \
                 @earth_relief_15m \
-                @earth_relief_10m @earth_relief_10m_g \
+                @earth_relief_10m_p @earth_relief_10m_g \
                 @earth_relief_06m \
-                @earth_relief_05m @earth_relief_05m_g \
+                @earth_relief_05m_p @earth_relief_05m_g \
                 @earth_relief_04m \
                 @earth_relief_02m \
                 @earth_relief_01m \
@@ -67,7 +67,7 @@ jobs:
 
       # Upload the downloaded files as artifacts to GitHub
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gmt-cache
           path: |
@@ -80,18 +80,18 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
+        uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.0
 
       - name: Install vcpkg libraries
         run: bash ci/install-dependencies-windows.sh
 
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: vcpkg-cache
           # VCPKG_INSTALLATION_ROOT is C:\vcpkg

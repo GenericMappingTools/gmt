@@ -9,12 +9,12 @@
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5708769.svg)](https://doi.org/10.5281/zenodo.5708769)
 
 ## What is GMT?
 
-GMT is an open source collection of about 90 command-line tools for manipulating
+GMT is an open source collection of about 100 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing high-quality illustrations ranging from simple x-y
 plots via contour maps to artificially illuminated surfaces, 3D perspective
@@ -85,7 +85,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2022 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
+Copyright (c) 1991-2023 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -98,7 +98,7 @@ operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (* means optional):
 
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
-[Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
+[Geospatial Data Abstraction Library (GDAL)](https://gdal.org),
 [Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
@@ -112,12 +112,11 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 
 GMT uses (or can access) raster data derived from these sources:
 
-- [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
 - [Earth 15" IGPP DEM](https://www.essoar.org/doi/10.1002/essoar.10508279.1)
 - [Earth 15" GEBCO DEM](https://www.gebco.net/data_and_products/gridded_bathymetry_data/)
 - [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
 - [Earth 15" GSHHG land/sea masks](http://www.soest.hawaii.edu/pwessel/)
-- [Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
+- [Earth 1' crustal age](https://doi.org/10.1029/2020GC009214)
 - [Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
 - [Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)
 - [Earth 1' EGM2008 Geoid Anomalies](https://earth-info.nga.mil)
@@ -125,3 +124,13 @@ GMT uses (or can access) raster data derived from these sources:
 - [Earth 1' Vertical Gravity Gradients from Altimetry](https://topex.ucsd.edu/marine_grav/mar_grav.html)
 - [Earth 2' EMAG2 Magnetic Anomalies](https://www.ncei.noaa.gov)
 - [Earth 3' WDMAM Magnetic Anomalies](https://wdmam.org)
+
+GMT provides several color maps from these sources:
+
+- [SCM (Scientific Color Maps)](http://www.fabiocrameri.ch/visualisation.php)
+- [cmocean](https://github.com/kthyng/cmocean-gmt)
+- [cpt-city](http://soliton.vm.bytemark.co.uk/pub/cpt-city/views/totp-cpt.html)
+- [google](https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html)
+- [matlab](https://www.mathworks.com/help/matlab/colors-1.html)
+- [matplotlib](https://matplotlib.org/stable/tutorials/colors/colormaps.html)
+- [panoply](https://www.giss.nasa.gov/tools/panoply/)

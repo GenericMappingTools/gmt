@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,10 +15,21 @@
 #-------------------------------------------------------------------------------
 
 if (SPHINX_FOUND)
+	# Copy PS sources for gmt release
+	if (GIT_FOUND AND HAVE_GIT_VERSION)
+		add_custom_target (_scripts_images_release
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_CURRENT_SOURCE_DIR}/images/
+			${GMT_RELEASE_PREFIX}/doc/scripts/images
+			DEPENDS git_export_release)
+		add_depend_to_target (gmt_release _scripts_images_release)
+	endif (GIT_FOUND AND HAVE_GIT_VERSION)
+
 	# Convert PS to PNG
 	file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
 	set (_scripts_png)
-	foreach (_fig ${_scripts_ps2png})
+	foreach (_ps ${_scripts_ps2png})
+		get_filename_component (_fig ${_ps} NAME)
 		string (REPLACE ".ps" ".png" _png_fig ${_fig})
 		list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
@@ -27,15 +38,16 @@ if (SPHINX_FOUND)
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 			-A -P -E150 -Tg -Qg4 -Qt4
 			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
-	endforeach (_fig ${_scripts_ps2png})
+			DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+	endforeach (_ps ${_scripts_ps2png})
 
 	# Convert PS to PDF
-	set (_scripts_ps2pdf images/GMT_RGBchart_a4.ps images/GMT_RGBchart_letter.ps images/GMT_RGBchart_tabloid.ps images/GMT_App_F_stand+_iso+.ps images/GMT_App_F_symbol_dingbats.ps)
+	set (_scripts_ps2pdf images/GMT_RGBchart.ps images/GMT_App_F_stand+_iso+.ps images/GMT_App_F_symbol_dingbats.ps)
 	set (_scripts_pdf)
-	foreach (_fig ${_scripts_ps2pdf})
+	foreach (_ps ${_scripts_ps2pdf})
+		get_filename_component (_fig ${_ps} NAME)
 		string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
 		list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
@@ -43,10 +55,10 @@ if (SPHINX_FOUND)
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
 			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
-	endforeach (_fig ${_scripts_ps})
+			DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+	endforeach (_ps ${_scripts_ps})
 
 	# Convert script to verbatim txt
 	file (GLOB _scripts_sh2txt RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.sh")

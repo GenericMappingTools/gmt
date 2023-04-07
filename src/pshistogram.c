@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pshistogram_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pshistogram"
 #define THIS_MODULE_MODERN_NAME	"histogram"
@@ -214,7 +215,7 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	F->n_boxes = F->T->n - 1;	/* One less than the bin boundaries */
 	F->boxh = gmt_M_memory (GMT, NULL, F->n_boxes, double);
 	F->n_counted = 0;
-	/* Pic variable bin search unles not variable bounds and the data set is large */
+	/* Pick variable bin search unless not variable bounds and the data set is large */
 	pshistogram_get_bin = (F->T->var_inc || n < BIN_FASTER_IF_THIS_LARGE) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
 
 	/* First fill boxes with counts  */
@@ -644,7 +645,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, mode = 0, pos = 0;
+	unsigned int n_errors = 0, mode = 0, pos = 0;
 	int sval;
 	size_t L;
 	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""};
@@ -655,25 +656,22 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (opt->arg[0] && (c = strstr (opt->arg, "+b"))) {
 					Ctrl->C.binval = true;
 					c[0] = '\0';	/* Remove modifier */
@@ -684,7 +682,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				while (gmt_getmodopt (GMT, 'D', opt->arg, "bfor", &pos, p, &n_errors) && n_errors == 0) {	/* Looking for +b, +f, +o, +r */
 					switch (p[0]) {
 						case 'b':	/* beneath */
@@ -705,7 +702,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				break;
 			case 'E':	/* Alternative histogram bar width */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if ((c = strstr (opt->arg, "+o"))) {	/* Asking for offset */
 					Ctrl->E.do_offset = true;
 					L = strlen (c);
@@ -730,11 +726,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
@@ -742,7 +737,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0] == 'o') Ctrl->I.mode = 1;
 				if (opt->arg[0] == 'O') Ctrl->I.mode = 2;
 				break;
@@ -771,24 +765,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				Ctrl->Q.mode = (opt->arg[0] == 'r') ? -1 : +1;
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				t_arg = opt->arg;
 				break;
 			case 'W':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				w_arg = opt->arg;
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				if ((c = strstr (opt->arg, "+w")) != NULL) {	/* Use weights instead of counts */
 					Ctrl->Z.weights = true;
 					c[0] = '\0';	/* Chop of temporarily */
@@ -817,6 +807,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 		/* Process -T<width> [-Lb|h|l] [-W<pen>] */
 		Ctrl->T.active = true;
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
+		gmt_reset_array_time (GMT, &(Ctrl->T.T));	/* Correct any conflicts between T unit and TIME_UNIT */
 		if (l_arg) {	/* Gave -Lb|h|l */
 			Ctrl->L.active = true;
 			if (l_arg[0] == 'l') Ctrl->L.mode = PSHISTOGRAM_LEFT;
@@ -886,7 +877,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && (Ctrl->N.selected[PSHISTOGRAM_L1] || Ctrl->N.selected[PSHISTOGRAM_LMS]), "Option -N: Only -N is supported when -w is selected.\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && Ctrl->N.selected[PSHISTOGRAM_L2] && Ctrl->Q.active, "Option -N: Cannot use -Q when -w is selected.\n");
 	n_errors += gmt_check_binary_io (GMT, 0);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -924,7 +914,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (gmt_M_compat_check (GMT, 4)) {	/* Must see if -E was given and temporarily change it */
 		struct GMT_OPTION *opt = NULL;
 		for (opt = options; opt->next; opt = opt->next) {
@@ -938,9 +928,15 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
-	if (!Ctrl->I.active && GMT->current.proj.projection != GMT_LINEAR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only Cartesian scaling available in this module.\n");
-		Return (GMT_RUNTIME_ERROR);
+	if (!Ctrl->I.active) {	/* Need a linear projection either set explicitly (classic) or implicitly (modern only) */
+		if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->common.J.active) {	/* -J is required, exit at this point */
+			GMT_Report (API, GMT_MSG_ERROR, "Must specify Cartesian scales or dimensions of the domain via -Jx or -JX.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (GMT->current.proj.projection != GMT_LINEAR) {	/* Must have given a nonlinear map projection by mistake */
+			GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only Cartesian scaling available in this module.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
@@ -1040,12 +1036,9 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	data = gmt_M_memory (GMT, data, n, double);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || Ctrl->N.active) {	/* Must do work on the array for statistics */
+	{	/* Must do some work on the array for statistics */
 		bool mmm[3];
-		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
-			mmm[PSHISTOGRAM_L2] = mmm[PSHISTOGRAM_L1] = mmm[PSHISTOGRAM_LMS] = true;	/* Need to know mean, median, mode plus deviations */
-		else
-			gmt_M_memcpy (mmm, Ctrl->N.selected, 3, bool);
+		mmm[PSHISTOGRAM_L2] = mmm[PSHISTOGRAM_L1] = mmm[PSHISTOGRAM_LMS] = true;	/* Need to know mean, median, mode plus deviations */
 		if (F.weights) {	/* Must use a copy since get_loc_scale sorts the array and that does not work if we have weights */
 			double *tmp = gmt_M_memory (GMT, NULL, n, double);
 			gmt_M_memcpy (tmp, data, n, double);
@@ -1055,41 +1048,48 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		else
 			pshistogram_get_loc_scl (GMT, data, n, mmm, stats);
-
-		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
-			sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
-			sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
-		}
+	}
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
+		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
+		/* Adjust the min/max found for finite bin width */
+		double b_min = x_min, b_max = x_max;
+		if (Ctrl->F.active) {	/* First and last bin will stick out half a bin width from the the data limits */
+			b_min -= 0.5 * F.T->inc;
+			b_max += 0.5 * F.T->inc;
+		}
+		else	/* Only b_max needs to change since it may fall in the last bin starting at x_max */
+			b_max += F.T->inc;
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* No tick info set, pick something */
 			if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
 				tmp = 1.0;	/* Do powers of 10 only */
 			else {	/* Linear */
-				tmp = pow (10.0, floor (d_log10 (GMT, x_max-x_min)));
-				if (((x_max-x_min) / tmp) < 3.0) tmp *= 0.5;
+				tmp = pow (10.0, floor (d_log10 (GMT, b_max-b_min)));
+				if (((b_max-b_min) / tmp) < 3.0) tmp *= 0.5;
 			}
 		}
 		else
 			tmp = GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) {	/* Round to nearest multiples of 1,2,5 * 10^p only */
-			double f = log10 (x_min), p = floor (f), df = f - p;
+			double f = log10 (b_min), p = floor (f), df = f - p;
 			if (df > LOG10_5) F.wesn[XLO] = pow (10.0, p + LOG10_5);
 			else if (df > LOG10_2) F.wesn[XLO] = pow (10.0, p + LOG10_2);
 			else F.wesn[XLO] = pow (10.0, p);
-			f = log10 (x_max), p = floor (f), df = f - p;
+			f = log10 (b_max), p = floor (f), df = f - p;
 			if (df > LOG10_5) F.wesn[XHI] = pow (10.0, p + 1.0);
 			else if (df > LOG10_2) F.wesn[XHI] = pow (10.0, p + LOG10_5);
 			else F.wesn[XHI] = pow (10.0, p + LOG10_2);
 		}
 		else {	/* Linear */
-			F.wesn[XLO] = floor (x_min / tmp) * tmp;
-			F.wesn[XHI] = ceil  (x_max / tmp) * tmp;
+			F.wesn[XLO] = floor (b_min / tmp) * tmp;
+			F.wesn[XHI] = ceil  (b_max / tmp) * tmp;
 		}
 		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10 && F.wesn[XLO] == 0.0) F.wesn[XLO] = 1.0;	/* To avoid any log10 of zero issues */
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
@@ -1360,7 +1360,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			else
 				S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
 		}
-		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
 	}
 	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */

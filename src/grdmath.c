@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdmath_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdmath"
 #define THIS_MODULE_MODERN_NAME	"grdmath"
@@ -111,6 +112,10 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
+	struct GRDMATH_C {	/* -C[<cpt>] */
+		bool active;
+		char *cpt;
+	} C;
 	struct GRDMATH_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
@@ -173,7 +178,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [%s] [-D<resolution>[+f]] [%s] [-M] [-N] [-S] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] %s A B op C op D op ... = %s\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
+		"[%s] [%s] [%s] [%s]%s[%s] A B op C op D op ... = %s\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
 		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT, GMT_OUTGRID);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -249,9 +254,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     CSCH       1 1  ");	GMT_Usage (API, -21, "csch (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     CUMSUM     2 1  ");	GMT_Usage (API, -21, "Cumulative sum of rows (B=+/-1|3) or columns (B=+/-2|4) in A");
 	GMT_Message (API, GMT_TIME_NONE, "     CURV       1 1  ");	GMT_Usage (API, -21, "Curvature of A (Laplacian)");
-	GMT_Message (API, GMT_TIME_NONE, "     D2DX2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dx^2 2nd derivative");
-	GMT_Message (API, GMT_TIME_NONE, "     D2DY2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dy^2 2nd derivative");
-	GMT_Message (API, GMT_TIME_NONE, "     D2DXY      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dxdy 2nd derivative");
+	GMT_Message (API, GMT_TIME_NONE, "     D2DX2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dx^2 Central 2nd derivative");
+	GMT_Message (API, GMT_TIME_NONE, "     D2DY2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dy^2 Central 2nd derivative");
+	GMT_Message (API, GMT_TIME_NONE, "     D2DXY      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dxdy Central 2nd cross-derivative");
 	GMT_Message (API, GMT_TIME_NONE, "     D2R        1 1  ");	GMT_Usage (API, -21, "Converts Degrees to Radians");
 	GMT_Message (API, GMT_TIME_NONE, "     DAYNIGHT   3 1  ");	GMT_Usage (API, -21, "1 where sun at (A, B) shines and 0 elsewhere, with C transition width");
 	GMT_Message (API, GMT_TIME_NONE, "     DDX        1 1  ");	GMT_Usage (API, -21, "d(A)/dx Central 1st derivative");
@@ -272,7 +277,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     EXCH       2 2  ");	GMT_Usage (API, -21, "Exchanges A and B on the stack");
 	GMT_Message (API, GMT_TIME_NONE, "     EXP        1 1  ");	GMT_Usage (API, -21, "exp (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     FACT       1 1  ");	GMT_Usage (API, -21, "A! (A factorial)");
-	GMT_Message (API, GMT_TIME_NONE, "     EXTREMA    1 1  ");	GMT_Usage (API, -21, "Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere");
+	GMT_Message (API, GMT_TIME_NONE, "     EXTREMA    1 1  ");	GMT_Usage (API, -21, "Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere");
 	GMT_Message (API, GMT_TIME_NONE, "     FCRIT      3 1  ");	GMT_Usage (API, -21, "F distribution critical value for alpha = A, nu1 = B, and nu2 = C");
 	GMT_Message (API, GMT_TIME_NONE, "     FCDF       3 1  ");	GMT_Usage (API, -21, "F cumulative distribution function for F = A, nu1 = B, and nu2 = C");
 	GMT_Message (API, GMT_TIME_NONE, "     FISHER     3 1  ");	GMT_Usage (API, -21, "Fisher probability density function at grid nodes given stack lon,lat (A, B) and kappa (C)");
@@ -340,7 +345,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     NAN        2 1  ");	GMT_Usage (API, -21, "NaN if A == B, else A");
 	GMT_Message (API, GMT_TIME_NONE, "     NEG        1 1  ");	GMT_Usage (API, -21, "-A");
 	GMT_Message (API, GMT_TIME_NONE, "     NEQ        2 1  ");	GMT_Usage (API, -21, "1 if A != B, else 0");
-	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so max(A)-min(A) = 1");
+	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so min(A) = 0 and max(A) = 1");
 	GMT_Message (API, GMT_TIME_NONE, "     NOT        1 1  ");	GMT_Usage (API, -21, "NaN if A == NaN, 1 if A == 0, else 0");
 	GMT_Message (API, GMT_TIME_NONE, "     NRAND      2 1  ");	GMT_Usage (API, -21, "Normal, random values with mean A and std. deviation B");
 	GMT_Message (API, GMT_TIME_NONE, "     OR         2 1  ");	GMT_Usage (API, -21, "NaN if B == NaN, else A");
@@ -371,16 +376,17 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A");
 	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B");
 	GMT_Message (API, GMT_TIME_NONE, "     RPDF       1 1  ");	GMT_Usage (API, -21, "Rayleigh probability density function for z = A");
-	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B");
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTX       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in x-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTY       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in y-direction");
-	GMT_Message (API, GMT_TIME_NONE, "     SDIST      2 1  ");	GMT_Usage (API, -21, "Spherical distance (in km) between grid nodes and stack lon,lat (A, B)");
-	GMT_Message (API, GMT_TIME_NONE, "     SDIST2     2 1  ");	GMT_Usage (API, -21, "As SDIST but only to nodes that are != 0");
+	GMT_Message (API, GMT_TIME_NONE, "     SADDLE     1 1  ");	GMT_Usage (API, -21, "Critical points: -1|+1 is a saddle with min|max in x-direction; 0 elsewhere");
 	GMT_Message (API, GMT_TIME_NONE, "     SAZ        2 1  ");	GMT_Usage (API, -21, "Spherical azimuth from grid nodes to stack x,y");
 	GMT_Message (API, GMT_TIME_NONE, "     SBAZ       2 1  ");	GMT_Usage (API, -21, "Spherical back-azimuth from grid nodes to stack x,y");
 	GMT_Message (API, GMT_TIME_NONE, "     SEC        1 1  ");	GMT_Usage (API, -21, "sec (A) (A in radians)");
 	GMT_Message (API, GMT_TIME_NONE, "     SECD       1 1  ");	GMT_Usage (API, -21, "sec (A) (A in degrees)");
 	GMT_Message (API, GMT_TIME_NONE, "     SECH       1 1  ");	GMT_Usage (API, -21, "sech (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     SDIST      2 1  ");	GMT_Usage (API, -21, "Spherical distance (in km) between grid nodes and stack lon,lat (A, B)");
+	GMT_Message (API, GMT_TIME_NONE, "     SDIST2     2 1  ");	GMT_Usage (API, -21, "As SDIST but only to nodes that are != 0");
 	GMT_Message (API, GMT_TIME_NONE, "     SIGN       1 1  ");	GMT_Usage (API, -21, "sign (+1 or -1) of A");
 	GMT_Message (API, GMT_TIME_NONE, "     SIN        1 1  ");	GMT_Usage (API, -21, "sin (A) (A in radians)");
 	GMT_Message (API, GMT_TIME_NONE, "     SINC       1 1  ");	GMT_Usage (API, -21, "sinc (A) (sin (pi*A)/(pi*A))");
@@ -513,27 +519,28 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Restrict GSHHS features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				break;
+			case 'C':	/* Control default CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				if (opt->arg[0]) Ctrl->C.cpt = opt->arg;	/* Just pass pointer if given an argument */
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.set = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.set);
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Map units */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Relax domain check */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Only checked later */
 				break;
@@ -1915,7 +1922,7 @@ GMT_LOCAL void grdmath_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 }
 
 GMT_LOCAL void grdmath_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: D2DX2 1 1 d^2(A)/dx^2 2nd derivative.  */
+/*OPERATOR: D2DX2 1 1 d^2(A)/dx^2 2nd Central derivative.  */
 {
 	uint64_t node, ij;
 	openmp_int row, col;
@@ -1951,7 +1958,7 @@ GMT_LOCAL void grdmath_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 }
 
 GMT_LOCAL void grdmath_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: D2DY2 1 1 d^2(A)/dy^2 2nd derivative.  */
+/*OPERATOR: D2DY2 1 1 d^2(A)/dy^2 2nd Central derivative.  */
 {
 	uint64_t node, ij;
 	openmp_int row, col, mx;
@@ -1988,7 +1995,7 @@ GMT_LOCAL void grdmath_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 }
 
 GMT_LOCAL void grdmath_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: D2DXY 1 1 d^2(A)/dxdy 2nd derivative.  */
+/*OPERATOR: D2DXY 1 1 d^2(A)/dxdy 2nd Central derivative.  */
 {
 	uint64_t node;
 	openmp_int row, col, mx;
@@ -2016,10 +2023,10 @@ GMT_LOCAL void grdmath_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 
 	z = gmt_M_memory (GMT, NULL, info->size, float);
 	cx = gmt_M_memory (GMT, NULL, info->G->header->n_rows, double);
-	gmt_M_row_loop (GMT, info->G, row) cx[row] = 0.5 / (info->dx[row] * info->dx[row]);
+	gmt_M_row_loop (GMT, info->G, row) cx[row] = 0.5 / info->dx[row];
 
 	mx = info->G->header->mx;
-	cy = 0.5 / (info->dy * info->dy);
+	cy = 0.5 / info->dy;
 
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		z[node] = (float)(cx[row] * cy * (stack[last]->G->data[node-mx+1] - stack[last]->G->data[node-mx-1] + \
@@ -2495,7 +2502,7 @@ GMT_LOCAL int grdmath_do_derivative (gmt_grdfloat *z, uint64_t this_node, int of
 }
 
 GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: EXTREMA 1 1 Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere.  */
+/*OPERATOR: EXTREMA 1 1 Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere.  */
 {
 	uint64_t node;
 	openmp_int row, col;
@@ -2526,12 +2533,11 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 	/* We will visit each node on the grid and determine if there are extrema.  We do this
 	 * by looking at the along-x and along-y profiles separately.  If both of them shows the
 	 * central node in a min or max location with respect to its two neighbors (one if at the
-	 * edge of the grid or in the presence of NaNs) we must do further checking.  If the two
-	 * extrema are of different sign we call it a saddle point and we are done.  If both are
+	 * edge of the grid or in the presence of NaNs) we must do further checking.  If both are
 	 * min or max then we look at the two diagonal lines to see if they can confirm this.
 	 * Here, NaNs are not held against you - it takes real values to overrule the dx,dy values.
 	 *
-	 * Min is given -2, Max is given +2, Saddle points are +1 (if max in x) or -1 (if max in y)
+	 * Min is given -1, Max is given +1
 	 * Default is 0 which means no extrema.
 	 */
 
@@ -2545,10 +2551,7 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 		if ((dy = grdmath_do_derivative (stack[last]->G->data, node, info->G->header->mx, 0)) == -2) continue;	/* Too many NaNs or flat y-line */
 
 		if ((product = dx * dy) == 0) continue;	/* No min or max possible */
-		if (product < 0) {	/* Saddle point - don't need to check diagonals */
-			z[node] = (float)((dx > 0) ? +1 : -1);
-			continue;
-		}
+		if (product < 0) continue;	/* Saddle point - don't need to check diagonals */
 
 		/* Need to examine diagonal trends to verify min or max */
 
@@ -2559,7 +2562,64 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 
 		/* OK, we have a min or max point; just use dx to check which kind */
 
-		z[node] = (float)((dx > 0) ? +2 : -2);
+		z[node] = (float)((dx > 0) ? +1 : -1);
+	}
+
+	gmt_M_memcpy (stack[last]->G->data, z, info->size, float);
+	gmt_M_memset (HH->BC, 4, unsigned int);	/* No BC padding in this array */
+	gmt_M_free (GMT, z);
+}
+
+GMT_LOCAL void grdmath_SADDLE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: SADDLE 1 1  -1|+1 is a saddle point with min|max in x-direction; 0 elsewhere.  */
+{
+	uint64_t node;
+	openmp_int row, col;
+	int dx, dy, product;
+	float *z = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
+
+	/* Find saddle points in grid */
+
+	if (stack[last]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to SADDLE is constant!\n");
+		gmt_M_memset (stack[last]->G->data, info->size, float);
+		return;
+	}
+
+	/* If grid does not have BC rows/cols assigned we apply reasonable conditions:
+	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
+	 * as a BC == GMT_BC_IS_DATA then the pad already constrains observations. */
+
+	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
+
+	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
+	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
+
+	z = gmt_M_memory (GMT, NULL, info->size, float);
+
+	/* We will visit each node on the grid and determine if there are saddles.  We do this
+	 * by looking at the along-x and along-y profiles separately.  If both of them shows the
+	 * central node in a min or max location with respect to its two neighbors (one if at the
+	 * edge of the grid or in the presence of NaNs) we must do further checking.  If the two
+	 * extrema are of different sign we call it a saddle point and we are done, else 0.
+	 *
+	 * Saddle points are +1 (if max in x) or -1 (if max in y)
+	 * Default is 0 which means no saddle.
+	 */
+
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;	/* No saddle if point is NaN */
+
+		if ((dx = grdmath_do_derivative (stack[last]->G->data, node, 1, 0)) == -2) continue;	/* Too many NaNs or flat x-line */
+		if ((dy = grdmath_do_derivative (stack[last]->G->data, node, info->G->header->mx, 0)) == -2) continue;	/* Too many NaNs or flat y-line */
+
+		if ((product = dx * dy) == 0) continue;	/* No local min or max possible */
+		if (product < 0)	/* Saddle point */
+			z[node] = (float)((dx > 0) ? +1 : -1);
+			continue;
 	}
 
 	gmt_M_memcpy (stack[last]->G->data, z, info->size, float);
@@ -3292,8 +3352,10 @@ GMT_LOCAL struct GMT_DATASET *grdmath_ASCII_read (struct GMT_CTRL *GMT, struct G
 	int error;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		error = gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
-	else
-		error = gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Cartesian squared distances */
+	else {
+		char code = strcmp (op, "PDIST") ? 'R' : 'X';
+		error = gmt_init_distaz (GMT, code, 0, GMT_MAP_DIST);	/* Cartesian distances of some flavor */
+	}
 	if (error == GMT_NOT_A_VALID_TYPE) return NULL;
 	if (GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s setting number of input columns\n", op);
@@ -4058,7 +4120,7 @@ GMT_LOCAL void grdmath_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 }
 
 GMT_LOCAL void grdmath_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
-/*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
+/*OPERATOR: NORM 1 1 Normalize (A) so min(A) = 0 and max(A) = 1.  */
 	uint64_t node, n = 0;
 	openmp_int row, col;
 	float z, zmin = FLT_MAX, zmax = -FLT_MAX;
@@ -4078,7 +4140,7 @@ GMT_LOCAL void grdmath_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		}
 		a = (n == 0 || zmax == zmin) ? GMT->session.f_NaN : (1.0 / (zmax - zmin));	/* Normalization scale */
 	}
-	gmt_M_grd_loop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : a * stack[last]->G->data[node]);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : a * (stack[last]->G->data[node] - zmin));
 }
 
 GMT_LOCAL void grdmath_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
@@ -5996,7 +6058,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 234
+#define GRDMATH_N_OPERATORS 235
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -6236,6 +6298,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[231] = grdmath_ASECD;	n_args[231] = 1;	n_out[231] = 1;
 	ops[232] = grdmath_ATAND;	n_args[232] = 1;	n_out[232] = 1;
 	ops[233] = grdmath_ATAN2D;	n_args[233] = 2;	n_out[233] = 1;
+	ops[234] = grdmath_SADDLE;	n_args[234] = 1;	n_out[234] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6387,6 +6450,8 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	gmt_M_free (GMT, info->f_grd_yn);
 	gmt_M_free (GMT, info->dx);
 	gmt_M_str_free (info->ASCII_file);
+	info->A = NULL;
+	gmt_free_grid (GMT, &(info->G), false);
 }
 
 GMT_LOCAL void grdmath_expand_recall_cmd (struct GMT_OPTION *list) {
@@ -6663,6 +6728,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"ASECD",	/* id = 231 */
 		"ATAND",	/* id = 232 */
 		"ATAN2D",	/* id = 233 */
+		"SADDLE",	/* id = 234 */
 		"" /* last element is intentionally left blank */
 	};
 
@@ -6687,7 +6753,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (GMT_RUNTIME_ERROR);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return1 (API->error);
@@ -6863,7 +6929,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
+		if (strchr ("ACDIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
 		if (opt->option == 'S' && nstack > 1) {	/* Turn on reducing stack behavior */
 			opt = opt->next;	/* Skip to actual operator */
 			if (grdmath_collapse_stack (GMT, &info, stack, nstack, opt->arg)) continue;	/* Failed, just ignore */
@@ -6875,6 +6941,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (op == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible way to go... */
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
+			struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 			if (nstack <= 0) {
 				GMT_Report (API, GMT_MSG_ERROR, "No items on stack are available for output!\n");
 				Return (GMT_RUNTIME_ERROR);
@@ -6896,6 +6963,21 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 			gmt_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
 
 			gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+
+			HH = gmt_get_H_hidden (stack[this_stack]->G->header);
+			if (Ctrl->C.active) {	/* Keep or replace the grid's default CPT */
+				if (Ctrl->C.cpt) {	/* Setting another default CPT */
+					if (HH->cpt) gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
+					HH->cpt = strdup (Ctrl->C.cpt);
+					API->meta.ignore_remote_cpt = true;	/* Since we just specified something else */
+				}
+				else	/* Want to keep what we have or assign the remote CPT if this is a remote grid */
+					API->meta.ignore_remote_cpt = false;	/* Just in case it had been set elsewhere */
+			}
+			else {	/* Default is to get rid of the grid's default CPT since we cannot know if it is valid anymore */
+				gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
+				API->meta.ignore_remote_cpt = true;	/* Since we cannot keep track of what grdmath did to this grid */
+			}
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {

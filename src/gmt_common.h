@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -121,6 +121,7 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int just;
 		double x, y;
+		char string[GMT_LEN64];	/* User override for timestamp */
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
 	struct V {	/* -V */
@@ -174,6 +175,8 @@ struct GMT_COMMON {
 	} e;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
+		bool is_geo[2];	/* true if -f[i|o]g was set to force a Cartesian grid to be seen as geographic */
+		bool is_cart[2];	/* true if -f[i|o]c was set to force a geographic grid to be seen as Cartesian */
 		char string[GMT_LEN64];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */

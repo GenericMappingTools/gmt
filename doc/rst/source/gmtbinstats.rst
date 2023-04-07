@@ -30,7 +30,6 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-w| ]
@@ -45,7 +44,7 @@ Description
 **gmtbinstats** reads arbitrarily located (x,y[,z][,w]) points
 (2-4 columns) from standard input [or *table*] and for each
 node in the specified grid layout determines which points are
-within the given radius.  These point are then used in the
+within the given radius.  These points are then used in the
 calculation of the specified statistic. The results may be
 presented as is or may be normalized by the circle area to
 perhaps give density estimates.  Alternatively, select
@@ -56,8 +55,8 @@ Required Arguments
 
 *table*
     A 2-4 column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
-    to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
+    **-bi**] holding (x,y[,z][,w]) data values. You must use |-W|
+    to indicate that you have weights.  Only |-C|\ **n** will accept 2 columns only.
     If no file is specified, **gmtbinstats** will read from standard input.
 
 .. _-C:
@@ -68,9 +67,9 @@ Required Arguments
     **d** for median absolute deviation (MAD), **g** for full (max-min) range,
     **i** for 25-75% interquartile range, **l** for minimum (low),
     **L** for minimum of positive values only, **m** for median,
-    **n** the number of values, **o** for LMS scale,
+    **n** the number of values, **o** for least median square (LMS) scale,
     **p** for mode (maximum likelihood), **q** for selected quantile
-    (append desired quantile in 0-100% range [50]), **r** for the r.m.s.,
+    (append desired quantile in 0-100% range [50]), **r** for root mean square (RMS),
     **s** for standard deviation, **u** for maximum (upper),
     **U** for maximum of negative values only, or **z** for the sum.
 
@@ -108,18 +107,18 @@ Optional Arguments
 **-S**\ *search_radius*
     Sets the *search_radius* that determines which data points are
     considered close to a node. Append the distance unit (see `Units`_).
-    Not compatible with **-T**.
+    Not compatible with |-T|.
 
 .. _-T:
 
 **-T**\ [**h**\|\ **r**]
     Instead of circular, possibly overlapping areas, select non-overlapping tiling.  Choose between
-    **r**\ ectangular **h**\ exagonal binning. For **-Tr**, set bin sizes via **-I** and we write
-    the computed statistics to the grid file named in **-G**.  For **-Th**, we write a table with
+    **r**\ ectangular and **h**\ exagonal binning. For **-Tr**, set bin sizes via |-I| and we write
+    the computed statistics to the grid file named in |-G|.  For **-Th**, we write a table with
     the centers of the hexagons and the computed statistics to standard output (or to the file named
-    in **-G**).  Here, the **-I** setting is expected to set the *y* increment only and we compute
+    in |-G|).  Here, the |-I| setting is expected to set the *y* increment only and we compute
     the *x*-increment given the geometry. Because the horizontal spacing between hexagon centers in
-    *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in **-R** to
+    *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in |-R| to
     fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -133,12 +132,12 @@ Optional Arguments
    Input data have an extra column containing observation point weight.
    If weights are given then weighted statistical quantities will be computed
    while the count will be the sum of the weights instead of number of points.
-   If your weights are actually uncertainties (one sigma) then append **+s**
-   and we compute weight = 1/sigma.
+   If your weights are actually uncertainties (:math:`1\sigma`) then append **+s**
+   and we compute weight = :math:`\frac{1}{\sigma}`.
 
 .. include:: explain_-aspatial.rst_
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
+.. |Add_-bi| replace:: [Default is 3 (or 4 if |-W| is set) columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -157,13 +156,6 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
-
-**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
-   Append **+b**\ *BC* to set any boundary conditions to be used,
-   adding **g** for geographic, **p** for periodic, or **n** for
-   natural boundary conditions. For the latter two you may append **x**
-   or **y** to specify just one direction, otherwise both are assumed.
-   [Default is geographic if grid is geographic].
 
 .. include:: explain_-qi.rst_
 

@@ -19,8 +19,7 @@ Synopsis
 [ |-G| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ]
-[ |-M| ]
-[ |-Q| ]
+[ |-M|\ [**c**\|\ **f**] ]
 [ |SYN_OPT-R| ]
 [ |-T|\ [*dv*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
 [ |SYN_OPT-V| ]
@@ -43,12 +42,13 @@ deviation, and/or the median, median absolute deviation (MAD) of *v*, and/or
 the mode (Least Median of Squares; LMS), LMS scale of *v*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
 if it is a Cartesian or Geographic data set (based on metadata in the file).
-With option **-Q** we can also report information for 3-D data cubes.
+We can also report information for 3-D netCDF data cubes, but note that
+data cubes are not compatible with options |-D|, |-E|, |-F|, and |-I|\ **b**.
 
 Required Arguments
 ------------------
 
-.. |Add_ingrid| replace:: The name of one or several 2-D grid files. 
+.. |Add_ingrid| replace:: The name of one or several 2-D grid or 3-D cube files. **Note**: You cannot mix 2-D and 3-D files.
 .. include:: explain_grd_inout.rst_
     :start-after: ingrid-syntax-begins
     :end-before: ingrid-syntax-ends
@@ -60,45 +60,48 @@ Optional Arguments
 
 **-C**\ [**n**\|\ **t**\]
     Formats the report using tab-separated fields on a single line. The
-    output is *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}*\ [ *x0 y0 {z0} x1 y1 {z1}* ] [ *med
-    scale* ] [*mean std rms*] [*n\_nan*] *registration gtype*. The data in brackets are
-    output only if the corresponding options **-M**, **-L1**, **-L2**,
-    and **-M** are used, respectively, while the data in braces only apply if **-Q** is
-    used with 3-D data cubes. Use **-Ct** to place file *name*
-    at the end of the output record or **-Cn** to only output numerical
+    output is:
+
+    *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}* [*x0 y0 {z0} x1 y1 {z1}*] [*med scale*] [*mean std rms*] [*n\_nan*] *registration gtype*
+
+    The data in brackets are
+    output only if the corresponding options |-M| (with no directive), |-L|\ **1**, and |-L|\ **2**
+    are used, respectively, while the data in braces only apply if
+    used with 3-D data cubes. Use |-C|\ **t** to place file *name*
+    at the end of the output record or |-C|\ **n** to only output numerical
     columns.  The *registration* is either 0 (gridline) or 1 (pixel),
     while *gtype* is either 0 (Cartesian) or 1 (geographic).
-    If the **-I** option is used, the
+    If the |-I| option is used, the
     output format is instead *NF w e s n {b t} v0 v1*, where *NF* is the total
-    number of files read and *w e s n {b t}* are rounded off (see **-I**).
+    number of files read and *w e s n {b t}* are rounded off (see |-I|).
 
 .. _-D:
 
 **-D**\ [*xoff*\ [/*yoff*]][**+i**]
-    Divide a single grid's domain (or the **-R** domain, if no grid given)
-    into tiles of size *dx* times *dy* (set via **-I**).  You can specify
+    Divide a single grid's domain (or the |-R| domain, if no grid given)
+    into tiles of size *dx* times *dy* (set via |-I|).  You can specify
     overlap between tiles by appending *xoff*\ [/*yoff*].  If the single
     grid is given you may use the modifier **+i** to ignore tiles that
     have no data within each tile subregion.  Default output is text
-    region strings.  Use **-C** to instead report four columns with
-    *xmin xmax ymin ymax* per tile, or use **-Ct** to also have the
+    region strings.  Use |-C| to instead report four columns with
+    *xmin xmax ymin ymax* per tile, or use |-C|\ **t** to also have the
     region string appended as trailing text.
 
 .. _-E:
 
 **-E**\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**]
-    Report the extreme values found on a per column (**-Ex**) or per
-    row (**-Ey**) basis.  By default, we look for the global maxima (**+u**\|\ **U**)
+    Report the extreme values found on a per column (|-E|\ **x**) or per
+    row (|-E|\ **y**) basis.  By default, we look for the global maxima (**+u**\|\ **U**)
     for each column.  Append **+l**\|\ **L** to look for minima instead.
     Upper case **+L** means we find the minimum of the positive values only, while
     upper case **+U** means we find the maximum of the negative values only [use all values].
-    We only allow one input grid when **-E** is selected.
+    We only allow one input grid when |-E| is selected.
 
 .. _-F:
 
 **-F**
     Report grid domain and x/y-increments in world mapping format
-    [Default is generic]. Does not apply to the **-C** option.
+    [Default is generic]. Does not apply to the |-C| option.
 
 .. _-G:
 
@@ -110,30 +113,30 @@ Optional Arguments
 
 **-I**\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**]
     Report the min/max of the region to the nearest multiple of *dx* and
-    *dy*, and output this in the form **-R**\ *w/e/s/n* (unless **-C**
-    is set). To report the actual grid region, select **-Ir**. For a
+    *dy*, and output this in the form |-R|\ *w/e/s/n* (unless |-C|
+    is set). To report the actual grid region, select |-I|\ **r**. For a
     grid produced by the img supplement (a Cartesian Mercator grid),
-    the exact geographic region is given with **-Ii** (if not found
+    the exact geographic region is given with |-I|\ **i** (if not found
     then we return the actual grid region instead).  If no
     argument is given then we report the grid increment in the form
-    **-I**\ *xinc*\ [/*yinc*]. If **-Ib** is given we write each grid's
-    bounding box polygon instead.  Finally, if **-D** is in effect then
+    |-I|\ *xinc*\ [/*yinc*]. If |-I|\ **b** is given we write each grid's
+    bounding box polygon instead.  Finally, if |-D| is in effect then
     *dx* and *dy* are the dimensions of the desired tiles.
 
 .. _-L:
 
 **-L**\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**]
-    **-L0**
+    |-L|\ **0**
         Report range of *v* after actually scanning the data, not just
         reporting what the header says.
-    **-L1**
+    |-L|\ **1**
         Report median and L1 scale of *v* (L1 scale = 1.4826 \* Median
         Absolute Deviation (MAD)).
-    **-L2**
+    |-L|\ **2**
         Report mean, standard deviation, and root-mean-square (rms) of *v*.
-    **-Lp**
+    |-L|\ **p**
         Report mode (LMS) and LMS scale of *v*.
-    **-La**
+    |-L|\ **a**
         All of the above.
 
     **Note**: If the grid is geographic then each node represents a physical
@@ -142,18 +145,15 @@ Optional Arguments
 
 .. _-M:
 
-**-M**
+**-M**\ [**c**\|\ **f**]
     Find and report the location of min/max *v*-values, and count and
-    report the number of nodes set to NaN, if any.
+    report the number of nodes set to NaN, if any [Default]. Use directive
+    **f** to instead force an update of the *v*-value min/max by reading the
+    matrix, or use **c** for conditionally doing so if the header information
+    does not contain a valid *v* range.
 
-.. _-Q:
-
-**-Q**
-    All input files must be data 3-D netCDF data cube files [all files are 2-D grids].
-    Not compatible with **-D**, **-E**, **-F**, and **-Ib**.
-
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid(s). If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted. If **-Q** is used you must also
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of the input grid(s). If this subsection
+    exceeds the boundaries of the grid, only the common region will be extracted. For cubes you must also
     append limits in the *z* dimension. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -170,7 +170,7 @@ Optional Arguments
     Give *alpha* in the format *alphaL*/*alphaR* to select unequal tail areas.
     To force a symmetrical range about zero, using minus/plus the max
     absolute value of the two extremes, append **+s**. We report the
-    result via the text string **-T**\ *vmin/vmax* or **-T**\ *vmin/vmax/dv*
+    result via the text string |-T|\ *vmin/vmax* or |-T|\ *vmin/vmax/dv*
     (if *dv* was given) as expected by :doc:`makecpt`.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -201,7 +201,7 @@ Get the grid spacing in earth_relief_10m::
 
 To learn about the extreme values and coordinates in the 3-D data cube S362ANI_kmps.nc?vs::
 
-    gmt grdinfo -Q -M S362ANI_kmps.nc?vs
+    gmt grdinfo -M S362ANI_kmps.nc?vs
 
 See Also
 --------

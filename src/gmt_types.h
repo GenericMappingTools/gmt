@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ struct GMT_MATH_MACRO {
 struct GMT_KEYWORD_DICTIONARY {	/* Used for keyword-value lookup */
 	char separator;			/* Single character separating 2 or more identical specifications [0 for no repeat] */
 	char short_option;		/* Single character GMT option code */
-	char long_option[GMT_LEN32-1];		/* Name of corresponding long option */
+	char long_option[GMT_LEN256-1];		/* Name of corresponding long option */
 	char short_directives[GMT_LEN32];	/* Single character directives, comma-separated */
 	char long_directives[GMT_LEN256];	/* Long name directives, comma-separated */
 	char short_modifiers[GMT_LEN32];	/* Single character modifiers, comma-separated */
@@ -260,6 +260,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	unsigned int n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	unsigned int n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
 	unsigned int path_mode;		/* 0 if we should call gmt_fix_up_path to resample across gaps > path_step, 1 to leave alone */
+	unsigned int last_dim;		/* 2 for 2-D or 3 for 3-D as previous plot */
 	double last_width;			/* Full width in inches of previous plot */
 	double last_height;			/* Full height in inches of previous plot */
 	double width;				/* Full width in inches of this world map */
@@ -459,13 +460,13 @@ struct GMT_SESSION {
 
 struct GMT_CTRL {
 	/* Master structure for a GMT invocation.  All internal settings for GMT is accessed here */
+	struct PSL_CTRL *PSL;		/* Pointer to the PSL structure [or NULL] */
+	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
 	struct GMT_SESSION session;	/* Structure with all values that do not change throughout a session */
 	struct GMT_INIT init;		/* Structure with all values that do not change in a GMT_func call */
 	struct GMT_COMMON common;	/* Structure with all the common GMT command settings (-R -J ..) */
 	struct GMT_CURRENT current;	/* Structure with all the GMT items that can change during execution, such as defaults settings (pens, colors, fonts.. ) */
 	struct GMT_INTERNAL hidden;	/* Internal global variables that are not to be changed directly by users */
-	struct PSL_CTRL *PSL;		/* Pointer to the PSL structure [or NULL] */
-	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
 };
 
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments

@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [|-T|\ *file*\|\ *list*]]
 [ |SYN_OPT-V| ]
 [ |-W|\ *col* ]
 [ |SYN_OPT-b| ]
@@ -67,7 +67,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**]
-    For track resampling (if **-T**...\ *unit* is set) we can select how
+    For track resampling (if |-T|...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not
     necessarily yield equidistant points [Default], **m** as **f**, but
@@ -101,6 +101,14 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **+d1** or **+d2**, respectively.
 
+.. figure:: /_images/GMT_splines.*
+   :width: 500 px
+   :align: center
+
+   The |-F| option lets you choose among several interpolators, including
+   one that is approximate (the smoothing spline).  You can also specify
+   that you actually need a derivative of the solution instead of the value.
+
 .. _-N:
 
 **-N**\ *col*
@@ -109,12 +117,13 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**]
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [**-T**\ *file*\|\ *list*]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.  **Note**: For resampling of spatial
+    The form **-T**\ *list* means a online list of *time* coordinates like for example: **-T**\ *13,15,16,22.5*.
+    For details on array creation, see `Generate 1-D Array`_. **Note**: For resampling of spatial
     (*x,y* or *lon,lat*) series you must give an increment with a valid distance unit;
-    see `Units`_ for map units or use **c** if plain Cartesian coordinates.  The first two
-    columns must contain the spatial coordinates.  From these we calculate distances in the
+    see `Units`_ for map units or use **c** if plain Cartesian coordinates. The first two
+    columns must contain the spatial coordinates. From these we calculate distances in the
     chosen units and interpolate using this parametric series.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -128,7 +137,7 @@ Optional Arguments
     Sets the column number of the weights to be used with a smoothing cubic
     spline.  Requires **-Fs**.
 
-.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)].
+.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by |-T|)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
@@ -206,7 +215,7 @@ intervals using Akima's spline, use::
 
     gmt sample1d profiles.tdgmb -N1 -Fa -T1 > profiles_equi_d.tdgmb
 
-To resample the file depths.dt at positions listed in the file
+To resample the file depths.txt at positions listed in the file
 grav_pos.dg, using a cubic spline for the interpolation, use::
 
     gmt sample1d depths.txt -Tgrav_pos.dg -Fc > new_depths.txt

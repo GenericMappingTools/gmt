@@ -20,7 +20,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
 [ |-D|\ [*template*] ]
-[ |-E|\ *indexfile* ]
+[ |-E|\ *indexfile*\ [**+b**] ]
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
 [ |-I| ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
@@ -56,9 +56,9 @@ Description
 Reads an ASCII [or binary] *table* and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
 triangulation is performed (using either Shewchuk's [1996] or Watson's
-[1982] method as selected during GMT installation; run the module with argument
-**-** to see which method is selected), but the user may optionally
-provide a second file with network information, such as a triangular
+[1982] method as selected during GMT installation; run
+**gmt get GMT_TRIANGULATE** to see which method is selected), but the user may
+optionally provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
 between contours may be painted according to the CPT.
 Alternatively, the *x, y, z* positions of the contour lines may be saved to
@@ -90,8 +90,8 @@ Optional Arguments
 
 **-A**\ [**n**\|\ *contours*][*labelinfo*]
     *contours* is annotation interval in data units; it is ignored if
-    contour levels are given in a file via **-C**. [Default is no annotations]. Prepend
-    **n** to disable all annotations implied by **-C**. To just select a few specific
+    contour levels are given in a file via |-C|. [Default is no annotations]. Prepend
+    **n** to disable all annotations implied by |-C|. To just select a few specific
     contours give them as a comma-separated string; if only a single contour please add
     a trailing comma so it is seen as a list and not a contour interval. The optional
     *labelinfo* controls the specifics of the label formatting and consists
@@ -123,24 +123,25 @@ Optional Arguments
         are contoured, while the levels marked **A** (or **a**) are both contoured
         and annotated. If the annotation *angle* is present we will plot the label
         at that fixed angle [aligned with the contour].  Finally, a contour-
-        specific *pen* may be present and will override the pen set by **-W**
+        specific *pen* may be present and will override the pen set by |-W|
         for this contour level only. **Note**: Please specify *pen* in proper
         format so it can be distinguished from a plain number like *angle*.
+        If only *cont-level* columns are present then we set type to **C**.
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
         you must append a trailing comma to separate it from a contour interval.
-        The **-A** option offers the same list choice so they may be used together
+        The |-A| option offers the same list choice so they may be used together
         to plot only specific annotated and non-annotated contours.
 
     (4) If no argument is given in modern mode then we select the current CPT.
 
     (5) Otherwise, *contours* is interpreted as a constant contour interval.
 
-    If a file is given and **-T** is set, then only contours marked with
+    If a file is given and |-T| is set, then only contours marked with
     upper case C or A will have tick-marks. In all cases the contour
-    values have the same units as the file.  Finally, if neither **-C**
-    nor **-A** are set then we auto-compute suitable contour and annotation
+    values have the same units as the file.  Finally, if neither |-C|
+    nor |-A| are set then we auto-compute suitable contour and annotation
     intervals from the data range, yielding approximately 10-20 contours.
 
 .. _-D:
@@ -151,10 +152,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *indexfile*
+**-E**\ *indexfile*\ [**+b**]
     Give name of file with network information. Each record must contain
     triplets of node numbers for a triangle [Default computes these
-    using Delaunay triangulation (see :doc:`triangulate`)].
+    using Delaunay triangulation (see :doc:`triangulate`)]. If the
+    *indexfile* is binary and can be read the same way as the binary
+    input *table* then you can append **+b** to spead up the reading
+    [Default reads nodes as ASCII].
 
 .. _-G:
 
@@ -176,8 +180,8 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip contours or image at the boundaries [Default will clip
-    to fit inside region **-R**].
+    Do **not** clip contours or image at the boundaries [Default will clip
+    to fit inside region |-R|].
 
 .. _-Q:
 
@@ -195,7 +199,7 @@ Optional Arguments
     Skip all input *xyz* points that fall outside the region [Default
     uses all the data in the triangulation].  Alternatively, use **-St**
     to skip triangles whose three vertices are all outside the region.
-    **-S** with no modifier is interpreted as **-Sp**.
+    |-S| with no modifier is interpreted as **-Sp**.
 
 .. _-T:
 
@@ -211,7 +215,7 @@ Optional Arguments
     and + as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
     will plot the two characters (here, L and H) as labels. For more elaborate
     labels, separate the low and high label strings with a comma (e.g.,
-    **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
+    **+l**\ *lo*,\ *hi*). If a file is given by |-C| and |-T| is set,
     then only contours marked with upper case C or A will have tick marks
     [and annotations].
 
@@ -234,7 +238,7 @@ Optional Arguments
     Regular contours use pen 0.25p,black. Normally, all contours are drawn
     with a fixed color determined by the pen setting. If the modifier **+cl** is appended
     then the color of the contour lines are taken from the CPT (see
-    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to the contour annotations.  Select **+c** for both effects.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
@@ -242,7 +246,7 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-E**).
+.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (|-E|).
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is 3 output columns].

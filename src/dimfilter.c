@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/dimfilter_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"dimfilter"
 #define THIS_MODULE_MODERN_NAME	"dimfilter"
@@ -264,7 +265,7 @@ static char *dimtemplate =
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -D0-4 -F<type><width>[+l|u] -G%s %s "
+	GMT_Usage (API, 0, "usage: %s -D<flag> -F<type><width>[+l|u] -G%s %s "
 		"-N<type><n_sectors>[+l|u] [%s] [-L] [-Q] [%s] [-T] [%s] [%s] [%s] [%s]\n", name,
 		GMT_INGRID, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
@@ -272,8 +273,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	gmt_ingrid_syntax (API, 0, "Name of grid to be filtered");
-	GMT_Usage (API, 1, "\n-D0-4");
-	GMT_Usage (API, -2, "Distance flag determines how grid (x,y) maps into distance units of filter width as follows:");
+	GMT_Usage (API, 1, "\n-D<flag>");
+	GMT_Usage (API, -2, "Distance <flag> determines how grid (x,y) maps into distance units of filter width as follows:");
 	GMT_Usage (API, 3, "0: grid x,y same units as <filter_width>, Cartesian distances.");
 	GMT_Usage (API, 3, "1: grid x,y in degrees, <filter_width> in km, Cartesian distances.");
 	GMT_Usage (API, 3, "2: grid x,y in degrees, <filter_width> in km, x scaled by cos(middle y), Cartesian distances.");
@@ -348,8 +349,7 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, set = 0;
-	int k;
+	unsigned int n_errors = 0, set = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 #ifdef OBSOLETE
@@ -360,12 +360,8 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
-					n_errors++;
-				else
-					Ctrl->In.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				set++;
 				break;
 
@@ -373,27 +369,22 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				set++;
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				k = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, k < 0 || k > 4, "Option -D: Choose from the range 0-4\n");
-				Ctrl->D.mode = k;
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
 				set++;
 				break;
 #ifdef OBSOLETE
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				set++;
 				break;
 #endif
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'b':
 						Ctrl->F.filter = DIMFILTER_BOXCAR;
@@ -421,24 +412,20 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				set++;
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				set++;
 				break;
 			case 'L':	/* Write shell template to stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Scan: Option to set the number of sections and how to reduce the sector results to a single value */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	/* Lower bound (min) */
 						Ctrl->N.filter = DIMSECTOR_MIN;
@@ -454,34 +441,33 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 						break;
 					case 'p':	/* Mode */
 						Ctrl->N.filter = DIMSECTOR_MODE;
+						/* Check for +l but also deprecated trailing - */
 						if (strstr (opt->arg, "+l") || opt->arg[strlen(opt->arg)-1] == '-') Ctrl->N.mode = DIMFILTER_MODE_KIND_LOW;
 						else if (strstr (opt->arg, "+u")) Ctrl->N.mode = DIMFILTER_MODE_KIND_HIGH;
 						break;
 					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized directive %s", opt->arg);
 						n_errors++;
 						break;
 				}
-				k = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
-				n_errors += gmt_M_check_condition (GMT, k <= 0, "Option -N: Correct syntax: -Nx<nsectors>[<modifier>], with x one of l|u|a|m|p, <nsectors> is number of sectors\n");
-				Ctrl->N.n_sectors = k;	/* Number of sections to split filter into */
+				n_errors += gmt_get_required_uint (GMT, &opt->arg[1], opt->option, 0, &Ctrl->N.n_sectors);
 				set++;
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				set++;
 				break;
 #ifdef OBSOLETE
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
 				set++;
 				break;
 #endif
 			case 'T':	/* Toggle registration */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				set++;
 				break;
 
@@ -494,11 +480,12 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 	if (Ctrl->L.active)
 		n_errors += gmt_M_check_condition (GMT, set, "Option -L can only be used by itself.\n");
 	else if (!Ctrl->Q.active) {
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode < 0 || Ctrl->D.mode > 4, "Option -D: Argument must be in the range 0-4\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Option -F: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors == 0, "Option -N: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors <= 0, "Option -N: Correct syntax: -Nx<nsectors>[<modifier>], with x one of l|u|a|m|p, <nsectors> is number of sectors\n");
 #ifdef OBSOLETE
 		slow = (Ctrl->F.filter == DIMFILTER_MEDIAN || Ctrl->F.filter == DIMFILTER_MODE);		/* Will require sorting etc */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !slow, "Option -E: Only valid for robust filters -Fm|p.\n");
@@ -631,7 +618,7 @@ EXTERN_MSC int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error);	/* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error);	/* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

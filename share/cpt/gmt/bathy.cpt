@@ -1,0 +1,22 @@
+#
+# gmt/bathy : Like abyss but via aquamarine at mid-depths [R=-8000/0, C=RGB]
+# Color table for bathymetry modeled after IBCSO
+# at depth but going through an aquamarine patch
+# between 2009-3000, then into lightblue to ~white.
+# Designed by P. Wessel, SOEST
+#------------------------------------------------
+# COLOR_MODEL = RGB
+# RANGE = -8000/0
+#------------------------------------------------
+0	black		0.125	31/40/79
+0.125	31/40/79	0.25	38/60/106
+0.25	38/60/106	0.5	53/99/160
+0.5	53/99/160	0.5625	72/151/211
+0.5625	72/151/211	0.6875	mediumaquamarine
+0.6875	mediumaquamarine	0.875	141/210/239
+0.875	141/210/239	1	245/255/255
+#------------------------------------------------
+B       black
+F       245/255/255
+N	gray
+#----------------------------------------------------------

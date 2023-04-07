@@ -108,6 +108,7 @@ function psldemo()
 for apiprog in \
 	testapi_columns \
     testapi_cube \
+    testapi_gmtgrid \
     testapi_makecpt \
     testapi_matrix \
     testapi_matrix_pad \
@@ -117,12 +118,13 @@ for apiprog in \
     testapi_usergrid \
     testapi_uservectors \
     testapi_vector \
-    testapiconv \
+    testapi_conv \
     testgrdio \
     testapi_imageshading \
     testapi_matrix_as_grid \
     testapi_vector_strings \
     testapi_vector_plot \
+    testapi_vector_times \
     testapi_vector_io \
     testapi_matrix_io \
     testapi_matrix_360 \

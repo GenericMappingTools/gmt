@@ -80,7 +80,7 @@ Optional Arguments
     processing) by only storing one form of location coordinates
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays
-    in memory]. Not applicable with **-Q**.
+    in memory]. Not applicable with |-Q|.
 
 .. _-D:
 
@@ -104,7 +104,7 @@ Optional Arguments
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
-    (mile), **n** (nautical mile) or **u** survey foot.
+    (mile), **n** (nautical mile) or **u** (survey foot).
 
 .. _-N:
 
@@ -112,7 +112,7 @@ Optional Arguments
     Read the information pertaining to each Voronoi
     polygon (the unique node lon, lat and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
-    headers of the output file]. Required if binary input via **-Q** is used.
+    headers of the output file]. Required if binary input via |-Q| is used.
 
 .. _-Q:
 
@@ -120,7 +120,7 @@ Optional Arguments
     Append the name of a file with pre-calculated Voronoi polygons
     [Default performs the Voronoi construction on input data]. For
     binary data **-bi** you must specify the node
-    information separately (via **-N**).
+    information separately (via |-N|).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -191,7 +191,7 @@ Notes
 The STRIPACK algorithm and implementation expect that there are no duplicate points
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as :doc:`blockmean` and others, to combine close points into single entries.
-Also, **sphdistance** has a **-D** option to determine and exclude duplicates, but
+Also, **sphdistance** has a |-D| option to determine and exclude duplicates, but
 it is a very brute-force yet exact comparison that is very slow for large data sets.
 Detection of duplicates in the STRIPACK library will exit the module.
 

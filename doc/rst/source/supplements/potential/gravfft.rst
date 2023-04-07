@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w** ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
-[ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
+[ |-F|\ [**f**\ [**+s**\|\ **z**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
 [ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
@@ -46,15 +46,10 @@ isostatic model.  The available
 models are the "loading from top", or elastic plate model, and the
 "loading from below" which accounts for the plate's response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
-them). In both cases, the model parameters are set with **-T** and
+them). In both cases, the model parameters are set with |-T| and
 **-Z** options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
-Optionally, the model admittance may also be calculated. The horizontal
-dimensions of the grids are assumed to be in meters. Geographical
-grids may be used by specifying the |SYN_OPT-f| option that scales degrees
-to meters. If you have grids with dimensions in km, you could change
-this to meters using :doc:`grdedit </grdedit>` or scale the output with
-:doc:`grdmath </grdmath>`.
+Optionally, the model admittance may also be calculated.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing; see the examples for further guidance.
@@ -95,7 +90,7 @@ Optional Arguments
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-N+h**.  Alternatively,
+    do not use |-T|. It also implicitly sets **-N+h**.  Alternatively,
     specify a co-registered grid with density contrasts if a variable
     density contrast is required.  **Note**: Any NaNs found in the density
     grid will be replaced with the minimum density found.
@@ -104,16 +99,18 @@ Optional Arguments
 
 **-E**\ *n_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
-    terms depending on n will blow out the program) [Default = 3]
+    terms depending on n will blow out the program) [Default = 3].
 
 .. _-F:
 
-**-F**\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
+**-F**\ [**f**\ [**+s**\|\ **z**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
        **f** = Free-air anomalies (mGal) [Default].  Append **+s** to add
        in the slab implied when removing the mean value from the topography.
-       This requires zero topography to mean no mass anomaly.
+       This requires zero topography to mean no mass anomaly. Alternatively,
+       to force the far-field to be exactly zero (i.e., the corner nodes of
+       the grid), select **+z** instead.
 
        **b** = Bouguer gravity anomalies (mGal).
 
@@ -141,22 +138,24 @@ Optional Arguments
     theoretical admittance, and **t** writes a fourth column with "elastic
     plate" theoretical admittance.
 
+.. _-N:
+
 .. include:: ../../explain_fft.rst_
 
 .. _-Q:
 
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
-    whose average depth was set by **-Z**\ *zm* and model parameters by **-T**
-    (and output by **-G**). That is the "gravimetric Moho". **-Q**
-    implicitly sets **-N+h**
+    whose average depth was set by **-Z**\ *zm* and model parameters by |-T|
+    (and output by |-G|). That is the "gravimetric Moho". |-Q|
+    implicitly sets **-N+h**.
 
 .. _-S:
 
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
-    necessary parameters are set within **-T** and **-Z** options. The
+    necessary parameters are set within |-T| and |-Z| options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
 
@@ -166,11 +165,11 @@ Optional Arguments
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle,
     water and infill in SI units. If *ri* is not provided it defaults to *rl*.
-    Give average mantle depth via **-Z**. If the elastic thickness
+    Give average mantle depth via |-Z|. If the elastic thickness
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
-    with the Moho's geopotential effect (see **-F**) from model selected by **-T**.
-    If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
+    with the Moho's geopotential effect (see |-F|) from model selected by |-T|.
+    If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**.
 
 .. _-W:
 
@@ -179,9 +178,9 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *zm*\ [*zl*]
+**-Z**\ *zm*\ [/*zl*]
     Moho [and swell] average compensation depths (in meters positive down – the depth). For the "load from
-    top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
+    top" model you only have to provide *zm*, but for the "loading from below" don't forget to supply *zl*.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -209,6 +208,19 @@ other grids geographical grids were you want to convert degrees into
 meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
+
+Handling of Grids with NaNs
+---------------------------
+
+Since we cannot take FFTs of 2-D grids that contain NaNs, we perform simple substitutions.
+If any of the input grids contain NaNs they will be replaced with zeros. In contrast, if **-D**
+passes a grid with density contrasts then we replace any NaNs with the minimum density in the grid.
+
+Data Detrending
+---------------
+
+The default detrending mode follows Parker [1972] and removes the mid-value (**+h**).
+Consult and use |-N| to select other modes.
 
 Plate Flexure
 -------------
@@ -336,13 +348,13 @@ References
 Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
 Volc. Res. Volume 156, Issues 1-2, Pages 10–22,
-`https://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <https://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
+`https://doi.org/10.1016/j.jvolgeores.2006.03.010 <https://doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 
 Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 31, 447–455.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431–19,441,
-`https://dx.doi.org/10.1029/2000JB000083 <https://dx.doi.org/10.1029/2000JB000083>`_
+`https://doi.org/10.1029/2000JB000083 <https://doi.org/10.1029/2000JB000083>`_
 
 See Also
 --------

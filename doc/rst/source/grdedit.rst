@@ -45,7 +45,7 @@ any]. As an option, global, geographical grids (with 360 degrees
 longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
 values. **grdedit** only operates on files containing a grid header. **Note**:
-If it is important to retain the original data you should use **-G**
+If it is important to retain the original data you should use |-G|
 to save the modified grid to a new file.
 
 Required Arguments
@@ -63,7 +63,7 @@ Optional Arguments
 
 **-A**
     If necessary, adjust the file's *x_inc*, *y_inc* to be compatible
-    with its domain (or a new domain set with **-R**). Older grid files
+    with its domain (or a new domain set with |-R|). Older grid files
     (i.e., created prior to GMT 3.1) often had excessive slop in
     *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
@@ -72,8 +72,8 @@ Optional Arguments
 
 **-Cb**\|\ **c**\|\ **n**\|\ **p**
     Normally, output grids store the current module's command-line history.
-    Use **-C** to specify what the output grid's command history should be:
-    Append directive **b** to write both the previous and the current module's 
+    Use |-C| to specify what the output grid's command history should be:
+    Append directive **b** to write both the previous and the current module's
     command histories, **c** to only write the current module's command
     history, **n** to save no history whatsoever [Default], or select **p**
     to instead save only the previous command history.
@@ -94,17 +94,17 @@ Optional Arguments
     **-Er** will rotate the grid 90 degrees clockwise (right),
     **-Et** will transpose the grid [Default],
     **-Ev** will flip the grid vertically (top-to-bottom).
-    Incompatible with the other options (except **-G**).
+    Incompatible with the other options (except |-G|).
 
 .. _-G:
 
 .. |Add_outgrid| replace:: Normally, **grdedit** will overwrite the existing grid with the modified grid.
-    Use **-G** to write the modified grid to the file *outgrid* instead.
+    Use |-G| to write the modified grid to the file *outgrid* instead.
 .. include:: /explain_grd_inout.rst_
     :start-after: outgrid-syntax-begins
     :end-before: outgrid-syntax-ends
 
-.. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
+.. |Add_-J| replace:: Use the |-J| syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be recognized by GDAL.
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
@@ -125,8 +125,9 @@ Optional Arguments
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
 
-.. |Add_-R| replace:: The new w/e/s/n values will replace those in the grid, and the *x_inc*, *y_inc* values are
-    adjusted, if necessary. |Add_-R_links|
+.. |Add_-R| replace:: The new limits will replace those in the grid, and the *x_inc*, *y_inc* values are
+    adjusted, if necessary. **Note**: Here, |-R| does not select a sub-region of the input grid but
+    instead simply replaces the domain of the grid. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
@@ -135,7 +136,7 @@ Optional Arguments
 
 **-S**
     For global, geographical grids only. Grid values will be shifted
-    longitudinally according to the new borders given in **-R**.
+    longitudinally according to the new borders given in |-R|.
 
 .. _-T:
 
@@ -217,8 +218,8 @@ We can exchange the two dimension by running::
 
     gmt grdedit bad.nc -Ee -Gnew.nc
 
-Notes:
-------
+Notes
+-----
 
 This module is not a general editor for netCDF files.  If your netCDF file
 contains more than one 2-D (or higher dimension) data layer, then only the

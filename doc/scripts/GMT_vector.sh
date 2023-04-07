@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Demonstrate vector details
-gmt begin GMT_vector ps
+gmt begin GMT_vector
 gmt set GMT_THEME cookbook
 # Cartesian straight arrows
 	gmt plot -R0/5/0/5 -JX6i -Sv1i+s+e+a50+p0.25p,dashed -W5p <<- EOF

@@ -62,7 +62,7 @@ Required Arguments (begin mode)
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Specify inset box attributes via the **-F** option [outline only].
+    Specify inset box attributes via the |-F| option [outline only].
 
 Optional Arguments (begin mode)
 -------------------------------
@@ -96,7 +96,7 @@ Optional Arguments (begin mode)
 .. _-N:
 
 **-N**
-    Do NOT clip features extruding outside map inset boundaries [Default will clip].
+    Do **not** clip features extruding outside map inset boundaries [Default will clip].
 
 .. |Add_-R| replace:: This is useful when you want the inset **-R -J** to also determine the inset size. |Add_-R_links|
 .. include:: explain_-R.rst_

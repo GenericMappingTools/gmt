@@ -26,8 +26,8 @@ The Frame settings are specified by
    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*]\
    [**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
-The frame setting is optional but can be invoked once to override the defaults. The following modifiers can be appended
-to **-B** to control the Frame settings:
+The frame setting is optional but can be invoked once to override the defaults. The following directives and modifiers
+can be appended to **-B** to control the Frame settings:
 
 - *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
   below [default is :doc:`theme dependent </theme-settings>`]. Borders omitted from the set of codes will not be drawn.
@@ -99,7 +99,7 @@ but you may also split this into two separate invocations for clarity, i.e.,
      [**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
    | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
-The following modifiers can be appended to **-B** to control the Axes settings:
+The following directives and modifiers can be appended to **-B** to control the Axes settings:
 
 - **p**\|\ **s** to set whether the modifiers apply to the **p**\ (rimary) or **s**\ (econdary) axes [Default is **p**].
   These settings are mostly used for time axes annotations but are available for geographic axes as well. **Note**:

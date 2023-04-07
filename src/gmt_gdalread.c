@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -448,7 +448,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* Get some metadata for each band. */
 	/* ------------------------------------------------------------------------- */
 
-	Ctrl->band_field_names = gmt_M_memory(GMT, NULL, raster_count, struct GDAL_BAND_FNAMES);
+	if ((Ctrl->band_field_names = gmt_M_memory(GMT, NULL, raster_count, struct GDAL_BAND_FNAMES)) == NULL) return GMT_NOTSET;
 
 	/* ==================================================================== */
 	/*      Loop over bands.                                                */
@@ -536,7 +536,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		&& (hTable = GDALGetRasterColorTable(hBand)) != NULL) {
 
 		Ctrl->nIndexedColors = GDALGetColorEntryCount(hTable);
-		Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
+		if ((Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int)) == NULL) return GMT_NOTSET;
 		for (i = 0; i < Ctrl->nIndexedColors; i++) {
 			GDALGetColorEntryAsRGB(hTable, i, &sEntry);
 			gmt_M_set_rgba (Ctrl->ColorMap, i, 0, Ctrl->nIndexedColors, sEntry.c1);
@@ -554,7 +554,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		if (pszNBits && !strcmp(pszNBits, "1")) {
 			/* Create a two-color index table for black and white only */
 			Ctrl->nIndexedColors = 2;
-			Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
+			if ((Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int)) == NULL) return GMT_NOTSET;
 			for (j = 0; j < 3; j++) {	/* For R, G, B */
 				gmt_M_set_rgba (Ctrl->ColorMap, 0, j, Ctrl->nIndexedColors, 0);
 				gmt_M_set_rgba (Ctrl->ColorMap, 1, j, Ctrl->nIndexedColors, 255);
@@ -759,8 +759,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   just_copy = false, copy_flipud = false, UDflip_Y = false;
 	int	   *whichBands = NULL;
 	int64_t *rowVec = NULL, *colVec = NULL;
-	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, col_indent = 0, nXSize_withPad = 0, nYSize_withPad;
+	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, nXSize_withPad = 0, nYSize_withPad;
 	int64_t  n_alloc, n, m, nn, mm, ij, layer_size, layer_offset = 0;
+	//int64_t  col_indent = 0;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
 	double	adfGeoTransform[6];
@@ -775,7 +776,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	gmt_M_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
-		whichBands = gmt_M_memory (GMT, NULL, 128, int);		/* 128 is huge enough */
+		if ((whichBands = gmt_M_memory (GMT, NULL, 128, int)) == NULL) return GMT_NOTSET;		/* 128 is huge enough */
 		nReqBands = gdal_decode_columns (GMT, prhs->B.bands, whichBands);
 	}
 	else if (prhs->f_ptr.active) {
@@ -1057,8 +1058,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		case GDT_Byte:
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
 				Ctrl->UInt8.data = prhs->c_ptr.grd;
-			else
-				Ctrl->UInt8.data = gmt_M_memory (GMT, NULL, n_alloc, uint8_t); /* aka unsigned char */
+			else if ((Ctrl->UInt8.data = gmt_M_memory (GMT, NULL, n_alloc, uint8_t)) == NULL)
+				return GMT_NOTSET; /* aka unsigned char */
 
 			if (do_BIP) {
 				if (nBands == 4)	/* Assume fourth band holds the alpha channel */
@@ -1074,8 +1075,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
 				Ctrl->Int16.data = (int16_t *)prhs->c_ptr.grd;
-			else
-				Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t);
+			else if ((Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t)) == NULL)
+				return GMT_NOTSET;
 			break;
 		case GDT_UInt16:
 			if (prhs->f_ptr.active) {	/* Use the previously allocated float pointer */
@@ -1086,24 +1087,24 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->UInt16.data = (uint16_t *)prhs->c_ptr.grd;
 				Ctrl->UInt16.active = true;		/* In case it was not set yet */
 			}
-			else
-				Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t);
+			else if ((Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t)) == NULL)
+				return GMT_NOTSET;
 			break;
 		case GDT_Int32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
 				Ctrl->Int32.data = (int32_t *)prhs->c_ptr.grd;
-			else
-				Ctrl->Int32.data = gmt_M_memory (GMT, NULL, n_alloc, int32_t);
+			else if ((Ctrl->Int32.data = gmt_M_memory (GMT, NULL, n_alloc, int32_t)) == NULL)
+				return GMT_NOTSET;
 			break;
 		case GDT_UInt32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
 				Ctrl->UInt32.data = (uint32_t *)prhs->c_ptr.grd;
-			else
-				Ctrl->UInt32.data = gmt_M_memory (GMT, NULL, n_alloc, uint32_t);
+			else if ((Ctrl->UInt32.data = gmt_M_memory (GMT, NULL, n_alloc, uint32_t)) == NULL)
+				return GMT_NOTSET;
 			break;
 		case GDT_Float32:
 		case GDT_Float64:
@@ -1114,6 +1115,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					Ctrl->Float.data = gmt_M_memory (GMT, NULL, n_alloc, float);
 				else
 					Ctrl->Float.data = gmt_M_memory (GMT, NULL, 2 * n_alloc, float);
+				if (Ctrl->Float.data == NULL)
+					return GMT_NOTSET;
 			}
 			break;
 		default:
@@ -1152,8 +1155,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 
 		/* Can't find why but have to multiply by nRGBA otherwise it crashes in win32 builds */
-		rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
-		colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
+		if ((rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t)) == NULL) return GMT_NOTSET;
+		if ((colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t)) == NULL) return GMT_NOTSET;	/* For now this will be used only to select BIP ordering */
 		for (i = 0; i < nBands; i++) {
 			if (!nReqBands)		/* No band selection, read them sequentially */
 				hBand = GDALGetRasterBand(hDataset, i+1);
@@ -1402,10 +1405,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		gmt_M_free (GMT, rowVec);
 		if (!(just_copy || copy_flipud))
 			gmt_M_str_free (tmp);
-		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		indent = pad_w[piece] + nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		layer_offset += layer_size;	/* As of now, this is never used after increment for float images */
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
+		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
 			for (m = startRow, mm = 0; m < endRow ; m++, mm++) {
 				nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;

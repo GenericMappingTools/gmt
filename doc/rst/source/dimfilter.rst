@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt dimfilter** *ingrid*
-|-D|\ *0-4*
+|-D|\ *flag*
 |-F|\ **x**\ *width*\ [*modifier*]
 |-G|\ *outgrid*
 |-N|\ **x**\ *sectors*\ [*modifier*]
@@ -41,11 +41,11 @@ The output *.nc* file can optionally be generated as a subregion of the
 input and/or with a new **-I**\ ncrement. In this way, one may have
 "extra space" in the input data so that there will be no edge effects
 for the output grid. If the filter is low-pass, then the output may be
-less frequently sampled than the input. The **-Q** option is for the error analysis
+less frequently sampled than the input. The |-Q| option is for the error analysis
 mode and expects the input file to contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
-sectors. The output can be rough unless the input data is noise-free.
+sectors. The output can be rough unless the input data are noise-free.
 Thus, an additional filtering (e.g., Gaussian via :doc:`grdfilter`) of the
 DiM-filtered data is generally recommended.
 
@@ -127,7 +127,7 @@ Optional Arguments
 **-I**
     *x_inc* [and optionally *y_inc*] is the output Increment. Append
     **m** to indicate minutes, or **c** to indicate seconds. If the new
-    *x_inc*, *y_inc* are NOT integer multiples of the old ones (in the
+    *x_inc*, *y_inc* are **not** integer multiples of the old ones (in the
     input data), filtering will be considerably slower. [Default: Same
     as input.]
 
@@ -239,7 +239,7 @@ Script Template
 
 The dim.template.sh is a skeleton shell script that can be used to set
 up a complete DiM analysis, including the MAD analysis.  It is obtained
-via the **-L** option.
+via the |-L| option.
 
 References
 ----------

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psternary_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psternary"
 #define THIS_MODULE_MODERN_NAME	"ternary"
@@ -105,7 +106,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-G<fill>] [-JX[-]<width>] "
-		"%s[-L<a>/<b/<c>] [-M] [-N] %s%s [-S[<symbol>][<size>]] [-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] "
+		"%s[-L<a>/<b>/<c>] [-M] [-N] %s%s [-S[<symbol>][<size>]] [-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] "
 		"[-W[<pen>][<attr>]] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT,
@@ -127,7 +128,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Use -JX<width> to set the plot base width (axes are positive counter-clockwise). "
 		"Give a negative width for clockwise positive axes direction.");
 	GMT_Option (API, "K");
-	GMT_Usage (API, 1, "\n-L<a>/<b/<c>");
+	GMT_Usage (API, 1, "\n-L<a>/<b>/<c>");
 	GMT_Usage (API, -2, "Place labels where each of the three vertices reach 100%% [no labels]. "
 		"Specify any label as - to skip that label only.");
 	GMT_Usage (API, 1, "\n-M Convert (a,b,c) to normalized (x,y) and write to standard output.  No plotting occurs.");
@@ -154,7 +155,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ni_files = 0, no_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -162,61 +163,51 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 
-			case '<':	/* Input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
-				ni_files++;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (no_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Turn off draw_arc mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
-				gmt_M_str_free (Ctrl->A.string);
-				Ctrl->A.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->A.string);
 				break;
 			case 'C':	/* Use CPT for coloring symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.string);
 				if (opt->arg[0]) Ctrl->C.string = strdup (opt->arg);
 				break;
 			case 'G':	/* Fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				gmt_M_str_free (Ctrl->G.string);
-				Ctrl->G.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->G.string);
 				break;
 			case 'L':	/* Get the three labels separated by slashes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
+				if (sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]) != 3) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Must provide three labels separated by slashes\n");
+					n_errors++;
+				}
 				break;
 			case 'M':	/* Convert a,b,c -> x,y and dump */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Plot symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				gmt_M_str_free (Ctrl->S.string);
-				Ctrl->S.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->S.string);
 				break;
 			case 'W':	/* Pen settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
-				gmt_M_str_free (Ctrl->W.string);
-				Ctrl->W.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->W.string);
 				break;
 
 			default:	/* Report bad options */
@@ -389,7 +380,8 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	struct PSTERNARY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL, *boptions[3] = {NULL, NULL, NULL};
-	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
+	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) after conversion to x,y */
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -406,7 +398,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -417,6 +409,21 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		Return (API->error);
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		Return (API->error);
+
+	DH = gmt_get_DD_hidden (D);
+	if (DH->alloc_mode == GMT_ALLOC_EXTERNALLY) {
+		/* We duplicate input since we will modify it and move columns - not good if read-only data is our source */
+		struct GMT_DATASET *D2 = NULL;
+		if ((D2 = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, D)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate input dataset\n");
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {	/* No longer needed */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to destroy input dataset\n");
+			Return (API->error);
+		}
+		D = D2;	/* Now use the internally allocated version instead */
+	}
 
 	if (GMT->common.J.active && GMT->common.J.string[1] == '-')	/* Gave a negative width to reverse direction of axes */
 		reverse = true;	/* Need to do this here given the abs_to_xy projection below */
@@ -473,9 +480,11 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		GMT->current.map.frame.paint[GMT_Z] = false;
 	}
 	/* Count how many of the three sides will be drawn */
-	if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */
-	if (GMT->current.map.frame.side[E_SIDE]) n_sides++;	/* The right (b) side */
-	if (GMT->current.map.frame.side[W_SIDE]) n_sides++;	/* The left (c) side */
+	if (GMT->common.B.active[GMT_PRIMARY]) {	/* -B was given */
+		if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */
+		if (GMT->current.map.frame.side[E_SIDE]) n_sides++;	/* The right (b) side */
+		if (GMT->current.map.frame.side[W_SIDE]) n_sides++;	/* The left (c) side */
+	}
 	if (n_sides) {	/* Draw some or all of the triangular sides */
 		PSL_comment (PSL, "Draw triangular frame sides\n");
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
@@ -530,6 +539,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	if (reverse) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
 	}
+	if (n_sides == 0) gmt_M_memset (side, 3U, unsigned int);	/* No, nothing shall be drawn after all */
 
 	if (!Ctrl->S.active && (Ctrl->G.active || Ctrl->C.active)) {	/* Plot polygons before gridlines */
 		char vfile[GMT_VF_LEN] = {""};
@@ -585,7 +595,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	}
 
 	for (k = 0; k <= GMT_Z; k++) {
-		if (GMT_Free_Option (API, &boptions[k])) {
+		if (boptions[k] && GMT_Free_Option (API, &boptions[k])) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to free -B? option\n");
 			Return (API->error);
 		}

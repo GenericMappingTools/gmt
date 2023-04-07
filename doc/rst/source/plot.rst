@@ -18,7 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
+[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
@@ -56,10 +56,10 @@ Description
 
 Reads (*x*,\ *y*) pairs from *files* [or standard input] and will plot lines, polygons, or symbols at those locations on a map.
 If a symbol is selected and no symbol size given, then it will interpret the third column of the input data as symbol size.
-Symbols whose *size* is <= 0 are skipped. If no symbols are specified then the symbol code (see **-S** below) must be present as
-last column in the input. If **-S** is not used, a line connecting the data points will be drawn instead. To explicitly close
-polygons, use **-L**. Select a fill with **-G**. If **-G** is set, **-W** will control whether the polygon outline is drawn or not.
-If a symbol is selected, **-G** and **-W** determines the fill and outline/no outline, respectively.
+Symbols whose *size* is <= 0 are skipped. If no symbols are specified then the symbol code (see |-S| below) must be present as
+last column in the input. If |-S| is not used, a line connecting the data points will be drawn instead. To explicitly close
+polygons, use |-L|. Select a fill with |-G|. If |-G| is set, |-W| will control whether the polygon outline is drawn or not.
+If a symbol is selected, |-G| and |-W| determines the fill and outline/no outline, respectively.
 
 Required Arguments
 ------------------
@@ -88,7 +88,7 @@ Optional Arguments
 **-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
     By default, geographic line segments are drawn as great circle arcs by resampling
     coarse input data along such arcs. To disable this sampling and draw them as
-    straight lines, use the **-A** flag.  Alternatively, add **m** to draw
+    straight lines, use the |-A| flag.  Alternatively, add **m** to draw
     the line by first following a meridian, then a parallel. Or append **p**
     to start following a parallel, then a meridian. (This can be practical
     to draw a line along parallels, for example).  For Cartesian data, points
@@ -110,14 +110,14 @@ Optional Arguments
     where *z* starts at 0 and is incremented by one for each color.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
-    If **-S** is set, let symbol fill color be
+    If |-S| is set, let symbol fill color be
     determined by the *z*-value in the third column. Additional fields are
     shifted over by one column (optional *size* would be 4th rather than 3rd
     field, etc.).
-    If **-S** is not set, then it expects the user to
+    If |-S| is not set, then it expects the user to
     supply a multisegment file where each segment header contains a
     **-Z**\ *value* string. The *value* will control the color of the line or
-    polygon (if **-L** is set) via the CPT.  Alternatively, see the **-Z**
+    polygon (if |-L| is set) via the CPT.  Alternatively, see the |-Z|
     option for how to assign *z*-values. **Note**: If modern mode and no
     argument is given then we select the current CPT.
 
@@ -130,11 +130,12 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*]
-    Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
-    want to draw (Default is both x and y). The x and/or y errors must be
+**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
+    Draw error bars. Append **x** and/or **y** to indicate which bars you
+    want to draw [Default is both x and y]. The x and/or y errors must be
     stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
-    **+a** is appended then we will draw asymmetrical error bars; these requires
+    **+a** is appended then we will draw asymmetrical error bars [Default
+    is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.
     Use **+A** to read the low and high bounds rather than signed deviations.
     If upper case **X** and/or **Y** are used we will instead draw
@@ -142,13 +143,15 @@ Optional Arguments
     is then taken as the median value, and four more columns are expected to
     contain the minimum (0% quantile), the 25% quantile, the 75% quantile,
     and the maximum (100% quantile) values. The 25-75% box may be filled by
-    using **-G**. If **+n** is appended the we draw a notched
+    using |-G|. If **+n** is appended the we draw a notched
     "box-and-whisker" symbol where the notch width reflects the uncertainty
     in the median. This symbol requires a 5th extra data column to contain the
     number of points in the distribution.  The **+w** modifier sets the
-    *cap* width that indicates the length of the end-cap on the error bars
-    [7\ **p**]. Pen attributes for error bars may also be set via **+p**\ *pen*.
-    [Defaults: width = default, color = black, style = solid]. When **-C** is
+    *width* that indicates the length of the end-cap on the error bars
+    [7\ **p**]. For box-and-whisker symbols it sets both the default box width and whisker cap length [7\ **p**].
+    Append both *width*\ /*cap* to set separate width and cap dimensions for such symbols.
+    Pen attributes for error bars may also be set via **+p**\ *pen*.
+    [Defaults: width = 0.25p, color = black, style = solid]. When |-C| is
     used we can control how the look-up color is applied to our symbol.
     Append **+cf** to use it to fill the symbol, while **+cl** will just
     set the error pen color and turn off symbol fill.  Giving **+c** will
@@ -181,9 +184,9 @@ Optional Arguments
 
 **-G**\ *fill*\|\ **+z** :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
-    Note that this module will search for **-G** and **-W** strings in all the
+    Note that this module will search for |-G| and |-W| strings in all the
     segment headers and let any values thus found over-ride the command line settings.
-    If **-Z** is set, use **-G+z** to assign fill color via **-C**\ *cpt* and the
+    If |-Z| is set, use **-G+z** to assign fill color via **-C**\ *cpt* and the
     *z*-values obtained. Finally, if *fill* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the fill colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  Any *transparency* setting is unchanged.
@@ -193,7 +196,7 @@ Optional Arguments
 **-H**\ [*scale*]
     Scale symbol sizes and pen widths on a per-record basis using the *scale* read from the
     data set, given as the first column after the (optional) *z* and *size* columns [no scaling].
-    The symbol size is either provided by **-S** or via the input *size* column.  Alternatively,
+    The symbol size is either provided by |-S| or via the input *size* column.  Alternatively,
     append a constant *scale* that should be used instead of reading a scale column.
 
 .. _-I:
@@ -213,20 +216,21 @@ Optional Arguments
     Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 3-4.
     Append **+xl**\|\ **r**\|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
     append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
-    Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
-    **Note**: When option **-Z** is passed via segment headers you will need **-L** to ensure
+    Polygon may be painted (|-G|) and optionally outlined by adding **+p**\ *pen* [no outline].
+    **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
     your segments are interpreted as polygons, else they are seen as lines.
 
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
-    Do NOT clip symbols that fall outside map border [Default plots points
-    whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
-    which are always clipped to the map region. For periodic (360-longitude)
+    Do **not** clip symbols that fall outside map border [Default plots points
+    whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
-    boundary. The **-N** will turn off clipping and not plot repeating symbols.
+    boundary. The |-N| will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
+    **Note**: A plain |-N| may also be used with lines or polygons but note that this deactivates
+    any consideration of periodicity (e.g., longitudes) and may have unintended consequences.
 
 .. _-S:
 
@@ -235,8 +239,8 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Ignore all input files.  If **-B** is not used then **-R -J** are not required.
-    Typically used to move plot origin via **-X** and **-Y**.
+    Ignore all input files.  If |-B| is not used then **-R -J** are not required.
+    Typically used to move plot origin via |-X| and |-Y|.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
@@ -252,9 +256,9 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. If the modifier **+cl**
+    width = 0.25p, color = black, style = solid]. If the modifier **+cl**
     is appended then the color of the line are taken from the CPT (see
-    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
     You can also append one or more additional line attribute modifiers:
     **+o**\ *offset*\ *unit* will start and stop drawing the line the given distance offsets
@@ -267,7 +271,7 @@ Optional Arguments
     Because **+v** may take additional modifiers it must necessarily be given
     at the end of the pen specification.
     See the `Vector Attributes`_ for more information.
-    If **-Z** is set, then append **+z** to **-W** to assign pen color via **-C**\ *cpt* and the
+    If |-Z| is set, then append **+z** to |-W| to assign pen color via **-C**\ *cpt* and the
     *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
@@ -280,10 +284,10 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *value*\|\ *file*
-    Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
-    give both a *value* via **-Z** and a color lookup table via **-C**.  Alternatively,
+    Instead of specifying a symbol or polygon fill and outline color via |-G| and |-W|,
+    give both a *value* via |-Z| and a color lookup table via |-C|.  Alternatively,
     give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
-    To apply the color obtained to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
+    To apply the color obtained to a fill, use **-G+z**; to apply it to the pen color, append **+z** to |-W|.
 
 .. include:: explain_-aspatial.rst_
 
@@ -299,7 +303,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: The **-g** option is ignored if **-S** is set.
+.. |Add_-g| replace:: The **-g** option is ignored if |-S| is set.
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

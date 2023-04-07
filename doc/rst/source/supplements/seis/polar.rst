@@ -48,7 +48,7 @@ Description
 Plot observations from a single earthquake observed at various stations
 at different azimuths and distances on the lower hemisphere of the focal
 sphere.  The focal sphere is typically plotted at the location of the earthquake,
-specified via **-D**. Reads data values from *files* [or standard input].
+specified via |-D|. Reads data values from *files* [or standard input].
 
 Parameters are expected to be in the following columns:
 
@@ -183,7 +183,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**-**\|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
-    Set current pen attributes [Default pen is default,black,solid].
+    Set current pen attributes [Default pen is 0.25p,black,solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_

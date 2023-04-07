@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtwrite_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtwrite"
 #define THIS_MODULE_MODERN_NAME	"gmtwrite"
@@ -31,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Write GMT objects from external API"
 #define THIS_MODULE_KEYS	"-T-,<?{,>?}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RV"
+#define THIS_MODULE_OPTIONS "->RVf"
 
 /* Control structure for gmtwrite */
 
@@ -104,25 +105,21 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 			case GMT_OPT_INFILE:	/* File args */
 				if (Ctrl->IO.active[GMT_OUT]) {	/* User gave output as ->outfile and it was found on the command line earlier */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[GMT_IN]);
-					Ctrl->IO.active[GMT_IN] = true;
 					Ctrl->IO.file[GMT_IN] = strdup (opt->arg);
 				}
 				else if (n_files < 2) {	/* Encountered input file(s); the 2nd would be output */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[n_files]);
-					Ctrl->IO.active[n_files] = true;
 					Ctrl->IO.file[n_files] = strdup (opt->arg);
 				}
 				n_files++;
 				break;
 			case GMT_OPT_OUTFILE:	/* Got specific output argument */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[GMT_OUT]);
-				Ctrl->IO.active[GMT_OUT] = true;
 				Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
 				n_files++;
 				break;
 			case 'T':	/* Type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 't':
 						if (gmt_M_compat_check (GMT, 5))	/* There is no longer a T type but we will honor T as D from GMT5 */
@@ -132,12 +129,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 							n_errors++;
 						}
 						break;
-					case 'd': Ctrl->T.mode = GMT_IS_DATASET; break;
-					case 'g': Ctrl->T.mode = GMT_IS_GRID;	 break;
-					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;	 break;
-					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
-					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
-					case 'u': Ctrl->T.mode = GMT_IS_CUBE;	 break;
+					case 'd': Ctrl->T.mode = GMT_IS_DATASET;     break;
+					case 'g': Ctrl->T.mode = GMT_IS_GRID;        break;
+					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;     break;
+					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;       break;
+					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;  break;
+					case 'u': Ctrl->T.mode = GMT_IS_CUBE;        break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
 						n_errors++;
@@ -180,7 +177,7 @@ EXTERN_MSC int GMT_gmtwrite (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

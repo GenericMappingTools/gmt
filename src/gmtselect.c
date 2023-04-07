@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtselect_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtselect"
 #define THIS_MODULE_MODERN_NAME	"gmtselect"
@@ -130,8 +131,10 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		bool mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
-	struct GMTSELECT_Z {	/* -Z<min>/<max>[+c<col>][+i][+a] */
+	struct GMTSELECT_Z {	/* -Z<min>/<max>[+c<col>][+a][+h[k|s]][+i] */
 		bool active;
+		bool mseg_Z;	/* True for +h when we examine -Z<z> in the segment header for z */
+		bool mseg_Z_missing_keep;	/* Determines what happens if -Z<z> is missing from header */
 		bool or;		/* Logical or.  If any test passes then we pass the record [all tests must pass] */
 		unsigned int n_tests;	/* How many of these tests did we get */
 		unsigned int max_col;	/* The largest column we encountered */
@@ -184,7 +187,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [%s] [-C<ptfile>|<lon>/<lat>+d%s] [-D<resolution>[+f]] "
 		"[-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s] [-Icfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] "
-		"[%s] [%s] [-Z<min>[/<max>][+c<col>][+a][+i]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
+		"[%s] [%s] [-Z<min>[/<max>][+c<col>][+a][+h[k|s]][+i]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_A_OPT, GMT_DIST_OPT, GMT_J_OPT, GMT_DIST_OPT,
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT,
 		GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -233,13 +236,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s <ocean>/<land>/<lake>/<island>/<pond>.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "[Default is s/k/s/k/s (i.e., s/k)].");
 	GMT_Option (API, "R,V");
-	GMT_Usage (API, 1, "\n-Z<min>[/<max>][+c<col>][+a][+i]");
+	GMT_Usage (API, 1, "\n-Z<min>[/<max>][+c<col>][+a][+h[k|s]][+i]");
 	GMT_Usage (API, -2, "Assume the 3rd data column contains z-values and we want to keep records with "
 		"<min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit. "
 		"If /<max> is not appended then we pass records whose z equal <min> within 5 ulps. "
 		"Append +c<col> to select another column than the third [2]. "
 		"The -Z option is repeatable.  If given more than once then these modifiers may be useful:");
 	GMT_Usage (API, 3, "+a Pass the record if any of the tests are true [all tests must be true in order to pass].");
+	GMT_Usage (API, 3, "+h Get fixed z for all records via segment header -Z<z> instead of data column. "
+		"If no -Z<z> is found we skip all records [i.e., Default is +hs] unless +hk is used to keep all such records");
 	GMT_Usage (API, 3, "+i Reverse an individual test since -Iz only applies to a single test.");
 	GMT_Usage (API, -2, "If +c is not given then it is incremented automatically, starting at 2.");
 	GMT_Option (API, "a,bi0");
@@ -321,7 +326,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 	 */
 
 	unsigned int n_errors = 0, pos, j, col, n_z_alloc = 0, z_col = GMT_Z;
-	bool invert = false;
+	bool invert = false, got_col = false;
 	char buffer[GMT_BUFSIZ] = {""}, za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *c = NULL;
 	enum gmt_col_enum ctype;
 	struct GMT_OPTION *opt = NULL;
@@ -331,19 +336,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Limit GSHHS features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance> or -C<lon/lat>+d<distance> */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
 					n_errors += gmtselect_old_C_parser (API, opt->arg, Ctrl);
 					break;
@@ -369,13 +372,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.set = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.set);
 				Ctrl->D.force = (opt->arg[1] == '+' && (opt->arg[2] == 'f' || opt->arg[2] == '\0'));
 				break;
 			case 'E':	/* On-boundary selection */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'f': Ctrl->E.inside[F_ITEM] = GMT_INSIDE; break;
@@ -389,19 +390,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'F':	/* Inside/outside polygon test */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':	/* In-grid selection */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Invert these tests */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'r': Ctrl->I.pass[GMT_SELECT_R] = false; break;
@@ -420,7 +418,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':	/* Near a line test -L<lfile>+d%s[+p]] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
 					n_errors += gmtselect_old_L_parser (API, opt->arg, Ctrl);
 					break;
@@ -444,11 +441,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':	/* Inside/outside GSHHS land */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 				if (buffer[strlen(buffer)-1] == 'o' && gmt_M_compat_check (GMT, 4)) { /* Edge is considered outside */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -N...o is deprecated; use -E instead\n");
-					Ctrl->E.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
 				}
@@ -473,16 +469,26 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				Ctrl->N.mode = (j == 2);
 				break;
-			case 'Z':	/* Test column-ranges */
+			case 'Z':	/* Test column-ranges (repeatable) */
 				Ctrl->Z.active = true;
-				invert = false;
+				invert = got_col = false;
 				col = z_col++;	/* If no +c<col> given the we march from GMT_Z outwards */
-				if ((c = gmt_first_modifier (GMT, opt->arg, "aci"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "achi"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'Z', c, "aci", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'Z', c, "achi", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'a': Ctrl->Z.or = true; break;	/* Logical or: pass if any z-test is true */
-							case 'c': col = atoi (&p[1]); break;	/* Set z column # */
+							case 'c': col = atoi (&p[1]); got_col = true; break;	/* Set z column # */
+							case 'h': Ctrl->Z.mseg_Z = true; /* Use segment header z */
+								switch (p[1]) {	/* Check for skip or keep argument */
+									case '\0':	case 's':	Ctrl->Z.mseg_Z_missing_keep = false;	break;
+									case 'k':	Ctrl->Z.mseg_Z_missing_keep = true;	break;
+									default:
+										GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Modifier +h[k|s] given unrecognized argument: %s\n", p);
+										n_errors++;
+										break;
+								}
+								break;
 							case 'i': invert = true; break;		/* Reverse this test */
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
@@ -548,6 +554,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[GMT_SELECT_Z],
 	                                   "Option -Iz can only be used with one -Z range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.mseg_Z && Ctrl->Z.n_tests > 1,
+	                                   "Modifier +h to option -Z can only be used with one -Z range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.mseg_Z && Ctrl->Z.or,
+	                                   "Option -Z: Cannot mix +h and +a\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.mseg_Z && got_col,
+	                                   "Option -Z: Cannot mix +h and +c\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -565,7 +577,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;
 
-	double xx, yy;
+	double xx, yy, z_seg_value;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
@@ -592,7 +604,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -604,6 +616,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active && gmt_M_is_cartesian (GMT, GMT_IN)) pt_cartesian = true;
 
 	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */
+	z_seg_value = GMT->session.d_NaN;
 
 	if (!GMT->common.R.active[RSET] && Ctrl->N.active) {	/* If we use coastline data or used -fg but didn't give -R we implicitly set -Rg */
 		GMT->common.R.active[RSET] = true;
@@ -825,6 +838,15 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 			else if (gmt_M_rec_is_segment_header (GMT)) {
 				output_header = true;
 				need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
+				if (Ctrl->Z.mseg_Z) {
+					char text_item[GMT_LEN64];
+					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-Z", text_item))	/* Look for zvalue option */
+						z_seg_value = atof (text_item);
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Data file segment header has no -Z entry; none of the segment records pass.\n");
+						z_seg_value = GMT->session.d_NaN;
+					}
+				}
 			}
 			continue;							/* Go back and read the next record */
 		}
@@ -854,16 +876,23 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->Z.active) {	/* Apply z-range test(s) */
+			double z_val = z_seg_value;
 			for (k = 0, keep = true; keep && k < Ctrl->Z.n_tests; k++) {
-				col = Ctrl->Z.limit[k].col;			/* Shorthand notation */
-				if (gmt_M_is_dnan (In->data[col]))
-					keep = true;		/* Make no decision on NaNs here; see -s instead */
+				if (!Ctrl->Z.mseg_Z) {	/* Get z from data column(s) */
+					col = Ctrl->Z.limit[k].col;			/* Shorthand notation */
+					z_val = In->data[col];
+				}
+				if (Ctrl->Z.mseg_Z && gmt_M_is_dnan (z_seg_value))
+					keep = Ctrl->Z.mseg_Z_missing_keep;		/* Segment without -Z are skipped [+hs] or kept (+hk) entirely */
+				else if (gmt_M_is_dnan (z_val)) {
+					keep = true;		/* Make no decision on NaNs in the data here; see -s instead */
+				}
 				else if (Ctrl->Z.limit[k].equal) {
-					inside = doubleAlmostEqualZero (In->data[col], Ctrl->Z.limit[k].min);
+					inside = doubleAlmostEqualZero (z_val, Ctrl->Z.limit[k].min);
 					if (Ctrl->Z.limit[k].invert) inside = !inside;	/* Flip the result for the test below */
 				}
 				else {
-					inside = (In->data[col] >= Ctrl->Z.limit[k].min && In->data[col] <= Ctrl->Z.limit[k].max);
+					inside = (z_val >= Ctrl->Z.limit[k].min && z_val <= Ctrl->Z.limit[k].max);
 					if (Ctrl->Z.limit[k].invert) inside = !inside;	/* Flip the result for the test below */
 				}
 				if (inside != Ctrl->I.pass[GMT_SELECT_Z]) keep = false;

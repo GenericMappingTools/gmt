@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdsample_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdsample"
 #define THIS_MODULE_MODERN_NAME	"grdsample"
@@ -104,7 +105,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int n_errors = 0, n_files = 0, ii = 0, jj = 0;
+	int n_errors = 0, ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -113,23 +114,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* BCs */
@@ -168,7 +164,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 					n_errors += gmt_default_option_error (GMT, opt);
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (GMT->common.R.active[FSET]) GMT->common.R.active[GSET] = false;	/* Override any implicit -r via -Rgridfile */
 				break;
 
@@ -178,7 +173,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, (n_files != 1), "Must specify a single input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[GSET] && Ctrl->T.active && !GMT->common.R.active[FSET],
 	                                   "Only one of -r, -T may be specified\n");
@@ -200,7 +195,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	char format[GMT_BUFSIZ];
 
-	double *lon = NULL, lat, wesn_i[4], wesn_o[4], inc[2];
+	double *lon = NULL, lat, wesn_i[4], wesn_o[4], inc[2], ince[2];
 
 	struct GRDSAMPLE_CTRL *Ctrl = NULL;
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
@@ -219,7 +214,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -251,7 +246,8 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (wesn_i, Gin->header->wesn, 4, double);	/* wesn_i is eventually the subset we will read from this grid */
 	gmt_M_memcpy (wesn_o, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : Gin->header->wesn), 4, double);	/* wesn_o is the region we want for the output [Same as input] */
 	gmt_M_memcpy (inc, (GMT->common.R.active[ISET] ? GMT->common.R.inc : Gin->header->inc), 2, double);	/* Either a new increment is given or we use the one from the input grid */
-
+	ince[GMT_X] = GMT_CONV4_LIMIT * inc[GMT_X];
+	ince[GMT_Y] = GMT_CONV4_LIMIT * inc[GMT_Y];
 	/* Set the registration for the output via -R, -r or default input grid */
 	if (Ctrl->T.active)
 		registration = !Gin->header->registration;
@@ -270,11 +266,11 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 		/* Adjust wesn used to READ subset unless 360 geographic */
 		if (!wrap_360_i) {
 			k = 0;
-			while (wesn_i[YLO] < wesn_o[YLO]) wesn_i[YLO] += Gin->header->inc[GMT_Y], k++;	/* Now on or inside grid boundary */
-			if (wesn_i[YLO] > Gin->header->wesn[YLO] && k) wesn_i[YLO] -= Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+			while (wesn_i[YLO] < (wesn_o[YLO] + ince[GMT_Y])) wesn_i[YLO] += Gin->header->inc[GMT_Y], k++;	/* Now on or inside grid boundary */
+			if (wesn_i[YLO] > (Gin->header->wesn[YLO] + ince[GMT_Y]) && k) wesn_i[YLO] -= Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
 			k = 0;
-			while (wesn_i[YHI] > wesn_o[YHI]) wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
-			if (wesn_i[YHI] < Gin->header->wesn[YHI] && k) wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
+			while (wesn_i[YHI] > (wesn_o[YHI] - ince[GMT_Y])) wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
+			if (wesn_i[YHI] < (Gin->header->wesn[YHI] + ince[GMT_Y]) && k) wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
 		}
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between grid and -R */
 			int shift = 0;
@@ -296,16 +292,22 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 					wesn_i[XLO] -= 360.0, wesn_i[XHI] -= 360.0;
 			}
 			k = 0;
-			while (wesn_i[XLO] < wesn_o[XLO]) wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
-			if (wesn_i[XLO] > Gin->header->wesn[XLO] && k) wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+			while (wesn_i[XLO] < (wesn_o[XLO] - ince[GMT_X]))
+				wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
+			if (wesn_i[XLO] > (Gin->header->wesn[XLO] + ince[GMT_X]) && k)
+				wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
 			k = 0;
-			while (wesn_i[XHI] > wesn_o[XHI]) wesn_i[XHI] -= Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
-			if (wesn_i[XHI] < Gin->header->wesn[XHI] && k) wesn_i[XHI] += Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+			while (wesn_i[XHI] > (wesn_o[XHI] + ince[GMT_X]))
+				wesn_i[XHI] -= Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
+			if (wesn_i[XHI] < (Gin->header->wesn[XHI] - ince[GMT_X]) && k)
+				wesn_i[XHI] += Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
 		}
 
 		/* Adjust wesn_o used to CREATE the output grid: It cannot exceed the input grid bounds */
-		while (wesn_o[YLO] < Gin->header->wesn[YLO]) wesn_o[YLO] += inc[GMT_Y];	/* Now on or inside boundary */
-		while (wesn_o[YHI] > Gin->header->wesn[YHI]) wesn_o[YHI] -= inc[GMT_Y];	/* Now on or inside boundary */
+		while (wesn_o[YLO] < (Gin->header->wesn[YLO] - ince[GMT_Y]))
+			wesn_o[YLO] += inc[GMT_Y];	/* Now on or inside boundary */
+		while (wesn_o[YHI] > (Gin->header->wesn[YHI] + ince[GMT_Y]))
+			wesn_o[YHI] -= inc[GMT_Y];	/* Now on or inside boundary */
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			int shift = 0;
 			if (Gin->header->wesn[XHI] < wesn_o[XLO]) shift += 360;
@@ -318,8 +320,10 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			}
 		}
 		if (!wrap_360_o && !wrap_360_i) {	/* Can only shrink wesn_o if there is no 360-wrapping going on */
-			while (wesn_o[XLO] < Gin->header->wesn[XLO]) wesn_o[XLO] += inc[GMT_X];	/* Now on or inside boundary */
-			while (wesn_o[XHI] > Gin->header->wesn[XHI]) wesn_o[XHI] -= inc[GMT_X];	/* Now on or inside boundary */
+			while (wesn_o[XLO] < (Gin->header->wesn[XLO] - ince[GMT_X]))
+				wesn_o[XLO] += inc[GMT_X];	/* Now on or inside boundary */
+			while (wesn_o[XHI] > (Gin->header->wesn[XHI] + ince[GMT_X]))
+				wesn_o[XHI] -= inc[GMT_X];	/* Now on or inside boundary */
 		}
 	}
 

@@ -80,8 +80,8 @@ Optional Arguments
 
 **-C**
     Clips polygons to the map region, including map boundary to the
-    polygon as needed. The result is a closed polygon (see **-T** for
-    truncation instead). Requires **-R**.
+    polygon as needed. The result is a closed polygon (see |-T| for
+    truncation instead). Requires |-R|.
 
 .. _-D:
 
@@ -138,7 +138,7 @@ Optional Arguments
 
 **-L**\ *dist*\ /*noise*\ /*offset*
     Remove tile Lines.  These are superfluous lines that were digitized with a
-    polygon but that all fall along the rectangular **-R** border and should be removed.
+    polygon but that all fall along the rectangular |-R| border and should be removed.
     Append *dist* (in m) [0], coordinate *noise* [1e-10], and max *offset* from gridlines [1e-10].
 
 .. _-N:
@@ -148,7 +148,7 @@ Optional Arguments
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
     taken from the aspatial value assigned to Z, the segment header
-    (first **-Z**, then **-L** are scanned), or it is assigned the
+    (first |-Z|, then |-L| are scanned), or it is assigned the
     running number that is initialized to *start* [0]. By default the
     input segment that are found to be inside a polygon are written to
     standard output with the polygon ID encoded in the segment header as
@@ -206,23 +206,23 @@ Optional Arguments
 
 **-T**\ [*clippolygon*]
     Truncate polygons against the specified polygon given, possibly
-    resulting in open polygons. If no argument is given to **-T** we
-    create a clipping polygon from **-R** which then is required. Note
-    that when the **-R** clipping is in effect we will also look for
-    polygons of length 4 or 5 that exactly match the **-R** clipping polygon.
+    resulting in open polygons. If no argument is given to |-T| we
+    create a clipping polygon from |-R| which then is required. Note
+    that when the |-R| clipping is in effect we will also look for
+    polygons of length 4 or 5 that exactly match the |-R| clipping polygon.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. --W:
+.. _-W:
 
 **-W**\ *dist*\[*unit*][**+f**\|\ **l**]
     Extend all segments with a new first and last point such that these points are *dist* away
     from their neighbor point in the direction implied by the two points at each end of the
     segment.  For geographic data you may append a *unit* (see `Units`_). To give separate
-    distances for the two ends, give distf*\[*unit*]/distl*\[*unit*] instead.  Optionally,
+    distances for the two ends, give *distf*\[*unit*]/*distl*\[*unit*] instead.  Optionally,
     append either **+f** or **+l** to only extend the first or last point this way [both].
     The mode of geographical calculations depends on **-j**.
 

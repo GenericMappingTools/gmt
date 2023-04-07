@@ -22,8 +22,8 @@ Description
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
 Besides the modules names, some special targets
 *gmt*, *api*, *colors*, *cookbook*, *data*, *gallery*, *home*, *settings*, and *tutorial*
-are also accepted. You can also give *forum* (takes you to the GMT Discourse Forum) and
-*website* (or just *site*; takes you to the GMT main website).
+are also accepted. You can also give *forum* (takes you to the `GMT Discourse Forum <https://forum.generic-mapping-tools.org/>`_) and
+*website* (or just *site*; takes you to the `GMT main website <https://www.generic-mapping-tools.org/>`_).
 
 Required Arguments
 ------------------
@@ -42,13 +42,13 @@ Optional Arguments
     This option means we are doing a "dry-run" and simply want the final URL to be
     printed to standard output.  No file open command will take place. This is useful
     if you are working remotely on a server and do not wish to launch a GUI browser.
-    If used, **-Q** must be the first option to **docs**.
+    If used, |-Q| must be the first option to **docs**.
 
 .. _-S:
 
 **-S**
     Normally, **docs** will open documentation files from the local computer if the document can
-    be found there; otherwise it will use the GMT server.  The **-S** option forces **docs** to
+    be found there; otherwise it will use the GMT server.  The |-S| option forces **docs** to
     read the file from the web server first.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -62,10 +62,10 @@ Optional Module Arguments
 -------------------------
 
 *-option*
-    Where *-option* is the one-letter option of the module in question (e.g, **-R**).
+    Where *-option* is the one-letter option of the module in question (e.g, |-R|).
     We then display the *module* documentation positioned at that specific option.  Note
     that this operation is only valid for an actual URL, hence we implicitly set
-    **-S** when an option anchor is specified.
+    |-S| when an option anchor is specified.
 
 Examples
 --------
@@ -82,7 +82,7 @@ To see the link to the documentation of *grdimage* on the GMT server::
 
     gmt docs -Q -S grdimage
 
-To see the documentation of the **-B** option in *coast*::
+To see the documentation of the |-B| option in *coast*::
 
     gmt docs coast -B
 

@@ -46,6 +46,7 @@ Quick links
         animations
         tutorial
         tutorial_jl
+        Tutorials in PyGMT <https://www.pygmt.org/latest/tutorials/index.html>
 
     ---
 
@@ -85,7 +86,7 @@ Quick links
         :maxdepth: 1
         :caption: Development
 
-        Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+        Code of Conduct <https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md>
         /devdocs/contributing
         /devdocs/maintenance
         /devdocs/team

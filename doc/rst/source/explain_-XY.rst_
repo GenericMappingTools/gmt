@@ -18,14 +18,15 @@ The **-X** **-Y** options
 The **-X** and **-Y** options shift the plot origin relative to the current origin by (*xshift*,\ *yshift*). Optionally,
 append the length unit (**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`, :term:`MAP_ORIGIN_Y`) for new
 plots, which ensures that boundary annotations fit on the page. Subsequent overlays will be co-registered with the
-previous plot unless the origin is shifted using these options. The following modifiers are supported
+previous plot unless the origin is shifted using these options. The following directives are supported
 [default is **r**]:
 
 - Prepend **a** to shift the origin back to the original position after plotting.
-- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*).
-- Prepend **f** to shift the origin relative to the fixed lower left.
+- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*) (classic mode only).
+- Prepend **f** to shift the origin relative to the fixed lower left (classic mode only).
 - Prepend **r** to move the origin relative to its current location.
 
+**Note**: Directives **c** and **f** are only available in classic mode.
 When **-X** or **-Y** are used without any further arguments, the values from the last use of that option in a previous
 GMT command will be used. In modern mode, **-X** and **-Y** can also access the previous plot bounding box dimensions *w* and
 *h* and construct offsets that involve them.  Thus, *xshift* can in general be [[±][*f*]\ *w*\ [/\ *d*\ ]±]\ *xoff*, where optional signs, factor *f*

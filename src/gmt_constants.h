@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -344,6 +344,9 @@ enum GMT_time_period {
 #define GMT_FRAME_MODIFIERS "bginotwxyz"
 /* Valid axis setting modifiers */
 #define GMT_AXIS_MODIFIERS "aefLlpsSu"
+
+/* Valid decorated line symbols */
+#define GMT_DECORATE_SYMBOLS "-+AaBbCcDdGgHhIikNnpSsTtxy"
 
 /* Settings for usage message indents and break/continue characters */
 

@@ -1,0 +1,45 @@
+# Upload the ZIP archive of baseline images as a release asset
+
+name: Upload baseline images
+
+# Only run for releases
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  upload-baseline:
+    name: Upload baseline images
+    runs-on: ubuntu-latest
+    if: github.repository == 'GenericMappingTools/gmt'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3.5.0
+
+    - name: Setup data version control (DVC)
+      uses: iterative/setup-dvc@v1.1.1
+
+    - name: Pull baseline image data from dvc remote
+      run: |
+        dvc pull
+        ls -lhR test/baseline/
+
+    - name: Create the baseline image asset in zip format
+      run: |
+        mkdir baseline-images
+        mkdir baseline-images/test
+        mkdir baseline-images/examples
+        mkdir baseline-images/scripts
+        cp -r test/baseline/* baseline-images/test
+        cp doc/examples/images/*.ps baseline-images/examples
+        cp doc/scripts/images/*.ps baseline-images/scripts
+        zip -r baseline-images baseline-images/ -x "*.dvc"
+        shasum -a 256 baseline-images.zip
+
+    - name: Upload baseline image as a release asset
+      uses: shogo82148/actions-upload-release-asset@v1.6.4
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: baseline-images.zip

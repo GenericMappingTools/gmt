@@ -1,7 +1,7 @@
 
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1999-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdrotater_inc.h"
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdrotater"
@@ -144,7 +145,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k;
 	int n_items;
 	uint64_t t = 0;
 	bool gave_e = false;
@@ -160,17 +161,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == 'g' && opt->arg[1] == '\0') {	/* Got -Ag */
 					Ctrl->A.wesn[0] = 0.0;	Ctrl->A.wesn[1] = 360.0;	Ctrl->A.wesn[2] = -90.0;	Ctrl->A.wesn[3] = 90.0;
 					break;
@@ -210,40 +208,33 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file));
 				break;
 			case 'e':
 				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
 				/* Intentionally fall through */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* New: -Tage, -Tmin/max/inc, -Tmin/max/n+, -Tfile; compat mode: -Tlon/lat/angle Finite rotation parameters */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a file with times in first column */
 					uint64_t seg, row;
 					struct GMT_DATASET *T = NULL;
@@ -270,7 +261,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 				if (k == 3) {	/* Gave -Ttstart/tstop/tinc[+n] or possibly ancient -Tlon/lat/angle */
 					if (gmt_M_compat_check (GMT, 4) && !gave_e) {	/* No -E|e so likely ancient syntax */
 						GMT_Report (API, GMT_MSG_COMPAT, "-T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
-						Ctrl->E.rot.single = Ctrl->E.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+						Ctrl->E.rot.single = true;
 						Ctrl->T.active = false;
 						Ctrl->E.rot.w = atof (txt_c);
 						Ctrl->E.rot.age = GMT->session.d_NaN;
@@ -421,7 +413,7 @@ GMT_LOCAL bool grdrotater_skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATA
 EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 	int scol, srow, error = 0;	/* Signed row, col */
 	int n_stages;
-	bool not_global, global = false;
+	bool not_global, global = false, got_region;
 	openmp_int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	char gfile[PATH_MAX] = {""};
 
@@ -452,7 +444,7 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -464,12 +456,26 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 	/* Check limits and get data file */
 
+	got_region = GMT->common.R.active[RSET];	/* Remember if -R was used to set the grid region or not */
+	if (Ctrl->F.active) {	/* Read the user's polygon file */
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (!got_region) {	/* Did not give -R so we pick the BB of the polygon instead */
+			GMT->common.R.wesn[XLO] = D->table[0]->min[GMT_X];
+			GMT->common.R.wesn[XHI] = D->table[0]->max[GMT_X];
+			GMT->common.R.wesn[YLO] = D->table[0]->min[GMT_Y];
+			GMT->common.R.wesn[YHI] = D->table[0]->max[GMT_Y];
+			got_region = true;	/* Now "-R" is in effect set for the input grid */
+		}
+	}
+
 	if (Ctrl->In.file) {	/* Provided an input grid */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		HH = gmt_get_H_hidden (G->header);
-		if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
+		if (!got_region) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set (via -R or -F) so we use the grid domain */
 
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
@@ -479,7 +485,7 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
-		if (!GMT->common.R.active[RSET]) global = gmt_grd_is_global (GMT, G->header);
+		if (!got_region) global = gmt_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
 
@@ -490,12 +496,8 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->F.active) {	/* Read the user's polygon file */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
-			Return (API->error);
-		}
+	if (Ctrl->F.active)	/* Read the user's polygon file */
 		pol = D->table[0];	/* Since we know it is a single file */
-	}
 	else if (not_global) {	/* Make a single grid-outline polygon */
 		if (!G) {
 			GMT_Report (API, GMT_MSG_ERROR, "No grid give so cannot determine grid outline path\n");
@@ -686,6 +688,7 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 						gmt_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 						gmt_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */
 						yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
+						if (not_global && grdrotater_skip_if_outside (GMT, polr, xx, yy)) continue;	/* Outside rotated polygon */
 						scol = (int)gmt_M_grd_x_to_col (GMT, xx, G->header);
 						if (scol < 0) continue;
 						col_o = scol;	if (col_o >= (openmp_int)G->header->n_columns) continue;

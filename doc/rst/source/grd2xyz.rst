@@ -39,7 +39,7 @@ precision of the ASCII output format by editing the
 :term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
 **--FORMAT_FLOAT_OUT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates (see **-Z** below) or you can
+output z-values without the (x,y) coordinates (see |-Z| below) or you can
 save the grid in the STL format for 3-D printers.
 
 Required Arguments
@@ -71,7 +71,7 @@ Optional Arguments
     the valid range then no output will result and a warning is issued.  **Note**: For
     directives **x** and **y** we find the nearest column or row, respectively.
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -93,7 +93,7 @@ Optional Arguments
    :align: center
 
    3-D print of Vailulu’u crater multibeam data (2006, R/V Kilo Moana off Samoa) via a GMT STL file.  Original
-   multibeam data processed with `MB-System <https://www.mbari.org/products/research-software/mb-system>`_ seen
+   multibeam data processed with `MB-System <https://www.mbari.org/technology/mb-system/>`_ seen
    on the right. Photos courtesy of Jasper Konter, U of Hawaii at Manoa.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -109,7 +109,7 @@ Optional Arguments
     weights equal to the area each node represents.  For Cartesian grids this
     is simply the product of the *x* and *y* increments (except for
     gridline-registered grids at all sides [half] and corners [quarter]).
-    For geographic grids we default to a length unit of **k** (hence area is in km^2). Change
+    For geographic grids we default to a length unit of **k** (hence area is in km\ :sup:`2`). Change
     this by appending **+u**\ *unit* (see `Units`_). For such grids, the area
     varies with latitude and also sees special cases for gridline-registered layouts
     at sides, corners, and poles.
@@ -147,7 +147,7 @@ Optional Arguments
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
 
 .. |Add_-bo| replace:: [Default is 3]. This option
-    only applies to xyz output; see **-Z** for z table output.
+    only applies to xyz output; see |-Z| for z table output.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -208,17 +208,23 @@ with **-Lc**\ *0* and **-Lx**\ *xmin* (for the correct minimum x-value) yielding
 Examples
 --------
 
-To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII::
+To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII:
+
+   ::
 
     gmt grd2xyz @AFR.nc > AFR.xyz
 
 To write a single precision binary file without the x,y positions from
-the remote file @AFR.nc file, using scanline orientation, run::
+the remote file @AFR.nc file, using scanline orientation, run:
+
+   ::
 
     gmt grd2xyz @AFR.nc -ZTLf > AFR.b
 
-To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter^2 as the area unit,
-and where *area* reflects the size of each grid box, run::
+To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter\ :sup:`2` as the area unit,
+and where *area* reflects the size of each grid box, run:
+
+   ::
 
     gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
 

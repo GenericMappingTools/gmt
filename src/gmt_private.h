@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -120,11 +120,25 @@ struct GMTAPI_DATA_OBJECT {
 #endif
 };
 
+struct API_META {	/* Items related to passing or not passing certain meta data from one grid to the next */
+	bool ignore_remote_cpt;			/* true if we should not store the remote CPT associated with the origin of this grid */
+};
+
+struct GMT_JULIA_POCKET {
+	/* Hold some variables stored in the API struct that may be needed to be known in GMT.jl
+	   Ideally one would wrap the GMTAPI_CTRL struct but this gal is huge and there is no contract
+	   that it wont change in response to future needs.
+	*/
+	char *gwf_dir;			/* In API->gwf_dir. GMT WorkFlow dir (NULL if not running in modern mode). 4GMT.jl */
+	int col_type[2][64];	/* Type of column on input and output: Time, geographic, etc. 4GMT.jl */
+};
+
 struct GMTAPI_CTRL {
 	/* Master controller which holds all GMT API related information at run-time for a single session.
 	 * Users can run several GMT sessions concurrently; each session requires its own structure.
 	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
 
+	struct GMT_JULIA_POCKET jl_pocket;	/* For access from Julia. MUST be first member to ensure it can safely be wrapped. */
 	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
 	unsigned int n_objects;			/* Number of currently active input and output data objects */
 	unsigned int unique_ID;			/* Used to create unique IDs for duration of session */
@@ -150,6 +164,8 @@ struct GMTAPI_CTRL {
 	bool no_history;					/* true if we want to disable the gmt.history mechanism */
 	bool got_remote_wesn;				/* true if we obtained w/e/sn via a remote grid/image with no resolution given */
 	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
+	bool use_gridline_registration_warn;	/* true if we should warn about the above */
+	bool ignore_BC;       	   /* temporarily set true for, say, weight grids in grdfilter which do not need a BC wrap-around check */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
@@ -172,6 +188,7 @@ struct GMTAPI_CTRL {
 	char error_msg[4096];			/* The cached last error message */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */
+	bool parker_fft_default;	/* Used to alter the default in -N FFT settings */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
 	unsigned int do_not_exit;		/* 0 by default, meaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
 	struct GMT_LIBINFO *lib;		/* List of shared libs to consider */
@@ -214,6 +231,9 @@ struct GMTAPI_CTRL {
 	struct GMT_DATA_INFO *remote_info;
 	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
 	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */
+	bool inset_shrink;	/* True if gmt inset gets a -R -J that forces us to shrink the scale to fit the inset size */
+	double inset_shrink_scale;	/* The amount of shrinking.  Reset to false and 1 in gmt inset end */
+	struct API_META meta;	/* For controlling meta data */
 };
 
 /* Macro to test if filename is a special name indicating memory location */
@@ -224,6 +244,8 @@ struct GMTAPI_CTRL {
 #define GMTAPI_OBJECT_FAMILY_START 15U	/* Start position of the encoded actual family in the virtual filename */
 #define GMTAPI_OBJECT_ID_START 21U		/* Start position of the encoded object ID in the virtual filename */
 #define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", GMTAPI_PREFIX_LEN) && strlen (file) == GMTAPI_MEMFILE_LEN)
+#define gmt_M_memfile_is_grid(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'G')
+#define gmt_M_memfile_is_cube(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'U')
 
 #ifdef __cplusplus
 }

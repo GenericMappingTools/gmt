@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Show what (x,y,p,q,r,s) in project are for man page
-gmt begin project_setup ps
+gmt begin project_setup
 	a=$(gmt math -Q 4 2.5 DIV ATAN R2D =)
 	X=(`echo 0 0 | gmt project -C0/-1 -E2.5/3 -N`)
 	gmt plot -JX4i/0 -R-3.5/4/-2.7/2.6 -Glightgray -B -Bx+l"@%7%x@%% or @%7%r@%%" -By+l"@%7%y@%% or @%7%s@%%" <<- EOF

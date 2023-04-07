@@ -207,7 +207,7 @@ modify the appearance of plots or affect the manipulation of data. When
 a new session starts (unless **-C** is given), it initializes all parameters to the
 GMT defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
-sub-directory ``/.gmt`` of your home directory, and finally in your home directory
+sub-directory ``.gmt`` of your home directory, and finally in your home directory
 itself. If successful, the session will read the contents and set the
 default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
@@ -310,7 +310,6 @@ are known. The **auto** flag is supported for the following parameters:
 :term:`FONT_ANNOT_SECONDARY`       Secondary annotation font [13.20p]
 :term:`FONT_HEADING`               Subplot heading font [30.80p]
 :term:`FONT_LABEL`                 Axis label font [15.40p]
-:term:`FONT_LOGO`                  Logo font [8.80p]
 :term:`FONT_SUBTITLE`              Plot subtitle font [19.80p]
 :term:`FONT_TAG`                   Tag/labeling font [17.60p]
 :term:`FONT_TITLE`                 Plot title font [24.20p]
@@ -340,7 +339,7 @@ annotation font size will be computed as::
 
     size = (2/15) * (map_size_in_cm - 10) + 9 [in points]
 
-where :math:`map\_size\_in\_cm = sqrt(map\_height  x  map\_width)`.  All other
+where :math:`map\_size\_in\_cm = \sqrt(map\_height  \times  map\_width)`.  All other
 items will have their reference sizes scaled by :math:`scale = size / 10`. In
 modern mode, if you do nothing then all of the above dimensions will be
 automatically set based on your plot dimensions.  However, you are free to
@@ -352,23 +351,23 @@ font sizes and dimensions for a 10 x 1 cm plot. **Note**: The particular scaling
 relationship is experimental in 6.2 and we reserve the right to adjust it
 pending further experimentation and user feedback.
 
-For **MAP_POLAR_CAP**, **auto** will determine a suitable *pc_lat* for your
+For :term:`MAP_POLAR_CAP`, **auto** will determine a suitable *pc_lat* for your
 region for all azimuthal projections and a few others in which the geographic
 poles are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
 Sinusoidal, and van der Grinten).
 
-For **MAP_FRAME_AXES**, **auto** will determine a suitable setting based on the
+For :term:`MAP_FRAME_AXES`, **auto** will determine a suitable setting based on the
 projection, type of plot, perspective, etc. For example, GMT will determine the
 position of different quadrants for perspective and polar plots and select the
 equivalent of **WrStZ**. The default for the Gnomonic and general perspective
 projections is **WESNZ**. The default for non-perspective, non-Gnomonic, and
 non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 
-For **MAP_LABEL_OFFSET, **auto** will scale the offset based on figure size if
-**MAP_LABEL_MODE** is set to **annot**, but will default to **32p** if
-**MAP_LABEL_MODE** is set to **axis**.
+For :term:`MAP_LABEL_OFFSET`, **auto** will scale the offset based on figure size if
+:term:`MAP_LABEL_MODE` is set to **annot**, but will default to **32p** if
+:term:MAP_LABEL_MODE` is set to **axis**.
 
-For **MAP_EMBELLISHMENT_MODE**, **auto** means we uses the given size of the
+For :term:`MAP_EMBELLISHMENT_MODE`, **auto** means we uses the given size of the
 embellishment to set relative sizes of ticks, texts and labels, and offsets.
 These are otherwise controlled by numerous default settings; see discussion
 under :ref:`Embellishments <GMT_Embellishments>`.
@@ -864,9 +863,9 @@ point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_sett
    .. literalinclude:: /_verbatim/GMT_joint.txt
 
 By default, line segments have rectangular ends, but this can
-change to give rounded ends. When :term:`PS_LINE_CAP` is set to round the
+change to give rounded ends. When :term:`PS_LINE_CAP` is set to round then
 a segment length of zero will appear as a circle. This can be used to
-created circular dotted lines, and by manipulating the phase shift in
+create circular dotted lines, and by manipulating the *phase* shift in
 the *style* attribute and plotting the same line twice one can even
 alternate the color of adjacent items.
 Figure :ref:`Line appearance <Line_appearance>` shows various lines made in this
@@ -879,7 +878,7 @@ different phase *offset* and color. See the :doc:`/gmt.conf` man page for more i
    :width: 500 px
    :align: center
 
-   Line appearance can be varied by using :term:`PS_LINE_CAP`
+   Line appearance can be varied by using :term:`PS_LINE_CAP`.
 
 .. toggle::
 
@@ -1706,7 +1705,7 @@ GMT strings using the Standard+ encoding:
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
 | ``Stresses are @~s@~@+*@+@-xx@- MPa`` = Stresses are :math:`\sigma^{*}_{xx}` MPa
 | ``Se@nor Gar@con`` = Señor Garçon
-| ``M@!\305anoa stra@se`` = Manoa straße
+| ``M@!\305anoa Stra@se`` = Mānoa Straße
 | ``A@#cceleration@# (ms@+-2@+)`` = ACCELERATION (ms\ :math:`^{-2}`)
 
 The option in :doc:`/text` to draw a
@@ -2325,9 +2324,8 @@ conventions for netCDF grids. Thus, products created under those
 conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
 read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
-`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, `Panoply
-<http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
-<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
+`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, and `Panoply
+<http://www.giss.nasa.gov/tools/panoply/>`_; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
 to read netCDF 4 files (if data compression has been applied).
@@ -2445,7 +2443,7 @@ does not allow piping.
 
 Everything looks clearer after a few examples:
 
-*  To write a native binary float grid file, specify the name as ``my_file.f4=bf`` .
+*  To write a native binary float grid file, specify the name as ``my_file.f4=bf``.
 
 *  To read a native short integer grid file, multiply the data by 10 and
    then add 32000, but first let values that equal 32767 be set to NaN,
@@ -2466,13 +2464,13 @@ Everything looks clearer after a few examples:
    offset, give filename as ``=nb+oa``.
 
 *  To read a short integer *.bil* grid file stored in binary and and force
-   the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``
+   the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``.
 
 *  To write a lossless, deflate compressed, and tiled GeoTIFF grid (or image) use,
-   ``output.tif=gd:GTiff+cTILED=YES+cCOMPRESS=DEFLATE+cPREDICTOR=3``
+   ``output.tif=gd:GTiff+cTILED=YES+cCOMPRESS=DEFLATE+cPREDICTOR=3``.
    See also :ref:`Writing grids and images <Write-grids-images>` as well as available options
    for each output format from the GDAL driver documentation,
-   `for example <https://gdal.org/drivers/raster/gtiff.html>`_
+   `for example <https://gdal.org/drivers/raster/gtiff.html>`_.
 
 Programs that both read and/or write more than one grid file may specify
 different formats and/or scaling for the files involved. The only

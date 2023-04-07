@@ -32,16 +32,17 @@ segment header info can be displayed. The header info has the format *ID
 npoints hierarchical-level source area f\_area west east south north
 container ancestor*, where hierarchical levels for coastline polygons go
 from 1 (shoreline) to 4 (lake inside island inside lake inside land).
-Source is either W (World Vector Shoreline) or C (CIA World Data Bank
-II); lower case is used if a lake is a river-lake. The *west east south
-north* is the enclosing rectangle, *area* is the polygon area in km^2
+Source is either W (World Vector Shoreline), C (CIA World Data Bank
+II), or A (Atlas of the Cryosphere (Antarctica only)); lower case is
+used if a lake is a river-lake. The *west east south
+north* is the enclosing rectangle, *area* is the polygon area in km\ :sup:`2`
 while *f\_area* is the actual area of the ancestor polygon, *container*
 is the ID of the polygon that contains this polygon (-1 if none), and
 *ancestor* is the ID of the polygon in the full resolution set that was
 reduced to yield this polygon (-1 if full resolution since there is no
 ancestor). For line data the header is simply *ID npoints
 hierarchical-level source west east south north*. For more information
-about the file formats, see TECHNICAL INFORMATION below.
+about the file formats, see :ref:`techinfo` below.
 
 Required Arguments
 ------------------
@@ -125,6 +126,25 @@ file, try
 
     gmt gshhg gshhs_h.b -Ee -N2 > all_lakes.txt
 
+Polygon Levels
+--------------
+
+The features in GSHHG have 6 levels that can be selected by |-N| and
+are listed in the table below:
+
+.. _tbl-levels:
+
+======= ============================================
+ Level   Meaning
+======= ============================================
+  1     Continents and islands
+  2     Lakes (regular and river lakes)
+  3     Islands inside lakes
+  4     Ponds in islands inside lakes
+  5     Antarctica via ice/ocean boundary
+  6     Antarctica via grounding line/ocean boundary
+======= ============================================
+
 Specific Polygons
 -----------------
 
@@ -162,6 +182,7 @@ are different from the netCDF-formatted files used by GMT in the
 modules :doc:`gmtselect </gmtselect>`, :doc:`grdlandmask </grdlandmask>`,
 or :doc:`coast </coast>`.
 
+.. _techinfo:
 
 Technical Information
 ---------------------
@@ -175,18 +196,14 @@ MathWorks and IDL have made such tools available to their users.
 However, they tend not to update their code and our file structure has
 evolved considerably over time, breaking their code. Here, some general
 technical comments on the binary data files are given.
-**GSHHG**: These files contain completely closed polygons of continents
-and islands (level 1), lakes (level 2), islands-in-lakes (level 3) and
-ponds-in-islands-in-lakes (level 4); a particular level can be extracted
-using the **-N** option. Continents are identified as the first 6
-polygons and can be extracted via the **-Ic** option. The IDs for the
-continents are Eurasia (0), Africa (1), North America
-(2), South America (3), Antarctica (4), and Australia
-(5). Files are sorted on area from large to small.
+**GSHHG**: Continents are identified as the first 6 polygons and can be
+extracted via the **-Ic** option. The IDs for the continents are Eurasia
+(0), Africa (1), North America (2), South America (3), Antarctica (4),
+and Australia (5). Files are sorted on area from large to small.
 There are two sub-groups for level 2: Regular lakes and the so-called
 "river-lakes", the latter being sections of a river that are so wide to
 warrant a polygon representation. These river-lakes are flagged in the
-header (also see **-Q**). All five resolutions are free of
+header (also see |-Q|). All five resolutions are free of
 self-intersections. Areas of all features have been computed using a
 Lambert azimuthal equal-area projection centered on the polygon
 centroids, using WGS-84 as the ellipsoid. GMT use the GSHHG as a
@@ -214,10 +231,15 @@ major rivers (1), Additional major rivers
 three levels: National boundaries (1), Internal
 domestic boundaries (2), and international
 maritime boundaries (3). Individual levels or
-classes may be extracted via **-N**.
+classes may be extracted via |-N|.
 
 References
 ----------
+
+Bohlander, J. and T. Scambos. 2007, Antarctic coastlines and grounding line
+derived from MODIS Mosaic of Antarctica (MOA). Boulder, Colorado USA:
+National Snow and Ice Data Center. Digital media. Accessed 24 April 2008.
+Via Atlas of the Cryosphere: https://nsidc.org/MMS/atlas/cryosphere_atlas_north.html.
 
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its
