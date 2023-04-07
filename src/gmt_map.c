@@ -6424,8 +6424,6 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		if (!GMT->current.proj.z_project.view_given) {	/* Pick center of current page */
 			GMT->current.proj.z_project.view_x = 0.5 * GMT->current.setting.ps_page_size[0] * GMT->session.u2u[GMT_PT][GMT_INCH];
 			GMT->current.proj.z_project.view_y = 0.5 * GMT->current.setting.ps_page_size[1] * GMT->session.u2u[GMT_PT][GMT_INCH];
-			//GMT->current.proj.z_project.view_x = 0.5 * (GMT->current.proj.rect[XLO] + GMT->current.proj.rect[XHI]);
-			//GMT->current.proj.z_project.view_y = 0.5 * (GMT->current.proj.rect[YLO] + GMT->current.proj.rect[YHI]);
 		}
 		GMT->current.proj.z_project.x_off = GMT->current.proj.z_project.view_x - x;
 		GMT->current.proj.z_project.y_off = GMT->current.proj.z_project.view_y - y;
