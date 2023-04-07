@@ -2446,7 +2446,7 @@ int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
-	unsigned int k, l = 0, pos = 0, error = 0;
+	unsigned int k, l = 0, n, pos = 0, error = 0;
 	double az, el = 0.0, z = 0.0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char p[GMT_LEN256] = {""}, *c = NULL;
@@ -2478,7 +2478,7 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 		while (gmt_getmodopt (GMT, 'p', c, "vw", &pos, p, &error) && error == 0) {
 			switch (p[0]) {
 				case 'v':	/* View point given in projected coordinates */
-					if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
+					if ((n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -p (%s): Syntax is %s\n", p, GMT_p_OPT);
 						return GMT_PARSE_ERROR;
 					}
@@ -2487,13 +2487,13 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 					GMT->current.proj.z_project.view_given = true;
 					break;
 				case 'w':	/* Specify fixed World point in user's coordinates */
-					if (sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) < 2) {
+					if ((n = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -p (%s): Syntax is %s\n", p, GMT_p_OPT);
 						return GMT_PARSE_ERROR;
 					}
 					error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &GMT->current.proj.z_project.world_x), txt_a);
 					error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), &GMT->current.proj.z_project.world_y), txt_b);
-					if (k == 3) error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, txt_c, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.proj.z_project.world_z), txt_c);
+					if (n == 3) error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, txt_c, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.proj.z_project.world_z), txt_c);
 					GMT->current.proj.z_project.world_given = true;
 					break;
 				default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
