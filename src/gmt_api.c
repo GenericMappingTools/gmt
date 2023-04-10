@@ -4639,6 +4639,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	bool new = false;
 	unsigned char *data = NULL;
 	uint64_t node, off[3];
+    size_t n_colors;
 	unsigned int c, index;
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
@@ -4668,7 +4669,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	h = I->header;
 	if ((data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char)) == NULL) return false;	/* The new r,g,b image */
 
-	size_t n_colors = I->n_indexed_colors;
+	n_colors = I->n_indexed_colors;
 	if (n_colors > 2000)			/* If colormap is Mx4 or has encoded the alpha color */
 		n_colors = (uint64_t)(floor(n_colors / 1000.0));
 
@@ -8954,10 +8955,10 @@ GMT_LOCAL int gmtapi_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_
 		S->h_delay = false;
 	}
 	if (S->delay) {	/* Must place delayed NaN record(s) signifying segment header(s) */
-		GMT_putfunction api_put_val = gmtapi_select_put_function (API, M->type);
-		if (api_put_val == NULL) return_error (API, GMT_NOT_A_VALID_TYPE);
 		p_func_uint64_t GMT_2D_to_index = NULL;
 		uint64_t col, ij;
+        GMT_putfunction api_put_val = gmtapi_select_put_function (API, M->type);
+        if (api_put_val == NULL) return_error (API, GMT_NOT_A_VALID_TYPE);
 		if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL)) == NULL)	/* Can only do row-format until end of this function */
 			return_error (API, GMT_WRONG_MATRIX_SHAPE);
 		while (S->delay) {	/* Place delayed NaN-rows(s) up front */
@@ -10024,13 +10025,13 @@ GMT_LOCAL void * gmtapi_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int
 	return record;
 }
 
-GMT_LOCAL struct GMT_RECORD *api_get_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *gmtapi_get_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets other data record from current open stream */
 	struct GMTAPI_DATA_OBJECT *S;
 	return (gmtapi_get_record_fp_sub (API, mode, n_fields, &S));
 }
 
-GMT_LOCAL struct GMT_RECORD *api_get_record_fp_first (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *gmtapi_get_record_fp_first (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets first data record from current open stream */
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -10038,12 +10039,12 @@ GMT_LOCAL struct GMT_RECORD *api_get_record_fp_first (struct GMTAPI_CTRL *API, u
 
 	if (gmt_M_rec_is_data (GMT) && S->n_expected_fields != GMT_MAX_COLUMNS) {	/* Set the actual column count */
 		GMT->common.b.ncol[GMT_IN] = S->n_expected_fields;
-		API->api_get_record = api_get_record_fp;	/* From now on we can read just the record */
+		API->api_get_record = gmtapi_get_record_fp;	/* From now on we can read just the record */
 	}
 	return record;
 }
 
-GMT_LOCAL struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *gmtapi_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets next data record from current matrix */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -10102,7 +10103,7 @@ GMT_LOCAL struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, uns
 	return (record);
 }
 
-GMT_LOCAL struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *gmtapi_get_record_vector (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets next data record from current vector */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -10244,7 +10245,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 		case GMT_IS_FILE:	/* File, stream, and fd are all the same for us, regardless of data or text input */
 	 	case GMT_IS_STREAM:
 	 	case GMT_IS_FDESC:
-			API->api_get_record = api_get_record_fp_first;
+			API->api_get_record = gmtapi_get_record_fp_first;
 			GMT->current.io.first_rec = true;
 			gmtlib_reset_input (GMT);	/* Go back to being agnostic about number of columns, etc. */
 			API->is_file = true;
@@ -10259,7 +10260,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 			}
 			API->current_get_M_val = gmtapi_select_get_function (API, API->current_get_M->type);
 			if (API->current_get_M->text == NULL) GMT->current.io.record.text = NULL;
-			API->api_get_record = api_get_record_matrix;
+			API->api_get_record = gmtapi_get_record_matrix;
 			break;
 
 		 case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:	/* Here we copy from a user memory location that points to an array of column vectors */
@@ -10269,7 +10270,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 			API->current_get_V_val = gmt_M_memory (GMT, NULL, API->current_get_V->n_columns, GMT_getfunction);	/* Array of functions */
 			for (col = 0; col < API->current_get_V->n_columns; col++)	/* We know the number of columns from registration */
 				API->current_get_V_val[col] = gmtapi_select_get_function (API, API->current_get_V->type[col]);
-			API->api_get_record = api_get_record_vector;
+			API->api_get_record = gmtapi_get_record_vector;
 			if (API->current_get_V->text == NULL) GMT->current.io.record.text = NULL;
 			break;
 
