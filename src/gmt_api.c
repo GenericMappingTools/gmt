@@ -4639,7 +4639,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	bool new = false;
 	unsigned char *data = NULL;
 	uint64_t node, off[3];
-    size_t n_colors;
+	size_t n_colors;
 	unsigned int c, index;
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
@@ -8957,8 +8957,8 @@ GMT_LOCAL int gmtapi_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_
 	if (S->delay) {	/* Must place delayed NaN record(s) signifying segment header(s) */
 		p_func_uint64_t GMT_2D_to_index = NULL;
 		uint64_t col, ij;
-        GMT_putfunction api_put_val = gmtapi_select_put_function (API, M->type);
-        if (api_put_val == NULL) return_error (API, GMT_NOT_A_VALID_TYPE);
+		GMT_putfunction api_put_val = gmtapi_select_put_function (API, M->type);
+		if (api_put_val == NULL) return_error (API, GMT_NOT_A_VALID_TYPE);
 		if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL)) == NULL)	/* Can only do row-format until end of this function */
 			return_error (API, GMT_WRONG_MATRIX_SHAPE);
 		while (S->delay) {	/* Place delayed NaN-rows(s) up front */
