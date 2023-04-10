@@ -186,6 +186,32 @@
 /*!
  * \file gmt_api.c
  * \brief Public functions for the GMT C/C++ API.
+ *
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ * gmt_copy
+ * gmt_eliminate_duplicates
+ * gmt_get_api_ptr
+ * gmt_get_header
+ * gmt_is_an_object
+ * gmt_whole_earth
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ * gmtlib_GDALDestroyDriverManager
+ * gmtlib_close_grd
+ * gmtlib_count_objects
+ * gmtlib_create_header_item
+ * gmtlib_data_is_geographic
+ * gmtlib_garbage_collection
+ * gmtlib_ind2rgb
+ * gmtlib_module_classic_all
+ * gmtlib_module_list_all
+ * gmtlib_module_show_all
+ * gmtlib_pick_in_col_number
+ * gmtlib_report_error
+ * gmtlib_unregister_io
+ * gmtlib_validate_id
  */
 
 #include "gmt_dev.h"
@@ -4233,7 +4259,7 @@ GMT_LOCAL int gmtapi_destroy_data_ptr (struct GMTAPI_CTRL *API, enum GMT_enum_fa
 	return (GMT_NOERROR);	/* Null pointer */
 }
 
-void gmtapi_flip_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, unsigned int direction) {
+GMT_LOCAL void gmtapi_flip_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, unsigned int direction) {
 	enum GMT_enum_type etmp;
 	union GMT_UNIVECTOR utmp;
 
@@ -9998,13 +10024,13 @@ GMT_LOCAL void * gmtapi_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int
 	return record;
 }
 
-struct GMT_RECORD *api_get_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *api_get_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets other data record from current open stream */
 	struct GMTAPI_DATA_OBJECT *S;
 	return (gmtapi_get_record_fp_sub (API, mode, n_fields, &S));
 }
 
-struct GMT_RECORD *api_get_record_fp_first (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *api_get_record_fp_first (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets first data record from current open stream */
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -10017,7 +10043,7 @@ struct GMT_RECORD *api_get_record_fp_first (struct GMTAPI_CTRL *API, unsigned in
 	return record;
 }
 
-struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets next data record from current matrix */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -10076,7 +10102,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 	return (record);
 }
 
-struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
+GMT_LOCAL struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int mode, int *n_fields) {
 	/* Gets next data record from current vector */
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
