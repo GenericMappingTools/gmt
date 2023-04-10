@@ -40,14 +40,14 @@
  * gmt_set_unspecified_remote_registration
  * gmt_use_srtm_coverage
  *
- * B) List of exported gmtlib_* functions available to modules and libraries via gmt_internals.h:
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
  *
  * gmtlib_assemble_tiles
  * gmtlib_file_is_jpeg2000_tile
  * gmtlib_get_tile_list
  * gmtlib_remote_file_is_tiled
  *
- * gmtremote_* functions are all static and local to this file, hence not exported.
+ * gmtremote_* functions are all static and used only in this file, hence not exported.
  */
 
 #include "gmt_dev.h"
