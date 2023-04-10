@@ -8898,6 +8898,14 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	strncpy (GMT->common.R.string, item, GMT_LEN256-1);	/* Verbatim copy */
 
+	if (gmt_remote_dataset_id (GMT->parent, item) != GMT_NOTSET) {	/* Silly, but user set -R@earth_relief_xxy or similar */
+		/* These are always -Rd */
+		GMT->common.R.wesn[XLO] = -180.0, GMT->common.R.wesn[XHI] = 180.0;
+		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
+		gmt_set_geographic (GMT, GMT_IN);
+		GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+		return (GMT_NOERROR);
+	}
 	if (n_slash == 3 && !got_country && ((strchr ("LCR", item[0]) && strchr ("TMB", item[1])) || (strchr ("LCR", item[1]) && strchr ("TMB", item[0])))) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
 		double xdim, ydim, orig[2] = {0.0, 0.0};
