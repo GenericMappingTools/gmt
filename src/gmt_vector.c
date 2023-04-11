@@ -1349,8 +1349,8 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 }
 
 void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C) {
-	gmt_M_unused(GMT);
 	uint64_t row, col, ij;
+	gmt_M_unused(GMT);
 	for (row = ij = 0; row < n_rowsA; row++) {
 		for (col = 0; col < n_colsA; col++, ij++) {
 			C[ij] = A[ij] + B[ij];
