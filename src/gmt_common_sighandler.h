@@ -34,10 +34,10 @@
 #ifndef NO_SIGHANDLER
 #   ifdef WIN32
 #       include <windows.h>
-        EXTERN_MSC BOOL sig_handler_win32 (DWORD dwType);
+        EXTERN_MSC BOOL gmt_sig_handler_win32 (DWORD dwType);
 #   else
 #       include <signal.h>
-        EXTERN_MSC void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
+        EXTERN_MSC void gmt_sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
 #   endif
 #endif /* !defined(NO_SIGHANDLER) */
 
