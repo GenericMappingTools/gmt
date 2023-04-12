@@ -20,13 +20,15 @@
 
 /* Misc functions to find and read DCW polygons.
  * Some of the countries have state borders too.
- * The PUBLIC functions are (5):
+ *
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
  * gmt_DCW_option	: Present the DCW option and modifier usage
  * gmt_DCW_parse	: Parse the DCW option arguments
  * gmt_DCW_list 	: List the available polygons and exit
  * gmt_DCW_operation	: Get DCW polygons and operate on them
  * gmt_DCW_free		: Free memory allocated by gmt_DCW_parse
+ * gmt_DCW_version	: Return DCW version
  *
  * Author:	Paul Wessel
  * Date:	1-MAY-2013
