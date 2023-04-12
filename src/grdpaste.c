@@ -360,9 +360,9 @@ EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 		GMT->current.io.col_type[GMT_OUT][0] = GMT_IS_FLOAT;
 		(way == 1) ? strcpy(t, "B is on top of A") : (way == 10) ? strcpy(t, "B is on top of A but their grid reg limits underlap by one cell") : (way == 11) ? strcpy(t, "B is on top of A but their pixel reg limits overlap by one cell") :
-		(way == 2) ? strcpy(t, "A is on top of B") : (way == 20) ? strcpy(t, "A is on top of B but their grid reg limits underlap by one cell") : (way == 21) ? strcpy(t, "A is on top of B but their pixel reg limits overlap by one cell") :
-		(way == 3) ? strcpy(t, "A is on the right of B") : (way == 30) ? strcpy(t, "A is on right of B but their grid reg limits underlap by one cell") : (way == 31) ? strcpy(t, "A is on right of B but their pixel reg limits overlap by one cell") :
-		(way == 4) ? strcpy(t, "A is on the left of B") : (way == 40) ? strcpy(t, "A is on left of B but their grid reg limits underlap by one cell") : (way == 41) ? strcpy(t, "A is on left of B but their pixel reg limits overlap by one cell") : "";
+		(way == 2) ? strcpy(t, "A is on top of B") : (way == 21) ? strcpy(t, "A is on top of B but their grid reg limits underlap by one cell") : (way == 22) ? strcpy(t, "A is on top of B but their pixel reg limits overlap by one cell") :
+		(way == 3) ? strcpy(t, "A is on the right of B") : (way == 32) ? strcpy(t, "A is on right of B but their grid reg limits underlap by one cell") : (way == 33) ? strcpy(t, "A is on right of B but their pixel reg limits overlap by one cell") :
+		(way == 4) ? strcpy(t, "A is on the left of B") : (way == 43) ? strcpy(t, "A is on left of B but their grid reg limits underlap by one cell") : (way == 44) ? strcpy(t, "A is on left of B but their pixel reg limits overlap by one cell") : "";
 		Out = gmt_new_record (GMT, out, t);
 		out[0] = (double)way;
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
