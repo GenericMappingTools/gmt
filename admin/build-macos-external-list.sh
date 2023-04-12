@@ -21,7 +21,7 @@ GDAL_VIA_HOMEBREW=$3
 
 if [ ${DISTRO} = "MacPorts" ]; then
 	top=/opt/local
-	if [ ${GDAL_VIA_HOMEBREW} = "Y" ]; then
+	if [ "X${GDAL_VIA_HOMEBREW}" = "XY" ]; then
 		topgdal=/opt/homebrew
 	else
 		topgdal=/opt/local
@@ -60,7 +60,7 @@ EXELINKS=${top}/bin/gs
 EXEONLY=
 # 1d. Shared directories to be added (except ghostscript which we do separately)
 #     Use full path if you need something not in your path
-if [ ${GDAL_VIA_HOMEBREW} = "Y" ]; then
+if [ "X${GDAL_VIA_HOMEBREW}" = "XY" ]; then
 	EXESHARED="${proj}"
 else
 	EXESHARED="gdal ${proj}"
@@ -114,7 +114,7 @@ if [ ! "X$EXESHARED" = "X" ]; then
 	echo ""
 	echo "install (DIRECTORY"
 fi
-if [ ${GDAL_VIA_HOMEBREW} = "Y" ]; then
+if [ "X${GDAL_VIA_HOMEBREW}" = "XY" ]; then
 	echo "	$topgdal/share/gdal"
 fi
 for P in $EXESHARED; do

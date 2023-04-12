@@ -74,7 +74,10 @@ fi
 # macports or homebrew is required
 if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 	DISTRO=MacPorts
-	NO_GDAL=Y
+	if [ $(which gdalinfo) = "/opt/homebrew/bin/gdalinfo" ]; then
+		NO_GDAL=Y
+		echo "Must use GDAL from /opt/homebrew since not present in macports" >&2
+	fi
 elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
 	DISTRO=HomeBrew1
 elif [ $(which cmake) = "/opt/homebrew/bin/cmake" ]; then
