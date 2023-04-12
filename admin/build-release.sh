@@ -53,15 +53,15 @@ elif [ "X${1}" = "X-t" ]; then
 	release=0
 elif [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
-	Usage: build-release.sh [-p|m]
+	Usage: build-release.sh [-p|m|t]
 	
 	build-release.sh must be run from top-level gmt directory.
 	Will create the release compressed tarballs and (under macOS) the bundle.
 	Requires you have set GMT_PACKAGE_VERSION_* and GMT_PUBLIC_RELEASE in cmake/ConfigDefaults.cmake.
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
-	Passing -p means we copy the files to the SOEST ftp directory
-	Passing -m means only copy the macOS bundle to the SOEST ftp directory
-	Passing -t means test the build-release script without requiring GMT_PUBLIC_RELEASE
+		Passing -p means we copy the files to the SOEST ftp directory
+		Passing -m means only copy the macOS bundle to the SOEST ftp directory
+		Passing -t means test the build-release script without requiring GMT_PUBLIC_RELEASE
 	[Default places no files in the SOEST ftp directory]
 	EOF
 	exit 1
