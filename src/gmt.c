@@ -52,14 +52,14 @@ int main (int argc, char *argv[]) {
 #ifndef NO_SIGHANDLER
 	/* Install a signal handler */
 #ifdef WIN32	/* Only handle Ctrl-C under Windows */
-    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
+    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)gmt_sig_handler_win32, TRUE)) {
         fprintf (stderr, "Unable to install Windows signal handler!\n");
         return EXIT_FAILURE;
     }
 #else	/* Unix/Linux/macOS */
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
-	act.sa_sigaction = sig_handler_unix;
+	act.sa_sigaction = gmt_sig_handler_unix;
 	act.sa_flags = SA_SIGINFO;
 	sigaction (SIGINT,  &act, NULL);	/* Catching Ctrl-C will also wipe a session work directory and destroy GMT session */
 	sigaction (SIGILL,  &act, NULL);	/* The other signals will exit with a full backtrace */

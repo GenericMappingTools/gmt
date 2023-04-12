@@ -7760,8 +7760,9 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	divider[L] = '\0';	/* Truncate the line */
 	gmt_message (GMT, "     %s\n", divider);
 	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) {
+		char *c = NULL;
 		strncpy (line, GMT_CPT_master[k], GMT_LEN256);
-		char *c = strchr (line, ':');	/* Find the start of the info */
+		c = strchr (line, ':');	/* Find the start of the info */
 		c[0] = '\0';
 		gmt_message (GMT, "     %s: ", line);
 		GMT_Usage (API, -19, "%s", &c[2]);
@@ -10024,8 +10025,8 @@ unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg) {
 	/* Because of backwards compatibility, we need to anticipate shits like -A+1 for a
 	 * single annotated contour and hence cannot confuse it with a modifier for contour specs.
 	 * Thus, here we scan past any leading single contour specification using deprecated syntax. */
-	gmt_M_unused(GMT);
 	unsigned int k = 1;
+	gmt_M_unused(GMT);
 	if (arg[0] != '+') return 0;	/* Start checking from start */
 	if (isalpha (arg[1]) || arg[1] == '=') return 0;	/* Standard modifier */
 	/* Here we must have +<value> which we wish to skip */
