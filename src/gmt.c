@@ -83,7 +83,7 @@ int main (int argc, char *argv[]) {
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
 
 	/* Initialize new GMT session */
-	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
+	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode | GMT_SESSION_CMDLINE, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
 
 	api_ctrl->internal = true;	/* This is a proper GMT commandline session (external programs will default to false) */

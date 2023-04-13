@@ -254,6 +254,8 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (gmt_modern_in_classic_session (API, "inset"))	/* If not command-line or external it means use of C API directly, so GMT_Create_Session needs to set modern mode first */
+		return (GMT_RUNTIME_ERROR);
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 

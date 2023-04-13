@@ -18623,8 +18623,29 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
+	/* Set up hash table for GMT_keywords (used in gmt_conf) */
+
+	if (gmt_hash_init (GMT, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS)) {	/* Initialize hash table for GMT defaults */
+		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
+		return NULL;
+	}
+
+	/* Set up hash table for colornames (used to convert <colorname> to <r/g/b>) */
+
+	if (gmt_hash_init (GMT, GMT->session.rgb_hashnode, gmt_M_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES)) {
+		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
+		return NULL;
+	}
+
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_manage_workflow\n");
-	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
+	if (API->runmode && !API->external && !API->cmdline) {	/* Special case */
+		/* If external C call then there is no gmt.c driver and only one GMT_Create_Session, so we must init a new session here, if in modern mode */
+		mode = GMT_BEGIN_WORKFLOW;
+		GMT->current.setting.run_mode = GMT_MODERN;	/* Set here so we get the benefits of a "gmt module" initialization for PSL */
+	}
+	else	/* Regular use */
+		mode = GMT_USE_WORKFLOW;
+	if (gmt_manage_workflow (API, mode, NULL)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
@@ -18665,7 +18686,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	gmt_reload_settings (GMT);	/* Initialize the standard GMT system default settings and overload with user's settings */
 	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmt_reload_settings\n");
 
-	if (API->runmode) GMT->current.setting.run_mode = GMT_MODERN;	/* Enforced at API Creation */
+	if (API->runmode) GMT->current.setting.run_mode = GMT_MODERN;	/* Enforced at API Creation but set AFTER gmt_reload_settings */
 
 	/* There is no longer a -m option in GMT so multi segments are now always true.
 	   However, in GMT_COMPAT mode the -mi and -mo options WILL turn off multi in the other direction. */
@@ -19037,19 +19058,20 @@ GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats,
 }
 
 GMT_LOCAL bool gmtinit_check_if_autosize (struct GMTAPI_CTRL *API, int ID) {
-	/* Check if the BoundingBox line in the half-baked PostScript file has max dimension (32767x32767)
+	/* Check if the BoundingBox line in the half-baked PostScript file has max dimension (GMT_PAPER_DIM x GMT_PAPER_DIM)
 	 * which we used to enforce automatic cropping to actual size [and possible extra margins] */
-	char file[PATH_MAX] = {""};
+	char file[PATH_MAX] = {""}, def_dim[GMT_LEN32] = {""};
 	FILE *fp;
 	snprintf (file, PATH_MAX, "%s/gmt_%d.ps-", API->gwf_dir, ID);	/* Current half-baked PostScript file */
 	if ((fp = fopen (file, "r")) == NULL) {	/* This is an unmitigated disaster */
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to open half-baked PostScript file %s\n", file);
 		return false;
 	}
+	sprintf (def_dim, "%d %d", GMT_PAPER_DIM, GMT_PAPER_DIM);	/* Create the comparison string */
 	gmt_fgets (API->GMT, file, PATH_MAX, fp);	/* Skip first line */
 	gmt_fgets (API->GMT, file, PATH_MAX, fp);	/* Get second line with BoundingBox code */
 	fclose (fp);
-	if (strstr (file, "32767 32767")) return true;	/* Max paper size means auto-sized media */
+	if (strstr (file, def_dim)) return true;	/* Max paper size means auto-sized media */
 	return false;
 }
 
@@ -19870,7 +19892,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 					gmtinit_setautopagesize (API->GMT);	/* Reset to auto */
 			}
 			snprintf (dir, PATH_MAX, "%s/%s", API->gwf_dir, GMT_SETTINGS_FILE);	/* Reuse dir string for saving gmt.conf to this dir */
-			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
+			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here AFTER gmt_conf call so putdefaults can skip writing PS_MEDIA if not PostScript output */
 			error = gmtinit_put_session_name (API, text);		/* Store session name, possibly setting psconvert options */
 			gmt_putdefaults (API->GMT, dir);		/* Write current GMT defaults to this sessions gmt.conf file in the workflow directory */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */

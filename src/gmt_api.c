@@ -16258,3 +16258,12 @@ int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D
 
 	return (n_dup);
 }
+
+bool gmt_modern_in_classic_session (struct GMTAPI_CTRL *API, const char *module) {
+	/* If not commandline or external it means use of C API directly, so GMT_Create_Session needs to set modern mode first */
+	if (API->runmode) return false;		/* Already in modern mode */
+	if (API->external) return false;	/* An external call from MATLAB, Julia, or Python */
+	if (API->cmdline) return false;		/* A standard command-line call via gmt program */
+	GMT_Report (API, GMT_MSG_ERROR, "Cannot call module \"%s\" in a classic session created via a call to GMT_Create_Session\n", module);
+	return true;	/* Sorry, calling a modern-mode only module from a classic session started from GMT_Create_Session in a C/C++ program is not allowed */
+}

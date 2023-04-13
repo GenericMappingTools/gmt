@@ -762,6 +762,7 @@ EXTERN_MSC void gmt_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta,
 EXTERN_MSC void gmt_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *a, bool degrees);
 
 /* From gmt_api.c */
+EXTERN_MSC bool gmt_modern_in_classic_session (struct GMTAPI_CTRL *API, const char *module);
 EXTERN_MSC int64_t gmt_eliminate_duplicates (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, uint64_t cols[], uint64_t ncols, bool text);
 EXTERN_MSC unsigned int gmt_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_out[]);
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);

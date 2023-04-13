@@ -184,6 +184,8 @@ enum GMT_enum_basemap {
 	GMT_BASEMAP_ANNOT_BEFORE	= 0,
 	GMT_BASEMAP_ANNOT_AFTER		= 4};
 
+#define GMT_SESSION_CMDLINE	64	/* Passed when GMT_Create_Session is called from the command-line gmt.c driver only */
+
 /*! Handling of periodic data */
 enum GMT_time_period {
 	GMT_CYCLE_SEC = 1,

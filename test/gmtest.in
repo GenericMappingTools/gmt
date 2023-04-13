@@ -111,6 +111,7 @@ for apiprog in \
     testapi_gmtgrid \
     testapi_makecpt \
     testapi_matrix \
+    testapi_map \
     testapi_matrix_pad \
     testapi_matrix_plot \
     testapi_mixmatrix \
