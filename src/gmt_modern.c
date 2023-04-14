@@ -26,6 +26,18 @@
  * Version:	6.x
  */
 
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_current_name
+ *	gmt_get_full_name
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *	gmtlib_get_active_name
+ *	gmtlib_is_modern_name
+ *	gmtlib_set_KOP_strings
+ */
+
 #include "gmt_dev.h"
 
 const char *gmt_current_name (const char *module, char modname[]) {
