@@ -143,7 +143,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"For spatial resampling with distance computed from the first two columns, specify increment as "
 		"<inc> and append a geospatial distance unit (%s) or c (for Cartesian distances). "
 		"See -A to control how the spatial resampling is done.", GMT_TIME_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
-	GMT_Usage (API, 3, "+a Add any internally computed distances as a final output column [no distances added].");
+	GMT_Usage (API, 3, "+a Add any internally computed spatial distances as a final output column [no distances added].");
 	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce over the range instead.");
 	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
 	GMT_Usage (API, -2, "Alternatively, <inc> is a file with output times in the first column, or a comma-separated list.");
@@ -457,13 +457,17 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 
 	dim[GMT_COL] = Din->n_columns;	/* Only known dimension, the rest is 0 */
+	if (Ctrl->T.T.spatial && Ctrl->T.T.add) {	/* Append created spatial distances as last column */
+		gmt_set_column_type (GMT, GMT_OUT, dim[GMT_COL], GMT_IS_FLOAT);
+		dim[GMT_COL]++;
+	}
 	if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 	Dout->table = gmt_M_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
 	Dout->n_tables = Din->n_tables;
 
 	nan_flag = gmt_M_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Din->n_columns, 0U, false);
+		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, dim[GMT_COL], 0U, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -515,10 +519,12 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 				t_out = Ctrl->T.T.array;
 			}
 			/* Readjust the row allocation for the current output segment */
-			Sout = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, m, Din->n_columns, NULL, Tout->segment[seg]);
+			Sout = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, m, Dout->n_columns, NULL, Tout->segment[seg]);
 			if (Ctrl->T.T.spatial) {	/* Use resampled path coordinates */
 				gmt_M_memcpy (Sout->data[GMT_X], lon, m, double);
 				gmt_M_memcpy (Sout->data[GMT_Y], lat, m, double);
+				if (Ctrl->T.T.add)	/* Append distances as final extra out-column */
+					gmt_M_memcpy (Sout->data[Dout->n_columns-1], t_out, m, double);
 			}
 			else
 				gmt_M_memcpy (Sout->data[Ctrl->N.col], t_out, m, double);
