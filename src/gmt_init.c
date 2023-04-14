@@ -2443,7 +2443,7 @@ GMT_LOCAL double gmtinit_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t col) {
 }
 
 /*! Parse the -n option for 2-D grid resampling parameters -n[b|c|l|n][+a][+t<BC>][+<threshold>] */
-GMT_LOCAL int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
+int gmt_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 	unsigned int pos = 0, j, k = 1;
 	char p[GMT_LEN256] = {""};
 
@@ -18328,7 +18328,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'n':
-			error += (gmt_M_more_than_once (GMT, GMT->common.n.active) || gmtinit_parse_n_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.n.active) || gmt_parse_n_option (GMT, item));
 			GMT->common.n.active = true;
 			break;
 

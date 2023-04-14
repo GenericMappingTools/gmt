@@ -60,6 +60,7 @@ EXTERN_MSC bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
 EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
+EXTERN_MSC int gmt_parse_n_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it);
