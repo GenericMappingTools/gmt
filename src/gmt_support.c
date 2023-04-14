@@ -3417,6 +3417,7 @@ int gmt_signum (double x) {
  */
 
 #define REAL double
+#define ANSI_DECLARATORS
 #include "triangle.h"
 
 /* Leave link as int**, not uint64_t** */
