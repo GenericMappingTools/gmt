@@ -26,47 +26,68 @@
  * Date:	1-JAN-2010
  * Version:	5
  *
- * PUBLIC Functions include (39):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *	gmt_draw_map_scale 	 : Plot map scale
- *	gmt_draw_map_rose 	 : Plot map rose
- *	gmt_draw_map_panel 	 : Plot map panel
- *	gmt_draw_front 		 : Draw a front line
- *	gmt_geo_line 		 : Plots line in lon/lat on maps, takes care of periodicity jumps
- *	gmt_plot_geo_ellipse 	 : Plots ellipse in lon/lat on maps, takes care of periodicity jumps
- *	gmt_geo_polygons 	 : Plots polygon in lon/lat on maps, takes care of periodicity jumps
- *	gmt_geo_rectangle 	 : Plots rectangle in lat/lon on maps, takes care of periodicity jumps
- *	gmt_map_basemap 	 : Generic basemap function
- *	gmt_map_clip_off 	 : Deactivate map region clip path
- *	gmt_map_clip_on 	 : Activate map region clip path
- *	gmt_BB_clip_on		 : Activate Bounding Box clip path
- *	gmt_plane_perspective	 : Adds PS matrix to simulate perspective plotting
- *	gmt_plot_line 		 : Plots path (in projected coordinates), takes care of boundary crossings
- *	gmt_vertical_axis 	 : Draw 3-D vertical axes
- *	gmt_xy_axis 		 : Draw x or y axis
- *	gmt_linearx_grid 	 : Draw linear x grid lines
- *	gmt_setfill              :
- *	gmt_setfont              :
- *	gmt_draw_map_inset       :
- *	gmt_setpen               :
- *	gmt_draw_custom_symbol   :
- *	gmt_add_label_record     :
- *	gmt_contlabel_save_begin :
- *	gmt_contlabel_save_end   :
- *	gmt_textpath_init        :
- *	gmt_contlabel_plot       :
- *	gmt_export2proj4         :
- *	gmt_plotinit             :
- *	gmt_plotcanvas           :
- *	gmt_plotend              :
- *	gmt_geo_polarcap_segment :
- *	gmt_geo_vector           :
- *	gmtlib_create_ps            :
- *	gmtlib_free_ps_ptr          :
- *	gmtlib_free_ps              :
- *	gmtlib_read_ps              :
- *	gmtlib_write_ps             :
- *	gmtlib_duplicate_ps         :
+ *  gmt_BB_clip_on
+ *  gmt_add_label_record
+ *  gmt_contlabel_plot
+ *  gmt_contlabel_save_begin
+ *  gmt_contlabel_save_end
+ *  gmt_draw_custom_symbol
+ *  gmt_draw_front
+ *  gmt_draw_map_inset
+ *  gmt_draw_map_panel
+ *  gmt_draw_map_rose
+ *  gmt_draw_map_scale
+ *  gmt_draw_vertical_scale
+ *  gmt_draw_vertical_scale_old
+ *  gmt_export2proj4
+ *  gmt_geo_line
+ *  gmt_geo_polarcap_segment
+ *  gmt_geo_polygons
+ *  gmt_geo_rectangle
+ *  gmt_geo_vector
+ *  gmt_geo_wedge
+ *  gmt_get_postscript
+ *  gmt_importproj4
+ *  gmt_inch_to_degree_scale
+ *  gmt_linearx_grid
+ *  gmt_map_basemap
+ *  gmt_map_clip_off
+ *  gmt_map_clip_on
+ *  gmt_map_text
+ *  gmt_map_title
+ *  gmt_plane_perspective
+ *  gmt_plot_geo_ellipse
+ *  gmt_plot_image_graticules
+ *  gmt_plot_line
+ *  gmt_plot_timex_grid
+ *  gmt_plotcanvas
+ *  gmt_plotend
+ *  gmt_plotinit
+ *  gmt_ps_append
+ *  gmt_set_basemap_orders
+ *  gmt_set_psfilename
+ *  gmt_setfill
+ *  gmt_setfont
+ *  gmt_setpen
+ *  gmt_strip_layer
+ *  gmt_text_is_latex
+ *  gmt_textpath_init
+ *  gmt_vertical_axis
+ *  gmt_xy_axis
+ *  gmt_xy_axis2
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *  gmtlib_create_ps
+ *  gmtlib_duplicate_ps
+ *  gmtlib_ellipsoid_name_convert
+ *  gmtlib_free_ps
+ *  gmtlib_free_ps_ptr
+ *  gmtlib_read_ps
+ *  gmtlib_set_do_seconds
+ *  gmtlib_write_ps
  *
  */
 
@@ -839,7 +860,7 @@ GMT_LOCAL void gmtplot_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	}
 }
 
-void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
+void gmt_plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
 	unsigned int nx;
 	double *x = NULL;
 
@@ -2006,7 +2027,7 @@ GMT_LOCAL void gmtplot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		}
 		else if (!A[GMT_X]->item[item[k]].active || fabs(dx) == 0.0) { /* Nothing */ }
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_TIME)
-			plot_timex_grid (GMT, PSL, w, e, s, n, item[k]);
+			gmt_plot_timex_grid (GMT, PSL, w, e, s, n, item[k]);
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
 			gmtplot_logx_grid (GMT, PSL, w, e, s, n, dx);
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_POW)
@@ -2699,7 +2720,7 @@ GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char
 	}
 }
 
-bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
+GMT_LOCAL bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
 	/* Here, latitude is -90 or +90 and the question is do we annotation that latitude? */
 	if (GMT->current.proj.projection_GMT == GMT_ECKERT4   && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
 	if (GMT->current.proj.projection_GMT == GMT_HAMMER    && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
@@ -6442,7 +6463,7 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
 }
 
-void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
+GMT_LOCAL void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
 	/* Deal with long-form @^ or <break> strings in title and subtitle and replace with GMT_ASCII_GS */
 	unsigned int i, o, kl[2] = {2, 7}, id;
 	char *kw[2] = {"@^", "<break>"};
@@ -10773,7 +10794,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 	return (GMT_NOERROR);
 }
 
-void gmtplot_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
+GMT_LOCAL void gmtplot_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
 	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P_copy);
 	if (P_obj->n_bytes > PH->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n_bytes, char);
