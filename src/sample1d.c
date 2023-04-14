@@ -467,7 +467,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	nan_flag = gmt_M_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, dim[GMT_COL], 0U, false);
+		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Dout->n_columns, 0U, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -523,7 +523,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 			if (Ctrl->T.T.spatial) {	/* Use resampled path coordinates */
 				gmt_M_memcpy (Sout->data[GMT_X], lon, m, double);
 				gmt_M_memcpy (Sout->data[GMT_Y], lat, m, double);
-				if (Ctrl->T.T.add)	/* Append distances as final extra out-column */
+				if (Ctrl->T.T.add)	/* Append geospatial distances as final extra out column */
 					gmt_M_memcpy (Sout->data[Dout->n_columns-1], t_out, m, double);
 			}
 			else
