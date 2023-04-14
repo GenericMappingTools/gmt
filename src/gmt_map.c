@@ -116,6 +116,7 @@
  *	gmtlib_great_circle_intersection
  *	gmtlib_init_ellipsoid
  *	gmtlib_init_geodesic
+ *	gmtlib_lat_swap_quick
  *	gmtlib_latpath
  *	gmtlib_left_boundary
  *	gmtlib_lonpath
@@ -8939,7 +8940,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 }
 
 /*! . */
-double gmtmap_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]) {
+double gmtlib_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]) {
 	/* Return latitude, in degrees, given latitude, in degrees, based on coefficients c */
 
 	double delta, cos2phi, sin2phi;
