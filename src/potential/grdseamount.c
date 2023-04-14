@@ -851,7 +851,7 @@ GMT_LOCAL double grdseamount_poly_solver (struct SEAMOUNT *S, double f, double v
 	double t = 0.0, phi = 0.0, lhs = 0.0, last_lhs;
 	gmt_M_unused (S);
 	gmt_M_unused (elliptical);
-	while (lhs >= b) {
+	while (lhs >= b && t <= 1.0) {	/* Ensure we don't run amok by at least stopping when phi = 1 */
     	t += DELTA_PHI;
     	last_lhs = lhs;
     	lhs = M_PI * t * t * poly_smt_func (t) - poly_smt_vol (t);

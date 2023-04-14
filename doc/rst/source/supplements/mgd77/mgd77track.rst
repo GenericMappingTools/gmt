@@ -184,7 +184,7 @@ a PDF map, enter the following command:
 
    ::
 
-    gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
+    gmt mgd77track @01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
                    -La1da1000kf6hf250k -pdf map
 
 .. module_note_begins

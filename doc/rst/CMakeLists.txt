@@ -19,9 +19,6 @@ if (SPHINX_FOUND)
 	# Create configuration file
 	configure_file (conf.py.in conf.py @ONLY)
 
-	# path for the cached environment and doctree files
-	set (SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
-
 	# Copy reST sources to build tree
 	include (CopyDirIfDifferent)
 	foreach (subdir source themes _static _templates _extensions)
@@ -68,7 +65,7 @@ if (SPHINX_FOUND)
 	add_custom_target (docs_html
 		COMMAND ${SPHINX_EXECUTABLE} -q -b html
 		-c "${CMAKE_CURRENT_BINARY_DIR}"
-		-d "${SPHINX_CACHE_DIR}"
+		-d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees_html"
 		-w "${CMAKE_CURRENT_BINARY_DIR}/html.log"
 		${CMAKE_CURRENT_BINARY_DIR}/source
 		${CMAKE_CURRENT_BINARY_DIR}/html
@@ -80,7 +77,7 @@ if (SPHINX_FOUND)
 		add_custom_target (docs_man
 			COMMAND ${SPHINX_EXECUTABLE} -q -b man
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
-			-d "${SPHINX_CACHE_DIR}"
+			-d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees_man"
 			-w "${CMAKE_CURRENT_BINARY_DIR}/man.log"
 			-t nosphinxpanels
 			${CMAKE_CURRENT_BINARY_DIR}/source

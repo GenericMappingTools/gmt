@@ -845,8 +845,11 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 		/* PW: This test was <= 360 but if you have grids from 340-375 and it says longitude then we should not make it Cartesian */
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] < 720.0)) {
-			/* Input data type is longitude */
-			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
+			/* Input data type is longitude ... if */
+			if ((header->wesn[XHI] - header->wesn[XLO]) > 360)
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Grid x units says it is longitude but it spans > 360 so is set to Cartesian\n");
+			else
+				gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
 		}
 		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
 			/* Input data type is latitude */
@@ -863,7 +866,7 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in grid not recognized, defaulting to %s settings.\n", units, GMT_SETTINGS_FILE);
 
-			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
+			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */	
 			scale = time_system.scale * GMT->current.setting.time_system.i_scale;
 			offset = (time_system.rata_die - GMT->current.setting.time_system.rata_die) + (time_system.epoch_t0 - GMT->current.setting.time_system.epoch_t0);
 			offset *= GMT_DAY2SEC_F * GMT->current.setting.time_system.i_scale;

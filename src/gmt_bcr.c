@@ -68,10 +68,13 @@
  * Version:	5
  * Now 64-bit enabled.
  *
- * Public functions (3):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
  *	gmt_bcr_get_z	   : Get interpolated grid value by convolution
  *	gmt_bcr_get_z_fast : Same, but skips NaN or outside checking
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
  *	gmtlib_bcr_get_img	   : Get interpolated image value(s) by convolution
  */
 
