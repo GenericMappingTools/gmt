@@ -33,33 +33,22 @@
  *
  * Added support for chunked I/O, Florian Wobbe, June 2012.
  *
- * Functions include:
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *  gmt_nc_read_grd_info:   Read header from file
- *  gmt_nc_read_grd:        Read data set from file
- *  gmt_nc_update_grd_info: Update header in existing file
- *  gmt_nc_write_grd_info:  Write header to new file
- *  gmt_nc_write_grd:       Write header and data set to new file
- *  gmt_nc_read_cube_info:  Read information from cube file
- *  gmt_nc_write_cube:      rite header and cube to new file(s)
- *  gmtlib_is_nc_grid:	    Determine if we have a nc grid
+ *	gmt_nc_close
+ *	gmt_nc_create
+ *	gmt_nc_is_cube
+ *	gmt_nc_open
+ *	gmt_nc_read_cube_info
+ *	gmt_nc_read_grd
+ *	gmt_nc_read_grd_info
+ *	gmt_nc_update_grd_info
+ *	gmt_nc_write_cube
+ *	gmt_nc_write_grd_info
  *
- * Private functions:
- *  gmtnc_setup_chunk_cache:      Change the default HDF5 chunk cache settings
- *  gmtnc_pad_grid:               Add padding to a grid
- *  gmtnc_unpad_grid:             Remove padding from a grid
- *  gmtnc_padding_copy:           Fill padding by replicating the border cells
- *  gmtnc_padding_zero:           Fill padding with zeros
- *  gmtnc_n_chunked_rows_in_cache Determines how many chunks to read at once
- *  gmtnc_io_nc_grid              Does the actual netcdf I/O
- *  gmtnc_netcdf_libvers          returns the netCDF library version
- *  gmtnc_right_shift_grid
- *  gmtnc_set_optimal_chunksize   Determines the optimal chunksize
- *  gmtnc_get_units
- *  gmtnc_put_units
- *  gmtnc_check_step
- *  gmtnc_grd_info
- *  gmtnc_grid_fix_repeat_col
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_is_nc_grid
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #include "gmt_dev.h"
