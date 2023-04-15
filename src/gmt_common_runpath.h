@@ -43,13 +43,13 @@ extern "C" {
 
 /* Prototypes */
 #if defined (__APPLE__)
-#	define GMT_runtime_bindir(result, argv) gmt_runtime_bindir_osx(result)
+#	define gmt_runtime_bindir(result, argv) gmt_runtime_bindir_osx(result)
 	EXTERN_MSC char *gmt_runtime_bindir_osx (char *result);
 #elif defined (_WIN32)
-#	define GMT_runtime_bindir(result, argv) GMT_runtime_bindir_win32(result)
-	EXTERN_MSC char *GMT_runtime_bindir_win32 (char *result);
+#	define gmt_runtime_bindir(result, argv) gmt_runtime_bindir_win32(result)
+	EXTERN_MSC char *gmt_runtime_bindir_win32 (char *result);
 #else
-	EXTERN_MSC char *GMT_runtime_bindir (char *result, const char *candidate);
+	EXTERN_MSC char *gmt_runtime_bindir (char *result, const char *candidate);
 #endif
 
 EXTERN_MSC char *gmt_runtime_libdir (char *result);
