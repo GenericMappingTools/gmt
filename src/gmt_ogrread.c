@@ -76,6 +76,13 @@
  * Revision: 1		Based on ogrread.c MEX from Mirone
  */
 
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_ogrread
+ *	gmt_ogrread2
+ */
+
 #include "gmt_gdalread.h"
 #include <ogr_api.h>
 
