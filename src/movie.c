@@ -2546,7 +2546,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			status[k].completed = true;	/* Flag this frame as completed */
 			n_cores_unused++;		/* Free up the core */
 			percent = 100.0 * n_frames_completed / n_frames;
-			GMT_Report (API, GMT_MSG_INFORMATION, "Frame %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_frames, percent);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Frame %*.*d of %d completed [%5.1f %%]\n", precision, precision, k+1, n_frames, percent);
 		}
 		/* Adjust first_i_frame, if needed */
 		while (first_i_frame < n_frames && status[first_i_frame].completed) first_i_frame++;
