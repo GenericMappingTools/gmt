@@ -2604,7 +2604,7 @@ GMT_LOCAL int gmtapi_add_comment (struct GMTAPI_CTRL *API, unsigned int mode, ch
 
 	if (mode & GMT_COMMENT_IS_TITLE)  { gmt_M_str_free (C->h.title); C->h.title = strdup (txt); k++; }
 	if (mode & GMT_COMMENT_IS_REMARK) { gmt_M_str_free (C->h.remark); C->h.remark = strdup (txt); k++; }
-	if (mode & GMT_COMMENT_IS_COLNAMES) { gmt_M_str_free (C->h.colnames); C->h.colnames = strdup (txt); k++; }
+    if (mode & GMT_COMMENT_IS_COLNAMES) { gmt_M_str_free (C->h.colnames); C->h.colnames = strdup (txt); k++; C->h.add_colnames = true; }
 	return (k);	/* 1 if we did any of the three above; 0 otherwise */
 }
 
