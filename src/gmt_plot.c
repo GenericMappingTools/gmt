@@ -9140,7 +9140,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	if (O_active && GMT->current.ps.switch_set) {	/* User used --PS_CHAR_ENCODING=<encoding> to change it */
 		GMT->current.ps.switch_set = false;
-		switch_charset = 4;
+		switch_charset = PSL_CHANGESET;
 	}
 
 	/* Get title */
