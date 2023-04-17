@@ -1595,7 +1595,7 @@ GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned in
 EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	openmp_int col, row;
 	uint64_t n_read, p, k, i, j, seg, m, n, nm, n_cr = 0, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
-	unsigned int dimension = 0, normalize, n_cols, n_layers = 1, w_col, L_Max = 0;
+	unsigned int dimension = 0, normalize, n_cols, n_layers = 1, w_col, e_col, L_Max = 0;
 	int64_t *kolumn = NULL;
 	size_t n_alloc;
 	int error = GMT_NOERROR, out_ID, way, n_columns, n_use;
@@ -2659,6 +2659,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_grd_init (GMT, Out->header, options, true);
 			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
 				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 4+Ctrl->W.active+Ctrl->E.norm};
+				e_col = 4 + Ctrl->W.active;
  				eigen = gmt_sort_svd_values (GMT, ssave, nm);	/* Get sorted eigenvalues */
 				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
@@ -2679,7 +2680,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				if (Ctrl->E.norm) {	/* Compute the history of model misfit */
 					for (k = 0; k < nm; k++)
 						modnorm += obs[k] * obs[k];
-					S->data[4][e] = modnorm;	/* Model norm at this point */
+					S->data[e_col][e] = sqrt (modnorm);	/* Model norm at this point */
 				}
 
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
