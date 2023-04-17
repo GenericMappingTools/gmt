@@ -32,6 +32,17 @@
  * Version:	API 5 64-bit
  *
  */
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_ssrfpack_grid
+ *	gmt_stripack_areas
+ *	gmt_stripack_lists
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_geo_centroid_area
+ */
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"

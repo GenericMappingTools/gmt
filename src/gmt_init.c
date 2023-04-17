@@ -1625,13 +1625,13 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 		/* Got --PAR=VALUE */
 		this_c[0] = '\0';	/* Temporarily remove the '=' character */
 		n = gmtlib_setparameter (GMT, text, &this_c[1], false);
+		if (!strcmp (text, "PS_CHAR_ENCODING")) GMT->current.ps.switch_set = true;
 		this_c[0] = '=';	/* Put it back were it was */
 	}
 	else {
 		/* Got --PAR */
 		n = gmtlib_setparameter (GMT, text, "true", false);
 	}
-	if (!strcmp (text, "PS_CHAR_ENCODING")) GMT->current.ps.switch_set = true;
 	return (n);
 }
 
@@ -2446,7 +2446,7 @@ int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
-	unsigned int k, l = 0, pos = 0, error = 0;
+	unsigned int k, l = 0, n, pos = 0, error = 0;
 	double az, el = 0.0, z = 0.0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char p[GMT_LEN256] = {""}, *c = NULL;
@@ -2478,7 +2478,7 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 		while (gmt_getmodopt (GMT, 'p', c, "vw", &pos, p, &error) && error == 0) {
 			switch (p[0]) {
 				case 'v':	/* View point given in projected coordinates */
-					if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
+					if ((n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -p (%s): Syntax is %s\n", p, GMT_p_OPT);
 						return GMT_PARSE_ERROR;
 					}
@@ -2487,13 +2487,13 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 					GMT->current.proj.z_project.view_given = true;
 					break;
 				case 'w':	/* Specify fixed World point in user's coordinates */
-					if (sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) < 2) {
+					if ((n = sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -p (%s): Syntax is %s\n", p, GMT_p_OPT);
 						return GMT_PARSE_ERROR;
 					}
 					error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &GMT->current.proj.z_project.world_x), txt_a);
 					error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), &GMT->current.proj.z_project.world_y), txt_b);
-					if (k == 3) error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, txt_c, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.proj.z_project.world_z), txt_c);
+					if (n == 3) error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, txt_c, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.proj.z_project.world_z), txt_c);
 					GMT->current.proj.z_project.world_given = true;
 					break;
 				default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -7178,7 +7178,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->init.module_name = GMT->init.module_lib = NULL;
 
 	/* Set runtime bindir */
-	GMT_runtime_bindir (path, session);
+	gmt_runtime_bindir (path, session);
 	GMT->init.runtime_bindir = strdup (path);
 
 	/* Set runtime libdir */
@@ -8898,6 +8898,14 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	strncpy (GMT->common.R.string, item, GMT_LEN256-1);	/* Verbatim copy */
 
+	if (gmt_remote_dataset_id (GMT->parent, item) != GMT_NOTSET) {	/* Silly, but user set -R@earth_relief_xxy or similar */
+		/* These are always -Rd */
+		GMT->common.R.wesn[XLO] = -180.0, GMT->common.R.wesn[XHI] = 180.0;
+		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
+		gmt_set_geographic (GMT, GMT_IN);
+		GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+		return (GMT_NOERROR);
+	}
 	if (n_slash == 3 && !got_country && ((strchr ("LCR", item[0]) && strchr ("TMB", item[1])) || (strchr ("LCR", item[1]) && strchr ("TMB", item[0])))) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
 		double xdim, ydim, orig[2] = {0.0, 0.0};

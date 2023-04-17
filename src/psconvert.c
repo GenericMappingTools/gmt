@@ -2894,7 +2894,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 
 	HKEY hkey;              /* Handle to registry key */
 	char data[GMT_LEN256] = {""}, ver[GMT_LEN16] = {""}, *ptr;
-	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
+	char key[40] = "SOFTWARE\\GPL Ghostscript\\";
 	unsigned long datalen = GMT_LEN256, verlen = GMT_LEN16;
 	unsigned long datatype;
 	long RegO, rc = 0;
