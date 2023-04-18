@@ -1032,6 +1032,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->In.type == GMT_IS_GRID) {	/* Write a grid */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G))
 			Return (API->error);
+		if (API->external) {	/* No need to BC and, mainly, avoid a bug that plagues cutting global grids from externals */
+			HH = gmt_get_H_hidden (G->header);
+			HH->no_BC = 1;
+		} 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR)
 			Return (API->error);
 	}
