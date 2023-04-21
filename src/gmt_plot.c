@@ -451,15 +451,15 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to load EPS file equation.eps\n");
 		return NULL;
 	}
-	/* Clean up */
-	if (gmt_remove_dir (API, tmpdir, false)) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
-		PSL_free (picture);
-		return NULL;
-	}
 	/* Change back to original directory */
 	if (chdir (here)) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to change directory back to %s - exiting.\n", here);
+		PSL_free (picture);
+		return NULL;
+	}
+	/* Clean up */
+	if (gmt_remove_dir (API, tmpdir, false)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
 		PSL_free (picture);
 		return NULL;
 	}
