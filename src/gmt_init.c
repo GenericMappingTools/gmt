@@ -24,73 +24,138 @@
  * \file gmt_init.c
  * \brief gmt_init.c contains code which is used by all GMT programs
  *
- * The PUBLIC functions (68) are:
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *	gmtlib_explain_options		Prints explanations for the common options\n
- *	gmt_parse_common_options	Interprets common options, such as -B, -R, --\n
- *	gmt_getdefaults			Initializes the GMT global parameters\n
- *	gmt_putdefaults			Dumps the GMT global parameters\n
- *	gmt_pickdefaults
- *	gmt_setdefaults
- *	gmt_hash_init			Initializes a hash\n
- *	gmt_hash_lookup			Key - id lookup using hashing\n
- *	gmt_begin			Gets history and init parameters\n
- *	gmt_end				Cleans up and returns\n
- *	gmt_putcolor			Encode color argument into textstring\n
- *	gmt_putrgb			Encode color argument into r/g/b textstring\n
- *	gmtlib_puthsv			Encode color argument into h-s-v textstring\n
- *	gmtlib_putcmyk			Encode color argument into c/m/y/k textstring
- *	gmtlib_putfill
- *	gmtlib_setparameter		Sets a default value given keyword,value-pair\n
- *	gmtlib_getparameter
+ *	gmt_GSHHG_resolution_syntax
  *	gmt_GSHHG_syntax
- *  gmt_GSHHG_resolution_syntax
- *	gmt_label_syntax
- *	gmt_cont_syntax
- *	gmt_inc_syntax
- *	gmt_fill_syntax
- *	gmt_pen_syntax
- *	gmt_rgb_syntax
- *	gmt_refpoint_syntax
- *	gmt_mapinset_syntax
- *	gmt_mapscale_syntax
- *	gmt_maprose_syntax
- *	gmt_mappanel_syntax
- *	gmt_dist_syntax
- *	gmt_vector_syntax
- *	gmt_segmentize_syntax
- *	gmt_img_syntax
- *	gmt_syntax
- *	gmt_default_error
- *	gmt_check_region
- *	gmt_parse_R_option
- *	gmtlib_parse_index_range
- *	gmt_parse_d_option
- *	gmt_parse_i_option
- *	gmt_parse_o_option
- *	gmt_parse_model
- *	gmt_parse_segmentize
+ *	gmt_add_R_if_modern_and_true
+ *	gmt_add_figure
+ *	gmt_add_legend_item
+ *	gmt_auto_offsets_for_colorbar
+ *	gmt_begin
+ *	gmt_begin_module
  *	gmt_check_binary_io
- *	gmt_parse_g_option
- *	gmt_get_V
- *	gmt_convert_units
- *	gmtlib_unit_lookup
- *	gmt_get_time_system
- *	gmt_init_vector_param
- *	gmt_parse_vector
- *	gmt_parse_symbol_option
- *	gmt_init_scales
- *	gmtlib_get_unit_number
- *	gmt_check_scalingopt
- *	gmt_set_measure_unit
- *	gmt_set_pad
  *	gmt_check_filearg
- *	gmt_setmode
+ *	gmt_check_region
+ *	gmt_check_scalingopt
+ *	gmt_conf_SI
+ *	gmt_conf_US
+ *	gmt_cont_syntax
+ *	gmt_convert_units
+ *	gmt_count_char
+ *	gmt_default_error
+ *	gmt_default_option_error
+ *	gmt_detect_oblique_region
+ *	gmt_dist_syntax
+ *	gmt_end
+ *	gmt_end_module
+ *	gmt_file_type
+ *	gmt_fill_syntax
+ *	gmt_get_V
+ *	gmt_get_current_figure
+ *	gmt_get_dim_unit
+ *	gmt_get_ellipsoid
+ *	gmt_get_graphics_id
+ *	gmt_get_legend_info
+ *	gmt_get_next_panel
+ *	gmt_get_option_id
+ *	gmt_get_time_system
+ *	gmt_getdefaults
+ *	gmt_handle5_plussign
+ *	gmt_hash_init
+ *	gmt_hash_lookup
+ *	gmt_hierarchy_tag
+ *	gmt_img_syntax
+ *	gmt_inc_syntax
+ *	gmt_ingrid_syntax
+ *	gmt_init_B
+ *	gmt_init_module
+ *	gmt_init_scales
+ *	gmt_init_time_system_structure
+ *	gmt_init_vector_param
+ *	gmt_innercont_syntax
+ *	gmt_is_integer
+ *	gmt_label_syntax
+ *	gmt_legend_file
+ *	gmt_manage_workflow
+ *	gmt_mapinset_syntax
+ *	gmt_mappanel_syntax
+ *	gmt_maprose_syntax
+ *	gmt_mapscale_syntax
  *	gmt_message
- *	gmtlib_report_func
+ *	gmt_outgrid_syntax
+ *	gmt_parse_R_option
+ *	gmt_parse_common_options
+ *	gmt_parse_d_option
+ *	gmt_parse_g_option
+ *	gmt_parse_i_option
+ *	gmt_parse_inc_option
+ *	gmt_parse_j_option
+ *	gmt_parse_model
+ *	gmt_parse_o_option
+ *	gmt_parse_region_extender
+ *	gmt_parse_s_option
+ *	gmt_parse_segmentize
+ *	gmt_parse_symbol_option
+ *	gmt_parse_vector
+ *	gmt_pen_syntax
+ *	gmt_pickdefaults
+ *	gmt_putcolor
+ *	gmt_putdefaults
+ *	gmt_puthex
+ *	gmt_putrgb
+ *	gmt_refpoint_syntax
+ *	gmt_reload_history
+ *	gmt_reload_settings
+ *	gmt_remove_dir
+ *	gmt_report_usage
+ *	gmt_reset_history
+ *	gmt_rgb_syntax
+ *	gmt_segmentize_syntax
+ *	gmt_set_V
+ *	gmt_set_current_panel
+ *	gmt_set_length_unit
+ *	gmt_set_measure_unit
+ *	gmt_set_missing_options
+ *	gmt_set_pad
+ *	gmt_set_undefined_axes
+ *	gmt_set_undefined_defaults
+ *	gmt_setdefaults
+ *	gmt_setmode
+ *	gmt_subplot_gaps
+ *	gmt_subplot_info
+ *	gmt_subplot_status
+ *	gmt_syntax
+ *	gmt_truncate_file
+ *	gmt_update_keys
+ *	gmt_vector_syntax
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_B_is_frame
+ *	gmtlib_colon_pos
+ *	gmtlib_explain_options
+ *	gmtlib_fig_is_ps
+ *	gmtlib_file_lock
+ *	gmtlib_file_unlock
+ *	gmtlib_get_graphics_item
  *	gmtlib_get_num_processors
- *	gmt_get_ellipsoid		Returns ellipsoid id based on name\n
- *	gmt_init_time_system_structure  Does what it says\n
+ *	gmtlib_get_pos_of_filename
+ *	gmtlib_getparameter
+ *	gmtlib_module_may_get_R_from_RP
+ *	gmtlib_panel_B_file
+ *	gmtlib_parse_B_option
+ *	gmtlib_parse_index_range
+ *	gmtlib_putcmyk
+ *	gmtlib_putfill
+ *	gmtlib_puthsv
+ *	gmtlib_reparse_i_option
+ *	gmtlib_reparse_o_option
+ *	gmtlib_report_func
+ *	gmtlib_set_case_and_kind
+ *	gmtlib_setparameter
+ *	gmtlib_terminate_session
+ *	gmtlib_unit_lookup
  */
 
 #include "gmt_dev.h"
@@ -2378,7 +2443,7 @@ GMT_LOCAL double gmtinit_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t col) {
 }
 
 /*! Parse the -n option for 2-D grid resampling parameters -n[b|c|l|n][+a][+t<BC>][+<threshold>] */
-int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
+int gmt_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 	unsigned int pos = 0, j, k = 1;
 	char p[GMT_LEN256] = {""};
 
@@ -2575,7 +2640,7 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	return (false);
 }
 
-bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
+GMT_LOCAL bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
 	/* Only modules psxy, psxyz, pstext, psmeca, and pscoupe can do variable transparency */
 	if (!strncmp (GMT->init.module_name, "psxyz",   5U)) return true;
 	if (!strncmp (GMT->init.module_name, "psxy",    4U)) return true;
@@ -2586,7 +2651,7 @@ bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
 	return false;	/* Anything else */
 }
 
-bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
+GMT_LOCAL bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	/* Parse -t[<filltransparency>[/<stroketransparency>]][+f][+s]
 	 * Note: The transparency is optional (read from file) only for plot, plot3d, and text */
 	unsigned int n_errors = 0, nt = 0;
@@ -10212,7 +10277,7 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 	return (error);
 }
 
-void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg) {
+void gmt_update_keys (struct GMT_CTRL *GMT, bool arg) {
 	gmt_M_unused(GMT);
 	if (arg == false)
 		gmt_M_memset (GMT_keyword_updated, GMT_N_KEYS, bool);
@@ -15081,7 +15146,7 @@ bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name
 }
 
 /*! Classic mode: Discover if a certain option was set in the history and re-set it */
-void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *options) {
+GMT_LOCAL void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *options) {
 	/* When a module discovers it needs -R or -J and it maybe was not given
 	 * see if we can tease out the answer from the history and parse it.
 	 * Currently used in gmt_get_refpoint where we may learn that -R -J will
@@ -16589,7 +16654,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	return (error);
 }
 
-double gmtinit_get_diameter (struct GMT_CTRL *GMT, char code, char *text, bool *geo) {
+GMT_LOCAL double gmtinit_get_diameter (struct GMT_CTRL *GMT, char code, char *text, bool *geo) {
 	bool is_geo;
 	size_t len = strlen (text);
 	double d;
@@ -17743,7 +17808,7 @@ int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit) {
 }
 
 /*! Use to parse various -S -Q options when backwardsness has been enabled */
-int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item) {
+GMT_LOCAL int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item) {
 	int j;
 
 	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c[-]<mode>[/<threshold>] is deprecated. Use -n<mode>[+a][+t<threshold>] instead.\n", option);
@@ -18263,7 +18328,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'n':
-			error += (gmt_M_more_than_once (GMT, GMT->common.n.active) || gmtinit_parse_n_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.n.active) || gmt_parse_n_option (GMT, item));
 			GMT->common.n.active = true;
 			break;
 

@@ -49,6 +49,7 @@ EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *i
 
 /* gmt_init.c: */
 
+EXTERN_MSC void gmt_update_keys (struct GMT_CTRL *GMT, bool arg);
 EXTERN_MSC void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC unsigned int gmt_subplot_status (struct GMTAPI_CTRL *API, int fig);
 EXTERN_MSC void gmt_round_wesn (double wesn[], bool geo);
@@ -59,6 +60,7 @@ EXTERN_MSC bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
 EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
+EXTERN_MSC int gmt_parse_n_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it);
