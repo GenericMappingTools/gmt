@@ -1272,7 +1272,10 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 					snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.USERDIR, &file[1]);
 				break;
 			case GMT_LOCAL_DIR:
-				snprintf (local_path, PATH_MAX, "%s", &file[1]);
+				if (jp2_file)	/* Leave as JP2 file in the local directory */
+					snprintf (local_path, PATH_MAX, "%s", jp2_file);
+				else
+					snprintf (local_path, PATH_MAX, "%s", &file[1]);
 				break;
 			default:	/* Place remote data files locally per the internal rules */
 				if (GMT->session.USERDIR == NULL || access (GMT->session.USERDIR, R_OK))
