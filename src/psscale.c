@@ -36,7 +36,6 @@
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxyf" GMT_OPT("c")
 
 EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T);
-EXTERN_MSC void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
 #define V_BORDER 8	/* 8p vertical border space for -T [not used] */
@@ -736,8 +735,8 @@ GMT_LOCAL unsigned int psscale_cpt_transparency (struct GMT_CTRL *GMT, struct GM
 	 * Bit 2 means different slices have different transparencies
 	 * Bit 3 means at least one slice has different transparencies within it
 	 */
-	gmt_M_unused(GMT);
 	unsigned int k, status = 0;
+	gmt_M_unused(GMT);
 	for (k = 0; k < P->n_colors; k++) {
 		if (P->data[k].rgb_low[3] > 0.0 || P->data[k].rgb_high[3] > 0.0) status |= 1;	/* Transparency detected */
 		if (k && !doubleAlmostEqualZero (P->data[k].rgb_low[3], P->data[k-1].rgb_low[3]))     status |= 2;	/* Unequal transparencies between slices */
@@ -1360,7 +1359,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				dx = gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				if (A->type == GMT_TIME)
-					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
+					gmt_plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
 				else
 					gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}
@@ -1692,7 +1691,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				dx = gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				if (A->type == GMT_TIME)
-					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
+					gmt_plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
 				else
 					gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}

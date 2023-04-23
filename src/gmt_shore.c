@@ -38,24 +38,26 @@
  * These functions simplifies the access to the GMT shoreline, border, and river
  * databases.
  *
- * The PUBLIC functions are (16):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- * gmt_set_levels           : Modifies what items to extract from GSHHG database
- * gmt_set_resolution       : Converts resolutions f,h,i,l,c to integers 0-4
- * gmt_init_shore           : Opens selected shoreline database and initializes structures
- * gmt_get_shore_bin        : Returns all selected shore data for this bin
- * gmt_init_br              : Opens selected border/river database and initializes structures
- * gmt_get_br_bin           : Returns all selected border/river data for this bin
- * gmt_get_gshhg_lines      : Returns a GMT_DATASET with lines
- * gmt_assemble_shore       : Creates polygons or lines from shoreline segments
- * gmt_prep_shore_polygons  : Wraps polygons if necessary and prepares them for use
- * gmt_shore_level_at_point : Return hierarchical level at specified point
- * gmt_assemble_br          : Creates lines from border or river segments
- * gmt_free_shore           : Frees up memory used by shorelines for this bin
- * gmt_free_br              : Frees up memory used by shorelines for this bin
- * gmt_free_shore_polygons  : Frees list of polygon coordinates
- * gmt_shore_cleanup        : Frees up main shoreline structure memory
- * gmt_br_cleanup           : Frees up main river/border structure memory
+ *	gmt_assemble_br          : Creates lines from border or river segments
+ *	gmt_assemble_shore       : Creates polygons or lines from shoreline segments
+ *	gmt_br_cleanup           : Frees up main river/border structure memory
+ *	gmt_free_shore           : Frees up memory used by shorelines for this bin
+ *	gmt_free_br              : Frees up memory used by shorelines for this bin
+ *	gmt_free_shore_polygons  : Frees list of polygon coordinates
+ *	gmt_get_br_bin           : Returns all selected border/river data for this bin
+ *	gmt_get_shore_bin        : Returns all selected shore data for this bin
+ *	gmt_get_gshhg_lines      : Returns a GMT_DATASET with lines
+ *	gmt_init_shore           : Opens selected shoreline database and initializes structures
+ *	gmt_init_br              : Opens selected border/river database and initializes structures
+ *	gmt_prep_shore_polygons  : Wraps polygons if necessary and prepares them for use
+ *	gmt_set_levels           : Modifies what items to extract from GSHHG database
+ *	gmt_set_resolution       : Converts resolutions f,h,i,l,c to integers 0-4
+ *	gmt_shore_adjust_res     : Return highest available resolution
+ *	gmt_shore_cleanup        : Frees up main shoreline structure memory
+ *	gmt_shore_level_at_point : Return hierarchical level at specified point
+ *	gmt_shore_version        : Return the GSHHS version string
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010

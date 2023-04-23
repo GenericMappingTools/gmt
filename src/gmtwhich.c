@@ -149,7 +149,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 }
 
 
-GMT_LOCAL int gmtwhich_list_tiles (struct GMTAPI_CTRL *API, char *list, bool YN, struct GMT_RECORD *Out) {
+GMT_LOCAL int gmtwhich_list_tiles (struct GMTAPI_CTRL *API, char *list, unsigned int mode, bool YN, struct GMT_RECORD *Out) {
 	/* List all tiles and whether found/not found */
 	int t_data, fail;
 	uint64_t n, k, nf = 0;
@@ -158,7 +158,8 @@ GMT_LOCAL int gmtwhich_list_tiles (struct GMTAPI_CTRL *API, char *list, bool YN,
 
 	if ((t_data = gmt_get_tile_id (API, list)) == GMT_NOTSET) return GMT_RUNTIME_ERROR;
 	if ((n = gmt_read_list (API->GMT, list, &file)) == 0) return GMT_RUNTIME_ERROR;
-	snprintf (dir, PATH_MAX, "%s%s%s", API->GMT->session.USERDIR, API->remote_info[t_data].dir, API->remote_info[t_data].file);
+	if (mode == 0)	/* Not looking in local directory */
+		snprintf (dir, PATH_MAX, "%s%s%s", API->GMT->session.USERDIR, API->remote_info[t_data].dir, API->remote_info[t_data].file);
 
 	for (k = 0; k < n; k++) {
 		sprintf (path, "%s%s", dir, &file[k][1]);
@@ -251,7 +252,7 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (Ctrl->G.active) {
 			if (list) {
 				gmt_download_tiles (API, opt->arg, Ctrl->G.mode);
-				if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->C.active, Out)))
+				if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->G.mode, Ctrl->C.active, Out)))
 					Return (error);
 				continue;
 			}
@@ -265,7 +266,7 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		else
 			strcpy (file, opt->arg);
 		if (list) {
-			if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->C.active, Out)))
+			if ((error = gmtwhich_list_tiles (API, opt->arg, Ctrl->G.mode, Ctrl->C.active, Out)))
 				Return (error);
 		}
 		else if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */

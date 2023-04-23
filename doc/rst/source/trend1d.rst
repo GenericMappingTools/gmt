@@ -60,7 +60,8 @@ Required Arguments
     weight used in fitting. Alternatively, choose just the single
     selection **p** to output a record with the polynomial model coefficients,
     **P** for the normalized polynomial model coefficients, or **c**
-    for the normalized Chebyshev model coefficients.
+    for the normalized Chebyshev model coefficients. **Note**: If **m** is included
+    then we sort the output on increasing **x** (whether **x** is selected or not).
 
 .. _-N:
 

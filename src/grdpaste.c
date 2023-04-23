@@ -30,7 +30,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdpaste"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Join two grids along their common edge"
-#define THIS_MODULE_KEYS	"<G{2,GG}"
+#define THIS_MODULE_KEYS	"<G{2,GG},>DS"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-Vf"
 
@@ -43,6 +43,9 @@ struct GRDPASTE_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDPASTE_S {	/* -S */
+		bool active;
+	} S;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -66,7 +69,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid1> <grid2> -G%s [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid1> <grid2> -G%s [-S] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -78,6 +81,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If grids are geographic and adds to full 360-degree range then <grid1> "
 		"determines west.  Use grdedit -S to rotate grid to another -Rw/e/s/n.");
 	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	GMT_Usage (API, 1, "\n-S");
+	GMT_Usage (API, -2, "Just prints a code number and a description of the sides at which the grids are pasted. "
+		"No pasting actually happens. -G is ignored.");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,f,.");
 
@@ -116,6 +122,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 
+ 			case 'S':	/* Print the code number that tells on what side grid B glues to A and return. */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				break;
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
 				break;
@@ -123,7 +133,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_O
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Must specify two input files\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
+	if (!Ctrl->S.active)
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -333,6 +344,34 @@ EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->n_columns, A->header->n_rows);
 		GMT_Report (API, GMT_MSG_INFORMATION, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->n_columns, B->header->n_rows);
 		GMT_Report (API, GMT_MSG_INFORMATION, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->n_columns, C->header->n_rows);
+	}
+
+	/* This option is mostly for GMT.jl usage because grdpaste doesn't work for externals passing grid objs. */
+	if (Ctrl->S.active) {
+		char t[70]; 
+		double out[1];
+		struct GMT_RECORD *Out = NULL;
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
+		GMT->current.io.col_type[GMT_OUT][0] = GMT_IS_FLOAT;
+		(way == 1) ? strcpy(t, "B is on top of A") : (way == 10) ? strcpy(t, "B is on top of A but their grid reg limits underlap by one cell") : (way == 11) ? strcpy(t, "B is on top of A but their pixel reg limits overlap by one cell") :
+		(way == 2) ? strcpy(t, "A is on top of B") : (way == 21) ? strcpy(t, "A is on top of B but their grid reg limits underlap by one cell") : (way == 22) ? strcpy(t, "A is on top of B but their pixel reg limits overlap by one cell") :
+		(way == 3) ? strcpy(t, "A is on the right of B") : (way == 32) ? strcpy(t, "A is on right of B but their grid reg limits underlap by one cell") : (way == 33) ? strcpy(t, "A is on right of B but their pixel reg limits overlap by one cell") :
+		(way == 4) ? strcpy(t, "A is on the left of B") : (way == 43) ? strcpy(t, "A is on left of B but their grid reg limits underlap by one cell") : (way == 44) ? strcpy(t, "A is on left of B but their pixel reg limits overlap by one cell") : "";
+		Out = gmt_new_record (GMT, out, t);
+		out[0] = (double)way;
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			Return (API->error);
+		}
+		gmt_set_pad (GMT, API->pad); /* Restore to GMT Defaults */
+		gmt_M_free (GMT, Out);
+		Return (GMT_NOERROR);
 	}
 
 	gmt_set_grddim (GMT, C->header);

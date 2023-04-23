@@ -233,7 +233,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 /* A few non-exported library functions we need here only */
 
-EXTERN_MSC int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
 
@@ -483,7 +482,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 
 	if (!GMT->common.n.active && (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)))
 		/* Unless user selected -n we want the default not to exceed data range on projection when we are auto-scaling a master table */
-		n_errors += gmtinit_parse_n_option (GMT, "c+c");
+		n_errors += gmt_parse_n_option (GMT, "c+c");
 
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3),

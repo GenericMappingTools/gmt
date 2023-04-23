@@ -72,6 +72,17 @@
  * Version:	5.x
  */
 
+/*
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_genper_map_clip_path
+ *	gmtlib_iobl
+ *	gmtlib_itranslin
+ *	gmtlib_translin
+ *
+ * NOTE: gmt_proj.c is included directly into gmt_map.c
+ */
+
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 

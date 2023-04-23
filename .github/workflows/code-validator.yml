@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.4.0
+        uses: actions/checkout@v3.5.2
 
       - name: Check PSL_strings.h
         run: |

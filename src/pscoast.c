@@ -734,8 +734,6 @@ GMT_LOCAL int pscoast_check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SH
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx);
-
 EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pscoast task */
 
@@ -1149,7 +1147,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 					if (!Ctrl->W.use[p[i].level-1]) continue;
 
-					n_out = map_wesn_clip (GMT, p[i].lon, p[i].lat, p[i].n, &xtmp, &ytmp, &unused);
+					n_out = gmt_map_wesn_clip (GMT, p[i].lon, p[i].lat, p[i].n, &xtmp, &ytmp, &unused);
 					if (!Ctrl->M.single) {
 						sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
 						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
