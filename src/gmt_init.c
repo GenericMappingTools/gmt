@@ -167,6 +167,10 @@
 #	include <mex.h>
 #endif
 
+#ifndef HAVE_MERGESORT
+#include "mergesort.c"
+#endif
+
 /* These are used in gmtinit_init_custom_annot and gmtinit_decode_tinfo only */
 #define GMT_ITEM_ANNOT		0
 #define GMT_ITEM_INTVAL		1
