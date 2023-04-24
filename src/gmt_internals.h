@@ -292,6 +292,8 @@ EXTERN_MSC void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[
 EXTERN_MSC const char *gmtlib_module_keys (void *API, struct GMT_MODULEINFO M[], char *candidate);
 EXTERN_MSC const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *candidate);
 
+EXTERN_MSC int mergesort(void *base, size_t nmemb, size_t size, int (*cmp)(const void *, const void *));
+
 EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
 
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,

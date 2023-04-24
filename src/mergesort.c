@@ -39,6 +39,8 @@
  * It works for objects as small as two bytes.
  */
 
+#include "gmt_internals.h"
+
 #define NATURAL
 #define THRESHOLD 16    /* Best choice for natural merge cut-off. */
 
