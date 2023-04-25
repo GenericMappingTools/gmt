@@ -17,7 +17,7 @@ Synopsis
 [ |-E|\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**] ]
 [ |-F| ]
 [ |-G| ]
-[ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
+[ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **o**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ]
 [ |-M|\ [**c**\|\ **f**] ]
 [ |SYN_OPT-R| ]
@@ -111,10 +111,11 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**]
+**-I**\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **o**\|\ **r**]
     Report the min/max of the region to the nearest multiple of *dx* and
     *dy*, and output this in the form |-R|\ *w/e/s/n* (unless |-C|
-    is set). To report the actual grid region, select |-I|\ **r**. For a
+    is set). To report the actual grid region, select |-I|\ **r** for
+    the format |-R|\ *w/e/s/n* or |-I|\ **o** for the oblique format |-R|\ *w/s/e/n*\ **+r**. For a
     grid produced by the img supplement (a Cartesian Mercator grid),
     the exact geographic region is given with |-I|\ **i** (if not found
     then we return the actual grid region instead).  If no
