@@ -121,8 +121,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC void gmtinit_update_keys (struct GMT_CTRL *GMT, bool arg);
-
 EXTERN_MSC int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	int error;
 
@@ -158,7 +156,7 @@ EXTERN_MSC int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 
 	/* To ensure that all is written to stdout we must set updated to true */
 
-	gmtinit_update_keys (GMT, true);
+	gmt_update_keys (GMT, true);
 
 	gmt_putdefaults (GMT, "-");
 

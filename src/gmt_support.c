@@ -25,54 +25,274 @@
  * Date:    1-JAN-2010
  * Version: 5
  *
- * Modules in this file:
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *  gmtlib_akima               Akima's 1-D spline
- *  gmt_BC_init             Initialize BCs for a grid or image
- *  gmt_grd_BC_set          Set two rows of padding according to bound cond for grid
- *  gmtlib_image_BC_set        Set two rows of padding according to bound cond for image
- *  gmtsupport_check_rgb           Check rgb for valid range
- *  gmtsupport_cmyk_to_rgb         Corvert CMYK to RGB
- *  gmtsupport_comp_double_asc     Used when sorting doubles into ascending order [checks for NaN]
- *  gmtsupport_comp_float_asc      Used when sorting floats into ascending order [checks for NaN]
- *  gmtsupport_comp_int_asc        Used when sorting ints into ascending order
- *  gmt_contours            Subroutine for contouring
- *  gmtlib_cspline             Natural cubic 1-D spline solver
- *  gmtsupport_csplint             Natural cubic 1-D spline evaluator
- *  gmt_delaunay            Performs a Delaunay triangulation
- *  gmtlib_get_annot_label     Construct degree/minute label
- *  gmt_get_index           Return color table entry for given z
- *  gmt_get_fill_from_z     Return fill type for given z
- *  gmt_get_format          Find # of decimals and create format string
- *  gmt_get_rgb_from_z      Return rgb for given z
- *  gmt_get_plot_array      Allocate memory for plotting arrays
- *  gmt_getfill             Decipher and check fill argument
- *  gmt_getinc              Decipher and check increment argument
- *  gmt_getpen              Decipher and check pen argument
- *  gmt_getrgb              Decipher and check color argument
- *  gmt_hsv_to_rgb          Convert HSV to RGB
- *  gmt_init_fill           Initialize fill attributes
- *  gmt_init_pen            Initialize pen attributes
- *  gmt_illuminate          Add illumination effects to rgb
- *  gmt_intpol              1-D interpolation
- *  gmt_lab_to_rgb          Corvert CIELAB LAB to RGB
- *  gmt_lab_to_xyz          Convert CIELAB LAB to XYZ
- *  gmt_non_zero_winding    Finds if a point is inside/outside a polygon
- *  gmt_putpen              Encode pen argument into textstring
- *  gmtlib_read_cpt            Read color palette file
- *  gmtsupport_rgb_to_cmyk         Convert RGB to CMYK
- *  gmt_rgb_to_hsv          Convert RGB to HSV
- *  gmt_rgb_to_lab          Convert RGB to CMYK
- *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
- *  gmt_sample_cpt          Resamples the current CPT based on new z-array
- *  gmt_invert_cpt          Flips the current CPT upside down
- *  gmtsupport_smooth_contour      Use Akima's spline to smooth contour
- *  GMT_shift_refpoint      Adjust reference point based on size and justification of plotted item
- *  gmt_sprintf_float       Make formatted string from float, while checking for %-apostrophe
- *  gmtsupport_trace_contour       Function that trace the contours in gmt_contours
- *  gmtsupport_polar_adjust        Adjust label justification for polar projection
- *  gmt_xyz_to_rgb          Convert CIELAB XYZ to RGB
- *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
+ *	gmt_BC_init
+ *	gmt_RI_prepare
+ *	gmt_add_options
+ *	gmt_adjust_refpoint
+ *	gmt_arabic2roman
+ *	gmt_argv2str
+ *	gmt_assign_text
+ *	gmt_best_dim_choice
+ *	gmt_cat_cpt_strings
+ *	gmt_centroid_area
+ *	gmt_char_count
+ *	gmt_check_executable
+ *	gmt_check_language
+ *	gmt_colorname2index
+ *	gmt_consider_current_cpt
+ *	gmt_contlabel_free
+ *	gmt_contlabel_info
+ *	gmt_contlabel_init
+ *	gmt_contlabel_prep
+ *	gmt_contlabel_specs
+ *	gmt_contour_A_arg_parsing
+ *	gmt_contour_C_arg_parsing
+ *	gmt_contour_T_arg_parsing
+ *	gmt_contour_edge_init
+ *	gmt_contour_first_pos
+ *	gmt_contours
+ *	gmt_cpt_default
+ *	gmt_cpt_interval_modifier
+ *	gmt_cpt_transparency
+ *	gmt_create_array
+ *	gmt_create_tempdir
+ *	gmt_create_tempfile
+ *	gmt_crossing_dateline
+ *	gmt_crossover
+ *	gmt_crosstracks
+ *	gmt_cube_BC_set
+ *	gmt_decorate_prep
+ *	gmt_decorated_line
+ *	gmt_delaunay
+ *	gmt_delaunay_free
+ *	gmt_dry_run_only
+ *	gmt_duplicate_array
+ *	gmt_enable_threads
+ *	gmt_err_func
+ *	gmt_extend_region
+ *	gmt_filename_get
+ *	gmt_filename_set
+ *	gmt_find_macro
+ *	gmt_first_modifier
+ *	gmt_flip_angle_d
+ *	gmt_flip_azim_d
+ *	gmt_flip_justify
+ *	gmt_format_region
+ *	gmt_found_modifier
+ *	gmt_free_array
+ *	gmt_free_int_selection
+ *	gmt_free_list
+ *	gmt_free_macros
+ *	gmt_free_refpoint
+ *	gmt_free_text_selection
+ *	gmt_freepen
+ *	gmt_gcd_euclid
+ *	gmt_get_columbar_bands
+ *	gmt_get_contours_from_table
+ *	gmt_get_current_item
+ *	gmt_get_dist_units
+ *	gmt_get_distance
+ *	gmt_get_fill_from_key
+ *	gmt_get_fill_from_z
+ *	gmt_get_format
+ *	gmt_get_index
+ *	gmt_get_int_selection
+ *	gmt_get_limits
+ *	gmt_get_no_argument
+ *	gmt_get_pair
+ *	gmt_get_palette
+ *	gmt_get_plot_array
+ *	gmt_get_prime_factors
+ *	gmt_get_refpoint
+ *	gmt_get_required_char
+ *	gmt_get_required_double
+ *	gmt_get_required_file
+ *	gmt_get_required_float
+ *	gmt_get_required_sint
+ *	gmt_get_required_string
+ *	gmt_get_required_uint
+ *	gmt_get_required_uint64
+ *	gmt_get_rgb_from_z
+ *	gmt_get_rgb_lookup
+ *	gmt_get_rgbtxt_from_z
+ *	gmt_get_segtext_selection
+ *	gmt_get_strwithtab
+ *	gmt_get_tempname
+ *	gmt_get_vector_shrinking
+ *	gmt_getfill
+ *	gmt_getfont
+ *	gmt_getfonttype
+ *	gmt_getinc
+ *	gmt_getincn
+ *	gmt_getinset
+ *	gmt_getmodopt
+ *	gmt_getpanel
+ *	gmt_getpen
+ *	gmt_getrgb
+ *	gmt_getrose
+ *	gmt_getscale
+ *	gmt_grd_BC_set
+ *	gmt_hold_contour
+ *	gmt_hsv_to_rgb
+ *	gmt_illuminate
+ *	gmt_increment_adjust
+ *	gmt_init_fill
+ *	gmt_init_next_color
+ *	gmt_init_pen
+ *	gmt_init_track
+ *	gmt_inonout
+ *	gmt_intpol
+ *	gmt_invert_cpt
+ *	gmt_is_barcolumn
+ *	gmt_is_cpt_master
+ *	gmt_is_fill
+ *	gmt_is_gmt_end_show
+ *	gmt_is_gmtmodule
+ *	gmt_just_decode
+ *	gmt_just_to_code
+ *	gmt_just_to_lonlat
+ *	gmt_just_to_xy
+ *	gmt_just_validate
+ *	gmt_lab_to_rgb
+ *	gmt_lab_to_xyz
+ *	gmt_list_cpt
+ *	gmt_list_custom_symbols
+ *	gmt_list_to_array
+ *	gmt_load_macros
+ *	gmt_locate_custom_symbol
+ *	gmt_make_equidistant_array
+ *	gmt_make_filename
+ *	gmt_make_profiles
+ *	gmt_matrix_vect_mult
+ *	gmt_mean_point
+ *	gmt_memory_use
+ *	gmt_minmaxinc_verify
+ *	gmt_new_record
+ *	gmt_no_pstext_input
+ *	gmt_non_zero_winding
+ *	gmt_optimal_dim_for_surface
+ *	gmt_parse_array
+ *	gmt_parse_inv_cpt
+ *	gmt_place_var
+ *	gmt_pol_area
+ *	gmt_polygon_centroid
+ *	gmt_polygon_is_open
+ *	gmt_polygon_orientation
+ *	gmt_prepare_contour
+ *	gmt_putfont
+ *	gmt_putpen
+ *	gmt_putusername
+ *	gmt_read_list
+ *	gmt_read_triangulation
+ *	gmt_resample_data
+ *	gmt_reset_array_time
+ *	gmt_rgb_to_hsv
+ *	gmt_rgb_to_lab
+ *	gmt_rgb_to_xyz
+ *	gmt_row_col_out_of_bounds
+ *	gmt_same_fill
+ *	gmt_sample_cpt
+ *	gmt_save_current_cpt
+ *	gmt_scale_cpt
+ *	gmt_scale_pen
+ *	gmt_script_is_classic
+ *	gmt_segmentize_data
+ *	gmt_set_comment
+ *	gmt_set_dvalue
+ *	gmt_set_inside_mode
+ *	gmt_set_int_selection
+ *	gmt_set_interpolate_mode
+ *	gmt_set_ivalue
+ *	gmt_set_next_color
+ *	gmt_set_refpoint
+ *	gmt_set_script
+ *	gmt_set_text_selection
+ *	gmt_set_tvalue
+ *	gmt_set_value
+ *	gmt_set_xy_domain
+ *	gmt_signum
+ *	gmt_sleep
+ *	gmt_smart_justify
+ *	gmt_sort_array
+ *	gmt_sort_order
+ *	gmt_sprintf_float
+ *	gmt_str_setcase
+ *	gmt_str_tolower
+ *	gmt_str_toupper
+ *	gmt_stretch_cpt
+ *	gmt_substitute_macros
+ *	gmt_symbol_free
+ *	gmt_testing
+ *	gmt_token_check
+ *	gmt_trim_line
+ *	gmt_trim_requested
+ *	gmt_truncate_cpt
+ *	gmt_undo_log10
+ *	gmt_unpack_rgbcolors
+ *	gmt_validate_cpt_parameters
+ *	gmt_validate_modifiers
+ *	gmt_verify_expectations
+ *	gmt_voronoi
+ *	gmt_write_glue_function
+ *	gmt_x_free
+ *	gmt_x_is_outside
+ *	gmt_x_out_of_bounds
+ *	gmt_xyz_to_lab
+ *	gmt_xyz_to_rgb
+ *	gmt_y_out_of_bounds
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_akima
+ *	gmtlib_annot_pos
+ *	gmtlib_coordinate_array
+ *	gmtlib_copy_palette
+ *	gmtlib_cptfile_unitscale
+ *	gmtlib_create_palette
+ *	gmtlib_cspline
+ *	gmtlib_decorate_info
+ *	gmtlib_decorate_init
+ *	gmtlib_decorate_specs
+ *	gmtlib_detrend
+ *	gmtlib_duplicate_palette
+ *	gmtlib_enforce_rgb_triplets
+ *	gmtlib_free_cpt_ptr
+ *	gmtlib_free_custom_symbols
+ *	gmtlib_free_palette
+ *	gmtlib_get_annot_label
+ *	gmtlib_get_arc
+ *	gmtlib_get_coordinate_label
+ *	gmtlib_get_custom_symbol
+ *	gmtlib_get_map_interval
+ *	gmtlib_getpenstyle
+ *	gmtlib_getrgb_index
+ *	gmtlib_glob_list
+ *	gmtlib_image_BC_set
+ *	gmtlib_init_cpt
+ *	gmtlib_init_rot_matrix
+ *	gmtlib_inplace_transpose
+ *	gmtlib_invalid_symbolname
+ *	gmtlib_is_color
+ *	gmtlib_last_valid_file_modifier
+ *	gmtlib_linear_array
+ *	gmtlib_load_custom_annot
+ *	gmtlib_load_rot_matrix
+ *	gmtlib_log2_array
+ *	gmtlib_log_array
+ *	gmtlib_polar_prepare_label
+ *	gmtlib_pow_array
+ *	gmtlib_prepare_label
+ *	gmtlib_read_cpt
+ *	gmtlib_refpoint_to_panel_xy
+ *	gmtlib_rotate2D
+ *	gmtlib_set_current_item_file
+ *	gmtlib_smooth_spline
+ *	gmtlib_split_line_at_dateline
+ *	gmtlib_time_array
+ *	gmtlib_var_inc
+ *	gmtlib_write_cpt
  */
 
 /*!
@@ -3417,6 +3637,7 @@ int gmt_signum (double x) {
  */
 
 #define REAL double
+#define ANSI_DECLARATORS
 #include "triangle.h"
 
 /* Leave link as int**, not uint64_t** */
@@ -7760,8 +7981,9 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	divider[L] = '\0';	/* Truncate the line */
 	gmt_message (GMT, "     %s\n", divider);
 	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) {
+		char *c = NULL;
 		strncpy (line, GMT_CPT_master[k], GMT_LEN256);
-		char *c = strchr (line, ':');	/* Find the start of the info */
+		c = strchr (line, ':');	/* Find the start of the info */
 		c[0] = '\0';
 		gmt_message (GMT, "     %s: ", line);
 		GMT_Usage (API, -19, "%s", &c[2]);
@@ -10024,8 +10246,8 @@ unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg) {
 	/* Because of backwards compatibility, we need to anticipate shits like -A+1 for a
 	 * single annotated contour and hence cannot confuse it with a modifier for contour specs.
 	 * Thus, here we scan past any leading single contour specification using deprecated syntax. */
-	gmt_M_unused(GMT);
 	unsigned int k = 1;
+	gmt_M_unused(GMT);
 	if (arg[0] != '+') return 0;	/* Start checking from start */
 	if (isalpha (arg[1]) || arg[1] == '=') return 0;	/* Standard modifier */
 	/* Here we must have +<value> which we wish to skip */
@@ -12736,10 +12958,10 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 
 /* Clipper to ensure a byte stays in 0-255 range */
 #if 1
-static inline unsigned char gmtsupport_clip_to_byte (int byte) { if (byte < 0) return (0); else if (byte > 255) return (255); else return ((unsigned char)byte);}
+GMT_LOCAL inline unsigned char gmtsupport_clip_to_byte (int byte) { if (byte < 0) return (0); else if (byte > 255) return (255); else return ((unsigned char)byte);}
 #else
 /* For debugging BC actions for images when the result is outside byte range  */
-unsigned char gmtsupport_clip_to_byte (int byte) {
+GMT_LOCAL unsigned char gmtsupport_clip_to_byte (int byte) {
 	if (byte < 0) {
 		fprintf (stderr, "byte = %d\n", byte);
 		return (0);
@@ -18812,7 +19034,7 @@ double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, 
 /* Helper functions to handle the parsing of option and modifier arguments that are required.
  * If argument is missing then that is an error, otherwise we parse and return */
 
-unsigned int gmtsupport_print_and_err (struct GMT_CTRL *GMT, char *text, char option, char modifier) {
+GMT_LOCAL unsigned int gmtsupport_print_and_err (struct GMT_CTRL *GMT, char *text, char option, char modifier) {
 	unsigned int error = GMT_NOERROR;
 	if (!text || !text[0]) {
 		if (modifier)

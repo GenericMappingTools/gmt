@@ -37,8 +37,18 @@
  *  Configure the implementation with gmtset GMT_FFT.
  *
  *--------------------------------------------------------------------------
- * Public functions declared in gmt_dev.h ():
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
+ * gmt_fft_any_wave
+ * gmt_fft_get_wave
+ * gmt_fft_set_wave
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ * gmtlib_fft_cleanup
+ * gmtlib_fft_initialization
+ * gmtlib_fourt_stats
+ * gmtlib_suggest_fft_dim
  *
  */
 

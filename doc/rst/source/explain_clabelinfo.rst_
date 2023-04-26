@@ -34,7 +34,7 @@
        is to see annotations and labels and not the lines that guides them.
 
     **+j**\ *just*
-       Sets label justification relative to the line center point [Default is MC].
+       Sets label justification relative to the line center point [Default is **MC**].
 
     **+n**\ *dx*\ [/*dy*]
         Nudges the placement of labels by the specified amount (append

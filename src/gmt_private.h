@@ -146,7 +146,7 @@ struct GMTAPI_CTRL {
 	unsigned int unique_var_ID;		/* Used to create unique object IDs (grid,dataset, etc) for duration of session */
 	int current_item[2];			/* Array number of current dataset being processed (in and out)*/
 	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */
-	unsigned int external;			/* 1 if called via external API (MATLAB, Python) [0] */
+	unsigned int external;			/* 1 if called via external API (MATLAB, Julia, Python) [0] */
 	unsigned int runmode;			/* nonzero for GMT modern runmode [0 = classic] */
 	enum GMT_enum_fmt shape;		/* GMT_IS_COL_FORMAT (2) if column-major (MATLAB, Fortran), GMT_IS_ROW_FORMAT (1) if row-major (Python, C/C++) [1] */
 	unsigned int leave_grid_scaled;		/* 1 if we don't want to unpack a grid after we packed it for writing [0] */

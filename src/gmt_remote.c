@@ -19,6 +19,35 @@
  *
  * Author:	Paul Wessel
  * Date:	15-Sept-2017
+ *
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ * gmt_dataserver_url
+ * gmt_download_file
+ * gmt_download_file_if_not_found
+ * gmt_download_tiles
+ * gmt_file_is_a_tile
+ * gmt_file_is_cache
+ * gmt_file_is_tiled_list
+ * gmt_get_dataset_tiles
+ * gmt_get_tile_id
+ * gmt_refresh_server
+ * gmt_remote_dataset_id
+ * gmt_remote_no_extension
+ * gmt_remote_no_resolution_given
+ * gmt_remote_resolutions
+ * gmt_set_remote_and_local_filenames
+ * gmt_set_unspecified_remote_registration
+ * gmt_use_srtm_coverage
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ * gmtlib_assemble_tiles
+ * gmtlib_file_is_jpeg2000_tile
+ * gmtlib_get_tile_list
+ * gmtlib_remote_file_is_tiled
+ *
+ * gmtremote_* functions are all static and used only in this file, hence not exported.
  */
 
 #include "gmt_dev.h"
@@ -318,7 +347,7 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 	return (strncmp (name_1, name_2, len));
 }
 
-int gmtremote_wind_to_file (const char *file) {
+GMT_LOCAL int gmtremote_wind_to_file (const char *file) {
 	int k = (int)(strlen (file) - 2);	/* This jumps past any trailing / for tiles */
 	while (k >= 0 && file[k] != '/') k--;
 	return (k+1);
@@ -685,7 +714,7 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 	return Curl;	/* Happily return the Curl pointer */
 }
 
-struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
+GMT_LOCAL struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
 	/* Creates filename for lock and activates the lock */
 	struct LOCFILE_FP *P = gmt_M_memory (GMT, NULL, 1, struct LOCFILE_FP);
 	if (P == NULL) return NULL;
@@ -700,7 +729,7 @@ struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
 	return P;
 }
 
-void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
+GMT_LOCAL void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
 	/* Deactivates the lock on the file */
 	gmtlib_file_unlock (GMT, fileno((*P)->fp));
 	fclose ((*P)->fp);
@@ -1243,7 +1272,10 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 					snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.USERDIR, &file[1]);
 				break;
 			case GMT_LOCAL_DIR:
-				snprintf (local_path, PATH_MAX, "%s", &file[1]);
+				if (jp2_file)	/* Leave as JP2 file in the local directory */
+					snprintf (local_path, PATH_MAX, "%s", jp2_file);
+				else
+					snprintf (local_path, PATH_MAX, "%s", &file[1]);
 				break;
 			default:	/* Place remote data files locally per the internal rules */
 				if (GMT->session.USERDIR == NULL || access (GMT->session.USERDIR, R_OK))
