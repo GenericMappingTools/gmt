@@ -8400,7 +8400,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		/* Determine if psscale need to label these steps by looking for the optional single L|U|B character at the end */
 
 		L = strlen(line) - 1;   /* Position in line of last character. Will be 0 if just L|U|B */
-		if (L == 0) {   /* Got a single character - check if L|U|B */
+		if (L > 0 && strchr (" \t", line[L-1])) {   /* Got a single character - check if L|U|B */
 			c = line[L];
 			if (c == 'L')
 				X->data[n].annot = 1;
