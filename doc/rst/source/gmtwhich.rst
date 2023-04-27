@@ -62,9 +62,9 @@ Optional Arguments
 .. _-G:
 
 **-G**\ [**a**\|\ **c**\|\ **l**\|\ **u**]
-    If a file argument is a downloadable file (either a complete URL or a @file for
-    downloading from the GMT data server, i.e., one of the sample datasets or one of
-    the remote datasets at https://www.generic-mapping-tools.org/remote-datasets/)
+    If a file argument is a downloadable file (either a complete URL, a @file for
+    downloading from the GMT data server, or @earth_relief_rru or any other of the
+    remote datasets at https://www.generic-mapping-tools.org/remote-datasets/)
     we will try to download the file if it is not found in your local data or cache dirs.
     By default [**-Gl**] we download to the current directory. Append **a** to
     place files in the appropriate folder under the user directory (this is where
