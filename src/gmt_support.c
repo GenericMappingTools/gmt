@@ -8400,14 +8400,15 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		/* Determine if psscale need to label these steps by looking for the optional single L|U|B character at the end */
 
 		L = strlen(line) - 1;   /* Position in line of last character. Will be 0 if just L|U|B */
+		/* Must check previous char since hex colors like #5CC3EB should not trigger on 'B' */
 		if (L > 0 && strchr (" \t", line[L-1])) {   /* Got a single character - check if L|U|B */
 			c = line[L];
 			if (c == 'L')
-				X->data[n].annot = 1;
+				X->data[n].annot = GMT_CPT_L_ANNOT;
 			else if (c == 'U')
-				X->data[n].annot = 2;
+				X->data[n].annot = GMT_CPT_U_ANNOT;
 			else if (c == 'B')
-				X->data[n].annot = 3;
+				X->data[n].annot = GMT_CPT_B_ANNOT;
 			if (X->data[n].annot) line[strlen(line)-1] = '\0';	/* Chop off this information so it does not affect our column count below */
 		}
 
@@ -8632,8 +8633,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	}
 
 	if (!annot) {	/* Must set default annotation flags */
-		for (i = 0; i < X->n_colors; i++) X->data[i].annot = 1;
-		X->data[i-1].annot = 3;
+		for (i = 0; i < X->n_colors; i++) X->data[i].annot = GMT_CPT_L_ANNOT;
+		X->data[i-1].annot = GMT_CPT_B_ANNOT;
 	}
 
 	/* Reset the color model to what it was in the GMT defaults when a + is used there. */
@@ -9351,9 +9352,9 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	}
 
 	/* Must set default annotation flags */
-	for (i = 0; i < P->n_colors; i++) P->data[i].annot = 1;
-	if (i) P->data[i-1].annot = 3;
-	else P->data[i].annot = 3;
+	for (i = 0; i < P->n_colors; i++) P->data[i].annot = GMT_CPT_L_ANNOT;
+	if (i) P->data[i-1].annot = GMT_CPT_B_ANNOT;
+	else P->data[i].annot = GMT_CPT_B_ANNOT;
 
 	gmtsupport_copy_palette_hdrs (GMT, P, Pin);
 	return (P);
