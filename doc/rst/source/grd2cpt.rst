@@ -130,7 +130,7 @@ Optional Arguments
     If *label* is appended then we create labels for each category to be used
     when the CPT is plotted. The *label* may be a comma-separated list of
     category names (you can skip a category by not giving a name), or give
-    *start*[-], where we automatically build monotonically increasing labels
+    *start*\ [-], where we automatically build monotonically increasing labels
     from *start* (a single letter or an integer). Append - to build ranges
     *start*-*start+1* instead.  **Note**: If **+cM** is given and the number
     of categories is 12, then we automatically create a list of month names.
