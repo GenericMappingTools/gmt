@@ -80,7 +80,7 @@ Required Arguments
     *16:9 (24x13.5 cm or 9.6x5.4 inch)*
     4320p (8k and uhd-2)                7680 x 4320
     2160p (4k and uhd)                  3840 x 2160
-    1080p (hd)                          1920 x 1080
+    1080p (fhd and hd)                  1920 x 1080
     720p                                1280 x 720
     540p                                960 x 540
     480p                                854 x 480
@@ -648,7 +648,6 @@ horizontally, then combine the two resulting strips vertically::
     ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
 
 For more information on such manipulations, see the FFmpeg documentation.
-
 
 Adding an Audio Track
 ---------------------
