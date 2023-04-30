@@ -1112,6 +1112,7 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 	strcat (cmd, args);	/* Append the common arguments */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
 	GMT_Report (API, GMT_MSG_DEBUG, "Running: grdconvert %s\n", cmd);
+	API->GMT->common.V.active = false;	/* Since we will parse again below */
 	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
 		gmt_M_free (API->GMT, ncfile);
