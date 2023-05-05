@@ -354,7 +354,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "         xga:  1024 x  768    24 x 18 cm      42.6667    9.6 x 7.2 inch   106.6667\n");
 	GMT_Message (API, GMT_TIME_NONE, "        svga:   800 x  600    24 x 18 cm      33.3333    9.6 x 7.2 inch    83.3333\n");
 	GMT_Message (API, GMT_TIME_NONE, "         dvd:   640 x  480    24 x 18 cm      26.6667    9.6 x 7.2 inch    66.6667\n");
-	GMT_Usage (API, -2, "Note: uhd-2 and 8k can be used for 4320p, uhd and 4k for 2160p, and hd for 1080p. "
+	GMT_Usage (API, -2, "Note: uhd-2 and 8k can be used for 4320p, uhd and 4k for 2160p, and fhd or hd for 1080p. "
 		"Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions and dpu. "
 		"Alternatively, set a custom canvas with dimensions and dots-per-unit manually by "
 		"providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).");
@@ -753,7 +753,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				else if (!strcmp (arg, "4k") || !strcmp (arg, "uhd") || !strcmp (arg, "2160p")) {	/* 2160x3840 */
 					Ctrl->C.dim[GMT_X] = width;	Ctrl->C.dim[GMT_Y] = height16x9;	Ctrl->C.dim[GMT_Z] = dpu;
 				}
-				else if (!strcmp (arg, "1080p") || !strcmp (arg, "hd")) {	/* 1080x1920 */
+				else if (!strcmp (arg, "1080p") || !strcmp (arg, "fhd") || !strcmp (arg, "hd")) {	/* 1080x1920 */
 					Ctrl->C.dim[GMT_X] = width;	Ctrl->C.dim[GMT_Y] = height16x9;	Ctrl->C.dim[GMT_Z] = dpu / 2.0;
 				}
 				else if (!strcmp (arg, "720p")) {	/* 720x1280 */

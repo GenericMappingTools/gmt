@@ -526,6 +526,11 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
+		if (D->n_records == 0) {	/* Got nothing from file or stdin */
+			if (Ctrl->E.active) GMT_Report (API, GMT_MSG_ERROR, "Option -E: File has no data records\n");
+			else GMT_Report (API, GMT_MSG_ERROR, "Option -S: File has no data records\n");
+			Return (API->error);
+		}
 		zcol = D->n_columns - 1;	/* Always the last column */
 		if (!(Ctrl->E.active || Ctrl->S.mode == DO_RANGE || Ctrl->S.mode == DO_ROUNDED_RANGE)) {
 			/* Must sort the data to do the L1, LMS statistics */

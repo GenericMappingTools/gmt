@@ -326,26 +326,26 @@ jobs using all available cores and launches new jobs as old ones complete.
 
 As another example, we get a list of all European countries and make a simple coast plot of each of them,
 placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
-we combine all the individual PDFs into a single PDF file and delete the individual files::
+we combine all the individual PDFs into a single PDF file and delete the individual files.  Here, we place the EOF tag in quotes which prevent the un-escaped variables from being interpreted::
 
-    cat << EOF > pre.sh
+    cat << 'EOF' > pre.sh
     gmt begin
         gmt coast -E=EU+l > countries.txt
     gmt end
     EOF
-    cat << EOF > main.sh
-    gmt begin \${BATCH_NAME} pdf
-        gmt coast -R\${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"\${BATCH_WORD1}" -E\${BATCH_WORD0}+gred+p0.5p
-        echo \${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
+    cat << 'EOF' > main.sh
+    gmt begin ${BATCH_NAME} pdf
+        gmt coast -R${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"${BATCH_WORD1}" -E${BATCH_WORD0}+gred+p0.5p
+        echo ${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
     gmt end
     EOF
-    cat << EOF > post.sh
-    gmt psconvert -TF -F\${BATCH_PREFIX} \${BATCH_PREFIX}_*.pdf
-    rm -f \${BATCH_PREFIX}_*.pdf
+    cat << 'EOF' > post.sh
+    gmt psconvert -TF -F${BATCH_PREFIX} ${BATCH_PREFIX}_*.pdf
+    rm -f ${BATCH_PREFIX}_*.pdf
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
-Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
+Here, the postflight script may not even be a GMT script. In our case we simply run psconvert (which just calls gs (Ghostscript)) and deletes what we don't want to keep.
 
 macOS Issues
 ------------

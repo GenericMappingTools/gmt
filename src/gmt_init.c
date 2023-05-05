@@ -167,6 +167,10 @@
 #	include <mex.h>
 #endif
 
+#ifndef HAVE_MERGESORT
+#include "mergesort.c"
+#endif
+
 /* These are used in gmtinit_init_custom_annot and gmtinit_decode_tinfo only */
 #define GMT_ITEM_ANNOT		0
 #define GMT_ITEM_INTVAL		1
@@ -10754,7 +10758,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_FONT_ANNOT_PRIMARY:
 			if (value[0] == '+') {
 				/* When + is prepended, scale fonts, offsets and ticklengths relative to FONT_ANNOT_PRIMARY (except LOGO font) */
-				double scale = GMT->current.setting.font_annot[GMT_PRIMARY].size;
+				double scale = 1.0;
+				gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values for now */
+				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size;
 				if (gmt_getfont (GMT, &value[1], &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
 				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size / scale;
 				GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale;
