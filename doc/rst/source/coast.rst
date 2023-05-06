@@ -122,7 +122,7 @@ Optional Arguments
       state of a country (if available), e.g., US.TX for Texas.
     - Append =\ *continent* to specify a continent, using either the full names or the abbreviations AF (Africa),
       AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
-    - To specify a collection or named region, give either the code of the full name.
+    - To specify a collection or named region, give either the code or the full name.
 
     The following modifiers are supported:
 
