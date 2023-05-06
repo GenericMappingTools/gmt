@@ -2841,7 +2841,7 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.clip = &gmt_map_wesn_clip;
 	}
 	else {
-		GMT->current.proj.VE = GMT->current.proj.scale[GMT_Y] / GMT->current.proj.scale[GMT_X];
+		GMT->current.proj.VE = fabs(GMT->current.proj.scale[GMT_Y] / GMT->current.proj.scale[GMT_X]);
         	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Linear projection implies y-axis distance exaggeration relative to the x-axis by a factor of %g\n", GMT->current.proj.VE);
 
 		GMT->current.map.outside = &gmtmap_rect_outside;
@@ -9857,8 +9857,8 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
 	GMT->current.map.path_step = GMT->current.setting.map_line_step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 
-	i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
-	scale = 0.001 / (GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit] * GMT->current.proj.scale[GMT_X]);
+	i_scale = 1.0 / fabs(0.0254 * GMT->current.proj.scale[GMT_X]);
+	scale = 0.001 / fabs(GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit] * GMT->current.proj.scale[GMT_X]);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map scale is %g km per %s or 1:%g.\n",
 		scale, GMT->session.unit_name[GMT->current.setting.proj_length_unit], i_scale);
 
