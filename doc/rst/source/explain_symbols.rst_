@@ -148,7 +148,7 @@
         **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the
         two dimensions and corner radius must be found after the location [and *value*] columns.
 
-    **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+i**\ [*inner*]]
+    **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+a**\ [*dr*]][**+i**\ [*inner*]][**+p**\ *pen*][**+r**\ [*da*]]
         Pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
         These are directions (in degrees counter-clockwise from horizontal) for wedge.
         Parameters not appended are read from file after the location [and *value*] columns.
@@ -159,7 +159,7 @@
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
-    **-SW**\ [*outer*\ [/*startaz*/*stopaz*]][**+i**\ [*inner*]]
+    **-SW**\ [*outer*\ [/*startaz*/*stopaz*]][**+a**\ [*dr*]][**+i**\ [*inner*]][**+p**\ *pen*][**+r**\ [*da*]]
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
