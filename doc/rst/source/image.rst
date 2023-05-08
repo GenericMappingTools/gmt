@@ -81,7 +81,7 @@ Optional Arguments
     Use **+r**\ *dpi* to set the dpi of the image in dots per inch, or use
     **+w**\ [**-**]\ *width*\ [/*height*] to
     set the width (and height) of the image in plot coordinates
-    (inches, cm, etc.). If *height* or *width* is set to 0, then the original aspect
+    (inches, cm, etc.). If *height* (or *width*) is set to 0, then the original aspect
     ratio of the image is maintained. If *width* (or *height*) is negative we use the
     absolute value and interpolate image to the device resolution using
     the PostScript image operator. If neither dimensions nor *dpi* are set then we
