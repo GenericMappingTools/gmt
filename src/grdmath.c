@@ -2619,7 +2619,6 @@ GMT_LOCAL void grdmath_SADDLE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 		if ((product = dx * dy) == 0) continue;	/* No local min or max possible */
 		if (product < 0)	/* Saddle point */
 			z[node] = (float)((dx > 0) ? +1 : -1);
-			continue;
 	}
 
 	gmt_M_memcpy (stack[last]->G->data, z, info->size, float);
