@@ -1980,6 +1980,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
 					gmt_set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
+					fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
 					fprintf (fp, "\tgmt figure ../%s %s", gmt_place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
 					fprintf (fp, " E%s,%s\n", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
 				}
