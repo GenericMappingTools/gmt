@@ -1308,7 +1308,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_i_frame = 0, data_frame, n_cores_unused, n_fade_frames = 0;
 	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
-	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false;
+	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false, play_movie = false;
 	bool n_written = false, has_text = false, is_classic = false, place_background = false, issue_col0_par = false;
 
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"}, var_token[4] = "$$%";
@@ -2469,8 +2469,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA \"%s\" GMT_MAX_CORES 1\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-			if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
-			else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+			if (gmt_is_gmt_end_show (line)) {	/* Want to play movie at the end */
+				sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
+				play_movie = true;
+			}
+			else if (strchr (line, '\n') == NULL)	/* In case the last line misses a newline */
+				strcat (line, "\n");
 			fprintf (fp, "%s", line);	/* Just copy the line as is */
 		}
 	}
@@ -2616,6 +2620,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "MP4 movie built: %s.mp4\n", Ctrl->N.prefix);
+		if (play_movie) {	/* Play the movie automatically via gmt docs */
+			snprintf (cmd, PATH_MAX, "%s.mp4", Ctrl->N.prefix);
+			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
+			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to call docs\n");
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
+			}
+		}
 	}
 	if (Ctrl->F.active[MOVIE_WEBM]) {
 		static char *vpx[2] = {"libvpx", "libvpx-vp9"}, *pix_fmt[2] = {"yuv420p", "yuva420p"};
@@ -2640,6 +2653,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "WebM movie built: %s.webm\n", Ctrl->N.prefix);
+		if (play_movie) {	/* Play the movie automatically via gmt docs */
+			snprintf (cmd, PATH_MAX, "%s.webm", Ctrl->N.prefix);
+			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
+			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to call docs\n");
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
+			}
+		}
 	}
 
 	/* Prepare the cleanup script */

@@ -60,7 +60,8 @@ Required Arguments
     written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
     and we build hidden movie scripts using the same language.  Parameters that can be accessed
-    are discussed below.
+    are discussed below. **Note**: If the final **gmt end** statement ends with **show** then
+    we automatically open and play the movie once assembled.
 
 .. _-C:
 
