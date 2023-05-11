@@ -2365,6 +2365,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			error = GMT_RUNTIME_ERROR;
 			goto out_of_here;
 		}
+		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure master frame is ready to be viewed */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
 		if (!Ctrl->Q.active) {
 			/* Delete the masterfile script */
