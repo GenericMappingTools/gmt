@@ -183,10 +183,10 @@ struct MOVIE_CTRL {
 	} E;
 	struct MOVIE_F {	/* -F<videoformat>[+l<n>][+o<options>][+s<stride>][+t][+v] - repeatable */
 		bool active[MOVIE_N_FORMATS];
+		bool view[MOVIE_N_FORMATS];
 		bool transparent;
 		bool loop;
 		bool skip;
-		bool view;
 		unsigned int loops;
 		unsigned int stride;
 		char *format[MOVIE_N_FORMATS];
@@ -682,6 +682,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 	unsigned int n_errors = 0, n_files = 0, k, pos, mag, T, frames;
 	int n;
+	bool do_view = false;
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, arg[GMT_LEN64] = {""}, p[GMT_LEN256] = {""};
 	char *c = NULL, *s = NULL, string[GMT_LEN128] = {""};
 	double width = 24.0, height16x9 = 13.5, height4x3 = 18.0, dpu = 160.0;	/* SI values for dimensions and dpu */
@@ -846,9 +847,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'F':	/* Set movie format and optional FFmpeg options */
-				if ((c = gmt_first_modifier (GMT, opt->arg, "lost"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "lostv"))) {	/* Process any modifiers */
+					do_view = false;
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'F', c, "lost", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'F', c, "lostv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'l':	/* Specify loops for GIF */
 								Ctrl->F.loop = true;
@@ -871,7 +873,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 								Ctrl->F.transparent = true;
 								break;
 							case 'v':	/* Open video in viewer */
-								Ctrl->F.view = true;
+								do_view = true;
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -913,6 +915,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					}
 					/* Here we have a new video format selected */
 					Ctrl->F.active[k] = true;
+					Ctrl->F.view[k] = do_view;
 					if (k != MOVIE_PNG) Ctrl->animate = true;
 					if (s) {	/* Gave specific encoding options */
 						if (Ctrl->F.options[k]) gmt_M_str_free (Ctrl->F.options[k]);	/* Free old setting first */
@@ -2636,7 +2639,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "MP4 movie built: %s.mp4\n", Ctrl->N.prefix);
-		if (Ctrl->F.active[MOVIE_MP4].view) {	/* Play the movie automatically via gmt docs */
+		if (Ctrl->F.view[MOVIE_MP4]) {	/* Play the movie automatically via gmt docs */
 			snprintf (cmd, PATH_MAX, "%s.mp4", Ctrl->N.prefix);
 			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
@@ -2669,7 +2672,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "WebM movie built: %s.webm\n", Ctrl->N.prefix);
-		if (Ctrl->F.active[MOVIE_WEBM].view) {	/* Play the movie automatically via gmt docs */
+		if (Ctrl->F.view[MOVIE_WEBM]) {	/* Play the movie automatically via gmt docs */
 			snprintf (cmd, PATH_MAX, "%s.webm", Ctrl->N.prefix);
 			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
