@@ -172,11 +172,12 @@ enum gmtlogo_label {
 /* Control structure for gmtlogo */
 
 struct GMTLOGO_CTRL {
-	struct GMTLOGO_D {	/* -D[g|j|n|x]<refpoint>+w<width>[+j<justify>][+o<dx>[/<dy>]] */
+	struct GMTLOGO_D {	/* -D[g|j|n|x]<refpoint>[+h<height>|+w<width>][+j<justify>][+o<dx>[/<dy>]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
 		double width;
+		double height;
 		int justify;
 	} D;
 	struct GMTLOGO_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
@@ -208,7 +209,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [-D%s[+w<width>]%s] [-F%s] [%s] "
+	GMT_Usage (API, 0, "usage: %s [-D%s[+h<height>|+w<width>]%s] [-F%s] [%s] "
 		"%s%s%s[%s] [-S[l|n|u]] [%s] [%s] [%s] [%s] %s[%s] [%s]\n",
 		name, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT,
 		API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -218,7 +219,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LOGO, 2);
-	GMT_Usage (API, 3, "+w Set the <width> of the GMT logo. [144p]");
+	GMT_Usage (API, 3, "+h Set the <height> of the GMT logo [72p], or");
+	GMT_Usage (API, 3, "+w Set the <width> of the GMT logo [144p]");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Usage (API, 1, "\n-S[l|n|u]");
@@ -255,8 +257,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL)
 					n_errors++;	/* Failed basic parsing */
-				else {	/* args are [+w<width>][+j<justify>][+o<dx>[/<dy>]] */
-					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jow", GMT_MSG_ERROR)) n_errors++;
+				else {	/* args are [+h<height>|w<width>][+j<justify>][+o<dx>[/<dy>]] */
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "hjow", GMT_MSG_ERROR)) n_errors++;
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
@@ -264,6 +266,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'h', string))	/* Get logo height */
+						Ctrl->D.height = gmt_M_to_inch (GMT, string);
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
 						Ctrl->D.width = gmt_M_to_inch (GMT, string);
 				}
@@ -301,7 +305,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 			Ctrl->D.width = gmt_M_to_inch (GMT, string);
 		Ctrl->D.active = true;
 	}
-	if (Ctrl->D.width == 0.0) Ctrl->D.width = 2.0;	/* Default width */
+	if (Ctrl->D.width == 0.0) {	/* Either size not set or got height instead */
+		if (Ctrl->D.height > 0.0) /* Got height, now compute width */
+			Ctrl->D.width = (Ctrl->S.mode == GMTLOGO_LABEL_NONE) ? Ctrl->D.height / (1.55 * 0.25) : 2.0 * Ctrl->D.height;
+		else	/* Default width */
+			Ctrl->D.width = 2.0;
+	}
+	else if (Ctrl->D.height > 0.0) {	/* Cannot specify both dimensions since aspect is fixed */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.width > 0.0, "Option -D+w|+h modifiers: Cannot set both width and height since aspecf is fixed!\n");
+	}
 	if (Ctrl->D.refpoint && Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		static char *kind = GMT_REFPOINT_CODES;	/* The five types of refpoint specifications */
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Option -D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
