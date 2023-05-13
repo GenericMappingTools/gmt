@@ -24,7 +24,7 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-K|\ [**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*]\ [**+p**\ [**i**\|\ **o**]] ]
 [ |-L|\ *labelinfo* ]
-[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*] ]
+[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*][**+v**] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
 [ |-Sb|\ *background* ]
@@ -250,12 +250,12 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*]
+**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*][**+v**]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can be one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
     we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame. **Note**: For raster frame formats
-    you may optionally specify an alternate *dpu* of that frame via the **+r** modifier [same dpu as the movie frames].
+    you may optionally specify an alternate *dpu* of that frame via the **+r** modifier [same dpu as the movie frames]. Finally, to open the master plot in the default viewer, append **+v**.
 
 .. _-P:
 

@@ -216,10 +216,11 @@ struct MOVIE_CTRL {
 	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+h[<dx>/<dy>/][<shade>]][+j<justify>][+o<offset>][+p<pen>][+r][+t<fmt>][+s<scl>] */
 		bool active;
 	} L;
-	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format][+r<dpu>] */
+	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format][+r<dpu>][+v] */
 		bool active;
 		bool exit;
 		bool dpu_set;
+		bool view;
 		unsigned int update;	/* 1 = set middle, 2 = set last frame */
 		unsigned int frame;	/* Frame selected as master frame */
 		double dpu;
@@ -324,7 +325,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
 		"[-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t][+v]] [-G[<fill>][+p<pen>]] [-H<scale>] "
-		"[-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
+		"[-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>][+v]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
 		"[-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -431,11 +432,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+p Draw the outline of the textbox using selected pen [no outline].");
 	GMT_Usage (API, 3, "+r Select a rounded rectangular textbox (requires +g or +p) [rectangular].");
 	GMT_Usage (API, 3, "+t Provide a C-format statement to be used with the item selected [none].");
-	GMT_Usage (API, 1, "\n-M[<frame>|f|m|l,][<format>][+r<dpu>]");
+	GMT_Usage (API, 1, "\n-M[<frame>|f|m|l,][<format>][+r<dpu>][+v]");
 	GMT_Usage (API, -2, "Create a master frame plot as well; append comma-separated frame number [0] and format [pdf]. "
 		"Master plot will be named <prefix>.<format> and placed in the current directory. "
-		"Instead of frame number you can specify f(irst), m(iddle), or l(last) frame. "
-		"For a raster master frame you may optionally select another <dpu> via +r [same as movie].");
+		"Instead of frame number you can specify f(irst), m(iddle), or l(last) frame.");
+		GMT_Usage (API, 3, "+r For a raster master frame you may optionally select another <dpu> [same as movie].");
+		GMT_Usage (API, 3, "+v Open the master frame in the default viewer.");
 	GMT_Usage (API, 1, "\n-P<progressinfo>");
 	GMT_Usage (API, -2, "Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter. "
 		"Append desired indicator (a-f) [a] and consult the movie documentation for which attributes are needed:");
@@ -1015,24 +1017,36 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'M':	/* Create a single frame plot as well as movie (unless -Q is active) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				if ((s = strstr (opt->arg, "+r")) ) {	/* Gave specific resolution for master frame */
-					Ctrl->M.dpu = atof (&s[2]);
-					Ctrl->M.dpu_set = true;
-					s[0] = '\0';	/* Truncate for now */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "rv"))) {	/* Process any modifiers */
+					pos = 0;	/* Reset to start of new word */
+					while (gmt_getmodopt (GMT, 'K', c, "rv", &pos, p, &n_errors) && n_errors == 0) {	
+						switch (p[0]) {
+							case 'r':	/* Gave specific resolution for master frame */
+								Ctrl->M.dpu = atof (&s[2]);
+								Ctrl->M.dpu_set = true;
+								break;
+							case 'v':	/* View master frame */
+								Ctrl->M.view = true;
+								break;
+							default:
+								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+						}
+					}								
+					c[0] = '\0';	/* Chop off modifiers */
 				}
-				if ((c = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
-					if (!strncmp (&c[1], "view", 4U))  /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
+				if ((s = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
+					if (!strncmp (&s[1], "view", 4U))  /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
 						Ctrl->M.format = strdup (gmt_session_format[API->GMT->current.setting.graphics_format]);
 					else
-						Ctrl->M.format = strdup (&c[1]);
-					c[0] = '\0';	/* Chop off format */
+						Ctrl->M.format = strdup (&s[1]);
+					s[0] = '\0';	/* Chop off format */
 					switch (opt->arg[0]) {
 						case 'f':	Ctrl->M.frame  = 0; break;
 						case 'm':	Ctrl->M.update = 1; break;
 						case 'l':	Ctrl->M.update = 2; break;
 						default:	Ctrl->M.frame = atoi (opt->arg); break;
 					}
-					c[0] = ',';	/* Restore format */
+					s[0] = ',';	/* Restore format */
 				}
 				else if (isdigit (opt->arg[0]) || (strchr ("fml", opt->arg[0]) && opt->arg[1] == '\0')) {	/* Gave just a frame, default to PDF format */
 					Ctrl->M.format = strdup ("pdf");
@@ -1050,7 +1064,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 						Ctrl->M.format = strdup (opt->arg);
 				else /* Default is PDF of frame 0 */
 					Ctrl->M.format = strdup ("pdf");
-				if (s) s[0] = '+';	/* Restore */
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'N':	/* Movie prefix and directory name */
@@ -1316,7 +1330,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_i_frame = 0, data_frame, n_cores_unused, n_fade_frames = 0;
 	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
-	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false, view_master = false;
+	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false;
 	bool n_written = false, has_text = false, is_classic = false, place_background = false, issue_col0_par = false;
 
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"}, var_token[4] = "$$%";
@@ -2342,7 +2356,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
 					if (gmt_is_gmt_end_show (line)) {	/* Want to open the master plot and movie at the end */
 						sprintf (line, "gmt end\n");	/* Eliminate show from gmt end in this script */
-						view_master = true;
+						Ctrl->M.view = true;			/* Backwards compatibility: Use +v modifier instead */
 					}
 					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 					fprintf (fp, "%s", line);	/* Just copy the line as is */
@@ -2379,7 +2393,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
-		if (view_master) {	/* Play the movie master frame via gmt docs */
+		if (Ctrl->M.view) {	/* Play the movie master frame via gmt docs */
 			snprintf (cmd, PATH_MAX, "%s/%s.%s", topdir, Ctrl->N.prefix, Ctrl->M.format);
 			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
