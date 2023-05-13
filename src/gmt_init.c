@@ -8887,12 +8887,15 @@ int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt) {
 
 unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]) {
 	/* If given +e|r|R<incs> we must parse and get the mode and 1, 2, or 4 increments */
-	unsigned int n_errors = 0, k;
+	unsigned int n_errors = 0;
+	char *c = NULL;
+
 	if (arg == NULL || arg[0] == '\0') return GMT_NOERROR;	/* Nothing to do */
-	k = (arg[0] == '+') ? 1 : 0;	/* We may get +r or e, for instance, depending on upstream strtok */
-	if (strchr ("erR", arg[k])) {	/* Want to extend the final region before reporting */
-		int j = GMT_Get_Values (GMT->parent, &arg[k+1], inc, 4);
-		*mode = (arg[k] == 'e') ? GMT_REGION_ROUND_EXTEND : ((arg[k] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
+	c = strchr (arg, '+');	/* Start of modifier, if given */
+	if (c && strchr ("erR", c[1])) {	/* Want to extend the final region before reporting */
+		int j;
+		j = GMT_Get_Values (GMT->parent, &c[2], inc, 4);
+		*mode = (c[1] == 'e') ? GMT_REGION_ROUND_EXTEND : ((c[1] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
 		if (j == 1)	/* Same increments in all directions */
 			inc[XHI] = inc[YLO] = inc[YHI] = inc[XLO];
 		else if (j == 2) {	/* Separate increments in x and y */
@@ -8900,7 +8903,7 @@ unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char 
 			inc[XHI] = inc[XLO];
 		}
 		else if (j != 4) {	/* The only other option is 4 but somehow we failed */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad number of increment to modifier +%c.\n", option, arg[k]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad number of increment to modifier +%c.\n", option, c[1]);
 			n_errors++;
 		}
 	}
