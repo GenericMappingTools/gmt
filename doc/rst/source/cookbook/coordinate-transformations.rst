@@ -272,7 +272,7 @@ Polar coordinate transformations
 **Syntax**
 
     **-Jp**\|\ **P**\ *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\
-    [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]]
+    [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
 
 **Parameters**
 
