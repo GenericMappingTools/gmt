@@ -18,7 +18,7 @@ Synopsis
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
-[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**] ]
+[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
@@ -61,7 +61,7 @@ Required Arguments
     or DOS batch language (.bat).  The script language is inferred from the file extension
     and we build hidden movie scripts using the same language.  Parameters that can be accessed
     are discussed below. **Note**: If the final **gmt end** statement ends with **show** then
-    we automatically open and play the movie once assembled.
+    we display the movie master frame (but only if |-M| is active).
 
 .. _-C:
 
@@ -154,7 +154,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
+**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**]
     Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
     *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  If just
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
@@ -167,6 +167,7 @@ Optional Arguments
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
       frame, with *stride* being one of a fixed set of strides: 2, 5, 10, 20, 50, 100, 200, and 500.
     - **+t** selects generation of transparent PNG images [opaque]; see `Transparency`_ for more details.
+    - **+v** opens the movie in the default movie viewer.
 
 .. _-G:
 

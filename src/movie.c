@@ -181,11 +181,12 @@ struct MOVIE_CTRL {
 		unsigned int fade[2];	/* Duration of fade title in, fade title out [none]*/
 		FILE *fp;			/* Open file pointer to title script */
 	} E;
-	struct MOVIE_F {	/* -F<videoformat>[+l<n>][+o<options>][+s<stride>][+t] - repeatable */
+	struct MOVIE_F {	/* -F<videoformat>[+l<n>][+o<options>][+s<stride>][+t][+v] - repeatable */
 		bool active[MOVIE_N_FORMATS];
 		bool transparent;
 		bool loop;
 		bool skip;
+		bool view;
 		unsigned int loops;
 		unsigned int stride;
 		char *format[MOVIE_N_FORMATS];
@@ -322,7 +323,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
-		"[-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t]] [-G[<fill>][+p<pen>]] [-H<scale>] "
+		"[-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t][+v]] [-G[<fill>][+p<pen>]] [-H<scale>] "
 		"[-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
 		"[-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -389,6 +390,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: gif|mp4|webm all imply png. Two modifiers are available for mp4 or webm:");
 	GMT_Usage (API, 3, "+o Append custom FFmpeg encoding options (in quotes) [none].");
 	GMT_Usage (API, 3, "+t Build transparent images [opaque].");
+	GMT_Usage (API, 3, "+v Open the movie in the default viewer when completed.");
 	GMT_Usage (API, -2, "Two modifiers are available for gif:");
 	GMT_Usage (API, 3, "+l Enable looping [no loop]; optionally append number of loops [infinite loop].");
 	GMT_Usage (API, 3, "+s Set stride: If -Fmp4|webm is also used you may restrict the GIF animation to use every <stride> frame only [all]. "
@@ -868,6 +870,9 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 							case 't':	/* Transparent images */
 								Ctrl->F.transparent = true;
 								break;
+							case 'v':	/* Open video in viewer */
+								Ctrl->F.view = true;
+								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
@@ -1308,7 +1313,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_i_frame = 0, data_frame, n_cores_unused, n_fade_frames = 0;
 	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
-	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false, view_product = false;
+	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false, view_master = false;
 	bool n_written = false, has_text = false, is_classic = false, place_background = false, issue_col0_par = false;
 
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"}, var_token[4] = "$$%";
@@ -2334,7 +2339,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
 					if (gmt_is_gmt_end_show (line)) {	/* Want to open the master plot and movie at the end */
 						sprintf (line, "gmt end\n");	/* Eliminate show from gmt end in this script */
-						view_product = true;
+						view_master = true;
 					}
 					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 					fprintf (fp, "%s", line);	/* Just copy the line as is */
@@ -2371,7 +2376,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
-		if (view_product) {	/* Play the movie automatically via gmt docs */
+		if (view_master) {	/* Play the movie master frame via gmt docs */
 			snprintf (cmd, PATH_MAX, "%s/%s.%s", topdir, Ctrl->N.prefix, Ctrl->M.format);
 			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
@@ -2483,10 +2488,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA \"%s\" GMT_MAX_CORES 1\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 		}
 		else if (!strstr (line, "#!/")) {		/* Skip any leading shell incantation since already placed */
-			if (gmt_is_gmt_end_show (line)) {	/* Want to play movie at the end */
-				sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
-				view_product = true;
-			}
+			if (gmt_is_gmt_end_show (line)) sprintf (line, "gmt end\n");		/* Eliminate show from gmt end in this script */
 			else if (strchr (line, '\n') == NULL)	/* In case the last line misses a newline */
 				strcat (line, "\n");
 			fprintf (fp, "%s", line);	/* Just copy the line as is */
@@ -2634,7 +2636,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "MP4 movie built: %s.mp4\n", Ctrl->N.prefix);
-		if (view_product) {	/* Play the movie automatically via gmt docs */
+		if (Ctrl->F.active[MOVIE_MP4].view) {	/* Play the movie automatically via gmt docs */
 			snprintf (cmd, PATH_MAX, "%s.mp4", Ctrl->N.prefix);
 			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
@@ -2667,7 +2669,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "WebM movie built: %s.webm\n", Ctrl->N.prefix);
-		if (view_product) {	/* Play the movie automatically via gmt docs */
+		if (Ctrl->F.active[MOVIE_WEBM].view) {	/* Play the movie automatically via gmt docs */
 			snprintf (cmd, PATH_MAX, "%s.webm", Ctrl->N.prefix);
 			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
