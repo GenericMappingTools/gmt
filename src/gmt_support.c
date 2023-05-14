@@ -38,7 +38,8 @@
  *	gmt_cat_cpt_strings
  *	gmt_centroid_area
  *	gmt_char_count
- *	gmt_check_executable
+ *	gmt_run_process_get_first_line
+ *  gmt_check_executable
  *	gmt_check_language
  *	gmt_colorname2index
  *	gmt_consider_current_cpt
@@ -18229,10 +18230,9 @@ void gmt_filename_get (char *name) {
 	gmt_strrepc (name, GMT_ASCII_RS, ' ');
 }
 
-bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text) {
+bool gmt_run_process_get_first_line (struct GMT_CTRL *GMT, char *program, char *arg, char *text) {
 	/* Determine if a program exists by calling program with arg via popen.  If popen is successful
-	 * and pattern != NULL we check that the first line read from popen contains the pattern.
-	 * If text != NULL then we return what popen read as first line. If successful test then
+	 * and text != NULL then we return what popen read as first line. If successful test then
 	 * we return true, else false */
 	char cmd[PATH_MAX] = {""}, line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
@@ -18259,11 +18259,11 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 #else
 	strcat (cmd, " 2> /dev/null");
 #endif
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_check_executable: Pass to popen: [%s]\n", cmd);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_run_process_get_first_line: Pass to popen: [%s]\n", cmd);
 
 	if ((fp = popen (cmd, "r")))	/* There was such a command */
 		gmt_fgets (GMT, line, GMT_LEN256, fp);	/* Read first line */
-	if (fp == NULL || line[0] == '\0' || (pattern && strstr (line, pattern) == NULL)) {
+	if (fp == NULL || line[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s failed\n", cmd);
 	}
 	else {	/* Get here if we passed the test */
@@ -18274,6 +18274,15 @@ bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char 
 	if (fp) pclose (fp);
 	if (text) gmt_chop (text);	/* Get rid of newline */
 	return (answer);
+}
+
+bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text) {
+    /* To avoid function name change in several GMT files. */
+    bool status = gmt_run_process_get_first_line (GMT, program, arg, text);
+	if (status && pattern && strstr (text, pattern) == NULL) {
+        GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_check_executable failed pattern %s test\n", pattern);
+    }
+    return (status);
 }
 
 void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, double inc[]) {

@@ -16,6 +16,7 @@ Synopsis
 |-C|\ *canvas*
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-A|\ *audiofile*\ [**+e**] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
 [ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**] ]
@@ -129,6 +130,13 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-A:
+
+**-A**\ *audiofile*\ [**+e**]
+    Add in an audio track (such as a narration), presumably of same length as the animation, but it can be
+    shorter or longer.  We place it starting at the first frame. Use **+e** to stretch the audio track to
+    exactly fit the length of the animation (provided the scaling is not less than 0.5 or larger than 2.0).
 
 .. _-D:
 

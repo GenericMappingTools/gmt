@@ -162,6 +162,12 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of main script */
 		FILE *fp;	/* Open file pointer to main script */
 	} In;
+	struct MOVIE_A {	/* -A<audiofile>[+e] */
+		bool active;
+		bool exact;
+		double duration;	/* Original length of audio track */
+		char *file;
+	} A;
 	struct MOVIE_C {	/* -C<namedcanvas>|<canvas_and_dpu> */
 		bool active;
 		double dim[3];
@@ -287,6 +293,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Dealloca
 	gmt_M_unused (GMT);
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.string);
 	gmt_M_str_free (C->E.fill);
 	gmt_M_str_free (C->M.format);
@@ -322,8 +329,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
-		"[-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t]] [-G[<fill>][+p<pen>]] [-H<scale>] "
-		"[-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
+		"[-A<audiofile>[+e]] [-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t]] [-G[<fill>][+p<pen>]] "
+		"[-H<scale>] [-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
 		"[-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -371,6 +378,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"We use space or TAB as separators; append <str> to set custom characters as separators instead.");
 	GMT_Usage (API, 3, "+W Same as +w but only use TAB as separator.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<audiofile>[+e]");
+	GMT_Usage (API, -2, "Merge in an audio track, starting at first frame.");
+	GMT_Usage (API, 3, "+e Adjust length of audio track to fix the length of the movie exactly.");
 	GMT_Usage (API, 1, "\n-D<rate>");
 	GMT_Usage (API, -2, "Set movie display frame rate in frames/second [24].");
 	GMT_Usage (API, 1, "\n-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]");
@@ -709,10 +719,19 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
-			case 'A':	/* Animated GIF [Deprecated] */
-				if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows -A */
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated - use -F instead\n");
-					Ctrl->F.active[MOVIE_GIF] = Ctrl->F.active[MOVIE_PNG] = Ctrl->animate = true;	/* old -A implies -Fpng */
+			case 'A':	/* Audio track (but also backwards compatible Animated GIF [Deprecated]) */
+				if (opt->arg[0] && (c = gmt_first_modifier (GMT, opt->arg, "ls")) == NULL) {	/* New audio syntax */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+					if ((c = strstr (opt->arg, "+e"))) {	/* Stretch audio to fit video length */
+						Ctrl->A.exact = true;
+						c[0] = '\0';	/* Remove modifier */
+					}
+					Ctrl->A.file = strdup (opt->arg);	/* Get audio file name */
+					if (c) c[0] = '+';	/* Restore modifier */
+				}
+				else if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows backwards compatible -A[+l<loop>][+s<stride>] for animated GIF */
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -A[+l<loop>][+s<stride>] is deprecated - use -F instead\n");
+					Ctrl->F.active[MOVIE_GIF] = Ctrl->F.active[MOVIE_PNG] = Ctrl->animate = true;	/* Old -A implies -Fpng */
 					if ((c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any modifiers */
 						pos = 0;	/* Reset to start of new word */
 						while (gmt_getmodopt (GMT, 'A', c, "ls", &pos, p, &n_errors) && n_errors == 0) {
@@ -1172,6 +1191,9 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG], "Must select at least one output product (-F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Option -H: factor must be and integer > 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Only valid with -Fmp4 or -Fwebm\n");
+
+	
 	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
 		unsigned int n_used = 0;
 		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++)
@@ -1322,8 +1344,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	char string[GMT_LEN128] = {""}, extra[GMT_BUFSIZ] = {""}, cmd[PATH_MAX] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
 	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer, dir_sep;
+	char audio_option[PATH_MAX] = {""};
 
-	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0;
+	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0, audio_stretch = 0.0;
 
 	FILE *fp = NULL;
 
@@ -2493,7 +2516,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 #endif
 
-	n_frames += Ctrl->E.duration;	/* THis is the total set of frames to process */
+	n_frames += Ctrl->E.duration;	/* This is the total set of frames to process */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Total frames to process: %u\n", n_frames);
 
 	if (Ctrl->Q.scripts) {	/* No animation sequence generated */
@@ -2595,6 +2618,29 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation built: %s.gif\n", Ctrl->N.prefix);
 		if (Ctrl->F.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->F.stride);
 	}
+	if (Ctrl->A.active) {	/* Need to include audio track, possibly stretched */
+		if (Ctrl->A.exact) {	/* Need to get exact fit */
+			double video_duration = n_frames / Ctrl->D.framerate;
+			/* Create ffprobe arguments to get duration of audio track */
+			sprintf (cmd, "-i %s -show_entries format=duration -v quiet -of csv=\"p=0\"", Ctrl->A.file);
+			GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
+			if (gmt_run_process_get_first_line (GMT, "ffprobe", cmd, line))	/* Success */
+				Ctrl->A.duration = atof (line);
+			else {
+				GMT_Report (API, GMT_MSG_ERROR, "Determining length of audio track %s returned error %d - exiting.\n", Ctrl->A.file, error);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
+			}
+			if ((audio_stretch = (video_duration / Ctrl->A.duration)) < 0.5 || audio_stretch > 2.0) {
+				GMT_Report (API, GMT_MSG_ERROR, "Audio track %s must be stretched by %lg which exceeds the 0.5 to 2.0 limit - exiting.\n", Ctrl->A.file, audio_stretch);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
+			}
+			sprintf (audio_option, " -i %s -af atempo=%lg", Ctrl->A.file, audio_stretch);
+		}
+		else	/* No stretching - just include */
+			sprintf (audio_option, " -i %s", Ctrl->A.file);
+	}
 	if (Ctrl->F.active[MOVIE_MP4]) {
 		/* Set up system call to FFmpeg (which we know exists) */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG))
@@ -2606,8 +2652,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
-			extra, Ctrl->D.framerate, tmpwpath, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4%s",
+			extra, Ctrl->D.framerate, tmpwpath, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION,
+			(Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix, audio_option);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
@@ -2629,9 +2676,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec %s %s -pix_fmt %s %s.webm",
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec %s %s -pix_fmt %s %s.webm%s",
 			extra, Ctrl->D.framerate, tmpwpath, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, vpx[Ctrl->F.transparent],
-			(Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", pix_fmt[Ctrl->F.transparent], Ctrl->N.prefix);
+			(Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", pix_fmt[Ctrl->F.transparent], Ctrl->N.prefix, audio_option);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
