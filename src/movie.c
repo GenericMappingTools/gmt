@@ -1019,10 +1019,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				if ((c = gmt_first_modifier (GMT, opt->arg, "rv"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'K', c, "rv", &pos, p, &n_errors) && n_errors == 0) {	
+					while (gmt_getmodopt (GMT, 'M', c, "rv", &pos, p, &n_errors) && n_errors == 0) {	
 						switch (p[0]) {
 							case 'r':	/* Gave specific resolution for master frame */
-								Ctrl->M.dpu = atof (&s[2]);
+								Ctrl->M.dpu = atof (&p[2]);
 								Ctrl->M.dpu_set = true;
 								break;
 							case 'v':	/* View master frame */
@@ -1032,21 +1032,21 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}								
-					c[0] = '\0';	/* Chop off modifiers */
+					c[0] = '\0';	/* Chop off modifiers so we just have -M[<frame>|f|l|m][,format] */
 				}
-				if ((s = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
+				if ((s = strchr (opt->arg, ',')) ) {	/* Gave both frame and format */
 					if (!strncmp (&s[1], "view", 4U))  /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
 						Ctrl->M.format = strdup (gmt_session_format[API->GMT->current.setting.graphics_format]);
 					else
 						Ctrl->M.format = strdup (&s[1]);
-					s[0] = '\0';	/* Chop off format */
+					s[0] = '\0';	/* Chop off format specification; now we have just -M[<frame>|f|l|m] */
 					switch (opt->arg[0]) {
 						case 'f':	Ctrl->M.frame  = 0; break;
 						case 'm':	Ctrl->M.update = 1; break;
 						case 'l':	Ctrl->M.update = 2; break;
 						default:	Ctrl->M.frame = atoi (opt->arg); break;
 					}
-					s[0] = ',';	/* Restore format */
+					s[0] = ',';	/* Restore format specification */
 				}
 				else if (isdigit (opt->arg[0]) || (strchr ("fml", opt->arg[0]) && opt->arg[1] == '\0')) {	/* Gave just a frame, default to PDF format */
 					Ctrl->M.format = strdup ("pdf");
@@ -1057,11 +1057,12 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 						default:	Ctrl->M.frame = atoi (opt->arg); break;
 					}
 				}
-				else if (opt->arg[0])	/* Must be format, with frame = 0 implicit */
-					if (strchr ("v", opt->arg[0])) /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
+				else if (opt->arg[0]) {	/* Must be format only, with frame = 0 implicit */
+					if (!strncmp ("view", opt->arg, 4U)) /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
 						Ctrl->M.format = strdup (gmt_session_format[API->GMT->current.setting.graphics_format]);
 					else
 						Ctrl->M.format = strdup (opt->arg);
+				}
 				else /* Default is PDF of frame 0 */
 					Ctrl->M.format = strdup ("pdf");
 				if (c) c[0] = '+';	/* Restore modifier */
