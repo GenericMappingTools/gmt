@@ -2626,7 +2626,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			double video_duration = n_frames / Ctrl->D.framerate;	/* We can easily compute the animation length in seconds */
 			/* Create ffprobe arguments to get duration of audio track in seconds */
 			sprintf (cmd, "-i %s -show_entries format=duration -v quiet -of csv=\"p=0\"", Ctrl->A.file);
-			GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Running: ffprobe %s\n", cmd);
 			if (gmt_run_process_get_first_line (GMT, "ffprobe", cmd, line))	/* Success */
 				Ctrl->A.duration = atof (line);
 			else {
