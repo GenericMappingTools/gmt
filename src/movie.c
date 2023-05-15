@@ -70,7 +70,7 @@
  * the user, her script is actually embellished by movie in various ways.  For instance,
  * we call gmt figure to define the plot format before the user's commands are appended.
  * When gmt figure runs we end up calling gmt_add_figure (gmt_init.c) and it actually
- * is passed a special option -I<parameterfile>.  if gmt figure is given this special option
+ * is passed a special option -I<parameterfile>.  If gmt figure is given this special option
  * we get its value and learn (1) that gmt figure is called from a movie script and (2)
  * that we have labels to place.  Now, we extract all such labels (here just 1) from
  * that parameter file.  These labels are then written to a file under the session directory
