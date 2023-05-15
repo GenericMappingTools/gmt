@@ -8517,8 +8517,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			if (!X->categorical) {
 				dz = X->data[n].z_high - X->data[n].z_low;
-				if (dz == 0.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice with dz = 0\n");
+				if (dz <= 0.0) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice around line %d with dz <= 0\n", n);
 					if (Z) gmt_M_free (GMT, Z);
 					gmtlib_free_palette (GMT, &X);
 					if (close_file) fclose (fp);
@@ -8592,8 +8592,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		for (i = 0; i < X->n_colors; i++) {
 			X->data[i].z_high = (i == (X->n_colors-1)) ? X->data[i].z_low + dz : X->data[i+1].z_low;
 			dz = X->data[i].z_high - X->data[i].z_low;
-			if (dz == 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice with dz = 0\n");
+			if (dz <= 0.0) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice around line %d with dz <= 0\n", i);
 				return (NULL);
 			}
 			X->data[i].i_dz = 1.0 / dz;
@@ -9317,11 +9317,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 			if (P->data[i].hsv_diff[0] >  180.0) P->data[i].hsv_diff[0] -= 360.0;
 		}
 		f = P->data[i].z_high - P->data[i].z_low;
-		if (f == 0.0) {
+		if (f <= 0.0) {
 			gmt_M_free (GMT, x);
 			gmt_M_free (GMT, lut);
 			if (log_mode) gmt_M_free (GMT, z_out);
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice with dz = 0\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice around line %d with dz <= 0\n", i);
 			return (NULL);
 		}
 		P->data[i].i_dz = 1.0 / f;
