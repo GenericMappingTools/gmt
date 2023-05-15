@@ -720,7 +720,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'A':	/* Audio track (but also backwards compatible Animated GIF [Deprecated]) */
-				if (opt->arg[0] && (c = gmt_first_modifier (GMT, opt->arg, "ls")) == NULL) {	/* New audio syntax */
+				if (opt->arg[0] && (c = gmt_first_modifier (GMT, opt->arg, "ls")) == NULL) {	/* New audio syntax option -A<audiofile>[+e] */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 					if ((c = strstr (opt->arg, "+e"))) {	/* Stretch audio to fit video length */
 						Ctrl->A.exact = true;
@@ -1191,7 +1191,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG], "Must select at least one output product (-F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Option -H: factor must be and integer > 1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Only valid with -Fmp4 or -Fwebm\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Audio is only valid with -Fmp4 or -Fwebm\n");
 
 	
 	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
@@ -1201,6 +1201,9 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if (Ctrl->item[k][T].mode == MOVIE_LABEL_IS_COL_T) n_used++;
 		if (n_used) Ctrl->T.split = true;	/* Necessary setting when labels address individual words */
 	}
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.file && gmt_access (GMT, Ctrl->A.file, R_OK),
+					"Option -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
 					"Option -C: Bad unit given for canvas dimensions\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
@@ -2618,27 +2621,28 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation built: %s.gif\n", Ctrl->N.prefix);
 		if (Ctrl->F.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->F.stride);
 	}
-	if (Ctrl->A.active) {	/* Need to include audio track, possibly stretched */
-		if (Ctrl->A.exact) {	/* Need to get exact fit */
-			double video_duration = n_frames / Ctrl->D.framerate;
-			/* Create ffprobe arguments to get duration of audio track */
+	if (Ctrl->A.active) {	/* Need to include audio track, possibly scaled to fit */
+		if (Ctrl->A.exact) {	/* Need to get an exact fit */
+			double video_duration = n_frames / Ctrl->D.framerate;	/* We can easily compute the animation length in seconds */
+			/* Create ffprobe arguments to get duration of audio track in seconds */
 			sprintf (cmd, "-i %s -show_entries format=duration -v quiet -of csv=\"p=0\"", Ctrl->A.file);
 			GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 			if (gmt_run_process_get_first_line (GMT, "ffprobe", cmd, line))	/* Success */
 				Ctrl->A.duration = atof (line);
 			else {
-				GMT_Report (API, GMT_MSG_ERROR, "Determining length of audio track %s returned error %d - exiting.\n", Ctrl->A.file, error);
 				error = GMT_RUNTIME_ERROR;
+				GMT_Report (API, GMT_MSG_ERROR, "Determining length of audio track %s returned error %d - exiting.\n", Ctrl->A.file, error);
 				goto out_of_here;
 			}
 			if ((audio_stretch = (video_duration / Ctrl->A.duration)) < 0.5 || audio_stretch > 2.0) {
-				GMT_Report (API, GMT_MSG_ERROR, "Audio track %s must be stretched by %lg which exceeds the 0.5 to 2.0 limit - exiting.\n", Ctrl->A.file, audio_stretch);
+				GMT_Report (API, GMT_MSG_ERROR, "Audio track %s must be stretched by %lg which exceeds the ffmpeg 0.5-2.0 valid range - exiting.\n", Ctrl->A.file, audio_stretch);
 				error = GMT_RUNTIME_ERROR;
 				goto out_of_here;
 			}
+			/* Create audio options for ffmpeg to include the audiofile but first scale it by adio_stretch */
 			sprintf (audio_option, " -i %s -af atempo=%lg", Ctrl->A.file, audio_stretch);
 		}
-		else	/* No stretching - just include */
+		else	/* No stretching - just include the audio file */
 			sprintf (audio_option, " -i %s", Ctrl->A.file);
 	}
 	if (Ctrl->F.active[MOVIE_MP4]) {
