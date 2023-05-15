@@ -8517,8 +8517,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			if (!X->categorical) {
 				dz = X->data[n].z_high - X->data[n].z_low;
-				if (dz == 0.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice with dz = 0\n");
+				if (dz <= 0.0) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice around line %d with dz <= 0\n", n);
 					if (Z) gmt_M_free (GMT, Z);
 					gmtlib_free_palette (GMT, &X);
 					if (close_file) fclose (fp);
