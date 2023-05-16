@@ -16,6 +16,7 @@ Synopsis
 |-C|\ *canvas*
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-A|\ *audiofile*\ [**+e**] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
 [ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
@@ -130,6 +131,13 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-A:
+
+**-A**\ *audiofile*\ [**+e**]
+    Add in an audio track (such as a narration), presumably of same length as the animation, but it can be
+    shorter or longer.  We place it starting at the first frame. Use **+e** to stretch the audio track to
+    exactly fit the length of the animation (provided the scaling is not less than 0.5 or larger than 2.0).
 
 .. _-D:
 
@@ -460,6 +468,18 @@ able to verify the latter by viewing a transparent webm movie in Chrome. Animate
 transparent PNGs as well and here each additional frame accumulate in the final movie. Experts may create
 transparent PNGs and create movies in professional tools that support a movie alpha channel.
 
+. _Audio:
+
+Adding an Audio Track
+---------------------
+
+Using |-A|\ [**+e**], you can include an audio track, such as narrating the animation or add music, or
+whatever you have on tap. The final movie will have a length matching the longest of the audio or animation,
+so you probably will want to process you audio file to fit your animation.  Since the animation length
+is known to be *n_frames / displayrate* you can preprocess the audio track to have the matching length.
+Alternatively, if the audio track is approximately the same length as the video (withing ±50% of animation
+length), append **+e** to scale the audio track to have the exact same length as the animation.
+
 Technical Details
 -----------------
 
@@ -650,17 +670,6 @@ horizontally, then combine the two resulting strips vertically::
     ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
 
 For more information on such manipulations, see the FFmpeg documentation.
-
-Adding an Audio Track
----------------------
-
-If you wish to add an *audio* track to the animation, say a narration that explains your animation,
-you can record your audio using a suitable tool and save it to a \*.mp3 or \*.m4a file.  The audio track
-should be approximately the same length as the video.  Then, simply combine the two with FFmpeg::
-
-    ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
-
-For more information on audio manipulations, see the FFmpeg documentation.
 
 Deprecations
 ------------
