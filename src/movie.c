@@ -2673,7 +2673,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Determining length of audio track %s returned error %d - exiting.\n", Ctrl->A.file, error);
 				goto out_of_here;
 			}
-			if ((audio_stretch = (video_duration / Ctrl->A.duration)) < 0.5 || audio_stretch > 2.0) {
+			if ((audio_stretch = (Ctrl->A.duration / video_duration)) < 0.5 || audio_stretch > 2.0) {
 				GMT_Report (API, GMT_MSG_ERROR, "Audio track %s must be stretched by %lg which exceeds the ffmpeg 0.5-2.0 valid range - exiting.\n", Ctrl->A.file, audio_stretch);
 				error = GMT_RUNTIME_ERROR;
 				goto out_of_here;
