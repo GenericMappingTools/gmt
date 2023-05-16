@@ -119,6 +119,7 @@ const char *gmt_get_full_name (struct GMTAPI_CTRL *API, const char *module) {
 	else if (!strcmp (module, "set"))       return "gmtset";
 	else if (!strcmp (module, "simplify"))  return "gmtsimplify";
 	else if (!strcmp (module, "spatial"))   return "gmtspatial";
+	else if (!strcmp (module, "split"))     return "gmtsplit";
 	else if (!strcmp (module, "vector"))    return "gmtvector";
 	else if (!strcmp (module, "which"))     return "gmtwhich";
 	else if (!strcmp (module, "pmodeler"))  return "gmtpmodeler";

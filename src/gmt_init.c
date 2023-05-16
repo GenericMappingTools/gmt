@@ -167,6 +167,10 @@
 #	include <mex.h>
 #endif
 
+#ifndef HAVE_MERGESORT
+#include "mergesort.c"
+#endif
+
 /* These are used in gmtinit_init_custom_annot and gmtinit_decode_tinfo only */
 #define GMT_ITEM_ANNOT		0
 #define GMT_ITEM_INTVAL		1
@@ -8883,12 +8887,15 @@ int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt) {
 
 unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]) {
 	/* If given +e|r|R<incs> we must parse and get the mode and 1, 2, or 4 increments */
-	unsigned int n_errors = 0, k;
+	unsigned int n_errors = 0;
+	char *c = NULL;
+
 	if (arg == NULL || arg[0] == '\0') return GMT_NOERROR;	/* Nothing to do */
-	k = (arg[0] == '+') ? 1 : 0;	/* We may get +r or e, for instance, depending on upstream strtok */
-	if (strchr ("erR", arg[k])) {	/* Want to extend the final region before reporting */
-		int j = GMT_Get_Values (GMT->parent, &arg[k+1], inc, 4);
-		*mode = (arg[k] == 'e') ? GMT_REGION_ROUND_EXTEND : ((arg[k] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
+	c = strchr (arg, '+');	/* Start of modifier, if given */
+	if (c && strchr ("erR", c[1])) {	/* Want to extend the final region before reporting */
+		int j;
+		j = GMT_Get_Values (GMT->parent, &c[2], inc, 4);
+		*mode = (c[1] == 'e') ? GMT_REGION_ROUND_EXTEND : ((c[1] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
 		if (j == 1)	/* Same increments in all directions */
 			inc[XHI] = inc[YLO] = inc[YHI] = inc[XLO];
 		else if (j == 2) {	/* Separate increments in x and y */
@@ -8896,7 +8903,7 @@ unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char 
 			inc[XHI] = inc[XLO];
 		}
 		else if (j != 4) {	/* The only other option is 4 but somehow we failed */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad number of increment to modifier +%c.\n", option, arg[k]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad number of increment to modifier +%c.\n", option, c[1]);
 			n_errors++;
 		}
 	}
@@ -10754,7 +10761,9 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_FONT_ANNOT_PRIMARY:
 			if (value[0] == '+') {
 				/* When + is prepended, scale fonts, offsets and ticklengths relative to FONT_ANNOT_PRIMARY (except LOGO font) */
-				double scale = GMT->current.setting.font_annot[GMT_PRIMARY].size;
+				double scale = 1.0;
+				gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values for now */
+				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size;
 				if (gmt_getfont (GMT, &value[1], &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
 				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size / scale;
 				GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale;

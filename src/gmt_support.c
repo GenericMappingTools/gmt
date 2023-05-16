@@ -8151,7 +8151,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	 */
 
 	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model, hinge_mode = 0;
-	size_t k;
+	size_t k, L;
 	bool gap, overlap, error = false, close_file = false, check_headers = true;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
 	double dz, z_hinge;
@@ -8397,16 +8397,20 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			XH->alloc_mode_text[GMT_CPT_INDEX_LBL] = GMT_ALLOC_INTERNALLY;
 		}
 
-		/* Determine if psscale need to label these steps by looking for the optional L|U|B character at the end */
+		/* Determine if psscale need to label these steps by looking for the optional single L|U|B character at the end */
 
-		c = line[strlen(line)-1];
-		if (c == 'L')
-			X->data[n].annot = 1;
-		else if (c == 'U')
-			X->data[n].annot = 2;
-		else if (c == 'B')
-			X->data[n].annot = 3;
-		if (X->data[n].annot) line[strlen(line)-1] = '\0';	/* Chop off this information so it does not affect our column count below */
+		L = strlen(line) - 1;   /* Position in line of last character. Will be 0 if just L|U|B */
+		/* Must check previous char since hex colors like #5CC3EB should not trigger on 'B' */
+		if (L > 0 && strchr (" \t", line[L-1])) {   /* Got a single character - check if L|U|B */
+			c = line[L];
+			if (c == 'L')
+				X->data[n].annot = GMT_CPT_L_ANNOT;
+			else if (c == 'U')
+				X->data[n].annot = GMT_CPT_U_ANNOT;
+			else if (c == 'B')
+				X->data[n].annot = GMT_CPT_B_ANNOT;
+			if (X->data[n].annot) line[strlen(line)-1] = '\0';	/* Chop off this information so it does not affect our column count below */
+		}
 
 		nread = sscanf (line, "%s %s %s %s %s %s %s %s %s %s", T0, T1, T2, T3, T4, T5, T6, T7, T8, T9);	/* Hope to read 4, 8, or 10 fields */
 
@@ -8513,8 +8517,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			}
 			if (!X->categorical) {
 				dz = X->data[n].z_high - X->data[n].z_low;
-				if (dz == 0.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice with dz = 0\n");
+				if (dz <= 0.0) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice around line %d with dz <= 0\n", n);
 					if (Z) gmt_M_free (GMT, Z);
 					gmtlib_free_palette (GMT, &X);
 					if (close_file) fclose (fp);
@@ -8588,8 +8592,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		for (i = 0; i < X->n_colors; i++) {
 			X->data[i].z_high = (i == (X->n_colors-1)) ? X->data[i].z_low + dz : X->data[i+1].z_low;
 			dz = X->data[i].z_high - X->data[i].z_low;
-			if (dz == 0.0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice with dz = 0\n");
+			if (dz <= 0.0) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice around line %d with dz <= 0\n", i);
 				return (NULL);
 			}
 			X->data[i].i_dz = 1.0 / dz;
@@ -8629,8 +8633,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	}
 
 	if (!annot) {	/* Must set default annotation flags */
-		for (i = 0; i < X->n_colors; i++) X->data[i].annot = 1;
-		X->data[i-1].annot = 3;
+		for (i = 0; i < X->n_colors; i++) X->data[i].annot = GMT_CPT_L_ANNOT;
+		X->data[i-1].annot = GMT_CPT_B_ANNOT;
 	}
 
 	/* Reset the color model to what it was in the GMT defaults when a + is used there. */
@@ -9313,11 +9317,11 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 			if (P->data[i].hsv_diff[0] >  180.0) P->data[i].hsv_diff[0] -= 360.0;
 		}
 		f = P->data[i].z_high - P->data[i].z_low;
-		if (f == 0.0) {
+		if (f <= 0.0) {
 			gmt_M_free (GMT, x);
 			gmt_M_free (GMT, lut);
 			if (log_mode) gmt_M_free (GMT, z_out);
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice with dz = 0\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Z-slice around line %d with dz <= 0\n", i);
 			return (NULL);
 		}
 		P->data[i].i_dz = 1.0 / f;
@@ -9348,9 +9352,9 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	}
 
 	/* Must set default annotation flags */
-	for (i = 0; i < P->n_colors; i++) P->data[i].annot = 1;
-	if (i) P->data[i-1].annot = 3;
-	else P->data[i].annot = 3;
+	for (i = 0; i < P->n_colors; i++) P->data[i].annot = GMT_CPT_L_ANNOT;
+	if (i) P->data[i-1].annot = GMT_CPT_B_ANNOT;
+	else P->data[i].annot = GMT_CPT_B_ANNOT;
 
 	gmtsupport_copy_palette_hdrs (GMT, P, Pin);
 	return (P);

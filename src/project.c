@@ -446,9 +446,11 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				else {
-					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->C.x), txt_a);
-					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->C.y), txt_b);
-					if (n_errors) GMT_Report (API, GMT_MSG_ERROR, "Option -C: Undecipherable argument %s\n", opt->arg);
+					unsigned int ee = 0;
+					ee += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->C.x), txt_a);
+					ee += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->C.y), txt_b);
+					if (ee) GMT_Report (API, GMT_MSG_ERROR, "Option -C: Undecipherable argument %s\n", opt->arg);
+					n_errors += ee;
 				}
 				break;
 			case 'D':
@@ -594,9 +596,9 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					}
 					else {	/* Bad number of arguments */
 						if (Ctrl->N.active)
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e|n] or -Z<diameter>[+e|n]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e] or -Z<diameter>[+e]\n");
 						else
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major[unit]/minor/azimuth>[+e|n] or -Z<diameter>[unit][+e|n]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major[unit]/minor/azimuth>[+e] or -Z<diameter>[unit][+e]\n");
 						n_errors++;
 					}
 				}

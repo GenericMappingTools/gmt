@@ -39,6 +39,15 @@ EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid
 EXTERN_MSC char * gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 #endif
 
+#ifdef __APPLE__
+/* macOX has it built in, so ensure we define this flag */
+#define HAVE_MERGESORT
+#endif
+
+#ifndef HAVE_MERGESORT
+EXTERN_MSC int mergesort (void *base, size_t nmemb, size_t size, int (*cmp)(const void *, const void *));
+#endif
+
 /* gmt_nc.c: */
 
 EXTERN_MSC bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file);

@@ -17,7 +17,7 @@ Synopsis
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [**+s**\ *factor*][**+o**\ *offset*] ]
+[ |-Z|\ [**+o**\ *offset*][**+s**\ *factor*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -78,7 +78,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**+s**\ *factor*][**+o**\ *offset*]
+**-Z**\ [**+o**\ *offset*][**+s**\ *factor*]
     Use to subtract *offset* from the data and then multiply the results by
     *factor* before writing the output file [1/0]. **Note**: This
     *changes* the values in the grid.  In contrast, while options to supply
@@ -160,7 +160,7 @@ fails you may append the =\ *ID* suffix to the filename *ingrid*.
 | **gd**   | Import/export through GDAL                                    |
 +----------+---------------------------------------------------------------+
 
-GMT Standard Netcdf Files
+GMT Standard netCDF Files
 -------------------------
 
 The standard format used for grdfiles is based on netCDF and conforms to

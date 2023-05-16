@@ -37,7 +37,7 @@ dividing the given filter circle into *n\_sectors*, applying one of the
 selected primary convolution or non-convolution filters to each sector,
 and choosing the final outcome according to the selected secondary
 filter. It computes distances using Cartesian or Spherical geometries.
-The output *.nc* file can optionally be generated as a subregion of the
+The output gridfile can optionally be generated as a subregion of the
 input and/or with a new **-I**\ ncrement. In this way, one may have
 "extra space" in the input data so that there will be no edge effects
 for the output grid. If the filter is low-pass, then the output may be
@@ -134,14 +134,14 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    This option is used by itself to write the dim.template.sh bash script
+    This option is used by itself to write the *dim.template.sh* bash script
     to standard output.  No other options can be used in combination.
 
 .. _-R:
 
 **-R**
     *west*, *east*, *south*, and *north* defines the Region of the
-    output points. [Default: Same as input.]
+    output grid. [Default: Same as input.]
 
 .. _-T:
 

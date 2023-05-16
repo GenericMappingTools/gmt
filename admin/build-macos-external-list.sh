@@ -12,14 +12,23 @@
 #
 # Notes:
 #   1. This is tested on macports where gs is a symbolic link to gsc.
+#	2. Since the latest macports is fucked related to GDAL we must get GDAL and executables
+#	   from homebrew installation instead.
 
 GSVERSION=$1	# Get the version of gs from build-release.sh
 DISTRO=$2
+GDAL_VIA_HOMEBREW=$3
+PROJV=9
 
 if [ ${DISTRO} = "MacPorts" ]; then
 	top=/opt/local
+	if [ "X${GDAL_VIA_HOMEBREW}" = "XY" ]; then
+		topgdal=/opt/homebrew
+	else
+		topgdal=/opt/local
+	fi
 	omp="libomp/"
-	proj="${top}/lib/proj8/share/proj"
+	proj="${top}/lib/proj${PROJV}/share/proj"
 	gm="${top}/lib/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}"
 elif [ ${DISTRO} = "HomeBrew1" ]; then
 	DISTRO="HomeBrew"
@@ -42,8 +51,8 @@ TMPDIR=${TMPDIR:-/tmp}
 
 # 1a. List of executables needed and whose shared libraries also are needed.
 #     Use full path if you need something not in your path
-EXEPLUSLIBS="${top}/bin/gsc ${top}/bin/gm ${top}/bin/ffmpeg ${top}/bin/ogr2ogr \
- ${top}/bin/gdal_translate ${top}/lib/libfftw3f_threads.dylib ${top}/lib/${omp}libomp.dylib"
+EXEPLUSLIBS="${top}/bin/gsc ${top}/bin/gm ${top}/bin/ffmpeg ${topgdal}/bin/ogr2ogr \
+ ${topgdal}/bin/gdal_translate ${top}/lib/libfftw3f_threads.dylib ${top}/lib/${omp}libomp.dylib"
 # 1b. List of any symbolic links needed
 #     Use full path if you need something not in your path
 EXELINKS=${top}/bin/gs
@@ -52,7 +61,11 @@ EXELINKS=${top}/bin/gs
 EXEONLY=
 # 1d. Shared directories to be added (except ghostscript which we do separately)
 #     Use full path if you need something not in your path
-EXESHARED="gdal ${proj}"
+if [ "X${GDAL_VIA_HOMEBREW}" = "XY" ]; then
+	EXESHARED="${proj}"
+else
+	EXESHARED="gdal ${proj}"
+fi
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f ${TMPDIR}/raw.lis
@@ -101,6 +114,9 @@ EOF
 if [ ! "X$EXESHARED" = "X" ]; then
 	echo ""
 	echo "install (DIRECTORY"
+fi
+if [ "X${GDAL_VIA_HOMEBREW}" = "XY" ]; then
+	echo "	$topgdal/share/gdal"
 fi
 for P in $EXESHARED; do
 	if [ $P = $(basename $P) ]; then

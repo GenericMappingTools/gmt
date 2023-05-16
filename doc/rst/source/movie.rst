@@ -18,13 +18,13 @@ Synopsis
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
-[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**] ]
+[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
 [ |-K|\ [**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*]\ [**+p**\ [**i**\|\ **o**]] ]
 [ |-L|\ *labelinfo* ]
-[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*] ]
+[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*][**+v**] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
 [ |-Sb|\ *background* ]
@@ -60,7 +60,8 @@ Required Arguments
     written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
     and we build hidden movie scripts using the same language.  Parameters that can be accessed
-    are discussed below.
+    are discussed below. **Note**: If the final **gmt end** statement ends with **show** then
+    we display the movie master frame (but only if |-M| is active).
 
 .. _-C:
 
@@ -80,7 +81,7 @@ Required Arguments
     *16:9 (24x13.5 cm or 9.6x5.4 inch)*
     4320p (8k and uhd-2)                7680 x 4320
     2160p (4k and uhd)                  3840 x 2160
-    1080p (hd)                          1920 x 1080
+    1080p (fhd and hd)                  1920 x 1080
     720p                                1280 x 720
     540p                                960 x 540
     480p                                854 x 480
@@ -153,7 +154,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
+**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**]
     Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
     *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  If just
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
@@ -166,6 +167,7 @@ Optional Arguments
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
       frame, with *stride* being one of a fixed set of strides: 2, 5, 10, 20, 50, 100, 200, and 500.
     - **+t** selects generation of transparent PNG images [opaque]; see `Transparency`_ for more details.
+    - **+v** opens the movie in the default movie viewer.
 
 .. _-G:
 
@@ -248,12 +250,12 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*]
+**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*][**+v**]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can be one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
     we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame. **Note**: For raster frame formats
-    you may optionally specify an alternate *dpu* of that frame via the **+r** modifier [same dpu as the movie frames].
+    you may optionally specify an alternate *dpu* of that frame via the **+r** modifier [same dpu as the movie frames]. Finally, to open the master plot in the default viewer, append **+v**.
 
 .. _-P:
 
@@ -648,7 +650,6 @@ horizontally, then combine the two resulting strips vertically::
     ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
 
 For more information on such manipulations, see the FFmpeg documentation.
-
 
 Adding an Audio Track
 ---------------------
