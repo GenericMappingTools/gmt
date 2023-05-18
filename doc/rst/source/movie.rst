@@ -142,7 +142,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *displayrate*
-    Set the display frame rate in frames per seconds for the final animation [24].
+    Set the display frame rate in frames per second for the final animation [24].
 
 .. _-E:
 
