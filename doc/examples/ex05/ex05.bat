@@ -2,7 +2,7 @@ REM		GMT EXAMPLE 05
 REM
 REM Purpose:	Generate grid and show monochrome 3-D perspective
 REM GMT modules:	grdmath, grdview, text, makecpt
-REM DOS calls:	echo, del
+REM DOS calls:	del
 REM
 gmt begin ex05
 	gmt grdmath -R-15/15/-15/15 -I0.3 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL = sombrero.nc

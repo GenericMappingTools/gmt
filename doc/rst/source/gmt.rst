@@ -101,6 +101,9 @@ If no module is given then several other options are available:
 **--show-cores**
     Show number of available cores.
 
+**--show-date**
+    Show GMT binary building date and exit.
+
 **--show-datadir**
     Show data directory/ies and exit.
 

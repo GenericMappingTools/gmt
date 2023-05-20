@@ -495,6 +495,7 @@ EXTERN_MSC void gmt_lab_to_xyz (double xyz[], double lab[]);
 EXTERN_MSC void gmt_rgb_to_lab (double rgb[], double lab[]);
 EXTERN_MSC void gmt_lab_to_rgb (double rgb[], double lab[]);
 EXTERN_MSC bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text);
+EXTERN_MSC bool gmt_run_process_get_first_line (struct GMT_CTRL *GMT, char *program, char *arg, char *text);
 EXTERN_MSC void gmt_filename_set (char *name);
 EXTERN_MSC void gmt_filename_get (char *name);
 EXTERN_MSC bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg);
