@@ -362,9 +362,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s p,q are the coordinates of x,y in the projection's coordinate system.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Note 1: p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W. "
-		"Note 2: z refers to all input data columns beyond the required x,y. "
+		"Note 2: z refers to all input data columns beyond the required x,y and may contain trailing text. "
 		"Note 3: If -G is set, -F is not available and output defaults to rsp "
-		"[Default is all fields, i.e., -Fxyzpqrs].");
+		"[Default is all fields, i.e., -Fxypqrsz, with z at the end if included].");
 	GMT_Usage (API, 1, "\n-G<dist>[<unit>][/<colat>][+c|h]");
 	GMT_Usage (API, -2, "Generate (r,s,p) points along profile every <dist> units. (No input data used.) "
 		"If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length. "

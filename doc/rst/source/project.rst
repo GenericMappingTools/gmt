@@ -145,10 +145,10 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *flags*
-    Specify the desired output using any combination of *xyzpqrs* in any order, where (:math:`p, q`) are the
+    Specify the desired output using any combination of *xypqrsz* in any order, where (:math:`p, q`) are the
     coordinates in the projection, (:math:`r, s`) is the position in the (:math:`x, y`) coordinate system of the point
     on the profile (:math:`q = 0` path) closest to (:math:`x, y`), and *z* is all remaining columns in the input
-    (beyond the required :math:`x` and :math:`y` columns). [Default is *xyzpqrs*]. If output format is ASCII then
+    (beyond the required :math:`x` and :math:`y` columns). [Default is *xypqrsz*]. If output format is ASCII then
     *z* also includes any trailing text (which is placed at the end of the record regardless of the order of *z*
     in *flags*). Use lower case and do not add spaces between the letters. **Note**: If |-G| is selected, then the
     output order is set to be *rsp* and |-F| is not allowed.
