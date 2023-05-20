@@ -368,7 +368,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-cores        Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir      Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver   Show URL of the remote GMT data server.\n");
-			fprintf (stderr, "  --show-date         Show GMT binaries building date\n");
+			fprintf (stderr, "  --show-date         Show GMT binary building date\n");
 			fprintf (stderr, "  --show-dcw          Show the DCW data version used.\n");
 			fprintf (stderr, "  --show-doi          Show the DOI for the current release.\n");
 			fprintf (stderr, "  --show-gshhg        Show the GSHHG data version used.\n");
