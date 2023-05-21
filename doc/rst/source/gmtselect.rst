@@ -183,24 +183,26 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+h**\ [**k**\|\ **s**]]\ [**+i**]
-    Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range
-    or is NaN (use **-s** to skip NaN records).
-    If *max* is omitted then we test if *z* equals *min* instead.  This means
-    equality within 5 ULPs (unit of least precision; http://en.wikipedia.org/wiki/Unit_in_the_last_place).
-    Input file must have at least three columns. To indicate no limit on
-    min or max, specify a hyphen (-). If your 3rd column is absolute
-    time then remember to supply **-f**\ 2T. To specify another column, append
-    **+c**\ *col*, and to specify several tests just repeat the **Z** option as
-    many times as you have columns to test. **Note**: When more than one **Z** option
-    is given then the **-Iz** option cannot be used.  In the case of multiple tests
-    you may use these modifiers as well: **+a** passes any record that passes at least
-    one of your *z* tests [Default is all tests must pass], and **+i** reverses the
-    tests to pass record with *z* value **not** in the given range.  Finally, if **+c** is
-    not used then it is automatically incremented for each new |-Z| option, starting
-    with 2. Alternatively, instead of obtaining *z* from the data column(s), use modifier
-    **+h** to instead extract *z* from the segment header |-Z|\ *z* string.  If no such entry is
-    found we skip [Default, or **+hs**] the entire segment (or we keep the entire segment if **+hk** was given),
-    otherwise it is subject to the test(s) using the constant *z* for each segment.
+    Control passing or skipping records (or entire segments) given the selections set via
+    the arguments. Pass all records whose 3rd column (*z*; *col* = 2) lies within the given
+    range or is NaN (use **-s** to skip NaN records). If *max* is omitted then we test if
+    *z* equals *min* instead.  This means equality within 5 ULPs (unit of least precision;
+    http://en.wikipedia.org/wiki/Unit_in_the_last_place). To indicate no limit on *min* or
+    *max*, specify a hyphen (-). **Notes**: (1) If your 3rd column is absolute time then remember
+    to supply **-f**\ 2T. (2) To specify several tests just repeat the **Z** option as many times
+    as you have columns to test. (3) To use **-Z**, the input file must have at least three columns.
+    (4) When more than one **Z** option is given then the **-Iz** option cannot be used.
+    Several modifiers are available:
+
+    - **+a** - In the case of multiple tests, output any record that passes at least
+      one of your *z* tests [Default is all tests must pass].
+    - **+c** - To specify another *z*-column, append **+c**\ *col*. If **+c** is not used
+      then it is automatically incremented for each new |-Z| option, starting from 2. 
+    - **+i** - Reverses the tests to pass record with a *z* value **not** in the given range.
+    - **+h** - Instead of obtaining *z* from the data column(s), extract *z* from the segment
+      header |-Z|\ *z* string.  If no such entry is found we skip [Default, or **+hs**] the
+      entire segment (or we keep the entire segment if **+hk** was given), otherwise it is
+      subject to the test(s) using the constant *z* for each segment.
 
 .. include:: explain_-aspatial.rst_
 
