@@ -198,12 +198,11 @@ Optional Arguments
       one of your *z* tests [Default is all tests must pass].
     - **+c** - To specify another *z*-column, append **+c**\ *col*. If **+c** is not used
       then it is automatically incremented for each new |-Z| option, starting from 2. 
-    - **+i** - Reverses the tests to pass record with a *z* value **not** in the given range.
     - **+h** - Instead of obtaining *z* from the data column(s), extract *z* from the segment
       header |-Z|\ *z* string.  If no such entry is found we skip [Default, or **+hs**] the
       entire segment (or we keep the entire segment if **+hk** was given), otherwise it is
       subject to the test(s) using the constant *z* for each segment.
-
+    - **+i** - Reverses the tests to pass record with a *z* value **not** in the given range.
 .. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
