@@ -58,7 +58,7 @@ triplets at equal increments *dist* along a profile using |-G|. In this case, no
 Projections are defined in one of three ways:
 
   1. By a center (*cx*/*cy*) using |-C| and an azimuth in degrees clockwise from North using |-A|.
-  2. By a center (*cx*/*cy*) using |-C| and end point (*bx*/*by*) of the projection path using |-E|.
+  2. By a center (*cx*/*cy*) (e.g., start point) using |-C| and end point (*bx*/*by*) of the projection path using |-E|.
   3. By a center (*cx*/*cy*) using |-C| and a rotation pole position (*px*/*py*) using |-T| (not allowed when a
      Cartesian transformation is set by |-N|).
 
