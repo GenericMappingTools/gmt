@@ -331,10 +331,9 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/* Here, wesn_i is compatible with the INPUT grid so we can read the subset from which we will resample.
 	 * Here, wesn_o is the region we wish to use when creating the output grid */
-#if 0
-	fprintf (stderr, "wesn_i = %lg/%lg/%lg/%lg\n", wesn_i[XLO], wesn_i[XHI], wesn_i[YLO], wesn_i[YHI]);
-	fprintf (stderr, "wesn_o = %lg/%lg/%lg/%lg\n", wesn_o[XLO], wesn_o[XHI], wesn_o[YLO], wesn_o[YHI]);
-#endif
+
+	GMT_Report (API, GMT_MSG_DEBUG, "wesn_i = %lg/%lg/%lg/%lg\n", wesn_i[XLO], wesn_i[XHI], wesn_i[YLO], wesn_i[YHI]);
+	GMT_Report (API, GMT_MSG_DEBUG, "wesn_o = %lg/%lg/%lg/%lg\n", wesn_o[XLO], wesn_o[XHI], wesn_o[YLO], wesn_o[YHI]);
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn_o, inc, \
 		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
