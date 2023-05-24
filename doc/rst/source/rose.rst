@@ -79,7 +79,7 @@ Optional Arguments
     diagram instead of sector diagram.
 
 .. |Add_-B| replace:: |Add_-B_links| Remember that "x" here is radial distance
-   and "y" is azimuth. The ylabel may be used to plot a figure caption. The
+   and "y" is azimuth. The y label may be used to plot a figure caption. The
    scale bar length is determined by the radial gridline spacing.
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
