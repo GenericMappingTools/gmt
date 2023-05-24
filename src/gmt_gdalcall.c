@@ -218,8 +218,8 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 	}
 
 /* At 3.6 GDAL made some internal change that when passing back the data to the grid buffer,
-   data ccomes upside-down as comparing to what it used to do. But since that in fact helps
-   us since we n o longer need to a flipud, we did not complain to GDAL dev. */
+   data comes upside-down as comparing to what it used to do. But since that in fact helps
+   us since we no longer need to a flipud, we did not complain to GDAL dev. */
 #if (GDAL_VERSION_MAJOR < 3 && GDAL_VERSION_MINOR < 6)
 	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, sizeof(float));
 #endif
