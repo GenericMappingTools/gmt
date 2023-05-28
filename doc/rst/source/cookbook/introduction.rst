@@ -79,10 +79,10 @@ GMT is thoroughly documented and comes with a technical reference and
 cookbook which explains the purpose of the package and its many
 features, and provides numerous examples to help new users quickly
 become familiar with the operation and philosophy of the system. The
-cookbook contains the shell scripts that were used for each example. The online 
-GMT Documentation is also home to the extensive technical reference for all programs. 
+cookbook contains the shell scripts that were used for each example. The online
+GMT Documentation is also home to the extensive technical reference for all programs.
 The programs also have individual manual pages which can be installed as part of the
-on-line documentation under the UNIX **man** utility. 
+on-line documentation under the UNIX **man** utility.
 In addition, the programs offer friendly help messages which make
 them essentially self-teaching – if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
@@ -245,7 +245,7 @@ Footnotes
 ---------
 
 .. [2]
-   See GNU Lesser General Public License (`<http://www.gnu.org/copyleft/gpl.html>`_)
+   See GNU Lesser General Public License (`<https://www.gnu.org/licenses/lgpl-3.0.html>`_)
    for terms on redistribution and modifications.
 
 .. [3]
