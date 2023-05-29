@@ -1637,7 +1637,7 @@ size_t gmtlib_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdf
 			return (sizeof (int32_t));
 			break;
 		case 'f':
-			return (sizeof (float));
+			return (sizeof (gmt_grdfloat));
 			break;
 		case 'd':
 			return (sizeof (double));

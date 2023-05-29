@@ -745,7 +745,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				So = Out->table[0]->segment[seg];	/* Short hand to this output segment */
 				for (row = 0; row < So->n_rows; row++) {
 					ij = gmt_M_ijp (Grid->header, So->n_rows-row-1, seg);	/* Must flip order since rows in grid goes down */
-					Grid->data[ij] = (float)So->data[3][row];
+					Grid->data[ij] = (gmt_grdfloat)So->data[3][row];
 				}
 			}
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK) {
@@ -887,7 +887,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				i_value[k] = C[GMT_IN]->data[node+k*C[GMT_IN]->header->size];
 			gmt_intpol (GMT, C[GMT_IN]->z, i_value, NULL, C[GMT_IN]->header->n_bands, n_layers, level, o_value, 0.0, int_mode);	/* Resample at requested output levels */
 			for (k = 0; k < n_layers; k++)	/* For all output levels, place the interpolated values at this (x,y) across all levels */
-				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (float)o_value[k];
+				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (gmt_grdfloat)o_value[k];
 		}
 	}
 	GMT_Destroy_Data (API, &C[GMT_IN]);	/* Done with the input cube */

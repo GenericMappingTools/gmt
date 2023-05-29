@@ -8353,7 +8353,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			struct GMT_GRID *G = NULL;
 			if ((G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, O->header->wesn, O->header->inc, \
 				O->header->registration, GMT_PAD_DEFAULT, NULL)) == NULL) goto bail_grd_dbg;
-			for (k = 0; k < G->header->size; k++) G->data[k] = (float)nz[k];
+			for (k = 0; k < G->header->size; k++) G->data[k] = (gmt_grdfloat)nz[k];
 			(void) GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "nz_grd_counter.grd", G);
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_grd_counter.grd\n");
 			GMT_Destroy_Data (GMT->parent, &G);
@@ -8582,7 +8582,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 			struct GMT_GRID *G = NULL;
 			if ((G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, O->header->wesn, O->header->inc, \
 				O->header->registration, GMT_PAD_DEFAULT, NULL)) == NULL) goto bail_img_dbg;
-			for (k = 0; k < G->header->size; k++) G->data[k] = (float)nz[k];
+			for (k = 0; k < G->header->size; k++) G->data[k] = (gmt_grdfloat)nz[k];
 			(void) GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "nz_img_counter.grd", G);
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_img_counter.grd\n");
 			GMT_Destroy_Data (GMT->parent, &G);

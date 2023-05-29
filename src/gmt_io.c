@@ -1552,6 +1552,7 @@ GMT_LOCAL int gmtio_L_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, dou
 
 /*! . */
 GMT_LOCAL int gmtio_f_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
+    /* Not gmt_grdfloat since applies to tables */
 	/* read float */
 	uint64_t i;
 	size_t k;
@@ -1839,6 +1840,7 @@ GMT_LOCAL int gmtio_L_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, do
 /*! . */
 GMT_LOCAL int gmtio_f_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* write float */
+    /* Not gmt_grdfloat since applies to tables */
 	uint64_t i;
 	gmt_M_unused(GMT);
 	for (i = 0; i < n; ++i) {
