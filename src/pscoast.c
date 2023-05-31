@@ -782,7 +782,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		Return (error);
 	}
 	if (Ctrl->E.active) {
-		isDCW = strlen(Ctrl->E.info.item[0]->codes) == 2 || strrchr((Ctrl->E.info.item[0]->codes), ',') || strrchr((Ctrl->E.info.item[0]->codes), '.');
+		isDCW = strlen(Ctrl->E.info.item[0]->codes) == 2 || strchr((Ctrl->E.info.item[0]->codes), ',') || strchr((Ctrl->E.info.item[0]->codes), '.');
 		if (!isDCW && (Ctrl->M.active || GMT->common.R.active[0])) {
 			GMT_Report (API, GMT_MSG_ERROR, "Passing other than DCW codes to option -E together with -M or -R options is not possible.\n");
 			Return (0);
