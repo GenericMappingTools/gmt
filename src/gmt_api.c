@@ -4787,7 +4787,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			HH = gmt_get_H_hidden (I_obj->header);
 			I_obj->header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);		/* Pass on any bitflags */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read image */
-			if (! (mode & GMT_DATA_ONLY)) {		/* Must init header and read the header information from file */
+			if (!(mode & GMT_DATA_ONLY)) {		/* Must init header and read the header information from file */
 				if (gmtapi_import_ppm_header (GMT, S_obj->filename, true, NULL, I_obj) == GMT_NOERROR)
 					d = 0.0;	/* Placeholder */
 				else if (gmt_M_err_pass (GMT, gmtlib_read_image_info (GMT, S_obj->filename, must_be_image, I_obj), S_obj->filename)) {
@@ -4795,8 +4795,8 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 					return_null (API, GMT_IMAGE_READ_ERROR);
 				}
 				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
-				have_CRS = (I_obj->header->ProjRefPROJ4 || I_obj->header->ProjRefWKT || I_obj->header->ProjRefEPSG != 0) ? true : false;
 			}
+			have_CRS = (I_obj->header->ProjRefPROJ4 || I_obj->header->ProjRefWKT || I_obj->header->ProjRefEPSG != 0) ? true : false;
 			/* Here we will read the image data themselves. To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			   Otherwise we extract the entire file domain */
 			/* BUT WE HAVE A MESS SOMEWHERE.
