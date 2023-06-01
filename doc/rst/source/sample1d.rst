@@ -15,7 +15,7 @@ Synopsis
 **gmt sample1d** [ *table* ]
 [ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**] ]
 [ |-E| ]
-[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
+[ |-F|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [|-T|\ *file*\|\ *list*]]
 [ |SYN_OPT-V| ]
@@ -92,12 +92,10 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
-    Choose from **l** (Linear), **a** (Akima spline), **c** (natural
-    cubic spline), **n** (no interpolation: nearest point), or **s**
-    (smoothing cubic spline; append fit parameter *p*) [Default
-    is **-Fa**]. You may change the default interpolant; see
-    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
+**-Fl**\|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
+    Choose from **a** (Akima spline), **e** step-up curve, **c** (natural cubic spline),
+    **l** (Linear), **n** (no interpolation: nearest point), or **s** (smoothing cubic
+    spline; append fit parameter *p*) [Default is **-Fa**]. You may change the default interpolant; see :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
     by appending **+d1** or **+d2**, respectively.
 

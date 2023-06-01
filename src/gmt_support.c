@@ -1751,7 +1751,7 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 
 	/* Set minimum and maximum */
 
-	if (spline_mode == GMT_SPLINE_NN) {
+	if (spline_mode >= GMT_SPLINE_NN) {
 		x_min = (3*x[0] - x[1]) / 2;
 		x_max = (3*x[n-1] - x[n-2]) / 2;
 	}
@@ -1809,9 +1809,17 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 			case GMT_SPLINE_CUBIC:	/* Natural cubic spline u(v) */
 				v[i] = gmtsupport_csplint (GMT, x, y, c, u[i], j);
 				break;
-			case GMT_SPLINE_NN:	/* Nearest neighbor value */
-				v[i] = ((u[i] - x[j]) < (x[j+1] - u[i])) ? y[j] : y[j+1];
-				break;
+            case GMT_SPLINE_NN: /* Nearest neighbor value */
+                v[i] = ((u[i] - x[j]) < (x[j+1] - u[i])) ? y[j] : y[j+1];
+                break;
+            case GMT_SPLINE_STEP: /* Step up to next value when passing it */
+                if (j == 0)	/* Start at the beginning */
+                    v[i] = y[0];
+                else if (i == (m-1))	/* End at the end */
+                	v[i] = y[n-1];
+                else	/* Pick the smallest before the step happens */
+                	v[i] = MIN (y[j], y[j+1]);
+                break;
 			case GMT_SPLINE_LINEAR+GMT_SPLINE_SLOPE:	/* Linear spline v'(u) */
 				v[i] = (y[j+1]-y[j])/(x[j+1]-x[j]);
 				break;
@@ -1825,6 +1833,9 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 			case GMT_SPLINE_NN+GMT_SPLINE_SLOPE:	/* Nearest neighbor slopes are zero */
 				v[i] = 0.0;
 				break;
+			case GMT_SPLINE_STEP+GMT_SPLINE_SLOPE:	/* Step slopes are zero */
+				v[i] = 0.0;
+				break;
 			case GMT_SPLINE_LINEAR+GMT_SPLINE_CURVATURE:	/* Linear spline v"(u) */
 				v[i] = 0.0;
 				break;
@@ -1836,6 +1847,9 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				v[i] = gmtsupport_csplintcurv (GMT, x, c, u[i], j);
 				break;
 			case GMT_SPLINE_NN+GMT_SPLINE_CURVATURE:	/* Nearest neighbor curvatures are zero  */
+				v[i] = 0.0;
+				break;
+			case GMT_SPLINE_STEO+GMT_SPLINE_CURVATURE:	/* Step curvatures are zero  */
 				v[i] = 0.0;
 				break;
 			case GMT_SPLINE_SMOOTH:	/* Smoothing spline */
@@ -9975,6 +9989,7 @@ int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
  *	  mode = GMT_SPLINE_CUBIC [2] : Natural cubic spline (cubspl)
  *	  mode = GMT_SPLINE_CUBIC [3] : Smooth cubic spline
  *    mode = GMT_SPLINE_NN [4]    : No interpolation (closest point)
+ *    mode = GMT_SPLINE_STEP [5]  : Step interpolation (repeat output until next input node reached)
  *	  derivative_level = 0 :	The spline values
  *	  derivative_level = 1 :	The spline's 1st derivative
  *	  derivative_level = 2 :	The spline 2nd derivative
@@ -10001,8 +10016,8 @@ int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, double *w, uint64_t 
 	}
 	smode = mode % GMT_SPLINE_SLOPE;	/* Get spline method first */
 	deriv = mode / GMT_SPLINE_SLOPE;	/* Get spline derivative order [0-2] */
-	if (smode > GMT_SPLINE_NN) smode = GMT_SPLINE_LINEAR;	/* Default to linear */
-	if (smode != GMT_SPLINE_NN && n < 4) smode = GMT_SPLINE_LINEAR;	/* Default to linear if 3 or fewer points, unless when nearest neighbor */
+	if (smode > GMT_SPLINE_STEP) smode = GMT_SPLINE_LINEAR;	/* Default to linear */
+	if (smode != GMT_SPLINE_STEP && n < 4) smode = GMT_SPLINE_LINEAR;	/* Default to linear if 3 or fewer points, unless when nearest neighbor */
 	if (n < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Need at least 2 x-values\n");
 		return (GMT_DIM_TOO_SMALL);
