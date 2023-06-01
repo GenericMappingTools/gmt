@@ -10338,7 +10338,7 @@ GMT_LOCAL unsigned int gmtsupport_contour_old_T_parser (struct GMT_CTRL *GMT, ch
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
-						"Option -T: Give low and high labels either as :LH or :<low>,<high>.\n");
+			            "Option -T: Give low and high labels either as :LH or :<low>,<high>.\n");
 			I->label = false;
 			n_errors++;
 		}
@@ -10388,26 +10388,26 @@ unsigned int gmt_contour_T_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 				}
 				else {
 					GMT_Report (API, GMT_MSG_ERROR,
-								"Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
+					            "Option -T: Give low and high labels either as +lLH or +l<low>,<high>.\n");
 					n_errors++;
 				}
 			}
 		}
 		else {
 			if (gmt_M_compat_check (API->GMT, 4))  {
-				GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
-					GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+			        GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+			        GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				n_errors += gmtsupport_contour_old_T_parser (GMT, &arg[j], I);
 			}
 			else {
 				GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Your format for -T is deprecated; use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
-					GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+				            GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				n_errors++;
 			}
 		}
 		n_errors += gmt_M_check_condition (GMT, I->dim[GMT_X] <= 0.0 || I->dim[GMT_Y] == 0.0,
-						"Option -T: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
-							GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+		                "Option -T: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
+		                GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	}
 
 	return (n_errors);
@@ -10499,7 +10499,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 			case 'k':	/* Font color specification (backwards compatibility only since font color is now part of font specification */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT,
-								"+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
+					            "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
 					if (gmt_getfill (GMT, &p[1], &(G->font_label.fill))) bad++;
 				}
 				else
