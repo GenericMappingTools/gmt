@@ -234,6 +234,9 @@ Optional Arguments
 
 **-Z**
     Transpose the single segment in a dataset. Any trailing text will be lost.
+    **Note**: If you are using binary tables then add |-V| to have the dimensions
+    of the transposed table reported since you will need to specify **-bi**\ *ncols*
+    when reading the binary transposed table.
 
 .. include:: explain_-aspatial.rst_
 

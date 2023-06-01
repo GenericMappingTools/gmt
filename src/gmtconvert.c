@@ -576,6 +576,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Transposing of input data segment failed.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+		GMT_Report (API, GMT_MSG_INFORMATION, "Transposed dimensions: n_rows = %" PRIu64 " n_columns = %" PRIu64"\n", Dt->n_records, Dt->n_columns);
 		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_NOERROR) {	/* Be gone with the original input */
 			Return (API->error);
 		}
