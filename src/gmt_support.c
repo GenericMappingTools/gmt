@@ -1849,7 +1849,7 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 			case GMT_SPLINE_NN+GMT_SPLINE_CURVATURE:	/* Nearest neighbor curvatures are zero  */
 				v[i] = 0.0;
 				break;
-			case GMT_SPLINE_STEO+GMT_SPLINE_CURVATURE:	/* Step curvatures are zero  */
+			case GMT_SPLINE_STEP+GMT_SPLINE_CURVATURE:	/* Step curvatures are zero  */
 				v[i] = 0.0;
 				break;
 			case GMT_SPLINE_SMOOTH:	/* Smoothing spline */
