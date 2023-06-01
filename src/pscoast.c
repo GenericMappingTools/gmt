@@ -744,7 +744,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	bool greenwich = false, possibly_donut_hell = false, fill_in_use = false;
 	bool clobber_background = false, paint_polygons = false, donut, double_recursive = false;
 	bool donut_hell = false, world_map_save, clipping;
-	bool clip_to_extend_lines = false;
+	bool clip_to_extend_lines = false, isDCW = false;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border = 0.0, east_border = 0.0, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
@@ -780,6 +780,13 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) {
 		if (error == NOT_REALLY_AN_ERROR) Return (0);
 		Return (error);
+	}
+	if (Ctrl->E.active) {
+		isDCW = strlen(Ctrl->E.info.item[0]->codes) == 2 || strchr((Ctrl->E.info.item[0]->codes), ',') || strchr((Ctrl->E.info.item[0]->codes), '.');
+		if (!isDCW && (Ctrl->M.active || GMT->common.R.active[0])) {
+			GMT_Report (API, GMT_MSG_ERROR, "Passing other than DCW codes to option -E together with -M or -R options is not possible.\n");
+			Return (0);
+		}
 	}
 
 	/*---------------------------- This is the pscoast main code ----------------------------*/
