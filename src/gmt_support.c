@@ -1358,8 +1358,8 @@ GMT_LOCAL bool gmtsupport_is_penstyle (char *word) {
 	if (n == 0) return (false);
 
 	if (!strncmp (word, "dotdash", 7U) || !strncmp (word, "dashdot", 7U) \
-		|| !strncmp (word, "dash", 4U) || !strncmp (word, "dot", 3U) \
-		|| !strncmp (word, "solid", 5U)) return (true);
+        || !strncmp (word, "dash", 4U) || !strncmp (word, "dot", 3U) \
+        || !strncmp (word, "solid", 5U)) return (true);
 
 	n--;
 	if (strchr (GMT_DIM_UNITS, word[n])) n--;	/* Reduce length by 1; the unit character */
