@@ -1358,8 +1358,8 @@ GMT_LOCAL bool gmtsupport_is_penstyle (char *word) {
 	if (n == 0) return (false);
 
 	if (!strncmp (word, "dotdash", 7U) || !strncmp (word, "dashdot", 7U) \
-        || !strncmp (word, "dash", 4U) || !strncmp (word, "dot", 3U) \
-        || !strncmp (word, "solid", 5U)) return (true);
+	    || !strncmp (word, "dash", 4U) || !strncmp (word, "dot", 3U) \
+	    || !strncmp (word, "solid", 5U)) return (true);
 
 	n--;
 	if (strchr (GMT_DIM_UNITS, word[n])) n--;	/* Reduce length by 1; the unit character */
@@ -2805,7 +2805,7 @@ GMT_LOCAL void gmtsupport_orient_contour (struct GMT_GRID *G, double *x, double 
 	}
 
 	switch (side[0]) {	/* Entry side: check heights of corner points.*/
-							/* if point to the right of the line is higher z_dir = +1 else -1 */
+		                /* if point to the right of the line is higher z_dir = +1 else -1 */
 		case 0:	/* Bottom: check heights of lower left and lower right nodes */
 			z_dir = (G->data[ij_lr] > G->data[ij_ll]) ? +1 : -1;
 			break;
@@ -10395,8 +10395,8 @@ unsigned int gmt_contour_T_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 		}
 		else {
 			if (gmt_M_compat_check (API->GMT, 4))  {
-			        GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
-			        GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+				GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+				            GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				n_errors += gmtsupport_contour_old_T_parser (GMT, &arg[j], I);
 			}
 			else {
@@ -10406,8 +10406,8 @@ unsigned int gmt_contour_T_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 			}
 		}
 		n_errors += gmt_M_check_condition (GMT, I->dim[GMT_X] <= 0.0 || I->dim[GMT_Y] == 0.0,
-		                "Option -T: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
-		                GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+		                                   "Option -T: Expected\n\t-T[l|h][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
+		                                   GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	}
 
 	return (n_errors);
@@ -11544,8 +11544,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			}
 		}
 		if ((G->f_n = (unsigned int)k) == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Fixed position file %s does not have any data records\n",
-						G->flag, G->file);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Fixed position file %s does not have any data records\n", G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
@@ -11553,7 +11552,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -%c:  Failed to free DATASET allocated to parse %s\n",
-						G->flag, G->file);
+			            G->flag, G->file);
 	}
 
 	return (error);
@@ -16668,31 +16667,31 @@ unsigned int gmt_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int fac
 	ystop = 2*n_rows;
 
 	for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
-	  for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
-		for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
-		nxg = nx2 * nx3 * nx5;
-		if (nxg < n_columns || nxg > xstop) continue;
+		for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
+			for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
+				nxg = nx2 * nx3 * nx5;
+				if (nxg < n_columns || nxg > xstop) continue;
 
-		for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
-		  for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
-			for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
-			nyg = ny2 * ny3 * ny5;
-			if (nyg < n_rows || nyg > ystop) continue;
+				for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
+					for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
+						for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
+							nyg = ny2 * ny3 * ny5;
+							if (nyg < n_rows || nyg > ystop) continue;
 
-			current_time = gmtsupport_guess_surface_time (GMT, factors, nxg, nyg);
-			if (current_time < users_time) {
-				n_sug++;
-				sug = gmt_M_memory (GMT, sug, n_sug, struct GMT_SURFACE_SUGGESTION);
-				sug[n_sug-1].n_columns = nxg;
-				sug[n_sug-1].n_rows = nyg;
-				sug[n_sug-1].factor = users_time/current_time;
+							current_time = gmtsupport_guess_surface_time (GMT, factors, nxg, nyg);
+							if (current_time < users_time) {
+								n_sug++;
+								sug = gmt_M_memory (GMT, sug, n_sug, struct GMT_SURFACE_SUGGESTION);
+								sug[n_sug-1].n_columns = nxg;
+								sug[n_sug-1].n_rows = nyg;
+								sug[n_sug-1].factor = users_time/current_time;
+							}
+
+						}
+					}
+				}
 			}
-
-			}
-		  }
 		}
-		}
-	  }
 	}
 
 	if (n_sug) {
@@ -17394,11 +17393,11 @@ void gmt_mean_point (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, i
 void gmt_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify, int anchor) {
 	/* Adjust reference point based on size and justification of plotted item, towards a given anchor */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before justify = %d, Dim x = %g y = %g, Reference x = %g y = %g\n",
-				justify, dim[GMT_X], dim[GMT_Y], ref->x, ref->y);
+	            justify, dim[GMT_X], dim[GMT_Y], ref->x, ref->y);
 	ref->x += 0.5 * (anchor%4 - justify%4) * dim[GMT_X];
 	ref->y += 0.5 * (anchor/4 - justify/4) * dim[GMT_Y];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After justify = %d, Offset x = %g y = %g, Reference x = %g y = %g\n",
-				justify, off[GMT_X], off[GMT_Y], ref->x, ref->y);
+	            justify, off[GMT_X], off[GMT_Y], ref->x, ref->y);
 	/* Also deal with any justified offsets if given */
 	if (justify%4 == 3)	/* Right aligned */
 		ref->x -= off[GMT_X];
@@ -17578,7 +17577,8 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 			if (number < (50 + 4 * 10)) {
 				gmtsupport_postdigit('L', number / 50, string, &i);
 				number = number - (number / 50) * 50;
-			} else {
+			}
+			else {
 				gmtsupport_predigit('X','C', string, &i);
 				number = number - (100-10);
 			}
@@ -17587,7 +17587,8 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 			if (number < (10 + 3 * 10)) {
 				gmtsupport_postdigit('X', number / 10, string, &i);
 				number = number - (number / 10) * 10;
-			} else {
+			}
+			else {
 				gmtsupport_predigit('X','L', string, &i);
 				number = number - (50 - 10);
 			}
@@ -17596,7 +17597,8 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 			if (number < (5 + 4 * 1)) {
 				gmtsupport_postdigit('V', number / 5, string, &i);
 				number = number - (number / 5) * 5;
-			} else {
+			}
+			else {
 				gmtsupport_predigit('I', 'X', string, &i);
 				number = number - (10 - 1);
 			}
@@ -17605,7 +17607,8 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 			if (number < 4) {
 				gmtsupport_postdigit('I', number / 1, string, &i);
 				number = number - (number / 1) * 1;
-			} else {
+			}
+			else {
 				gmtsupport_predigit('I', 'V', string, &i);
 				number = number - (5 - 1);
 			}
