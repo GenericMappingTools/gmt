@@ -1813,10 +1813,10 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				v[i] = ((u[i] - x[j]) < (x[j+1] - u[i])) ? y[j] : y[j+1];
 				break;
 			case GMT_SPLINE_STEP: /* Step up to next value when passing it */
-				if (j == 0)	/* Start at the beginning */
+                if (i == (m-1))    /* End at the end */
+                    v[i] = y[n-1];
+				else if (j == 0)	/* Start at the beginning */
 					v[i] = y[0];
-				else if (i == (m-1))	/* End at the end */
-					v[i] = y[n-1];
 				else	/* Pick the smallest before the step happens */
 					v[i] = MIN (y[j], y[j+1]);
 				break;
