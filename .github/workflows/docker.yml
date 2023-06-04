@@ -15,8 +15,15 @@ defaults:
     # default to use bash shell
     shell: bash
 
+permissions:
+  contents: read
+
 jobs:
   docker:
+    permissions:
+      actions: write  # for styfle/cancel-workflow-action to cancel/stop running workflows
+      contents: read  # for actions/checkout to fetch code
+      pull-requests: read  # for dawidd6/action-download-artifact to query commit hash
     name: ${{ matrix.image }}
     runs-on: ubuntu-latest
     container:

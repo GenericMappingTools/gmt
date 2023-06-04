@@ -15,8 +15,13 @@ on:
 
 name: Create a Draft Release
 
+permissions:
+  contents: read
+
 jobs:
   draft-release:
+    permissions:
+      contents: write  # for softprops/action-gh-release to create GitHub release
     name: Create a Draft Release
     runs-on: macos-latest # Have to use macos because linux sometimes timeouts
     steps:
