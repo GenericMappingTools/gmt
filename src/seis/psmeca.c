@@ -98,6 +98,11 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} L;
+	struct PSMECA_M {	/* -D[g|j|J|n|x]<refpoint>[+o<dx>[/<dy>]] */
+		bool active;
+		struct GMT_REFPOINT *refpoint;
+		double off[2];
+	} M;
 	struct PSMECA_N {	/* -N */
 		bool active;
 	} N;
@@ -179,6 +184,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_free_refpoint (GMT, &C->M.refpoint);
 	gmt_M_str_free (C->C.file);
 	gmt_M_free (GMT, C);
 }
@@ -193,8 +199,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] [-A[+p<pen>][+s<size>]] [%s] "
 		"[-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] "
 		"[-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] "
-		"[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT,
+		"[-M%s%s] [-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, API->K_OPT, GMT_XYANCHOR, GMT_OFFSET, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT,
 		GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -266,6 +272,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-L<pen>");
 	GMT_Usage (API, -2, "Sets pen attribute for outline other than the default set by -W.");
+	gmt_refpoint_syntax (API->GMT, "M", "Specify position of a single symbol for information only [0/0].", 0, 1);
 	GMT_Usage (API, 1, "\n-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].");
 	GMT_Option (API, "O,P");
 	GMT_Usage (API, 1, "\n-T<plane>[/<pen>]");
@@ -356,7 +363,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, n;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -492,13 +499,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					n_errors++;
 				}
 				break;
-			case 'M':	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
-				if (gmt_M_compat_check (GMT, 6)) {
+			case 'M':
+				if (opt->arg[0] == '\0' && gmt_M_compat_check (GMT, 6)) {	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
 					GMT_Report (API, GMT_MSG_COMPAT, "-M is deprecated from 6.3.0; use -S modifier +m instead.\n");
 					Ctrl->S.fixed = true;
 				}
-				else
-					n_errors += gmt_default_option_error (GMT, opt);
+				else {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+					if ((Ctrl->M.refpoint = gmt_get_refpoint (GMT, opt->arg, 'M')) == NULL) {
+						n_errors++;	/* Failed basic parsing */
+						continue;
+					}
+					/* Args are [+o<dx>[/<dy>]] */
+					if (gmt_validate_modifiers (GMT, Ctrl->M.refpoint->args, 'I', "o", GMT_MSG_ERROR)) n_errors++;
+					if (gmt_get_modifier (Ctrl->M.refpoint->args, 'o', txt)) {
+						if ((n = gmt_get_pair (GMT, txt, GMT_PAIR_DIM_DUP, Ctrl->M.off)) < 0) n_errors++;
+					}
+				}
 				break;
 			case 'N':	/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -724,6 +741,18 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+
+	if (Ctrl->M.active) {	/* Not plotting into a map but a legend box, so fix the plot location, adjust if needed */
+		int mode = Ctrl->M.refpoint->mode;
+		Ctrl->N.active = true;	/* Allow this symbol to be placed anywhere relative to given anchor */
+		gmt_set_refpoint (GMT, Ctrl->M.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		Ctrl->M.refpoint->x += 0.5 * Ctrl->S.scale;	plot_y = Ctrl->M.refpoint->y += 0.5 * Ctrl->S.scale;	/* First let these refer to BL of symbol BoundingBox */
+		if (mode == GMT_REFPOINT_JUST) {	/* Must adjust these auto-locations by symbol size and offsets */
+			double dim[2] = {Ctrl->S.scale, Ctrl->S.scale};
+			gmt_adjust_refpoint (GMT, Ctrl->M.refpoint, dim, Ctrl->M.off, Ctrl->M.refpoint->justify, PSL_BL);
+		}
+		plot_x = Ctrl->M.refpoint->x;	plot_y = Ctrl->M.refpoint->y;
+	}
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -1153,9 +1182,234 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
 				}
 				event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
-				}
 			}
-	}
+		}
+
+		/* Gather and transform the input records, depending on type */
+		if (Ctrl->S.readmode == READ_CMT) {
+			meca.NP1.str = in[2+new_fmt];
+			if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0;
+			else if (meca.NP1.str < -180.0) 	meca.NP1.str += 360.0;	/* Strike must be in -180/+180 range*/
+			meca.NP1.dip = in[3+new_fmt];
+			meca.NP1.rake = in[4+new_fmt];
+			if (meca.NP1.rake > 180.0)			meca.NP1.rake -= 360.0;
+			else if (meca.NP1.rake < -180.0) 	meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
+			meca.NP2.str = in[5+new_fmt];
+			if (meca.NP2.str > 180.0)			meca.NP2.str -= 360.0;
+			else if (meca.NP2.str < -180.0) 	meca.NP2.str += 360.0;	/* Strike must be in -180/+180 range*/
+			meca.NP2.dip = in[6+new_fmt];
+			meca.NP2.rake = in[7+new_fmt];
+			if (meca.NP2.rake > 180.0)			meca.NP2.rake -= 360.0;
+			else if (meca.NP2.rake < -180.0) 	meca.NP2.rake += 360.0;	/* Rake must be in -180/+180 range*/
+			meca.moment.mant = in[8+new_fmt];
+			meca.moment.exponent = irint (in[9+new_fmt]);
+			if (meca.moment.exponent == 0) meca.magms = in[8+new_fmt];
+		}
+		else if (Ctrl->S.readmode == READ_AKI) {
+			meca.NP1.str = in[2+new_fmt];
+			if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0;
+			else if (meca.NP1.str < -180.0) 	meca.NP1.str += 360.0;	/* Strike must be in -180/+180 range*/
+			meca.NP1.dip = in[3+new_fmt];
+			meca.NP1.rake = in[4+new_fmt];
+			if (meca.NP1.rake > 180.0)			meca.NP1.rake -= 360.0;
+			else if (meca.NP1.rake < -180.0) 	meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
+			if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;	/* Fixing the issue http://gmt.soest.hawaii.edu/issues/894 */
+			meca.magms = in[5+new_fmt];
+			meca.moment.exponent = 0;
+			meca_define_second_plane (meca.NP1, &meca.NP2);
+		}
+		else if (Ctrl->S.readmode == READ_PLANES) {
+			meca.NP1.str = in[2+new_fmt];
+			if (meca.NP1.str > 180.0)		meca.NP1.str -= 360.0;
+			else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
+			meca.NP1.dip = in[3+new_fmt];
+			meca.NP2.str = in[4+new_fmt];
+			if (meca.NP2.str > 180.0)		meca.NP2.str -= 360.0;
+			else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
+			fault = in[5+new_fmt];
+			meca.magms = in[6+new_fmt];
+			meca.moment.exponent = 0;
+			meca.NP2.dip = meca_computed_dip2(meca.NP1.str, meca.NP1.dip, meca.NP2.str);
+			if (meca.NP2.dip == 1000.0) {
+				not_defined = true;
+				transparence_old = Ctrl->T.active;
+				n_plane_old = Ctrl->T.n_plane;
+				Ctrl->T.active = true;
+				Ctrl->T.n_plane = 1;
+				meca.NP1.rake = 1000.;
+				event_name = (has_text) ? S->text[row] : no_name;
+				GMT_Report (API, GMT_MSG_WARNING, "Second plane is not defined for event %s only first plane is plotted.\n", event_name);
+			}
+			else
+				meca.NP1.rake = meca_computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
+		}
+		else if (Ctrl->S.readmode == READ_AXIS) {
+			T.val = in[2+new_fmt];
+			T.str = in[3+new_fmt];
+			T.dip = in[4+new_fmt];
+			T.e = irint (in[11+new_fmt]);
+
+			N.val = in[5+new_fmt];
+			N.str = in[6+new_fmt];
+			N.dip = in[7+new_fmt];
+			N.e = irint (in[11+new_fmt]);
+
+			P.val = in[8+new_fmt];
+			P.str = in[9+new_fmt];
+			P.dip = in[10+new_fmt];
+			P.e = irint (in[11+new_fmt]);
+			/*
+			F. A. Dahlen and Jeroen Tromp, Theoretical Global Seismology, Princeton, 1998, p.167.
+			Definition of scalar moment.
+			*/
+			meca.moment.exponent = T.e;
+			meca.moment.mant = sqrt (squared (T.val) + squared (N.val) + squared (P.val)) / M_SQRT2;
+			meca.magms = 0.0;
+
+			/* normalization by M0 */
+			T.val /= meca.moment.mant;
+			N.val /= meca.moment.mant;
+			P.val /= meca.moment.mant;
+
+			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+		}
+		else if (Ctrl->S.readmode == READ_TENSOR) {
+			for (i = 2+new_fmt, n = 0; i < 8+new_fmt; i++, n++) mt.f[n] = in[i];
+			mt.expo = irint (in[i]);
+			/*
+			F. A. Dahlen and Jeroen Tromp, Theoretical Global Seismology, Princeton, 1998, p.167.
+			Definition of scalar moment.
+			*/
+			meca.moment.mant = sqrt(squared(mt.f[0]) + squared(mt.f[1]) + squared(mt.f[2]) +
+									2.*(squared(mt.f[3]) + squared(mt.f[4]) + squared(mt.f[5]))) / M_SQRT2;
+			meca.moment.exponent = mt.expo;
+			meca.magms = 0.;
+
+			/* normalization by M0 */
+			for(i=0;i<=5;i++) mt.f[i] /= meca.moment.mant;
+
+			meca_moment2axe (GMT, mt, &T, &N, &P);
+
+			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+		}
+
+		/* Common to all input types ... */
+
+		if (!Ctrl->M.active)	/* Update plot location */
+			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
+
+		/* If option -A is used, read the new position */
+
+		if (Ctrl->A.active) {
+			if (fabs (xynew[GMT_X]) > EPSIL || fabs (xynew[GMT_Y]) > EPSIL) {
+				gmt_setpen (GMT, &Ctrl->A.pen);
+				gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
+				gmt_setfill (GMT, &Ctrl->G.fill, 1);
+				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->A.size, PSL_CIRCLE);
+				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
+				plot_x = plot_xnew;
+				plot_y = plot_ynew;
+			}
+		}
+
+		if (Ctrl->M.active) {
+			meca.moment.mant = 4.0;
+			meca.moment.exponent = 23;
+		}
+
+		moment.mant = meca.moment.mant;
+		moment.exponent = meca.moment.exponent;
+		size = (meca_computed_mw(moment, meca.magms) / 5.0) * Ctrl->S.scale;
+
+		if (size < 0.0) {	/* Addressing Bug #1171 */
+			GMT_Report (API, GMT_MSG_WARNING, "Skipping negative symbol size %g for record # %d.\n", size, n_rec);
+			continue;
+		}
+
+		meca_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
+		delaz = atan2d(t12,t11);
+
+		if ((Ctrl->S.readmode == READ_AXIS || Ctrl->S.readmode == READ_TENSOR) && Ctrl->S.plotmode != PLOT_DC) {
+
+			T.str = meca_zero_360(T.str + delaz);
+			N.str = meca_zero_360(N.str + delaz);
+			P.str = meca_zero_360(P.str + delaz);
+
+			gmt_setpen (GMT, &Ctrl->L.pen);
+			if (fabs (N.val) < EPSIL && fabs (T.val + P.val) < EPSIL) {
+				meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+				meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
+			}
+			else
+				meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.plotmode == PLOT_TRACE, n_rec);
+		}
+
+		if (Ctrl->Z2.active) {
+			gmt_setpen (GMT, &Ctrl->Z2.pen);
+			meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
+		}
+
+		if (Ctrl->T.active) {
+			meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
+			meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
+			gmt_setpen (GMT, &Ctrl->T.pen);
+			meca_ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
+			if (not_defined) {
+				not_defined = false;
+				Ctrl->T.active = transparence_old;
+				Ctrl->T.n_plane = n_plane_old;
+			}
+		}
+		else if (Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.plotmode == PLOT_DC) {
+			meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
+			meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
+			gmt_setpen (GMT, &Ctrl->L.pen);
+			meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
+		}
+
+		if (!Ctrl->S.no_label) {
+			int label_justify = 0;
+			double label_x, label_y;
+			double label_offset[2];
+
+			label_justify = gmt_flip_justify(GMT, Ctrl->S.justify);
+			label_offset[0] = label_offset[1] = GMT_TEXT_CLEARANCE * 0.01 * Ctrl->S.font.size / PSL_POINTS_PER_INCH;
+
+			label_x = plot_x + 0.5 * (Ctrl->S.justify%4 - label_justify%4) * size * 0.5;
+			label_y = plot_y + 0.5 * (Ctrl->S.justify/4 - label_justify/4) * size * 0.5;
+
+			/* Also deal with any justified offsets if given */
+			if (Ctrl->S.justify%4 == 1) /* Left aligned */
+				label_x -= Ctrl->S.offset[0];
+			else /* Right or center aligned */
+				label_x += Ctrl->S.offset[0];
+			if (Ctrl->S.justify/4 == 0) /* Bottom aligned */
+				label_y -= Ctrl->S.offset[1];
+			else /* Top or middle aligned */
+				label_y += Ctrl->S.offset[1];
+
+			gmt_setpen (GMT, &Ctrl->W.pen);
+			PSL_setfill (PSL, Ctrl->R2.fill.rgb, 0);
+			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, label_offset, 0);
+			form = gmt_setfont(GMT, &Ctrl->S.font);
+			PSL_plottext (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, form);
+		}
+
+		if (Ctrl->A2.active) {
+			if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
+			meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
+			gmt_setpen (GMT, &Ctrl->P2.pen);
+			gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active ? 1 : 0);
+			PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
+			gmt_setpen (GMT, &Ctrl->T2.pen);
+			gmt_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active ? 1 : 0);
+			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
+		}
+		event_title[0] = string[0] = '\0';	/* Reset these two in case next record misses "string" */
+		if (Ctrl->M.active) goto once_only;	/* When -I is active we only plot the very first entry */
+	} while (true);
+
+once_only:
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
