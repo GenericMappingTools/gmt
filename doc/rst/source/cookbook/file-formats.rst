@@ -81,7 +81,9 @@ Binary tables
 
 GMT programs also support native binary tables to speed up
 input-output for i/o-intensive tasks like gridding and preprocessing.
-This is discussed in more detail in section :ref:`option_-b`.
+This is discussed in more detail in section :ref:`option_-b`. Unlike
+ASCII tables, binary tables do not have any limitations on the number
+of data columns.
 
 NetCDF tables
 ~~~~~~~~~~~~~
