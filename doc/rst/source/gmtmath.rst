@@ -683,6 +683,19 @@ versus
     echo 1 2 3 4 | gmt math -C3 STDIN 1 ADD =
     0    0    0    5
 
+To calculate how many days there were in the 80s decade:
+
+   ::
+
+    gmt math -Q 1991-01-01T 1981-01-01T SUB --TIME_UNIT=d =
+
+To determine the 1000th day since the beginning of the millennium:
+
+  ::
+
+  gmt math -Q 2001-01-01T 1000 ADD --TIME_UNIT=d -fT =
+
+
 References
 ----------
 
