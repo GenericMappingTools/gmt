@@ -671,14 +671,14 @@ Users must be aware that when |-C| controls which columns are to be
 active the control extends to placing columns from files as well.
 Contrast the different result obtained by these very similar commands:
 
-::
+   ::
 
     echo 1 2 3 4 | gmt math STDIN -C3 1 ADD =
     1    2    3    5
 
 versus
 
-::
+   ::
 
     echo 1 2 3 4 | gmt math -C3 STDIN 1 ADD =
     0    0    0    5
@@ -691,9 +691,9 @@ To calculate how many days there were in the 80s decade:
 
 To determine the 1000th day since the beginning of the millennium:
 
-  ::
+   ::
 
-  gmt math -Q 2001-01-01T 1000 ADD --TIME_UNIT=d -fT =
+    gmt math -Q 2001-01-01T 1000 ADD --TIME_UNIT=d -fT =
 
 
 References
