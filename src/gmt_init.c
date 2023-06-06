@@ -8887,15 +8887,17 @@ int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt) {
 
 unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]) {
 	/* If given +e|r|R<incs> we must parse and get the mode and 1, 2, or 4 increments */
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, k;
 	char *c = NULL;
 
 	if (arg == NULL || arg[0] == '\0') return GMT_NOERROR;	/* Nothing to do */
 	c = strchr (arg, '+');	/* Start of modifier, if given */
-	if (c && strchr ("erR", c[1])) {	/* Want to extend the final region before reporting */
+	k = (c) ? 1 : 0;	/* Whether a leading + was found */
+	if (k == 0) c = arg;	/* Starts right away with no leading + */
+	if (c && strchr ("erR", c[k])) {	/* Want to extend the final region before reporting */
 		int j;
-		j = GMT_Get_Values (GMT->parent, &c[2], inc, 4);
-		*mode = (c[1] == 'e') ? GMT_REGION_ROUND_EXTEND : ((c[1] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
+		j = GMT_Get_Values (GMT->parent, &c[k+1], inc, 4);
+		*mode = (c[k] == 'e') ? GMT_REGION_ROUND_EXTEND : ((c[k] == 'r') ? GMT_REGION_ROUND : GMT_REGION_ADD);
 		if (j == 1)	/* Same increments in all directions */
 			inc[XHI] = inc[YLO] = inc[YHI] = inc[XLO];
 		else if (j == 2) {	/* Separate increments in x and y */
