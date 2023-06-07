@@ -12,6 +12,7 @@ Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*, e.
     3.5
     3.6
     3.7
+    ...
 
 Append **+b** if we should take log2 of *min* and *max*, get their nearest integers,
 build an equidistant log2-array using *inc* integer increments in log2, then undo
