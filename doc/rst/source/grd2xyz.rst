@@ -210,23 +210,23 @@ Examples
 
 To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII:
 
-   ::
+::
 
-    gmt grd2xyz @AFR.nc > AFR.xyz
+  gmt grd2xyz @AFR.nc > AFR.xyz
 
 To write a single precision binary file without the x,y positions from
 the remote file @AFR.nc file, using scanline orientation, run:
 
-   ::
+::
 
-    gmt grd2xyz @AFR.nc -ZTLf > AFR.b
+  gmt grd2xyz @AFR.nc -ZTLf > AFR.b
 
 To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter\ :sup:`2` as the area unit,
 and where *area* reflects the size of each grid box, run:
 
-   ::
+::
 
-    gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
+  gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
 
 See Also
 --------

@@ -197,7 +197,7 @@ Optional Arguments
     - **+a** - In the case of multiple tests, output any record that passes at least
       one of your *z* tests [Default is all tests must pass].
     - **+c** - To specify another *z*-column, append **+c**\ *col*. If **+c** is not used
-      then it is automatically incremented for each new |-Z| option, starting from 2. 
+      then it is automatically incremented for each new |-Z| option, starting from 2.
     - **+h** - Instead of obtaining *z* from the data column(s), extract *z* from the segment
       header |-Z|\ *z* string.  If no such entry is found we skip [Default, or **+hs**] the
       entire segment (or we keep the entire segment if **+hk** was given), otherwise it is
@@ -300,9 +300,9 @@ To return all the points *except* those inside that square, use::
 To extract the subset of data set that is within 300 km of any of the
 points in pts.txt but more than 100 km away from the lines in lines.txt, run
 
-   ::
+::
 
-    gmt select lonlatfile -fg -Cpts.txt+d300k -Llines.txt+d100k -Il > subset.txt
+  gmt select lonlatfile -fg -Cpts.txt+d300k -Llines.txt+d100k -Il > subset.txt
 
 Here, you must specify **-fg** so the program knows you are processing
 geographical data.
@@ -310,37 +310,37 @@ geographical data.
 To keep all points in data.txt within the specified region, except the
 points on land (as determined by the high-resolution coastlines), use
 
-   ::
+::
 
-    gmt select data.txt -R120/121/22/24 -Dh -Nk/s > subset.txt
+  gmt select data.txt -R120/121/22/24 -Dh -Nk/s > subset.txt
 
 To return all points in quakes.txt that are inside or on the spherical
 polygon lonlatpath.txt, try
 
-   ::
+::
 
-    gmt select quakes.txt -Flonlatpath.txt -fg > subset1.txt
+  gmt select quakes.txt -Flonlatpath.txt -fg > subset1.txt
 
 To return all points in stations.txt that are within 5 cm of the point in
 origin.txt for a certain projection, try
 
-   ::
+::
 
-    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2.txt
+  gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2.txt
 
 To return all points in quakes.txt that are inside the grid topo.nc
 where the values are nonzero, try
 
-   ::
+::
 
-    gmt select quakes.txt -Gtopo.nc > subset2.txt
+  gmt select quakes.txt -Gtopo.nc > subset2.txt
 
 The pass all records whose 3rd column values fall in the range 10-50
 and 5th column values are all negative, try
 
-   ::
+::
 
-    gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3.txt
+  gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3.txt
 
 
 .. include:: explain_gshhg.rst_

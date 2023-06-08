@@ -86,7 +86,7 @@ Required Arguments
     - (**b**) Boxcar: All weights are equal.
     - (**c**) Cosine Arch: Weights follow a cosine arch curve.
     - (**g**) Gaussian: Weights are given by the Gaussian function.
-    
+
     Non-convolution filters are:
 
     - (**m**) Median: Returns median value.
@@ -189,9 +189,9 @@ biased by the sloping plane, you want to divide the filter circle into 6
 sectors and to choose the lowest value among 6 medians. Using spherical
 distance calculations, you need:
 
-   ::
+::
 
-    gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
+  gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
 
 Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
 to 15W and 8N to 25N, and you want to remove small-length-scale features
@@ -199,10 +199,10 @@ in order to define a swell in an area extending from 27.5W to 20.5W and
 12.5N to 19.5N, and you want the output value every 2 minute. Using
 cartesian distance calculations, you need:
 
-   ::
+::
 
-    gmt dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
-    gmt grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V
+  gmt dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
+  gmt grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V
 
 Suppose that you found a range of filter widths for a given area, and
 you filtered the given bathymetric data using the range of filter widths
@@ -211,14 +211,14 @@ regional trend using the range of filter widths, and you want to obtain
 median absolute deviation (MAD) estimates at each data point. Then, you
 will need to do:
 
-   ::
+::
 
-    gmt grd2xyz f100.nc -Z > f100.txt
-    gmt grd2xyz f110.nc -Z > f110.txt
-    gmt grd2xyz f120.nc -Z > f120.txt
-    gmt grd2xyz f130.nc -Z > f130.txt
-    paste f100.txt f110.txt f120.txt f130.txt > depths.txt
-    gmt dimfilter depths.txt -Q > output.z
+  gmt grd2xyz f100.nc -Z > f100.txt
+  gmt grd2xyz f110.nc -Z > f110.txt
+  gmt grd2xyz f120.nc -Z > f120.txt
+  gmt grd2xyz f130.nc -Z > f130.txt
+  paste f100.txt f110.txt f120.txt f130.txt > depths.txt
+  gmt dimfilter depths.txt -Q > output.z
 
 Limitations
 -----------

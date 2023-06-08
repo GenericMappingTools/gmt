@@ -226,22 +226,22 @@ along the prime meridian, and just paint those areas yellow we try::
 To make an overlay that will mask out the regions of a
 contour map where there is no control data using clip polygons, use:
 
-   ::
+::
 
-    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -pdf mask
+  gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -pdf mask
 
 We do it again, but this time we wish to save the clipping polygons to
 file all_pols.txt:
 
-   ::
+::
 
-    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -Dall_pols.txt
+  gmt mask africa_grav.xyg -R20/40/20/40 -I5m -Dall_pols.txt
 
 A repeat of the first example but this time we use white tiling:
 
-   ::
+::
 
-    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -Gwhite -pdf mask
+  gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -Gwhite -pdf mask
 
 See Also
 --------

@@ -58,7 +58,7 @@ Optional Arguments
     Azimuthal direction for a directional derivative; *azim* is the
     angle in the x,y plane measured in degrees positive clockwise from
     north (the +y direction) toward east (the +x direction). The
-    negative of the directional derivative, 
+    negative of the directional derivative,
     :math:`-(\frac{dz}{dx}\sin(a) + \frac{dz}{dy}\cos(a))`
     , is found where :math:`a` is the *azimuth*; negation yields positive values
     when the slope of :math:`z(x,y)` is downhill in the :math:`a` direction, the
@@ -116,7 +116,7 @@ Optional Arguments
     *amp* = 1. If *offset* is not given, it is set to the average of
     :math:`g`. The following forms are supported, where :math:`o` is the offset
     and :math:`a` is the *amp*:
-    
+
     - |-N| - Normalize using :math:`g_n = a(\frac{g - o}{max(|g - o|)})`
     - **-Ne** - Normalize using a cumulative Laplace distribution yielding:
       :math:`g_n = a(1 - \exp{(\sqrt{2}\frac{g - o}{\sigma}))}`, where
@@ -126,7 +126,7 @@ Optional Arguments
       :math:`g_n = \frac{2a}{\pi}(\tan^{-1}(\frac{g - o}{\sigma}))` where
       :math:`\sigma` is estimated using the L2 norm of :math:`(g -o)` if it
       is not given.
-      
+
     To use :math:`o` and/or :math:`\sigma` from a previous calculation,
     leave out the argument to the modifier(s) and see |-Q| for usage.  As a final
     option, you may add **+a**\ *ambient* to add *ambient* to all nodes after
@@ -237,23 +237,23 @@ the north and west directions::
 
 To find the azimuth orientations of seafloor fabric in the file topo.nc:
 
-   ::
+::
 
-    gmt grdgradient topo.nc -Dno -Gazimuths.nc -V
+  gmt grdgradient topo.nc -Dno -Gazimuths.nc -V
 
 To determine the offset and sigma suitable for normalizing the intensities from topo.nc, do
 
-   ::
+::
 
-    gmt grdgradient topo.nc -A30 -Nt0.6 -Qc -V
+  gmt grdgradient topo.nc -A30 -Nt0.6 -Qc -V
 
 Without |-G|, only the hidden statistics file is created and no output grid is written.
 
 To use the previously determined offset and sigma to normalize the intensities in tile_3.nc, do
 
-   ::
+::
 
-    gmt grdgradient tile_3.nc -A30 -Nt0.6+o+s -Qr -V -Gtile_3_int.nc
+  gmt grdgradient tile_3.nc -A30 -Nt0.6+o+s -Qr -V -Gtile_3_int.nc
 
 
 References
