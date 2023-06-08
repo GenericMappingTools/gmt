@@ -358,9 +358,9 @@ free-air anomalies on a Mercator grid) along 100-km-long cross-profiles
 that are orthogonal to the line segment given in the file track.xy,
 erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
-   ::
+::
 
-    gmt grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
+  gmt grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
 
 The same thing, but now determining the central anomaly location along track,
 with a threshold of 25 mGal, try::

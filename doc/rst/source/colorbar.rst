@@ -272,12 +272,12 @@ Examples
 To plot a horizontal color scale (12 cm long; 0.5 cm wide) at the reference point (8,1)
 (paper coordinates) with justification at top center and automatic annotation interval, do
 
-   ::
+::
 
-    gmt begin map
-      gmt makecpt -T-200/1000/100 -Crainbow
-      gmt colorbar -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm
-    gmt end show
+  gmt begin map
+    gmt makecpt -T-200/1000/100 -Crainbow
+    gmt colorbar -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm
+  gmt end show
 
 
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
@@ -285,16 +285,16 @@ right of a plot that is 6 inch wide and 4 inch high, using illumination,
 and show back- and foreground colors, and annotating every 5 units, we
 provide the reference point and select the left-mid anchor point via
 
-   ::
+::
 
-    gmt colorbar -Dx6.5i+jLM/2i+w7.5c/1.25c+e -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm
+  gmt colorbar -Dx6.5i+jLM/2i+w7.5c/1.25c+e -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm
 
 To overlay a horizontal color scale (4 inches long and default width) above a
 Mercator map produced by a previous call, ensuring a 2 cm offset from the map frame, use
 
-   ::
+::
 
-    gmt colorbar -DjCT+w4i+o0/2c+h -Ccolors.cpt -Baf
+  gmt colorbar -DjCT+w4i+o0/2c+h -Ccolors.cpt -Baf
 
 .. module_note_begins
 

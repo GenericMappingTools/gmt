@@ -126,9 +126,9 @@ earth_relief_05m into 16 divisions of equal area::
 To make the poorly distributed intensities in the file raw_intens.nc
 suitable for use with :doc:`grdimage` or :doc:`grdview`, run
 
-   ::
+::
 
-    gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
+  gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
 
 Notes
 ------

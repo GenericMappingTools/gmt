@@ -164,17 +164,17 @@ then plot it on a sphere, try::
 To triangulate the points in the file testdata.txt, and make a Voronoi
 diagram via :doc:`plot`, use
 
-   ::
+::
 
-    gmt sphtriangulate testdata.txt -Qv | gmt plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
+  gmt sphtriangulate testdata.txt -Qv | gmt plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.txt and save the area of each triangle
 in the header record, try
 
-   ::
+::
 
-    gmt sphtriangulate globalnodes.txt -Qd -A > global_tri.txt
+  gmt sphtriangulate globalnodes.txt -Qd -A > global_tri.txt
 
 Notes
 -----

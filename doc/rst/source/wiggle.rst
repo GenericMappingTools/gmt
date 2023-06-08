@@ -231,20 +231,20 @@ To plot the magnetic anomaly stored in the file track.xym along track @
 mode, with positive anomalies in red on a blue track of width 0.25
 points, use
 
-   ::
+::
 
-    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
-                 -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
+  gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
+               -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 and the positive anomalies will in general point in the north direction.
 We used |-D| to place a vertical scale bar indicating a 1000 nT anomaly.
 To instead enforce a fixed azimuth of 45 for the positive wiggles, we add |-I|
 and obtain
 
-   ::
+::
 
-    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
-              -C32000 -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
+  gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
+            -C32000 -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 Bugs
 ----
@@ -253,15 +253,15 @@ Sometimes the (*x,y*) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 
-   ::
+::
 
-    gmt mapproject -Af yourdata.xyz | more
+  gmt mapproject -Af yourdata.xyz | more
 
 Then if these numbers jump around a lot, you may do this:
 
-   ::
+::
 
-    awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
+  awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
 which performs a 5-point boxcar filter, and plot this data set instead.
 

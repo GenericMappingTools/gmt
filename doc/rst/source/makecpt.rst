@@ -275,9 +275,9 @@ Examples
 To make a CPT with z-values from -200 to 200, with discrete color
 changes every 25, and using a polar blue-white-red colortable:
 
-   ::
+::
 
-    gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
+  gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
 
 To make an equidistant CPT from z = -2 to 6 using the
 continuous default turbo rainbow of colors::
@@ -292,58 +292,58 @@ or simply use -Cgebco directly in the application that needs the color table.
 To create a 24-level color table suitable for plotting the depths in
 the remote data table v3206_06.txt (with lon, lat, depths), run
 
-   ::
+::
 
-    gmt makecpt -Cgebco @v3206_06.txt -E24 > my_depths.cpt
+  gmt makecpt -Cgebco @v3206_06.txt -E24 > my_depths.cpt
 
 To use the gebco color table but reverse the z-values so it can be used for
 positive depth values, try
 
-   ::
+::
 
-    gmt makecpt -Cgebco -Iz > my_positive_gebco.cpt
+  gmt makecpt -Cgebco -Iz > my_positive_gebco.cpt
 
 To make a custom discrete color table for depth of seismicity, using red color for
 hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1000 km)
 earthquakes, use
 
-   ::
+::
 
-    gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
+  gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
 
 To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
-   ::
+::
 
-    gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
+  gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval
 0 to 500, i.e., the color will be wrapped every 500 z-units so that
 we always get a color regardless of the *z* value, try
 
-   ::
+::
 
-    gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
+  gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
 To build a categorical table with 3 categories and add specific category
 names to them, try
 
-   ::
+::
 
-    gmt makecpt -Ccubhelix -T0/2/1 -F+cClouds,Trees,Water > cat.cpt
+  gmt makecpt -Ccubhelix -T0/2/1 -F+cClouds,Trees,Water > cat.cpt
 
 To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try
 
-   ::
+::
 
-    gmt makecpt -Cjet -T0/10/1 -F+cA
+  gmt makecpt -Cjet -T0/10/1 -F+cA
 
 To make a categorical CPT with string keys instead of numerical lookup values, try
 
-   ::
+::
 
-    gmt makecpt -Ccategorical -Twood,water,gold
+  gmt makecpt -Ccategorical -Twood,water,gold
 
 .. include:: cpt_notes.rst_
 

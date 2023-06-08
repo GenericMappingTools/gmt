@@ -276,9 +276,9 @@ hawaii_5x5.xyg, using a *tension_factor* = 0.25, a
 *convergence_limit* = 0.1 mGal, writing the result to a file called
 hawaii_grd.nc, and monitoring each iteration, try:
 
-   ::
+::
 
-    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
+  gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
 
 Notes
 -----

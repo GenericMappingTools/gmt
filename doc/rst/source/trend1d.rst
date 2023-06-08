@@ -200,28 +200,28 @@ Examples
 
 To remove a linear trend from data.xy by ordinary least squares, use:
 
-   ::
+::
 
-    gmt trend1d data.xy -Fxr -Np1 > detrended_data.xy
+  gmt trend1d data.xy -Fxr -Np1 > detrended_data.xy
 
 To make the above linear trend robust with respect to outliers, use:
 
-   ::
+::
 
-    gmt trend1d data.xy -Fxr -Np1+r > detrended_data.xy
+  gmt trend1d data.xy -Fxr -Np1+r > detrended_data.xy
 
 To fit the model y(x) = a + bx\ :sup:`2` + c * cos(2*pi*3*(x/l) + d * sin(2*pi*3*(x/l), with l the fundamental period (here l = 15), try:
 
-   ::
+::
 
-    gmt trend1d data.xy -Fxm -NP0,P2,F3+l15 > model.xy
+  gmt trend1d data.xy -Fxm -NP0,P2,F3+l15 > model.xy
 
 To find out how many terms (up to 20, say in a robust Fourier
 interpolant are significant in fitting data.xy, use:
 
-   ::
+::
 
-    gmt trend1d data.xy -Nf20+r -I -V
+  gmt trend1d data.xy -Nf20+r -I -V
 
 See Also
 --------

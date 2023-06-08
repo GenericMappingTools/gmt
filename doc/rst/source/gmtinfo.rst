@@ -224,33 +224,33 @@ To find the extreme values in @ship_15.txt to the nearest 5 units
 but shifted to within 1 unit of the data center, and use this region to
 plot all the points as small black circles using :doc:`plot`, run
 
-  ::
+::
 
-    gmt plot `gmt info -I5 -D1 @ship_15.txt` @ship_15.txt -B -Sc2p -pdf map
+  gmt plot `gmt info -I5 -D1 @ship_15.txt` @ship_15.txt -B -Sc2p -pdf map
 
 To find the min and max values for each of the first 3 columns, but
 rounded to integers, and return the result individually for each data
 file, use
 
-  ::
+::
 
-    gmt info @ship_15.txt -C -I1/1/1
+  gmt info @ship_15.txt -C -I1/1/1
 
 Given seven profiles with different start and stop positions, we
 want to find a range of positions, with increment of 5, that are
 common to all the profiles.  We use
 
-  ::
+::
 
-    gmt info profile_[123567].txt -L -I5
+  gmt info profile_[123567].txt -L -I5
 
 The file magprofs.txt contains a number of magnetic profiles stored
 as separate data segments.  We need to know how many segments there
 are and use
 
-  ::
+::
 
-    gmt info magprofs.txt -Fi
+  gmt info magprofs.txt -Fi
 
 Bugs
 ----

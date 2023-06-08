@@ -194,11 +194,11 @@ region **-R**\ 300/315/12/20. You want to use a 100 km low-pass filter to
 smooth the tracks and a 500km high-pass filter to detrend the magnetic
 anomalies. Try this:
 
-   ::
+::
 
-    gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt split -A90/15 -F100/-500 \
-        -D100 -S -V -fg | gmt wiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
-        -W0.75p -Ggray -Z200 -pdf JA020015_wiggles
+  gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt split -A90/15 -F100/-500 \
+      -D100 -S -V -fg | gmt wiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
+      -W0.75p -Ggray -Z200 -pdf JA020015_wiggles
 
 MGD-77 users: For this application we recommend that you extract dist,azim
 from :doc:`mgd77list <supplements/mgd77/mgd77list>` rather than have
@@ -208,9 +208,9 @@ Suppose you have been given a binary, double-precision file containing
 lat, lon, gravity values from a survey, and you want to split it into
 profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try this:
 
-   ::
+::
 
-    gmt split survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
+  gmt split survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
 See Also
 --------
