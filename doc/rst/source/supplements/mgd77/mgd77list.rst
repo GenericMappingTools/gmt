@@ -489,51 +489,51 @@ To get a (distance, heading, gravity, bathymetry) listing from
 01010047.mgd77, starting at June 3 1971 20:45 and ending at distance =
 5000 km, use the following command:
 
-   ::
+::
 
-    gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.txt
+  gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.txt
 
 To make input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using free-air anomalies
 from all the cruises listed in the file cruises.lis, but only the data
 that are inside the specified area, and make the output binary:
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
+  gmt mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
 
 To extract the locations of depths exceeding 9000 meter that were not
 interpolated (**btc** != 1) from all the cruises listed in the file
 cruises.lis:
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.txt
+  gmt mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.txt
 
 To extract dist, faa, and grav12_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
 all the MGD77+ netCDF files whose cruise ids are listed in the file
 cruises.lis, we try
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
-        shallow_grav.txt
+  gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
+      shallow_grav.txt
 
 To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
 records whose bitflag for faa indicates BAD values, we try
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
+  gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
 
 To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
 reference fields, try:
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.txt
+  gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.txt
 
 Recalculated Anomalies
 ----------------------

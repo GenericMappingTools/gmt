@@ -173,26 +173,26 @@ To find the likely (hotspot) origins of the seamounts represented by the
 poles and the pac_hs.txt list of possible hotspots, and report the 2 most
 likely hotspot candidates for each seamount, run
 
-   ::
+::
 
-    gmt originater seamounts.txt -S2 -EDC85.txt -Fpac_hs.txt > origins.txt
+  gmt originater seamounts.txt -S2 -EDC85.txt -Fpac_hs.txt > origins.txt
 
 To determine the predicted age of a seamount, distances to the closest
 hotspot, and echo the observed age given its location, observed age, and
 a rotation model, try
 
-   ::
+::
 
-    echo "1.55 -8.43 52.3" | gmt originater -FONeill_2005_hotspots.txt \
-    -EOMS2005_APM_fixed.txt -Q1/120 -Lt
+  echo "1.55 -8.43 52.3" | gmt originater -FONeill_2005_hotspots.txt \
+  -EOMS2005_APM_fixed.txt -Q1/120 -Lt
 
 where 52.3 Ma is observed age. The output is 70 -95.486 52.3. To repeat
 the same exercise with a moving hotspot model, try
 
-   ::
+::
 
-    echo "1.55 -8.43 52.3" | gmt originater -FONeill_2005_hotspots.txt+d \
-    -EOMS2005_APM_smooth.txt -Q1/120 -Lt
+  echo "1.55 -8.43 52.3" | gmt originater -FONeill_2005_hotspots.txt+d \
+  -EOMS2005_APM_smooth.txt -Q1/120 -Lt
 
 Now the output is 80 -213.135 52.3. Negative distances means the closest
 approach was east of the hotspot.
