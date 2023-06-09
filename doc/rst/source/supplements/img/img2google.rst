@@ -131,19 +131,19 @@ To create a 10x10 degree Google Earth KML tile for the region
 **-R**\ 170/180/20/30 using the default *topo.18.1.img* and output
 naming convention, try
 
-   ::
+::
 
-    img2google -R170/180/20/30
+  img2google -R170/180/20/30
 
 To make the same tile with a previous file such as *topo.15.1.img*, run in verbose
 mode, clip so only oceanic areas are visible, name the output oldimage,
 specify the KML metadata directly (including setting the image altitude
 to 10 km), and make a single \*.kmz file, try
 
-   ::
+::
 
-    img2google topo.15.1.img -R170/180/20/30 -Aa10000 -C -Goldimage \
-    -N"My KML title" -T"My KML title" -Uhttp://my.server.com/images -V -Z
+  img2google topo.15.1.img -R170/180/20/30 -Aa10000 -C -Goldimage \
+  -N"My KML title" -T"My KML title" -Uhttp://my.server.com/images -V -Z
 
 DATA SETS
 ---------

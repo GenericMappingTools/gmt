@@ -117,40 +117,40 @@ Examples
 To get one-line summary information about the cruises 01010047.mgd77 and
 01010008.mgd77, try
 
-   ::
+::
 
-    gmt mgd77info 01010047 01010008 -E > listing.lis
+  gmt mgd77info 01010047 01010008 -E > listing.lis
 
 To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -Mr
+  gmt mgd77info 01010047 -Mr
 
 To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -Mf | grep Gravity
+  gmt mgd77info 01010047 -Mf | grep Gravity
 
 To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -MfMagnetics_Sampling_Rate
+  gmt mgd77info 01010047 -MfMagnetics_Sampling_Rate
 
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -C
+  gmt mgd77info 01010047 -C
 
 To see the E77 status of all MGD77+ cruises collected by the University
 of Hawaii (institution 08), run
 
-   ::
+::
 
-    gmt mgd77info 08 -Ia -Me
+  gmt mgd77info 08 -Ia -Me
 
 See Also
 --------

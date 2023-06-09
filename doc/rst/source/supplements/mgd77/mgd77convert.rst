@@ -97,39 +97,39 @@ Examples
 
 To convert a large set of a77,h77 pairs to proper mgd77 files, try
 
-   ::
+::
 
-    gmt mgd77convert -C *.h77
+  gmt mgd77convert -C *.h77
 
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files,
 and capture all verification messages, try
 
-   ::
+::
 
-    gmt mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+l > log.lis
+  gmt mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+l > log.lis
 
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical
 to the original file, try (Bourne shell syntax)
 
-   ::
+::
 
-    orig=`gmt mgd77path 01010047 -Ic`
-    gmt mgd77convert 01010047 -Fc -Ta -V
-    diff $orig 01010047.mgd77
+  orig=`gmt mgd77path 01010047 -Ic`
+  gmt mgd77convert 01010047 -Fc -Ta -V
+  diff $orig 01010047.mgd77
 
 To convert 01010047.nc to a plain ASCII table for manual editing,
 overwriting any existing table, try
 
-   ::
+::
 
-    gmt mgd77convert 01010047 -Fc -Tt+f -V
+  gmt mgd77convert 01010047 -Fc -Tt+f -V
 
 To recover the original NCEI MGD77 version of 01020051.nc and ignore any
 E77 corrections, use
 
-   ::
+::
 
-    gmt mgd77convert 01020051 -FC -Ta -V
+  gmt mgd77convert 01020051 -FC -Ta -V
 
 File Formats
 ------------
