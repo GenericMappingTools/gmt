@@ -558,17 +558,17 @@ Igf
 The equations used are reproduced here using coefficients extracted
 directly from the source code (let us know if you find errors):
 
-(1) g = 978052.0 \* [1 + 0.005285 \* sin^2(lat) - 7e-6 \* sin^2(2\*lat)
-+ 27e-6 \* cos^2(lat) \* cos^2(lon-18)]
+(1) :math:`g = 978052.0 \times [1 + 0.005285 \times sin^2(lat) - 7e-6 \times sin^2(2\times lat)
++ 27e-6 \times cos^2(lat) \times cos^2(lon-18)]`
 
-(2) g = 978049.0 \* [1 + 0.0052884 \* sin^2(lat) - 0.0000059 \*
-sin^2(2\*lat)]
+(2) :math:`g = 978049.0 \times [1 + 0.0052884 \times sin^2(lat) - 0.0000059 \times
+sin^2(2\times lat)]`
 
-(3) g = 978031.846 \* [1 + 0.0053024 \* sin^2(lat) - 0.0000058 \*
-sin^2(2\*lat)]
+(3) :math:`g = 978031.846 \times [1 + 0.0053024 \times sin^2(lat) - 0.0000058 \times
+sin^2(2\times lat)]`
 
-(4) g = 978032.67714 \* [(1 + 0.00193185138639 \* sin^2(lat)) / sqrt (1
-- 0.00669437999013 \* sin^2(lat))]
+(4) :math:`g = 978032.67714 \times [\frac{1 + 0.00193185138639 \times sin^2(lat)}{\sqrt{ 1
+- 0.00669437999013 \times sin^2(lat) }}]`
 
 Corrections
 -----------
