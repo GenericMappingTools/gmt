@@ -560,7 +560,7 @@ directly from the source code (let us know if you find errors). Below,
 :math:`\lambda` is longitude and :math:`\phi` is latitude:
 
 1. :math:`g = 978052.0 \times [1 + 0.005285 \sin^2(\phi) - 7\cdot 10^{-6}  \sin^2(2\phi)
-+ 27\cdot 10^{-6} \cos^2(\phi) \cos^2(\lambda-18)]`
++ 27\cdot 10^{-6} \cos^2(\phi) \cos^2(\lambda-18^{\circ})]`
 
 2. :math:`g = 978049.0 \times [1 + 0.0052884 \sin^2(\phi)
 - 0.0000059 \sin^2(2\phi)]`
