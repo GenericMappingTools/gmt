@@ -19,7 +19,7 @@ Synopsis
 [ |-E| ]
 [ |-G|\ **a**\ *startrec* ]
 [ |-G|\ **b**\ *stoprec* ]
-[ |-I|\ **a\|c\|m\|t** ]
+[ |-I|\ **a**\|\ **c**\|\ **m**\|\ **t** ]
 [ |-L|\ [*corrtable*] ]
 [ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
@@ -229,7 +229,7 @@ Required Arguments
     limited using program options such as |-D|, |-Q|, |-S|, etc.
 
     Finally, for MGD77+ files you may optionally append :*bittests*
-    which is : (a colon) followed by one or more comma-separated +-*col*
+    which is : (a colon) followed by one or more comma-separated ±\ *col*
     terms. This compares specific bitflags only for each listed column.
     Here, + means the chosen bit must be 1 (ON) whereas - means it must
     be 0 (OFF). All bit tests given must be passed. By default, MGD77+
@@ -378,7 +378,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ **a\|c\|m\|t**
+**-I**\ **a**\|\ **c**\|\ **m**\|\ **t**
     Ignore certain data file formats from consideration. Append
     **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain
     tab-separated ASCII table files, respectively. The option may be
