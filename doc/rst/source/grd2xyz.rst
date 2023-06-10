@@ -58,7 +58,7 @@ Optional Arguments
 **-C**\ [**f**\|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
-    **f** to start at 1 (Fortran-style counting). Alternatively, append
+    **f** to start at 1 (FORTRAN-style counting). Alternatively, append
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
 

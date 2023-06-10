@@ -2585,7 +2585,7 @@ int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	separating colons, nor calendar nor clock).
 	However, D and d are permitted to map to e
 	if this would result in a success.  This
-	allows Fortran Double Precision to be readable.
+	allows FORTRAN Double Precision to be readable.
 
 	On success, return GMT_IS_FLOAT and store val.
 	On failure, return GMT_IS_NAN and do not touch val.
@@ -2614,7 +2614,7 @@ int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val) {
 	}
 
 	x = strtod (s, &p);
-	if (p[0] == 0) {	/* Success (non-Fortran).  */
+	if (p[0] == 0) {	/* Success (non-FORTRAN).  */
 		*val = x;
 		return (GMT_IS_FLOAT);
 	}

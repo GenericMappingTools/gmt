@@ -16,12 +16,12 @@
  *--------------------------------------------------------------------*/
 /*
  * Spherical triangulation - Delaunay or Voronoi options.
- * Relies on STRIPACK Fortran F77 library (Renka, 1997). Reference:
+ * Relies on STRIPACK FORTRAN F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
  *    and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *    Software, 23 (3), 416-434.
  * Spherical interpolation - tension or smoothing.
- * Relies on SSRFPACK Fortran F77 library (Renka, 1997). Reference:
+ * Relies on SSRFPACK FORTRAN F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of
  *    Scattered Data on the Surface of a Sphere with a Surface under Tension,
  *    AMC Trans. Math. Software, 23 (3), 435-442.
@@ -79,7 +79,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	uint64_t kk;
 	int64_t *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
-	int64_t n = n_in, n_out, k, ierror= 0, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
+	int64_t n = n_in, n_out, k, ierror= 0, lnew, nrow = TRI_NROW;	/* Since the FORTRAN funcs expect signed ints */
 	size_t n_alloc;
 	double *ds = NULL;
 
@@ -172,7 +172,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 			return GMT_RUNTIME_ERROR;
 		}
 
-		/* Adjust Fortran to GMT indices */
+		/* Adjust FORTRAN to GMT indices */
 		n_alloc = 6 * (n - 2);
 		for (kk = 0; kk < n_alloc; kk++) T->V.listc[kk]--;
 		for (kk = 0; kk < n_alloc; kk++) T->V.lptr[kk]--;
@@ -183,7 +183,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		gmt_M_free (GMT, lptr);
 	}
 
-	/* Adjust Fortran to GMT indices */
+	/* Adjust FORTRAN to GMT indices */
 	for (kk = 0; kk < TRI_NROW*T->D.n; kk++) T->D.tri[kk]--;
 
 	gmt_M_free (GMT, list);
@@ -231,7 +231,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		ist = 1;
 		for (row = 0; row < h->n_rows; row++) {
 			for (col = 0; col < h->n_columns; col++) {
-				ij = (uint64_t)col * (uint64_t)h->n_rows + (uint64_t)row; /* Use Fortran indexing since calling program will transpose to GMT order */
+				ij = (uint64_t)col * (uint64_t)h->n_rows + (uint64_t)row; /* Use FORTRAN indexing since calling program will transpose to GMT order */
 				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 				if (ierror < 0) {
@@ -248,7 +248,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		int64_t k1;
 		double sum = 0.0;
 		for (k = 0; k < n; k++) {
-			k1 = k + 1;	/* Since gradl expects Fortran indexing */
+			k1 = k + 1;	/* Since gradl expects FORTRAN indexing */
 			gradl_ (&n, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[3*k], &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in GRADL: K = %" PRId64 " IER = %" PRId64 "\n", k1, ierror);

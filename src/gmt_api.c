@@ -24,7 +24,7 @@
  *
  * The API presently consists of 69 documented functions.  For a full
  * description of the API, see the api.rst documentation [in doc/rst/source/devdocs].
- * These functions have Fortran bindings as well, provided you add
+ * These functions have FORTRAN bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUserAdvanced.cmake].
  *
  * There are 2 public functions used for GMT API session handling.
@@ -1926,26 +1926,26 @@ GMT_LOCAL uint64_t gmtapi_2d_to_index_c_cplx_imag (uint64_t row, uint64_t col, u
 
 /*! . */
 GMT_LOCAL uint64_t gmtapi_2d_to_index_f_normal (uint64_t row, uint64_t col, uint64_t dim) {
-	/* Maps (row,col) to 1-D index for Fortran column-major grid */
+	/* Maps (row,col) to 1-D index for FORTRAN column-major grid */
 	return ((col * dim) + row);
 }
 
 /*! . */
 GMT_LOCAL uint64_t gmtapi_2d_to_index_f_cplx_real (uint64_t row, uint64_t col, uint64_t dim) {
-	/* Maps (row,col) to 1-D index for Fortran complex column-major grid, real component */
+	/* Maps (row,col) to 1-D index for FORTRAN complex column-major grid, real component */
 	return (2ULL*(col * dim) + row);	/* Complex grid, real(1) */
 }
 
 /*! . */
 GMT_LOCAL uint64_t gmtapi_2d_to_index_f_cplx_imag (uint64_t row, uint64_t col, uint64_t dim) {
-	/* Maps (row,col) to 1-D index for Fortran complex column-major grid, imaginary component  */
+	/* Maps (row,col) to 1-D index for FORTRAN complex column-major grid, imaginary component  */
 	return (2ULL*(col * dim) + row + 1ULL);	/* Complex grid, imag(2) component */
 }
 
 /*! . */
 GMT_LOCAL p_func_uint64_t gmtapi_get_2d_to_index (struct GMTAPI_CTRL *API, enum GMT_enum_fmt shape, unsigned int mode) {
 	/* Return pointer to the required 2D-index function above for MATRIX.  Here
-	 * shape is either GMT_IS_ROW_FORMAT (C) or GMT_IS_COL_FORMAT (Fortran);
+	 * shape is either GMT_IS_ROW_FORMAT (C) or GMT_IS_COL_FORMAT (FORTRAN);
 	 * mode is either 0 (regular grid), GMT_GRID_IS_COMPLEX_REAL (complex real) or GMT_GRID_IS_COMPLEX_IMAG (complex imag)
 	 */
 	p_func_uint64_t p = NULL;
@@ -1976,7 +1976,7 @@ GMT_LOCAL void gmtapi_index_to_2d_c (int *row, int *col, size_t index, int dim, 
 }
 
 GMT_LOCAL void gmtapi_index_to_2d_f (int *row, int *col, size_t index, int dim, int mode) {
-	/* Maps 1-D index to (row,col) for Fortran */
+	/* Maps 1-D index to (row,col) for FORTRAN */
 	if (mode) index /= 2;
 	*col = (index / dim);
 	*row = (index % dim);
@@ -2037,7 +2037,7 @@ GMT_LOCAL unsigned int gmtapi_decode_layout (struct GMTAPI_CTRL *API, const char
 	}
 	switch (code[1]) {	/* Char 2: The storage mode (rows vs columns) */
 		case 'R':	break;		  /* rows, i.e., scanlines [Default] */
-		case 'C':	bits |= 2; break; /* columns (e.g., Fortran) */
+		case 'C':	bits |= 2; break; /* columns (e.g., FORTRAN) */
 		default:
 			GMT_Report (API, GMT_MSG_ERROR, "Illegal code [%c] for grid/image storage mode.  Must be R or C\n", code[1]);
 			break;
@@ -5984,7 +5984,7 @@ int GMT_Put_Levels (void *V_API, struct GMT_CUBE *C, double *levels, uint64_t n_
 
 #ifdef FORTRAN_API
 int GMT_Put_Levels_ (struct GMT_CUBE *C, double *level, uint64_t *n) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Levels (GMT_FORTRAN, C, level, *n));
 }
 #endif
@@ -8361,7 +8361,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	 * The mode argument is a bitflag that controls a few things [0, or GMT_SESSION_NORMAL]:
 	 *   bit 1 (GMT_SESSION_NOEXIT)   means call return and not exit when returning from an error.
 	 *   bit 2 (GMT_SESSION_EXTERNAL) means we are called by an external API (e.g., MATLAB, Python).
-	 *   bit 3 (GMT_SESSION_COLMAJOR) means the external API uses column-major format (e.g., MATLAB, Fortran) [Default is row-major, i.e., C/C++, Python]
+	 *   bit 3 (GMT_SESSION_COLMAJOR) means the external API uses column-major format (e.g., MATLAB, FORTRAN) [Default is row-major, i.e., C/C++, Python]
 	 *   bit 4 (GMT_SESSION_LOGERRORS) means we redirect stderr to a log file whose name is the session string + log.
 	 *   We reserve the right to add future flags.
 	 * We return the pointer to the allocated API structure.
@@ -8476,9 +8476,9 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 }
 
 #ifdef FORTRAN_API
-/* Fortran binding [THESE MAY CHANGE ONCE WE ACTUALLY TRY TO USE THESE] */
+/* FORTRAN binding [THESE MAY CHANGE ONCE WE ACTUALLY TRY TO USE THESE] */
 struct GMTAPI_CTRL * GMT_Create_Session_ (const char *tag, unsigned int *pad, unsigned int *mode, void *print, int len) {
-	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the hidden global GMT_FORTRAN structure */
 	return (GMT_Create_Session (tag, *pad, *mode, print));
 }
 #endif
@@ -8522,7 +8522,7 @@ int GMT_Destroy_Session (void *V_API) {
 
 #ifdef FORTRAN_API
 int GMT_Destroy_Session_ () {
-	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the hidden global GMT_FORTRAN structure */
 	return (GMT_Destroy_Session (GMT_FORTRAN));
 }
 #endif
@@ -8826,7 +8826,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 
 #ifdef FORTRAN_API
 int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *direction, double wesn[], void *input) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Register_IO (GMT_FORTRAN, *family, *method, *geometry, *direction, wesn, input));
 }
 #endif
@@ -8858,7 +8858,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 
 	if (n_args == 0) /* Passed the head of linked option structures */
 		head = args;
-	else		/* Passed argc, argv, likely from Fortran */
+	else		/* Passed argc, argv, likely from FORTRAN */
 		head = GMT_Create_Options (API, n_args, args);
 	gmtlib_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
@@ -8871,7 +8871,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 
 #ifdef FORTRAN_API
 int GMT_Init_IO_ (unsigned int *family, unsigned int *geometry, unsigned int *direction, unsigned int *mode, unsigned int *n_args, void *args) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Init_IO (GMT_FORTRAN, *family, *geometry, *direction, *mode, *n_args, args));
 }
 #endif
@@ -9086,7 +9086,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 
 #ifdef FORTRAN_API
 int GMT_End_IO_ (unsigned int *direction, unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_End_IO (GMT_FORTRAN, *direction, *mode));
 }
 #endif
@@ -9123,7 +9123,7 @@ int GMT_Get_Status (void *V_API, unsigned int mode) {
 
 #ifdef FORTRAN_API
 int GMT_Get_Status_ (unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Status (GMT_FORTRAN, *mode));
 }
 #endif
@@ -9340,7 +9340,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 
 #ifdef FORTRAN_API
 int GMT_Open_VirtualFile_ (unsigned int *family, unsigned int *geometry, unsigned int *direction, void *data, char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Open_VirtualFile (GMT_FORTRAN, *family, *geometry, *direction, data, string));
 }
 #endif
@@ -9365,7 +9365,7 @@ int GMT_Close_VirtualFile (void *V_API, const char *string) {
 
 #ifdef FORTRAN_API
 int GMT_Close_VirtualFile_ (unsigned int *family, char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Close_VirtualFile (GMT_FORTRAN, string));
 }
 #endif
@@ -9385,7 +9385,7 @@ void * GMT_Read_VirtualFile (void *V_API, const char *string) {
 
 #ifdef FORTRAN_API
 void * GMT_Read_VirtualFile_ (char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_VirtualFile (GMT_FORTRAN, string));
 }
 #endif
@@ -9406,7 +9406,7 @@ int GMT_Inquire_VirtualFile (void *V_API, const char *string) {
 
 #ifdef FORTRAN_API
 int GMT_Inquire_VirtualFile_ (char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Inquire_VirtualFile (GMT_FORTRAN, string));
 }
 #endif
@@ -9438,7 +9438,7 @@ int GMT_Init_VirtualFile (void *V_API, unsigned int mode, const char *name) {
 
 #ifdef FORTRAN_API
 int GMT_Init_VirtualFile_ (unsigned int mode, char *string, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Init_VirtualFile (GMT_FORTRAN, mode, string));
 }
 #endif
@@ -9678,7 +9678,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 
 #ifdef FORTRAN_API
 void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *input, void *data, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, input, data));
 }
 #endif
@@ -9734,7 +9734,7 @@ void * GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, un
 
 #ifdef FORTRAN_API
 void * GMT_Read_Group_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, void *sources, unsigned int *n_items, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_Group (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, sources, n_items, data));
 }
 #endif
@@ -9837,7 +9837,7 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 
 #ifdef FORTRAN_API
 void * GMT_Duplicate_Data_ (unsigned int *family,  unsigned int *mode, void *data) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Duplicate_Data (GMT_FORTRAN, *family, *mode, data));
 }
 #endif
@@ -9917,7 +9917,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 
 #ifdef FORTRAN_API
 int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *output, void *data, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Write_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, output, data));
 }
 #endif
@@ -9987,7 +9987,7 @@ int GMT_Set_Geometry (void *V_API, unsigned int direction, unsigned int geometry
 }
 
 #ifdef FORTRAN_API
-int GMT_Set_Geometry_ (unsigned int *direction, unsigned int *geometry) {	/* Fortran version: We pass the global GMT_FORTRAN structure */
+int GMT_Set_Geometry_ (unsigned int *direction, unsigned int *geometry) {	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Set_Geometry (GMT_FORTRAN, *direction, *geometry));
 }
 #endif
@@ -10330,7 +10330,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 }
 
 #ifdef FORTRAN_API
-void * GMT_Get_Record_ (unsigned int *mode, int *status) {	/* Fortran version: We pass the global GMT_FORTRAN structure */
+void * GMT_Get_Record_ (unsigned int *mode, int *status) {	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Record (GMT_FORTRAN, *mode, status));
 }
 #endif
@@ -10798,7 +10798,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 
 #ifdef FORTRAN_API
 int GMT_Put_Record_ (unsigned int *mode, void *record) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Record (GMT_FORTRAN, *mode, record));
 }
 #endif
@@ -10863,7 +10863,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 
 #ifdef FORTRAN_API
 int GMT_Begin_IO_ (unsigned int *family, unsigned int *direction, unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Begin_IO (GMT_FORTRAN, *family, *direction, *mode));
 }
 #endif
@@ -10955,7 +10955,7 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, gmt_grdfloat *row)
 
 #ifdef FORTRAN_API
 int GMT_Get_Row_ (int *rec_no, struct GMT_GRID *G, gmt_grdfloat *row) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Row (GMT_FORTRAN, *rec_no, G, row));
 }
 #endif
@@ -11028,7 +11028,7 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row)
 
 #ifdef FORTRAN_API
 int GMT_Put_Row_ (int *rec_no, struct GMT_GRID *G, gmt_grdfloat *row) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Row (GMT_FORTRAN, *rec_no, G, row));
 }
 #endif
@@ -11113,7 +11113,7 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 
 #ifdef FORTRAN_API
 int GMT_Destroy_Data_ (void *object) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Destroy_Data (GMT_FORTRAN, object));
 }
 #endif
@@ -11132,7 +11132,7 @@ int GMT_Free (void *V_API, void *ptr) {
 
 #ifdef FORTRAN_API
 int GMT_Free_ (void *ptr) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Free (GMT_FORTRAN, ptr));
 }
 #endif
@@ -11249,7 +11249,7 @@ int GMT_Destroy_Group (void *V_API, void *object, unsigned int n_items) {
 
 #ifdef FORTRAN_API
 int GMT_Destroy_Group_ (void *object, unsigned int *n_items) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Destroy_Group (GMT_FORTRAN, object, *n_items));
 }
 #endif
@@ -11287,7 +11287,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 * pad sets the padding for grids and images, while for matrices it can be
 	 *     0 for the default row/col orientation
 	 *     1 for row-major format (C)
-	 *     2 for column major format (Fortran)
+	 *     2 for column major format (FORTRAN)
 	   pad is ignored for other resources.
 	 * Some default actions for grids:
 	 * range = NULL: Select current -R setting if present.
@@ -11534,7 +11534,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 
 #ifdef FORTRAN_API
 void * GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned int *mode, uint64_t *dim, double *range, double *inc, unsigned int *registration, int *pad, void *container) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Create_Data (GMT_FORTRAN, *family, *geometry, *mode, dim, range, inc, *registration, *pad, container));
 }
 #endif
@@ -11672,7 +11672,7 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 
 #ifdef FORTRAN_API
 int GMT_Get_Info_ (unsigned int *family, void *container, unsigned int *geometry, uint64_t *dim, double *range, double *inc, unsigned int *registration, int *pad) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Info (GMT_FORTRAN, *family, container, geometry, dim, range, inc, registration, pad));
 }
 #endif
@@ -11686,7 +11686,7 @@ uint64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, in
 
 #ifdef FORTRAN_API
 uint64_t GMT_Get_Index_ (void *h, int *row, int *col) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Index (GMT_FORTRAN, h, *row, *col));
 }
 #endif
@@ -11701,7 +11701,7 @@ uint64_t GMT_Get_Pixel (void *V_API, struct GMT_GRID_HEADER *header, int row, in
 
 #ifdef FORTRAN_API
 uint64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Pixel (GMT_FORTRAN, h, *row, *col, *layer));
 }
 #endif
@@ -11715,7 +11715,7 @@ uint64_t GMT_Get_Index3 (void *V_API, struct GMT_GRID_HEADER *header, int row, i
 
 #ifdef FORTRAN_API
 uint64_t GMT_Get_Index3_ (void *h, int *row, int *col, int *layer) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Index3 (GMT_FORTRAN, h, *row, *col, *layer));
 }
 #endif
@@ -11776,7 +11776,7 @@ int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 
 #ifdef FORTRAN_API
 int GMT_Set_Index_ (void *h, char *code, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Set_Index (GMT_FORTRAN, h, code));
 }
 #endif
@@ -11833,7 +11833,7 @@ double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void
 
 #ifdef FORTRAN_API
 double * GMT_Get_Coord_ (unsigned int *family, unsigned int *dim, void *container) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Coord (GMT_FORTRAN, *family, *dim, container));
 }
 #endif
@@ -11941,7 +11941,7 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 
 #ifdef FORTRAN_API
 unsigned int GMT_FFT_Option_ (char *option, unsigned int *dim, const char *string, int *length) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Option (GMT_FORTRAN, *option, *dim, string));
 }
 #endif
@@ -12079,7 +12079,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *ar
 
 #ifdef FORTRAN_API
 void * GMT_FFT_Parse_ (char *option, unsigned int *dim, char *args, int *length) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Parse (GMT_FORTRAN, *option, *dim, args));
 }
 #endif
@@ -12417,7 +12417,7 @@ void * GMT_FFT_Create (void *V_API, void *X, unsigned int dim, unsigned int mode
 
 #ifdef FORTRAN_API
 void * GMT_FFT_Create_ (void *X, unsigned int *dim, unsigned int *mode, void *v_info) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Create (GMT_FORTRAN, X, *dim, *mode, v_info));
 }
 #endif
@@ -12684,7 +12684,7 @@ int GMT_FFT_Reset (void *V_API, void *X, unsigned int dim, unsigned int mode) {
 
 #ifdef FORTRAN_API
 int GMT_FFT_Reset_ (void *X, int *direction, unsigned int *mode) {
-    /* Fortran version: We pass the global GMT_FORTRAN structure */
+    /* FORTRAN version: We pass the global GMT_FORTRAN structure */
     return (GMT_FFT_Reset (GMT_FORTRAN, X, *direction, *mode));
 }
 #endif
@@ -12702,7 +12702,7 @@ int GMT_FFT (void *V_API, void *X, int direction, unsigned int mode, void *v_K) 
 
 #ifdef FORTRAN_API
 int GMT_FFT_ (void *X, int *direction, unsigned int *mode, void *v_K) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT (GMT_FORTRAN, X, *direction, *mode, v_K));
 }
 #endif
@@ -12722,7 +12722,7 @@ int GMT_FFT_Destroy (void *V_API, void *v_info) {
 
 #ifdef FORTRAN_API
 int GMT_FFT_Destroy_ (void *v_K) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Destroy (GMT_FORTRAN, v_K));
 }
 #endif
@@ -13694,7 +13694,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 #ifdef FORTRAN_API
 struct GMT_RESOURCE *GMT_Encode_Options_ (const char *module, int *n_in, struct GMT_OPTION **head, unsigned int *n, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Encode_Options (GMT_FORTRAN, module, *n_in, head, n));
 }
 #endif
@@ -13777,7 +13777,7 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 
 #ifdef FORTRAN_API
 int GMT_Get_Common_ (unsigned int *option, double par[]) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Common (GMT_FORTRAN, *option, par));
 }
 #endif
@@ -13831,7 +13831,7 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 
 #ifdef FORTRAN_API
 int GMT_Get_Default_ (char *keyword, char *value, int len1, int len2) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Default (GMT_FORTRAN, keyword, value));
 }
 #endif
@@ -13883,7 +13883,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 
 #ifdef FORTRAN_API
 int GMT_Set_Default_ (char *keyword, char *value, int len1, int len2) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Set_Default (GMT_FORTRAN, keyword, value));
 }
 #endif
@@ -13959,7 +13959,7 @@ int GMT_Option (void *V_API, const char *options) {
 
 #ifdef FORTRAN_API
 int GMT_Option_ (char *options, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Option (GMT_FORTRAN, options));
 }
 #endif
@@ -13998,7 +13998,7 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 
 #ifdef FORTRAN_API
 int GMT_Message_ (unsigned int *mode, const char *message, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Message (GMT_FORTRAN, *mode, message));
 }
 #endif
@@ -14052,7 +14052,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 
 #ifdef FORTRAN_API
 int GMT_Report_ (unsigned int *level, const char *format, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Report (GMT_FORTRAN, *level, format));
 }
 #endif
@@ -14247,7 +14247,7 @@ int GMT_Usage (void *V_API, int level, const char *format, ...) {
 
 #ifdef FORTRAN_API
 int GMT_Usage_ (unsigned int *level, const char *format, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Usage (GMT_FORTRAN, *level, format));
 }
 #endif
@@ -14262,7 +14262,7 @@ char * GMT_Error_Message (void *V_API) {
 
 #ifdef FORTRAN_API
 char * GMT_Error_Message_ () {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Error_Message (GMT_FORTRAN));
 }
 #endif
@@ -14319,7 +14319,7 @@ int GMT_Handle_Messages (void *V_API, unsigned int mode, unsigned int method, vo
 
 #ifdef FORTRAN_API
 int GMT_Handle_Messages_ (unsigned int *mode, unsigned int *method, void *dest) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Handle_Messages (GMT_FORTRAN, *mode, *method, dest));
 }
 #endif
@@ -14403,7 +14403,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 
 #ifdef FORTRAN_API
 int GMT_Get_Values_ (char *arg, double par[], int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
 }
 #endif
@@ -14572,7 +14572,7 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 	return GMT_NOERROR;
 }
 
-/* wrappers for several Fortran compilers */
+/* wrappers for several FORTRAN compilers */
 #define F77_ARG1 unsigned int dim[], double limit[], double inc[], char *title, char *remark, const char *name, int ltitle, int lremark, int lname
 #define F77_ARG2 dim, limit, inc, title, remark, name, ltitle, lremark, lname
 int gmt_f77_readgrdinfo__(F77_ARG1) { return gmt_f77_readgrdinfo_ (F77_ARG2); }
@@ -15071,7 +15071,7 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 
 #ifdef FORTRAN_API
 void * GMT_Convert_Data_ (void *In, unsigned int *family_in, void *Out, unsigned int *family_out, unsigned int flag[]) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Convert_Data (GMT_FORTRAN, In, *family_in, Out, *family_out, flag));
 }
 #endif
@@ -15112,7 +15112,7 @@ void * GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint6
 
 #ifdef FORTRAN_API
 void * GMT_Alloc_Segment_ (unsigned int *family, uint64_t *n_rows, uint64_t *n_columns, char *header, void *S, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Alloc_Segment (GMT_FORTRAN, *family, *n_rows, *n_columns, header, S));
 }
 #endif
@@ -15174,7 +15174,7 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 
 #ifdef FORTRAN_API
 int GMT_Set_Columns_ (unsigned int *direction, unsigned int *n_cols, unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Set_Columns (GMT_FORTRAN, *direction, *n_cols, *mode));
 }
 #endif
@@ -15449,7 +15449,7 @@ int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned in
 
 #ifdef FORTRAN_API
 int GMT_Change_Layout_ (unsigned int *family, char *code, unsigned int *mode, void *obj, void *out, void *alpha, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Change_Layout (GMT_FORTRAN, *family, code, *mode, obj, out, alpha));
 }
 #endif
@@ -15593,7 +15593,7 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 
 #ifdef FORTRAN_API
 int GMT_Put_Vector_ (struct GMT_VECTOR *V, unsigned int *col, unsigned int *type, void *vector) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Vector (GMT_FORTRAN, V, *col, *type, vector));
 }
 #endif
@@ -15612,7 +15612,7 @@ void * GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col) {
 
 #ifdef FORTRAN_API
 void * GMT_Get_Vector_ (struct GMT_VECTOR *V, unsigned int *col) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Vector (GMT_FORTRAN, V, *col));
 }
 #endif
@@ -15642,7 +15642,7 @@ int GMT_Put_Matrix (void *V_API, struct GMT_MATRIX *M, unsigned int type, int pa
 
 #ifdef FORTRAN_API
 int GMT_Put_Matrix_ (struct GMT_MATRIX *M, unsigned int *type, int *pad, void *matrix) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Matrix (GMT_FORTRAN, M, *type, *pad, matrix));
 }
 #endif
@@ -15660,7 +15660,7 @@ void * GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 
 #ifdef FORTRAN_API
 void * GMT_Get_Matrix_ (struct GMT_MATRIX *M) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Matrix (GMT_FORTRAN, M));
 }
 #endif
@@ -15751,7 +15751,7 @@ int GMT_Put_Strings (void *V_API, unsigned int family, void *object, char **arra
 
 #ifdef FORTRAN_API
 int GMT_Put_Strings_ (unsigned int *family, void *object, char **array, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Strings (GMT_FORTRAN, *family, object, array));
 }
 #endif
@@ -15777,7 +15777,7 @@ char ** GMT_Get_Strings (void *V_API, unsigned int family, void *object) {
 
 #ifdef FORTRAN_API
 char ** GMT_Get_Strings_ (unsigned int *family, void *object) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Strings (GMT_FORTRAN, *family, object));
 }
 #endif
@@ -15815,21 +15815,21 @@ int GMT_Get_Enum_ (char *arg, int len) {
 
 #ifdef FORTRAN_API
 double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Wavenumber (GMT_FORTRAN, *k, *mode, v_K));
 }
 #endif
 
 #ifdef FORTRAN_API
 int GMT_FFT_1D_ (gmt_grdfloat *data, uint64_t *n, int *direction, unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_1D (GMT_FORTRAN, data, *n, *direction, *mode));
 }
 #endif
 
 #ifdef FORTRAN_API
 int GMT_FFT_2D_ (gmt_grdfloat *data, unsigned int *n_columns, unsigned int *n_rows, int *direction, unsigned int *mode) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_2D (GMT_FORTRAN, data, *n_columns, *n_rows, *direction, *mode));
 }
 #endif
@@ -15873,7 +15873,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 
 #ifdef FORTRAN_API
 int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Family (GMT_FORTRAN, *direction, head));
 }
 #endif
@@ -15940,7 +15940,7 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 
 #ifdef FORTRAN_API
 int GMT_Set_AllocMode_ (unsigned int *family, void *object) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Set_AllocMode (GMT_FORTRAN, *family, object));
 }
 #endif
@@ -16066,7 +16066,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 
 #ifdef FORTRAN_API
 int GMT_Get_FilePath_ (unsigned int *family, unsigned int *direction, unsigned int *mode, char **file, int len) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	/* FORTRAN version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_FilePath (GMT_FORTRAN, *family, *direction, *mode, file));
 }
 #endif

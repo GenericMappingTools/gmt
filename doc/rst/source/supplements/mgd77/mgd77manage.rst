@@ -380,7 +380,7 @@ suppressed from output.
 Credits
 -------
 
-The IGRF calculations are based on a Fortran program written by Susan
+The IGRF calculations are based on a FORTRAN program written by Susan
 Macmillan, British Geological Survey, translated to C via f2c by Joaquim
 Luis, and adapted to GMT style by Paul Wessel.
 
