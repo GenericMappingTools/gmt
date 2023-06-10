@@ -736,7 +736,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 
 enum GMT_enum_fmt {
 	GMT_IS_ROW_FORMAT	= 1,	/* 2-D grid is C-style with rows: as index increase we move across rows */
-	GMT_IS_COL_FORMAT	= 2	/* 2-D grid is Fortran-style with columns: as index increase we move down columns  */
+	GMT_IS_COL_FORMAT	= 2	/* 2-D grid is FORTRAN-style with columns: as index increase we move down columns  */
 };
 
 /* These containers are used to pass user vectors and matrices in/out of GMT */
@@ -747,9 +747,9 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	uint64_t n_columns;		/* Number of columns in this matrix */
 	uint64_t n_layers;		/* Number of layers in a 3-D matrix [1] */
 	unsigned int n_headers;		/* Number of CPT header records (0 if no header) */
-	enum GMT_enum_fmt shape;	/* 0 = C (rows) and 1 = Fortran (cols) */
+	enum GMT_enum_fmt shape;	/* 0 = C (rows) and 1 = FORTRAN (cols) */
 	enum GMT_enum_reg registration;	/* 0 for gridline and 1 for pixel registration  */
-	size_t dim;			/* Allocated length of longest C or Fortran dim */
+	size_t dim;			/* Allocated length of longest C or FORTRAN dim */
 	size_t size;			/* Byte length of data */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
 	double range[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
