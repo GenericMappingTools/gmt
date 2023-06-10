@@ -182,7 +182,7 @@ initialization:
     This function frees up the memory allocated inside PSL.
     Programmers using C/C++ should now this is a macro and there is no
     need to cast the pointer to *void \** as this will be done by the
-    macro. Fortran programmers should instead call
+    macro. FORTRAN programmers should instead call
     **PSL_freefunction**.
 
 **void PSL_beginaxes** (**struct PSL_CTRL** *\*PSL*, **double** *llx*,
@@ -215,7 +215,7 @@ initialization:
     Controls the initiation (or continuation) of a particular plot
     within the current session. Pass file pointer *fp* where the
     PostScript code will be written; if NULL then the output is
-    written to *stdout*. The Fortran interface always sends to *stdout*.
+    written to *stdout*. The FORTRAN interface always sends to *stdout*.
     If you want to receive the PostScript back in memory then you need
     to add PSL_MEMORY to *orientation* and call **PSL_getplot** to retrieve
     the plot after you finish the plot with **PSL_endplot**.

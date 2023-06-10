@@ -54,10 +54,10 @@ every 10 degrees, draw gridlines every 5 degrees, and mark the track
 every day and 1000 km, with ticks every 6 hours and 250 km, and send the
 plot to the default printer, enter the following command:
 
-   ::
+::
 
-    gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
-                   -La1da1000kf6hf250k \| lpr
+  gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
+                 -La1da1000kf6hf250k \| lpr
 
 .. include:: mgd77track.rst
     :start-after: .. module_note_begins

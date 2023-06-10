@@ -194,9 +194,9 @@ To create a polespotting image from the abyssal hill and fracture zone fabric
 for the northern hemisphere, sampling the great circles every 10 km, and also
 dump the great circles to standard output, try
 
-   ::
+::
 
-    gmt polespotter -Ahills.txt -Ffractures.txt -D10 -Gpoles.nc -R0/360/0/90 -I1 -V -Ss+l > lines.txt
+  gmt polespotter -Ahills.txt -Ffractures.txt -D10 -Gpoles.nc -R0/360/0/90 -I1 -V -Ss+l > lines.txt
 
 This file can then be plotted with :doc:`grdimage </grdimage>`.
 

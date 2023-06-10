@@ -304,7 +304,7 @@ GMT_LOCAL double talwani3d_parint (double x[], double y[], int n) {
 	 *       in the region  x2 - x1.  If i is 2 or n-1, however, we
 	 *       set x1 = x(1) or x2 = x(n) to cover the entire interval of x.
 	 *
-	 * Programmer:  W.H.F. Smith,  30-AUG-1986 in Fortran.
+	 * Programmer:  W.H.F. Smith,  30-AUG-1986 in FORTRAN.
 	 * C-version by Paul Wessel, 3/4/91.
 	 *
 	 * Remarks:  This replaces PRBINT, which performed the same operation

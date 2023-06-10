@@ -200,28 +200,28 @@ Examples
 
 To remove a planar trend from data.xyz by ordinary least squares, use
 
-   ::
+::
 
-    gmt trend2d data.xyz -Fxyr -N3 > detrended_data.xyz
+  gmt trend2d data.xyz -Fxyr -N3 > detrended_data.xyz
 
 To simply report the three coefficients, use
 
-   ::
+::
 
-    gmt trend2d data.xyz -Fp -N3 > parameters.txt
+  gmt trend2d data.xyz -Fp -N3 > parameters.txt
 
 To make the above planar trend robust with respect to outliers, use
 
-   ::
+::
 
-    gmt trend2d data.xzy -Fxyr -N3+r > detrended_data.xyz
+  gmt trend2d data.xzy -Fxyr -N3+r > detrended_data.xyz
 
 To find out how many terms (up to 10 in a robust interpolant are
 significant in fitting data.xyz, use
 
-   ::
+::
 
-    gmt trend2d data.xyz -N10+r -I -V
+  gmt trend2d data.xyz -N10+r -I -V
 
 See Also
 --------

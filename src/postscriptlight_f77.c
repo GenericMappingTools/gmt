@@ -12,7 +12,7 @@
  *	GNU Lesser General Public License for more details.
  *
  *--------------------------------------------------------------------*/
-/* 			PSL: PostScript Light (Fortran Binder)
+/* 			PSL: PostScript Light (FORTRAN Binder)
  * PSL is a library of plot functions that create PostScript.
  * All the routines write their output to the same plotting file,
  * which can be dumped to a Postscript output device (laserwriters).
@@ -105,8 +105,8 @@ struct PSL_CTRL *PSL_FORTRAN;        /* Global structure needed for FORTRAN-77 (
 /*------------------- PUBLIC PSL API FUNCTIONS--------------------- */
 
 int PSL_beginsession_ ()	/* Initialize PSL session */
-{       /* Fortran version: We pass the hidden global GMT_FORTRAN structure */
-	PSL_FORTRAN = New_PSL_Ctrl ("Fortran");
+{       /* FORTRAN version: We pass the hidden global GMT_FORTRAN structure */
+	PSL_FORTRAN = New_PSL_Ctrl ("FORTRAN");
 	return (PSL_beginsession (PSL_FORTRAN));
 }
 

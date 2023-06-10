@@ -234,36 +234,36 @@ Examples
 To triangulate the points in the file samples.xyz, store the triangle
 information in a binary file, and make a grid for the given area and spacing, use
 
-   ::
+::
 
-    gmt triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
+  gmt triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
 
 To draw the optimal Delaunay triangulation network based on the same
 file using a 15-cm-wide Mercator map, use
 
-   ::
+::
 
-    gmt triangulate samples.xyz -M -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf network
+  gmt triangulate samples.xyz -M -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf network
 
 To instead plot the Voronoi cell outlines, try
 
-   ::
+::
 
-    gmt triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf cells
+  gmt triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf cells
 
 To combine the Voronoi outlines into polygons and paint them
 according to their ID, try
 
-   ::
+::
 
-    gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
-        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -B1 -Ccolors.cpt -pdf polygons
+  gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
+      gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -B1 -Ccolors.cpt -pdf polygons
 
 To grid the data using the natural nearest neighbor algorithm, try
 
-   ::
+::
 
-    gmt triangulate samples.xyz -Gnnn.nc -Qn -R-100/-90/30/34 -I0.5
+  gmt triangulate samples.xyz -Gnnn.nc -Qn -R-100/-90/30/34 -I0.5
 
 Notes
 -----

@@ -187,39 +187,39 @@ Examples
 To backtrack the (x,y,t) points in the file seamounts.txt to their origin
 (presumably the hotspot), using the DC85.txt Euler poles, run
 
-   ::
+::
 
-    gmt backtracker seamounts.txt -Db -EDC85.txt > newpos.txt
+  gmt backtracker seamounts.txt -Db -EDC85.txt > newpos.txt
 
 To project flowlines forward from the (x,y,t) points stored in several
 3-column, binary, double precision files, run
 
-   ::
+::
 
-    gmt backtracker points.* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
+  gmt backtracker points.* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
 
 This file can then be plotted with :doc:`plot </plot>`.
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
 Ma, given a history of hotspot motion file (HIdrift.txt) and a set of
 total reconstruction rotations for the plate (PAC_APM.txt), try
 
-   ::
+::
 
-    echo 204 19 80 | gmt backtracker -Df -EPAC_APM.txt -Lb1 > path.txt
+  echo 204 19 80 | gmt backtracker -Df -EPAC_APM.txt -Lb1 > path.txt
 
 To predict Hawaiian-Emperor seamount trail using the Pacific absolute plate
 and plume motion from Doubrovine et al. (2012), use
 
-   ::
+::
 
-    echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt -FD2012_HI_drift.txt > traildrift.txt
+  echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt -FD2012_HI_drift.txt > traildrift.txt
 
 To predict the Hawaiian-Emperor seamount trail that would have resulted if no plume drift had been in effect,
 using the Pacific absolute plate motion model from Doubrovine et al. (2012), use
 
-   ::
+::
 
-    echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt > trail.txt
+  echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt > trail.txt
 
 Notes
 -----

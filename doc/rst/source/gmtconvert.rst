@@ -26,6 +26,7 @@ Synopsis
 [ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
+[ |-Z| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -228,6 +229,14 @@ Optional Arguments
     (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
     exclude the columns with NaNs.  **Note**: These columns are identified based on
     the first input record only.
+
+.. _-Z:
+
+**-Z**
+    Transpose the single segment in a dataset. Any trailing text will be lost.
+    **Note**: If you are using binary tables then add |-V| to have the dimensions
+    of the transposed table reported since you will need to specify **-bi**\ *ncols*
+    when reading the binary transposed table.
 
 .. include:: explain_-aspatial.rst_
 

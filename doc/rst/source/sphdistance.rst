@@ -174,16 +174,16 @@ and annotations every 1000 km, try::
 To construct Voronoi polygons from the points in the file testdata.txt
 and then calculate distances from the data to a global 1x1 degree grid, use
 
-   ::
+::
 
-    gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
+  gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
 
 To generate the same grid in two steps using :doc:`sphtriangulate` separately, try
 
-   ::
+::
 
-    gmt sphtriangulate testdata.txt -Qv > voronoi.txt
-    gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
+  gmt sphtriangulate testdata.txt -Qv > voronoi.txt
+  gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
 
 Notes
 -----

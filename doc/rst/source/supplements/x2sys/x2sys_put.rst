@@ -67,9 +67,9 @@ To add the information stored in the track bin-index file latest.tbf to
 the track data bases associated with the tag MGD77, and replace any
 exiting information for these tracks, try
 
-   ::
+::
 
-    gmt x2sys_put latest.tbf -F -V -TMGD77
+  gmt x2sys_put latest.tbf -F -V -TMGD77
 
 X2sys Databases
 ---------------
