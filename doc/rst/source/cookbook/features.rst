@@ -2123,7 +2123,7 @@ Placing map legends
 Adding map legends is the standard way to communicate what various symbols placed on your map
 represent.  For instance, you may use this mechanism to convey the information that circles are
 earthquake locations, triangles are places where you ate Thai food, and dashed lines indicate
-some sort of gang-land demarkation line that you should not cross without paying the locals due respect.
+some sort of gang-land demarcation line that you should not cross without paying the locals due respect.
 Map legends are placed by the module :doc:`/legend`, with location and size determined by the
 various **-D** attributes. We must again specify the reference and anchor points and any adjustments to them
 first, then supply suitable required and optional modifiers:
