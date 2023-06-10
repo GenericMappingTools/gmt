@@ -73,7 +73,7 @@ can be appended to **-B** to control the Frame settings:
 - **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
   North pole]. **+o** is ignored if no gridlines are requested.
 
-- **+n** to have no frame and annotations at all [default is contolled by *axes*].
+- **+n** to have no frame and annotations at all [default is controlled by *axes*].
 
 - **+t**\ *title* to place the string given in *title* centered above the plot frame [default is no title].
 
