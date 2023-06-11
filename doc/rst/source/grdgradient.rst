@@ -182,7 +182,7 @@ Hints
 
 - If you don't know what |-N| options to use to make an intensity file for :doc:`grdimage` or :doc:`grdview`, a good
   first try is **-Ne**\ 0.6.
-- Usually 255 shades are more than enough for visualization purposes. You can save 75% disk space by appending =nb/a to
+- Usually 255 shades are more than enough for visualization purposes. You can save 75% disk space by appending =\ *nb/a* to
   the output filename *outgrid*.
 - If you want to make several illuminated maps of subregions of a large data set, and you need the illumination effects
   to be consistent across all the maps, use the |-N| option and supply the same value of *sigma*
