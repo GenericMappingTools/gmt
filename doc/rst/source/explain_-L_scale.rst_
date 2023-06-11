@@ -9,7 +9,7 @@
     .. include:: explain_refpoint.rst_
 
     The following modifiers can be appended to |-L| (**+w** is required), with additional explanation and
-    examples provided in the :ref:`placing-map-scales` cookbook section. For Cartesian projectsion, the modifiers
+    examples provided in the :ref:`placing-map-scales` cookbook section. For Cartesian projection, the modifiers
     **+c** and **+f** are not allowed and no units should be appended in **+w**.
 
     - **+w**\ *length* to set scale *length* in km, or append :ref:`unit <tbl-distunits>` from

@@ -21,6 +21,7 @@ Synopsis
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ]
+[ |-S|\ [**a**\|\ **l**\|\ **L**\|\ **m**\|\ **p**\|\ **u**\|\ **U**][**+a**][**+c**][**+d**][**+r**][**+s**\ [*file*] ]
 [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ]
 [ |-Z| ]
@@ -213,7 +214,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *method*/*modifiers*
+**-S**\ [**a**\|\ **l**\|\ **L**\|\ **m**\|\ **p**\|\ **u**\|\ **U**][**+a**][**+c**][**+d**][**+r**][**+s**\ [*file*]
     In conjunction with |-C|, compute a single stacked profile from
     all profiles across each segment. Append a method for how stacking should be
     computed: **a** = mean (average), **m** = median, **p** = mode
