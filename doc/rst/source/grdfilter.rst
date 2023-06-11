@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfilter** *ingrid* |-D|\ *distance_flag*
-|-F|\ **x**\ *width*\ [/*width2*][*modifiers*]
+|-F|\ **x**\ *width*\ [/*width2*][**+c**\|\ **+h**\|\ **+l**\|\ **+q**\ *quantile*\|\ **+u**]
 |-G|\ *outgrid*
 [ |SYN_OPT-I| ]
 [ |-N|\ **i**\|\ **p**\|\ **r** ]
@@ -75,7 +75,7 @@ Required Arguments
 
 .. _-F:
 
-**-Fx**\ *width*\ [/*width2*][*modifiers*]
+**-Fx**\ *width*\ [/*width2*][**+c**\|\ **+h**\|\ **+l**\|\ **+q**\ *quantile*\|\ **+u**]
     Sets the filter type. Choose among convolution and non-convolution
     filters. Use any filter code **x** (listed below) followed by the full
     diameter *width*. This gives an isotropic filter; append /*width2*
