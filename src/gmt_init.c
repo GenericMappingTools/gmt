@@ -15770,7 +15770,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots and time-axis */
 				unsigned int geo = gmtinit_is_region_geographic (GMT, *options, mod_name);
 				if (geo) 	/* Max dimension lon/lat plot of 15 cm */
-					snprintf (scl, GMT_LEN64, "Q15c+");
+					snprintf (scl, GMT_LEN64, "Q15c+du");
 				else {	/* Use 15cm square but watch out for panels and time-axes */
 					char *Tcode[2] = {"", "T"};
 					unsigned int xy[2];
