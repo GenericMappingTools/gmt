@@ -73,7 +73,7 @@ struct GRDFILTER_CTRL {
 		bool active;
 		int mode;	/* -1 to 5 */
 	} D;
-	struct GRDFILTER_F {	/* <type>[-]<width>[/<width2>][<mode>] */
+	struct GRDFILTER_F {	/* -F<type>[-]<width>[/<width2>][+c|+h|+l|+q<quantile>|+u] */
 		bool active;
 		bool highpass;
 		bool custom;
@@ -595,7 +595,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s -D<flag> -F<type><width>[/<width2>][<modifiers>] -G%s "
+	GMT_Usage (API, 0, "usage: %s %s -D<flag> -F<type><width>[/<width2>][+c|+h|+l|+q<quantile>|+u] -G%s "
 		"[%s] [-Ni|p|r] [%s] [-T] [%s] [%s] [%s]%s[%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_f_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
@@ -617,7 +617,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "3: grid x,y in degrees, <width> in km, x scale varies as cos(y), Cartesian distances.");
 	GMT_Usage (API, 3, "4: grid x,y in degrees, <width> in km, spherical distances.");
 	GMT_Usage (API, 3, "5: grid x,y in Mercator units (-Jm1), <width> in km, spherical distances.");
-	GMT_Usage (API, 1, "\n-F<type><width>[/<width2>][<modifiers>]");
+	GMT_Usage (API, 1, "\n-F<type><width>[/<width2>][+c|+h|+l|+q<quantile>|+u]");
 	GMT_Usage (API, -2, "Set the low-pass filter type and full diameter (6 sigma) filter-width. "
 		"Choose between convolution-type filters which differ in how weights are assigned "
 		"and geospatial filters that seek to return a representative value. "
