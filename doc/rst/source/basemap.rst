@@ -35,7 +35,7 @@ Synopsis
 Description
 -----------
 
-Creates a basic or fancy basemap with axes, fill, and titles. Several map projections are available, and the user may
+Creates a basic or fancy basemap (frame, with no actual map inside) with axes, fill, and titles. Several map projections are available, and the user may
 specify separate tick-mark intervals for boundary annotation, ticking, and (optionally) gridlines. A simple map scale
 (|-L|) or directional rose (|-T|) may also be plotted. At least one of the options |-B|, |-L|, or |-T| must be
 specified.
