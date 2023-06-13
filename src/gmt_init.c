@@ -7803,9 +7803,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Choose among 7 levels; each level adds more detailed messages:", V_code[GMT->current.setting.verbose]);
 			GMT_Usage (API, 3, "q: Quiet, not even fatal error messages.");
 			GMT_Usage (API, 3, "e: Error messages only.");
-			GMT_Usage (API, 3, "w: Warnings [Default].");
+			GMT_Usage (API, 3, "w: Warnings [Default when no -V is given].");
 			GMT_Usage (API, 3, "t: Timings (time-intensive operations only).");
-			GMT_Usage (API, 3, "i: Informational messages (or just -V).");
+			GMT_Usage (API, 3, "i: Informational messages (or just -V with no level appended).");
 			GMT_Usage (API, 3, "c: Compatibility warnings.");
 			GMT_Usage (API, 3, "d: Debugging messages.");
 			break;
