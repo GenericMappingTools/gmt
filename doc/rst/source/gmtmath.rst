@@ -200,9 +200,9 @@ Operators
 Choose among the following operators. Here, "args" are the number of input
 and output arguments.
 
- =============== ======= =========================================================================================== =================== 
-  Operator        args    Returns                                                                                     Type of Function   
- =============== ======= =========================================================================================== =================== 
+=============== ======= =========================================================================================== =================== 
+ Operator        args    Returns                                                                                     Type of Function   
+=============== ======= =========================================================================================== =================== 
   **ABS**         1 1     Absolute value of A                                                                         Arithmetic         
   **ACOS**        1 1     Inverse cosine (result in radians)                                                          Calculus           
   **ACOSD**       1 1     Inverse cosine (result in degrees)                                                          Calculus           
@@ -346,7 +346,7 @@ and output arguments.
   **PSI**         1 1     Psi (or Digamma) of A                                                                       Special Functions  
   **PV**          3 1     Legendre function Pv(A) of degree v = real(B) + imag(C)                                     Special Functions  
   **QV**          3 1     Legendre function Qv(A) of degree v = real(B) + imag(C)                                     Special Functions  
-  **R2**          2 1     Hypotenuse squared (= A\ :sup:`2` + B\ :sup:`2`)                                                            Calculus           
+  **R2**          2 1     Hypotenuse squared (= A\ :sup:`2` + B\ :sup:`2`)                                            Calculus           
   **R2D**         1 1     Convert radians to degrees                                                                  Special Operators  
   **RAND**        2 1     Uniform random values between A and B                                                       Probability        
   **RCDF**        1 1     Rayleigh cumulative distribution function for z = A                                         Probability        
@@ -402,7 +402,7 @@ and output arguments.
   **ZCDF**        1 1     Normal cumulative distribution function for z = A                                           Probability        
   **ZCRIT**       1 1     Normal distribution critical value for alpha = A                                            Probability        
   **ZPDF**        1 1     Normal probability density function for z = A                                               Probability        
- =============== ======= =========================================================================================== =================== 
+=============== ======= =========================================================================================== =================== 
  
 Symbols
 -------
