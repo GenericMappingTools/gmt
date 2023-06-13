@@ -112,7 +112,7 @@ The following directives and modifiers can be appended to **-B** to control the 
   3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the vertical axis.
 - **+e** to give skip annotations that fall exactly at the ends of the axis.  Append **l** or **u** to only
   skip the lower or upper annotation, respectively.
-- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffices encoding the sign.
+- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffixes encoding the sign.
 - **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
   label orientation; **+L** forces a horizontal label for *y*-axes, which is useful for very short labels.
 - **+s**\|\ **S**\ *seclabel* (for Cartesian plots only) to specify an alternate label for the right or upper axes.
