@@ -2511,7 +2511,7 @@ a ``gmt.io`` file:
 |       |     |     |   |       | auto-scale and auto-offset                |
 +-------+-----+-----+---+-------+-------------------------------------------+
 
-These suffices can be anything that makes sense to the user. To activate
+These suffixes can be anything that makes sense to the user. To activate
 this mechanism, set parameter :term:`IO_GRIDFILE_SHORTHAND` to TRUE in
 your :doc:`/gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs+n32767``, and the
 filename ``wet.mask`` means wet.mask=bm+n0. For a file intended for masking, i.e.,
