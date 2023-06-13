@@ -47,12 +47,13 @@ Description
 **info** reads its standard input [or from files] and finds the
 extreme values in each of the columns reported as slash-separated min/max
 pairs. It recognizes NaNs and will print warnings if the number of columns
-vary from record to record. The pairs can be split into two separate columns
-by using the |-C| option.  As another option, **info** can find the extent
+vary from record to record. The reported number of rows ignores records where at least one column is a NaN.
+The pairs can be split into two separate columns
+by using the |-C| option. As another option, **info** can find the extent
 of data in the first two columns rounded up and down to the nearest multiple of the
 supplied increments given by |-I|. Such output will be in the text form
 |-R|\ *w/e/s/n*, which can be used directly on the command line for other
-modules (hence only *dx* and *dy* are needed).  If |-C| is combined with
+modules (hence only *dx* and *dy* are needed). If |-C| is combined with
 |-I| then the output will be in column form and rounded up/down for as many
 columns as there are increments provided in |-I|. A similar option (|-T|)
 will provide a |-T|\ *zmin/zmax/dz* string for makecpt.
