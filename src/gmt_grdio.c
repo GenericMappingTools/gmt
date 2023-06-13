@@ -2859,7 +2859,7 @@ void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	if (is_complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		gmt_grdfloat *f = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extend grid via copy onto larger memory-aligned grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extending grid via copying onto larger memory-aligned grid\n");
 		if ((f = gmt_M_memory_aligned (GMT, NULL, size, gmt_grdfloat)) == NULL) return;	/* New, larger grid size */
 		gmt_M_memcpy (f, G->data, G->header->size, gmt_grdfloat);	/* Copy over previous grid values */
 		gmt_M_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */

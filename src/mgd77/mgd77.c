@@ -2761,7 +2761,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 
 	append = (has_suffix == MGD77_NOT_SET);		/* No extension, must append extension */
 
-	/* First look in current directory using all allowed suffices */
+	/* First look in current directory using all allowed suffixes */
 
 	for (fmt = f_start; fmt <= f_stop; fmt++) {	/* Try either one or any of three formats... */
 		if (!MGD77_format_allowed[fmt]) continue;		/* ...but not this one, apparently */
