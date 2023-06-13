@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.5.2
+      uses: actions/checkout@v3.5.3
 
     - name: Setup data version control (DVC)
       uses: iterative/setup-dvc@v1.1.2
