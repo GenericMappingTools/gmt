@@ -130,7 +130,8 @@ Optional Arguments
 .. _-F:
 
 **-F**
-    Center bin on each value. [Default is left edge].
+    Center bin on each node created via |-T| [Default uses the nodes to define the
+    left edge of each bin].
 
 .. _-G:
 
@@ -140,10 +141,10 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [**o**\|\ **O**]
-    Inquire about min/max x and y after binning. The *xmin xmax ymin
-    ymax* is output; no plotting is done. Append **o** to output an
-    ASCII table of the resulting x,y data instead. Upper case **O** will
-    output all x,y bin data even when y == 0. **Note**: You may use **-o**
+    Inquire about min/max *x* and *y* after binning. The *xmin xmax ymin
+    ymax* is output; no plotting is done. Append directive **o** to output an
+    ASCII table of the resulting *x,y* data instead. Upper case directive **O** will
+    output all *x,y* bin data even when *y* == 0. **Note**: You may use **-o**
     to select a subset from this record.
 
 .. _-Jz:
@@ -153,7 +154,7 @@ Optional Arguments
 .. _-L:
 
 **-Ll**\|\ **h**\|\ **b**
-    The modifiers specify the handling of extreme values that fall outside the range
+    The directives specify the handling of extreme values that fall outside the range
     set by |-T|.  By default these values are ignored.  Append **b** to let
     these values be included in the first or last bins.  To only include
     extreme values below first bin into the first bin, use **l**, and to
@@ -164,7 +165,7 @@ Optional Arguments
 
 **-N**\ [*mode*][**+p**\ *pen*]
     Draw the equivalent normal distribution; append desired pen [0.25p,black].
-    The *mode* selects which central location and scale to use:
+    The *mode* directive selects which central location and scale to use:
 
     * 0 = mean and standard deviation [Default];
     * 1 = median and L1 scale (1.4826 \* median absolute deviation; MAD);

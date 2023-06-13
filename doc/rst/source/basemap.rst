@@ -35,7 +35,7 @@ Synopsis
 Description
 -----------
 
-Creates a basic or fancy basemap with axes, fill, and titles. Several map projections are available, and the user may
+Creates a basic or fancy basemap (frame, with no actual map inside) with axes, fill, and titles. Several map projections are available, and the user may
 specify separate tick-mark intervals for boundary annotation, ticking, and (optionally) gridlines. A simple map scale
 (|-L|) or directional rose (|-T|) may also be plotted. At least one of the options |-B|, |-L|, or |-T| must be
 specified.
@@ -507,7 +507,7 @@ Custom Labels or Intervals
 
 The |-B| option sets up a regular annotation interval and the
 annotations derive from the corresponding *x*, *y*, or *z* coordinates.
-However, some applications requires special control on which annotations
+However, some applications require special control on which annotations
 to plot and even replace the annotation with other labels. This is
 achieved by using **c**\ *intfile* in the |-B| option, where *intfile*
 contains all the information about annotations, ticks, and even
@@ -516,7 +516,7 @@ gridlines. Each record is of the form *coord* *type* [*label*], where
 *type* is one or more letters from **a** (annotation), **i** interval
 annotation, **f** tickmark, and **g** gridline. Note that **a** and
 **i** are mutually exclusive and cannot both appear in the same
-*intfile*. Both **a** and **i** requires you to supply a *label* which
+*intfile*. Both **a** and **i** require you to supply a *label* which
 is used as the plot annotation. If not given then a regular formatted
 annotation based on the coordinate will occur.
 

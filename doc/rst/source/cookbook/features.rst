@@ -115,7 +115,7 @@ of ways. GMT programs that accept actual Earth length scales like
 search radii or distances can therefore handle a variety of units. These
 choices are listed in the Table :ref:`Distance Units <tbl-distunits>`;
 simply append the desired unit to the distance value you supply. A value
-without a unit suffix will be consider to be in meters. For example, a distance
+without a unit suffix will be considered to be in meters. For example, a distance
 of 30 nautical miles should be given as 30\ **n**.
 
 Distance calculations
@@ -2123,7 +2123,7 @@ Placing map legends
 Adding map legends is the standard way to communicate what various symbols placed on your map
 represent.  For instance, you may use this mechanism to convey the information that circles are
 earthquake locations, triangles are places where you ate Thai food, and dashed lines indicate
-some sort of gang-land demarkation line that you should not cross without paying the locals due respect.
+some sort of gang-land demarcation line that you should not cross without paying the locals due respect.
 Map legends are placed by the module :doc:`/legend`, with location and size determined by the
 various **-D** attributes. We must again specify the reference and anchor points and any adjustments to them
 first, then supply suitable required and optional modifiers:
@@ -2511,7 +2511,7 @@ a ``gmt.io`` file:
 |       |     |     |   |       | auto-scale and auto-offset                |
 +-------+-----+-----+---+-------+-------------------------------------------+
 
-These suffices can be anything that makes sense to the user. To activate
+These suffixes can be anything that makes sense to the user. To activate
 this mechanism, set parameter :term:`IO_GRIDFILE_SHORTHAND` to TRUE in
 your :doc:`/gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs+n32767``, and the
 filename ``wet.mask`` means wet.mask=bm+n0. For a file intended for masking, i.e.,

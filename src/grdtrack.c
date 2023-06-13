@@ -493,7 +493,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 						GMT_Report (API, GMT_MSG_ERROR, "Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
 						break;
 				}
-				pos = 0;
+				pos = 0;	/* This skips over any useless slash */
 				while (gmt_strtok (&opt->arg[1], "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a': Ctrl->S.selected[STACK_ADD_VAL] = true; break;	/* Gave +a to add stacked value to all output profiles */

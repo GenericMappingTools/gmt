@@ -7355,7 +7355,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 	GMT_Usage (API, -2, "Specify the min/max coordinates of your data region in user units. "
 		"Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds]. "
 		"Use -R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] for regions given in projected coordinates, "
-		"with <unit> selected from %s [e]. If +u is set, projected regions centered on (0,0) may be"
+		"with <unit> selected from %s [Default: e]. If +u is set, projected regions centered on (0,0) may be "
 		"set via -R<halfwidth>[/<halfheight>]+u<unit>, where <halfheight> defaults to <halfwidth> if not given. "
 		"Use [yyyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
 		"Append +r if -R specifies the coordinates of the lower left and "
@@ -7473,7 +7473,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear]. Optional modifiers: ");
 			GMT_Usage (API, 3, "+a Append <angle> for slanted or use +an|p for orthogonal|parallel annotations [+ap].");
 			GMT_Usage (API, 3, "+e Skip annotation that land exactly at one (append l or u) or both ends of the axis [no skipping].");
-			GMT_Usage (API, 3, "+f Let geographic axes place \"fancy\" annotations with W|E|S|N suffices.");
+			GMT_Usage (API, 3, "+f Let geographic axes place \"fancy\" annotations with W|E|S|N suffixes.");
 			GMT_Usage (API, 3, "+l Place <label> for the axis.  Use +L to enforce horizontal labels for y-axes. "
 				"For another axis label on the opposite axis, use +s|S as well. "
 				"Use quotes if any of the <label>, <prefix> or <unit> have spaces. "
@@ -7803,9 +7803,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Choose among 7 levels; each level adds more detailed messages:", V_code[GMT->current.setting.verbose]);
 			GMT_Usage (API, 3, "q: Quiet, not even fatal error messages.");
 			GMT_Usage (API, 3, "e: Error messages only.");
-			GMT_Usage (API, 3, "w: Warnings [Default].");
+			GMT_Usage (API, 3, "w: Warnings [Default when no -V is given].");
 			GMT_Usage (API, 3, "t: Timings (time-intensive operations only).");
-			GMT_Usage (API, 3, "i: Informational messages (or just -V).");
+			GMT_Usage (API, 3, "i: Informational messages (or just -V with no level appended).");
 			GMT_Usage (API, 3, "c: Compatibility warnings.");
 			GMT_Usage (API, 3, "d: Debugging messages.");
 			break;
@@ -15770,7 +15770,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots and time-axis */
 				unsigned int geo = gmtinit_is_region_geographic (GMT, *options, mod_name);
 				if (geo) 	/* Max dimension lon/lat plot of 15 cm */
-					snprintf (scl, GMT_LEN64, "Q15c+");
+					snprintf (scl, GMT_LEN64, "Q15c+du");
 				else {	/* Use 15cm square but watch out for panels and time-axes */
 					char *Tcode[2] = {"", "T"};
 					unsigned int xy[2];
@@ -18051,7 +18051,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			if (!error) {
 				if (GMT->current.setting.run_mode == GMT_MODERN && (!GMT->current.map.frame.set[GMT_X] || !GMT->current.map.frame.set[GMT_Y] || (GMT->common.J.zactive && !GMT->current.map.frame.set[GMT_Z]))) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
-					if (item[q] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffices */
+					if (item[q] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffixes */
 					if (c && strchr (GMT_AXIS_MODIFIERS, c[1]))	/* We got the ones suitable for axes that we can chop off */
 						c[0] = '\0';	/* Temporarily chop off these modifiers only */
 					code[0] = item[q]; code[1] = (item[q]) ? item[q+1] : '\0';
