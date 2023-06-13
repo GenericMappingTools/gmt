@@ -9671,7 +9671,7 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 			snprintf (GMT->common.l.item.label, GMT_LEN128, "%s%%d", arg);
 			arg[strlen(arg)-1] = '#';
 		}
-		else if ((d = strchr (arg, '%')) && (d[0] == 'd' || isdigit (d[0]))) {	/* Got %d, %<w>d or %<w>.<p>% */
+		else if ((d = strchr (arg, '%')) && (d[1] == 'd' || isdigit (d[1]))) {	/* Got %d, %<w>d or %<w>.<p>% */
 			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
 			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
 		}
