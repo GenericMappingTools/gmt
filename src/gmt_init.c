@@ -9660,16 +9660,20 @@ GMT_LOCAL int gmtinit_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 		c[0] = '\0';	/* Chop'em off */
 	}
 	if (arg[0]) {	/* Gave a label, which may be a constant string, code, or format statement */
-		char *d = strchr (arg, '%');
-		if (d && strchr (d, 'd')) {
-			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
+		char *d = strstr (arg, "@%");	/* First rule out font settings before hunt for integer formats */
+		if (d) {	/* Font settings are not integer formats */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FIXED;
 			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
 		}
-		else if (arg[strlen(arg)-1] == '#') {	/* Short hand for integer %d */
+		else if (arg[strlen(arg)-1] == '#') {	/* # in label string is short hand for an integer %d */
 			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
 			arg[strlen(arg)-1] = '\0';
 			snprintf (GMT->common.l.item.label, GMT_LEN128, "%s%%d", arg);
 			arg[strlen(arg)-1] = '#';
+		}
+		else if ((d = strchr (arg, '%')) && (d[1] == 'd' || isdigit (d[1]))) {	/* Got %d, %<w>d or %<w>.<p>% */
+			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_FORMAT;
+			strncpy (GMT->common.l.item.label, arg, GMT_LEN128-1);
 		}
 		else if (strchr (arg, ',')) {
 			GMT->common.l.item.label_type = GMT_LEGEND_LABEL_LIST;
