@@ -1258,7 +1258,7 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 		default:
 			GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r'; break;
 	}
-	if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.ps_def_page_size[GMT_Y] == GMT_PAPER_DIM) {	/* Modern mode: Disallow -Yc|f */
+	if (GMT->current.setting.run_mode == GMT_MODERN && strchr ("cf", GMT->common.Y.mode) && GMT->current.setting.ps_def_page_size[GMT_Y] == GMT_PAPER_DIM) {	/* Modern mode: Disallow -Yc|f */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Centered (-Yc) and fixed (-Yf) shifts are not available in modern mode\n");
 		return (GMT_PARSE_ERROR);
 	}
