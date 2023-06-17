@@ -365,7 +365,7 @@ non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 
 For :term:`MAP_LABEL_OFFSET`, **auto** will scale the offset based on figure size if
 :term:`MAP_LABEL_MODE` is set to **annot**, but will default to **32p** if
-:term:MAP_LABEL_MODE` is set to **axis**.
+:term:`MAP_LABEL_MODE` is set to **axis**.
 
 For :term:`MAP_EMBELLISHMENT_MODE`, **auto** means we uses the given size of the
 embellishment to set relative sizes of ticks, texts and labels, and offsets.
@@ -1633,70 +1633,9 @@ Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape
 sequence for font switching. In bash scripts the brackets have special meaning, hence you must add double quotes.
 
-.. _tbl-escape:
+.. include:: /character_escape_sequences_info.rst_
 
-+-------------------+----------------------------------------------------------------+
-+===================+================================================================+
-| @~                | Turns symbol font on or off                                    |
-+-------------------+----------------------------------------------------------------+
-| @+                | Turns superscript on or off                                    |
-+-------------------+----------------------------------------------------------------+
-| @-                | Turns subscript on or off                                      |
-+-------------------+----------------------------------------------------------------+
-| @#                | Turns small caps on or off                                     |
-+-------------------+----------------------------------------------------------------+
-| @\_               | Turns underline on or off                                      |
-+-------------------+----------------------------------------------------------------+
-| @%\ *fontno*\ %   | Switches to another font; @%% resets to previous font          |
-+-------------------+----------------------------------------------------------------+
-| @:\ *size*:       | Switches to another font size; @:: resets to previous size     |
-+-------------------+----------------------------------------------------------------+
-| @;\ *color*;      | Switches to another font color; @;; resets to previous color   |
-+-------------------+----------------------------------------------------------------+
-| @!                | Creates one composite character of the next two characters     |
-+-------------------+----------------------------------------------------------------+
-| @.                | Prints the degree symbol                                       |
-+-------------------+----------------------------------------------------------------+
-| @@                | Prints the @ sign itself                                       |
-+-------------------+----------------------------------------------------------------+
-
-Shorthand notation for a few special European characters has also been added (for others
-you must use the full octal code):
-
-
-.. _tbl-shorthand:
-
-+----------+------------+----------+------------+
-| *Code*   | *Effect*   | *Code*   | *Effect*   |
-+==========+============+==========+============+
-| @E       | Æ          | @e       | æ          |
-+----------+------------+----------+------------+
-| @O       | Ø          | @o       | ø          |
-+----------+------------+----------+------------+
-| @A       | Å          | @a       | å          |
-+----------+------------+----------+------------+
-| @C       | Ç          | @c       | ç          |
-+----------+------------+----------+------------+
-| @N       | Ñ          | @n       | ñ          |
-+----------+------------+----------+------------+
-| @U       | Ü          | @u       | ü          |
-+----------+------------+----------+------------+
-| @s       | ß          | @i       | í          |
-+----------+------------+----------+------------+
-
-However, if your input text contains UTF-8 code characters (e.g., ü, Î)
-and you select the ISOLatin1+ character encoding then GMT will substitute
-the correct PostScript octal codes for you automatically.
-
-PostScript fonts used in GMT may be re-encoded to include several
-accented characters used in many European languages. To access these,
-you must specify the full octal code \\xxx allowed for
-your choice of character encodings determined by the
-:term:`PS_CHAR_ENCODING` setting described in the
-:doc:`/gmt.conf` man page. Only the special
-characters belonging to a particular encoding will be available. Many
-characters not directly available by using single octal codes may be
-constructed with the composite character mechanism @!.
+.. _escape-examples:
 
 Some examples of escape sequences and embedded octal codes in
 GMT strings using the Standard+ encoding:
