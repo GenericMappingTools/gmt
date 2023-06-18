@@ -39,7 +39,7 @@ jobs:
 
       - name: Create an update request
         if: ${{ steps.scm.outputs.error_code == 2 }}
-        uses: nashmaniac/create-issue-action@v1.1
+        uses: nashmaniac/create-issue-action@v1.2
         with:
           title: New ScientificColourMaps version ${{ steps.scm.outputs.scm_version }} found
           token: ${{secrets.GITHUB_TOKEN}}
