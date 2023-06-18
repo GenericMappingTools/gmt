@@ -59,7 +59,7 @@ input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
 network. If |-G| |-I| are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
-the triangulations is either that of Watson [1982] or Shewchuk [1996] [Default]
+the triangulations is either that of *Watson* [1982] or *Shewchuk* [1996] [Default]
 (if installed; type **gmt get GMT_TRIANGULATE** to see which method is
 selected). This choice is made during the GMT installation.  Furthermore,
 if the Shewchuk algorithm is installed then you can also perform the
@@ -89,7 +89,7 @@ Optional Arguments
 
 **-C**\ *slpfile*
     Read a slope grid (in degrees) and compute the propagated uncertainty in the
-    bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the |-G|
+    bathymetry using the CURVE algorithm [*Zambo et al.*\ , 2016].  Requires the |-G|
     option to specify the output grid.  Note that the *slpgrid* sets the domain
     for the output grid so |-R|, |-I|, [|SYN_OPT-r|\ ] are not required.
     Cannot be used in conjunction with |-D|, |-F|, |-M|, |-N|, |-Q|,
@@ -154,8 +154,8 @@ Optional Arguments
 **-Q**\ [**n**]
     Output the edges of the Voronoi cells instead [Default is Delaunay
     triangle edges]. Requires |-R| and is only available if linked
-    with the Shewchuk [1996] library. Note that |-Z| is ignored on
-    output. Optionally, append **n** for combining the edges into
+    with the *Shewchuk* [1996] library. Note that |-Z| is ignored on
+    output. Optionally, append directive **n** for combining the edges into
     closed Voronoi polygons.
 
 .. |Add_-R| replace:: |Add_-R_links|

@@ -90,7 +90,7 @@ Optional Arguments
     Sets the preferred positive azimuth. Positive wiggles will
     "gravitate" towards that direction, i.e., azimuths of the
     normal direction to the track will be flipped into the
-    -90/+90 degree window centered on *azimuth* and that defines
+    ±90 degree window centered on *azimuth* and that defines
     the positive wiggle side.  If no azimuth is given the no
     preferred azimuth is enforced.  Default is **-A**\ 0.
 
