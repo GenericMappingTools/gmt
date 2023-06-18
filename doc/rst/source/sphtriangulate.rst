@@ -47,7 +47,7 @@ you may choose **-Qv** which will do further processing to obtain the
 Voronoi polygons. Normally, either set of polygons will be written as
 closed fillable segment output; use |-T| to write unique arcs instead. As an
 option, compute the area of each triangle or polygon. The algorithm used
-is STRIPACK.
+is STRIPACK [*Renka*\ , 1997].
 
 Required Arguments
 ------------------

@@ -43,8 +43,8 @@ Description
 input) containing lon, lat and performs the construction of Voronoi
 polygons. These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.
-The Voronoi algorithm used is STRIPACK. As an option, you may provide
-pre-calculated Voronoi polygon file in the format written by
+The Voronoi algorithm used is STRIPACK [*Renka*\ , 1997]. As an option,
+you may provide pre-calculated Voronoi polygon file in the format written by
 :doc:`sphtriangulate`, thus bypassing the memory- and time-consuming
 triangularization.
 
