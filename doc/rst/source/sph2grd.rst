@@ -34,7 +34,8 @@ Description
 -----------
 
 **sph2grd** reads a spherical harmonics coefficient table with records of
-L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid.
+L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid
+[*Holmes and Featherstone*, 2002].
 
 Required Arguments
 ------------------

@@ -43,7 +43,7 @@ using the specified stage or total reconstruction rotations. These
 flowlines are convolved with the shape of the seamount (using a Gaussian
 shape given amplitude and radius = 6 sigma) and added up to give a
 Cumulative Volcano Amplitude grid (CVA). See option **-:** on how to
-read (latitude,longitude,...) files.
+read (latitude,longitude,...) files [*Wessel*, 1999; 2008].
 
 Required Arguments
 ------------------

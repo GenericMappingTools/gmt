@@ -45,8 +45,8 @@ Description
 **backtracker** reads (longitude, latitude, age) positions from
 *infiles* [or standard input] and computes rotated (x,y,t) coordinates
 using the specified rotation parameters. It can either calculate final
-positions [Default] or create a sampled track (flowline or hotspot
-track) between the initial and final positions. The former mode allows
+positions [Default] or create a sampled track (flowline or hotspot track)
+between the initial and final positions [*Wessel*, 1999]. The former mode allows
 additional data fields after the first 3 columns which must have
 (longitude,latitude,age). See option **-:** on how to read
 (latitude,longitude,age) files.
@@ -208,14 +208,14 @@ total reconstruction rotations for the plate (PAC_APM.txt), try
   echo 204 19 80 | gmt backtracker -Df -EPAC_APM.txt -Lb1 > path.txt
 
 To predict Hawaiian-Emperor seamount trail using the Pacific absolute plate
-and plume motion from Doubrovine et al. (2012), use
+and plume motion from *Doubrovine et al.* [2012], use
 
 ::
 
   echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt -FD2012_HI_drift.txt > traildrift.txt
 
 To predict the Hawaiian-Emperor seamount trail that would have resulted if no plume drift had been in effect,
-using the Pacific absolute plate motion model from Doubrovine et al. (2012), use
+using the Pacific absolute plate motion model from *Doubrovine et al.* [2012], use
 
 ::
 

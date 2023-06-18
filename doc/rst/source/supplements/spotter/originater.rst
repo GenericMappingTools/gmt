@@ -44,7 +44,7 @@ records from *table* [or standard input] and uses the given Absolute
 Plate Motion (APM) stage or total reconstruction rotation file and the
 list of hotspot locations to determine the most likely origin (hotspot)
 for each seamount. It does so by calculating flowlines back in time and
-determining the closest approach to all hotspots. The output consists of
+determining the closest approach to all hotspots [*Wessel*, 1999]. The output consists of
 the input records with four additional fields added for each of the
 *n_hs* closest hotspots. The four fields are the hotspot id (e.g.,
 HWI), the stage id of the flowline segment that came closest, the

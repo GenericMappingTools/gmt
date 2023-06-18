@@ -42,7 +42,7 @@ obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
 Mercator \*.img grid) along track. The new data will be appended to the
 MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
-issues, see the DISCUSSION section below.
+issues, see the DISCUSSION section below [*Wessel and Chandler*, 2007].
 
 Required Arguments
 ------------------

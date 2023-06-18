@@ -40,7 +40,7 @@ Description
 calculates flowlines from each node that exceeds a minimum value using
 the specified rotations file. These flowlines are then convolved with
 the volume of the prism represented by each grid node and added up to
-give a Cumulative Volcano Amplitude grid (CVA).
+give a Cumulative Volcano Amplitude grid (CVA) [*Wessel*, 1999; 2008].
 
 Required Arguments
 ------------------

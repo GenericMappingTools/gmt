@@ -43,7 +43,7 @@ We can compute anomalies on an equidistant lattice (by specifying a lattice with
 **-T**) or provide arbitrary output points specified in a file via |-N|.
 Choose between free-air anomalies, vertical gravity gradient anomalies, or geoid anomalies.
 Options are available to control axes units and direction.
-
+For theory, see references at the end.
 
 Required Arguments
 ------------------

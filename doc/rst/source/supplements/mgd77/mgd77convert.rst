@@ -27,7 +27,7 @@ Description
 
 **mgd77convert** reads versions of MGD77 files and writes the same data
 in (probably) another format to a new file in the current directory.
-Both pre- and post-Y2K MGD77 formats can be processed.
+Both pre- and post-Y2K MGD77 formats can be processed [*Wessel and Chandler*, 2007].
 
 Required Arguments
 ------------------

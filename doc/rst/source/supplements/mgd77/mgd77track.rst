@@ -41,7 +41,7 @@ Description
 -----------
 
 **mgd77track** reads NCEI MGD77 cruises and plots one or more ship tracks
-on a map using the specified projection.
+on a map using the specified projection [*Wessel and Chandler*, 2007].
 
 Required Arguments
 ------------------

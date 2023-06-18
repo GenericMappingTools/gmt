@@ -43,7 +43,7 @@ Description
 of user-selectable options, such as boundary conditions, pre-existing
 deformations, variable rigidity and restoring force, and more.  The solutions
 are obtained using finite difference approximations to the differential
-equations.
+equations [*Bodine*,\ 1980].
 
 Required Arguments
 ------------------

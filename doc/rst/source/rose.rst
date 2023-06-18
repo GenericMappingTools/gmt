@@ -174,7 +174,7 @@ Optional Arguments
 **-Q**\ [*alpha*]
     Sets the confidence level used to determine if the mean resultant
     is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
-    **Note**: The critical values are approximated [Berens, 2009] and
+    **Note**: The critical values are approximated [*Berens*, 2009] and
     requires at least 10 points; the critical resultants are accurate
     to at least 3 significant digits.  For smaller data sets you
     should consult exact statistical tables.

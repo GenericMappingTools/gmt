@@ -31,7 +31,7 @@ record of information about each cruise specified. The information
 includes beginning and end times, total track distances in km, longitude
 and latitude range, and the total number of geophysical observations.
 Optionally, choose instead to see the original MGD77 header meta-data
-section or its individual members.
+section or its individual members [*Wessel and Chandler*, 2007].
 
 If you need to know which tracks are crossing through a given region and
 what kinds of geophysical observations are available, consider using the
