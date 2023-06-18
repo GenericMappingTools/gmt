@@ -7,7 +7,7 @@
 name: SCM Check
 on:
   # uncomment the 'pull_request' line to test the workflow in PRs
-  # pull_request:
+  pull_request:
   schedule:
     # weekly cron job
     - cron: '0 0 * * 0'
