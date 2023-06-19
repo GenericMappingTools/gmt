@@ -8795,13 +8795,15 @@ struct GMT_DATASET * gmt_transpose_dataset (struct GMT_CTRL *GMT, struct GMT_DAT
 	return (Dt);
 }
 
-GMT_LOCAL void gmtio_free_segment_text (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
-	/* Frees any array of trailing text items */
+GMT_LOCAL void gmtio_free_segment_text (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT_HIDDEN *SH) {
+	/* Frees any array of trailing text items unless externally allocated */
 	uint64_t row;
-	if (S->text == NULL) return;	/* No text */
-	for (row = 0; row < S->n_rows; row++)
-		gmt_M_str_free (S->text[row]);
-	gmt_M_free (GMT, S->text);
+	if (S->text == NULL) return;	/* No trailing text array */
+    if (SH->alloc_mode_text == GMT_ALLOC_INTERNALLY) {  /* We can free these strings */
+        for (row = 0; row < S->n_rows; row++)
+	       gmt_M_str_free (S->text[row]);
+    }
+	gmt_M_free (GMT, S->text); /* Always free the array holding the strings */
 }
 
 /*! . */
@@ -8825,7 +8827,7 @@ void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S) {
 	gmt_M_str_free ( segment->header);
 	for (k = 0; k < 2; k++) gmt_M_str_free (SH->file[k]);
 	if (SH->ogr) gmtio_free_ogr_seg (GMT, segment);	/* OGR metadata */
-	gmtio_free_segment_text (GMT, segment);
+	gmtio_free_segment_text (GMT, segment, SH);
 	gmt_M_free (GMT, SH->alloc_mode);
 	gmt_M_free (GMT, segment->hidden);
 	gmt_M_free (GMT, segment);
