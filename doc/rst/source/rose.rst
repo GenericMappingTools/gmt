@@ -174,7 +174,7 @@ Optional Arguments
 **-Q**\ [*alpha*]
     Sets the confidence level used to determine if the mean resultant
     is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
-    **Note**: The critical values are approximated [Berens, 2009] and
+    **Note**: The critical values are approximated [*Berens*, 2009] and
     requires at least 10 points; the critical resultants are accurate
     to at least 3 significant digits.  For smaller data sets you
     should consult exact statistical tables.
@@ -288,16 +288,16 @@ lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =
 solid pen (width = 0.5 point, and shown in landscape [Default]
 orientation with a timestamp and command line plotted, use:
 
-   ::
+::
 
-    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -U+c -pdf rose
+  gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -U+c -pdf rose
 
 Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
 
-   ::
+::
 
-    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c -pdf rose
+  gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c -pdf rose
 
 .. module_note_begins
 

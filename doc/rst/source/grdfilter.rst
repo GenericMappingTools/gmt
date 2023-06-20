@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfilter** *ingrid* |-D|\ *distance_flag*
-|-F|\ **x**\ *width*\ [/*width2*][*modifiers*]
+|-F|\ **x**\ *width*\ [/*width2*][**+c**\|\ **+h**\|\ **+l**\|\ **+q**\ *quantile*\|\ **+u**]
 |-G|\ *outgrid*
 [ |SYN_OPT-I| ]
 [ |-N|\ **i**\|\ **p**\|\ **r** ]
@@ -75,7 +75,7 @@ Required Arguments
 
 .. _-F:
 
-**-Fx**\ *width*\ [/*width2*][*modifiers*]
+**-Fx**\ *width*\ [/*width2*][**+c**\|\ **+h**\|\ **+l**\|\ **+q**\ *quantile*\|\ **+u**]
     Sets the filter type. Choose among convolution and non-convolution
     filters. Use any filter code **x** (listed below) followed by the full
     diameter *width*. This gives an isotropic filter; append /*width2*
@@ -191,18 +191,18 @@ which you choose to be from 150E to 250E and 10N to 40N, and you want
 the output values every 0.5 degree. Using spherical distance
 calculations, you need:
 
-   ::
+::
 
-    gmt grdfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
+  gmt grdfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
 
 If we instead wanted a high-pass result then one can perform the
 corresponding low-pass filter using a coarse grid interval as **grdfilter**
 will resample the result to the same resolution as the input grid so we
 can compute the residuals, e.g.,
 
-   ::
+::
 
-    gmt grdfilter @earth_relief_05m -Gresidual_pacific.nc -Fm600+h -D4 -R150/250/10/40 -I0.5 -V
+  gmt grdfilter @earth_relief_05m -Gresidual_pacific.nc -Fm600+h -D4 -R150/250/10/40 -I0.5 -V
 
 Here, the residual_pacific.nc grid will have the same 5 minute
 resolution as the original.
@@ -212,11 +212,11 @@ filter exp (-0.5\*r^2) whose distances r from the center is given by
 (2x^2 + y^2 -2xy)/6, with major axis at an angle of 63 degrees with the
 horizontal, try
 
-   ::
+::
 
-    gmt grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL \
-                SUB 6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
-    gmt grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
+  gmt grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL \
+              SUB 6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
+  gmt grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
 
 Limitations
 -----------

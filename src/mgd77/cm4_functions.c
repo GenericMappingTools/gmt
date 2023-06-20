@@ -5,14 +5,14 @@
  *
  *  Functions required to compute CM4 magnetic components
  *
- *  Authors:    J. Luis translated from original Fortran code
+ *  Authors:    J. Luis translated from original FORTRAN code
  *		P. Wessel further massaged it into this form
  *
  *  Version:	1.0
  *  Revised:	1-MAY-2009
  *
  *
- *  NOTES:	The original Fortran code written by Terry Sabaka from
+ *  NOTES:	The original FORTRAN code written by Terry Sabaka from
  *		- Planetary Geodynamics Lab at Goddard Space Flight Center -
  *		can be found at
  *        	denali.gsfc.nasa.gov/cm/cm4field.f

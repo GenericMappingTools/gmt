@@ -298,7 +298,7 @@ DCW Collections
 The |-E| and |-R| options can be expanded to take the user's own custom collections
 and named regions.  Users can create a dcw.conf file and place it in their
 GMT user directory (typically ~/.gmt).  The format of the file is the same
-as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
+as the `dcw-collections.txt <https://github.com/GenericMappingTools/dcw-gmt/blob/master/dcw-collections.txt>`_ file distributed with DCW 2.1.0 or later::
 
     # ~/.gmt/dcw.conf
     # Arbitrary comments and blank lines anywhere

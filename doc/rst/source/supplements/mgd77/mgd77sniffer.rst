@@ -484,23 +484,23 @@ Examples
 
 To scan for excessive values or gradients, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001
+  gmt mgd77sniffer 08010001
 
 To dump cruise gradients, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001 -Ds
+  gmt mgd77sniffer 08010001 -Ds
 
 To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
-                 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+  gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
+               -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 See Also
 --------

@@ -55,9 +55,9 @@ solving the differential equation (away from data points)
     (1 - t) \nabla ^2(z) + t \nabla (z) = 0,
 
 where *t* is a tension factor between 0 and 1, and :math:`\nabla` indicates the
-Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution.
+2-D Cartesian Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution.
 Minimum curvature can cause undesired oscillations and false local maxima or minima
-(See Smith and Wessel, 1990), and you may wish to use *t* > 0 to suppress these
+[See *Smith and Wessel*\ , 1990], and you may wish to use *t* > 0 to suppress these
 effects. Experience suggests *t* ~ 0.25 usually looks good for potential
 field data and *t* should be larger (*t* ~ 0.35) for steep topography data.
 *t* = 1 gives a harmonic surface (no maxima or minima are possible except
@@ -276,9 +276,9 @@ hawaii_5x5.xyg, using a *tension_factor* = 0.25, a
 *convergence_limit* = 0.1 mGal, writing the result to a file called
 hawaii_grd.nc, and monitoring each iteration, try:
 
-   ::
+::
 
-    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
+  gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
 
 Notes
 -----

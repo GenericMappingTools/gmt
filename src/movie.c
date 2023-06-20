@@ -382,7 +382,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<audiofile>[+e]");
 	GMT_Usage (API, -2, "Merge in an audio track, starting at first frame.");
-	GMT_Usage (API, 3, "+e Adjust length of audio track to fix the length of the movie exactly.");
+	GMT_Usage (API, 3, "+e Adjust length of audio track to fit the length of the movie exactly.");
 	GMT_Usage (API, 1, "\n-D<rate>");
 	GMT_Usage (API, -2, "Set movie display frame rate in frames/second [24].");
 	GMT_Usage (API, 1, "\n-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]");

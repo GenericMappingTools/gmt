@@ -49,7 +49,7 @@ Description
 Reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *table* [or standard input] and
 plots symbols at those locations on a ternary diagram. If a symbol is selected
 and no symbol size given, then we will interpret the fourth column of the input data
-as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
+as symbol size. Symbols whose *size* :math:`\leq 0` are skipped. If no symbols
 are specified then the symbol code (see |-S| below) must be present as
 last column in the input.  If |-S| is not specified then we instead plot
 lines or polygons.
@@ -193,8 +193,8 @@ in the file ternary.txt, with default annotations and gridline spacings, using t
 specified labeling, try::
 
     gmt begin map
-    gmt makecpt -Cturbo -T0/80/10
-    gmt ternary @ternary.txt -R0/100/0/100/0/100 -JX15c -Sc0.1c -C -LLimestone/Water/Air \
+      gmt makecpt -Cturbo -T0/80/10
+      gmt ternary @ternary.txt -R0/100/0/100/0/100 -JX15c -Sc0.1c -C -LLimestone/Water/Air \
         -Baafg+l"Limestone component"+u" %" -Bbafg+l"Water component"+u" %" -Bcagf+l"Air component"+u" %" \
         -B+givory+t"Example data from MATLAB Central"
     gmt end show

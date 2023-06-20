@@ -287,17 +287,17 @@ helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from :doc:`grdinfo`. So you can do this to see some points
 on the CDF(Z) curve (use |-V| option to see more):
 
-   ::
+::
 
-    gmt grd2cpt mydata.nc -V > /dev/null
+  gmt grd2cpt mydata.nc -V > /dev/null
 
 To make a CPT with entries from 0 to 200 in steps of 20, and ignore
 data below zero in computing CDF(Z), and use the built-in master cpt
 file relief, run
 
-   ::
+::
 
-    gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
+  gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
 
 To determine the empirical cumulative density function of a grid and
 create a CPT that would give equal area to each color in the image,
