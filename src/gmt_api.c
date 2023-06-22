@@ -4127,6 +4127,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					S->data[col_pos_out] = V_obj->data[col_pos].f8;
 					SH->alloc_mode[col_pos_out] = GMT_ALLOC_EXTERNALLY;	/* Not this objects job to free what was passed in by reference */
 				}
+				SH->alloc_mode_text = GMT_ALLOC_EXTERNALLY; /* Not this object's job to free what was passed in by reference */
 				DH = gmt_get_DD_hidden (D_obj);
 				if (smode) S->text = V_obj->text;	/* Hook up trailing text array */
 				gmtapi_increment_d (D_obj, V_obj->n_rows, n_columns, 1U);	/* Update counters for D_obj with 1 segment */
@@ -4520,7 +4521,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				}
 				if (S->text) {
 					V_obj->text = S->text;
-					VH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;	/* Since not duplicated, just pointed to */
+					VH->alloc_mode_text = SH->alloc_mode_text = GMT_ALLOC_EXTERNALLY;	/* Since not duplicated, just pointed to */
 				}
 				V_obj->n_rows = n_rows;
 				VH->alloc_level = S_obj->alloc_level;	/* Otherwise D_obj will be freed before we get to use data */
