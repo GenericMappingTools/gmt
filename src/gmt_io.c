@@ -8802,8 +8802,9 @@ GMT_LOCAL void gmtio_free_segment_text (struct GMT_CTRL *GMT, struct GMT_DATASEG
 	if (SH->alloc_mode_text == GMT_ALLOC_INTERNALLY) {  /* We can free these strings */
 		for (row = 0; row < S->n_rows; row++)
 			gmt_M_str_free (S->text[row]);
-	}
-	gmt_M_free (GMT, S->text); /* Always free the array holding the strings */
+		gmt_M_free (GMT, S->text);
+	} else
+		S->text = NULL;
 }
 
 /*! . */
