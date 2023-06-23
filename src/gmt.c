@@ -163,12 +163,6 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
-			/* Print version and exit */
-			else if (!strncmp (argv[arg_n], "--date", 5U) || !strncmp (argv[arg_n], "--show-date", 10U)) {
-				fprintf (stdout, "%s\n", GMT_BUILD_DATE);
-				status = GMT_NOERROR;
-			}
-
 			/* Show citation of the current release */
 			else if (!strncmp (argv[arg_n], "--show-citation", 15U)) {
 				fprintf(stdout, "%s\n", GMT_VERSION_CITATION);
@@ -245,6 +239,12 @@ int main (int argc, char *argv[]) {
 			/* Show user's ~/.gmt hidden dir */
 			else if (!strncmp (argv[arg_n], "--show-userdir", 14U)) {
 				fprintf(stdout, "%s\n", api_ctrl->GMT->session.USERDIR);
+				status = GMT_NOERROR;
+			}
+
+			/* Print date and exit */
+			else if (!strncmp (argv[arg_n], "--date", 5U) || !strncmp (argv[arg_n], "--show-date", 10U)) {
+				fprintf (stdout, "%s\n", GMT_BUILD_DATE);
 				status = GMT_NOERROR;
 			}
 
