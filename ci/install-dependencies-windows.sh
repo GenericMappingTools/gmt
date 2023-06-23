@@ -33,7 +33,7 @@ choco install ninja
 choco install ghostscript --version 9.50
 
 if [ "$BUILD_DOCS" = "true" ]; then
-    pip install --user sphinx dvc
+    pip install --user sphinx
     # Add sphinx to PATH
     echo "$(python -m site --user-site)\..\Scripts" >> $GITHUB_PATH
 
@@ -42,11 +42,8 @@ fi
 
 if [ "$RUN_TESTS" = "true" ]; then
     choco install graphicsmagick --version 1.3.32
-    pip install --user dvc
     # Add GraphicsMagick to PATH
     echo 'C:\Program Files\GraphicsMagick-1.3.32-Q8' >> $GITHUB_PATH
-    # Add dvc to PATH
-    echo "$(python -m site --user-site)\..\Scripts" >> $GITHUB_PATH
 fi
 
 # we need the GNU tar for packaging
