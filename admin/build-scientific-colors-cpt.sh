@@ -28,7 +28,7 @@ if [ $# -eq 0 ]; then
 	  3. Manually set the current version number/doi (see the zip PDF docs)
 	Afterwards you must:
 	  1. Update src/gmt_cpt_masters.h with any new entries (copy lines from /tmp/cpt_strings.txt)
-	  2. Adding the CPTs to share/cpt (overwriting the previous versions)
+	  2. Adding the CPTs to share/cpt/SCM (overwriting the previous versions)
 	  3. Probably mess with doc/scripts/GMT_App_M*.sh for new layouts
 	EOF
 	exit 1
