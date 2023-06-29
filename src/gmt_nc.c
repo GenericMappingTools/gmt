@@ -2018,6 +2018,8 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	if (z_unit)	/* Passed pointer to storage for z-unit in cubes */
 		strncpy (z_unit, z_units, GMT_GRID_UNIT_LEN80);
 
+	gmt_M_err_trap (gmt_nc_close (GMT, ncid));
+
 	return GMT_NOERROR;
 }
 
