@@ -228,7 +228,7 @@ To create a page-size global oblique Mercator basemap for a pole at
 
 ::
 
-  gmt basemap -R0/360/-70/70 -Joc0/0/90/30/0.064cd -B30g30 -B+t"Oblique Mercator" -pdf oblmerc
+  gmt basemap -R0/360/-70/70 -Joc0/0/90/30/0.064c -B30g30 -B+t"Oblique Mercator" -pdf oblmerc
 
 Transverse Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
