@@ -85,8 +85,8 @@ respectively):
         **-Jo**\|\ **O**\ [**c**\|\ **C**]\ *lon0/lat0/lonp/latp/*\ *scale*\|\ *width*\ [**+v**]
             Set projection center *lon0/lat0*, pole of oblique projection *lonp/latp*, and *scale* or *width*
 
-        Give *scale* along oblique equator (with **-Ja**\|\ **b**\|\ **c**; **1:**\ *xxxx* or
-        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JA**\|\ **B**\|\ **C**; in
+        Give *scale* along oblique equator (with **-Jo**
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JO**
         :ref:`plot-units <plt-units>`). Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern
         hemisphere pole. Append **+v** to let the oblique Equator align with the *y*-axis [*x*-axis].  **Note**: If
         the region (**-R**) is given without the **+r** modifier then the arguments are considered oblique degrees
