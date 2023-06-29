@@ -18,7 +18,7 @@ Synopsis
 [ |-D|\ [*dx*\ [/*dy*]] ]
 [ |-E|\ **L**\|\ **l**\|\ **H**\|\ **h**\ [*col*] ]
 [ |-F|\ [**i**\|\ **d**\|\ **t**] ]
-[ |-I|\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**] ]
+[ |-I|\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**\ *incs*] ]
 [ |-L| ]
 [ |-S|\ [**x**][**y**] ]
 [ |-T|\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*] ]
@@ -47,12 +47,13 @@ Description
 **info** reads its standard input [or from files] and finds the
 extreme values in each of the columns reported as slash-separated min/max
 pairs. It recognizes NaNs and will print warnings if the number of columns
-vary from record to record. The pairs can be split into two separate columns
-by using the |-C| option.  As another option, **info** can find the extent
+vary from record to record. The reported number of rows ignores records where at least one column is a NaN.
+The pairs can be split into two separate columns
+by using the |-C| option. As another option, **info** can find the extent
 of data in the first two columns rounded up and down to the nearest multiple of the
 supplied increments given by |-I|. Such output will be in the text form
 |-R|\ *w/e/s/n*, which can be used directly on the command line for other
-modules (hence only *dx* and *dy* are needed).  If |-C| is combined with
+modules (hence only *dx* and *dy* are needed). If |-C| is combined with
 |-I| then the output will be in column form and rounded up/down for as many
 columns as there are increments provided in |-I|. A similar option (|-T|)
 will provide a |-T|\ *zmin/zmax/dz* string for makecpt.
@@ -110,7 +111,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**]
+**-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**\ *incs*]
     Compute the *min*\ /*max* values of the first *n* columns to the nearest multiple
     of the provided increments (separate the *n* increments by slashes) [default is 2 columns].
     By default, output results in the form |-R|\ *w/e/s/n*, unless |-C| is
@@ -130,7 +131,7 @@ Optional Arguments
     as a closed polygon segment. **Note**: For oblique projections you should
     use the **-Ap** option in :doc:`plot` to draw the box properly.
     If |-I|\ **e** is given then the exact min/max of the input is given in the |-R| string.
-    If you only want either the x-* or *y-* range to be exact and the other range rounded, give one of the increments as zero.
+    If you only want either the *x-* or *y-* range to be exact and the other range rounded, give one of the increments as zero.
     Append **+r** to modify the min/max of the first *n* columns further:
     Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
     region to be a multiple of these steps [no adjustment]. Alternatively, use **+R** to extend the region
@@ -224,33 +225,33 @@ To find the extreme values in @ship_15.txt to the nearest 5 units
 but shifted to within 1 unit of the data center, and use this region to
 plot all the points as small black circles using :doc:`plot`, run
 
-  ::
+::
 
-    gmt plot `gmt info -I5 -D1 @ship_15.txt` @ship_15.txt -B -Sc2p -pdf map
+  gmt plot `gmt info -I5 -D1 @ship_15.txt` @ship_15.txt -B -Sc2p -pdf map
 
 To find the min and max values for each of the first 3 columns, but
 rounded to integers, and return the result individually for each data
 file, use
 
-  ::
+::
 
-    gmt info @ship_15.txt -C -I1/1/1
+  gmt info @ship_15.txt -C -I1/1/1
 
 Given seven profiles with different start and stop positions, we
 want to find a range of positions, with increment of 5, that are
 common to all the profiles.  We use
 
-  ::
+::
 
-    gmt info profile_[123567].txt -L -I5
+  gmt info profile_[123567].txt -L -I5
 
 The file magprofs.txt contains a number of magnetic profiles stored
 as separate data segments.  We need to know how many segments there
 are and use
 
-  ::
+::
 
-    gmt info magprofs.txt -Fi
+  gmt info magprofs.txt -Fi
 
 Bugs
 ----

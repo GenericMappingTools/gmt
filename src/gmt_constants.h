@@ -508,6 +508,7 @@ enum GMT_enum_spline {
 	GMT_SPLINE_CUBIC,      /* Cubic spline */
 	GMT_SPLINE_SMOOTH,     /* Smooth cubic spline */
 	GMT_SPLINE_NN,         /* Nearest neighbor */
+	GMT_SPLINE_STEP,       /* Step up to next value */
 	GMT_SPLINE_NONE};      /* No spline set */
 
 /*! Various 1-D interpolation derivatives */

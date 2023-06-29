@@ -40,12 +40,13 @@
 #define gmt_M_wind_lon(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
 
 /*! Some shorthand notation for GMT specific cases */
-EXTERN_MSC double gmtmap_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]);
 
-#define gmt_M_latg_to_latc(C,lat) gmtmap_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2C])
-#define gmt_M_latg_to_lata(C,lat) gmtmap_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2A])
-#define gmt_M_latc_to_latg(C,lat) gmtmap_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_C2G])
-#define gmt_M_lata_to_latg(C,lat) gmtmap_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_A2G])
+EXTERN_MSC double gmtlib_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]);
+
+#define gmt_M_latg_to_latc(C,lat) gmtlib_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2C])
+#define gmt_M_latg_to_lata(C,lat) gmtlib_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2A])
+#define gmt_M_latc_to_latg(C,lat) gmtlib_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_C2G])
+#define gmt_M_lata_to_latg(C,lat) gmtlib_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_A2G])
 
 /*! Macros returns true if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
 #define gmt_M_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] & GMT_IS_LON)

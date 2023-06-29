@@ -466,6 +466,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		}
 		if (do_sample) {	/* One or more reasons to call upon grdsample before using this grid */
 			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
+			GMT->common.V.active = false;	/* Since we will parse again below */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
 
 				if (gmt_get_tempname (GMT->parent, "grdblend_resampled", ".nc", buffer))

@@ -121,40 +121,40 @@ model (Pac_APM.txt), and a polygon that contains the outline of the
 present Pacific plate (pac_clip_path.txt). To evaluate the plate motion
 azimuths at the present time for the Pacific, try
 
-   ::
+::
 
-    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
-                     -Sa -T0 > pac_dir_0.txt
+  gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+                   -Sa -T0 > pac_dir_0.txt
 
 To determine the changes in latitude since crust formation for the
 entire Pacific, try
 
-   ::
+::
 
-    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
-                    -Sy > pac_dlat.txt
+  gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+                  -Sy > pac_dlat.txt
 
 To determine the plate motion velocities in effect when the Pacific crust was
 formed, try
 
-   ::
+::
 
-    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
-                    -Sv > pac_vel.txt
+  gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+                  -Sv > pac_vel.txt
 
 To determine how far the crust has moved since formation, try
 
-   ::
+::
 
-    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
-                    -Sd > pac_dist.txt
+  gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+                  -Sd > pac_dist.txt
 
 To save the coordinates of the crust's formation, try
 
-   ::
+::
 
-    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
-                    -SXY > ac_origin_xy.txt
+  gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+                  -SXY > ac_origin_xy.txt
 
 Notes
 -----

@@ -119,16 +119,16 @@ Examples
 To extract all data from the old-style MGG supplement file c2104.gmt,
 recognized by the tag GMT:
 
-   ::
+::
 
-    gmt x2sys_datalist c2104.gmt -TGMT > myfile
+  gmt x2sys_datalist c2104.gmt -TGMT > myfile
 
 To make lon,lat, and depth input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using
 all the files listed in the file tracks.lis and defined by the tag TRK,
 but only the data that are inside the specified area, and make output
 binary, run::
 
-    gmt x2sys_datalist =tracks.lis -TTRK -Flon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
+  gmt x2sys_datalist =tracks.lis -TTRK -Flon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
 
 Corrections
 -----------

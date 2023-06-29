@@ -121,6 +121,7 @@
 #define gmt_M_double_swap(x, y) {double double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define gmt_M_doublep_swap(x, y) {double *double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define gmt_M_float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
+#define gmt_M_grdfloat_swap(x, y) {gmt_grdfloat float_tmp; float_tmp = x, x = y, y = float_tmp;}
 
 /*! Macro to ensure proper value and sign of a change in longitude from lon1 to lon2 */
 #define gmt_M_set_delta_lon(lon1,lon2,delta) {delta = fmod ((lon2) - (lon1), 360.0); if (fabs (delta) > 180.0) delta = copysign (360.0 - fabs (delta), -delta);}

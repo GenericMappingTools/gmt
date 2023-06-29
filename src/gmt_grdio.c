@@ -30,57 +30,85 @@
  * with 32-bit ints.  However, 1-D array indices (e.g., ij = row*n_columns + col) are
  * addressed with 64-bit integers.
  *
- * Public functions (42 [+2]):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *  gmt_grd_get_format      : Get format id, scale, offset and missing value for grdfile
- *  gmtlib_read_grd_info       : Read header from file
- *  gmtlib_read_grd            : Read data set from file (must be preceded by gmtlib_read_grd_info)
- *  gmt_update_grd_info     : Update header in existing file (must be preceded by gmtlib_read_grd_info)
- *  gmtlib_write_grd_info      : Write header to new file
- *  gmtlib_write_grd           : Write header and data set to new file
- *  gmt_set_R_from_grd
- *  gmt_grd_coord           :
- *  gmtlib_grd_real_interleave :
- *  gmt_grd_mux_demux       :
- *  gmtlib_grd_set_units       :
- *  gmt_grd_pad_status      :
- *  gmt_grd_info_syntax
- *  gmtlib_get_grdtype         :
- *  gmtlib_grd_data_size       :
- *  gmt_grd_set_ij_inc      :
- *  gmt_grd_format_decoder  :
- *  gmt_grd_prep_io         :
- *  gmt_set_grdinc          :
- *  gmt_set_grddim          :
- *  gmt_grd_pad_off         :
- *  gmt_grd_pad_on          :
- *  gmt_grd_pad_zero        :
- *  gmt_create_grid         :
- *  gmt_duplicate_grid      :
- *  gmt_free_grid           :
- *  gmt_set_outgrid         :
- *  gmt_change_grdreg       :
- *  gmt_grd_zminmax         :
- *  gmt_grd_minmax          :
- *  gmt_grd_detrend         :
- *  gmtlib_init_complex        :
- *  gmtlib_found_url_for_gdal      :
- *  gmt_read_img            : Read [subset from] a Sandwell/Smith *.img file
- *  gmt_grd_init            : Initialize grd header structure
- *  gmt_grd_shift           : Rotates grdfiles in x-direction
- *  gmt_grd_setregion       : Determines subset coordinates for grdfiles
- *  gmt_grd_is_global       : Determine whether grid is "global", i.e. longitudes are periodic
- *  gmt_adjust_loose_wesn   : Ensures region, increments, and n_columns/n_rows are compatible
- *  gmt_decode_grd_h_info   : Decodes a -Dstring into header text components
- *  gmt_grd_RI_verify       : Test to see if region and incs are compatible
- *  gmt_scale_and_offset_f  : Routine that scales and offsets the data in a vector
- *  gmt_grd_flip_vertical  : Flips the grid in vertical direction
- *  gmtgrdio_pack_grid         : Packs or unpacks a grid by calling gmt_scale_and_offset_f()
+ *	gmt_adjust_loose_wesn
+ *	gmt_change_grdreg
+ *	gmt_change_grid_history
+ *	gmt_copy_gridheader
+ *	gmt_create_grid
+ *	gmt_cube_info_syntax
+ *	gmt_cube_pad_off
+ *	gmt_cube_vminmax
+ *	gmt_decode_cube_h_info
+ *	gmt_decode_grd_h_info
+ *	gmt_duplicate_grid
+ *	gmt_free_grid
+ *	gmt_free_header
+ *	gmt_get_active_layers
+ *	gmt_get_grd_command
+ *	gmt_get_grd_remark
+ *	gmt_get_grd_title
+ *	gmt_get_grid
+ *	gmt_grd_RI_verify
+ *	gmt_grd_coord
+ *	gmt_grd_detrend
+ *	gmt_grd_domains_match
+ *	gmt_grd_dump
+ *	gmt_grd_flip_vertical
+ *	gmt_grd_format_decoder
+ *	gmt_grd_get_format
+ *	gmt_grd_info_syntax
+ *	gmt_grd_init
+ *	gmt_grd_is_global
+ *	gmt_grd_is_polar
+ *	gmt_grd_layout
+ *	gmt_grd_minmax
+ *	gmt_grd_mux_demux
+ *	gmt_grd_pad_off
+ *	gmt_grd_pad_on
+ *	gmt_grd_pad_status
+ *	gmt_grd_pad_zero
+ *	gmt_grd_prep_io
+ *	gmt_grd_set_cartesian
+ *	gmt_grd_set_datapadding
+ *	gmt_grd_set_ij_inc
+ *	gmt_grd_setregion
+ *	gmt_grd_shift
+ *	gmt_grd_zminmax
+ *	gmt_grdcube_info_syntax
+ *	gmt_grid_perimeter
+ *	gmt_img_sanitycheck
+ *	gmt_raster_type
+ *	gmt_read_img
+ *	gmt_scale_and_offset_f
+ *	gmt_set_R_from_grd
+ *	gmt_set_grddim
+ *	gmt_set_grdinc
+ *	gmt_set_outgrid
+ *	gmt_update_grd_info
  *
- *  Reading images via GDAL:
- *  gmtlib_read_image          : Read [subset of] an image via GDAL
- *  gmtlib_read_image_info     : Get information for an image via GDAL
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
  *
+ *	gmtlib_create_cube
+ *	gmtlib_duplicate_cube
+ *	gmtlib_found_url_for_gdal
+ *	gmtlib_free_cube
+ *	gmtlib_free_cube_ptr
+ *	gmtlib_free_grid_ptr
+ *	gmtlib_get_grdtype
+ *	gmtlib_get_matrixtype
+ *	gmtlib_grd_data_size
+ *	gmtlib_grd_get_units
+ *	gmtlib_grd_real_interleave
+ *	gmtlib_grd_set_units
+ *	gmtlib_init_complex
+ *	gmtlib_read_grd
+ *	gmtlib_read_grd_info
+ *	gmtlib_read_image
+ *	gmtlib_read_image_info
+ *	gmtlib_write_grd
+ *	gmtlib_write_grd_info
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #include "gmt_dev.h"
@@ -754,8 +782,8 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	/* Destination must exist */
 	struct GMT_GRID_HEADER_HIDDEN *Hfrom = gmt_get_H_hidden (from), *Hto = gmt_get_H_hidden (to);
 	gmt_M_unused(GMT);
-	if (to->ProjRefWKT) gmt_M_str_free (to->ProjRefWKT);		/* Since we will duplicate via from */
-	if (to->ProjRefPROJ4) gmt_M_str_free (to->ProjRefPROJ4);	/* Since we will duplicate via from */
+	if (GMT->parent->internal && to->ProjRefWKT) gmt_M_str_free (to->ProjRefWKT);		/* Since we will duplicate via from */
+	if (GMT->parent->internal && to->ProjRefPROJ4) gmt_M_str_free (to->ProjRefPROJ4);	/* Since we will duplicate via from */
 	if (Hto->pocket) gmt_M_str_free (Hto->pocket);			/* Since we will duplicate via from */
 	if (Hto->title) gmt_M_str_free (Hto->title);			/* Since we will duplicate via from */
 	if (Hto->command) gmt_M_str_free (Hto->command);			/* Since we will duplicate via from */
@@ -845,8 +873,11 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 		/* PW: This test was <= 360 but if you have grids from 340-375 and it says longitude then we should not make it Cartesian */
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] < 720.0)) {
-			/* Input data type is longitude */
-			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
+			/* Input data type is longitude ... if */
+			if ((header->wesn[XHI] - header->wesn[XLO]) > 360)
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Grid x units says it is longitude but it spans > 360 so is set to Cartesian\n");
+			else
+				gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
 		}
 		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
 			/* Input data type is latitude */
@@ -863,7 +894,7 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in grid not recognized, defaulting to %s settings.\n", units, GMT_SETTINGS_FILE);
 
-			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
+			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */	
 			scale = time_system.scale * GMT->current.setting.time_system.i_scale;
 			offset = (time_system.rata_die - GMT->current.setting.time_system.rata_die) + (time_system.epoch_t0 - GMT->current.setting.time_system.epoch_t0);
 			offset *= GMT_DAY2SEC_F * GMT->current.setting.time_system.i_scale;
@@ -1254,7 +1285,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 }
 
-bool gmtgrdio_pad_status (struct GMT_CTRL *GMT, unsigned int *pad) {
+GMT_LOCAL bool gmtgrdio_pad_status (struct GMT_CTRL *GMT, unsigned int *pad) {
 	unsigned int side;
 	gmt_M_unused(GMT);
 	for (side = 0; side < 4; side++) if (pad[side]) return (true);	/* Grid has a pad */
@@ -2828,7 +2859,7 @@ void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	if (is_complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		gmt_grdfloat *f = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extend grid via copy onto larger memory-aligned grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extending grid via copying onto larger memory-aligned grid\n");
 		if ((f = gmt_M_memory_aligned (GMT, NULL, size, gmt_grdfloat)) == NULL) return;	/* New, larger grid size */
 		gmt_M_memcpy (f, G->data, G->header->size, gmt_grdfloat);	/* Copy over previous grid values */
 		gmt_M_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */

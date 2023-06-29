@@ -21,69 +21,83 @@
  * Date:	1-JAN-2010
  * Version:	5.x
  *
- * PUBLIC functions (59):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *	gmt_sig_f :	      : Returns true if reduction in model misfit was significant
- *	gmt_bei:	      : Kelvin-Bessel function bei(x)
- *	gmt_ber:	      : Kelvin-Bessel function ber(x)
- *	gmt_kei:	      : Kelvin-Bessel function kei(x)
- *	gmt_ker:	      : Kelvin-Bessel function ker(x)
- *	gmt_plm:	      : Legendre polynomial of degree L order M
- *	gmt_plm_bar:	      : Normalized Legendre polynomial of degree L order M
- *	gmt_plm_bar_all       :
- *	gmt_i0:		      : Modified Bessel function 1st kind order 0
- *	gmt_i1:		      : Modified Bessel function 1st kind order 1
- *	gmt_in:		      : Modified Bessel function 1st kind order N
- *	gmt_k0:		      : Modified Kelvin function 2nd kind order 0
- *	gmt_k1:		      : Modified Kelvin function 2nd kind order 1
- *	gmt_kn:		      : Modified Kelvin function 2nd kind order N
- *	gmt_dilog:	      : The dilog function
- *	gmt_erfinv:	      : The inverse error function
- *	gmt_rand:	      : Uniformly distributed random numbers 0 < x < 1
- *	gmt_nrand:	      : Normally distributed random numbers from N(0,1)
- *	gmt_lrand:	      : Laplace random number generator
- *	gmt_corrcoeff:	      : Correlation coefficient.
- *	gmt_psi:	      : Digamma (psi) function.
- *	gmt_PvQv:	      : Legendre functions Pv and Qv for imaginary v and real x (-1/+1).
- *	gmt_factorial:	      : Factorials.
- *	gmt_sinc              :
- *	gmt_permutation       :
- *	gmt_combination       :
- *	gmt_f_pdf             :
- *	gmt_f_cdf             :
- *	gmt_t_pdf             :
- *	gmt_t_cdf             :
- *	gmt_weibull_pdf       :
- *	gmt_weibull_cdf       :
- *	gmt_weibull_crit      :
- *	gmt_binom_pdf         :
- *	gmt_binom_cdf         :
- *	gmt_vonmises_pdf      :
- *	gmt_zdist             :
- *	gmt_zcrit             :
- *	gmt_tcrit             :
- *	gmt_chi2_pdf          :
- *	gmt_chi2crit          :
- *	gmt_Fcrit             :
- *	gmt_chi2              :
- *	gmt_poissonpdf        :
- *	gmt_poisson_cdf       :
- *	gmt_mean_and_std      :
- *	gmt_median            :
- *	gmt_mean_weighted     :
- *	gmt_quantile_weighted :
- *	gmt_median_weighted   :
- *	gmt_mode_weighted     :
- *	gmt_mode              :
- *	gmt_mode_f            :
- *	gmt_getmad            :
- *	gmt_getmad_f          :
- *	gmt_extreme           :
- *	gmt_chebyshev         :
- *	gmt_corrcoeff         :
- *	gmt_corrcoeff_f       :
- *	gmt_quantile          :
- *	gmt_quantile_f        :
+ *	gmt_Fcrit
+ *	gmt_PvQv
+ *	gmt_bei
+ *	gmt_ber
+ *	gmt_binom_cdf
+ *	gmt_binom_pdf
+ *	gmt_chebyshev
+ *	gmt_chi2
+ *	gmt_chi2_pdf
+ *	gmt_chi2crit
+ *	gmt_combination
+ *	gmt_corrcoeff
+ *	gmt_corrcoeff_f
+ *	gmt_dilog
+ *	gmt_erfinv
+ *	gmt_extreme
+ *	gmt_f_cdf
+ *	gmt_f_pdf
+ *	gmt_factorial
+ *	gmt_fisher_pdf
+ *	gmt_get_cellarea
+ *	gmt_getmad
+ *	gmt_getmad_f
+ *	gmt_grd_lmsscl
+ *	gmt_grd_mad
+ *	gmt_grd_mean
+ *	gmt_grd_median
+ *	gmt_grd_mode
+ *	gmt_grd_rms
+ *	gmt_grd_std
+ *	gmt_i0
+ *	gmt_i1
+ *	gmt_in
+ *	gmt_k0
+ *	gmt_k1
+ *	gmt_kei
+ *	gmt_ker
+ *	gmt_kn
+ *	gmt_lrand
+ *	gmt_mean_and_std
+ *	gmt_mean_weighted
+ *	gmt_median
+ *	gmt_median_weighted
+ *	gmt_mode
+ *	gmt_mode_f
+ *	gmt_mode_weighted
+ *	gmt_nrand
+ *	gmt_permutation
+ *	gmt_plm
+ *	gmt_plm_bar
+ *	gmt_plm_bar_all
+ *	gmt_poisson_cdf
+ *	gmt_poissonpdf
+ *	gmt_psi
+ *	gmt_quantile
+ *	gmt_quantile_f
+ *	gmt_quantile_weighted
+ *	gmt_rand
+ *	gmt_sig_f
+ *	gmt_sinc
+ *	gmt_std_weighted
+ *	gmt_t_cdf
+ *	gmt_t_pdf
+ *	gmt_tcrit
+ *	gmt_von_mises_mu_and_kappa
+ *	gmt_vonmises_pdf
+ *	gmt_weibull_cdf
+ *	gmt_weibull_crit
+ *	gmt_weibull_pdf
+ *	gmt_zcrit
+ *	gmt_zdist
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_compare_observation
  */
 
 #include "gmt_dev.h"

@@ -362,9 +362,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s p,q are the coordinates of x,y in the projection's coordinate system.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Note 1: p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W. "
-		"Note 2: z refers to all input data columns beyond the required x,y. "
+		"Note 2: z refers to all input data columns beyond the required x,y and may contain trailing text. "
 		"Note 3: If -G is set, -F is not available and output defaults to rsp "
-		"[Default is all fields, i.e., -Fxyzpqrs].");
+		"[Default is all fields, i.e., -Fxypqrsz, with z at the end if included].");
 	GMT_Usage (API, 1, "\n-G<dist>[<unit>][/<colat>][+c|h]");
 	GMT_Usage (API, -2, "Generate (r,s,p) points along profile every <dist> units. (No input data used.) "
 		"If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length. "
@@ -446,9 +446,11 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				else {
-					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->C.x), txt_a);
-					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->C.y), txt_b);
-					if (n_errors) GMT_Report (API, GMT_MSG_ERROR, "Option -C: Undecipherable argument %s\n", opt->arg);
+					unsigned int ee = 0;
+					ee += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->C.x), txt_a);
+					ee += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->C.y), txt_b);
+					if (ee) GMT_Report (API, GMT_MSG_ERROR, "Option -C: Undecipherable argument %s\n", opt->arg);
+					n_errors += ee;
 				}
 				break;
 			case 'D':
@@ -594,9 +596,9 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					}
 					else {	/* Bad number of arguments */
 						if (Ctrl->N.active)
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e|n] or -Z<diameter>[+e|n]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e] or -Z<diameter>[+e]\n");
 						else
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major[unit]/minor/azimuth>[+e|n] or -Z<diameter>[unit][+e|n]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major[unit]/minor/azimuth>[+e] or -Z<diameter>[unit][+e]\n");
 						n_errors++;
 					}
 				}

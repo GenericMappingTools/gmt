@@ -41,7 +41,7 @@
 #define THIS_MODULE_MODERN_NAME	"gravprisms"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D vertical prisms"
-#define THIS_MODULE_KEYS	"<D{,CD)=w,KG),LG(,ND(,SG(,TG(,WG(,ZG(,G?},GDN"
+#define THIS_MODULE_KEYS	"<D{,CD)=w,KG),LG(,ND(,SG(,TG(,WG(,ZG(,GG},ND),GDN"
 #define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-VRbdefhior" GMT_ADD_x_OPT
 

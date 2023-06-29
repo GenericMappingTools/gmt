@@ -203,7 +203,7 @@ GMT_LOCAL void pscoupe_rot_axis (struct AXIS A, struct nodal_plane PREF, struct 
 	 *
 	 */
 
-	double xn, xe, xz, x1, x2, x3, meca_zero_360();
+	double xn, xe, xz, x1, x2, x3;
 
 	xn = cosd (A.dip) * cosd (A.str);
 	xe = cosd (A.dip) * sind (A.str);

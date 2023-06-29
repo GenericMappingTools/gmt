@@ -122,7 +122,7 @@ Optional Arguments
       state of a country (if available), e.g., US.TX for Texas.
     - Append =\ *continent* to specify a continent, using either the full names or the abbreviations AF (Africa),
       AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
-    - To specify a collection or named region, give either the code of the full name.
+    - To specify a collection or named region, give either the code or the full name.
 
     The following modifiers are supported:
 
@@ -298,8 +298,9 @@ DCW Collections
 The |-E| and |-R| options can be expanded to take the user's own custom collections
 and named regions.  Users can create a dcw.conf file and place it in their
 GMT user directory (typically ~/.gmt).  The format of the file is the same
-as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
+as the `dcw-collections.txt <https://github.com/GenericMappingTools/dcw-gmt/blob/master/dcw-collections.txt>`_ file distributed with DCW 2.1.0 or later::
 
+    # ~/.gmt/dcw.conf
     # Arbitrary comments and blank lines anywhere
 
     # The France-Italian union (2042-45) of gallery example 34.
@@ -309,11 +310,14 @@ as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
     tag: SARG Sargasso Sea
     region: 70W/40W/20N/35N
 
-Each *tag:* record must be immediately followed by either a *list:* or *region:* record.
-All tags should be at least 3 characters long. Either the *tag* or the *name* (if available)
-can be used to make selections in |-R| or |-E|. The **-E+n** option wil list the contents
-of the collection distributed with DCW as well as any contents in ~/.gmt/dcw.conf. The latter
-file is consulted first and can be used to override same-name tag selections in the system DCW file.
+* Each *tag:* record must be immediately followed by either a *list:* (e.g. *list: FR,IT*, no space between codes)
+  or *region:* (e.g. *region: 70W/40W/20N/35N*) record.
+* All tags should be at least 3 characters long.
+  Either the *tag* or the *name* (if available) can be used to make selections in |-R| or |-E|.
+  Use quotes if *name* consists of more than one word (e.g. *"Franco-Italian Union"*).
+* The **-E+n** option wil list the contents of the collection distributed with DCW as well
+  as any contents in ~/.gmt/dcw.conf. The latter file is consulted first and can be used to
+  override same-name tag selections in the system DCW file.
 
 Examples
 --------

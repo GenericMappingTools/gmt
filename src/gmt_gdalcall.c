@@ -15,6 +15,16 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *	gmt_gdal_dem
+ *	gmt_gdal_grid
+ *	gmt_gdal_info
+ *	gmt_gdal_rasterize
+ *	gmt_gdal_translate
+ *	gmt_gdal_warp
+ */
+
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
@@ -207,7 +217,13 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 		}
 	}
 
+/* At 3.6 GDAL made some internal change that when passing back the data to the grid buffer,
+   data comes upside-down as comparing to what it used to do. But since that in fact helps
+   us since we no longer need to a flipud, we did not complain to GDAL dev. */
+#if (GDAL_VERSION_MAJOR < 3 && GDAL_VERSION_MINOR < 6)
 	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, sizeof(float));
+#endif
+
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 						NULL, fname, Grid) != GMT_NOERROR)
 		return GMT->parent->error;
@@ -216,7 +232,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
-char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+GMT_LOCAL char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	/* Pick the right output name when saving grids depending on if that writing is done with GMT or GDAL */
 	if (GDLL->M.write_gdal)			/* Write grid with the GDAL machinery */
 		return GDLL->fname_out;

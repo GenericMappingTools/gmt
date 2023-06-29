@@ -215,16 +215,16 @@ linear plot with scale 5 cm per data unit, using vector rather than
 stick plot, scale vector magnitudes so that 10 units equal 1 inch, and
 center vectors on the node locations, run
 
-   ::
+::
 
-    gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i -pdf gradient
+  gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i -pdf gradient
 
 To plot a geographic data sets given the files comp_x.nc and comp_y.nc,
 using a length scale of 200 km per data unit and only plot every 3rd node in either direction, try
 
-   ::
+::
 
-    gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200k -pdf globe
+  gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200k -pdf globe
 
 .. module_note_begins
 

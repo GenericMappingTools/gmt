@@ -21,7 +21,7 @@
  * Date:	11-AUG-2010
  * Version:	5.x
  *
- * PUBLIC functions:
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
  *
  * gmtlib_regexp_match:	Match a string against an extended regular expression
  *

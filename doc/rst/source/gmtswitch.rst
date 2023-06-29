@@ -81,21 +81,21 @@ Examples
 To switch to GMT version 4.5.18 (assuming it was installed as such and not
 via a package manager), try
 
-  ::
+::
 
-    gmtswitch gmt-4.5.18
+  gmtswitch gmt-4.5.18
 
 To switch to the default (your top choice), do
 
-  ::
+::
 
-    gmtswitch D
+  gmtswitch D
 
 Finally, to select from the menu, just run
 
-  ::
+::
 
-    gmtswitch
+  gmtswitch
 
 and pick the one you want.
 

@@ -43,7 +43,8 @@ triangulation to set up a spherical interpolation in tension. The final
 grid is saved to the specified file. Several options may be used to
 affect the outcome, such as choosing local versus global gradient
 estimation or optimize the tension selection to satisfy one of four
-criteria.
+criteria. The algorithms used are STRIPACK [*Renka*\ , 1997a] and
+SSRFPACK [*Renka*\ , 1997b].
 
 Required Arguments
 ------------------
@@ -189,10 +190,10 @@ See Also
 References
 ----------
 
-Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
+Renka, R, J., 1997a, Algorithm 772: STRIPACK: Delaunay Triangulation and
 Voronoi Diagram on the Surface of a Sphere, *AMC Trans. Math. Software*,
 **23**\ (3), 416-434.
 
-Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of scattered
+Renka, R, J,, 1997b, Algorithm 773: SSRFPACK: Interpolation of scattered
 data on the Surface of a Sphere with a surface under tension, *AMC
 Trans. Math. Software*, **23**\ (3), 435-442.

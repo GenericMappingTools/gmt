@@ -21,6 +21,14 @@
  * Date:	17-Aug-2017
  */
 
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_ogrproj_one_pt
+ *	gmt_proj4_fwd
+ *	gmt_proj4_inv
+ */
+
 #include <gdal.h>
 #include <ogr_srs_api.h>
 

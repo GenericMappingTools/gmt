@@ -200,9 +200,9 @@ Operators
 Choose among the following operators. Here, "args" are the number of input
 and output arguments.
 
- =============== ======= =========================================================================================== =================== 
-  Operator        args    Returns                                                                                     Type of Function   
- =============== ======= =========================================================================================== =================== 
+=============== ======= =========================================================================================== =================== 
+ Operator        args    Returns                                                                                     Type of Function   
+=============== ======= =========================================================================================== =================== 
   **ABS**         1 1     Absolute value of A                                                                         Arithmetic         
   **ACOS**        1 1     Inverse cosine (result in radians)                                                          Calculus           
   **ACOSD**       1 1     Inverse cosine (result in degrees)                                                          Calculus           
@@ -346,7 +346,7 @@ and output arguments.
   **PSI**         1 1     Psi (or Digamma) of A                                                                       Special Functions  
   **PV**          3 1     Legendre function Pv(A) of degree v = real(B) + imag(C)                                     Special Functions  
   **QV**          3 1     Legendre function Qv(A) of degree v = real(B) + imag(C)                                     Special Functions  
-  **R2**          2 1     Hypotenuse squared (= A\ :sup:`2` + B\ :sup:`2`)                                                            Calculus           
+  **R2**          2 1     Hypotenuse squared (= A\ :sup:`2` + B\ :sup:`2`)                                            Calculus           
   **R2D**         1 1     Convert radians to degrees                                                                  Special Operators  
   **RAND**        2 1     Uniform random values between A and B                                                       Probability        
   **RCDF**        1 1     Rayleigh cumulative distribution function for z = A                                         Probability        
@@ -402,7 +402,7 @@ and output arguments.
   **ZCDF**        1 1     Normal cumulative distribution function for z = A                                           Probability        
   **ZCRIT**       1 1     Normal distribution critical value for alpha = A                                            Probability        
   **ZPDF**        1 1     Normal probability density function for z = A                                               Probability        
- =============== ======= =========================================================================================== =================== 
+=============== ======= =========================================================================================== =================== 
  
 Symbols
 -------
@@ -565,26 +565,26 @@ Examples
 
 To add two plot dimensions of different units, we can run
 
-   ::
+::
 
     length=$(gmt math -Q 15c 2i SUB =)
 
 To compute the ratio of two plot dimensions of different units, we select *non-dimensional* output and run
 
-   ::
+::
 
     ratio=$(gmt math -Qn 15c 2i DIV =)
 
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
-   ::
+::
 
     process1 | gmt math STDIN SQRT = | process3
 
 To take log10 of the average of 2 data files, use
 
-   ::
+::
 
     gmt math file1.txt file2.txt ADD 0.5 MUL LOG10 = file3.txt
 
@@ -592,27 +592,27 @@ Given the file samples.txt, which holds seafloor ages in m.y. and seafloor
 depth in m, use the relation depth(in m) = 2500 + 350 \* sqrt (age) to
 print the depth anomalies:
 
-   ::
+::
 
     gmt math samples.txt T SQRT 350 MUL 2500 ADD SUB = | lpr
 
 To take the average of columns 1 and 4-6 in the three data sets sizes.1,
 sizes.2, and sizes.3, use
 
-   ::
+::
 
     gmt math -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.txt
 
 To take the 1-column data set ages.txt and calculate the modal value and
 assign it to a variable, try
 
-   ::
+::
 
     mode_age=$(gmt math -S -T ages.txt MODE =)
 
 To evaluate the dilog(x) function for coordinates given in the file t.txt:
 
-   ::
+::
 
     gmt math -Tt.txt T DILOG = dilog.txt
 
@@ -620,7 +620,7 @@ To demonstrate the use of stored variables, consider this sum of the
 first 3 cosine harmonics where we store and repeatedly recall the
 trigonometric argument (2\*pi\*T/360):
 
-   ::
+::
 
     gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD @kT 3 MUL COS ADD = harmonics.txt
 
@@ -629,13 +629,13 @@ input files) and calculate arbitrary expressions, use the |-Q| option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) +
 cos (60)) and store the result in the shell variable z:
 
-   ::
+::
 
     z=$(gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =)
 
 To convert the r,g,b value for yellow to h,s,v and save the hue, try
 
-   ::
+::
 
     hue=$(gmt math -Q 255 255 0 RGB2HSV POP POP =)
 
@@ -651,7 +651,7 @@ function for a given t0 = 1.55. Then, you need a 4-column augmented
 table loaded with *t* in column 1 and your observed *y* in column 3. The
 calculation becomes
 
-   ::
+::
 
     gmt math -N4/1 -Aty.txt -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.txt
 
@@ -663,7 +663,7 @@ columns are zero. If you already have a pre-calculated table with the
 augmented matrix [ **A** \| **b** ] in a file (say lsqsys.txt), the least squares
 solution is simply
 
-   ::
+::
 
     gmt math -T lsqsys.txt LSQFIT = solution.txt
 
@@ -682,6 +682,19 @@ versus
 
     echo 1 2 3 4 | gmt math -C3 STDIN 1 ADD =
     0    0    0    5
+
+To calculate how many days there were in the 80s decade:
+
+::
+
+    gmt math -Q 1991-01-01T 1981-01-01T SUB --TIME_UNIT=d =
+
+To determine the 1000th day since the beginning of the millennium:
+
+::
+
+    gmt math -Q 2001-01-01T 1000 ADD --TIME_UNIT=d -fT =
+
 
 References
 ----------

@@ -165,15 +165,6 @@ struct GMTSPATIAL_PAIR {
 	uint64_t pos;
 };
 
-#ifdef __APPLE__
-/* macOX has it built in, so ensure we define this flag */
-#define HAVE_MERGESORT
-#endif
-
-#ifndef HAVE_MERGESORT
-#include "mergesort.c"
-#endif
-
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSPATIAL_CTRL *C;
 

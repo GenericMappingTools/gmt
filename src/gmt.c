@@ -242,6 +242,12 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Print date and exit */
+			else if (!strncmp (argv[arg_n], "--date", 5U) || !strncmp (argv[arg_n], "--show-date", 10U)) {
+				fprintf (stdout, "%s\n", GMT_BUILD_DATE);
+				status = GMT_NOERROR;
+			}
+
 			/* print new shell template */
 			else if (!strncmp (argv[arg_n], "--new-script", 12U) || !strncmp (argv[arg_n], "--show-new-script", 17U)) {
 				unsigned int type = 0;	/* Default is bash */
@@ -362,6 +368,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-cores        Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir      Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver   Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-date         Show GMT binary building date\n");
 			fprintf (stderr, "  --show-dcw          Show the DCW data version used.\n");
 			fprintf (stderr, "  --show-doi          Show the DOI for the current release.\n");
 			fprintf (stderr, "  --show-gshhg        Show the GSHHG data version used.\n");
