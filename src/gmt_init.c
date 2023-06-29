@@ -7702,8 +7702,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 2, "-Jn|N[<lon0>/]<scl>|<width> (Robinson projection)");
 
 			GMT_Usage (API, 2, "-Jo|O (Oblique Mercator).  Specify one of three definitions:");
-			GMT_Usage (API, 3, "-Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>[+v]");
-			GMT_Usage (API, 3, "-Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>[+v]");
+			GMT_Usage (API, 3, "-Jo|Oa|A<lon0>/<lat0>/<azimuth>/<scl>|<width>[+v]");
+			GMT_Usage (API, 3, "-Jo|Ob|B<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>[+v]");
 			GMT_Usage (API, 3, "-Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>[+v]");
 
 			GMT_Usage (API, 2, "-Jpoly|Poly/[<lon0>/[<lat0>/]]<scl>|<width> ((American) Polyconic)");
