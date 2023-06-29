@@ -88,15 +88,15 @@
      - **-Jrobin/**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Oblique Mercator, 1: origin and azim <-Jo>`
-     - **-Jo**\|\ **O**\ [**a**\|\ **A**]
+     - **-Jo**\|\ **O**\ **a**\|\ **A**
      - **-Jomerc/**
      - |lon0|/|lat0|/\ *azim*/*scale*\|\ *width*\ [**+v**]
    * - :ref:`Oblique Mercator, 2: two points <-Jo>`
-     - **-Jo**\|\ **O**\ [**b**\|\ **B**]
+     - **-Jo**\|\ **O**\ **b**\|\ **B**
      - **-Jomerc/**
      - |lon0|/|lat0|/|lon1|/|lat1|/\ *scale*\|\ *width*\ [**+v**]
    * - :ref:`Oblique Mercator, 3: origin and pole <-Jo>`
-     - **-Jo**\|\ **O**\ [**c**\|\ **C**]
+     - **-Jo**\|\ **O**\ **c**\|\ **C**
      - **-Jomercp/**
      - |lon0|/|lat0|/|lonp|/|latp|/\ *scale*\|\ *width*\ [**+v**]
    * - :ref:`Polar [azimuthal] <-Jp>`  (:math:`\theta, r`) (or cylindrical)

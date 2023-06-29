@@ -225,7 +225,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 			case 'T':	/* Selects transformation */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				switch (opt->arg[0]) {
-					case 'a':	/* Angle between vectors */
+					case 'a':	/* Average location of the two vectors */
 						Ctrl->T.mode = DO_AVERAGE;
 						break;
 					case 'b':	/* Pole of bisector great circle */

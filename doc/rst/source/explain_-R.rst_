@@ -39,9 +39,8 @@ The **-R** option defines the map region or data domain of interest. It may be s
 #. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]. This indirectly supplies the region by
    consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
    countries given by the codes. Simply append one or more comma-separated countries using either the two-character
-   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_ (e.g., NO) or the full
-   country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
-   or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_ (e.g., -RNO) or the full
+   country name (e.g., -RNorway). To select a state within a country (if available), append .state (e.g, -RUS.TX). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
    Finally, append any :ref:`DCW collection <dcw-collections>` abbreviations or full names for the extent of the
    collection or named region. All names are case-insensitive. The following modifiers can be appended:
 

@@ -238,15 +238,15 @@ To get the CM4 Total field, Declination and Inclination due to all but
 lithospheric and toroidal field at a one point location and decimal time
 2000.0, try
 
-   ::
+::
 
-    echo -28 38 0 2000.0 | gmt mgd77magref -A+y -Ftdi/13456
+  echo -28 38 0 2000.0 | gmt mgd77magref -A+y -Ftdi/13456
 
 To do the same as above but at noon (Universal Time) of first May 2001, try
 
-   ::
+::
 
-    echo -28 38 0 2001-05-01T12:00:00 | gmt mgd77magref -Ftdi/13456
+  echo -28 38 0 2001-05-01T12:00:00 | gmt mgd77magref -Ftdi/13456
 
 See Also
 --------

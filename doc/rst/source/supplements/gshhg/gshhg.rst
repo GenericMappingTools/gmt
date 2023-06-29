@@ -108,23 +108,23 @@ Examples
 To convert the entire intermediate GSHHG binary data to ASCII files for
 Octave/Matlab, run
 
-   ::
+::
 
-    gmt gshhg gshhs_i.b --IO_SEGMENT_MARKER=N > gshhs_i.txt
+  gmt gshhg gshhs_i.b --IO_SEGMENT_MARKER=N > gshhs_i.txt
 
 To only get a listing of the headers for the river data set at full
 resolution, try
 
-   ::
+::
 
-    gmt gshhg wdb_rivers_f.b -L > riverlisting.txt
+  gmt gshhg wdb_rivers_f.b -L > riverlisting.txt
 
 To only extract lakes, excluding river-lakes, from the high resolution
 file, try
 
-   ::
+::
 
-    gmt gshhg gshhs_h.b -Ee -N2 > all_lakes.txt
+  gmt gshhg gshhs_h.b -Ee -N2 > all_lakes.txt
 
 Polygon Levels
 --------------

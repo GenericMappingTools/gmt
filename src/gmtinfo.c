@@ -414,7 +414,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false, save_t;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
-	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0;
+	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0, n_skiped = 0;
 	uint64_t col, ncol = 0, n = 0, n_alloc = GMT_BIG_CHUNK;
 
 	char file[PATH_MAX] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
@@ -753,8 +753,9 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 						sprintf (record, "%s-%" PRIu64, file, GMT->current.io.seg_no);
 					else									/* Either table mode or only one table in dataset */
 						sprintf (record, "%s", file);
-					sprintf (buffer, ": N = %" PRIu64 "\t", n);					/* Number of records in this item */
+					sprintf (buffer, ": N = %" PRIu64 "\t", n - n_skiped);		/* Number of non-NaN records in this item */
 					strcat (record, buffer);
+					n_skiped = 0;
 				}
 				for (col = 0; col < ncol; col++) {	/* Report min/max for each column in the format controlled by -C */
 					if (xyzmin[col] == DBL_MAX)	/* Encountered NaNs only */
@@ -921,7 +922,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		}
 		else {	/* Update min/max values for each column */
 			for (col = 0; col < ncol; col++) {
-				if (gmt_M_is_dnan (in[col])) continue;	/* We always skip NaNs */
+				if (gmt_M_is_dnan (in[col])) {n_skiped++; continue;}	/* We always skip NaNs */
 				if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Longitude requires more work */
 					/* We must keep separate min/max for both Dateline and Greenwich conventions */
 					gmt_quad_add (GMT, &Q[col], in[col]);

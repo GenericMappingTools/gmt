@@ -10,7 +10,7 @@
           mile) or **u** (US survey foot), in which case the increment will be
           converted to the equivalent degrees longitude at the middle latitude
           of the region  (the conversion depends on :term:`PROJ_ELLIPSOID`). If
-          *y_inc* is given but set to 0 it will be reset equal to *x_inc*;
+          *y_inc* is not given or given but set to 0 it will be reset equal to *x_inc*;
           otherwise it will be converted to degrees latitude.
     
     **All coordinates**: The following modifiers are supported:

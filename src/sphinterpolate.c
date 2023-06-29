@@ -17,7 +17,7 @@
 /*
  * Spherical gridding in tension.  We read input data and want to create
  * a grid using various interpolants on a sphere.  This program relies
- * on two Fortran F77 libraries by Renka:
+ * on two FORTRAN F77 libraries by Renka:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
  *     and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *     Software, 23 (3), 416-434.
@@ -418,7 +418,7 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		goto free_up;
 	}
 
-	/* Convert the doubles to gmt_grdfloat and unto the Fortran transpose order */
+	/* Convert the doubles to gmt_grdfloat and unto the FORTRAN transpose order */
 
 	sf = (w_max - w_min);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
@@ -426,7 +426,7 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		goto free_up;
 	}
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {
-		ij_f = (uint64_t)col * (uint64_t)Grid->header->n_rows + (uint64_t)row;	/* Fortran index */
+		ij_f = (uint64_t)col * (uint64_t)Grid->header->n_rows + (uint64_t)row;	/* FORTRAN index */
 		Grid->data[ij] = (gmt_grdfloat)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (gmt_grdfloat)sf;
 	}

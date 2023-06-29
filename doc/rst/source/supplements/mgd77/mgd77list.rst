@@ -19,7 +19,7 @@ Synopsis
 [ |-E| ]
 [ |-G|\ **a**\ *startrec* ]
 [ |-G|\ **b**\ *stoprec* ]
-[ |-I|\ **a\|c\|m\|t** ]
+[ |-I|\ **a**\|\ **c**\|\ **m**\|\ **t** ]
 [ |-L|\ [*corrtable*] ]
 [ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
@@ -229,7 +229,7 @@ Required Arguments
     limited using program options such as |-D|, |-Q|, |-S|, etc.
 
     Finally, for MGD77+ files you may optionally append :*bittests*
-    which is : (a colon) followed by one or more comma-separated +-*col*
+    which is : (a colon) followed by one or more comma-separated ±\ *col*
     terms. This compares specific bitflags only for each listed column.
     Here, + means the chosen bit must be 1 (ON) whereas - means it must
     be 0 (OFF). All bit tests given must be passed. By default, MGD77+
@@ -378,7 +378,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ **a\|c\|m\|t**
+**-I**\ **a**\|\ **c**\|\ **m**\|\ **t**
     Ignore certain data file formats from consideration. Append
     **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain
     tab-separated ASCII table files, respectively. The option may be
@@ -489,51 +489,51 @@ To get a (distance, heading, gravity, bathymetry) listing from
 01010047.mgd77, starting at June 3 1971 20:45 and ending at distance =
 5000 km, use the following command:
 
-   ::
+::
 
-    gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.txt
+  gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.txt
 
 To make input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using free-air anomalies
 from all the cruises listed in the file cruises.lis, but only the data
 that are inside the specified area, and make the output binary:
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
+  gmt mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
 
 To extract the locations of depths exceeding 9000 meter that were not
 interpolated (**btc** != 1) from all the cruises listed in the file
 cruises.lis:
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.txt
+  gmt mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.txt
 
 To extract dist, faa, and grav12_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
 all the MGD77+ netCDF files whose cruise ids are listed in the file
 cruises.lis, we try
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
-        shallow_grav.txt
+  gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
+      shallow_grav.txt
 
 To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
 records whose bitflag for faa indicates BAD values, we try
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
+  gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
 
 To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
 reference fields, try:
 
-   ::
+::
 
-    gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.txt
+  gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.txt
 
 Recalculated Anomalies
 ----------------------
@@ -545,30 +545,31 @@ restriction is implemented since many anomaly columns contains
 corrections, usually in the form of hand-edited changes, that cannot be
 duplicated from the corresponding observation.
 
-Igrf
+IGRF
 ----
 
-The IGRF calculations are based on a Fortran program written by Susan
+The IGRF calculations are based on a FORTRAN program written by Susan
 Macmillan, British Geological Survey, translated to C via f2c by Joaquim
 Luis, U Algarve, and adapted to GMT-style by Paul Wessel.
 
-Igf
+IGF
 ---
 
 The equations used are reproduced here using coefficients extracted
-directly from the source code (let us know if you find errors):
+directly from the source code (let us know if you find errors). Below,
+:math:`\lambda` is longitude and :math:`\phi` is latitude:
 
-(1) g = 978052.0 \* [1 + 0.005285 \* sin^2(lat) - 7e-6 \* sin^2(2\*lat)
-+ 27e-6 \* cos^2(lat) \* cos^2(lon-18)]
+1. :math:`g = 978052.0 \times [1 + 0.005285 \sin^2(\phi) - 7\cdot 10^{-6}  \sin^2(2\phi)
++ 27\cdot 10^{-6} \cos^2(\phi) \cos^2(\lambda-18^{\circ})]`
 
-(2) g = 978049.0 \* [1 + 0.0052884 \* sin^2(lat) - 0.0000059 \*
-sin^2(2\*lat)]
+2. :math:`g = 978049.0 \times [1 + 0.0052884 \sin^2(\phi)
+- 0.0000059 \sin^2(2\phi)]`
 
-(3) g = 978031.846 \* [1 + 0.0053024 \* sin^2(lat) - 0.0000058 \*
-sin^2(2\*lat)]
+3. :math:`g = 978031.846 \times [1 + 0.0053024 \sin^2(\phi)
+- 0.0000058 \sin^2(2\phi)]`
 
-(4) g = 978032.67714 \* [(1 + 0.00193185138639 \* sin^2(lat)) / sqrt (1
-- 0.00669437999013 \* sin^2(lat))]
+4. :math:`g = 978032.67714 \times [\frac{1 + 0.00193185138639 \sin^2(\phi)}{\sqrt{ 1
+- 0.00669437999013 \sin^2(\phi) }}]`
 
 Corrections
 -----------

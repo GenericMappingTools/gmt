@@ -143,17 +143,17 @@ Examples
 To find the parameters of a great circle that most closely fits the (lon,lat)
 points in the remote file @sat_03.txt in a least-squares sense, try::
 
-    gmt fitcircle @sat_03.txt -L2 -Fm
+  gmt fitcircle @sat_03.txt -L2 -Fm
 
 Suppose you have lon,lat,grav data along a twisty ship track in the file
 ship.xyg. You want to project this data onto a great circle and resample
 it in distance, in order to filter it or check its spectrum. Do the
 following:
 
-   ::
+::
 
-    gmt fitcircle ship.xyg -L2
-    gmt project ship.xyg -Cox/oy -Tpx/py -S -Fpz | gmt sample1d -S-100 -I1 > output.pg
+  gmt fitcircle ship.xyg -L2
+  gmt project ship.xyg -Cox/oy -Tpx/py -S -Fpz | gmt sample1d -S-100 -I1 > output.pg
 
 Here, *ox*/*oy* is the lon/lat of the mean from **fitcircle**, and
 *px*/*py* is the lon/lat of the pole. The file output.pg has distance,
@@ -163,9 +163,9 @@ ship.xyg
 If you have lon, lat points in the file data.txt and wish to return the northern
 hemisphere great circle pole location using the L2 norm, try
 
-   ::
+::
 
-    gmt fitcircle data.txt -L2 -Fn > pole.txt
+  gmt fitcircle data.txt -L2 -Fn > pole.txt
 
 
 See Also

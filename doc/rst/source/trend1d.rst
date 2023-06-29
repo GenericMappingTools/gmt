@@ -14,7 +14,7 @@ Synopsis
 
 **gmt trend1d** [ *table* ]
 |-F|\ **xymrw**\|\ **p**\|\ **P**\|\ **c**
-|-N|\ *params*
+|-N|\ [**p**\|\ **P**\|\ **f**\|\ **F**\|\ **c**\|\ **C**\|\ **s**\|\ **S**\|\ **x**]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
 [ |-C|\ *condition_number* ]
 [ |-I|\ [*confidence_level*] ]
 [ |SYN_OPT-V| ]
@@ -38,7 +38,7 @@ Description
 
 **trend1d** reads *x, y* [and *w*] values from the first two [three] columns
 on standard input [or *file*] and fits a regression model *y = f(x) + e*
-by [weighted] least squares. The functional form of *f(x)* may be chosen
+by [weighted] least squares [*Menke*\ , 1989]. The functional form of *f(x)* may be chosen
 as polynomial or Fourier or a mix of the two, and the fit may be made robust by iterative
 reweighting of the data. The user may also search for the number of
 terms in *f(x)* which significantly reduce the variance in *y*.
@@ -185,7 +185,7 @@ to keep iterating as long as Chi-Squared is decreasing, set
 A low confidence limit (such as the default value of 0.51) is needed to
 make the robust method work. This method iteratively reweights the data
 to reduce the influence of outliers. The weight is based on the Median
-Absolute Deviation and a formula from Huber [1964], and is 95% efficient
+Absolute Deviation and a formula from *Huber* [1964], and is 95% efficient
 when the model residuals have an outlier-free normal distribution. This
 means that the influence of outliers is reduced only slightly at each
 iteration; consequently the reduction in Chi-Squared is not very
@@ -200,28 +200,28 @@ Examples
 
 To remove a linear trend from data.xy by ordinary least squares, use:
 
-   ::
+::
 
-    gmt trend1d data.xy -Fxr -Np1 > detrended_data.xy
+  gmt trend1d data.xy -Fxr -Np1 > detrended_data.xy
 
 To make the above linear trend robust with respect to outliers, use:
 
-   ::
+::
 
-    gmt trend1d data.xy -Fxr -Np1+r > detrended_data.xy
+  gmt trend1d data.xy -Fxr -Np1+r > detrended_data.xy
 
 To fit the model y(x) = a + bx\ :sup:`2` + c * cos(2*pi*3*(x/l) + d * sin(2*pi*3*(x/l), with l the fundamental period (here l = 15), try:
 
-   ::
+::
 
-    gmt trend1d data.xy -Fxm -NP0,P2,F3+l15 > model.xy
+  gmt trend1d data.xy -Fxm -NP0,P2,F3+l15 > model.xy
 
 To find out how many terms (up to 20, say in a robust Fourier
 interpolant are significant in fitting data.xy, use:
 
-   ::
+::
 
-    gmt trend1d data.xy -Nf20+r -I -V
+  gmt trend1d data.xy -Nf20+r -I -V
 
 See Also
 --------
