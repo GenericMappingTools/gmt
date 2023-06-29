@@ -82,7 +82,7 @@
    * - :ref:`Mercator cylindrical <-Jm>`
      - **-Jm**\|\ **M**
      - **-Jmerc/**
-     - [|lon0|\ [/|lat0|/]]\ *scale*\|\ *width*
+     - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
    * - :ref:`Robinson <-Jn>`
      - **-Jn**\|\ **N**
      - **-Jrobin/**
@@ -107,11 +107,11 @@
    * - :ref:`(American) polyconic <-Jpoly>` 
      - **-Jpoly**\|\ **Poly**
      - **-Jpoly/**
-     - [|lon0|\ [/|lat0|/]]\ *scale*\|\ *width*
+     - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
    * - :ref:`Equidistant cylindrical <-Jq>`
      - **-Jq**\|\ **Q**
      - **-Jeqc/**
-     - [|lon0|\ [/|lat0|/]]\ *scale*\|\ *width*
+     - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
    * - :ref:`Winkel Tripel <-Jr>`
      - **-Jr**\|\ **R**
      - **-Jwintri/**
@@ -123,7 +123,7 @@
    * - :ref:`Transverse Mercator <-Jt>`
      - **-Jt**\|\ **T**
      - **-Jtmerc/**
-     - [|lon0|\ [/|lat0|/]]\ *scale*\|\ *width*
+     - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
    * - :ref:`Universal Transverse Mercator (UTM) <-Ju>`
      - **-Ju**\|\ **U**
      - **-Jutm/**
