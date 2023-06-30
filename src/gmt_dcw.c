@@ -182,6 +182,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	while ( gmt_fgets (GMT, line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
 		sscanf (line, "%s %s %[^\n]", Country[k].continent, Country[k].code,  Country[k].name);
+		gmt_chop (Country[k].name);	/* Eliminate any nasty CR/LF from Windows */
 		k++;
 		if (k == n_alloc) {
 			n_alloc += GMT_LEN128;
@@ -207,6 +208,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	while ( gmt_fgets (GMT, line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
 		sscanf (line, "%s %s %[^\n]", State[k].country, State[k].code,  State[k].name);
+		gmt_chop (State[k].name);	/* Eliminate any nasty CR/LF from Windows */
 		if (k && strcmp (State[k].country, State[k-1].country)) ns++;	/* New country with states */
 		k++;
 		if (k == n_alloc) {
@@ -262,6 +264,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 				goto bail;
 			}
 			nf = sscanf (&line[5], "%s %[^\n]", Collection[k].region, Collection[k].name);
+			gmt_chop (Collection[k].name);	/* Eliminate any nasty CR/LF from Windows */
 			if (nf == 2 && !isalpha (Collection[k].name[0])) {	/* Gave a name that do not start with a letter */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Collection name must start with a letter (%s)\n", (Collection[k].name));
 				goto bail;
