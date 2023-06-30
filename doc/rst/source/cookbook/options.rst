@@ -320,6 +320,26 @@ One solution is to request slanted annotations for the x-axis (e.g., Figure :ref
 via the **+a**\ *angle* modifier.
 
 
+.. _axis_radians_basemap:
+
+.. figure:: /_images/GMT_-B_radians.*
+   :width: 500 px
+   :align: center
+
+   Linear Cartesian projection axis with annotations and ticks in radians.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_radians.txt
+
+There are occasions when the length of the annotations are such that placing them
+horizontally (which is the default) may lead to overprinting or too few annotations.
+One solution is to request slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`)
+via the **+a**\ *angle* modifier.
+
+
 .. _axis_slanted_basemap:
 
 .. figure:: /_images/GMT_-B_slanted.*
