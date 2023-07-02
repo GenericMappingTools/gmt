@@ -21,6 +21,7 @@
    Software - Practice and Experience; Vol. 23 (11), 1249-1265, 1993.  */
 
 #if GMT_USE_COMPAT_QSORT
+#warning "C Preprocessor determined we need to use compat/qsort.[ch]"
 
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
@@ -257,4 +258,6 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
   }
 }
 #endif /* !HAVE_QSORT_R_GLIBC */
+#else
+#warning "C Preprocessor determined we will use system qsort_r]"
 #endif  /* GMT_USE_COMPAT_QSORT */
