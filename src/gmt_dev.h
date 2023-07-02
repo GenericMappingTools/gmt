@@ -79,6 +79,9 @@ extern "C" {
 #       define vImage_Utilities_h
 #       define vImage_CVUtilities_h
 #   endif
+#   if defined __arm64__
+#       define APPLE_SILICON
+#   endif
 #endif
 
 /* Avoid some annoying warnings from MS Visual Studio */
@@ -182,7 +185,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
 /* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
-#ifdef __APPLE__
+#ifdef APPLE_SILICON
     /* Argument order is unusual, ends with thunk pointer */
     #define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
 #else
