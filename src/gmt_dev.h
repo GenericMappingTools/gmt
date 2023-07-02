@@ -188,9 +188,9 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #ifdef APPLE_SILICON
     /* Argument order is unusual, ends with thunk pointer */
     #define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
-    #warning "C Preprocessor detected Silicon and we use different qsort_r order!"
+    //#warning "C Preprocessor detected Silicon and we use different qsort_r order!"
 #else
-    #warning "Not Apple Silicon (but could be Intel), probably Linux or Windows and we use different qsort_r order!"
+    //#warning "Not Apple Silicon (but could be Intel), probably Linux or Windows and we use different qsort_r order!"
     /* If GLIBC compatible QSORT_R is not available */
     #ifndef HAVE_QSORT_R_GLIBC
         #include "compat/qsort.h"
