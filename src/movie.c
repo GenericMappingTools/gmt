@@ -1440,6 +1440,30 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 	}
 
+	/* Get canvas size in pixels */
+	p_width =  urint (round (Ctrl->C.dim[GMT_X] * dpu));
+	p_height = urint (round (Ctrl->C.dim[GMT_Y] * dpu));
+	if (p_width % 2) {	/* Don't like odd pixel widths */
+		unsigned int p2_width;
+		GMT_Report (API, GMT_MSG_WARNING, "Your frame width is an odd number of pixels (%u). This will not work with FFmpeg\n", p_width);
+		do {	/* Make small increments to width in 0.1 pixels until we hit an even integer */
+			Ctrl->C.dim[GMT_X] += 0.1 / dpu;
+			p2_width = urint (round (Ctrl->C.dim[GMT_X] * dpu));
+		} while (p2_width == p_width);	/* Ends when we go from odd to even */
+		p_width = p2_width;
+		GMT_Report (API, GMT_MSG_WARNING, "Your frame width was adjusted to %g%c, giving an even width of %u pixels\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit , p_width);
+	}
+	if (p_height % 2) {	/* Don't like odd pixel heights */
+		unsigned int p2_height;
+		GMT_Report (API, GMT_MSG_WARNING, "Your frame height is an odd number of pixels (%u). This will not work with FFmpeg\n", p_height);
+		do {	/* Make small increments to height in 0.1 pixels until we hit an even integer */
+			Ctrl->C.dim[GMT_Y] += 0.1 / dpu;
+			p2_height = urint (round (Ctrl->C.dim[GMT_Y] * dpu));
+		} while (p2_height == p_height);	/* Ends when we go from odd to even */
+		p_height = p2_height;
+		GMT_Report (API, GMT_MSG_WARNING, "Your frame height was adjusted to %g%c, giving an even height of %u pixels\n", Ctrl->C.dim[GMT_Y], Ctrl->C.unit , p_height);
+	}
+
 	if (Ctrl->Q.scripts) {	/* No movie, but scripts will be produced */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
 		if (Ctrl->M.active) {
@@ -1476,29 +1500,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				movie_close_files (Ctrl);
 				Return (GMT_RUNTIME_ERROR);
 			}
-		}
-		/* Get canvas size in pixels */
-		p_width =  urint (ceil (Ctrl->C.dim[GMT_X] * dpu));
-		p_height = urint (ceil (Ctrl->C.dim[GMT_Y] * dpu));
-		if (p_width % 2) {	/* Don't like odd pixel widths */
-			unsigned int p2_width;
-			GMT_Report (API, GMT_MSG_WARNING, "Your frame width is an odd number of pixels (%u). This will not work with FFmpeg\n", p_width);
-			do {	/* Make small increments to width in 0.1 pixels until we hit an even integer */
-				Ctrl->C.dim[GMT_X] += 0.1 / dpu;
-				p2_width = urint (ceil (Ctrl->C.dim[GMT_X] * dpu));
-			} while (p2_width == p_width);	/* Ends when we go from odd to even */
-			p_width = p2_width;
-			GMT_Report (API, GMT_MSG_WARNING, "Your frame width was adjusted to %g%c, giving an even width of %u pixels\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit , p_width);
-		}
-		if (p_height % 2) {	/* Don't like odd pixel heights */
-			unsigned int p2_height;
-			GMT_Report (API, GMT_MSG_WARNING, "Your frame height is an odd number of pixels (%u). This will not work with FFmpeg\n", p_height);
-			do {	/* Make small increments to height in 0.1 pixels until we hit an even integer */
-				Ctrl->C.dim[GMT_Y] += 0.1 / dpu;
-				p2_height = urint (ceil (Ctrl->C.dim[GMT_Y] * dpu));
-			} while (p2_height == p_height);	/* Ends when we go from odd to even */
-			p_height = p2_height;
-			GMT_Report (API, GMT_MSG_WARNING, "Your frame height was adjusted to %g%c, giving an even height of %u pixels\n", Ctrl->C.dim[GMT_Y], Ctrl->C.unit , p_height);
 		}
 	}
 
