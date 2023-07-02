@@ -1373,7 +1373,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer, dir_sep;
 	char audio_option[PATH_MAX] = {""};
 
-	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0, audio_stretch = 0.0;
+	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0, audio_stretch = 0.0, dpu;
 
 	FILE *fp = NULL;
 
@@ -1406,8 +1406,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	if (Ctrl->F.transparent) GMT_Report (API, GMT_MSG_WARNING, "Building transparent PNG images is an experimental feature\n");
 	/* Determine pixel dimensions of individual images */
-	p_width =  urint (ceil (Ctrl->C.dim[GMT_X] * Ctrl->C.dim[GMT_Z]));
-	p_height = urint (ceil (Ctrl->C.dim[GMT_Y] * Ctrl->C.dim[GMT_Z]));
+	dpu = Ctrl->C.dim[GMT_Z];	/* As given, suiting the provided canvas dim units */
+	p_width =  urint (ceil (Ctrl->C.dim[GMT_X] * dpu));
+	p_height = urint (ceil (Ctrl->C.dim[GMT_Y] * dpu));
 	one_frame = (Ctrl->M.active && Ctrl->M.exit);	/* true if we want to create a single master plot only (no frames nor animations) */
 	if (Ctrl->C.unit == 'c') Ctrl->C.dim[GMT_Z] *= 2.54;		/* Since gs requires dots per inch but we gave dots per cm */
 	else if (Ctrl->C.unit == 'p') Ctrl->C.dim[GMT_Z] *= 72.0;	/* Since gs requires dots per inch but we gave dots per point */
@@ -1474,20 +1475,20 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				if (p_width % 2) {	/* Don't like odd pixel widths */
 					unsigned int p2_width;
 					GMT_Report (API, GMT_MSG_WARNING, "Your frame width is an odd number of pixels (%u). This will not work with FFmpeg\n", p_width);
-					do {
-						Ctrl->C.dim[GMT_X] += 0.1 / Ctrl->C.dim[GMT_Z];
-						p2_width = urint (ceil (Ctrl->C.dim[GMT_X] * Ctrl->C.dim[GMT_Z]));
-					} while (p2_width == p_width);
+					do {	/* Make small increments to width in 0.1 pixels until we hit an even integer */
+						Ctrl->C.dim[GMT_X] += 0.1 / dpu;
+						p2_width = urint (ceil (Ctrl->C.dim[GMT_X] * dpu));
+					} while (p2_width == p_width);	/* Ends when we go from odd to even */
 					p_width = p2_width;
 					GMT_Report (API, GMT_MSG_WARNING, "Your frame width was adjusted to %g%c, giving an even width of %u pixels\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit , p_width);
 				}
 				if (p_height % 2) {	/* Don't like odd pixel heights */
 					unsigned int p2_height;
-					GMT_Report (API, GMT_MSG_WARNING, "Your frame width is an odd number of pixels (%u). This will not work with FFmpeg\n", p_width);
-					do {
-						Ctrl->C.dim[GMT_Y] += 0.1 / Ctrl->C.dim[GMT_Z];
-						p2_height = urint (ceil (Ctrl->C.dim[GMT_Y] * Ctrl->C.dim[GMT_Z]));
-					} while (p2_height == p_height);
+					GMT_Report (API, GMT_MSG_WARNING, "Your frame height is an odd number of pixels (%u). This will not work with FFmpeg\n", p_height);
+					do {	/* Make small increments to height in 0.1 pixels until we hit an even integer */
+						Ctrl->C.dim[GMT_Y] += 0.1 / dpu;
+						p2_height = urint (ceil (Ctrl->C.dim[GMT_Y] * dpu));
+					} while (p2_height == p_height);	/* Ends when we go from odd to even */
 					p_height = p2_height;
 					GMT_Report (API, GMT_MSG_WARNING, "Your frame height was adjusted to %g%c, giving an even height of %u pixels\n", Ctrl->C.dim[GMT_Y], Ctrl->C.unit , p_height);
 				}
