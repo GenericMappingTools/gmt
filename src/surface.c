@@ -204,7 +204,7 @@ struct SURFACE_BRIGGS {		/* Coefficients in Taylor series for Laplacian(z) a la 
 	gmt_grdfloat b[6];
 };
 
-struct SURFACE_SEARCH {		/* Things needed inside compare function will be passed to qsort_r */
+struct SURFACE_SEARCH {		/* Things needed inside compare function will be passed to QSORT_R */
 	int current_nx;		/* Number of nodes in y-dir for a given grid factor */
 	int current_ny;		/* Number of nodes in y-dir for a given grid factor */
 	double inc[2];		/* Size of each grid cell for a given grid factor */
@@ -228,7 +228,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct GMT_GRID *Grid;		/* The final grid */
 	struct GMT_GRID *Bound[2];	/* Optional grids for lower and upper limits on the solution */
 	struct GMT_GRID_HEADER *Bh;	/* Grid header for one of the limit grids [or NULL] */
-	struct SURFACE_SEARCH info;	/* Information needed by the compare function passed to qsort_r */
+	struct SURFACE_SEARCH info;	/* Information needed by the compare function passed to QSORT_R */
 	unsigned int n_factors;		/* Number of factors in common for the dimensions (n_rows-1, n_columns-1) */
 	unsigned int factors[32];	/* Array of these common factors */
 	unsigned int set_limit[2];	/* For low and high: NONE = unconstrained, DATA = by min data value, VALUE = by user value, SURFACE by a grid */
@@ -467,7 +467,7 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 }
 
 GMT_LOCAL int surface_compare_points (const void *point_1v, const void *point_2v, void *arg) {
-	/* Routine for qsort_r to sort data structure for fast access to data by node location.
+	/* Routine for QSORT_R to sort data structure for fast access to data by node location.
 	   Sorts on index first, then on radius to node corresponding to index, so that index
 	   goes from low to high, and so does radius.  Note: These are simple Cartesian distance
 	 * calculations.  The metadata needed to do the calculations are passed via *arg.
@@ -530,7 +530,7 @@ GMT_LOCAL void surface_set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) 
 			C->data[k].index = row_col_to_index (row, col, C->current_nx);
 	}
 
-	qsort_r (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points, &(C->info));
+	QSORT_R (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points, &(C->info));
 
 	C->npoints -= k_skipped;
 }
@@ -1303,7 +1303,7 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 
 	/* Sort the data  */
 
-	qsort_r (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points, &(C->info));
+	QSORT_R (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points, &(C->info));
 
 	/* If more than one datum is indexed to the same node, only the first should be kept.
 	   Mark the additional ones as SURFACE_OUTSIDE.
@@ -1322,7 +1322,7 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 	}
 
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be sorted to end of the array */
-		qsort_r (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points, &(C->info));
+		QSORT_R (C->data, C->npoints, sizeof (struct SURFACE_DATA), surface_compare_points, &(C->info));
 		C->npoints -= n_outside;	/* Effectively chopping off the eliminated points */
 		C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);	/* Adjust memory accordingly */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);

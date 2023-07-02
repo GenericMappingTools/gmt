@@ -181,9 +181,17 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
-/* If GLIBC compatible qsort_r is not available */
-#ifndef HAVE_QSORT_R_GLIBC
-#	include "compat/qsort.h"
+/* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
+#ifdef __APPLE__
+    /* Argument order is unusual, ends with thunk pointer */
+    #define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
+#else
+    /* If GLIBC compatible QSORT_R is not available */
+    #ifndef HAVE_QSORT_R_GLIBC
+        #include "compat/qsort.h"
+        #define GMT_USE_COMPAT_QSORT
+    #endif
+    #define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
 #endif
 
 #ifdef __cplusplus

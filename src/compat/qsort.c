@@ -20,6 +20,8 @@
    Engineering a sort function; Jon Bentley and M. Douglas McIlroy;
    Software - Practice and Experience; Vol. 23 (11), 1249-1265, 1993.  */
 
+#if GMT_USE_COMPAT_QSORT
+
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 #ifndef HAVE_QSORT_R_GLIBC
@@ -255,3 +257,4 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
   }
 }
 #endif /* !HAVE_QSORT_R_GLIBC */
+#endif  /* GMT_USE_COMPAT_QSORT */
