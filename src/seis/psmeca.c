@@ -836,9 +836,11 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				/* Must examine the trailing text for optional columns: newX, newY and title */
 				if (S->text && S->text[row]) {
 					unsigned int n_comma = gmt_count_char (GMT, S->text[row], ',');
+					char tmp_buffer[GMT_LEN256] = {""};	/* Local buffer in case S->text is read-only */
+					strncpy (tmp_buffer, S->text[row], GMT_LEN256);
 					if (n_comma == 2)	/* CSV file so we must handle that */
-						gmt_strrepc (S->text[row], ',', ' ');
-					n_scanned = sscanf (S->text[row], "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
+						gmt_strrepc (tmp_buffer, ',', ' ');
+					n_scanned = sscanf (tmp_buffer, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
 					if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
 						unsigned int type;
 						if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
