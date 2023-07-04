@@ -466,7 +466,7 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	status[C->node_ne_corner] = SURFACE_IS_CONSTRAINED;
 }
 
-#ifdef APPLE_SILICON
+#ifdef QSORT_R_THUNK_FIRST
 /* arg is first argument to compare function */
 GMT_LOCAL int surface_compare_points (void *arg, const void *point_1v, const void *point_2v) {
 #else

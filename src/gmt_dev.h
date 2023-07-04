@@ -80,8 +80,12 @@ extern "C" {
 #       define vImage_CVUtilities_h
 #   endif
 #   if defined __arm64__
-#       define APPLE_SILICON
+#       define QSORT_R_THUNK_FIRST
 #   endif
+#endif
+
+#ifdef _WIN32
+#       define QSORT_R_THUNK_FIRST
 #endif
 
 /* Avoid some annoying warnings from MS Visual Studio */
@@ -185,18 +189,23 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
 /* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
-#ifdef APPLE_SILICON
-    /* Argument order is unusual, ends with thunk pointer */
-    #define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
-    //#warning "C Preprocessor detected Silicon and we use different qsort_r order!"
+#ifdef _WIN32
+	#include <search.h>
+	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, thunk, compar);
+#elif defined(QSORT_R_THUNK_FIRST)
+	/* Argument order is unusual, starts with thunk pointer */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
+	//#warning "C Preprocessor detected Silicon and we use different qsort_r order!"
 #else
-    //#warning "Not Apple Silicon (but could be Intel), probably Linux or Windows and we use different qsort_r order!"
-    /* If GLIBC compatible QSORT_R is not available */
-    #ifndef HAVE_QSORT_R_GLIBC
-        #include "compat/qsort.h"
-        #define GMT_USE_COMPAT_QSORT
-    #endif
-    #define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+	//#warning "Not Apple Silicon (but could be Intel), probably Linux or Windows and we use different qsort_r order!"
+	/* If GLIBC compatible QSORT_R is not available */
+	/* Argument order is unusual, ends with thunk pointer */
+	#ifndef HAVE_QSORT_R_GLIBC
+		#include "compat/qsort.h"
+		#define GMT_USE_COMPAT_QSORT
+	#endif
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
 #endif
 
 #ifdef __cplusplus
