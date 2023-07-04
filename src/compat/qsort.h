@@ -31,10 +31,10 @@
 extern "C" {
 #endif
 
+#if GMT_USE_COMPAT_QSORT
+
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
-
-#if GMT_USE_COMPAT_QSORT
 
 #ifndef HAVE_QSORT_R_GLIBC
 
