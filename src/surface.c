@@ -452,7 +452,7 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Next do linear interpolation along the north edge */
 	index_10 = C->node_nw_corner;	/* Left NW node */
 	for (previous_col = 0; previous_col < (C->previous_nx-1); previous_col++) {	/* To ensure last edge ends at col = C->previous_nx-1 */
-		index_00 = index_10;		/* Previous right node becmes current left node */
+		index_00 = index_10;		/* Previous right node becomes current left node */
 		index_10 = index_00 + expand;	/* Right node after striding to the right */
 		sx = u[index_10] - u[index_00];	/* Horizontal gradient in u toward xmax (for increasing i) */
 		index_new = index_00 + 1;	/* Start at 1 since we skip the constrained index_00 node */
@@ -466,7 +466,13 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	status[C->node_ne_corner] = SURFACE_IS_CONSTRAINED;
 }
 
+#ifdef APPLE_SILICON
+/* arg is first argument to compare function */
+GMT_LOCAL int surface_compare_points (void *arg, const void *point_1v, const void *point_2v) {
+#else
+/* arg is last argument to compare function */
 GMT_LOCAL int surface_compare_points (const void *point_1v, const void *point_2v, void *arg) {
+#endif
 	/* Routine for QSORT_R to sort data structure for fast access to data by node location.
 	   Sorts on index first, then on radius to node corresponding to index, so that index
 	   goes from low to high, and so does radius.  Note: These are simple Cartesian distance

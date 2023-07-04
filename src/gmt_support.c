@@ -4821,9 +4821,15 @@ GMT_LOCAL int gmtsupport_getrose_old (struct GMT_CTRL *GMT, char option, char *t
 }
 
 /* Here lies GMT Crossover core functions that previously was in X2SYS only */
-/* gmtsupport_ysort must be an int since it is passed to qsort! */
+/* gmtsupport_ysort must be an int since it is passed to qsort_r! */
 /*! . */
+#ifdef APPLE_SILICON
+/* arg is first argument to compare function */
+GMT_LOCAL int gmtsupport_ysort (void *arg, const void *p1, const void *p2) {
+#else
+/* arg is last argument to compare function */
 GMT_LOCAL int gmtsupport_ysort (const void *p1, const void *p2, void *arg) {
+#endif
 	const struct GMT_XSEGMENT *a = p1, *b = p2;
 	double *x2sys_y = arg;
 
