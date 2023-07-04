@@ -189,7 +189,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
 /* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
-#ifdef _WIN32
+#ifdef _MSC_VER
 	#include <search.h>
 	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
 	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, thunk, compar);

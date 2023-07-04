@@ -259,7 +259,7 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
 }
 #endif /* !HAVE_QSORT_R_GLIBC */
 #else
-#if _WIN32
+#if _MSC_VER
 #warning "C Preprocessor determined we will use system function qsort_s]"
 #else
 #warning "C Preprocessor determined we will use system function qsort_r]"
