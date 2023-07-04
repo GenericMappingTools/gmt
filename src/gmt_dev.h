@@ -84,10 +84,6 @@ extern "C" {
 #   endif
 #endif
 
-#ifdef _WIN32
-#       define QSORT_R_THUNK_FIRST
-#endif
-
 /* Avoid some annoying warnings from MS Visual Studio */
 #ifdef _MSC_VER
 #	pragma warning( disable : 4091 )	/* 'static ': ignored on left of 'XXX' when no variable is declared */
