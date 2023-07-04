@@ -192,7 +192,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #ifdef _MSC_VER
 	#include <search.h>
 	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
-	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, thunk, compar);
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
 #elif defined(QSORT_R_THUNK_FIRST)
 	/* Argument order is unusual, starts with thunk pointer */
 	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
