@@ -60,6 +60,10 @@ html_context = {
             '<i class="fa fa-github fa-fw"></i> Source Code',
             "https://github.com/GenericMappingTools/gmt",
         ),
+        (
+            '<i class="fa-solid fa-file-zip"></i> Download HTML zip',
+            f"/{version}/gmt-docs-{version}.zip",
+        ),
     ],
     # Show the "Edit on Github" link
     # https://docs.readthedocs.io/en/latest/guides/vcs.html
