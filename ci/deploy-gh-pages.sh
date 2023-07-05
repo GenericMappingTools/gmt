@@ -69,7 +69,7 @@ fi
 # Make the push quiet just in case there is anything that could leak
 # sensitive information.
 echo -e "\nPushing changes to gh-pages."
-# git push -fq origin gh-pages 2>&1 >/dev/null
+git push -fq origin gh-pages 2>&1 >/dev/null
 echo -e "\nFinished uploading generated files."
 
 # Turn off exit on failure.
