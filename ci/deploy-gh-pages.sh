@@ -19,7 +19,7 @@ if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
     fi
 elif [[ "$GITHUB_EVENT_NAME" == "push" ]] && [[ "${GITHUB_REF#refs/*/}" =~ ^[6-9]\.[0-9]+$ ]]; then
     version="${GITHUB_REF#refs/*/}"
-elif [[ "$GITHUB_EVENT_NAME" == "push" ]] && [[ "${GITHUB_REF#refs/*/}" == "master" ]]; then
+elif [[ "$GITHUB_EVENT_NAME" == "push" ]] && [[ "${GITHUB_REF#refs/*/}" == "docs-zip" ]]; then
     version=dev
 else
     echo -e "Not in master or 6.x branches. Deployment skipped."
