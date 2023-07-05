@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
+[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -230,7 +230,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
+**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -246,6 +246,7 @@ Optional Arguments
     *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
     text. To return the coordinates of the rectangular area encompassing the non-rectangular
     area defined by your |-R| |-J|, use **e**, or **E** for the trailing text string.
+    Similarly, use **m** or **M** to get the rectangular region in projected coordinates instead.
     Alternatively (for **e** or **r**), append **+n** to set how many points [100]
     you want along each side for a closed polygon of the oblique area instead
     [Default returns the width and height of the map].
