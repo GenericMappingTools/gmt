@@ -189,12 +189,13 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 	#include <search.h>
 	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
 	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
+    //#pragma message("C Preprocessor determined we need to use qsort_s on Windows")
 #elif defined(QSORT_R_THUNK_FIRST)
 	/* Argument order is unusual, starts with thunk pointer */
 	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
-	//#warning "C Preprocessor detected Silicon and we use different qsort_r order!"
+	//#pragma message("C Preprocessor detected Silicon and we use different qsort_r order!")
 #else
-	//#warning "Not Apple Silicon (but could be Intel), probably Linux or Windows and we use different qsort_r order!"
+	//#pragma message("Not Apple Silicon (but could be Intel), probably Linux and we use different qsort_r order!")
 	/* If GLIBC compatible QSORT_R is not available */
 	/* Argument order is unusual, ends with thunk pointer */
 	#ifndef HAVE_QSORT_R_GLIBC
