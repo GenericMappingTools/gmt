@@ -1152,18 +1152,18 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			case GMT_MP_M_MREGION:
 				if (GMT->current.proj.search && (error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
 					Return (GMT_RUNTIME_ERROR);
-		if (Ctrl->F.active) {	/* Convert to meter, then to chosen unit */
-			strncpy (unit_name, scale_unit_name, GMT_LEN64);
-			xmin /= GMT->current.proj.scale[GMT_X];
-			xmax /= GMT->current.proj.scale[GMT_X];
-			ymin /= GMT->current.proj.scale[GMT_Y];
-			ymax /= GMT->current.proj.scale[GMT_Y];
-			if (unit) {	/* Change the 1:1 unit used */
-				xmin *= fwd_scale;
-				xmax *= fwd_scale;
-				ymin *= fwd_scale;
-				ymax *= fwd_scale;
-			}
+				if (Ctrl->F.active) {	/* Convert to meter, then to chosen unit */
+					strncpy (unit_name, scale_unit_name, GMT_LEN64);
+					xmin /= GMT->current.proj.scale[GMT_X];
+					xmax /= GMT->current.proj.scale[GMT_X];
+					ymin /= GMT->current.proj.scale[GMT_Y];
+					ymax /= GMT->current.proj.scale[GMT_Y];
+					if (unit) {	/* Change the 1:1 unit used */
+						xmin *= fwd_scale;
+						xmax *= fwd_scale;
+						ymin *= fwd_scale;
+						ymax *= fwd_scale;
+					}
 		}
 				w_out[XLO] = xmin;	w_out[XHI] = xmax;
 				w_out[YLO] = ymin;	w_out[YHI] = ymax;
