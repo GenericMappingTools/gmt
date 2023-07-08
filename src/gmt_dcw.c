@@ -904,7 +904,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (special) {	/* Plot via psxy or clip via psclip, then free dataset */
 		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};
-		static char *module[2] = {"psxy", "psclip"};
+		static char *module[4] = {"psxy", "psclip", "plot", "clip"};
+		if (GMT->current.setting.run_mode == GMT_MODERN) special += 2;	/* Use modern mode module names */
 		/* Get a virtual file for the current DCW dataset */
 		if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, in_string) == GMT_NOTSET) {
 			return (NULL);
