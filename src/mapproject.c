@@ -306,6 +306,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "M: Same as m but prints -R<xmin>/<xmax>/<ymin>/<ymax> string as trailing text instead.");
 	GMT_Usage (API, 3, "n: Print map coordinates of reference point with normalized coordinates <rx/ry> in 0-1 range.");
 	GMT_Usage (API, 3, "o: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates and -R string for an oblique input region given via <xmin/xmax/ymin/ymax>+u<unit>.");
+	GMT_Usage (API, 3, "O: Same as o but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "r: Print rectangular region for an oblique -R -J selection.");
 	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
