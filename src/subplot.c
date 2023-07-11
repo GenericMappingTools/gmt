@@ -451,7 +451,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						case 'x':	side = XLO;	Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 						case 'y':	side = YLO;	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 						default:	/* Cannot get here */
-							GMT_Report (API, GMT_MSG_ERROR, "Option C: %s is not a valid side argument.\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: %s is not a valid side argument.\n", opt->arg);
 							n_errors++;
 							break;
 					}
