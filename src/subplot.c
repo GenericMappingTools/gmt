@@ -442,7 +442,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Clearance/inside margins (repeatable) */
 				Ctrl->C.active = true;
-				if (strchr ("wesnxy", opt->arg[0])) {	/* Gave a side directive */
+				if (opt->arg[0]) {	/* Gave side directive */
 					switch (opt->arg[0]) {
 						case 'w':	side = XLO;	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 						case 'e':	side = XHI;	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
@@ -450,6 +450,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						case 'n':	side = YHI;	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 						case 'x':	side = XLO;	Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 						case 'y':	side = YLO;	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						default:	/* Cannot get here */
+							GMT_Report (API, GMT_MSG_ERROR, "Option C: %s is not a valid side argument.\n", opt->arg);
+							n_errors++;
+							break;
 					}
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
 				}
