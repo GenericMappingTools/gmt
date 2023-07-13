@@ -145,7 +145,7 @@ is (optional items are in brackets []):
     x y [ z ] [ size ] [ sigma_x ] [ sigma_y ] [ symbol ]
 
 Thus, the only required input columns are the first two which must contain the
-longitude and latitude (or *x* and *y*.  The remaining items
+longitude and latitude (or *x* and *y*.)  The remaining items
 apply when one (or more) of the following conditions are met:
 
 #. If you want the color of each symbol to be determined individually,
