@@ -275,7 +275,7 @@ tools.  Here, we simply use the common column selection option **-i**
 and its :ref:`scaling/offset capabilities <-icols_full>`.
 To skip the first 3 header records
 and then select the 4th, 3rd, 5th, and
-6th column and scale the last column by 0.1, we would use
+6th column and scale the 6th column by 0.1, we would use
 
    ::
 
