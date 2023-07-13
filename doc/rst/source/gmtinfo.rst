@@ -129,7 +129,7 @@ Optional Arguments
     Use |-I|\ **b** to write the bounding box of the data table or segments (see |-A|)
     as a closed polygon segment. **Note**: For oblique projections you should
     use the **-Ap** option in :doc:`plot` to draw the box properly.
-    If |-I|\ **e** is given then the exact min/max of the input is given in the |-R| string.
+    If |-I|\ **e** is given then the exact min/max of the input is given in the **-R** string.
     If you only want either the *x-* or *y-* range to be exact and the other range rounded, give one of the increments as zero.
     Append **+r** to modify the min/max of the first *n* columns further:
     Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
