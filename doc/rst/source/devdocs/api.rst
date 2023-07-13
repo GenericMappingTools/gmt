@@ -1849,7 +1849,7 @@ development simplifies if you can read entire resources into memory with
 GMT_Read_Data_ or GMT_Read_VirtualFile_.  However, if this leads to
 unacceptable memory usage or if the program logic is particularly simple,
 you may obtain one data record at the time via GMT_Get_Record_ and write
-one at the time with GMT_Put_Record_.  For row-by-row i/o for grids there
+one at a time with GMT_Put_Record_.  For row-by-row i/o for grids there
 is the corresponding function GMT_Get_Row_. There are additional overhead involved
 in setting up record-by-record processing, which is the topic of this section.
 
