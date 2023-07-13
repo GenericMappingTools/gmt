@@ -131,7 +131,7 @@ us are shown in the table below:
 | **-Sy**\ *size*                    | vertical dash; *size* is length of dash                                                   |
 +------------------------------------+-------------------------------------------------------------------------------------------+
 
-The symbol option in :doc:`/plot`.  Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
+Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
 will fit inside a circle of given diameter.  Upper case symbols (**A, C, D, G, H, I, N, S, T, X**)
 will have area equal to that of a circle of given diameter.
 
