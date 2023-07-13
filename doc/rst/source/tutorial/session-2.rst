@@ -232,7 +232,7 @@ with plot?".  The surprising answer is that we must call :doc:`/plot` twice.
 While this sounds cumbersome there is a reason for this:  Basically,
 polygons need to be kept in memory since they may need to be clipped,
 hence computer memory places a limit on how large polygons we may plot.
-Symbols, on the other hand, can be plotted one at the time so there
+Symbols, on the other hand, can be plotted one at a time so there
 is no limit to how many symbols one may plot.  Therefore, to connect
 symbols with a line we must use the overlay approach:
 
