@@ -7381,7 +7381,7 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				expectation = GMT_IS_ARGTIME;
 			else if (gmtio_is_pi (s))	/* Found a "pi" specification - will try scanning as float */
 				expectation = GMT_IS_FLOAT;
-			else if (c == 't' && (strchr ("+-", s[0] || isdigit (s[0]))))		/* Found trailing t in a signed/unsigned leading integer - assume Relative time */
+			else if (c == 't' && (strchr ("+-", s[0]) || isdigit (s[0])))		/* Found trailing t in a signed/unsigned leading integer - assume Relative time */
 				expectation = GMT_IS_ARGTIME;
 			else if (nt > 1 || gmt_not_numeric (GMT, s)) {	/* No number has 2 or more letters at the end, or other junk, so return as NaN */
 				*val = GMT->session.d_NaN;
