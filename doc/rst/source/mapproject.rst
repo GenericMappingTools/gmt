@@ -430,7 +430,7 @@ or alternatively, use **awk** to scale and shift the (x,y) values before
 transforming.
 
 For some projection, a spherical solution may be used despite the user
-having selected an ellipsoid. This occurs when the users |-R| setting
+having selected an ellipsoid. This occurs when the user's |-R| setting
 implies a region that exceeds the domain in which the ellipsoidal series
 expansions are valid. These are the conditions: (1) Lambert Conformal
 Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical
