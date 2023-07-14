@@ -85,6 +85,8 @@ Required Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+(Note that depending on the Optional Arguments listed below, sometimes -J and -R are not actually required.)
+
 Optional Arguments
 ------------------
 
