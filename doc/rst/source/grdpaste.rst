@@ -14,6 +14,7 @@ Synopsis
 
 **gmt grdpaste** *file_a.nc file_b.nc*
 |-G|\ *outfile.nc*
+[ |-S| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -48,6 +49,13 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-S:
+
+**-S**
+    Just prints a code number and a description of the sides at which the grids are pasted.
+	No pasting actually happens. -G is ignored. This option is useful for externals that want to
+    reimplement the grdpaste utility since it doesn't work form them (*e.g.* Julia and GMTMEX).
+
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
@@ -67,9 +75,9 @@ Suppose file_a.nc is 150E - 180E and 0 - 30N, and file_b.nc is 150E -
 180E, -30S - 0, then you can make outfile.nc which will be 150 - 180 and
 -30S - 30N by:
 
-   ::
+::
 
-    gmt grdpaste file_a.nc file_b.nc -Goutfile.nc -V -fg
+  gmt grdpaste file_a.nc file_b.nc -Goutfile.nc -V -fg
 
 See Also
 --------

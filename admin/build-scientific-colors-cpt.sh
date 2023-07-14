@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # This script takes the downloaded zip content from
-# Crameri, Fabio. (2021, September 12). Scientific colour maps
-# (Version 7.0.1). Zenodo. https://doi.org/10.5281/zenodo.5501399
+# Crameri, Fabio. (2023, June 14). Scientific colour maps
+# (Version 8.0.0). Zenodo.  https://doi.org/10.5281/zenodo.1243862
 # and converts the *.cpt files into proper GMT master
 # CPT files with correct attribution and hinge info
 # Run from the ScientificColourMapsV directory (V is version) after the
@@ -11,8 +11,8 @@
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps7 on 20/09/2021 for GMT 6.3 (master)
-# Gave 51 CPTS: The same as prior release with minor changes for categorical cpts.
+# Last setup and run for ScientificColourMaps8 on June 26, 2023 for GMT 6.5 (master)
+# Gave 55 CPTS: The same as release 7 with new entries glasgow, lipari, navia, managua.
 #
 
 if [ $# -eq 0 ]; then
@@ -21,21 +21,21 @@ if [ $# -eq 0 ]; then
 
 	Will create the GMT CPT versions of Crameri's scientific colour maps.
 	Give the full path to the expanded zip file top directory, such as
-	~/Download/ScientificColourMaps7.
+	~/Download/ScientificColourMaps8.
 	Before running you must update this script with:
 	  1. Any new CPT entries since the last release to /tmp/cpt.info
 	  2. Flag those with a soft hinge as S and a hard hinge as H
 	  3. Manually set the current version number/doi (see the zip PDF docs)
 	Afterwards you must:
 	  1. Update src/gmt_cpt_masters.h with any new entries (copy lines from /tmp/cpt_strings.txt)
-	  2. Adding the CPTs to share/cpt (overwriting the previous versions)
+	  2. Adding the CPTs to share/cpt/SCM (overwriting the previous versions)
 	  3. Probably mess with doc/scripts/GMT_App_M*.sh for new layouts
 	EOF
 	exit 1
 fi
 
 DIR=$1
-VERSION=7.0.1
+VERSION=8.0.0
 cat << EOF > /tmp/cpt.info
 acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
@@ -62,6 +62,7 @@ davosS|Perceptually uniform categorical colormap by Fabio Crameri [C=RGB]
 devon|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 devonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
 fes|Perceptually uniform multi-sequential colormap by Fabio Crameri [H,C=RGB]
+glasgow|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
 grayC|Perceptually uniform 'gray' colormap by Fabio Crameri [C=RGB]
 grayCS|Perceptually uniform 'gray' categorical colormap by Fabio Crameri [C=RGB]
 hawaii|Perceptually uniform lush colormap by Fabio Crameri [C=RGB]
@@ -73,6 +74,9 @@ lajollaS|Perceptually uniform categorical colormap, without black or white, by F
 lapaz|Perceptually uniform 'rainbow' colormap by Fabio Crameri [C=RGB]
 lapazS|Perceptually uniform 'rainbow' categorical colormap by Fabio Crameri [C=RGB]
 lisbon|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
+lipari|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
+managua|Perceptually uniform diverging colormap, by Fabio Crameri [S,C=RGB]
+navia|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
 nuuk|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
 nuukS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 oleron|Perceptually uniform topography colormap, by Fabio Crameri [H,C=RGB]
@@ -92,7 +96,7 @@ EOF
 here=`pwd`
 cd $DIR
 # Make formatted list of lines suitable for copying into gmt_cpt_masters.h
-awk -F'|' '{printf "\"crameri/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
+awk -F'|' '{printf "\"SCM/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
 # Make list of CPTs with a hinge of some soft since these need to insert a true z = 0 slice
 grep "\[H," /tmp/cpt.info | awk -F'|' '{print $1}' > /tmp/hinge.lis
 grep "\[S," /tmp/cpt.info | awk -F'|' '{print $1}' >> /tmp/hinge.lis
@@ -109,7 +113,7 @@ while read line; do
 	cat <<- EOF > gmt_cpts/$cpt.cpt
 	#
 	EOF
-	echo $line | awk -F'|' '{printf "# crameri/%s : %s\n", $1, $2}' >> gmt_cpts/$cpt.cpt
+	echo $line | awk -F'|' '{printf "# SCM/%s : %s\n", $1, $2}' >> gmt_cpts/$cpt.cpt
 	last_char=$(echo $cpt | awk '{print substr($1,length($1),1)}')
 	if [ "X${last_char}" = "XS" ]; then
 		tmp=$(echo $cpt | awk '{print substr($1,1, length($1)-1)}')
@@ -122,8 +126,8 @@ while read line; do
 	#	www.fabiocrameri.ch/visualisation
 	#
 	# License: MIT License
-	# Copyright (c) 2021, Fabio Crameri.
-	# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/5501399
+	# Copyright (c) 2023, Fabio Crameri.
+	# Crameri, F., (2023). Scientific colour maps. Zenodo. https://doi.org/10.5281/zenodo.1243862
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF
@@ -136,7 +140,7 @@ while read line; do
 	if [ "X${last_char}" = "XS" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $6, $7, $8}}' > /tmp/tmp.cpt
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR, $6, $7, $8}}' > /tmp/tmp.cpt
 	elif [ "X$hinge" = "X" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		if [ "X${last_char}" = "XO" ]; then

@@ -3,7 +3,7 @@
 #
 # Purpose:	Generate grid and show monochrome 3-D perspective
 # GMT modules:	grdmath, grdview, text, makecpt
-# Unix progs:	echo, rm
+# Unix progs:	rm
 #
 gmt begin ex05
 	gmt grdmath -R-15/15/-15/15 -I0.3 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL = sombrero.nc

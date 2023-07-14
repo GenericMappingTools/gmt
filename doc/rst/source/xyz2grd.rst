@@ -38,12 +38,12 @@ Synopsis
 Description
 -----------
 
-**xyz2grd** reads one or more z or xyz tables and creates a binary grid
+**xyz2grd** reads one or more *x, y, z* or *z* tables and creates a binary grid
 file. **xyz2grd** will report if some of the nodes are not filled in
 with data. Such unconstrained nodes are set to a value specified by the
 user [Default is NaN]. Nodes with more than one value will be set to the
-mean value. As an option (using |-Z|), a 1-column z-table may be read
-assuming all nodes are present (z-tables can be in organized in a number
+mean value. As an option (using |-Z|), a 1-column *z* table may be read
+assuming all nodes are present (*z* tables can be organized in a number
 of formats, see |-Z| below.)  **Note**: **xyz2grd** does not grid the data,
 it simply reformats existing data to a grid structure.  For gridding,
 see :doc:`surface`, :doc:`greenspline`, :doc:`nearneighbor`, or
@@ -54,8 +54,8 @@ Required Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    files holding z or (x,y,z) values. The xyz triplets do not have to
-    be sorted. One-column z tables must be sorted and the |-Z| must be set.
+    files holding *z* or *x, y, z* values. The *x, y, z* triplets do not have to
+    be sorted. One-column *z* tables must be sorted and the |-Z| option must be set.
 
 .. _-G:
 
@@ -105,7 +105,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [*zfile*]
-    Swap the byte-order of the input only. No grid file is produced. You
+    Swap the byte-order of the *z* table input only. No grid file is produced. You
     must also supply the |-Z| option. The output is written to *zfile*
     (or standard output if not supplied).
 
@@ -120,17 +120,17 @@ Optional Arguments
     Read a 1-column ASCII [or binary] table. This assumes that all the
     nodes are present and sorted according to specified ordering
     convention contained in *flags*. If incoming data represents rows,
-    make *flags* start with **T**\ (op) if first row is y
-    = ymax or **B**\ (ottom) if first row is y = ymin.
+    make *flags* start with **T**\ (op) if first row is *y
+    = ymax* or **B**\ (ottom) if first row is *y = ymin*.
     Then, append **L** or **R** to indicate that first element is at
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
     **B** to position first element in a row. **Note**: These two row/column
     indicators are only required for grids; for other tables they do not
-    apply. For gridline registered grids: If data are periodic in x but
-    the incoming data do not contain the (redundant) column at x = xmax,
-    append **x**. For data periodic in y without redundant row at y =
-    ymax, append **y**. Append **s**\ *n* to skip the first *n* number
+    apply. For gridline registered grids: If data are periodic in *x* but
+    the incoming data do not contain the (redundant) column at *x = xmax*,
+    append **x**. For data periodic in *y* without redundant row at *y =
+    ymax*, append **y**. Append **s**\ *n* to skip the first *n* number
     of bytes (probably a header). If the byte-order or the words needs
     to be swapped, append **w**. Select one of several data types (all
     binary except **a**):
@@ -156,10 +156,10 @@ Optional Arguments
     Translate incoming *z*-values via the **-i**\ 0 option and needed modifiers.
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. This option only applies
-    to xyz input files; see |-Z| for z tables.
+    to *x, y, z* input files; see |-Z| for *z* tables.
 .. include:: explain_-bi.rst_
 
-.. |Add_-di| replace:: Also sets nodes with no input xyz triplet to this value
+.. |Add_-di| replace:: Also sets nodes with no input *x, y, z* triplet to this value
     [Default is NaN].
 .. include:: explain_-di.rst_
 
@@ -206,41 +206,41 @@ Examples
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
-   ::
+::
 
-    gmt xyz2grd hawaii_grv.xyz -D+xdegree+ydegree+zGal+t"Hawaiian Gravity"+r"GRS-80 Ellipsoid used" \
-                -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
+  gmt xyz2grd hawaii_grv.xyz -D+xdegree+ydegree+zGal+t"Hawaiian Gravity"+r"GRS-80 Ellipsoid used" \
+              -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
 
 To create a grid file from the raw binary (3-column, single-precision
 scanline-oriented data raw.b, use
 
-   ::
+::
 
-    gmt xyz2grd raw.b -D+xm+ym+zm -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
+  gmt xyz2grd raw.b -D+xm+ym+zm -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
 scanline-oriented data topo30.b on the NCEI global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
 reverse the byte-order. On such machines (like Sun), use
 
-   ::
+::
 
-    gmt xyz2grd topo30.b -D+xm+ym+zm -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
+  gmt xyz2grd topo30.b -D+xm+ym+zm -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
 
 Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can
 swap the byte-order with
 
-   ::
+::
 
-    gmt xyz2grd floats.bin -Snew_floats.bin -V -Zf
+  gmt xyz2grd floats.bin -Snew_floats.bin -V -Zf
 
 To make a pixel node registrated tiff of the number of data points
 that is assigned to each node in a cartesian data set, use
 
-   ::
+::
 
-    gmt xyz2grd data.txt -R0/100/0/100 -r -I10 -An -Gnumber_of_points.tif=gd:GTiff
+  gmt xyz2grd data.txt -R0/100/0/100 -r -I10 -An -Gnumber_of_points.tif=gd:GTiff
 
 See Also
 --------

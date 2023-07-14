@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,8 @@
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
 #endif
+
+#if GMT_USE_COMPAT_QSORT
 
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
@@ -62,4 +64,5 @@ static inline void qsort_r_glibc (void *base, size_t nmemb, size_t size,
 #define qsort_r qsort_r_glibc /* override builtin qsort_r */
 
 #endif /* !HAVE_QSORT_R_GLIBC */
+#endif  /* GMT_USE_COMPAT_QSORT */
 #endif /* !_QSORT_H */

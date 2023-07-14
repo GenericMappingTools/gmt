@@ -95,7 +95,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT use Taylor expansion.
+    Do **not** use Taylor expansion.
 
 .. _-R:
 
@@ -136,17 +136,17 @@ encloses that of the *anom.grd*, compute the *RTP* using bins of 2
 degrees and a filter of 45 coefficients.
 
 
-   ::
+::
 
-    gmt grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -Edec.grd/dip.grd -V
+  gmt grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -Edec.grd/dip.grd -V
 
 To compute the same *RTP* but now with the field and magnetization
 vectors collinear and computed from IGRF :
 
 
-   ::
+::
 
-    gmt grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -V
+  gmt grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -V
 
 Reference
 ---------

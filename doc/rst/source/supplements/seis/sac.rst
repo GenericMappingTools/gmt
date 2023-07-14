@@ -195,7 +195,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes for all traces unless overruled by *pen* specified in *saclist*.
-    [Defaults: width = default, color = black, style = solid].
+    [Defaults: width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_

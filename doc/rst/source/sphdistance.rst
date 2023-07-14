@@ -43,8 +43,8 @@ Description
 input) containing lon, lat and performs the construction of Voronoi
 polygons. These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.
-The Voronoi algorithm used is STRIPACK. As an option, you may provide
-pre-calculated Voronoi polygon file in the format written by
+The Voronoi algorithm used is STRIPACK [*Renka*\ , 1997]. As an option,
+you may provide pre-calculated Voronoi polygon file in the format written by
 :doc:`sphtriangulate`, thus bypassing the memory- and time-consuming
 triangularization.
 
@@ -104,7 +104,7 @@ Optional Arguments
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
-    (mile), **n** (nautical mile) or **u** survey foot.
+    (mile), **n** (nautical mile) or **u** (survey foot).
 
 .. _-N:
 
@@ -174,16 +174,16 @@ and annotations every 1000 km, try::
 To construct Voronoi polygons from the points in the file testdata.txt
 and then calculate distances from the data to a global 1x1 degree grid, use
 
-   ::
+::
 
-    gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
+  gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
 
 To generate the same grid in two steps using :doc:`sphtriangulate` separately, try
 
-   ::
+::
 
-    gmt sphtriangulate testdata.txt -Qv > voronoi.txt
-    gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
+  gmt sphtriangulate testdata.txt -Qv > voronoi.txt
+  gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
 
 Notes
 -----

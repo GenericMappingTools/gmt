@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -78,6 +78,9 @@ extern "C" {
 #       endif
 #       define vImage_Utilities_h
 #       define vImage_CVUtilities_h
+#   endif
+#   if defined __arm64__
+#       define QSORT_R_THUNK_FIRST
 #   endif
 #endif
 
@@ -181,9 +184,25 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
-/* If GLIBC compatible qsort_r is not available */
-#ifndef HAVE_QSORT_R_GLIBC
-#	include "compat/qsort.h"
+/* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
+#ifdef _MSC_VER
+	#include <search.h>
+	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
+    //#pragma message("C Preprocessor determined we need to use qsort_s on Windows")
+#elif defined(QSORT_R_THUNK_FIRST)
+	/* Argument order is unusual, starts with thunk pointer */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
+	//#pragma message("C Preprocessor detected Silicon and we use different qsort_r order!")
+#else
+	//#pragma message("Not Apple Silicon (but could be Intel), probably Linux and we use different qsort_r order!")
+	/* If GLIBC compatible QSORT_R is not available */
+	/* Argument order is unusual, ends with thunk pointer */
+	#ifndef HAVE_QSORT_R_GLIBC
+		#include "compat/qsort.h"
+		#define GMT_USE_COMPAT_QSORT
+	#endif
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
 #endif
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/filter1d_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"filter1d"
 #define THIS_MODULE_MODERN_NAME	"filter1d"
@@ -203,8 +204,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Convolution filters:");
 	GMT_Usage (API, 3, "b: Boxcar : Weights are equal.");
 	GMT_Usage (API, 3, "c: Cosine arch : Weights given by cosine arch.");
-	GMT_Usage (API, 3, "g: Gaussian : Weights given by Gaussian function.");
 	GMT_Usage (API, 3, "f: Custom : Weights given in one-column file <name>.");
+	GMT_Usage (API, 3, "g: Gaussian : Weights given by Gaussian function.");
 	GMT_Usage (API, -2, "Non-convolution filters:");
 	GMT_Usage (API, 3, "m: Median : Return the median value.");
 	GMT_Usage (API, 3, "p: Maximum likelihood probability (mode) estimator : Return the mode:");
@@ -214,7 +215,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "L: Lower+ : Return minimum of all positive points.");
 	GMT_Usage (API, 3, "u: Upper : Return maximum of all points.n");
 	GMT_Usage (API, 3, "U: Upper- : Return maximum of all negative points.");
-	GMT_Usage (API, -2, "Upper case type B, C, G, M, P, F will use robust filter versions, "
+	GMT_Usage (API, -2, "Upper case type B, C, F, G, M and P will use robust filter versions, "
 		"i.e., replace outliers (2.5 L1 scale (MAD) of median) with median during filtering.");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
@@ -906,7 +907,7 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error, "Error parsing filter1d options\n");

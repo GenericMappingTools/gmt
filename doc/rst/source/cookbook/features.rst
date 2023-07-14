@@ -96,7 +96,6 @@ Distance units
 .. _tbl-distunits:
 
 +---------+-------------------+---------+------------------+
-+=========+===================+=========+==================+
 | **d**   | Degree of arc     | **M**   | Statute mile     |
 +---------+-------------------+---------+------------------+
 | **e**   | Meter [Default]   | **n**   | Nautical mile    |
@@ -115,7 +114,7 @@ of ways. GMT programs that accept actual Earth length scales like
 search radii or distances can therefore handle a variety of units. These
 choices are listed in the Table :ref:`Distance Units <tbl-distunits>`;
 simply append the desired unit to the distance value you supply. A value
-without a unit suffix will be consider to be in meters. For example, a distance
+without a unit suffix will be considered to be in meters. For example, a distance
 of 30 nautical miles should be given as 30\ **n**.
 
 Distance calculations
@@ -310,7 +309,6 @@ are known. The **auto** flag is supported for the following parameters:
 :term:`FONT_ANNOT_SECONDARY`       Secondary annotation font [13.20p]
 :term:`FONT_HEADING`               Subplot heading font [30.80p]
 :term:`FONT_LABEL`                 Axis label font [15.40p]
-:term:`FONT_LOGO`                  Logo font [8.80p]
 :term:`FONT_SUBTITLE`              Plot subtitle font [19.80p]
 :term:`FONT_TAG`                   Tag/labeling font [17.60p]
 :term:`FONT_TITLE`                 Plot title font [24.20p]
@@ -742,7 +740,6 @@ option argument, with commas separating the given attributes, e.g.,
 .. _tbl-pennames:
 
     +------------+---------+------------+--------+
-    +============+=========+============+========+
     | faint      | 0       | thicker    | 1.5p   |
     +------------+---------+------------+--------+
     | default    | 0.25p   | thickest   | 2p     |
@@ -807,7 +804,6 @@ suitable for, say, :doc:`/plot`.
 .. _tbl-penex:
 
 +-------------------------------+-----------------------------------------------------+
-+===============================+=====================================================+
 | **-W**\ 0.5p                  | 0.5 point wide line of default color and style      |
 +-------------------------------+-----------------------------------------------------+
 | **-W**\ green                 | Green line with default width and style             |
@@ -879,7 +875,7 @@ different phase *offset* and color. See the :doc:`/gmt.conf` man page for more i
    :width: 500 px
    :align: center
 
-   Line appearance can be varied by using :term:`PS_LINE_CAP`
+   Line appearance can be varied by using :term:`PS_LINE_CAP`.
 
 .. toggle::
 
@@ -1050,7 +1046,6 @@ Table :ref:`fillex <tbl-fillex>` contains a few examples of fill specifications.
 .. _tbl-fillex:
 
 +-------------------------------------------------+-----------------------------------------------------+
-+=================================================+=====================================================+
 | **-G**\ 128                                     | Solid gray                                          |
 +-------------------------------------------------+-----------------------------------------------------+
 | **-G**\ 127/255/0                               | Chartreuse, R/G/B-style                             |
@@ -1637,7 +1632,6 @@ sequence for font switching. In bash scripts the brackets have special meaning, 
 .. _tbl-escape:
 
 +-------------------+----------------------------------------------------------------+
-+===================+================================================================+
 | @~                | Turns symbol font on or off                                    |
 +-------------------+----------------------------------------------------------------+
 | @+                | Turns superscript on or off                                    |
@@ -1706,7 +1700,7 @@ GMT strings using the Standard+ encoding:
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
 | ``Stresses are @~s@~@+*@+@-xx@- MPa`` = Stresses are :math:`\sigma^{*}_{xx}` MPa
 | ``Se@nor Gar@con`` = Señor Garçon
-| ``M@!\305anoa stra@se`` = Manoa straße
+| ``M@!\305anoa Stra@se`` = Mānoa Straße
 | ``A@#cceleration@# (ms@+-2@+)`` = ACCELERATION (ms\ :math:`^{-2}`)
 
 The option in :doc:`/text` to draw a
@@ -2124,7 +2118,7 @@ Placing map legends
 Adding map legends is the standard way to communicate what various symbols placed on your map
 represent.  For instance, you may use this mechanism to convey the information that circles are
 earthquake locations, triangles are places where you ate Thai food, and dashed lines indicate
-some sort of gang-land demarkation line that you should not cross without paying the locals due respect.
+some sort of gang-land demarcation line that you should not cross without paying the locals due respect.
 Map legends are placed by the module :doc:`/legend`, with location and size determined by the
 various **-D** attributes. We must again specify the reference and anchor points and any adjustments to them
 first, then supply suitable required and optional modifiers:
@@ -2325,9 +2319,8 @@ conventions for netCDF grids. Thus, products created under those
 conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
 read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
-`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, `Panoply
-<http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
-<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
+`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, and `Panoply
+<http://www.giss.nasa.gov/tools/panoply/>`_; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
 to read netCDF 4 files (if data compression has been applied).
@@ -2445,7 +2438,7 @@ does not allow piping.
 
 Everything looks clearer after a few examples:
 
-*  To write a native binary float grid file, specify the name as ``my_file.f4=bf`` .
+*  To write a native binary float grid file, specify the name as ``my_file.f4=bf``.
 
 *  To read a native short integer grid file, multiply the data by 10 and
    then add 32000, but first let values that equal 32767 be set to NaN,
@@ -2466,13 +2459,13 @@ Everything looks clearer after a few examples:
    offset, give filename as ``=nb+oa``.
 
 *  To read a short integer *.bil* grid file stored in binary and and force
-   the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``
+   the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``.
 
 *  To write a lossless, deflate compressed, and tiled GeoTIFF grid (or image) use,
-   ``output.tif=gd:GTiff+cTILED=YES+cCOMPRESS=DEFLATE+cPREDICTOR=3``
+   ``output.tif=gd:GTiff+cTILED=YES+cCOMPRESS=DEFLATE+cPREDICTOR=3``.
    See also :ref:`Writing grids and images <Write-grids-images>` as well as available options
    for each output format from the GDAL driver documentation,
-   `for example <https://gdal.org/drivers/raster/gtiff.html>`_
+   `for example <https://gdal.org/drivers/raster/gtiff.html>`_.
 
 Programs that both read and/or write more than one grid file may specify
 different formats and/or scaling for the files involved. The only
@@ -2513,7 +2506,7 @@ a ``gmt.io`` file:
 |       |     |     |   |       | auto-scale and auto-offset                |
 +-------+-----+-----+---+-------+-------------------------------------------+
 
-These suffices can be anything that makes sense to the user. To activate
+These suffixes can be anything that makes sense to the user. To activate
 this mechanism, set parameter :term:`IO_GRIDFILE_SHORTHAND` to TRUE in
 your :doc:`/gmt.conf` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs+n32767``, and the
 filename ``wet.mask`` means wet.mask=bm+n0. For a file intended for masking, i.e.,

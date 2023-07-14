@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmt2kml_inc.h"
 #include <stdarg.h>
 
 #define THIS_MODULE_CLASSIC_NAME	"gmt2kml"
@@ -197,7 +198,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]] "
 		"[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...] [-N<col>|t|<template>|<name>] [-O] "
-		"[-Qa|i|s<arg>] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>] [-T<title>[/<foldername>]] [%s] [-W[<pen>][<attr>]] "
+		"[-Qa|i|s<arg>] [-Re|<w>/<e>/<s>/<n>] [-Sc|n<scale>] [-T<title>[/<foldername>]] [%s] [-W[<pen>][<attr>]] "
 		"[-Z[+a<alt_min>/<alt_max>][+f<minfade>/<maxfade>][+l<minLOD>/<maxLOD>][+o][+v]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT,
 		GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -253,7 +254,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "a: Append preferred <azimuth> +|-90 for wiggle direction [0].");
 	GMT_Usage (API, 3, "i: Instead, append fixed <azimuth> for wiggle direction [variable].");
 	GMT_Usage (API, 3, "s: Append wiggle <scale> in z-data units per map unit; append a unit in %s [e].", GMT_LEN_UNITS_DISPLAY);
-	GMT_Usage (API, 1, "\n-Re|<w>/<e>/<s>/n>" );
+	GMT_Usage (API, 1, "\n-Re|<w>/<e>/<s>/<n>" );
 	GMT_Usage (API, -2, "Issue Region tag.  Append w/e/s/n to set a particular region or give -Re to use the "
 		"exact domain of the data (single file only) [no region specified].");
 	GMT_Usage (API, 1, "\n-Sc|n<scale>" );
@@ -434,7 +435,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 					snprintf (buffer, GMT_LEN256, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 					Ctrl->I.file = strdup (buffer);
 				}
-				else if (opt->arg[0])
+				else if (opt->arg[0] == '-' && opt->arg[0] == '\0')	/* Flag for no icon */
+					n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->I.file));
+				else if (opt->arg[0])	/* Alternative icon file */
 					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->I.file));
 				break;
 			case 'L':	/* Extended data */
@@ -478,7 +481,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'R':	/* Region setting */
-				Ctrl->R2.active = GMT->common.R.active[RSET] = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->R2.active);
+				GMT->common.R.active[RSET] = true;
 				if (opt->arg[0] == 'e' || opt->arg[0] == 'a')	/* Get args from data domain (used to be -Ra but in modern mdoe -Re is what is meant) */
 					Ctrl->R2.automatic = true;
 				else if (opt->arg[0])
@@ -863,7 +867,7 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

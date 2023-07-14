@@ -679,7 +679,7 @@ A global transverse Mercator map - the equivalent of the 360° Mercator map - ca
 Note that when a world map is given (indicated by **-R**\ *0/360/s/n*), the arguments are interpreted to mean oblique
 degrees, i.e., the 360° range is understood to mean the extent of the plot along the central meridian, while the "south"
 and "north" values represent how far from the central longitude we want the plot to extend. These values correspond to
-latitudes in the regular Mercator projection and must therefore be less than 90.
+latitudes in the regular Mercator projection and must therefore be less than 90°.
 
 
 
@@ -725,7 +725,7 @@ In order to minimize the distortion in any given zone, a scale factor of 0.9996 
 (although a standard, you can change this with :term:`PROJ_SCALE_FACTOR`). This makes the UTM projection a *secant*
 projection and not a *tangent* projection like the :ref:`transverse Mercator <-Jt>` above. The scale only varies by 1
 part in 1,000 from true scale at equator. The ellipsoidal projection expressions are accurate for map areas that extend
-less than 10 away from the central meridian. For larger regions we use the conformal latitude in the general spherical
+less than 10° away from the central meridian. For larger regions we use the conformal latitude in the general spherical
 formulae instead.
 
 .. _-Jo:
@@ -895,7 +895,7 @@ Cylindrical equidistant projection (**-Jq** **-JQ**)
 
 **Parameters**
 
-- Optionally, the central meridian (*lon0*) [default is the middle of the map map].
+- Optionally, the central meridian (*lon0*) [default is the middle of the map].
 - Optionally, the standard parallel (*lat0*)  [default is the equator]. When supplied, the central meridian (*lon0*)
   must be supplied as well.
 - The *scale*  in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jq**) or map *width* in
@@ -913,7 +913,6 @@ the equator. Some selections for standard parallels have practical properties as
 .. _tbl-JQ:
 
 +-----------------------------------------------------+--------+
-+=====================================================+========+
 | Grafarend and Niermann, minimum linear distortion   | 61.7°  |
 +-----------------------------------------------------+--------+
 | Ronald Miller Equirectangular                       | 50.5°  |
@@ -967,7 +966,6 @@ choices of standard parallels that result in known (or named) projections. These
 .. _tbl-JY:
 
 +-------------------+---------------------+
-+===================+=====================+
 | Balthasart        | 50°                 |
 +-------------------+---------------------+
 | Gall              | 45°                 |
@@ -1071,7 +1069,6 @@ projection (Table :ref:`JCylstere <tbl-JCylstere>`).
 .. _tbl-JCylstere:
 
 +---------------------------------------------------------+-------------+
-+=========================================================+=============+
 | Miller's modified Gall                                  | 66.159467°  |
 +---------------------------------------------------------+-------------+
 | Kamenetskiy's First                                     | 55°         |

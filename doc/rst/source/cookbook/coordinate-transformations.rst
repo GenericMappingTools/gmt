@@ -31,7 +31,7 @@ GMT Cartesian coordinate transformations come in three flavors:
 -  :ref:`cookbook/coordinate-transformations:Power (exponential) coordinate transformation`
 
 These transformations convert input coordinates :math:`(x,y)` to locations :math:`(x', y')` on a plot. There is no
-coupling between :math:`x` and :math:`y` (i.e., :math:`x' = f(x)` and :math:`y' = f(y)`); it is a **one-dimensional**
+coupling between :math:`x` and :math:`y` (i.e., :math:`x' = f(x)` and :math:`y' = g(y)`); it is a **one-dimensional**
 projection. Hence, we may use separate transformations for the :math:`x`- and :math:`y`-axes (and :math:`z`-axes for 3-D
 plots). Below, we will use the expression :math:`u' = f(u)`, where :math:`u` is either :math:`x` or :math:`y` (or
 :math:`z` for 3-D plots). The coefficients in :math:`f(u)` depend on the desired plot size (or scale), the chosen
@@ -272,7 +272,7 @@ Polar coordinate transformations
 **Syntax**
 
     **-Jp**\|\ **P**\ *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\
-    [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]]
+    [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
 
 **Parameters**
 

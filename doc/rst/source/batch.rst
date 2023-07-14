@@ -15,6 +15,8 @@ Synopsis
 **gmt batch** *mainscript*
 |-N|\ *prefix*
 |-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-D| ]
+[ |-F|\ *template* ]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -81,6 +83,30 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-D:
+
+**-D**
+    Select this option if (1) the main script does not produce products named using the prefix **BATCH_NAME**,
+    so we should not attempt to move such files to the top directory, or (2) the main script will handle the
+    placement of any such product files directly.
+
+.. _-F:
+
+**-F**\ *template*
+    Rather than build product file names from the **BATCH_NAME** prefix based on a single running number,
+    use this `C-format <https://en.wikipedia.org/wiki/Printf_format_string>`_ *template* instead and create
+    unique names by formatting the data columns given by *timefile*.  Some limitations apply: (1) If *timefile*
+    has trailing text then it may be used with a single %s code as the *last* format statement in *template*.
+    If no %s is found then any trailing text present will not be used.  (2) The previous *N* format statements
+    will be used to convert the first *N* data columns in *timefile*; there is no option to skip a column or
+    to specify a specific order of columns in the template (but see |SYN_OPT-i| to rearrange the input order).
+    (3) Up to five numerical statements may be used (provided the *timefile* has enough columns),
+    including none.  E.g., **-F**\ my_data_%05.2lf_%07.0lf_%s will use the first two numerical columns in *timefile*
+    as well as the trailing text to create a unique product prefix. **Note**: Since a GMT data set internally
+    is using double precision variables you must use floating point format statements even if some or all
+    of your data columns are integers. Finally, if your choice of format statement and trailing text yield
+    tabs or spaces in the final prefix we will automatically replace those with underscores.
 
 .. _-I:
 
@@ -173,7 +199,8 @@ column in *timefile*.  If *timefile* has trailing text then that text can be acc
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to |-T| then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
-will be automatically moved up to the starting directory upon completion.
+will be automatically moved up to the starting directory upon completion (unless |-D| is in effect). However,
+note that |-F| can be used to select more diverse product names based on the input parameters given via |-T|.
 
 Data Files
 ----------
@@ -299,26 +326,26 @@ jobs using all available cores and launches new jobs as old ones complete.
 
 As another example, we get a list of all European countries and make a simple coast plot of each of them,
 placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
-we combine all the individual PDFs into a single PDF file and delete the individual files::
+we combine all the individual PDFs into a single PDF file and delete the individual files.  Here, we place the EOF tag in quotes which prevent the un-escaped variables from being interpreted::
 
-    cat << EOF > pre.sh
+    cat << 'EOF' > pre.sh
     gmt begin
         gmt coast -E=EU+l > countries.txt
     gmt end
     EOF
-    cat << EOF > main.sh
-    gmt begin \${BATCH_NAME} pdf
-        gmt coast -R\${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"\${BATCH_WORD1}" -E\${BATCH_WORD0}+gred+p0.5p
-        echo \${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
+    cat << 'EOF' > main.sh
+    gmt begin ${BATCH_NAME} pdf
+        gmt coast -R${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"${BATCH_WORD1}" -E${BATCH_WORD0}+gred+p0.5p
+        echo ${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
     gmt end
     EOF
-    cat << EOF > post.sh
-    gs -dQUIET -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=\${BATCH_PREFIX}.pdf -dBATCH \${BATCH_PREFIX}_*.pdf
-    rm -f \${BATCH_PREFIX}_*.pdf
+    cat << 'EOF' > post.sh
+    gmt psconvert -TF -F${BATCH_PREFIX} ${BATCH_PREFIX}_*.pdf
+    rm -f ${BATCH_PREFIX}_*.pdf
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
-Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
+Here, the postflight script may not even be a GMT script. In our case we simply run psconvert (which just calls gs (Ghostscript)) and deletes what we don't want to keep.
 
 macOS Issues
 ------------

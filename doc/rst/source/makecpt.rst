@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -110,10 +110,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
-    codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
+    codes (**h**), or c/m/y/k codes (**c**), or #rrggbb hex codes (**x**).
+    Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
     If *label* is appended then we create labels for each category to be used
     when the CPT is plotted. The *label* may be a comma-separated list of
@@ -200,9 +201,9 @@ Optional Arguments
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If |-T| is
     not given, the existing range in the master CPT will be used intact.
-    The values produces defines the color slice boundaries.  If **+n** is
+    The values produced defines the color slice boundaries. If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
-    For details on array creation, see `Generate 1D Array`_.  **Note**: To set
+    For details on array creation, see `Generate 1-D Array`_. **Note**: To set
     up categorical CPTs with string keys you can also give a comma-separated
     list of your keys.
 
@@ -274,73 +275,75 @@ Examples
 To make a CPT with z-values from -200 to 200, with discrete color
 changes every 25, and using a polar blue-white-red colortable:
 
-   ::
+::
 
-    gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
+  gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
 
 To make an equidistant CPT from z = -2 to 6 using the
-continuous default turbo rainbow of colors:
-
-   ::
+continuous default turbo rainbow of colors::
 
     gmt makecpt -T-2/6 > colors.cpt
 
-To use the GEBCO look-alike CPT with its default range for bathymetry, run
-
-   ::
+To use the GEBCO look-alike CPT with its default range for bathymetry, run::
 
     gmt makecpt -Cgebco > my_gebco.cpt
 
 or simply use -Cgebco directly in the application that needs the color table.
 To create a 24-level color table suitable for plotting the depths in
-the remote ata table v3206_06.txt (with lon, lat, depths), run
+the remote data table v3206_06.txt (with lon, lat, depths), run
 
-   ::
+::
 
-    gmt makecpt -Cgebco @v3206_06.txt -E24 > my_depths.cpt
+  gmt makecpt -Cgebco @v3206_06.txt -E24 > my_depths.cpt
 
 To use the gebco color table but reverse the z-values so it can be used for
 positive depth values, try
 
-   ::
+::
 
-    gmt makecpt -Cgebco -Iz > my_positive_gebco.cpt
+  gmt makecpt -Cgebco -Iz > my_positive_gebco.cpt
 
 To make a custom discrete color table for depth of seismicity, using red color for
 hypocenters between 0 and 100 km, green for 100-300 km, and blue for deep (300-1000 km)
 earthquakes, use
 
-   ::
+::
 
-    gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
+  gmt makecpt -Cred,green,blue -T0,80,300,1000 -N > seis.cpt
 
 To make a continuous CPT from white to blue as z goes from
 3 to 10, try
 
-   ::
+::
 
-    gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
+  gmt makecpt -Cwhite,blue -T3/10 > cold.cpt
 
 To make a wrapped (cyclic) CPT from the jet table over the interval
 0 to 500, i.e., the color will be wrapped every 500 z-units so that
 we always get a color regardless of the *z* value, try
 
-   ::
+::
 
-    gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
+  gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
 To build a categorical table with 3 categories and add specific category
-names to them, try::
+names to them, try
 
-    gmt makecpt -Ccubhelix -T0/3/1 -F+cClouds,Trees,Water > cat.cpt
+::
 
-To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
+  gmt makecpt -Ccubhelix -T0/2/1 -F+cClouds,Trees,Water > cat.cpt
 
-    gmt makecpt -Cjet -T0/10/1 -F+cA
+To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try
 
-To make a categorical CPT with string keys instead of numerical lookup values, try::
+::
 
-    gmt makecpt -Ccategorical -Twood,water,gold 
+  gmt makecpt -Cjet -T0/10/1 -F+cA
+
+To make a categorical CPT with string keys instead of numerical lookup values, try
+
+::
+
+  gmt makecpt -Ccategorical -Twood,water,gold
 
 .. include:: cpt_notes.rst_
 
@@ -355,4 +358,4 @@ References
 Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
 
 Crameri, F. (2018), Geodynamic diagnostics, scientific visualisation and StagLab 3.0,
-*Geosci. Model Dev.*, 11, 2541-2562, doi:10.5194/gmd-11-2541-2018.
+*Geosci. Model Dev.*, 11, 2541-2562, https://doi.org/10.5194/gmd-11-2541-2018.

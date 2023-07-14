@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt logo** [ |-D|\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
+**gmt logo** [ |-D|\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+h**\ *height*\|\ **+w**\ *width*\ ][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ |-F|\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]] ]
 [ |-J|\ *parameters* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |SYN_OPT-Rz| ]
@@ -50,14 +50,15 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+h**\ *height*\|\ **+w**\ *width*\ ][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
     Sets reference point on the map for the image using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both |-R| and |-J| to be specified.
     Use **+w**\ *width* to set the width of the GMT logo in plot coordinates
-    (inches, cm, etc.).
+    (inches, cm, etc.). Alternatively, use **+h**\ *height* to instead specify the logo height.
+    **Note**: Since the aspect ratio is fixed, only one of height and width can be specified.
     By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
@@ -138,7 +139,7 @@ scaled up to be 6 cm wide and offset by 0.25 cm from the border, try::
 Notes
 -----
 
-To instead plot the GMT QR code that links to www.generic-mapping-tools.org, just plot the
+To instead plot the GMT QR code that links to https://www.generic-mapping-tools.org/ just plot the
 custom symbols **QR** or **QR_transparent** in :doc:`plot`.
 
 See Also

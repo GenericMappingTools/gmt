@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,35 @@
  *
  * Author:	Paul Wessel
  * Date:	15-Sept-2017
+ *
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ * gmt_dataserver_url
+ * gmt_download_file
+ * gmt_download_file_if_not_found
+ * gmt_download_tiles
+ * gmt_file_is_a_tile
+ * gmt_file_is_cache
+ * gmt_file_is_tiled_list
+ * gmt_get_dataset_tiles
+ * gmt_get_tile_id
+ * gmt_refresh_server
+ * gmt_remote_dataset_id
+ * gmt_remote_no_extension
+ * gmt_remote_no_resolution_given
+ * gmt_remote_resolutions
+ * gmt_set_remote_and_local_filenames
+ * gmt_set_unspecified_remote_registration
+ * gmt_use_srtm_coverage
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ * gmtlib_assemble_tiles
+ * gmtlib_file_is_jpeg2000_tile
+ * gmtlib_get_tile_list
+ * gmtlib_remote_file_is_tiled
+ *
+ * gmtremote_* functions are all static and used only in this file, hence not exported.
  */
 
 #include "gmt_dev.h"
@@ -318,7 +347,7 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 	return (strncmp (name_1, name_2, len));
 }
 
-int gmtremote_wind_to_file (const char *file) {
+GMT_LOCAL int gmtremote_wind_to_file (const char *file) {
 	int k = (int)(strlen (file) - 2);	/* This jumps past any trailing / for tiles */
 	while (k >= 0 && file[k] != '/') k--;
 	return (k+1);
@@ -466,7 +495,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
 	char newfile[GMT_LEN256] = {""}, dir[GMT_LEN128] = {""}, reg[2] = {'p', 'g'};
-	char *file = NULL, *infile = NULL, *ext = NULL, *c = NULL, *p = NULL, *q = NULL;
+	char *file = NULL, *infile = NULL, *c = NULL, *p = NULL, *q = NULL;
 	int k_data, k, kstart = 0, kstop = 2, kinc = 1;
 	size_t L;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
@@ -476,7 +505,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	if ((c = strchr (infile, '+')))	/* Got modifiers, probably from grdimage or similar, chop off for now */
 		c[0] = '\0';
 	/* Deal with any extension the user may have added */
-	ext = gmt_chop_ext (infile);
+	(void)gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
 	if ((k_data = gmt_remote_dataset_id (API, infile)) == GMT_NOTSET) goto clean_up;
 	API->remote_id = k_data;
@@ -488,7 +517,8 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	q += strlen (p);	/* Move to the end of family name after which any registration codes would be found */
 	if (strstr (q, "_p") || strstr (q, "_g")) goto clean_up;	/* Already have the registration codes */
 	if (API->use_gridline_registration) {	/* Switch order so checking for g first, then p */
-		GMT_Report (API, GMT_MSG_WARNING, "Remote dataset given to a data processing module but no registration was specified - default to gridline registration (if available)\n");
+		if (API->use_gridline_registration_warn)
+			GMT_Report (API, GMT_MSG_WARNING, "Remote dataset given to a data processing module but no registration was specified - default to gridline registration (if available)\n");
 		kstart = 1; kstop = -1; kinc = -1;
 	}
 	for (k = kstart; k != kstop; k += kinc) {
@@ -684,7 +714,7 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 	return Curl;	/* Happily return the Curl pointer */
 }
 
-struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
+GMT_LOCAL struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
 	/* Creates filename for lock and activates the lock */
 	struct LOCFILE_FP *P = gmt_M_memory (GMT, NULL, 1, struct LOCFILE_FP);
 	if (P == NULL) return NULL;
@@ -699,7 +729,7 @@ struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
 	return P;
 }
 
-void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
+GMT_LOCAL void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
 	/* Deactivates the lock on the file */
 	gmtlib_file_unlock (GMT, fileno((*P)->fp));
 	fclose ((*P)->fp);
@@ -1082,6 +1112,7 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 	strcat (cmd, args);	/* Append the common arguments */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
 	GMT_Report (API, GMT_MSG_DEBUG, "Running: grdconvert %s\n", cmd);
+	API->GMT->common.V.active = false;	/* Since we will parse again below */
 	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
 		gmt_M_free (API->GMT, ncfile);
@@ -1242,7 +1273,10 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 					snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.USERDIR, &file[1]);
 				break;
 			case GMT_LOCAL_DIR:
-				snprintf (local_path, PATH_MAX, "%s", &file[1]);
+				if (jp2_file)	/* Leave as JP2 file in the local directory */
+					snprintf (local_path, PATH_MAX, "%s", jp2_file);
+				else
+					snprintf (local_path, PATH_MAX, "%s", &file[1]);
 				break;
 			default:	/* Place remote data files locally per the internal rules */
 				if (GMT->session.USERDIR == NULL || access (GMT->session.USERDIR, R_OK))

@@ -25,6 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
+[ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -149,7 +150,7 @@ Optional Arguments
     specific intensity scenario then run :doc:`grdgradient` separately first.
     If we should derive intensities from another file than *grid*, specify the
     file with suitable modifiers [Default is no illumination].  **Note**: If
-    the input data is an *image* then an *intensfile* or constant *intensity*
+    the input data represent an *image* then an *intensfile* or constant *intensity*
     must be provided.
 
 .. _-M:
@@ -166,12 +167,12 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*color*][**+z**\ *value*]
+**-Q**\ [**+z**\ *value*][*color*]
     Make grid nodes with NaN values transparent, using the color-masking
     feature in PostScript Level 3 (the PS device must support PS Level 3).
-    Use **+z** to select another grid value than NaN.
-    If input is instead an image then black pixels are set to be transparent;
-    append an alternate color to select another pixel value to be transparent.
+    If the input is a grid, use **+z** to select another grid value than NaN.
+    If input is instead an image, append an alternate color to select another
+    pixel value to be transparent [Default is black].
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -183,6 +184,17 @@ Optional Arguments
     smaller region than specified in the grid file will result in a
     subset of the grid [Default is the region given by the grid file].
 .. include:: explain_-Rz.rst_
+
+.. _-t:
+
+**-T**\ [**+o**\ [*pen*]][**+s**]
+    Plot a data grid without any interpolation. This involves converting each
+    node-centered bin into a polygon which is then painted separately.
+    Append **+s** to skip nodes with z = NaN. This option is suitable for
+    categorical data where interpolating between values is meaningless
+    and a categorical CPT has been provided via |-C|.
+    Optionally, append **+o** to draw the tile outlines, and specify a
+    custom pen if the default pen is not to your liking.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
@@ -226,7 +238,7 @@ place with most map projections. Because **grdimage** uses the
 PostScript colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
-linear projection, or (b) use :doc:`grdview` **-Ts** instead.
+linear projection, or (b) use **-T+s** instead to plot graticule polygons.
 
 .. include:: explain_grdresample.rst_
 
@@ -240,7 +252,7 @@ requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
 if the CPT provided via |-C| is categorical we will override any **-n** setting you
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
-gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` |-T|
+gridding and turns *off* anti-aliasing.  Alternatively, use |-T|
 instead to plot individual polygons centered on each node.
 
 Image formats recognized
@@ -281,12 +293,6 @@ color levels in the file colors.cpt, with linear scaling at 10
 inch/x-unit, tickmarks every 5 units::
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -pdf image
-
-To create an false color plot from the three grid files
-red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
-tickmarks every 5 units::
-
-    gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
 
 To create a sinusoidal projection of a remotely located Jessica Rabbit::
 

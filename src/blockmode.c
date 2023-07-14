@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 #define BLOCKMODE	/* Since mean, median, mode share near-similar macros we require this setting */
 
 #include "gmt_dev.h"
+#include "longopt/blockmode_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"blockmode"
 #define THIS_MODULE_MODERN_NAME	"blockmode"
@@ -39,20 +40,6 @@
 #define THIS_MODULE_OPTIONS "-:>RVabdefhioqrw" GMT_OPT("FH")
 
 #include "block_subs.h"
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
-	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
-	{ 0, 'A', "fields", "", "", "", "" },
-	{ 0, 'C', "center", "", "", "", "" },
-	{ 0, 'D', "bin-width", "", "", "a,c,h,l", "average,center,high,low" },
-	{ 0, 'E', "extend", "r,s", "record,source", "l,h", "lower,higher" },
-	{ 0, 'G', "gridfile", "", "", "", "" },
-	GMT_INCREMENT_KW,	/* Defined in gmt_constant.h since not a true GMT common option (but almost) */
-	{ 0, 'Q', "quicker", "", "", "", "" },
-	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
-	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
-	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
-};
 
 struct BIN_MODE_INFO {	/* Used for histogram binning */
 	double width;		/* The binning width used */
@@ -71,8 +58,8 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	const char *extra1[2] = {" [-G<grdfile>]", ""}, *extra2[2] = {" (requires -G)", ""};
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A<fields>] [-C] [-D[<width>][+c][+a|l|h]] [-E[r|s[+l|h]]]%s "
 		"[-Q] [-W[i|o][+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, extra1[API->external], GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT,

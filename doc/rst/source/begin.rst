@@ -23,7 +23,8 @@ Description
 
 The **begin** module instructs GMT to begin a new modern mode session.  If your script only makes
 a single plot then this is the most opportune time to specify the name
-and format(s) of your plot.  However, if you want to create multiple illustrations within this session,
+and format(s) of your plot (see also :doc:`cookbook/one-liner`).
+However, if you want to create multiple illustrations within this session,
 you will instead use :doc:`figure` to name the figure(s) you wish to make.  The session
 keeps track of all default and history settings and isolates them from any other session
 that may run concurrently.  Thus, unlike classic mode, you can run multiple modern sessions
@@ -43,7 +44,7 @@ Optional Arguments
     automatically from your *formats* selection(s).  If your script only
     performs calculations or needs to make several figures then you will not use this argument.
     While not recommended, if your *prefix* has spaces in it then you must enclose your
-    prefix in single or double quotes.
+    prefix in single or double quotes. You may also include a relative or absolute output path.
 
 .. _begin-formats:
 
@@ -53,6 +54,7 @@ Optional Arguments
     (default format is configurable via setting :term:`GMT_GRAPHICS_FORMAT` [pdf]).
     Optionally, append **+m** for monochrome image (BMP, JPEG, PNG, and TIFF only)
     and **+q**\ *quality* in 0-100 range to change JPEG quality [90].
+    If you specify one or more formats, you should also supply a :ref:`prefix <begin-prefix>`.
 
 .. _begin-options:
 

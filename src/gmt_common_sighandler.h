@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,10 +34,10 @@
 #ifndef NO_SIGHANDLER
 #   ifdef WIN32
 #       include <windows.h>
-        EXTERN_MSC BOOL sig_handler_win32 (DWORD dwType);
+        EXTERN_MSC BOOL gmt_sig_handler_win32 (DWORD dwType);
 #   else
 #       include <signal.h>
-        EXTERN_MSC void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
+        EXTERN_MSC void gmt_sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
 #   endif
 #endif /* !defined(NO_SIGHANDLER) */
 

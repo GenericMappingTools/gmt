@@ -61,8 +61,8 @@ Required Arguments
 **-F**\ **type**\ *width*\ [**+h**]
     Sets the filter **type**. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
-    *width* in same units as time column. By default we
-    perform low-pass filtering; append **+h** to select high-pass filtering.
+    *width* (i.e., :math:`6 \sigma`) in same units as time column. By default we
+    perform low-pass filtering. Append **+h** to select high-pass filtering.
     Some filters allow for optional arguments and a modifier. Available convolution
     filter types are:
 
@@ -70,10 +70,10 @@ Required Arguments
 
     (**c**) Cosine Arch: Weights follow a cosine arch curve.
 
-    (**g**) Gaussian: Weights are given by the Gaussian function.
-
-    (**f**) Custom: Instead of *width* give name of a one-column file
+    (**f**) Custom: Instead of *width*, give name of a one-column file
     with your own weight coefficients.
+
+    (**g**) Gaussian: Weights are given by the Gaussian function.
 
     Non-convolution filter types are:
 
@@ -92,11 +92,11 @@ Required Arguments
 
     (**U**) Upper: Return maximum of all negative values only.
 
-    Upper case type **B**, **C**, **G**, **M**, **P**, **F** will use
-    robust filter versions: i.e., replace outliers (2.5 L1 scale off
-    median, using 1.4826 \* median absolute deviation [MAD]) with median during filtering.
+    Upper case type **B**, **C**, **F**, **G**, **M** and **P** will use
+    robust filter versions: i.e., before filtering we replace outliers (2.5 x L1 scale off
+    the median, using 1.4826 \* median absolute deviation [MAD] as L1 scale) with the median during filtering.
 
-    In the case of **L**\|\ **U** it is possible that no data passes
+    In the case of **L**\|\ **U** it is possible that no data will pass
     the initial sign test; in that case the filter will return 0.0.
     Apart from custom coefficients (**f**), the other filters may accept variable
     filter widths by passing *width* as a two-column time-series file with filter widths
@@ -113,7 +113,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *increment*
-    *increment* is used when series is NOT equidistantly sampled. Then
+    *increment* is used when series is **not** equidistantly sampled. Then
     *increment* will be the abscissae resolution, i.e., all abscissae
     will be rounded off to a multiple of *increment*. Alternatively,
     resample data with :doc:`sample1d`.
@@ -154,7 +154,7 @@ Optional Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -210,25 +210,25 @@ Examples
 To filter the remote CO2 data set in the file MaunaLoa_CO2.txt (year, CO2)
 with a 5 year Gaussian filter, try
 
-   ::
+::
 
-    gmt filter1d @MaunaLoa_CO2.txt -Fg5 > CO2_trend.txt
+  gmt filter1d @MaunaLoa_CO2.txt -Fg5 > CO2_trend.txt
 
 Data along track often have uneven sampling and gaps which we do not
 want to interpolate using :doc:`sample1d`. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
-v3312.txt, checking for gaps of 10km and asymmetry of 0.3:
+v3312.txt, checking for gaps of 10 km and asymmetry of 0.3:
 
-   ::
+::
 
-    gmt filter1d v3312.txt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.txt
+  gmt filter1d v3312.txt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.txt
 
 To smooth a noisy geospatial track using a Gaussian filter of full-width 100 km
 and not shorten the track, and add the distances to the file, use
 
-   ::
+::
 
-    gmt filter1d track.txt -Tk+a -E -Fg200 > smooth_track.txt
+  gmt filter1d track.txt -Tk+a -E -Fg200 > smooth_track.txt
 
 See Also
 --------

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,16 +21,19 @@
  * Date:    10-MAR-2012
  * Version: 5
  *
- * Modules in this file:
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- * int32_abs                   Like abs but for int32_t
- * int64_abs                   Like abs but for int64_t
- * floatAlmostEqualUlps        Compare 2 floats with ULPs (not safe for values
- *                             near zero)
- * doubleAlmostEqualUlps       Same as floatAlmostEqualUlps for double
  * floatAlmostEqualUlpsAndAbs  Compare 2 floats with an absolute epsilon
  *                             check (values near zero), then based on ULPs
  * doubleAlmostEqualUlpsAndAbs Same as floatAlmostEqualUlpsAndAbs for double
+ * floatAlmostEqualUlps        Compare 2 floats with ULPs (not safe for values
+ *                             near zero)
+ * doubleAlmostEqualUlps       Same as floatAlmostEqualUlps for double
+ *
+ * Other items (see gmt_common_math.h):
+ *
+ * int32_abs                   Like abs but for int32_t
+ * int64_abs                   Like abs but for int64_t
  * floatAlmostEqual            Convenience macro for floatAlmostEqualUlps
  * doubleAlmostEqual           Convenience macro for doubleAlmostEqualUlps
  * floatAlmostEqualZero        Convenience macro for floatAlmostEqualUlpsAndAbs

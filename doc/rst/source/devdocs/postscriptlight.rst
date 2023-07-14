@@ -114,7 +114,7 @@ this diagram:
 The box represents the text or image. E.g., to plot a text string with
 its center at (*x*, *y*), you must use *justify* == 6. *justify* == 0
 means "no justification", which generally means (*x*, *y*) is at the
-bottom left. Convenience values PSL_NONE, PSL_BL, PSL_BC, PSL_BL,
+bottom left. Convenience values PSL_NONE, PSL_BL, PSL_BC, PSL_BR,
 PSL_ML, PSL_MC, PSL_MR, PSL_TL, PSL_TC and PSL_TR are available.
 
 Initialization
@@ -182,7 +182,7 @@ initialization:
     This function frees up the memory allocated inside PSL.
     Programmers using C/C++ should now this is a macro and there is no
     need to cast the pointer to *void \** as this will be done by the
-    macro. Fortran programmers should instead call
+    macro. FORTRAN programmers should instead call
     **PSL_freefunction**.
 
 **void PSL_beginaxes** (**struct PSL_CTRL** *\*PSL*, **double** *llx*,
@@ -215,7 +215,7 @@ initialization:
     Controls the initiation (or continuation) of a particular plot
     within the current session. Pass file pointer *fp* where the
     PostScript code will be written; if NULL then the output is
-    written to *stdout*. The Fortran interface always sends to *stdout*.
+    written to *stdout*. The FORTRAN interface always sends to *stdout*.
     If you want to receive the PostScript back in memory then you need
     to add PSL_MEMORY to *orientation* and call **PSL_getplot** to retrieve
     the plot after you finish the plot with **PSL_endplot**.

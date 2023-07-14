@@ -31,7 +31,7 @@ fi
 
 # General settings
 GSHHG_VERSION="2.3.7"
-DCW_VERSION="2.0.0"
+DCW_VERSION="2.1.1"
 GSHHG="gshhg-gmt-${GSHHG_VERSION}"
 DCW="dcw-gmt-${DCW_VERSION}"
 EXT="tar.gz"

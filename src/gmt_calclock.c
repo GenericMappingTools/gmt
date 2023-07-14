@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,27 +29,29 @@
  *
  *       W H F Smith, April 2000
  *
- * Public functions (18):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- * gmt_dt2rdc           :
- * gmt_format_calendar  :
- * gmtlib_g_ymd_is_bad     :
- * gmt_gcal_from_dt     :
- * gmt_gcal_from_rd     :
- * gmtlib_get_time_label   :
- * gmtlib_gmonth_length    :
- * gmtlib_is_gleap         :
- * gmtlib_iso_ywd_is_bad   :
- * gmtlib_moment_interval  :
- * gmt_rd_from_gymd     :
- * gmtlib_rd_from_iywd     :
- * gmt_rdc2dt           :
- * gmtlib_splitinteger     :
- * gmtlib_verify_time_step :
- * gmtlib_y2_to_y4_yearfix :
- * gmt_cal_imod         :
- * gmt_gyear_from_rd    :
-*/
+ * gmt_dt2rdc
+ * gmt_format_calendar
+ * gmt_gcal_from_dt
+ * gmt_gcal_from_rd
+ * gmt_rd_from_gymd
+ * gmt_rdc2dt
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ * gmtlib_g_ymd_is_bad
+ * gmtlib_get_time_label
+ * gmtlib_gmonth_length
+ * gmtlib_is_gleap
+ * gmtlib_iso_ywd_is_bad
+ * gmtlib_moment_interval
+ * gmtlib_rd_from_iywd
+ * gmtlib_splitinteger
+ * gmtlib_verify_time_step
+ * gmtlib_y2_to_y4_yearfix
+
+ */
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"

@@ -14,7 +14,7 @@
 
 ## What is GMT?
 
-GMT is an open source collection of about 90 command-line tools for manipulating
+GMT is an open source collection of about 100 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing high-quality illustrations ranging from simple x-y
 plots via contour maps to artificially illuminated surfaces, 3D perspective
@@ -85,7 +85,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2022 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
+Copyright (c) 1991-2023 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -98,7 +98,7 @@ operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (* means optional):
 
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
-[Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
+[Geospatial Data Abstraction Library (GDAL)](https://gdal.org),
 [Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),

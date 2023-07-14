@@ -167,9 +167,10 @@ FONT Parameters
         size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo [:doc:`theme
-        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
-        with plot size <auto-scaling>`.
+        Font to use for text plotted as part of the GMT time logo. **Note**: Since the
+        time logo has a fixed height the font size for the time stamp is 8p and for the
+        optional label it is 7p. Hence, changing this font only affects the font style
+        and color but not its size.
 
     **FONT_SUBTITLE**
         Font to use when plotting titles over graphs that involve a subtitle
@@ -290,6 +291,8 @@ FORMAT Parameters
         **F**      Encode sign using WESN suffix
         **G**      Same as **F** but with a leading space before suffix
         ========   =================================================================
+
+        **Note**: With :term:`FORMAT_GEO_MAP`, **F** and **G** may also be used as a prefix.
 
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
@@ -781,7 +784,7 @@ MAP Parameters
         to the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
-        Size of grid cross at lon-lat intersections. **0** means draw
+        Size of grid cross at primary lon-lat intersections. **0** means draw
         continuous gridlines instead.  A nonzero size will draw a symmetric grid
         cross. Signed sizes have special meaning and imply grid line ticks that
         embellish an already drawn set of gridlines: A negative size will only
@@ -789,16 +792,13 @@ MAP Parameters
         draw symmetric ticks [default is **0p**].
 
     **MAP_GRID_CROSS_SIZE_SECONDARY**
-        Size of grid cross at secondary lon-lat intersections. **0** means draw
-        continuous gridlines instead.  A nonzero size will draw a symmetric grid
-        cross.  Signed sizes have special meaning and imply grid line ticks that
-        embellish an already drawn set of gridlines: A negative size will only
-        draw ticks away from Equator and Greenwich, while a positive size will
-        draw symmetric ticks [default is **0p**].
+        Size of grid cross at secondary lon-lat intersections.
+        See :term:`MAP_GRID_CROSS_SIZE_PRIMARY` for details.
+        [default is **0p**].
 
     **MAP_GRID_PEN**
         Sets both :term:`MAP_GRID_PEN_PRIMARY` and :term:`MAP_GRID_PEN_SECONDARY` to
-        the value specified. This setting is not include in the **gmt.conf** file.
+        the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or

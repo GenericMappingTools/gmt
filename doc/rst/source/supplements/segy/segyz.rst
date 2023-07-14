@@ -194,10 +194,10 @@ To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at ±3 and with wiggle trace and positive
 variable area shading in black, use
 
-   ::
+::
 
-    gmt segyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
-            -C3 -N -So -W -Fblack -pdf segy
+  gmt segyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
+          -C3 -N -So -W -Fblack -pdf segy
 
 .. module_note_begins
 

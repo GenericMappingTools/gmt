@@ -43,7 +43,7 @@ using the specified stage or total reconstruction rotations. These
 flowlines are convolved with the shape of the seamount (using a Gaussian
 shape given amplitude and radius = 6 sigma) and added up to give a
 Cumulative Volcano Amplitude grid (CVA). See option **-:** on how to
-read (latitude,longitude,...) files.
+read (latitude,longitude,...) files [*Wessel*, 1999; 2008].
 
 Required Arguments
 ------------------
@@ -131,9 +131,9 @@ Examples
 To create a CVA image from the Pacific (x,y,z,r,t) data in the file
 seamounts.txt, using the DC85.txt Euler poles, run
 
-   ::
+::
 
-    gmt hotspotter seamounts.txt -EDC85.txt -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
+  gmt hotspotter seamounts.txt -EDC85.txt -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 
 This file can then be plotted with :doc:`grdimage </grdimage>`.
 

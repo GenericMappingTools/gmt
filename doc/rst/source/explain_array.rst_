@@ -1,8 +1,8 @@
-Generate 1D Array
------------------
+Generate 1-D Array
+------------------
 
 We will demonstrate the use of options for creating 1-D arrays via :doc:`/gmtmath`.
-Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*, e.g.,::
+Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*, e.g.::
 
     gmt math -o0 -T3.1/4.2/0.1 T =
     3.1
@@ -12,6 +12,7 @@ Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*, e.
     3.5
     3.6
     3.7
+    ...
 
 Append **+b** if we should take log2 of *min* and *max*, get their nearest integers,
 build an equidistant log2-array using *inc* integer increments in log2, then undo

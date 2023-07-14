@@ -71,7 +71,8 @@ Optional Arguments
     For multiple segment data, dump each segment to a separate output
     file [Default writes a single multiple segment file]. Append a
     format template for the individual file names; this template
-    **must** contain a C format specifier that can format an integer
+    **must** contain a C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_
+    format specifier that can format an integer
     argument (the segment number); this is usually %d but could be %08d
     for leading zeros, etc. Optionally, it may also contain the
     format %c *before* the integer; this will then be replaced by C

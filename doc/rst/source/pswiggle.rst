@@ -82,7 +82,7 @@ and obtain
 Bugs
 ----
 
-Sometimes the (x,y) coordinates are not printed with enough significant
+Sometimes the (*x,y*) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 

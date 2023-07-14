@@ -38,24 +38,24 @@ Synopsis
 Description
 -----------
 
-**gmtsplit** reads a series of (x,y[,z]) records [or optionally
-(x,y[,z],d,h); see |-S| option] from standard input [or *xy[z][dh]file*]
-and splits this into separate lists of (x,y[,z]) series, such that each
-series has a nearly constant azimuth through the x,y plane. There are
+**gmtsplit** reads a series of (*x,y[,z]*) records [or optionally
+(*x,y[,z],d,h*); see |-S| option] from standard input [or *xy[z][dh]file*]
+and splits this into separate lists of (*x,y[,z]*) series, such that each
+series has a nearly constant azimuth through the *x,y* plane. There are
 options to choose only those series which have a certain orientation, to
-set a minimum length for series, and to high- or low-pass filter the z
-values and/or the x,y values. **gmtsplit** is a useful filter between
+set a minimum length for series, and to high- or low-pass filter the *z*
+values and/or the *x,y* values. **gmtsplit** is a useful filter between
 data extraction and :doc:`wiggle` plotting, and can also be used to
-divide a large x,y[,z] dataset into segments.
+divide a large *x,y[,z]* dataset into segments.
 
 Required Arguments
 ------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
-    data values. To use (x,y,z,d,h) input, sorted so that d is
-    non-decreasing, specify the |-S| option; default expects (x,y,z)
+    files with 2, 3, or 5 columns holding (*x,y*,[*z*\ [,\ *d,h*\ ]])
+    data values. To use (*x,y,z,d,h*) input, sorted so that *d* is
+    non-decreasing, specify the |-S| option; default expects (*x,y,z*)
     only. If no files are specified, **gmtsplit** will read from
     standard input.
 
@@ -85,20 +85,20 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *xy\_filter*/*z\_filter*
-    Filter the z values and/or the x,y values, assuming these are
-    functions of d coordinate. *xy\_filter* and *z\_filter* are filter
+    Filter the z values and/or the *x,y* values, assuming these are
+    functions of *d* coordinate. *xy\_filter* and *z\_filter* are filter
     widths in distance units. If a filter width is zero, the filtering
     is not performed. The absolute value of the width is the full width
     of a cosine-arch low-pass filter. If the width is positive, the data
     are low-pass filtered; if negative, the data are high-pass filtered
     by subtracting the low-pass value from the observed value. If
-    *z\_filter* is non-zero, the entire series of input z values is
+    *z\_filter* is non-zero, the entire series of input *z* values is
     filtered before any segmentation is performed, so that the only edge
     effects in the filtering will happen at the beginning and end of the
-    complete data stream. If *xy\_filter* is non-zero, the data is first
-    divided into segments and then the x,y values of each segment are
+    complete data stream. If *xy\_filter* is non-zero, the data are first
+    divided into segments and then the *x,y* values of each segment are
     filtered separately. This may introduce edge effects at the ends of
-    each segment, but prevents a low-pass x,y filter from rounding off
+    each segment, but prevents a low-pass *x,y* filter from rounding off
     the corners of track segments. [Default = no filtering].
 
 .. _-N:
@@ -127,12 +127,12 @@ Optional Arguments
 .. _-S:
 
 **-S**
-    Both d and h are supplied. In this case, input contains x,y,z,d,h.
-    [Default expects (x,y,z) input, and d,h are computed from delta x,
-    delta y. Use **-fg** to indicate map data; then x,y are assumed to
+    Both *d* and *h* are supplied. In this case, input contains *x,y,z,d,h*.
+    [Default expects (*x,y,z*) input, and *d,h* are computed from delta *x*,
+    delta *y*. Use **-fg** to indicate map data; then *x,y* are assumed to
     be in degrees of longitude, latitude, distances are considered to be
     in kilometers, and angles are actually azimuths. Otherwise,
-    distances are Cartesian in same units as x,y and angles are
+    distances are Cartesian in same units as *x,y* and angles are
     counter-clockwise from horizontal].
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -177,9 +177,9 @@ Distance Calculations
 ---------------------
 
 The type of input data is dictated by the **-f** option. If **-fg** is
-given then x,y are in degrees of longitude, latitude, distances are in
+given then *x,y* are in degrees of longitude, latitude, distances are in
 kilometers, and angles are azimuths. Otherwise, distances are Cartesian
-in same units as x,y and angles are counter-clockwise from horizontal.
+in same units as *x,y* and angles are counter-clockwise from horizontal.
 
 Examples
 --------
@@ -194,11 +194,11 @@ region **-R**\ 300/315/12/20. You want to use a 100 km low-pass filter to
 smooth the tracks and a 500km high-pass filter to detrend the magnetic
 anomalies. Try this:
 
-   ::
+::
 
-    gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt split -A90/15 -F100/-500 \
-        -D100 -S -V -fg | gmt wiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
-        -W0.75p -Ggray -Z200 -pdf JA020015_wiggles
+  gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt split -A90/15 -F100/-500 \
+      -D100 -S -V -fg | gmt wiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
+      -W0.75p -Ggray -Z200 -pdf JA020015_wiggles
 
 MGD-77 users: For this application we recommend that you extract dist,azim
 from :doc:`mgd77list <supplements/mgd77/mgd77list>` rather than have
@@ -208,9 +208,9 @@ Suppose you have been given a binary, double-precision file containing
 lat, lon, gravity values from a survey, and you want to split it into
 profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try this:
 
-   ::
+::
 
-    gmt split survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
+  gmt split survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
 See Also
 --------

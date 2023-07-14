@@ -10,5 +10,5 @@
     Alternatively, give *color1,color2*\ [*,color3*\ ,...]
     to build a linear continuous CPT from those colors automatically,
     where *z* starts at 0 and is incremented by one for each color.
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    In this case *color*\ **n** can be a r/g/b triplet, a :ref:`color name <RGBchart>`,
     or an HTML hexadecimal color (e.g. #aabbcc).

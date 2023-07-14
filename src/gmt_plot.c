@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,47 +26,68 @@
  * Date:	1-JAN-2010
  * Version:	5
  *
- * PUBLIC Functions include (39):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *	gmt_draw_map_scale 	 : Plot map scale
- *	gmt_draw_map_rose 	 : Plot map rose
- *	gmt_draw_map_panel 	 : Plot map panel
- *	gmt_draw_front 		 : Draw a front line
- *	gmt_geo_line 		 : Plots line in lon/lat on maps, takes care of periodicity jumps
- *	gmt_plot_geo_ellipse 	 : Plots ellipse in lon/lat on maps, takes care of periodicity jumps
- *	gmt_geo_polygons 	 : Plots polygon in lon/lat on maps, takes care of periodicity jumps
- *	gmt_geo_rectangle 	 : Plots rectangle in lat/lon on maps, takes care of periodicity jumps
- *	gmt_map_basemap 	 : Generic basemap function
- *	gmt_map_clip_off 	 : Deactivate map region clip path
- *	gmt_map_clip_on 	 : Activate map region clip path
- *	gmt_BB_clip_on		 : Activate Bounding Box clip path
- *	gmt_plane_perspective	 : Adds PS matrix to simulate perspective plotting
- *	gmt_plot_line 		 : Plots path (in projected coordinates), takes care of boundary crossings
- *	gmt_vertical_axis 	 : Draw 3-D vertical axes
- *	gmt_xy_axis 		 : Draw x or y axis
- *	gmt_linearx_grid 	 : Draw linear x grid lines
- *	gmt_setfill              :
- *	gmt_setfont              :
- *	gmt_draw_map_inset       :
- *	gmt_setpen               :
- *	gmt_draw_custom_symbol   :
- *	gmt_add_label_record     :
- *	gmt_contlabel_save_begin :
- *	gmt_contlabel_save_end   :
- *	gmt_textpath_init        :
- *	gmt_contlabel_plot       :
- *	gmt_export2proj4         :
- *	gmt_plotinit             :
- *	gmt_plotcanvas           :
- *	gmt_plotend              :
- *	gmt_geo_polarcap_segment :
- *	gmt_geo_vector           :
- *	gmtlib_create_ps            :
- *	gmtlib_free_ps_ptr          :
- *	gmtlib_free_ps              :
- *	gmtlib_read_ps              :
- *	gmtlib_write_ps             :
- *	gmtlib_duplicate_ps         :
+ *  gmt_BB_clip_on
+ *  gmt_add_label_record
+ *  gmt_contlabel_plot
+ *  gmt_contlabel_save_begin
+ *  gmt_contlabel_save_end
+ *  gmt_draw_custom_symbol
+ *  gmt_draw_front
+ *  gmt_draw_map_inset
+ *  gmt_draw_map_panel
+ *  gmt_draw_map_rose
+ *  gmt_draw_map_scale
+ *  gmt_draw_vertical_scale
+ *  gmt_draw_vertical_scale_old
+ *  gmt_export2proj4
+ *  gmt_geo_line
+ *  gmt_geo_polarcap_segment
+ *  gmt_geo_polygons
+ *  gmt_geo_rectangle
+ *  gmt_geo_vector
+ *  gmt_geo_wedge
+ *  gmt_get_postscript
+ *  gmt_importproj4
+ *  gmt_inch_to_degree_scale
+ *  gmt_linearx_grid
+ *  gmt_map_basemap
+ *  gmt_map_clip_off
+ *  gmt_map_clip_on
+ *  gmt_map_text
+ *  gmt_map_title
+ *  gmt_plane_perspective
+ *  gmt_plot_geo_ellipse
+ *  gmt_plot_image_graticules
+ *  gmt_plot_line
+ *  gmt_plot_timex_grid
+ *  gmt_plotcanvas
+ *  gmt_plotend
+ *  gmt_plotinit
+ *  gmt_ps_append
+ *  gmt_set_basemap_orders
+ *  gmt_set_psfilename
+ *  gmt_setfill
+ *  gmt_setfont
+ *  gmt_setpen
+ *  gmt_strip_layer
+ *  gmt_text_is_latex
+ *  gmt_textpath_init
+ *  gmt_vertical_axis
+ *  gmt_xy_axis
+ *  gmt_xy_axis2
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *  gmtlib_create_ps
+ *  gmtlib_duplicate_ps
+ *  gmtlib_ellipsoid_name_convert
+ *  gmtlib_free_ps
+ *  gmtlib_free_ps_ptr
+ *  gmtlib_read_ps
+ *  gmtlib_set_do_seconds
+ *  gmtlib_write_ps
  *
  */
 
@@ -93,7 +114,13 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 /* Get bitmapped 600 dpi GMT glyph for timestamp.  The glyph is a 90 x 220 pixel 1-bit image
 	and it is here represented as ceil (220 / 8) * 90 = 2520 bytes */
 
-static unsigned char GMT_glyph[2520] = {
+
+#define GMT_TIMESTAMP_DATESIZE	8.0	/* Fixed font size for date-clock timestamp portion */
+#define GMT_TIMESTAMP_LABELSIZE	7.0	/* Fixed font size for optional user label timestamp portion */
+#define GMT_TIMESTAMP_GLYPH_WIDTH	220	/* Fixed pixel width of glyph image */
+#define GMT_TIMESTAMP_GLYPH_HEIGHT	90	/* Fixed pixel height of glyph image */
+
+static unsigned char GMT_glyph[2520] = {	/* The GMT glyph bitmap */
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -424,15 +451,15 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to load EPS file equation.eps\n");
 		return NULL;
 	}
-	/* Clean up */
-	if (gmt_remove_dir (API, tmpdir, false)) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
-		PSL_free (picture);
-		return NULL;
-	}
 	/* Change back to original directory */
 	if (chdir (here)) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to change directory back to %s - exiting.\n", here);
+		PSL_free (picture);
+		return NULL;
+	}
+	/* Clean up */
+	if (gmt_remove_dir (API, tmpdir, false)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
 		PSL_free (picture);
 		return NULL;
 	}
@@ -833,7 +860,7 @@ GMT_LOCAL void gmtplot_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	}
 }
 
-void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
+void gmt_plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
 	unsigned int nx;
 	double *x = NULL;
 
@@ -2000,7 +2027,7 @@ GMT_LOCAL void gmtplot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		}
 		else if (!A[GMT_X]->item[item[k]].active || fabs(dx) == 0.0) { /* Nothing */ }
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_TIME)
-			plot_timex_grid (GMT, PSL, w, e, s, n, item[k]);
+			gmt_plot_timex_grid (GMT, PSL, w, e, s, n, item[k]);
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
 			gmtplot_logx_grid (GMT, PSL, w, e, s, n, dx);
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_POW)
@@ -2693,7 +2720,7 @@ GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char
 	}
 }
 
-bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
+GMT_LOCAL bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
 	/* Here, latitude is -90 or +90 and the question is do we annotation that latitude? */
 	if (GMT->current.proj.projection_GMT == GMT_ECKERT4   && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
 	if (GMT->current.proj.projection_GMT == GMT_HAMMER    && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
@@ -2986,6 +3013,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 }
 
 GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
+    int way;
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -2996,6 +3024,10 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_FRAME_AFTER)) return;	/* Wrong order */
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	/* Try to arrange longitudes relative to central meridian if it has been set */
+	if ((way = gmtlib_adjust_we_if_central_lon_set (GMT, &w, &e)))
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "W/E boundaries shifted by %d\n", way * 360);
 
 	PSL_comment (PSL, "Start of map frame\n");
 
@@ -3161,16 +3193,20 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	 *   1         2        3
 	 */
 
-	time_t right_now;
-	char label[GMT_LEN512] = {""}, text[GMT_LEN256] = {""};
+	char label[GMT_LEN512] = {""};
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
 	/* Plot time string in format defined by format_time_stamp */
 
-	right_now = time ((time_t *)0);
-	strftime (text, sizeof(text), GMT->current.setting.format_time_stamp, localtime (&right_now));
-	snprintf (label, GMT_LEN256, "  %s  ", text);
+	if (GMT->common.U.string[0])	/* Override UNIX time stamp with custom short string */
+		snprintf (label, GMT_LEN256, "  %s  ", GMT->common.U.string);
+	else {	/* Build UNIX time stamp based on current time */
+		time_t right_now = time ((time_t *)0);
+		char text[GMT_LEN256] = {""};
+		strftime (text, sizeof(text), GMT->current.setting.format_time_stamp, localtime (&right_now));
+		snprintf (label, GMT_LEN256, "  %s  ", text);
+	}
 
 	PSL_command (PSL, "%% Begin GMT time-stamp\nV\n");
 	PSL_setorigin (PSL, x, y, 0.0, PSL_FWD);
@@ -3178,7 +3214,7 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	PSL_setfont (PSL, GMT->current.setting.font_logo.id);
 	PSL_defunits (PSL, "PSL_g_w", dim[0]);	/* Size of the black [GMT] box */
 	PSL_defunits (PSL, "PSL_g_h", dim[1]);
-	PSL_deftextdim (PSL, "PSL_b", 8.0, label);	/* Size of the white [timestamp] box (use only length) */
+	PSL_deftextdim (PSL, "PSL_b", GMT_TIMESTAMP_DATESIZE, label);	/* Size of the white [timestamp] box (use only length) */
 
 	/* When justification is not BL (justify == 1), add some PostScript code to move to the
 		location where the lower left corner of the time stamp box is to be drawn */
@@ -3200,16 +3236,18 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 	PSL_plotsymbol (PSL, 0.5*dim[0], 0.5*dim[1], dim, PSL_RECT);
-	PSL_plotcolorimage (PSL, 0.0, 0.0, dim[0], dim[1], PSL_BL, GMT_glyph, 220, 90, 1);
+	PSL_plotcolorimage (PSL, 0.0, 0.0, dim[0], dim[1], PSL_BL, GMT_glyph, GMT_TIMESTAMP_GLYPH_WIDTH, GMT_TIMESTAMP_GLYPH_HEIGHT, 1);
 	PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 	PSL_command (PSL, "PSL_g_h PSL_b_w PSL_g_w 0 Sb\n");
-	PSL_plottext (PSL, dim[0], dim[2], 8.0, label, 0.0, PSL_BL, 0);
+	(void)gmt_setfont (GMT, &GMT->current.setting.font_logo);
+	/* Place timestamp label at 8p */
+	PSL_plottext (PSL, dim[0], dim[2], GMT_TIMESTAMP_DATESIZE, label, 0.0, PSL_BL, 0);
 
 	/* Optionally, add additional label to the right of the box */
 
-	if (U_label && U_label[0]) {
+	if (U_label && U_label[0]) {	/* Place user label at 7p with 3 leading spaces */
 		snprintf (label, GMT_LEN512, "   %s", U_label);
-		PSL_plottext (PSL, 0.0, 0.0, -7.0, label, 0.0, PSL_BL, 0);
+		PSL_plottext (PSL, 0.0, 0.0, -GMT_TIMESTAMP_LABELSIZE, label, 0.0, PSL_BL, 0);
 	}
 
 	PSL_command (PSL, "U\n%% End GMT time-stamp\n");
@@ -6425,7 +6463,7 @@ GMT_LOCAL void gmtplot_map_annotations (struct GMT_CTRL *GMT) {
 	gmtplot_map_annotate (GMT, PSL, w, e, s, n);
 }
 
-void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
+GMT_LOCAL void gmtplot_title_breaks_decode (struct GMT_CTRL *GMT, const char *in_string, char *out_string) {
 	/* Deal with long-form @^ or <break> strings in title and subtitle and replace with GMT_ASCII_GS */
 	unsigned int i, o, kl[2] = {2, 7}, id;
 	char *kw[2] = {"@^", "<break>"};
@@ -9102,7 +9140,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	if (O_active && GMT->current.ps.switch_set) {	/* User used --PS_CHAR_ENCODING=<encoding> to change it */
 		GMT->current.ps.switch_set = false;
-		switch_charset = 4;
+		switch_charset = PSL_CHANGESET;
 	}
 
 	/* Get title */
@@ -9172,9 +9210,14 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "A transparency of 0/0 is the same as opaque. Skipped\n");
 			GMT->common.t.active = false;
 		}
-		else 	/* Place both fill and stroke transparencies in 0-1 normalized range, plus the blend mode name */
+		else	/* Place both fill and stroke transparencies in 0-1 normalized range, plus the blend mode name */
 			PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value[GMT_FILL_TRANSP], 1.0 - 0.01 * GMT->common.t.value[GMT_PEN_TRANSP], GMT->current.setting.ps_transpmode);
 	}
+    /* Convert from percentage transparency to normalized opacity */
+    PSL->init.transparencies[PSL_FILL_TRANSP] = 1.0 - 0.01 * GMT->common.t.value[GMT_FILL_TRANSP];  /* Update layer fill transparency [0/0] */
+    PSL->init.transparencies[PSL_PEN_TRANSP]  = 1.0 - 0.01 * GMT->common.t.value[GMT_PEN_TRANSP];  /* Update layer stroke transparency [0/0] */
+    PSL->init.layer_transp = (int)GMT->common.t.active;  /* 1 if we have set -t */
+
 	/* If requested, place the timestamp (text set here but plotting happens in gmt_plotend) */
 
 	if (GMT->current.ps.logo_cmd) {
@@ -10548,12 +10591,12 @@ struct GMT_POSTSCRIPT * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length)
 	/* Makes an empty GMT_POSTSCRIPT struct - If length > 0 then we also allocate the string */
 	struct GMT_POSTSCRIPT *P = gmt_get_postscript (GMT);
 	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P);
-	PH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	PH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	if (length) {	/* Allocate a blank string */
 		P->data = gmt_M_memory (GMT, NULL, length, char);
 		PH->n_alloc = length;	/* But P->n_bytes = 0 since nothing was placed there */
 		PH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
+		PH->alloc_level = GMT->hidden.func_level;   /* Must be freed at this level. */
 	}
 	return (P);
 }
@@ -10746,11 +10789,12 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 		if (close_file) fclose (fp);
 		return (GMT_DATA_WRITE_ERROR);
 	}
+    fflush (fp);    /* Make sure we flush the pipe since we don't know if fclose will happen */
 	if (close_file) fclose (fp);
 	return (GMT_NOERROR);
 }
 
-void gmtplot_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
+GMT_LOCAL void gmtplot_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
 	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P_copy);
 	if (P_obj->n_bytes > PH->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n_bytes, char);
@@ -10775,4 +10819,72 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
 	P->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT_HIDDEN);
 	return (P);
+}
+
+void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity) {
+	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
+	 * so it can also be used in grdimage.
+	 * G is the data grid
+	 * I is an optional intensity grid.  If NULL then either intensity points to a
+	 *    constant intensity or it is also NULL, meaning no intensity adjustment for colors.
+	 * P is the CPT in use for fills
+	 * pen is an optional pen for drawing the graticules, or NULL
+	 * skip determines if we paint NaN polygons or not
+	 * intensity is pointer to a constant intensity or NULL.
+	 */
+	openmp_int row, col;
+	uint64_t ij, n;
+	int outline = 0;
+	bool delay_outline = false;
+	double *xx = NULL, *yy = NULL, inc2[2] = {0.0, 0.0};
+	struct GMT_FILL fill;
+	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
+	gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);   /* Initialize fill structure */
+
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tiling grid without interpolation\n");
+
+	inc2[GMT_X] = 0.5 * G->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * G->header->inc[GMT_Y];
+	if (pen) {	/* Want to outline each graticule with given pen */
+		if (gmt_M_is_zero (pen->rgb[3])) {	/* No transparency, use the pen as is while painting polygons */
+			gmt_setpen (GMT, pen);
+			outline = 1;
+		}
+		else {	/* Pen has transparency so do lines separately */
+			delay_outline = true;
+			outline = 0;
+		}
+	}
+	S->data = gmt_M_memory (GMT, NULL, 2, double *);
+	S->n_columns = 2;
+	gmt_M_grd_loop (GMT, G, row, col, ij) { /* Compute rgb for each pixel */
+		if (gmt_M_is_fnan (G->data[ij]) && skip) continue;
+		if (I && skip && gmt_M_is_fnan (I->data[ij])) continue;
+		gmt_get_fill_from_z (GMT, P, G->data[ij], &fill);
+		if (I)
+			gmt_illuminate (GMT, I->data[ij], fill.rgb);
+		else if (intensity)
+			gmt_illuminate (GMT, *intensity, fill.rgb);
+		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, G->x[col] - inc2[GMT_X], G->x[col] + inc2[GMT_X], G->y[row] - inc2[GMT_Y], G->y[row] + inc2[GMT_Y]);
+		gmt_setfill (GMT, &fill, outline);
+		S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
+		gmt_geo_polygons (GMT, S);
+		gmt_M_free (GMT, xx);
+		gmt_M_free (GMT, yy);
+	}
+	if (delay_outline) {	/* Just get graticule outlines and draw them */
+ 		gmt_setpen (GMT, pen);	/* Set outline pen */
+		gmt_setfill (GMT, NULL, 1);	/* Turn off fill */
+	 	gmt_M_grd_loop (GMT, G, row, col, ij) { /* Visit each node */
+			if (gmt_M_is_fnan (G->data[ij]) && skip) continue;
+			if (I && skip && gmt_M_is_fnan (I->data[ij])) continue;
+			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, G->x[col] - inc2[GMT_X], G->x[col] + inc2[GMT_X], G->y[row] - inc2[GMT_Y], G->y[row] + inc2[GMT_Y]);
+			S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
+			gmt_geo_polygons (GMT, S);
+			gmt_M_free (GMT, xx);
+			gmt_M_free (GMT, yy);
+		}
+	}
+  	
+	S->data[GMT_X] = S->data[GMT_Y] = NULL; /* Since xx and yy was set to NULL but not data... */
+	gmt_free_segment (GMT, &S);
 }

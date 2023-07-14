@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdgradient_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdgradient"
 #define THIS_MODULE_MODERN_NAME	"grdgradient"
@@ -448,7 +449,7 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -578,6 +579,7 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 #endif
 #endif
 	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 2, In, &Grid);	/* true if input is a read-only array */
+	if (new_grid) GMT_Report (API, GMT_MSG_DEBUG, "Input grid duplicated as it was read-only\n");
 
 	/* If new_grid is true then Grid points to a duplicate of In but will have two boundary rows,columns padding.
 	 * If new_grid is false then Grid simply points to In which presumably has two boundary row,column padding.
