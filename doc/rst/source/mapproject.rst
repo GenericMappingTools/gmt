@@ -199,8 +199,8 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ [**d**\|\ **e**]
-    List all projection parameters. To only list datums, use |-Q|\d. To
-    only list ellipsoids, use |-Q|\e.
+    List all projection parameters to STDERR and exit. No input files are read nor are other options checked.
+    To only list datums, use |-Q|\d. To only list ellipsoids, use |-Q|\e.
 
 .. _-S:
 
