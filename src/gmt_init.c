@@ -9522,6 +9522,11 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 
+		if (p[0] == '\0') {	/* No range given */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-i: No columns specified\n");
+				return (GMT_PARSE_ERROR);
+		}
+
 		if (p[0] == 't') {	/* Got the trailing test "column" */
 			GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = true;
 			if (p[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
