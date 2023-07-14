@@ -97,7 +97,8 @@ Optional Arguments
     to fixed point. Use |-A|\ **o** to get orientations (-90/90) rather than
     azimuths (0/360). Upper case **F**, **B** or **O** will convert from
     geodetic to geocentric latitudes and estimate azimuth of geodesics
-    (assuming the current ellipsoid is not a sphere). If no fixed point
+    (assuming the current ellipsoid is not a sphere). If more than one
+    of f,b,o,F,B,O are given the first one is used. If no fixed point
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
