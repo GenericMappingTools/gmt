@@ -418,6 +418,14 @@ the projected region defined by a stereographic projection, try
 
   gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
 
+Obtain azimuth of railroad using the points where it enters and leaves a
+city,
+
+::
+
+  echo -87.7447873 42.1192976 -87.7725841 42.1523955 | gmt mapproject -AF+v -fg
+
+
 Restrictions
 ------------
 
