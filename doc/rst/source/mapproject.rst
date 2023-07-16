@@ -337,14 +337,14 @@ on a Mercator grid for a given scale of 0.5 cm per degree and selected region, r
 
 ::
 
-  gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
+gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
 
 To convert UTM coordinates in meters to geographic locations, given
 a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
 
 ::
 
-  gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
+gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
 
 
 To transform several 2-column, binary, double precision files with
@@ -354,7 +354,7 @@ those points that would fall outside the map area, run
 
 ::
 
-  gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
+gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
 To convert the geodetic coordinates (lon, lat, height) in the file
 old.txt from the NAD27 CONUS datum (Datum ID 131 which uses the
@@ -362,7 +362,7 @@ Clarke-1866 ellipsoid) to WGS 84, run
 
 ::
 
-  gmt mapproject old.txt -Th131 > new.txt
+gmt mapproject old.txt -Th131 > new.txt
 
 To compute the closest distance (in km) between each point in the input
 file quakes.txt and the line segments given in the multisegment ASCII
@@ -370,7 +370,7 @@ file coastline.txt, run
 
 ::
 
-  gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
+gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
 
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times
@@ -378,7 +378,7 @@ assuming a fixed speed of 12 knots.  We do this with
 
 ::
 
-  gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
+gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
 where :term:`TIME_UNIT` is set to hour so that the speed is
 measured in nm (set by |-G|) per hour (set by :term:`TIME_UNIT`).
@@ -389,41 +389,40 @@ To determine the geographic coordinates of the mid-point of this transverse Merc
 
 ::
 
-  gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
+gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
 
 To determine the rectangular region that encompasses the oblique region
 defined by an oblique Mercator projection, try
 
 ::
 
-  gmt mapproject -R270/20/305/25+r -JOc280/25.5/22/69/2c -WR
+gmt mapproject -R270/20/305/25+r -JOc280/25.5/22/69/2c -WR
 
 To determine the oblique region string (in degrees) that corresponds to a rectangular
 (but oblique) region specified in projected units defined by an oblique Mercator projection, try
 
 ::
 
-  gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
+gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
 
 To instead get a closed polygon of the oblique area in geographical coordinates, try
 
 ::
 
-  gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Wr+n > polygon.txt
+gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Wr+n > polygon.txt
 
 To find the region string that corresponds to the rectangular region that encompasses
 the projected region defined by a stereographic projection, try
 
 ::
 
-  gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
+gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
 
-Obtain azimuth of railroad using the points where it enters and leaves a
-city,
+Obtain azimuth of railroad using the points where it enters and leaves a city,
 
 ::
 
-  echo -87.7447873 42.1192976 -87.7725841 42.1523955 | gmt mapproject -AF+v -fg
+echo -87.7447873 42.1192976 -87.7725841 42.1523955 | gmt mapproject -AF+v -fg -o4
 
 
 Restrictions
