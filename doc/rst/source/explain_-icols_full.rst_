@@ -10,7 +10,8 @@ The **-i** option
 
 The **-i** option allows you to specify which input file physical data columns to use and in what order. Specify
 individual columns or column ranges in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified,
-separated by commas [Default reads all columns in order, starting with the first column (i.e., column 0)]. Columns can
+separated by commas [Default reads all columns in order, starting with the first column given.]
+Columns are numbered starting at 0, and at least one column must be given. Columns can
 be repeated. The chosen data columns will be used as given and columns not listed will be skipped. Optionally, append
 one of the following modifiers to any column or column range to transform the input columns:
 
