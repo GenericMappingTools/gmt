@@ -9,7 +9,6 @@ on:
     branches:
       - master
       - 6.[0-9]+
-      - docs-zip
     paths:
       - 'doc/**'
       - '.github/workflows/**'
