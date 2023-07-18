@@ -9522,6 +9522,11 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 
+		if (p[0] == '\0') {	/* No range given */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-i: No columns specified\n");
+				return (GMT_PARSE_ERROR);
+		}
+
 		if (p[0] == 't') {	/* Got the trailing test "column" */
 			GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = true;
 			if (p[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
@@ -10379,7 +10384,10 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 #endif
 
 	/* Refuse to do this in gmtset */
-	if (!strcmp (GMT->init.module_name, "gmtset")) {fprintf (stderr, "Not doing it\n"); return; }
+	if (!strcmp (GMT->init.module_name, "gmtset")) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_set_undefined_defaults: quietly skipping out if called from gmtset\n");
+		return;
+	}
 
 	gmt_set_undefined_axes (GMT, conf_update);	/* Determine suitable MAP_FRAME_AXES for plot if still auto */
 

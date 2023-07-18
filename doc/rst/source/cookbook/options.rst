@@ -545,7 +545,7 @@ Custom axes
 
 Irregularly spaced annotations or annotations based on
 look-up tables can be implemented using the *custom* annotation
-mechanism. Here, we given the **c** (custom) type to the **-B** option
+mechanism. Here, we have given the **c** (custom) type to the **-B** option
 followed by a filename that contains the annotations (and
 tick/grid-lines specifications) for one axis. The file can contain any
 number of comments (lines starting with #) and any number of records of
