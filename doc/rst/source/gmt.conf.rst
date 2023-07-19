@@ -283,11 +283,11 @@ FORMAT Parameters
         **D**      Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default]
         **+D**     Output longitude in the range [0,360]
         **-D**     Output longitude in the range [-360,0]
-        **DDD**    Fixed format integer degrees
+        **DDD**    Fixed format integer degrees (3 digits for latitude, 2 digits for longitude)
         **ddd**    Integer degrees
         **:**      Delimiter used (this will translate to degree, minute, seconds symbols on maps)
-        **mm**     Fixed format integer arc minutes
-        **ss**     Fixed format integer arc seconds
+        **mm**     Fixed format integer arc minutes (2 digits)
+        **ss**     Fixed format integer arc seconds (2 digits)
         **.xxx**   Floating fraction of previous integer field, fixed width
         **F**      Encode sign using WESN suffix
         **G**      Same as **F** but with a leading space before suffix
