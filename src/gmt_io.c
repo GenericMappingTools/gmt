@@ -2172,7 +2172,6 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	S->decimal = S->no_sign = false;
 	S->wesn = 0;
 
-fprintf (stderr, "Xtring = %s\n", text);
 	i1 = strlen (text) - 1;
 	for (i = order = 0; i <= i1; i++) {
 		switch (text[i]) {
@@ -2258,7 +2257,6 @@ fprintf (stderr, "Xtring = %s\n", text);
 	}
 	else
 		S->decimal = true;
-fprintf (stderr, "n_DD = %d n_d = %d\n", n_DD, n_d);
 
 	if (S->decimal) return (GMT_NOERROR);	/* Easy formatting choice */
 
@@ -7077,7 +7075,7 @@ int gmtlib_geo_C_format (struct GMT_CTRL *GMT) {
 
 /*! . */
 int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
-	unsigned int i, j, length, id = 0;
+	unsigned int i, j, length;
 	struct GMT_GEO_IO *S = &GMT->current.plot.calclock.geo;
     char *d_fmt[2] = {"%d", "%3.3d"};
 
@@ -7088,9 +7086,6 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) gmt_M_memset (GMT->current.plot.format[i][j], GMT_LEN256, char);
 
 	if (gmtio_get_dms_order (GMT, GMT->current.setting.format_geo_map, S)) return GMT_PARSE_ERROR;	/* Get the order of degree, min, sec in output formats */
-
-	id = (S->leading_zeros) ? 1 : 0;
-	fprintf (stderr, "Leading = %d\n", id);
 
 	if (S->decimal) {	/* Plain decimal degrees */
 		int len;
@@ -7111,6 +7106,7 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 	}
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
 		char fmt[GMT_LEN256] = {""};
+        unsigned int id = S->leading_zeros ? 1 : 0;
 
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 

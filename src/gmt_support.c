@@ -15791,8 +15791,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
 	bool zero_fix = false, lat_special = (lonlat == 3), deg_special = (lonlat == 4);
-	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""}, text[GMT_LEN64] = {""};
-    char use_format[GMT_LEN64] = {""};
+	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""}, text[GMT_LEN64] = {""}, *use_format = NULL;
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -15802,11 +15801,9 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 
 	if (lat_special) lonlat = 1;	/* Remove the special flag */
 	if (deg_special) lonlat = 0;	/* Remove the special flag */
-	if (lonlat == 0) {	/* Fix longitudes range first */
+	if (lonlat == 0)	/* Fix longitudes range first */
 		gmt_lon_range_adjust (GMT->current.plot.calclock.geo.range, &val);
-	}
-
-	if (lonlat) {	/* i.e., for geographical data */
+    else {	/* i.e., for geographical data */
 		if (doubleAlmostEqual (val, 360.0) && !worldmap)
 			val = 0.0;
 		if (doubleAlmostEqual (val, 360.0) && worldmap && GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC)
@@ -15863,10 +15860,11 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 			zero_fix = true;
 		}
 		if (hemi_pre[0]) strcpy (label, hemi_pre);
-        strncpy (use_format, GMT->current.plot.format[level][type], GMT_LEN64);
         if (lonlat & 1)
-            gmt_strrep (use_format, "%3.3d", "%2.2d");
-        sprintf(stderr, "lonlat, use_format = %d %s\n", lonlat, use_format);
+            use_format = gmt_strrep (GMT->current.plot.format[level][type], "%3.3d", "%2.2d");
+        else
+            use_format = strdup (GMT->current.plot.format[level][type]);
+
 		switch (2*level+type) {
 			case 0:
 				sprintf (text, use_format, d, hemi_post);
