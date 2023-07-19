@@ -2172,6 +2172,7 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	S->decimal = S->no_sign = false;
 	S->wesn = 0;
 
+fprintf (stderr, "Xtring = %s\n", text);
 	i1 = strlen (text) - 1;
 	for (i = order = 0; i <= i1; i++) {
 		switch (text[i]) {
@@ -2184,9 +2185,18 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 				if (i != 0) error++;		/* Only valid as first flag */
 				break;
 			case 'D':	/* Want to use decimal degrees using FORMAT_FLOAT_OUT [Default] */
-				S->decimal = true;
-				if (i > 1) error++;		/* Only valid as first or second flag */
+				if (S->order[0] < 0)		/* First time we encounter a D */
+					S->order[0] = order++;
+				else if (text[i-1] != 'D')	/* Done it before, previous char must be D */
+					error++;
 				n_DD++;
+				break;
+			case 'd':	/* Degree */
+				if (S->order[0] < 0)		/* First time we encounter a d */
+					S->order[0] = order++;
+				else if (text[i-1] != 'd')	/* Done it before, previous char must be d */
+					error++;
+				n_d++;
 				break;
 			case 'F':	/* Want to use WESN to encode sign */
 				S->wesn = (i == 0) ? -1 : 1;
@@ -2201,13 +2211,6 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 			case 'A':	/* Want no sign in plot string */
 				S->no_sign = true;
 				if (i != i1 || S->wesn) error++;		/* Only valid as last flag */
-				break;
-			case 'd':	/* Degree */
-				if (S->order[0] < 0)		/* First time we encounter a d */
-					S->order[0] = order++;
-				else if (text[i-1] != 'd')	/* Done it before, previous char must be y */
-					error++;
-				n_d++;
 				break;
 			case 'm':	/* Minute */
 				if (S->order[1] < 0)		/* First time we encounter a m */
@@ -2249,6 +2252,14 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 		}
 	}
 
+	if (n_DD > 1) {				/* Leading zeros flag */
+		S->leading_zeros = true;
+		n_d = 3;
+	}
+	else
+		S->decimal = true;
+fprintf (stderr, "n_DD = %d n_d = %d\n", n_DD, n_d);
+
 	if (S->decimal) return (GMT_NOERROR);	/* Easy formatting choice */
 
 	/* Then get the actual order by inverting table */
@@ -2271,7 +2282,6 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	error += (n_x && n_dec != 1);			/* .xxx is the proper form */
 	error += (n_x == 0 && n_dec);			/* Period by itself and not delimiter? */
 	error += (n_dec > 1);				/* Only one period with xxx */
-	error += (n_DD > 1);				/* Only one occurrence of D */
 	error += ((n_F > 1) || (n_G > 1));		/* Only one occurrence of F or G */
 	error += ((n_G + n_F) > 1);				/* Only one of either F or G */
 	S->n_sec_decimals = n_x;
@@ -7067,8 +7077,9 @@ int gmtlib_geo_C_format (struct GMT_CTRL *GMT) {
 
 /*! . */
 int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
-	unsigned int i, j, length;
+	unsigned int i, j, length, id = 0;
 	struct GMT_GEO_IO *S = &GMT->current.plot.calclock.geo;
+    char *d_fmt[2] = {"%d", "%3.3d"};
 
 	/* Determine the plot geographic location formats. */
 
@@ -7077,6 +7088,9 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 	for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) gmt_M_memset (GMT->current.plot.format[i][j], GMT_LEN256, char);
 
 	if (gmtio_get_dms_order (GMT, GMT->current.setting.format_geo_map, S)) return GMT_PARSE_ERROR;	/* Get the order of degree, min, sec in output formats */
+
+	id = (S->leading_zeros) ? 1 : 0;
+	fprintf (stderr, "Leading = %d\n", id);
 
 	if (S->decimal) {	/* Plain decimal degrees */
 		int len;
@@ -7100,13 +7114,13 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 
-		strcat (GMT->current.plot.format[0][0], "%d");		/* ddd */
+		strcat (GMT->current.plot.format[0][0], d_fmt[id]);		/* ddd */
 		if (S->order[1] == GMT_NOTSET && S->n_sec_decimals > 0) { /* ddd.xxx format */
 			snprintf (fmt, GMT_LEN256, "%%d.%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
 			strcat (GMT->current.plot.format[0][1], fmt);
 		}
 		else						/* ddd format */
-			strcat (GMT->current.plot.format[0][1], "%d");		/* ddd */
+			strcat (GMT->current.plot.format[0][1], d_fmt[id]);		/* ddd */
 		if (GMT->current.setting.map_degree_symbol != gmt_none)
 		{	/* But we want the degree symbol appended */
 			snprintf (fmt, GMT_LEN256, "%c", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
@@ -7116,8 +7130,8 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 		/* Level 1: degrees and minutes only. index 0 is integer minutes, index 1 is [possibly] fractional minutes  */
 
-		strcat (GMT->current.plot.format[1][0], "%d");	/* ddd */
-		strcat (GMT->current.plot.format[1][1], "%d");
+		strcat (GMT->current.plot.format[1][0], d_fmt[id]);	/* ddd */
+		strcat (GMT->current.plot.format[1][1], d_fmt[id]);
 		if (GMT->current.setting.map_degree_symbol != gmt_none)
 		{	/* We want the degree symbol appended */
 			sprintf (fmt, "%c", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
@@ -7142,8 +7156,8 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 		/* Level 2: degrees, minutes, and seconds. index 0 is integer seconds, index 1 is [possibly] fractional seconds  */
 
-		strcat (GMT->current.plot.format[2][0], "%d");
-		strcat (GMT->current.plot.format[2][1], "%d");
+		strcat (GMT->current.plot.format[2][0], d_fmt[id]);
+		strcat (GMT->current.plot.format[2][1], d_fmt[id]);
 		if (GMT->current.setting.map_degree_symbol != gmt_none)
 		{	/* We want the degree symbol appended */
 			sprintf (fmt, "%c", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);

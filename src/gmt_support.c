@@ -15792,6 +15792,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	unsigned int k, n_items, level, type;
 	bool zero_fix = false, lat_special = (lonlat == 3), deg_special = (lonlat == 4);
 	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""}, text[GMT_LEN64] = {""};
+    char use_format[GMT_LEN64] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -15862,24 +15863,28 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 			zero_fix = true;
 		}
 		if (hemi_pre[0]) strcpy (label, hemi_pre);
+        strncpy (use_format, GMT->current.plot.format[level][type], GMT_LEN64);
+        if (lonlat & 1)
+            gmt_strrep (use_format, "%3.3d", "%2.2d");
+        sprintf(stderr, "lonlat, use_format = %d %s\n", lonlat, use_format);
 		switch (2*level+type) {
 			case 0:
-				sprintf (text, GMT->current.plot.format[level][type], d, hemi_post);
+				sprintf (text, use_format, d, hemi_post);
 				break;
 			case 1:
-				sprintf (text, GMT->current.plot.format[level][type], d, m_sec, hemi_post);
+				sprintf (text, use_format, d, m_sec, hemi_post);
 				break;
 			case 2:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, hemi_post);
+				sprintf (text, use_format, d, m, hemi_post);
 				break;
 			case 3:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, m_sec, hemi_post);
+				sprintf (text, use_format, d, m, m_sec, hemi_post);
 				break;
 			case 4:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, s, hemi_post);
+				sprintf (text, use_format, d, m, s, hemi_post);
 				break;
 			case 5:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, s, m_sec, hemi_post);
+				sprintf (text, use_format, d, m, s, m_sec, hemi_post);
 				break;
 		}
 		if (zero_fix) text[1] = '0';	/* Undo the fix above */

@@ -202,6 +202,7 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	int order[3];			/* The relative order of degree, minute, seconds in form (-ve if unused) */
 	bool decimal;			/* true if we want to use the FORMAT_FLOAT_OUT for decimal degrees only */
 	bool no_sign;			/* true if we want absolute values (plot only) */
+	bool leading_zeros;	/* True to get leading zeros in degrees */
 	char x_format[GMT_LEN64];	/* Actual C format used to plot/output longitude */
 	char y_format[GMT_LEN64];	/* Actual C format used to plot/output latitude */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
