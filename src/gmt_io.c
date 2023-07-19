@@ -1221,7 +1221,7 @@ void gmtlib_reset_input (struct GMT_CTRL *GMT) {
 GMT_LOCAL void gmtio_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, double geo, char *text) {
 	int k, n_items, d, m, s, m_sec, h_pos = 0;
 	bool minus;
-	char hemi[3] = {""}, *f = NULL;
+	char hemi[3] = {""}, *use_format = NULL;
 	static char *suffix[2][2] = {{"W", "E"}, {"S", "N"}};	/* Just for decimal degrees when no_sign is true */
 
 	if (is_lat) {	/* Column is supposedly latitudes */
@@ -1233,14 +1233,14 @@ GMT_LOCAL void gmtio_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, doubl
 	}
 	else gmt_lon_range_adjust (GMT->current.io.geo.range, &geo);	/* Adjust longitudes */
 	if (GMT->current.io.geo.decimal) {	/* Easy */
-		f = (GMT->current.io.o_format[is_lat]) ? GMT->current.io.o_format[is_lat] : GMT->current.setting.format_float_out;
+		use_format = (GMT->current.io.o_format[is_lat]) ? GMT->current.io.o_format[is_lat] : GMT->current.setting.format_float_out;
 		if (GMT->current.io.geo.no_sign) {
 			k = (geo < 0.0) ? 0 : 1;
-			sprintf (text, f, fabs(geo));
+			sprintf (text, use_format, fabs(geo));
 			strcat (text, suffix[is_lat][k]);
 		}
 		else
-			sprintf (text, f, geo);
+			sprintf (text, use_format, geo);
 		return;
 	}
 
@@ -1258,20 +1258,21 @@ GMT_LOCAL void gmtio_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, doubl
 		if (GMT->current.io.geo.order[k] >= 0) n_items++;	/* How many of d, m, and s are requested as integers */
 	minus = gmtlib_geo_to_dms (geo, n_items, GMT->current.io.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 	if (minus) text[0] = '-';	/* Must manually insert leading minus sign when degree == 0 */
+    use_format = (is_lat ? gmt_strrep(GMT->current.io.geo.format, "%3.3d", "%2.2d") : strdup(GMT->current.io.geo.format));
 	if (GMT->current.io.geo.n_sec_decimals) {		/* Wanted fraction printed */
 		if (n_items == 3)
-			sprintf (&text[minus], GMT->current.io.geo.y_format, d, m, s, m_sec, hemi);
+			sprintf (&text[minus], use_format, d, m, s, m_sec, hemi);
 		else if (n_items == 2)
-			sprintf (&text[minus], GMT->current.io.geo.y_format, d, m, m_sec, hemi);
+			sprintf (&text[minus], use_format, d, m, m_sec, hemi);
 		else
-			sprintf (&text[minus], GMT->current.io.geo.y_format, d, m_sec, hemi);
+			sprintf (&text[minus], use_format, d, m_sec, hemi);
 	}
 	else if (n_items == 3)
-		sprintf (&text[minus], GMT->current.io.geo.y_format, d, m, s, hemi);
+		sprintf (&text[minus], use_format, d, m, s, hemi);
 	else if (n_items == 2)
-		sprintf (&text[minus], GMT->current.io.geo.y_format, d, m, hemi);
+		sprintf (&text[minus], use_format, d, m, hemi);
 	else
-		sprintf (&text[minus], GMT->current.io.geo.y_format, d, hemi);
+		sprintf (&text[minus], use_format, d, hemi);
 }
 
 /* Various functions to support {grd2xyz,xyz2grd}_func.c */
@@ -2251,11 +2252,11 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 		}
 	}
 
-	if (n_DD > 1) {				/* Leading zeros flag */
+	if (n_DD > 1) {        /* Leading zeros flag */
 		S->leading_zeros = true;
 		n_d = 3;
 	}
-	else
+	else if (n_DD == 1)    /* One D means decimal */
 		S->decimal = true;
 
 	if (S->decimal) return (GMT_NOERROR);	/* Easy formatting choice */
@@ -7035,40 +7036,28 @@ int gmtlib_geo_C_format (struct GMT_CTRL *GMT) {
 		 /* here we depend on FORMAT_FLOAT_OUT begin set.  This will not be true when FORMAT_GEO_MAP is parsed but will be
 		  * handled at the end of gmt_begin.  For gmtset and --PAR later we will be OK as well. */
 		if (!GMT->current.setting.format_float_out[0]) return (GMT_NOERROR); /* Quietly return and deal with this later in gmt_begin */
-		sprintf (S->x_format, "%s", GMT->current.setting.format_float_out);
-		sprintf (S->y_format, "%s", GMT->current.setting.format_float_out);
+		sprintf (S->format, "%s", GMT->current.setting.format_float_out);
 	}
 	else {			/* Some form of dd:mm:ss */
 		char fmt[GMT_LEN64] = {""};
-		/* First add %s for the W,E,S,N string (or NULL) for pre-value hemisphere */
-		sprintf (fmt, "%%s");
-		strcat (S->x_format, fmt);
-		strcat (S->y_format, fmt);
-		sprintf (S->x_format, "%%03d");
-		sprintf (S->y_format, "%%02d");
-		if (S->order[1] >= 0) {	/* Need minutes too */
-			strcat (S->x_format, S->delimiter[0]);
-			strcat (S->y_format, S->delimiter[0]);
-			sprintf (fmt, "%%02d");
-			strcat (S->x_format, fmt);
-			strcat (S->y_format, fmt);
+        if (S->leading_zeros)
+            sprintf (S->format, "%%3.3d");
+        else
+            sprintf (S->format, "%%d");
+        if (S->order[1] >= 0) {	/* Need minutes too */
+			strcat (S->format, S->delimiter[0]);
+			strcat (S->format, "%02d");
 		}
 		if (S->order[2] >= 0) {	/* .. and seconds */
-			strcat (S->x_format, S->delimiter[1]);
-			strcat (S->y_format, S->delimiter[1]);
-			sprintf (fmt, "%%02d");
-			strcat (S->x_format, fmt);
-			strcat (S->y_format, fmt);
+			strcat (S->format, S->delimiter[1]);
+			strcat (S->format, "%02d");
 		}
 		if (S->n_sec_decimals) {	/* even add format for fractions of second (or minutes or degrees) */
 			snprintf (fmt, GMT_LEN64, ".%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
-			strcat (S->x_format, fmt);
-			strcat (S->y_format, fmt);
+			strcat (S->format, fmt);
 		}
 		/* Finally add %s for the W,E,S,N string (or NULL) for post-value hemisphere */
-		sprintf (fmt, "%%s");
-		strcat (S->x_format, fmt);
-		strcat (S->y_format, fmt);
+		strcat (S->format, "%s");
 	}
 	return (GMT_NOERROR);
 }
@@ -7093,16 +7082,13 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 		  * handled at the end of gmt_begin.  For gmtset and --PAR later we will be OK as well. */
 		if (!GMT->current.setting.format_float_out[0]) return GMT_NOERROR; /* Quietly return and deal with this later in gmt_begin */
 
-		len = sprintf (S->x_format, "%s", GMT->current.setting.format_float_out);
-			  sprintf (S->y_format, "%s", GMT->current.setting.format_float_out);
+		len = sprintf (S->format, "%s", GMT->current.setting.format_float_out);
 		if (GMT->current.setting.map_degree_symbol != gmt_none)
 		{	/* But we want the degree symbol appended */
-			S->x_format[len] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
-			S->y_format[len] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
-			S->x_format[len+1] = S->y_format[len+1] = '\0';
+			S->format[len] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
+			S->format[len+1] = '\0';
 		}
-		strcat (S->x_format, "%s");
-		strcat (S->y_format, "%s");
+		strcat (S->format, "%s");
 	}
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
 		char fmt[GMT_LEN256] = {""};

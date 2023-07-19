@@ -15852,7 +15852,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	if (!(lat_special || deg_special) && GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta [set via -Jp|P +fe modifier] */
 		gmt_sprintf_float (GMT, label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
-		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi_post);
+		sprintf (label, GMT->current.plot.calclock.geo.format, val, hemi_post);
 	else {
 		(void) gmtlib_geo_to_dms (val, n_items, GMT->current.plot.calclock.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 		if (d == 0 && sign == -1) {	/* Must write out -0 degrees, do so by writing -1 and change 1 to 0 */
@@ -15860,10 +15860,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 			zero_fix = true;
 		}
 		if (hemi_pre[0]) strcpy (label, hemi_pre);
-        if (lonlat & 1)
-            use_format = gmt_strrep (GMT->current.plot.format[level][type], "%3.3d", "%2.2d");
-        else
-            use_format = strdup (GMT->current.plot.format[level][type]);
+        use_format = (lonlat & 1 ? gmt_strrep (GMT->current.plot.format[level][type], "%3.3d", "%2.2d") :strdup (GMT->current.plot.format[level][type]));
 
 		switch (2*level+type) {
 			case 0:

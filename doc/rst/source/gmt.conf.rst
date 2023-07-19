@@ -285,7 +285,7 @@ FORMAT Parameters
         **-D**     Output longitude in the range [-360,0]
         **DDD**    Fixed format integer degrees
         **ddd**    Integer degrees
-        **:**      Delimiter used
+        **:**      Delimiter used (this will translate to degree, minute, seconds symbols on maps)
         **mm**     Fixed format integer arc minutes
         **ss**     Fixed format integer arc seconds
         **.xxx**   Floating fraction of previous integer field, fixed width
