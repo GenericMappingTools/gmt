@@ -283,7 +283,8 @@ FORMAT Parameters
         **D**      Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default]
         **+D**     Output longitude in the range [0,360]
         **-D**     Output longitude in the range [-360,0]
-        **ddd**    Fixed format integer degrees
+        **DDD**    Fixed format integer degrees
+        **ddd**    Integer degrees
         **:**      Delimiter used
         **mm**     Fixed format integer arc minutes
         **ss**     Fixed format integer arc seconds
