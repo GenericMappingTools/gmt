@@ -222,12 +222,16 @@ GMT_LOCAL int gmtmath_find_stored_item (struct GMTMATH_STORED *recall[], int n_s
 	return (k == n_stored ? GMT_NOTSET : k);
 }
 
-GMT_LOCAL void gmtmath_load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
+GMT_LOCAL int gmtmath_load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
 	/* Copies data from one column to another */
 	uint64_t seg;
 	for (seg = 0; seg < from->n_segments; seg++) {
-		gmt_M_memcpy (to->table[0]->segment[seg]->data[to_col], from->segment[seg]->data[from_col], from->segment[seg]->n_rows, double);
+		if (to->table[0]->segment[seg]->n_rows == from->segment[seg]->n_rows)
+			gmt_M_memcpy (to->table[0]->segment[seg]->data[to_col], from->segment[seg]->data[from_col], from->segment[seg]->n_rows, double);
+		else
+			return GMT_NOTSET;
 	}
+	return GMT_NOERROR;
 }
 
 /* ---------------------- start convenience functions --------------------- */
@@ -6852,7 +6856,12 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 					if (Ctrl->N.ncol > F->n_columns) gmt_adjust_dataset (GMT, F, Ctrl->N.ncol);	/* Add more input columns */
 					T_in = F->table[0];	/* Only one table since only a single file */
 				}
-				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) gmtmath_load_column (stack[nstack]->D, j, T_in, j);
+				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) {
+					if (gmtmath_load_column (stack[nstack]->D, j, T_in, j)) {
+						GMT_Report (API, GMT_MSG_ERROR, "tables not of same size!\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+				}
 				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 				if (!gmtmath_same_size (stack[nstack]->D, Template)) {

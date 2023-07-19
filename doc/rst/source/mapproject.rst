@@ -242,7 +242,7 @@ Optional Arguments
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
     where a plot point is given directly. To output the rectangular domain that
     covers an oblique area as defined by |-R| |-J|, append **r**,
-    or use |-R| to get the result in -Rw/e/s/n string format. Similarly, if an
+    or append **R** to get the result in -Rw/e/s/n string format. Similarly, if an
     oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
     use **o** to return the diagonal corner coordinates in degrees (in the order
     *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
