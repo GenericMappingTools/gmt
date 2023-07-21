@@ -81,8 +81,8 @@ extern "C" {
 #   endif
 #   define QSORT_R_THUNK_FIRST
 #endif
-#   define QSORT_R_THUNK_FIRST
 #if WIN32
+#   define QSORT_R_THUNK_FIRST
 #endif
 /* Avoid some annoying warnings from MS Visual Studio */
 #ifdef _MSC_VER
