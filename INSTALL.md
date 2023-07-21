@@ -86,12 +86,12 @@ version requires a computer with the M1 Apple Silicon chip.
 
 | **GMT Version** | **Minimum MacOS** |
 |-------------|-------------|
-| 6.4         | macOS 12 |
-| 6.3         | macOS 10.15 |
-| 6.2         | macOS 10.15 |
-| 6.1         | macOS 10.15 |
-| 6.0         | macOS 10.13 |
-| 5.4         | macOS 10.12 |
+| 6.4         | macOS 12 (Monterey) |
+| 6.3         | macOS 10.15 (Catalina) |
+| 6.2         | macOS 10.15 (Catalina) |
+| 6.1         | macOS 10.15 (Catalina) |
+| 6.0         | macOS 10.13 (High Sierra) |
+| 5.4         | macOS 10.12 (Sierra) |
 
 ### Install via Homebrew
 

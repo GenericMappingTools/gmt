@@ -81,10 +81,10 @@ Optional Arguments
     Use **+r**\ *dpi* to set the dpi of the image in dots per inch, or use
     **+w**\ [**-**]\ *width*\ [/*height*] to
     set the width (and height) of the image in plot coordinates
-    (inches, cm, etc.). If *height* is not given, the original aspect
-    ratio of the image is maintained. If *width* is negative we use the
+    (inches, cm, etc.). If *height* (or *width*) is set to 0, then the original aspect
+    ratio of the image is maintained. If *width* (or *height*) is negative we use the
     absolute value and interpolate image to the device resolution using
-    the PostScript image operator. If neither size nor *dpi* is set then we
+    the PostScript image operator. If neither dimensions nor *dpi* are set then we
     revert to the default dpi [:term:`GMT_GRAPHICS_DPU`].  Optionally, use
     **+n**\ *nx*\ [/*ny*] to replicate the image *nx* times horizontally and *ny* times
     vertically. If *ny* is omitted, it will be identical to *nx* [Default is 1/1].

@@ -105,8 +105,9 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		unsigned int mode;
 	} W;
-	struct GMTCONVERT_Z {	/* -Z[<first>]:[<last>] [DEPRECATED - use -q instead]*/
+	struct GMTCONVERT_Z {	/* -Z[<first>]:[<last>] [DEPRECATED - use -q instead] */
 		bool active;
+		bool transpose;	/* -Z with no arguments means transpose dataset */
 		int64_t first, last;
 	} Z;
 };
@@ -137,7 +138,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] "
 		"[-E[f|l|m|M<stride>]] [-F%s] [-I[tsr]] [-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"|+f<file>[+e] | -S[~]/<regexp>/[i][+e]]"
-		"[-T[h][d[[~]<selection>]]] [%s] [-W[+n]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-T[h][d[[~]<selection>]]] [%s] [-W[+n]] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_SEGMENTIZE4, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -209,6 +210,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W[+n]");
 	GMT_Usage (API, -2, "Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.");
+	GMT_Usage (API, 1, "\n-Z Transpose the single segment in the dataset. Any trailing text is lost.");
 	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -381,24 +383,30 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 					Ctrl->W.mode = 1;
 				break;
 			case 'Z':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				GMT_Report (API, GMT_MSG_COMPAT, "Option -Z is deprecated (but still works); Use common option -q instead\n");
-				if ((c = strchr (opt->arg, ':')) || (c = strchr (opt->arg, '/'))) {	/* Got [<first>]:[<last>] or [<first>]/[<last>] */
-					char div = c[0];	/* Either : or / */
-					if (opt->arg[0] == div) /* No first given, default to 0 */
-						Ctrl->Z.last = atol (&opt->arg[1]);
-					else { /* Gave first, and maybe last */
-						c[0] = '\0';	/* Chop off last */
-						Ctrl->Z.first = atol (opt->arg);
-						Ctrl->Z.last = (c[1]) ? (int64_t)atol (&c[1]) : INTMAX_MAX;	/* Last record if not given */
-						c[0] = div;	/* Restore */
+				if (opt->arg[0]) {	/* Deprecated column selector */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -Z is deprecated (but still works); Use common option -q instead\n");
+					if ((c = strchr (opt->arg, ':')) || (c = strchr (opt->arg, '/'))) {	/* Got [<first>]:[<last>] or [<first>]/[<last>] */
+						char div = c[0];	/* Either : or / */
+						if (opt->arg[0] == div) /* No first given, default to 0 */
+							Ctrl->Z.last = atol (&opt->arg[1]);
+						else { /* Gave first, and maybe last */
+							c[0] = '\0';	/* Chop off last */
+							Ctrl->Z.first = atol (opt->arg);
+							Ctrl->Z.last = (c[1]) ? (int64_t)atol (&c[1]) : INTMAX_MAX;	/* Last record if not given */
+							c[0] = div;	/* Restore */
+						}
 					}
+					else /* No colon means first is 0 and given value is last */
+						Ctrl->Z.last = atol (opt->arg);
+					/* Adjust to system where first record is 1 since we must increment n_in_rows before applying -Z check later */
+					Ctrl->Z.first++;	if (Ctrl->Z.last < INTMAX_MAX) Ctrl->Z.last++;
+					GMT_Report (API, GMT_MSG_DEBUG, "Output record numbers %" PRIu64 " through = %" PRIu64 "\n", Ctrl->Z.first, Ctrl->Z.last);
 				}
-				else /* No colon means first is 0 and given value is last */
-					Ctrl->Z.last = atol (opt->arg);
-				/* Adjust to system where first record is 1 since we must increment n_in_rows before applying -Z check later */
-				Ctrl->Z.first++;	if (Ctrl->Z.last < INTMAX_MAX) Ctrl->Z.last++;
-				GMT_Report (API, GMT_MSG_DEBUG, "Output record numbers %" PRIu64 " through = %" PRIu64 "\n", Ctrl->Z.first, Ctrl->Z.last);
+				else {	/* Transpose dataset */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.transpose);
+					n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -561,6 +569,20 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_WARNING, "No data records provided\n");
 		Return (GMT_NOERROR);
 	}
+
+	if (Ctrl->Z.transpose) {	/* Transpose the input data set per segment */
+		struct GMT_DATASET *Dt = NULL;
+		if ((Dt = gmt_transpose_dataset (GMT, D[GMT_IN])) == NULL) {	/* Transposing failed */
+			GMT_Report (API, GMT_MSG_ERROR, "Transposing of input data segment failed.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		GMT_Report (API, GMT_MSG_INFORMATION, "Transposed dimensions: n_rows = %" PRIu64 " n_columns = %" PRIu64"\n", Dt->n_records, Dt->n_columns);
+		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_NOERROR) {	/* Be gone with the original input */
+			Return (API->error);
+		}
+		D[GMT_IN] = Dt;	/* Replace the input pointer with the transposed input */
+	}
+
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
 		GMT_Report (API, GMT_MSG_ERROR, "The -a option requires a single table only.\n");
 		Return (GMT_RUNTIME_ERROR);

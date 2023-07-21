@@ -244,9 +244,9 @@ using 2700 and 1035 for the densities of crust and water and writing the
 result on water_g.grd (computing up to the fourth power of bathymetry
 in Parker expansion):
 
-   ::
+::
 
-    gmt gravfft bat.grd -D1665 -Gwater_g.grd -E4
+  gmt gravfft bat.grd -D1665 -Gwater_g.grd -E4
 
 Now subtract it from your free-air anomaly faa.grd and you will get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
@@ -256,9 +256,9 @@ dense than the rocks below. The answer relies on the way gravity
 effects are computed by the Parker's method and practical aspects of
 using the FFT.
 
-   ::
+::
 
-    gmt grdmath faa.grd water_g.grd SUB = bouguer.grd
+  gmt grdmath faa.grd water_g.grd SUB = bouguer.grd
 
 Want an MBA anomaly? Well compute the crust mantle contribution and add
 it to the sea-bottom anomaly. Assuming a 6 km thick crust of density
@@ -270,33 +270,33 @@ comes in hand. Notice that we didn't need to do that before because mean water
 depth was computed directly from data (notice also the negative sign of the
 offset due to the fact that *z* is positive up):
 
-   ::
+::
 
-    gmt gravfft bat.grd=+o-6000 -D600 -Gmoho_g.grd
+  gmt gravfft bat.grd=+o-6000 -D600 -Gmoho_g.grd
 
 Now, subtract it from the Bouguer to obtain the MBA anomaly. That is:
 
-   ::
+::
 
-    gmt grdmath bouguer.grd moho_g.grd SUB = mba.grd
+  gmt grdmath bouguer.grd moho_g.grd SUB = mba.grd
 
 To compute the Moho gravity effect of an elastic plate bat.grd with Te =
 7 km, density of 2700, over a mantle of density 3300, at an average depth
 of 9 km
 
-   ::
+::
 
-    gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
+  gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 
 If you add now the sea-bottom and Moho's effects, you will get the full
 gravity response of your isostatic model. We will use here only the
 first term in Parker expansion.
 
-   ::
+::
 
-    gmt gravfft bat.grd -D1665 -Gwater_g.grd -E1
-    gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000 -E1
-    gmt grdmath water_g.grd elastic.grd ADD = model.grd
+  gmt gravfft bat.grd -D1665 -Gwater_g.grd -E1
+  gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000 -E1
+  gmt grdmath water_g.grd elastic.grd ADD = model.grd
 
 The same result can be obtained directly by the next command. However,
 PAY ATTENTION to the following. I don't yet know if it's because of a
@@ -305,42 +305,42 @@ the previous commands only give the same result if **-E**\ 1 is used.
 For higher powers of bathymetry in Parker expansion,
 only the above example seams to give the correct result.
 
-   ::
+::
 
-    gmt gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -E1
+  gmt gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -E1
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
 below a region whose bathymetry is given by bat.grd, a Moho at 9 km
 depth and the same densities as before?
 
-   ::
+::
 
-    gmt gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S -E1
+  gmt gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S -E1
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
 mean thickness with 10 km effective elastic thickness in a region of 3 km
 mean water depth:
 
-   ::
+::
 
-    gmt gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
+  gmt gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
 
 To compute the admittance between the topo.grd bathymetry and geoid.grd
 geoid grid with the "loading from below" (LFB) model with the same as
 above and sub-surface load at 40 km, but assuming now the grids are in
 geographic and we want wavelengths instead of frequency:
 
-   ::
+::
 
-    gmt gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
+  gmt gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
 
 To compute the gravity theoretical admittance of a LFB along a 2000 km
 long profile using the same parameters as above
 
-   ::
+::
 
-    gmt gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
+  gmt gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 
 References
 ----------

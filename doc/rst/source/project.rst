@@ -58,7 +58,7 @@ triplets at equal increments *dist* along a profile using |-G|. In this case, no
 Projections are defined in one of three ways:
 
   1. By a center (*cx*/*cy*) using |-C| and an azimuth in degrees clockwise from North using |-A|.
-  2. By a center (*cx*/*cy*) using |-C| and end point (*bx*/*by*) of the projection path using |-E|.
+  2. By a center (*cx*/*cy*) (e.g., start point) using |-C| and end point (*bx*/*by*) of the projection path using |-E|.
   3. By a center (*cx*/*cy*) using |-C| and a rotation pole position (*px*/*py*) using |-T| (not allowed when a
      Cartesian transformation is set by |-N|).
 
@@ -145,10 +145,10 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *flags*
-    Specify the desired output using any combination of *xyzpqrs* in any order, where (:math:`p, q`) are the
+    Specify the desired output using any combination of *xypqrsz* in any order, where (:math:`p, q`) are the
     coordinates in the projection, (:math:`r, s`) is the position in the (:math:`x, y`) coordinate system of the point
     on the profile (:math:`q = 0` path) closest to (:math:`x, y`), and *z* is all remaining columns in the input
-    (beyond the required :math:`x` and :math:`y` columns). [Default is *xyzpqrs*]. If output format is ASCII then
+    (beyond the required :math:`x` and :math:`y` columns). [Default is *xypqrsz*]. If output format is ASCII then
     *z* also includes any trailing text (which is placed at the end of the record regardless of the order of *z*
     in *flags*). Use lower case and do not add spaces between the letters. **Note**: If |-G| is selected, then the
     output order is set to be *rsp* and |-F| is not allowed.
@@ -268,55 +268,55 @@ Examples
 .. include:: explain_example.rst_
 
 To project the remote data sets ship_03.txt (lon,lat,depth) onto a great circle specified by
-the two points (330,-18) and (53,21) and sort the records on the projected distances along
+the center (330,-18) and rotation pole (53,21) and sort the records on the projected distances along
 that circle and only output the distance and the depths, try::
 
     gmt project @ship_03.txt -C330/-18 -T53/21 -S -Fpz -Q > ship_proj.txt
 
 To generate points every 10 km along a great circle from 10N,50W to 30N,10W:
 
-   ::
+::
 
-    gmt project -C-50/10 -E-10/30 -G10 -Q > great_circle_points.xyp
+  gmt project -C-50/10 -E-10/30 -G10 -Q > great_circle_points.xyp
 
 (Note that great_circle_points.xyp could now be used as input for :doc:`grdtrack`, etc. ).
 
 To generate points every 1 degree along a great circle from 30N,10W with
 azimuth 30 and covering a full 360, try:
 
-   ::
+::
 
-    gmt project -C10W/30N -A30 -G1 -L-180/180 > great_circle.txt
+  gmt project -C10W/30N -A30 -G1 -L-180/180 > great_circle.txt
 
 To generate points every 10 km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
 
-   ::
+::
 
-    gmt project -C-50/10 -E-10/30 -G10/60 -Q > small_circle_points.xyp
+  gmt project -C-50/10 -E-10/30 -G10/60 -Q > small_circle_points.xyp
 
 To create a partial small circle of colatitude 80 about a pole at
 40E,85N, with extent of 45 degrees to either side of the meridian
 defined by the great circle from the pole to a point 15E,15N, try
 
-   ::
+::
 
-    gmt project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
+  gmt project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
 
 To generate points approximately every 10 km along an ellipse centered on (30W,70N) with
 major axis of 1500 km with azimuth of 30 degree and a minor axis of 600 km, try
 
-   ::
+::
 
-    gmt project -C-30/70 -G10 -Z1500/600/30+e -Q > ellipse.xyp
+  gmt project -C-30/70 -G10 -Z1500/600/30+e -Q > ellipse.xyp
 
 To project the shiptrack gravity, magnetics, and bathymetry in
 c2610.xygmb along a great circle through an origin at 30S, 30W, the
 great circle having an azimuth of N20W at the origin, keeping only the
 data from NE of the profile and within ±\ 500 km of the origin, run:
 
-   ::
+::
 
-    gmt project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q > c2610_projected.pgmb
+  gmt project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q > c2610_projected.pgmb
 
 (Note in this example that **-W**-10000/0 is used to admit any value
 with a large negative *q* coordinate. This will take those points which
@@ -326,24 +326,24 @@ To make a Cartesian coordinate transformation of mydata.xy so that the
 new origin is at 5,3 and the new :math:`x` axis (*p*) makes
 an angle of 20 degrees with the old :math:`x` axis, use:
 
-   ::
+::
 
-    gmt project mydata.xy -C5/3 -A70 -Fpq > mydata.pq
+  gmt project mydata.xy -C5/3 -A70 -Fpq > mydata.pq
 
 To take data in the file pacific.lonlat and transform it into oblique
 coordinates using a pole from the hotspot reference frame and placing
 the oblique zero meridian (*p* = 0 line) through Tahiti, run:
 
-   ::
+::
 
-    gmt project pacific.lonlat -T-75/68 -C-149:26/-17:37 -Fpq > pacific.pq
+  gmt project pacific.lonlat -T-75/68 -C-149:26/-17:37 -Fpq > pacific.pq
 
 Suppose that pacific_topo.nc is a grid file of bathymetry, and you want
 to make a file of flowlines in the hotspot reference frame. If you run:
 
-   ::
+::
 
-    gmt grd2xyz pacific_topo.nc | gmt project -T-75/68 -C0/-90 -Fxyq | gmt xyz2grd -Retc -Ietc -Cflow.nc
+  gmt grd2xyz pacific_topo.nc | gmt project -T-75/68 -C0/-90 -Fxyq | gmt xyz2grd -Retc -Ietc -Cflow.nc
 
 then flow.nc is a file in the same area as pacific_topo.nc, but flow
 contains the latitudes about the pole of the projection. You now can use

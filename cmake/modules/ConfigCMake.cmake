@@ -59,6 +59,9 @@ endif (NOT CMAKE_BUILD_TYPE)
 # Here we change it to add the git commit hash for non-public releases
 set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
 
+# ...
+set (GMT_BUILD_DATE ${GMT_BUILD_DATE})
+
 # Check if it's a git repository or not
 if (EXISTS ${GMT_SOURCE_DIR}/.git)
 	set (HAVE_GIT_VERSION TRUE)
@@ -91,6 +94,12 @@ if (GIT_FOUND AND HAVE_GIT_VERSION AND NOT GMT_PUBLIC_RELEASE)
 		endif (GIT_COMMIT_HASH)
 	endif (GIT_RETURN_CODE)
 endif (GIT_FOUND AND HAVE_GIT_VERSION AND NOT GMT_PUBLIC_RELEASE)
+
+execute_process (COMMAND ${GIT_EXECUTABLE} log -1 --date=short --pretty=format:%cd
+	WORKING_DIRECTORY ${GMT_SOURCE_DIR}
+	OUTPUT_VARIABLE GMT_BUILD_DATE
+	OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REPLACE "-" "." GMT_BUILD_DATE "${GMT_BUILD_DATE}")
 
 # apply license restrictions
 if (LICENSE_RESTRICTED) # on

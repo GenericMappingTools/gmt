@@ -913,7 +913,6 @@ the equator. Some selections for standard parallels have practical properties as
 .. _tbl-JQ:
 
 +-----------------------------------------------------+--------+
-+=====================================================+========+
 | Grafarend and Niermann, minimum linear distortion   | 61.7°  |
 +-----------------------------------------------------+--------+
 | Ronald Miller Equirectangular                       | 50.5°  |
@@ -967,7 +966,6 @@ choices of standard parallels that result in known (or named) projections. These
 .. _tbl-JY:
 
 +-------------------+---------------------+
-+===================+=====================+
 | Balthasart        | 50°                 |
 +-------------------+---------------------+
 | Gall              | 45°                 |
@@ -1071,7 +1069,6 @@ projection (Table :ref:`JCylstere <tbl-JCylstere>`).
 .. _tbl-JCylstere:
 
 +---------------------------------------------------------+-------------+
-+=========================================================+=============+
 | Miller's modified Gall                                  | 66.159467°  |
 +---------------------------------------------------------+-------------+
 | Kamenetskiy's First                                     | 55°         |

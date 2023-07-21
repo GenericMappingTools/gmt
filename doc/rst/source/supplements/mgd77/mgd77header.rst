@@ -234,9 +234,9 @@ Examples
 
 To generate an MGD77 header from A77 input, try
 
-   ::
+::
 
-    gmt mgd77header km0201 -Hkmheaderitems.txt -Mf > km0201.h77
+  gmt mgd77header km0201 -Hkmheaderitems.txt -Mf > km0201.h77
 
 See Also
 --------

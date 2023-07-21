@@ -18,6 +18,7 @@
 GSVERSION=$1	# Get the version of gs from build-release.sh
 DISTRO=$2
 GDAL_VIA_HOMEBREW=$3
+PROJV=9
 
 if [ ${DISTRO} = "MacPorts" ]; then
 	top=/opt/local
@@ -27,7 +28,7 @@ if [ ${DISTRO} = "MacPorts" ]; then
 		topgdal=/opt/local
 	fi
 	omp="libomp/"
-	proj="${top}/lib/proj8/share/proj"
+	proj="${top}/lib/proj${PROJV}/share/proj"
 	gm="${top}/lib/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}"
 elif [ ${DISTRO} = "HomeBrew1" ]; then
 	DISTRO="HomeBrew"

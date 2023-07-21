@@ -157,15 +157,15 @@ Examples
 To transform a chunk of the geographical remote grid earth_relief_05m onto a pixel Mercator grid at 300 dpi
 given a scale of 0.25 inches per degree, run
 
-   ::
+::
 
-    gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
+  gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
 
 To inversely transform the file topo_tm.nc back onto a geographical grid, use
 
-   ::
+::
 
-    gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
+  gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
 
 This assumes, of course, that the coordinates in topo_tm.nc were
 created with the same projection parameters.
@@ -174,18 +174,18 @@ To inversely transform the file topo_utm.nc (which is in UTM meters)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-   ::
+::
 
-    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
+  gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
 
 To inversely transform the file data.nc (which is in Mercator meters with Greenwich
 as the central longitude and a false easting of -4 and produced on the ellipse WGS-72)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-   ::
+::
 
-    gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
+  gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
 
 Restrictions
 ------------

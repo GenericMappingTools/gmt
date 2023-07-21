@@ -210,25 +210,25 @@ Examples
 To filter the remote CO2 data set in the file MaunaLoa_CO2.txt (year, CO2)
 with a 5 year Gaussian filter, try
 
-   ::
+::
 
-    gmt filter1d @MaunaLoa_CO2.txt -Fg5 > CO2_trend.txt
+  gmt filter1d @MaunaLoa_CO2.txt -Fg5 > CO2_trend.txt
 
 Data along track often have uneven sampling and gaps which we do not
 want to interpolate using :doc:`sample1d`. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
 v3312.txt, checking for gaps of 10 km and asymmetry of 0.3:
 
-   ::
+::
 
-    gmt filter1d v3312.txt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.txt
+  gmt filter1d v3312.txt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.txt
 
 To smooth a noisy geospatial track using a Gaussian filter of full-width 100 km
 and not shorten the track, and add the distances to the file, use
 
-   ::
+::
 
-    gmt filter1d track.txt -Tk+a -E -Fg200 > smooth_track.txt
+  gmt filter1d track.txt -Tk+a -E -Fg200 > smooth_track.txt
 
 See Also
 --------

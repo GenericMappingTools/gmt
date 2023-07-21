@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  * Spherical triangulation - with Delaunay or Voronoi output.
- * Relies on STRIPACK Fortran F77 library (Renka, 1997). Reference:
+ * Relies on STRIPACK FORTRAN F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
  *  and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *  Software, 23 (3), 416-434.

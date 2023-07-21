@@ -2841,11 +2841,8 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.clip = &gmt_map_wesn_clip;
 	}
 	else {
-		GMT->current.proj.VE = GMT->current.proj.scale[GMT_Y] / GMT->current.proj.scale[GMT_X];
-		if (GMT->current.proj.VE < 1.0)
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Linear projection implies x-axis distance exaggeration relative to the y-axis by a factor of %g\n", GMT->current.proj.VE);
-		else if (GMT->current.proj.VE > 1.0)
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Linear projection implies y-axis distance exaggeration relative to the x-axis by a factor of %g\n", GMT->current.proj.VE);
+		GMT->current.proj.VE = fabs(GMT->current.proj.scale[GMT_Y] / GMT->current.proj.scale[GMT_X]);
+        	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Linear projection implies y-axis distance exaggeration relative to the x-axis by a factor of %g\n", GMT->current.proj.VE);
 
 		GMT->current.map.outside = &gmtmap_rect_outside;
 		GMT->current.map.crossing = &gmtmap_rect_crossing;
@@ -6235,7 +6232,7 @@ GMT_LOCAL bool gmtmap_near_lines_spherical (struct GMT_CTRL *P, double lon, doub
 
 /*! . */
 GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
-	unsigned int i;
+	unsigned int i, i_min = 0, i_max = 0;
 	bool easy, positive;
 	double x, y, zmin = 0.0, zmax = 0.0, z_range;
 
@@ -6245,10 +6242,21 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 	/* z_level == DBL_MAX is signaling that it was not set by the user. In that case we change it to the lower z level */
 	if (GMT->current.proj.z_level == DBL_MAX) GMT->current.proj.z_level = (GMT->current.proj.xyz_pos[GMT_Z]) ?  GMT->common.R.wesn[ZLO] : GMT->common.R.wesn[ZHI];
 
+	switch (GMT->current.proj.z_project.view_plane % 3) {	/* This fixes the problem reported in #529 */
+		case GMT_X:
+			i_min = XLO, i_max = XHI;
+			break;
+		case GMT_Y:
+			i_min = YLO, i_max = YHI;
+			break;
+		case GMT_Z:
+			i_min = ZLO, i_max = ZHI;
+	}
+
 	switch (GMT->current.proj.xyz_projection[GMT_Z]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZLO] : GMT->common.R.wesn[ZHI];
-			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZHI] : GMT->common.R.wesn[ZLO];
+			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_min] : GMT->common.R.wesn[i_max];
+			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_max] : GMT->common.R.wesn[i_min];
 			GMT->current.proj.fwd_z = &gmtlib_translin;
 			GMT->current.proj.inv_z = &gmtlib_itranslin;
 			break;
@@ -6257,8 +6265,8 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Jz -JZ: limits must be positive for log10 projection\n");
 				return GMT_PROJECTION_ERROR;
 			}
-			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZLO]) : d_log10 (GMT, GMT->common.R.wesn[ZHI]);
-			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZHI]) : d_log10 (GMT, GMT->common.R.wesn[ZLO]);
+			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[i_min]) : d_log10 (GMT, GMT->common.R.wesn[i_max]);
+			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[i_max]) : d_log10 (GMT, GMT->common.R.wesn[i_min]);
 			GMT->current.proj.fwd_z = &gmtproj_translog10;
 			GMT->current.proj.inv_z = &gmtproj_itranslog10;
 			break;
@@ -6266,8 +6274,8 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			GMT->current.proj.xyz_pow[GMT_Z] = GMT->current.proj.z_pars[1];
 			GMT->current.proj.xyz_ipow[GMT_Z] = 1.0 / GMT->current.proj.z_pars[1];
 			positive = !((GMT->current.proj.xyz_pos[GMT_Z] + (GMT->current.proj.xyz_pow[GMT_Z] > 0.0)) % 2);
-			zmin = (positive) ? pow (GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]);
-			zmax = (positive) ? pow (GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]);
+			zmin = (positive) ? pow (GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]);
+			zmax = (positive) ? pow (GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[i_min], GMT->current.proj.xyz_pow[GMT_Z]);
 			GMT->current.proj.fwd_z = &gmtproj_transpowz;
 			GMT->current.proj.inv_z = &gmtproj_itranspowz;
 	}
@@ -9860,8 +9868,8 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
 	GMT->current.map.path_step = GMT->current.setting.map_line_step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 
-	i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
-	scale = 0.001 / (GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit] * GMT->current.proj.scale[GMT_X]);
+	i_scale = 1.0 / fabs(0.0254 * GMT->current.proj.scale[GMT_X]);
+	scale = 0.001 / fabs(GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit] * GMT->current.proj.scale[GMT_X]);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map scale is %g km per %s or 1:%g.\n",
 		scale, GMT->session.unit_name[GMT->current.setting.proj_length_unit], i_scale);
 

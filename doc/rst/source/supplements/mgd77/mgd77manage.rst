@@ -42,7 +42,7 @@ obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
 Mercator \*.img grid) along track. The new data will be appended to the
 MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
-issues, see the DISCUSSION section below.
+issues, see the DISCUSSION section below [*Wessel and Chandler*, 2007].
 
 Required Arguments
 ------------------
@@ -232,34 +232,34 @@ To append Geosat/ERS-1 gravity version 11.2 as an extra data column in
 the cruises 01010047.nc and 01010008.nc, storing the values as mGal\*10
 in a 2-byte short integer, try
 
-   ::
+::
 
-    gmt mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img \
-        -Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
+  gmt mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img \
+      -Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
 
 To append a filtered version of magnetics as an extra data column of
 type float for the cruise 01010047.nc, and interpolate the filtered data
 at the times given in the MGD77+ file, try
 
-   ::
+::
 
-    gmt mgd77manage 01010047 -ATmymag.tm -Ifiltmag/"Intermediate-wavelength \
-        magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" -V
+  gmt mgd77manage 01010047 -ATmymag.tm -Ifiltmag/"Intermediate-wavelength \
+      magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" -V
 
 To delete the existing extra columns satfaa, coastdist, and satvgg from
 all MGD77+ files, try
 
-   ::
+::
 
-    gmt mgd77manage =allmgd77.lis -Dsatfaa,coastdist,satvgg -V
+  gmt mgd77manage =allmgd77.lis -Dsatfaa,coastdist,satvgg -V
 
 To create a 4-byte float column with the correct IGRF reference field in
 all MGD77+ files, try
 
-   ::
+::
 
-    gmt mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference \
-        field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
+  gmt mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference \
+      field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
 
 Discussion
 ----------
@@ -380,7 +380,7 @@ suppressed from output.
 Credits
 -------
 
-The IGRF calculations are based on a Fortran program written by Susan
+The IGRF calculations are based on a FORTRAN program written by Susan
 Macmillan, British Geological Survey, translated to C via f2c by Joaquim
 Luis, and adapted to GMT style by Paul Wessel.
 

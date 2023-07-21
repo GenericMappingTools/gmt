@@ -15,6 +15,14 @@ ASCII, native binary, netCDF table data, and ESRI shapefiles
 ASCII tables
 ~~~~~~~~~~~~
 
+To avoid needless complications in the data record parsing, we have implemented GMT
+to only read and write ASCII records that are 4095 characters or shorter.  This
+means the number of columns in, say, an ASCII data table is limited to what fits in
+that buffer.  This further depends on the precision of your data and the format used.
+For instance, if each data value requires 10 bytes separated by a tab or space then
+you may be able to read ASCII tables with up to ~375 columns.  More bytes per number
+means fewer columns.  No similar limitation apply to the number of rows in a file.
+
 Optional file header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -73,7 +81,9 @@ Binary tables
 
 GMT programs also support native binary tables to speed up
 input-output for i/o-intensive tasks like gridding and preprocessing.
-This is discussed in more detail in section :ref:`option_-b`.
+This is discussed in more detail in section :ref:`option_-b`. Unlike
+ASCII tables, binary tables do not have any limitations on the number
+of data columns.
 
 NetCDF tables
 ~~~~~~~~~~~~~

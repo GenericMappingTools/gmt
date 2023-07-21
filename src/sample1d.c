@@ -102,7 +102,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-E] [-Fl|a|c|n|s<p>[+d1|2]] [-N<time_col>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-E] [-Fa|c|e||l|n|s<p>[+d1|2]] [-N<time_col>] "
 		"[-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]] [%s] [-W<w_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
@@ -125,11 +125,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+l Compute distances along rhumblines (loxodromes) [no].");
 	GMT_Usage (API, -2, "Note: +l uses spherical calculations - cannot be combined with -je.");
 	GMT_Usage (API, 1, "\n-E Add input data trailing text to output records when possible [Ignore trailing text].");
-	GMT_Usage (API, 1, "\n-Fl|a|c|n|s<p>[+d1|2]");
+	GMT_Usage (API, 1, "\n-Fa|c|e||l|n|s<p>[+d1|2]");
 	GMT_Usage (API, -2, "Set the interpolation mode.  Choose from:");
-	GMT_Usage (API, 3, "l: Linear interpolation.");
 	GMT_Usage (API, 3, "a: Akima spline interpolation.");
 	GMT_Usage (API, 3, "c: Cubic spline interpolation.");
+	GMT_Usage (API, 3, "e: Step-up interpolation (to next value).");
+	GMT_Usage (API, 3, "l: Linear interpolation.");
 	GMT_Usage (API, 3, "n: No interpolation (nearest point).");
 	GMT_Usage (API, 3, "s: Smooth spline interpolation (append fit parameter <p>).");
 	GMT_Usage (API, -2, "Optionally, request a spline derivative via a modifier:");
@@ -238,6 +239,9 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 						break;
 					case 'n':
 						Ctrl->F.mode = GMT_SPLINE_NN;
+						break;
+					case 'e':
+						Ctrl->F.mode = GMT_SPLINE_STEP;
 						break;
 					case 's':
 						Ctrl->F.mode = GMT_SPLINE_SMOOTH;

@@ -73,7 +73,7 @@ can be appended to **-B** to control the Frame settings:
 - **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
   North pole]. **+o** is ignored if no gridlines are requested.
 
-- **+n** to have no frame and annotations at all [default is contolled by *axes*].
+- **+n** to have no frame and annotations at all [default is controlled by *axes*].
 
 - **+t**\ *title* to place the string given in *title* centered above the plot frame [default is no title].
 
@@ -112,18 +112,18 @@ The following directives and modifiers can be appended to **-B** to control the 
   3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the vertical axis.
 - **+e** to give skip annotations that fall exactly at the ends of the axis.  Append **l** or **u** to only
   skip the lower or upper annotation, respectively.
-- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffices encoding the sign.
+- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffixes encoding the sign.
 - **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
   label orientation; **+L** forces a horizontal label for *y*-axes, which is useful for very short labels.
-- **+s**\|\ **S**\ *seclabel* (for Cartesion plots only) to specify an alternate label for the right or upper axes.
+- **+s**\|\ **S**\ *seclabel* (for Cartesian plots only) to specify an alternate label for the right or upper axes.
   **+s** uses the default label orientation; **+S** forces a horizontal label for *y*-axes, which is useful for very
   short labels.
-- **+p**\ *prefix* (for Cartesion plots only) to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
+- **+p**\ *prefix* (for Cartesian plots only) to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
   money). For geographic maps the addition of degree symbols, etc. is automatic and controlled by
   :term:`FORMAT_GEO_MAP`.
-- **+u**\ *unit* (for Cartesion plots only) to append specific units to the annotations. For geographic maps the
+- **+u**\ *unit* (for Cartesian plots only) to append specific units to the annotations. For geographic maps the
   addition of degree symbols, etc. is automatic and controlled by :term:`FORMAT_GEO_MAP`.
-- **+a**\ *angle* (for Cartesion plots only) to plot slanted annotations, where *angle* is measured with respect to
+- **+a**\ *angle* (for Cartesian plots only) to plot slanted annotations, where *angle* is measured with respect to
   the horizontal and must be in the -90 <= *angle* <= 90 range. **+an** can be used as a shorthand for normal
   (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default for
   x-axis]. These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.

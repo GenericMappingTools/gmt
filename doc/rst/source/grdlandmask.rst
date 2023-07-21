@@ -145,16 +145,16 @@ Examples
 To set all nodes on land to NaN, and nodes over water to 1, using the
 high resolution data set, do
 
-   ::
+::
 
-    gmt grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland_mask.nc -V
+  gmt grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland_mask.nc -V
 
 To make a 1x1 degree global grid with the hierarchical levels of the
 nodes based on the low resolution data:
 
-   ::
+::
 
-    gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
+  gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
 
 .. include:: explain_gshhg.rst_
 

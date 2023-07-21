@@ -23,7 +23,7 @@
  *
  * The API presently consists of 52 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
- * These functions have Fortran bindings as well, provided you add
+ * These functions have FORTRAN bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUserAdvanced.cmake].
  *
  * Here lie the 13 public functions used for GMT API command parsing:

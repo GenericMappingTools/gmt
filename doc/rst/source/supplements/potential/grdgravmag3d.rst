@@ -176,17 +176,17 @@ Examples
 Suppose you want to compute the gravity effect of the phantom "Sandy
 Island" together with its not phantom seamount
 
-   ::
+::
 
-    gmt grdgravmag3d sandy_bat.grd -C1700 -Z-4300 -fg -I1m -Gsandy_okb.grd -V
+  gmt grdgravmag3d sandy_bat.grd -C1700 -Z-4300 -fg -I1m -Gsandy_okb.grd -V
 
 To compute the vertical component due to a magnetization stored in *mag.grd* over a zone defined by
 the surface *bat.grd*, using variable declination and inclination provided the the IGRF and using 4
 processors, do:
 
-   ::
+::
 
-    gmt grdgravmag3d bat.grd -E10000 -Gcomp_Z.grd -Hz -H+n -H+mmag.grd -x4 -V -S50
+  gmt grdgravmag3d bat.grd -E10000 -Gcomp_Z.grd -Hz -H+n -H+mmag.grd -x4 -V -S50
 
 See Also
 --------

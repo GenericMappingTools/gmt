@@ -283,10 +283,11 @@ FORMAT Parameters
         **D**      Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default]
         **+D**     Output longitude in the range [0,360]
         **-D**     Output longitude in the range [-360,0]
-        **ddd**    Fixed format integer degrees
-        **:**      Delimiter used
-        **mm**     Fixed format integer arc minutes
-        **ss**     Fixed format integer arc seconds
+        **DDD**    Fixed format integer degrees (3 digits for longitude, 2 digits for latitude)
+        **ddd**    Integer degrees
+        **:**      Delimiter used (this will translate to degree, minute, seconds symbols on maps)
+        **mm**     Fixed format integer arc minutes (2 digits)
+        **ss**     Fixed format integer arc seconds (2 digits)
         **.xxx**   Floating fraction of previous integer field, fixed width
         **F**      Encode sign using WESN suffix
         **G**      Same as **F** but with a leading space before suffix
@@ -784,7 +785,7 @@ MAP Parameters
         to the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
-        Size of grid cross at lon-lat intersections. **0** means draw
+        Size of grid cross at primary lon-lat intersections. **0** means draw
         continuous gridlines instead.  A nonzero size will draw a symmetric grid
         cross. Signed sizes have special meaning and imply grid line ticks that
         embellish an already drawn set of gridlines: A negative size will only
@@ -792,16 +793,13 @@ MAP Parameters
         draw symmetric ticks [default is **0p**].
 
     **MAP_GRID_CROSS_SIZE_SECONDARY**
-        Size of grid cross at secondary lon-lat intersections. **0** means draw
-        continuous gridlines instead.  A nonzero size will draw a symmetric grid
-        cross.  Signed sizes have special meaning and imply grid line ticks that
-        embellish an already drawn set of gridlines: A negative size will only
-        draw ticks away from Equator and Greenwich, while a positive size will
-        draw symmetric ticks [default is **0p**].
+        Size of grid cross at secondary lon-lat intersections.
+        See :term:`MAP_GRID_CROSS_SIZE_PRIMARY` for details.
+        [default is **0p**].
 
     **MAP_GRID_PEN**
         Sets both :term:`MAP_GRID_PEN_PRIMARY` and :term:`MAP_GRID_PEN_SECONDARY` to
-        the value specified. This setting is not include in the **gmt.conf** file.
+        the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or

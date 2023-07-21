@@ -391,6 +391,7 @@ EXTERN_MSC struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64
 EXTERN_MSC void gmt_adjust_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t n_columns);
 EXTERN_MSC struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_rows, uint64_t n_columns, unsigned int mode);
 EXTERN_MSC struct GMT_DATASET * gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry);
+EXTERN_MSC struct GMT_DATASET * gmt_transpose_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC int gmt_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool first);
 EXTERN_MSC void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **segment);
 EXTERN_MSC void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table);
@@ -495,6 +496,7 @@ EXTERN_MSC void gmt_lab_to_xyz (double xyz[], double lab[]);
 EXTERN_MSC void gmt_rgb_to_lab (double rgb[], double lab[]);
 EXTERN_MSC void gmt_lab_to_rgb (double rgb[], double lab[]);
 EXTERN_MSC bool gmt_check_executable (struct GMT_CTRL *GMT, char *program, char *arg, char *pattern, char *text);
+EXTERN_MSC bool gmt_run_process_get_first_line (struct GMT_CTRL *GMT, char *program, char *arg, char *text);
 EXTERN_MSC void gmt_filename_set (char *name);
 EXTERN_MSC void gmt_filename_get (char *name);
 EXTERN_MSC bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg);

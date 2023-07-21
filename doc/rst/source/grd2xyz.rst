@@ -58,7 +58,7 @@ Optional Arguments
 **-C**\ [**f**\|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
-    **f** to start at 1 (Fortran-style counting). Alternatively, append
+    **f** to start at 1 (FORTRAN-style counting). Alternatively, append
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
 
@@ -210,23 +210,23 @@ Examples
 
 To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII:
 
-   ::
+::
 
-    gmt grd2xyz @AFR.nc > AFR.xyz
+  gmt grd2xyz @AFR.nc > AFR.xyz
 
 To write a single precision binary file without the x,y positions from
 the remote file @AFR.nc file, using scanline orientation, run:
 
-   ::
+::
 
-    gmt grd2xyz @AFR.nc -ZTLf > AFR.b
+  gmt grd2xyz @AFR.nc -ZTLf > AFR.b
 
 To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter\ :sup:`2` as the area unit,
 and where *area* reflects the size of each grid box, run:
 
-   ::
+::
 
-    gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
+  gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
 
 See Also
 --------
