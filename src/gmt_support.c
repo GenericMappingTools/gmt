@@ -4823,11 +4823,12 @@ GMT_LOCAL int gmtsupport_getrose_old (struct GMT_CTRL *GMT, char option, char *t
 /* Here lies GMT Crossover core functions that previously was in X2SYS only */
 /* gmtsupport_ysort must be an int since it is passed to qsort_r! */
 /*! . */
+
 #ifdef QSORT_R_THUNK_FIRST
-/* arg is first argument to compare function */
+/* thunk arg is first argument to compare function */
 GMT_LOCAL int gmtsupport_ysort (void *arg, const void *p1, const void *p2) {
 #else
-/* arg is last argument to compare function */
+/* thunk arg is last argument to compare function */
 GMT_LOCAL int gmtsupport_ysort (const void *p1, const void *p2, void *arg) {
 #endif
 	const struct GMT_XSEGMENT *a = p1, *b = p2;
@@ -15791,7 +15792,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
 	bool zero_fix = false, lat_special = (lonlat == 3), deg_special = (lonlat == 4);
-	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""}, text[GMT_LEN64] = {""};
+	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""}, text[GMT_LEN64] = {""}, *use_format = NULL;
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -15801,11 +15802,9 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 
 	if (lat_special) lonlat = 1;	/* Remove the special flag */
 	if (deg_special) lonlat = 0;	/* Remove the special flag */
-	if (lonlat == 0) {	/* Fix longitudes range first */
+	if (lonlat == 0)	/* Fix longitudes range first */
 		gmt_lon_range_adjust (GMT->current.plot.calclock.geo.range, &val);
-	}
-
-	if (lonlat) {	/* i.e., for geographical data */
+    else {	/* i.e., for geographical data */
 		if (doubleAlmostEqual (val, 360.0) && !worldmap)
 			val = 0.0;
 		if (doubleAlmostEqual (val, 360.0) && worldmap && GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC)
@@ -15854,7 +15853,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	if (!(lat_special || deg_special) && GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta [set via -Jp|P +fe modifier] */
 		gmt_sprintf_float (GMT, label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
-		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi_post);
+		sprintf (label, GMT->current.plot.calclock.geo.format, val, hemi_post);
 	else {
 		(void) gmtlib_geo_to_dms (val, n_items, GMT->current.plot.calclock.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 		if (d == 0 && sign == -1) {	/* Must write out -0 degrees, do so by writing -1 and change 1 to 0 */
@@ -15862,24 +15861,26 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 			zero_fix = true;
 		}
 		if (hemi_pre[0]) strcpy (label, hemi_pre);
+        use_format = (lonlat & 1 ? gmt_strrep (GMT->current.plot.format[level][type], "%3.3d", "%2.2d") :strdup (GMT->current.plot.format[level][type]));
+
 		switch (2*level+type) {
 			case 0:
-				sprintf (text, GMT->current.plot.format[level][type], d, hemi_post);
+				sprintf (text, use_format, d, hemi_post);
 				break;
 			case 1:
-				sprintf (text, GMT->current.plot.format[level][type], d, m_sec, hemi_post);
+				sprintf (text, use_format, d, m_sec, hemi_post);
 				break;
 			case 2:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, hemi_post);
+				sprintf (text, use_format, d, m, hemi_post);
 				break;
 			case 3:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, m_sec, hemi_post);
+				sprintf (text, use_format, d, m, m_sec, hemi_post);
 				break;
 			case 4:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, s, hemi_post);
+				sprintf (text, use_format, d, m, s, hemi_post);
 				break;
 			case 5:
-				sprintf (text, GMT->current.plot.format[level][type], d, m, s, m_sec, hemi_post);
+				sprintf (text, use_format, d, m, s, m_sec, hemi_post);
 				break;
 		}
 		if (zero_fix) text[1] = '0';	/* Undo the fix above */
