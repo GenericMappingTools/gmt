@@ -467,10 +467,10 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 }
 
 #ifdef QSORT_R_THUNK_FIRST
-/* arg is first argument to compare function */
+/* thunk arg is first argument to compare function */
 GMT_LOCAL int surface_compare_points (void *arg, const void *point_1v, const void *point_2v) {
 #else
-/* arg is last argument to compare function */
+/* thunk arg is last argument to compare function */
 GMT_LOCAL int surface_compare_points (const void *point_1v, const void *point_2v, void *arg) {
 #endif
 	/* Routine for QSORT_R to sort data structure for fast access to data by node location.
