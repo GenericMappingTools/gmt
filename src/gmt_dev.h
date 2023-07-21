@@ -79,7 +79,6 @@ extern "C" {
 #       define vImage_Utilities_h
 #       define vImage_CVUtilities_h
 #   endif
-#   define QSORT_R_THUNK_FIRST
 #endif
 #if WIN32
 #   define QSORT_R_THUNK_FIRST
@@ -185,6 +184,30 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
 /* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
+
+
+#if defined (__APPLE__)
+    /* Do thunk first via qsort_r */
+	#define QSORT_R_THUNK_FIRST
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
+#elif defined (WIN32)
+    /* Do thunk last via qsort_s */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
+#elif defined (HAVE_QSORT_R_GLIBC)
+    /* Use thunk last GNU order with qsort_r */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+#else
+    /* Use thunk last via Florian's code */
+	#include "compat/qsort.h"
+	#define GMT_USE_COMPAT_QSORT
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+#endif
+
+
+
+
+#if 0
+
 #ifdef _MSC_VER
 	#include <search.h>
 	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
@@ -203,6 +226,8 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 		#define GMT_USE_COMPAT_QSORT
 	#endif
 	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+#endif
+
 #endif
 
 #ifdef __cplusplus
