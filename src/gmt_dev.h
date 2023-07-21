@@ -79,9 +79,7 @@ extern "C" {
 #       define vImage_Utilities_h
 #       define vImage_CVUtilities_h
 #   endif
-#   if defined __arm64__
-#       define QSORT_R_THUNK_FIRST
-#   endif
+#   define QSORT_R_THUNK_FIRST
 #endif
 
 /* Avoid some annoying warnings from MS Visual Studio */
