@@ -187,17 +187,6 @@ This option selects the coordinate transformation or map projection. The general
    *width* is map width in :ref:`plot-units <plt-units>` (map height is automatically computed from the implied map scale
    and region).
 
-Since GMT version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the
-mapping package `PROJ <https://proj.org/>`_. The options thus either look like:
-
--  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a *lower-case* abbreviation that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *scale* is map scale given
-   in distance units per degree or as 1:xxxxx.
-
--  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an *capitalized* abbreviation that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *width* is map width (map
-   height is automatically computed from the implied map scale and region).
-
 The over 30 map projections and coordinate transformations available in GMT are represented in the Figure
 :ref:`GMT Projections <gmt_projections>`.
 
@@ -219,8 +208,7 @@ The over 30 map projections and coordinate transformations available in GMT are 
 
 Projections specifications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-GMT offers 31 map projections specified using the **-J** option. There are two conventions you may use: (a) GMT-style
-syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax. The codes for the GMT-style and the PROJ-style are tabulated
+GMT offers 31 map projections specified using the **-J** option. The projection codes are tabulated
 below along with the associated *parameters* and links to the cookbook sections that describe the projection syntax and
 usage.
 
