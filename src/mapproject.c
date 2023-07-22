@@ -74,7 +74,9 @@ enum GMT_mp_Wcodes {	/* Support for -W parsing */
 	GMT_MP_M_EREGION = 8,	/* Converts -R<xmin/xmax/ymin/ymax>+u<unit> to <llx/lly/urx/ury> returned as llx urx lly ury */
 	GMT_MP_M_ESTRING = 9,	/* As 6, but return string -Rw/e/s/n */
 	GMT_MP_M_MREGION = 10,	/* As 6, but return string -Rxmin/xmax/ymn/ymax */
-	GMT_MP_M_MSTRING = 11	/* As 6 but as string */
+	GMT_MP_M_MSTRING = 11,	/* As 6 but as string */
+	GMT_MP_M_BREGION = 12,	/* Return xmin/xmax/ymn/ymax in long/lat of boundingbox */
+	GMT_MP_M_BSTRING = 13	/* As 12 but as string */
 };
 
 enum GMT_mp_Zcodes {	/* Support for -Z parsing */
@@ -212,7 +214,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|m|M|n|o|O|r|R|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[b|B|e|E|g|h|j|m|M|n|o|O|r|R|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -295,8 +297,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If <from> equals - we use WGS-84.  If /<to> is not given we assume WGS-84. "
 		"Note: -T can be used as pre- or post- (-I) processing for -J -R.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|m|M|n|o|O|r|R|w|x][+n[<nx>[/<ny>]]]");
+	GMT_Usage (API, 1, "\n-W[b|B|e|E|g|h|j|m|M|n|o|O|r|R|w|x][+n[<nx>[/<ny>]]]");
 	GMT_Usage (API, -2, "Print map width and/or height or a reference point. No input files are read. Select optional directive:");
+	GMT_Usage (API, 3, "b: Print bounding box lon/lat for an oblique -R -J selection.");
+	GMT_Usage (API, 3, "B: Same as b but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "e: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates for rectangular region encompassing the -R -J area.");
 	GMT_Usage (API, 3, "E: Same as e but prints -Rw/s/e/n+r string as trailing text instead.");
 	GMT_Usage (API, 3, "g: Print map coordinates of reference point <gx/gy>.");
@@ -734,6 +738,8 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 						}
 						Ctrl->W.mode = GMT_MP_M_POINT;
 						break;
+					case 'b': Ctrl->W.mode = GMT_MP_M_BREGION; break;
+					case 'B': Ctrl->W.mode = GMT_MP_M_BSTRING; break;
 					case 'e': Ctrl->W.mode = GMT_MP_M_EREGION; break;
 					case 'E': Ctrl->W.mode = GMT_MP_M_ESTRING; break;
 					case 'o': Ctrl->W.mode = GMT_MP_M_OREGION; break;
@@ -1165,9 +1171,17 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 						ymin *= fwd_scale;
 						ymax *= fwd_scale;
 					}
-		}
-				w_out[XLO] = xmin;	w_out[XHI] = xmax;
+				}
+				w_out[XLO] = GMT->common.R.wesn[XLO];	w_out[XHI] = GMT->common.R.wesn[XHI];
 				w_out[YLO] = ymin;	w_out[YHI] = ymax;
+				n_output = (tmode == GMT_COL_FIX) ? 0 : 4;
+				break;
+			case GMT_MP_M_BSTRING:
+				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
+			case GMT_MP_M_BREGION:
+				if (!GMT->current.proj.search && (error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
+					Return (GMT_RUNTIME_ERROR);
+				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
 				n_output = (tmode == GMT_COL_FIX) ? 0 : 4;
 				break;
 			default:
@@ -1197,7 +1211,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg+r", w_out[XLO], w_out[YLO], w_out[XHI], w_out[YHI]);
 			Out->text = region;
 		}
-		else if (Ctrl->W.mode == GMT_MP_M_RSTRING || Ctrl->W.mode == GMT_MP_M_MSTRING) {
+		else if (Ctrl->W.mode == GMT_MP_M_BSTRING || Ctrl->W.mode == GMT_MP_M_RSTRING || Ctrl->W.mode == GMT_MP_M_MSTRING) {
 			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
 			Out->text = region;
 		}
