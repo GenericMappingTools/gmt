@@ -1971,7 +1971,7 @@ This option accepts the *reference* point where the map rose's *anchor* should b
 pinned.  In addition to the required *refpoint* and *anchor* arguments (and their standard
 modifiers discussed earlier) there are three optional modifiers:
 
-#. Size of map rose.  Use **+w**\ *size* to specify the full width and height of the rose. A 3 cm
+#. Size of map rose.  Use **+w**\ *size* to specify the full width and height of the rose. E.g., a 3 cm
    rose would require **+w**\ 3c.  Alternatively, append % to set the *size* as a percentage of the
    map width [Default is 10% if **+w** is not given].
 
@@ -2018,7 +2018,7 @@ map rose is added with :doc:`/basemap` or :doc:`/coast` and selected by the **-T
 As for other features, append the required *reference* point where the magnetic map rose's *anchor*
 should be pinned.  There several optional modifiers:
 
-#. Specify size of map rose.  Use **+w**\ *size* to specify the full width of the rose.  A 3 cm
+#. Specify size of map rose.  Use **+w**\ *size* to specify the full width of the rose.  E.g., a 3 cm
    rose would imply **+w**\ 3c. Alternatively, append % to set the *size* as a percentage of the map
    width [Default is 15% if **+w** is not given].
 
