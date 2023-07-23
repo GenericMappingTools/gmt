@@ -258,3 +258,5 @@ _quicksort (void *const pbase, size_t total_elems, size_t size,
   }
 }
 #endif /* !HAVE_QSORT_R_GLIBC */
+
+#endif /* GMT_USE_COMPAT_QSORT */
