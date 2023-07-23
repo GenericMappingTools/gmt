@@ -71,7 +71,8 @@ can be appended to **-B** to control the Frame settings:
   **0**].
 
 - **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
-  North pole]. **+o** is ignored if no gridlines are requested.
+  North pole]. **+o** is ignored if no gridlines are requested. Note, one cannot specify oblique gridlines for the
+  oblique Mercator projection, and results are not currently defined for non-geographic projections.
 
 - **+n** to have no frame and annotations at all [default is controlled by *axes*].
 
