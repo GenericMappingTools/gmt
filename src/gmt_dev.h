@@ -185,7 +185,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 /* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
 
-
 #if defined (__APPLE__)
     /* Do thunk first via qsort_r */
 	#define QSORT_R_THUNK_FIRST
@@ -200,31 +199,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
     /* Use thunk last via Florian's code */
 	#include "compat/qsort.h"
 	#define GMT_USE_COMPAT_QSORT
-	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
-#endif
-
-
-
-
-#if 0
-
-#ifdef _MSC_VER
-	#include <search.h>
-	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
-	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
-    //#pragma message("C Preprocessor determined we need to use qsort_s on Windows")
-#elif defined(QSORT_R_THUNK_FIRST)
-	/* Argument order is unusual, starts with thunk pointer */
-	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
-	//#pragma message("C Preprocessor detected Silicon and we use different qsort_r order!")
-#else
-	//#pragma message("Not Apple Silicon (but could be Intel), probably Linux and we use different qsort_r order!")
-	/* If GLIBC compatible QSORT_R is not available */
-	/* Argument order is unusual, ends with thunk pointer */
-	#ifndef HAVE_QSORT_R_GLIBC
-		#include "compat/qsort.h"
-		#define GMT_USE_COMPAT_QSORT
-	#endif
 	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
 #endif
 
