@@ -34,6 +34,10 @@ copyright = "@GMT_VERSION_YEAR@, The GMT Team"
 version = '@GMT_PACKAGE_VERSION_MAJOR@.@GMT_PACKAGE_VERSION_MINOR@'
 # The full version shown in the page title
 release = '@GMT_PACKAGE_VERSION@'
+if len('@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@'.split("_")) == 3:
+    doc_version = "dev"
+else:
+    doc_version = version
 
 # -- Options for HTML output ---------------------------------------------------
 html_theme = 'rtd'
@@ -59,6 +63,10 @@ html_context = {
         (
             '<i class="fa fa-github fa-fw"></i> Source Code',
             "https://github.com/GenericMappingTools/gmt",
+        ),
+        (
+            '<i class="fa fa-download fa-fw"></i> Download HTML zip',
+            f"/{doc_version}/gmt-docs-{doc_version}.zip",
         ),
     ],
     # Show the "Edit on Github" link

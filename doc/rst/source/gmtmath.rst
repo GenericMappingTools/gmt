@@ -128,7 +128,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ [**c**\|\ **i**\|\ **p**\|\ **n**]
-    Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
+    Quick mode for scalar calculation. Internally sets the equivalent of **-Ca** **-N**\ 1/0 **-T**\ 1.
     In this mode, constants may have dimensional units (i.e., **c**, **i**, or **p**),
     and will be converted to internal *inches* before computing. If one or more constants
     with units are encountered then the final answer will be reported in the unit set by
