@@ -80,7 +80,9 @@ extern "C" {
 #       define vImage_CVUtilities_h
 #   endif
 #endif
-
+#if WIN32
+#   define QSORT_R_THUNK_FIRST
+#endif
 /* Avoid some annoying warnings from MS Visual Studio */
 #ifdef _MSC_VER
 #	pragma warning( disable : 4091 )	/* 'static ': ignored on left of 'XXX' when no variable is declared */
@@ -181,9 +183,51 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
-/* If GLIBC compatible qsort_r is not available */
-#ifndef HAVE_QSORT_R_GLIBC
-#	include "compat/qsort.h"
+/* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
+
+
+#if defined (__APPLE__)
+    /* Do thunk first via qsort_r */
+	#define QSORT_R_THUNK_FIRST
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
+#elif defined (WIN32)
+    /* Do thunk last via qsort_s */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
+#elif defined (HAVE_QSORT_R_GLIBC)
+    /* Use thunk last GNU order with qsort_r */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+#else
+    /* Use thunk last via Florian's code */
+	#include "compat/qsort.h"
+	#define GMT_USE_COMPAT_QSORT
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+#endif
+
+
+
+
+#if 0
+
+#ifdef _MSC_VER
+	#include <search.h>
+	/* Argument order is unusual, starts with thunk pointer, and is called qsort_s */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
+    //#pragma message("C Preprocessor determined we need to use qsort_s on Windows")
+#elif defined(QSORT_R_THUNK_FIRST)
+	/* Argument order is unusual, starts with thunk pointer */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
+	//#pragma message("C Preprocessor detected Silicon and we use different qsort_r order!")
+#else
+	//#pragma message("Not Apple Silicon (but could be Intel), probably Linux and we use different qsort_r order!")
+	/* If GLIBC compatible QSORT_R is not available */
+	/* Argument order is unusual, ends with thunk pointer */
+	#ifndef HAVE_QSORT_R_GLIBC
+		#include "compat/qsort.h"
+		#define GMT_USE_COMPAT_QSORT
+	#endif
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+#endif
+
 #endif
 
 #ifdef __cplusplus

@@ -4136,7 +4136,11 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (in[i] == '+' && in[i+1] == 'o') {	/* Found +o<plon>/<plat> */
 			double lon, lat;
 			char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
-			if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
+			if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot specify oblique gridlines for non-geographic projection\n");
+				error++;
+			}
+			else if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 				error++;
 			}
@@ -4477,7 +4481,11 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					GMT->current.map.frame.no_frame = true;
 					break;
 				case 'o':	/* Specify pole for oblique gridlines */
-					if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
+					if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot specify oblique gridlines for non-geographic projection\n");
+						error++;
+					}
+					else if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR,
 							"Option -B: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 						error++;
@@ -4996,7 +5004,7 @@ GMT_LOCAL int gmtinit_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width
 		if (n != 1 || *value < 0.0) return (1);
 		*value = 1.0 / (*value * GMT->current.proj.unit);
 		if (GMT->current.proj.gave_map_width) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot specify map width with 1:xxxx format in -J option\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot specify map width with 1:xxxx format in projection option\n");
 			return (1);
 		}
 	}
@@ -9522,6 +9530,11 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 
+		if (p[0] == '\0') {	/* No range given */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-i: No columns specified\n");
+				return (GMT_PARSE_ERROR);
+		}
+
 		if (p[0] == 't') {	/* Got the trailing test "column" */
 			GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = true;
 			if (p[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
@@ -10379,7 +10392,10 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 #endif
 
 	/* Refuse to do this in gmtset */
-	if (!strcmp (GMT->init.module_name, "gmtset")) {fprintf (stderr, "Not doing it\n"); return; }
+	if (!strcmp (GMT->init.module_name, "gmtset")) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_set_undefined_defaults: quietly skipping out if called from gmtset\n");
+		return;
+	}
 
 	gmt_set_undefined_axes (GMT, conf_update);	/* Determine suitable MAP_FRAME_AXES for plot if still auto */
 

@@ -75,7 +75,9 @@ Fibonacci numbers::
     3
     5
 
-**Note**: Should you need to ensure that the coordinates are unique and sorted (in case the
+**Notes**: (1) If you need to pass the list nodes via a dataset file yet be understood
+as a list (i.e., no interpolation), then you must set the file header to contain the string "LIST". (2) Should
+you need to ensure that the coordinates are unique and sorted (in case the
 *file* or *list* are not sorted or have duplicates) then supply the **+u** modifier.
 
 If you only want a *single* value
