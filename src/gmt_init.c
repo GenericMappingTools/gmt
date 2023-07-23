@@ -4136,7 +4136,11 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (in[i] == '+' && in[i+1] == 'o') {	/* Found +o<plon>/<plat> */
 			double lon, lat;
 			char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
-			if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
+			if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot specify oblique gridlines for non-geographic projection\n");
+				error++;
+			}
+			else if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 				error++;
 			}
@@ -4477,7 +4481,11 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					GMT->current.map.frame.no_frame = true;
 					break;
 				case 'o':	/* Specify pole for oblique gridlines */
-					if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
+					if (gmt_M_is_cartesian (GMT, GMT_IN)) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot specify oblique gridlines for non-geographic projection\n");
+						error++;
+					}
+					else if (GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR,
 							"Option -B: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 						error++;
