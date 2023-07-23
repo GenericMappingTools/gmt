@@ -202,8 +202,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
 #endif
 
-#endif
-
 #ifdef __cplusplus
 }
 #endif
