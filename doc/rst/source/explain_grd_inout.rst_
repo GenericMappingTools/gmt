@@ -80,7 +80,7 @@ double quotes.
           automatic scaling to preserve precision for integer grids [Default
           is 1].
 
-    Note: Any offset is added before any scaling. **+sa** also sets **+oa**
+    **Note**: Any offset is added before any scaling. **+sa** also sets **+oa**
     (unless overridden). To write specific formats via GDAL, use =\ *gd*
     and supply *driver* (and optionally *dataType*) and/or one or more
     concatenated GDAL **-co** options using **+c**. See

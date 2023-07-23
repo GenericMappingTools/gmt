@@ -115,7 +115,7 @@ Optional Arguments
     considered when clobber mode is active. Optionally, append **+p** or **+n**.
     Then, we always initialize output to equal the first grid but then
     for subsequent grids we only consider them in the decision if the
-    values are >= 0 or <= 0, respectively.
+    values are :math:`z \ge 0` (**+p**) or :math:`z \le 0` (**+n**), respectively.
 
 .. _-Q:
 

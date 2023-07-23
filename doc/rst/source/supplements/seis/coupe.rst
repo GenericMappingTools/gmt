@@ -54,7 +54,7 @@ will plot a cross-section of focal mechanisms.
 The name "coupe" comes from the French
 verb “to cut”.  The best translation is a (vertical) cross section.
 
-Unless |-Q| is used, new file is created with the new coordinates
+Unless |-Q| is used, a new file is created with the new coordinates
 (**x**, **y**) and the mechanism (from lower focal half-sphere for
 horizontal plane, to half-sphere behind a vertical plane). When the
 plane is not horizontal,
@@ -216,7 +216,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Does **NOT** skip symbols that fall outside map border [Default plots points inside border only].
+    Does **not** skip symbols that fall outside map border [Default plots points inside border only].
 
 .. _-Q:
 
@@ -256,7 +256,7 @@ Optional Arguments
 
 **-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for text string or default pen attributes for
-    fault plane edges. [Defaults: default,black,solid].
+    fault plane edges. [Defaults: 0.25p,black,solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtmath_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtmath"
 #define THIS_MODULE_MODERN_NAME	"gmtmath"
@@ -221,12 +222,16 @@ GMT_LOCAL int gmtmath_find_stored_item (struct GMTMATH_STORED *recall[], int n_s
 	return (k == n_stored ? GMT_NOTSET : k);
 }
 
-GMT_LOCAL void gmtmath_load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
+GMT_LOCAL int gmtmath_load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
 	/* Copies data from one column to another */
 	uint64_t seg;
 	for (seg = 0; seg < from->n_segments; seg++) {
-		gmt_M_memcpy (to->table[0]->segment[seg]->data[to_col], from->segment[seg]->data[from_col], from->segment[seg]->n_rows, double);
+		if (to->table[0]->segment[seg]->n_rows == from->segment[seg]->n_rows)
+			gmt_M_memcpy (to->table[0]->segment[seg]->data[to_col], from->segment[seg]->data[from_col], from->segment[seg]->n_rows, double);
+		else
+			return GMT_NOTSET;
 	}
+	return GMT_NOERROR;
 }
 
 /* ---------------------- start convenience functions --------------------- */
@@ -546,7 +551,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     CSCH       1 1  ");	GMT_Usage (API, -21, "csch (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     PCDF       2 1  ");	GMT_Usage (API, -21, "Poisson cumulative distribution function for x = A and lambda = B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DDT        1 1  ");	GMT_Usage (API, -21, "d(A)/dt Central 1st derivative"); 
-	GMT_Message (API, GMT_TIME_NONE, "     D2DT2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dt^2 2nd derivative"); 
+	GMT_Message (API, GMT_TIME_NONE, "     D2DT2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dt^2 Central 2nd derivative"); 
 	GMT_Message (API, GMT_TIME_NONE, "     D2R        1 1  ");	GMT_Usage (API, -21, "Converts Degrees to Radians"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DEG2KM     1 1  ");	GMT_Usage (API, -21, "Converts Spherical Degrees to Kilometers");
 	GMT_Message (API, GMT_TIME_NONE, "     DENAN      2 1  ");	GMT_Usage (API, -21, "Replace NaNs in A with values from B"); 
@@ -1962,7 +1967,7 @@ GMT_LOCAL int gmtmath_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: D2DT2 1 1 d^2(A)/dt^2 2nd derivative.  */
+/*OPERATOR: D2DT2 1 1 d^2(A)/dt^2 Central 2nd derivative.  */
 {
 	uint64_t s, row;
 	double c, left, next_left;
@@ -6454,7 +6459,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "gmtmath.macros")) == NULL) Return1 (GMT_DATA_READ_ERROR);
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, list)) Return1 (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -6851,7 +6856,12 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 					if (Ctrl->N.ncol > F->n_columns) gmt_adjust_dataset (GMT, F, Ctrl->N.ncol);	/* Add more input columns */
 					T_in = F->table[0];	/* Only one table since only a single file */
 				}
-				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) gmtmath_load_column (stack[nstack]->D, j, T_in, j);
+				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) {
+					if (gmtmath_load_column (stack[nstack]->D, j, T_in, j)) {
+						GMT_Report (API, GMT_MSG_ERROR, "tables not of same size!\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+				}
 				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 				if (!gmtmath_same_size (stack[nstack]->D, Template)) {

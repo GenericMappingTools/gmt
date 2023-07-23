@@ -7,7 +7,7 @@ This is a community driven project and everyone is welcome to contribute. The pr
 `GMT GitHub repository <https://github.com/GenericMappingTools/gmt>`_.
 
 The goal is to maintain a diverse community that's pleasant for everyone. **Please be considerate and respectful of
-others**. Everyone must abide by our `Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>`_
+others**. Everyone must abide by our `Code of Conduct <https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md>`_
 and we encourage all to read it carefully.
 
 Ways to Contribute
@@ -239,16 +239,25 @@ You may need to know some basic reST syntax before making changes. Please refer 
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you need
-to install the `Sphinx <http://www.sphinx-doc.org/>`_ documentation builder. After configuring and
-`building GMT <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, you can build GMT documentation using
-the following commands within the build directory::
+Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you 
+need to `build GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_. Be sure 
+to also satisfy the 
+`developement dependencies <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md#development-dependencies>`_ 
+before proceeding. Have a look at the options in ``cmake/ConfigUserAdvanced.cmake`` if you want to change the 
+target directory for the documenation you are about to build.
+
+After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, 
+you can then build the GMT documentation using the following commands within the ``build`` directory::
 
   dvc pull
   cmake --build . --target docs_depends     # Generate images included in the documentation
   cmake --build . --target optimize_images  # Optimize PNG images for documentation [optional]
-  cmake --build . --target docs_man         # UNIX manual pages
-  cmake --build . --target docs_html        # HTML manual, tutorial, cookbook, and API reference
+  cmake --build . --target docs_man         # Build UNIX manual pages
+  cmake --build . --target docs_html        # Build HTML manual, tutorial, cookbook, and API reference
+
+To install the UNIX manpages and html documentation into the specified location (along with the gmt executable, library, development headers and built-in data), use::
+
+  cmake --build . --target install
 
 .. note::
   - Refer to the file ``admin/bashrc_for_gmt`` for useful aliases for building the documentation.
@@ -333,7 +342,7 @@ As the baseline images are large blob files that can change often, it is not ide
 we use `data version control (dvc) <https://dvc.org/>`_ to track the test images, which is like ``git`` but for data.
 ``dvc`` stores the hash (md5sum) of a file or an md5sum that describes the contents of a directory. For each test
 ``test/<module>/*.sh`` that generates a .PS file, there is a baseline image file in ``test/baseline/<module>/``
-that is compared to the test result using `GraphicsMagick <www.graphicsmagick.org>`_. Each of the
+that is compared to the test result using `GraphicsMagick <http://www.graphicsmagick.org/>`_. Each of the
 directories ``test/baseline/<module>`` are tracked by ``dvc`` using the file ``test/baseline/<module>.dvc``. This file
 contains the hash of a JSON .dir file stored in the .dvc cache. The .dir file contains information about each tracked
 file in the directory, which is used to push/pull the files to/from remote storage. The ``test/baseline/<module>.dvc``
@@ -439,7 +448,7 @@ Adding new tests
 ^^^^^^^^^^^^^^^^
 
 If you are fixing a bug or adding a new feature, you should add a test with your pull request. Most of the tests are
-image based and compare a result against a reference PostScript file using `GraphicsMagick <www.graphicsmagick.org>`_.
+image based and compare a result against a reference PostScript file using `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 
 To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMappingTools/gmt/blob/master/test/modern/box.sh>`_):
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdblend_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdblend"
 #define THIS_MODULE_MODERN_NAME	"grdblend"
@@ -465,6 +466,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		}
 		if (do_sample) {	/* One or more reasons to call upon grdsample before using this grid */
 			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
+			GMT->common.V.active = false;	/* Since we will parse again below */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
 
 				if (gmt_get_tempname (GMT->parent, "grdblend_resampled", ".nc", buffer))
@@ -859,7 +861,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

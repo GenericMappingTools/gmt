@@ -127,17 +127,23 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *template*
-    Dump contours as data line segments; no plotting takes place.
-    Append filename template which may contain C-format specifiers.
+    Dump contours as data line segments.
+    No plotting takes place.
+    Append filename template which may contain C language
+    `printf <https://en.wikipedia.org/wiki/Printf_format_string>`__ format specifiers.
     If no filename template is given we write all lines to standard output.
     If filename has no specifiers then we write all lines to a single file.
-    If a float format (e.g., %6.2f) is found we substitute the contour z-value.
-    If an integer format (e.g., %06d) is found we substitute a running segment count.
-    If an char format (%c) is found we substitute C or O for closed and open contours.
+
+    * If a float format (e.g., %6.2f) is found we substitute the contour z-value.
+    * If an integer format (e.g., %06d) is found we substitute a running segment count.
+    * If an char format (%c) is found we substitute C or O for closed and open contours.
+
     The 1-3 specifiers may be combined and appear in any order to produce the
-    the desired number of output files (e.g., just %c gives two files, just %f would.
-    separate segments into one file per contour level, and %d would write all segments.
-    to individual files; see manual page for more examples.
+    the desired number of output files.
+
+    E.g., just %c gives two files, just %f would
+    separate segments into one file per contour level, and %d would write all segments
+    to individual files. See `printf(3) <https://linux.die.net/man/3/printf>`__ for more examples.
 
 .. _-F:
 

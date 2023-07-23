@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -168,7 +168,7 @@ EXTERN_MSC int GMT_FFT_1D              (void *API, gmt_grdfloat *data, uint64_t 
 EXTERN_MSC int GMT_FFT_2D              (void *API, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode);
 EXTERN_MSC int GMT_FFT_Reset           (void *API, void *data, unsigned int dim, unsigned int mode);
 
-/* 3 F77 basic grid i/o functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
+/* 3 F77 basic grid i/o functions.  These give basic FORTRAN programs the ability to read and write any GMT-accessible grid */
 
 EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
 EXTERN_MSC int gmt_f77_readgrd_	    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);

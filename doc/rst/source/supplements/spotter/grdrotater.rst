@@ -91,6 +91,7 @@ Optional Arguments
 **-F**\ *polygonfile*
     Specify a multisegment closed polygon file that describes the inside
     area of the grid that should be projected [Default projects entire grid].
+    **Note**: If both |-F| and |-R| are given then |-R| takes precedence.
 
 .. _-N:
 
@@ -155,31 +156,31 @@ To rotate the data defined by grid topo.nc and the polygon outline
 clip_path.txt, using a total reconstruction rotation with pole at (135.5,
 -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try
 
-   ::
+::
 
-    gmt grdrotater topo.nc -E135.5/-33/37.3 -V -Fclip_path.txt -Grot_topo.nc > rot_clip_path.txt
+  gmt grdrotater topo.nc -E135.5/-33/37.3 -V -Fclip_path.txt -Grot_topo.nc > rot_clip_path.txt
 
 To rotate the entire grid faa.nc back to 32 Ma using the rotation file
 *rotations.txt* and a bilinear interpolation, try
 
-   ::
+::
 
-    gmt grdrotater faa.nc -Erotations.txt -T32 -V -Grot_faa.nc -nl > rot_faa_path.txt
+  gmt grdrotater faa.nc -Erotations.txt -T32 -V -Grot_faa.nc -nl > rot_faa_path.txt
 
 To just see how the outline of the grid large.nc will plot after the
 same rotation, try
 
-   ::
+::
 
-    gmt grdrotater large.nc -Erotations.txt -T32 -V -S | gmt plot -Rg -JH180/6i -B30 -W0.5p \| gv -
+  gmt grdrotater large.nc -Erotations.txt -T32 -V -S | gmt plot -Rg -JH180/6i -B30 -W0.5p \| gv -
 
 To rotate the grid topo.nc back to 100 Ma using the rotation file
 *rotations.txt* and request a reconstruction every 10 Myr, saving
 both grids and outlines to filenames that derive from templates, try
 
-   ::
+::
 
-    gmt grdrotater topo.nc -Erotations.txt -T10/100/10 -V -Grot_topo_%g.nc -Drot_topo_path_%g.txt
+  gmt grdrotater topo.nc -Erotations.txt -T10/100/10 -V -Grot_topo_%g.nc -Drot_topo_path_%g.txt
 
 Let say you have rotated gridA.nc and gridB.nc, restricting each
 rotation to nodes inside polygons polyA.txt and polyB.txt, respectively,
@@ -187,9 +188,9 @@ using rotation A = (123W,22S,16,4) and rotation B = (108W, 16S, -14.5),
 yielding rotated grids rot_gridA.nc and rot_gridB.nc. To determine the
 region of overlap between the rotated grids, we use :doc:`grdmath </grdmath>`:
 
-   ::
+::
 
-    gmt grdmath 1 rot_gridA.nc ISNAN SUB 1 rot_gridB.nc ISNAN SUB 2 EQ = overlap.nc
+  gmt grdmath 1 rot_gridA.nc ISNAN SUB 1 rot_gridB.nc ISNAN SUB 2 EQ = overlap.nc
 
 The grid overlap.nc now has 1s in the regions of overlap and 0
 elsewhere. You can use it as a mask or use :doc:`grdcontour </grdcontour>` |-D| to extract

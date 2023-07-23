@@ -62,7 +62,8 @@ Synopsis
 **gmt end** [**show**]
     Terminates a GMT modern mode session and automatically converts the registered
     illustration(s) to their specified formats, then eliminates the temporary work
-    directory.  The figures are placed in the current directory.
+    directory.  The figures are placed in the current directory. Appending the optional
+    directive **show** automatically opens the illustration in the default viewer.
 
 For information on any module, load the module documentation
 in your browser via gmt :doc:`docs`, e.g.::
@@ -100,6 +101,9 @@ If no module is given then several other options are available:
 
 **--show-cores**
     Show number of available cores.
+
+**--show-date**
+    Show GMT binary building date and exit.
 
 **--show-datadir**
     Show data directory/ies and exit.

@@ -16,15 +16,16 @@ Synopsis
 |-C|\ *canvas*
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-A|\ *audiofile*\ [**+e**] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
-[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**] ]
+[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
 [ |-K|\ [**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*]\ [**+p**\ [**i**\|\ **o**]] ]
 [ |-L|\ *labelinfo* ]
-[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*] ]
+[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*][**+v**] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
 [ |-Sb|\ *background* ]
@@ -60,7 +61,8 @@ Required Arguments
     written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
     and we build hidden movie scripts using the same language.  Parameters that can be accessed
-    are discussed below.
+    are discussed below. **Note**: If the final **gmt end** statement ends with **show** then
+    we display the movie master frame (but only if |-M| is active).
 
 .. _-C:
 
@@ -80,7 +82,7 @@ Required Arguments
     *16:9 (24x13.5 cm or 9.6x5.4 inch)*
     4320p (8k and uhd-2)                7680 x 4320
     2160p (4k and uhd)                  3840 x 2160
-    1080p (hd)                          1920 x 1080
+    1080p (fhd and hd)                  1920 x 1080
     720p                                1280 x 720
     540p                                960 x 540
     480p                                854 x 480
@@ -112,7 +114,7 @@ Required Arguments
     number of records equals the number of frames. Note that the *background* script is allowed to create
     *timefile*, hence we check for its existence both before *and* after the background script has completed.
     **Note**: If just *nframes* is given then only **MOVIE_FRAME** is available as no data file is available.
-    For details on array creation, see `Generate 1D Array`_.  Several modifiers are also available:
+    For details on array creation, see `Generate 1-D Array`_.  Several modifiers are also available:
 
     - **+n** indicates that *inc* is the desired *number* of frames from *min* to *max* instead of an increment.
     - **+p** can be used to set the tag *width* of the frame number format used in naming frames.  For
@@ -130,10 +132,17 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+**-A**\ *audiofile*\ [**+e**]
+    Add in an audio track (such as a narration), presumably of same length as the animation, but it can be
+    shorter or longer.  We place it starting at the first frame. Use **+e** to stretch the audio track to
+    exactly fit the length of the animation (provided the scaling is not less than 0.5 or larger than 2.0).
+
 .. _-D:
 
 **-D**\ *displayrate*
-    Set the display frame rate in frames per seconds for the final animation [24].
+    Set the display frame rate in frames per second for the final animation [24].
 
 .. _-E:
 
@@ -153,7 +162,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
+**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**]
     Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
     *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  If just
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
@@ -166,6 +175,7 @@ Optional Arguments
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
       frame, with *stride* being one of a fixed set of strides: 2, 5, 10, 20, 50, 100, 200, and 500.
     - **+t** selects generation of transparent PNG images [opaque]; see `Transparency`_ for more details.
+    - **+v** opens the movie in the default movie viewer.
 
 .. _-G:
 
@@ -248,12 +258,12 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*]
+**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*][**+v**]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can be one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
     we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame. **Note**: For raster frame formats
-    you may optionally specify an alternate *dpu* of that frame via the **+r** modifier [same dpu as the movie frames].
+    you may optionally specify an alternate *dpu* of that frame via the **+r** modifier [same dpu as the movie frames]. Finally, to open the master plot in the default viewer, append **+v**.
 
 .. _-P:
 
@@ -273,6 +283,8 @@ Optional Arguments
     - **+o**\ *dx*\ [/*dy*] offsets the indicator in direction implied by *justify*.
     - **+p**\ *pen* sets the moving item *pen*.
     - **+P**\ *pen* sets the static item *pen*.
+    - **+s**\ *scale* means we compute elapsed time as frame number times *scale*.
+    - **+t**\ *format* sets a C-format statement to be used with the item selected [none].
     - **+w**\ *width* sets the dimension of the indicator [5% of max canvas dimension for circular indicators and
       60% of relevant canvas dimension (height or width depending on **+j**) for the linear indicators].
 
@@ -455,6 +467,18 @@ transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offer this capabil
 able to verify the latter by viewing a transparent webm movie in Chrome. Animated GIFs can be built from
 transparent PNGs as well and here each additional frame accumulate in the final movie. Experts may create
 transparent PNGs and create movies in professional tools that support a movie alpha channel.
+
+. _Audio:
+
+Adding an Audio Track
+---------------------
+
+Using |-A|\ [**+e**], you can include an audio track, such as narrating the animation or add music, or
+whatever you have on tap. The final movie will have a length matching the longest of the audio or animation,
+so you probably will want to process you audio file to fit your animation.  Since the animation length
+is known to be *n_frames / displayrate* you can preprocess the audio track to have the matching length.
+Alternatively, if the audio track is approximately the same length as the video (withing ±50% of animation
+length), append **+e** to scale the audio track to have the exact same length as the animation.
 
 Technical Details
 -----------------
@@ -646,18 +670,6 @@ horizontally, then combine the two resulting strips vertically::
     ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
 
 For more information on such manipulations, see the FFmpeg documentation.
-
-
-Adding an Audio Track
----------------------
-
-If you wish to add an *audio* track to the animation, say a narration that explains your animation,
-you can record your audio using a suitable tool and save it to a \*.mp3 or \*.m4a file.  The audio track
-should be approximately the same length as the video.  Then, simply combine the two with FFmpeg::
-
-    ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
-
-For more information on audio manipulations, see the FFmpeg documentation.
 
 Deprecations
 ------------

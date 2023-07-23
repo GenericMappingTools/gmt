@@ -170,7 +170,7 @@ Optional Arguments
     available in a Google Earth balloon when the item is selected.
     The data file must have enough data columns and trailing text to
     accommodate the number of columns requested.  If the number of extended
-    data is one larger than the number of available numerical columns then
+    data columns is one larger than the number of available numerical columns then
     the entire trailing text is set as the last extended data column.
     Otherwise, the trailing text is split into individual words and
     set as separate extended columns.
@@ -247,7 +247,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines, wiggles or polygon outlines. Append pen
-    attributes to use [Defaults: width = default, color = black, style =
+    attributes to use [Defaults: width = 0.25p, color = black, style =
     solid]. If the modifier **+cl** is appended then the color of the line
     are taken from the CPT (see |-C|). If instead modifier **+cf** is
     appended then the color from the cpt file is applied to symbol fill.
@@ -309,17 +309,17 @@ first make the CPT and then create the KML file thus::
 To convert a file with point locations (lon, lat) into a KML file with
 red circle symbols, try
 
-   ::
+::
 
-    gmt 2kml mypoints.txt -Gred+f -Fs > mypoints.kml
+  gmt 2kml mypoints.txt -Gred+f -Fs > mypoints.kml
 
 To convert a multisegment file with lines (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick white pen, and title the document, try
 
-   ::
+::
 
-    gmt 2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
+  gmt 2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
 To convert a multisegment file with polygons (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
@@ -327,34 +327,34 @@ name, selecting a thick black pen and semi-transparent yellow fill,
 giving a title to the document, and prescribing a particular region
 limit, try
 
-   ::
+::
 
-    gmt 2kml mypolygons.txt -Gyellow@50+f -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
+  gmt 2kml mypolygons.txt -Gyellow@50+f -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
 To convert a file with point locations (lon, lat, time) into a KML file
 with green circle symbols that will go active at the specified time and
 stay active going forward, try
 
-   ::
+::
 
-    awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt 2kml -Ggreen+f -Ft > mytimepoints.kml
+  awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt 2kml -Ggreen+f -Ft > mytimepoints.kml
 
 To extract contours and labels every 10 units from the grid temp.nc and
 plot them in KML, using red lines at 75% transparency and red labels (no
 transparency), try
 
-   ::
+::
 
-    gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
-    gmt 2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
-    gmt 2kml    -O -Nt -Fs -Sn2 -Gred@0+n label.txt -I- >> contours.kml
+  gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
+  gmt 2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
+  gmt 2kml    -O -Nt -Fs -Sn2 -Gred@0+n label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try
 
-   ::
+::
 
-    gmt 2kml contours.txt -Fl -Ccontours.cpt > contours.kml
+  gmt 2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 
 To plot magnetic anomalies as wiggles along track, with positive
 wiggles painted orange and the wiggle line drawn with a black pen
@@ -362,9 +362,9 @@ of width 2p, scaling the magnetic anomalies (in nTesla) so that
 50 nT equals 1 nm on the map, and place the wiggles 50m above the
 sea surface, use
 
-   ::
+::
 
-    gmt 2kml magnetics_lon_lat_mag.txt -Fw -Gorange+f -W2p -Ag50 -Qs50n > wiggles.kml
+  gmt 2kml magnetics_lon_lat_mag.txt -Fw -Gorange+f -W2p -Ag50 -Qs50n > wiggles.kml
 
 Limitations
 -----------

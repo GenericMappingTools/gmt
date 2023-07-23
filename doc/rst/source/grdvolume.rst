@@ -70,7 +70,7 @@ Optional Arguments
 
         * **-C**\ **r**\ *low/high* - Report the area, volume, and mean height
           between *low* and *high* and above the grid surface. For example, use
-          this form to compute the volume of water between to contours.
+          this form to compute the volume of water between two contours.
 
 .. _-D:
 
@@ -131,35 +131,37 @@ Examples
 
 .. include:: explain_example.rst_
 
-To determine area (in km^2), volume (in km^3), and mean height (in km) of all land areas
-(above zero contour) in the Hawaiian Islands from the remote grid @earth_relief_05m (height in m), use::
+To determine area (in km\ :sup:`2`), volume (in km\ :sup:`3`), and mean height (in km) of all land areas
+(above zero contour) in the Hawaiian Islands from the remote grid @earth_relief_05m (height in m), use
 
-    gmt grdvolume @earth_relief_05m -R190/210/15/25 -C0 -Sk -Z0.001
+::
+
+  gmt grdvolume @earth_relief_05m -R190/210/15/25 -C0 -Sk -Z0.001
 
 To find the volume below the surface peaks.nc and above the contour z = 250 m in meters, use
 
-   ::
+::
 
-    gmt grdvolume peaks.nc -Se -C250
+  gmt grdvolume peaks.nc -Se -C250
 
 To search for the contour, ranging from 100 to 300 in steps of 10, that
 maximizes the ratio of volume to surface area for the file peaks.nc, use
 
-   ::
+::
 
-    gmt grdvolume peaks.nc -C0/300/10 -Th > results.d
+  gmt grdvolume peaks.nc -C100/300/10 -Th > results.d
 
 To see the areas and volumes for all the contours in the previous example, use
 
-   ::
+::
 
-    gmt grdvolume peaks.nc -C100/300/10 > results.d
+  gmt grdvolume peaks.nc -C100/300/10 > results.d
 
 To find the volume of water in a lake with its free surface at 0 and max depth of 300 meters, use
 
-   ::
+::
 
-    gmt grdvolume lake.nc -Cr-300/0
+  gmt grdvolume lake.nc -Cr-300/0
 
 Volume integration
 ------------------
@@ -180,7 +182,7 @@ Notes
 #. For geographical grids we convert degrees to "Flat Earth" distances in
    meter.  You can use |-S| to select another distance unit.  The
    area is then reported in this unit squared while the volume is reported
-   in unit^2 * z_unit quantities.
+   in unit\ :sup:`2` * z_unit quantities.
 #. **grdvolume** distinguishes between gridline and pixel-registered grids.
    In both cases the area and volume are computed up to the grid
    boundaries. That means that in the first case the grid cells on the

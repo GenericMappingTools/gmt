@@ -43,7 +43,7 @@ Description
 of user-selectable options, such as boundary conditions, pre-existing
 deformations, variable rigidity and restoring force, and more.  The solutions
 are obtained using finite difference approximations to the differential
-equations.
+equations [*Bodine*,\ 1980].
 
 Required Arguments
 ------------------
@@ -98,7 +98,7 @@ Optional Arguments
 
 **-C**\ **p**\|\ **y**\ *value*
     Append **p** or **y** to change the current value of Poisson's ratio [0.25]
-    or Young's modulus [7.0e10 N/m^2], respectively.
+    or Young's modulus [7.0e10 N/m\ :sup:`2`], respectively.
 
 .. _-F:
 
@@ -191,14 +191,14 @@ Examples
 To compute elastic plate flexure from the topography load in *topo.txt*,
 for a 10 km thick plate with typical densities, try
 
-   ::
+::
 
-    gmt flexure -Qttopo.txt -E10k -D2700/3300/1035 > flex.txt
+  gmt flexure -Qttopo.txt -E10k -D2700/3300/1035 > flex.txt
 
 References
 ----------
 
-Bodine, J. H., 1980, *Numerical computation of plate flexure in marine geophysics*, 
+Bodine, J. H., 1980, *Numerical computation of plate flexure in marine geophysics*,
 Tech. Rep. CU-1-80, Columbia University.
 
 See Also

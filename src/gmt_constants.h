@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -508,6 +508,7 @@ enum GMT_enum_spline {
 	GMT_SPLINE_CUBIC,      /* Cubic spline */
 	GMT_SPLINE_SMOOTH,     /* Smooth cubic spline */
 	GMT_SPLINE_NN,         /* Nearest neighbor */
+	GMT_SPLINE_STEP,       /* Step up to next value */
 	GMT_SPLINE_NONE};      /* No spline set */
 
 /*! Various 1-D interpolation derivatives */

@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt dimfilter** *ingrid*
-|-D|\ *0-4*
+|-D|\ *flag*
 |-F|\ **x**\ *width*\ [*modifier*]
 |-G|\ *outgrid*
 |-N|\ **x**\ *sectors*\ [*modifier*]
@@ -37,7 +37,7 @@ dividing the given filter circle into *n\_sectors*, applying one of the
 selected primary convolution or non-convolution filters to each sector,
 and choosing the final outcome according to the selected secondary
 filter. It computes distances using Cartesian or Spherical geometries.
-The output *.nc* file can optionally be generated as a subregion of the
+The output gridfile can optionally be generated as a subregion of the
 input and/or with a new **-I**\ ncrement. In this way, one may have
 "extra space" in the input data so that there will be no edge effects
 for the output grid. If the filter is low-pass, then the output may be
@@ -45,7 +45,7 @@ less frequently sampled than the input. The |-Q| option is for the error analysi
 mode and expects the input file to contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
-sectors. The output can be rough unless the input data is noise-free.
+sectors. The output can be rough unless the input data are noise-free.
 Thus, an additional filtering (e.g., Gaussian via :doc:`grdfilter`) of the
 DiM-filtered data is generally recommended.
 
@@ -86,7 +86,7 @@ Required Arguments
     - (**b**) Boxcar: All weights are equal.
     - (**c**) Cosine Arch: Weights follow a cosine arch curve.
     - (**g**) Gaussian: Weights are given by the Gaussian function.
-    
+
     Non-convolution filters are:
 
     - (**m**) Median: Returns median value.
@@ -127,21 +127,21 @@ Optional Arguments
 **-I**
     *x_inc* [and optionally *y_inc*] is the output Increment. Append
     **m** to indicate minutes, or **c** to indicate seconds. If the new
-    *x_inc*, *y_inc* are NOT integer multiples of the old ones (in the
+    *x_inc*, *y_inc* are **not** integer multiples of the old ones (in the
     input data), filtering will be considerably slower. [Default: Same
     as input.]
 
 .. _-L:
 
 **-L**
-    This option is used by itself to write the dim.template.sh bash script
+    This option is used by itself to write the *dim.template.sh* bash script
     to standard output.  No other options can be used in combination.
 
 .. _-R:
 
 **-R**
     *west*, *east*, *south*, and *north* defines the Region of the
-    output points. [Default: Same as input.]
+    output grid. [Default: Same as input.]
 
 .. _-T:
 
@@ -189,9 +189,9 @@ biased by the sloping plane, you want to divide the filter circle into 6
 sectors and to choose the lowest value among 6 medians. Using spherical
 distance calculations, you need:
 
-   ::
+::
 
-    gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
+  gmt dimfilter @earth_relief_05m -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
 
 Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
 to 15W and 8N to 25N, and you want to remove small-length-scale features
@@ -199,10 +199,10 @@ in order to define a swell in an area extending from 27.5W to 20.5W and
 12.5N to 19.5N, and you want the output value every 2 minute. Using
 cartesian distance calculations, you need:
 
-   ::
+::
 
-    gmt dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
-    gmt grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V
+  gmt dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
+  gmt grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V
 
 Suppose that you found a range of filter widths for a given area, and
 you filtered the given bathymetric data using the range of filter widths
@@ -211,14 +211,14 @@ regional trend using the range of filter widths, and you want to obtain
 median absolute deviation (MAD) estimates at each data point. Then, you
 will need to do:
 
-   ::
+::
 
-    gmt grd2xyz f100.nc -Z > f100.txt
-    gmt grd2xyz f110.nc -Z > f110.txt
-    gmt grd2xyz f120.nc -Z > f120.txt
-    gmt grd2xyz f130.nc -Z > f130.txt
-    paste f100.txt f110.txt f120.txt f130.txt > depths.txt
-    gmt dimfilter depths.txt -Q > output.z
+  gmt grd2xyz f100.nc -Z > f100.txt
+  gmt grd2xyz f110.nc -Z > f110.txt
+  gmt grd2xyz f120.nc -Z > f120.txt
+  gmt grd2xyz f130.nc -Z > f130.txt
+  paste f100.txt f110.txt f120.txt f130.txt > depths.txt
+  gmt dimfilter depths.txt -Q > output.z
 
 Limitations
 -----------

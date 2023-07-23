@@ -17,7 +17,7 @@ Synopsis
 [ |-E|\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**] ]
 [ |-F| ]
 [ |-G| ]
-[ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
+[ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **o**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ]
 [ |-M|\ [**c**\|\ **f**] ]
 [ |SYN_OPT-R| ]
@@ -43,7 +43,7 @@ the mode (Least Median of Squares; LMS), LMS scale of *v*, and number of nodes s
 to NaN. We also report if the grid is pixel- or gridline-registered and
 if it is a Cartesian or Geographic data set (based on metadata in the file).
 We can also report information for 3-D netCDF data cubes, but note that
-data cubes are not compatible with options |-D|, |-E|, |-F|, and **-Ib**.
+data cubes are not compatible with options |-D|, |-E|, |-F|, and |-I|\ **b**.
 
 Required Arguments
 ------------------
@@ -65,10 +65,10 @@ Optional Arguments
     *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}* [*x0 y0 {z0} x1 y1 {z1}*] [*med scale*] [*mean std rms*] [*n\_nan*] *registration gtype*
 
     The data in brackets are
-    output only if the corresponding options |-M| (with no directive), **-L1**, and **-L2**
+    output only if the corresponding options |-M| (with no directive), |-L|\ **1**, and |-L|\ **2**
     are used, respectively, while the data in braces only apply if
-    used with 3-D data cubes. Use **-Ct** to place file *name*
-    at the end of the output record or **-Cn** to only output numerical
+    used with 3-D data cubes. Use |-C|\ **t** to place file *name*
+    at the end of the output record or |-C|\ **n** to only output numerical
     columns.  The *registration* is either 0 (gridline) or 1 (pixel),
     while *gtype* is either 0 (Cartesian) or 1 (geographic).
     If the |-I| option is used, the
@@ -84,14 +84,14 @@ Optional Arguments
     grid is given you may use the modifier **+i** to ignore tiles that
     have no data within each tile subregion.  Default output is text
     region strings.  Use |-C| to instead report four columns with
-    *xmin xmax ymin ymax* per tile, or use **-Ct** to also have the
+    *xmin xmax ymin ymax* per tile, or use |-C|\ **t** to also have the
     region string appended as trailing text.
 
 .. _-E:
 
 **-E**\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**]
-    Report the extreme values found on a per column (**-Ex**) or per
-    row (**-Ey**) basis.  By default, we look for the global maxima (**+u**\|\ **U**)
+    Report the extreme values found on a per column (|-E|\ **x**) or per
+    row (|-E|\ **y**) basis.  By default, we look for the global maxima (**+u**\|\ **U**)
     for each column.  Append **+l**\|\ **L** to look for minima instead.
     Upper case **+L** means we find the minimum of the positive values only, while
     upper case **+U** means we find the maximum of the negative values only [use all values].
@@ -111,32 +111,33 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**]
+**-I**\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **o**\|\ **r**]
     Report the min/max of the region to the nearest multiple of *dx* and
-    *dy*, and output this in the form **-R**\ *w/e/s/n* (unless |-C|
-    is set). To report the actual grid region, select **-Ir**. For a
+    *dy*, and output this in the form |-R|\ *w/e/s/n* (unless |-C|
+    is set). To report the actual grid region, select |-I|\ **r** for
+    the format |-R|\ *w/e/s/n* or |-I|\ **o** for the oblique format |-R|\ *w/s/e/n*\ **+r**. For a
     grid produced by the img supplement (a Cartesian Mercator grid),
-    the exact geographic region is given with **-Ii** (if not found
+    the exact geographic region is given with |-I|\ **i** (if not found
     then we return the actual grid region instead).  If no
     argument is given then we report the grid increment in the form
-    **-I**\ *xinc*\ [/*yinc*]. If **-Ib** is given we write each grid's
+    |-I|\ *xinc*\ [/*yinc*]. If |-I|\ **b** is given we write each grid's
     bounding box polygon instead.  Finally, if |-D| is in effect then
     *dx* and *dy* are the dimensions of the desired tiles.
 
 .. _-L:
 
 **-L**\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**]
-    **-L0**
+    |-L|\ **0**
         Report range of *v* after actually scanning the data, not just
         reporting what the header says.
-    **-L1**
+    |-L|\ **1**
         Report median and L1 scale of *v* (L1 scale = 1.4826 \* Median
         Absolute Deviation (MAD)).
-    **-L2**
+    |-L|\ **2**
         Report mean, standard deviation, and root-mean-square (rms) of *v*.
-    **-Lp**
+    |-L|\ **p**
         Report mode (LMS) and LMS scale of *v*.
-    **-La**
+    |-L|\ **a**
         All of the above.
 
     **Note**: If the grid is geographic then each node represents a physical
@@ -170,7 +171,7 @@ Optional Arguments
     Give *alpha* in the format *alphaL*/*alphaR* to select unequal tail areas.
     To force a symmetrical range about zero, using minus/plus the max
     absolute value of the two extremes, append **+s**. We report the
-    result via the text string **-T**\ *vmin/vmax* or **-T**\ *vmin/vmax/dv*
+    result via the text string |-T|\ *vmin/vmax* or |-T|\ *vmin/vmax/dv*
     (if *dv* was given) as expected by :doc:`makecpt`.
 
 .. |Add_-V| replace:: |Add_-V_links|

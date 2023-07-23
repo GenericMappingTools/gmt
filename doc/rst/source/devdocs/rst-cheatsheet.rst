@@ -10,7 +10,7 @@ You can see the literal source code of the ReST file on the right,
 and the rendered web page on the left.
 
 .. note::
-    Try a online reStructuredText editor (e.g. https://livesphinx.herokuapp.com/),
+    Try an online reStructuredText editor (e.g. https://www.notex.ch/editor),
     if you want to preview texts written in ReST.
 
     For a more complete description of ReST syntax, please visit

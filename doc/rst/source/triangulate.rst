@@ -48,7 +48,7 @@ Description
 -----------
 
 **triangulate** reads one or more ASCII [or binary] files (or standard
-input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
+input) containing *x, y*\ [*, z*] and performs Delaunay triangulation, i.e., it
 finds how the points should be connected to give the most equilateral
 triangulation possible. If a map projection (give |-R| and |-J|) is
 chosen then it is applied before the triangulation is calculated. By
@@ -59,7 +59,7 @@ input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
 network. If |-G| |-I| are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
-the triangulations is either that of Watson [1982] or Shewchuk [1996] [Default]
+the triangulations is either that of *Watson* [1982] or *Shewchuk* [1996] [Default]
 (if installed; type **gmt get GMT_TRIANGULATE** to see which method is
 selected). This choice is made during the GMT installation.  Furthermore,
 if the Shewchuk algorithm is installed then you can also perform the
@@ -89,7 +89,7 @@ Optional Arguments
 
 **-C**\ *slpfile*
     Read a slope grid (in degrees) and compute the propagated uncertainty in the
-    bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the |-G|
+    bathymetry using the CURVE algorithm [*Zambo et al.*\ , 2016].  Requires the |-G|
     option to specify the output grid.  Note that the *slpgrid* sets the domain
     for the output grid so |-R|, |-I|, [|SYN_OPT-r|\ ] are not required.
     Cannot be used in conjunction with |-D|, |-F|, |-M|, |-N|, |-Q|,
@@ -154,8 +154,8 @@ Optional Arguments
 **-Q**\ [**n**]
     Output the edges of the Voronoi cells instead [Default is Delaunay
     triangle edges]. Requires |-R| and is only available if linked
-    with the Shewchuk [1996] library. Note that |-Z| is ignored on
-    output. Optionally, append **n** for combining the edges into
+    with the *Shewchuk* [1996] library. Note that |-Z| is ignored on
+    output. Optionally, append directive **n** for combining the edges into
     closed Voronoi polygons.
 
 .. |Add_-R| replace:: |Add_-R_links|
@@ -184,8 +184,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    Controls whether we read (x,y) or (x,y,z) data and if z should be
-    output when |-M| or |-S| are used [Read (x,y) only].
+    Controls whether we read (*x,y*) or (*x,y,z*) data and if *z* should be
+    output when |-M| or |-S| are used [Read (*x,y*) only].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -234,36 +234,36 @@ Examples
 To triangulate the points in the file samples.xyz, store the triangle
 information in a binary file, and make a grid for the given area and spacing, use
 
-   ::
+::
 
-    gmt triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
+  gmt triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
 
 To draw the optimal Delaunay triangulation network based on the same
 file using a 15-cm-wide Mercator map, use
 
-   ::
+::
 
-    gmt triangulate samples.xyz -M -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf network
+  gmt triangulate samples.xyz -M -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf network
 
 To instead plot the Voronoi cell outlines, try
 
-   ::
+::
 
-    gmt triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf cells
+  gmt triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c | gmt plot -R-100/-90/30/34 -JM15c -W0.5p -B1 -pdf cells
 
 To combine the Voronoi outlines into polygons and paint them
 according to their ID, try
 
-   ::
+::
 
-    gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
-        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -L -B1 -Ccolors.cpt -L -pdf polygons
+  gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
+      gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -B1 -Ccolors.cpt -pdf polygons
 
 To grid the data using the natural nearest neighbor algorithm, try
 
-   ::
+::
 
-    gmt triangulate samples.xyz -Gnnn.nc -Qn -R-100/-90/30/34 -I0.5
+  gmt triangulate samples.xyz -Gnnn.nc -Qn -R-100/-90/30/34 -I0.5
 
 Notes
 -----

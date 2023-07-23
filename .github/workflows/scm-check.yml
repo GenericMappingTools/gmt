@@ -21,7 +21,7 @@ jobs:
       - name: Check the latest release
         id: scm
         run: |
-          scm_version_in_gmt=7.0.1
+          scm_version_in_gmt=8.0.0
 
           # Get version string and date from Zenodo API
           # https://doi.org/10.5281/zenodo.1243862
@@ -30,16 +30,16 @@ jobs:
           echo "SCM version ${scm_version} (${scm_version_date})"
 
           # Set output of the current step
-          echo "::set-output name=scm_version::${scm_version}"
-          echo "::set-output name=scm_version_date::${scm_version_date}"
+          echo "scm_version=${scm_version}" >> $GITHUB_OUTPUT
+          echo "scm_version_date=${scm_version_date}" >> $GITHUB_OUTPUT
           if [ "${scm_version}" != ${scm_version_in_gmt} ]; then
             echo "The latest SCM version (${scm_version}) is different from the one in GMT (${scm_version_in_gmt})!"
-            echo "::set-output name=error_code::2"
+            echo "error_code=2" >> $GITHUB_OUTPUT
           fi
 
       - name: Create an update request
         if: ${{ steps.scm.outputs.error_code == 2 }}
-        uses: nashmaniac/create-issue-action@v1.1
+        uses: nashmaniac/create-issue-action@v1.2
         with:
           title: New ScientificColourMaps version ${{ steps.scm.outputs.scm_version }} found
           token: ${{secrets.GITHUB_TOKEN}}

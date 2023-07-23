@@ -34,7 +34,8 @@ Description
 -----------
 
 **sph2grd** reads a spherical harmonics coefficient table with records of
-L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid.
+L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid
+[*Holmes and Featherstone*, 2002].
 
 Required Arguments
 ------------------
@@ -132,9 +133,9 @@ Examples
 To create a 1 x 1 degree global grid file from the ASCII
 coefficients in the remote file EGM96_to_36.txt, use
 
-   ::
+::
 
-    gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
+  gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
 References
 ----------

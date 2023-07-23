@@ -211,8 +211,7 @@ other way around, reducing hue from 240 to 0, via cyan, green, and yellow.
 Depending on the design of your CPT, you may want to have it
 either way. By default, GMT interpolates in RGB space, even when the
 original CPT is in the HSV system. However, when you add the
-line ``#COLOR_MODEL=+HSV`` (with the leading '+' sign) in the header of
-the CPT, GMT will not only read the color
+line ``#COLOR_MODEL=hsv`` in the header of the CPT, GMT will not only read the color
 representation as HSV values, but also interpolate colors in the HSV
 system. That means that H, S, and V values are interpolated linearly
 between two colors, instead of their respective R, G, and B values.

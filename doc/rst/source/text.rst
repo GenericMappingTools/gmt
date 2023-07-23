@@ -70,9 +70,9 @@ caps are supported as follows:
      - Toggles superscript on/off
    * - @#
      - Toggles small caps on/off
-   * - @;\ *color*
+   * - @;\ *color*\ ;
      - Changes the font color (@;; resets it)
-   * - @:\ *size*
+   * - @:\ *size*\ :
      - Changes the font size (@:: resets it)
    * - @\_
      - Toggles underline on/off
@@ -245,7 +245,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip text at map boundaries [Default will clip].
+    Do **not** clip text at map boundaries [Default will clip].
 
 .. _-Q:
 
@@ -273,7 +273,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
-    |-C|) [Default is width = default, color = black, style = solid].
+    |-C|) [Default is width = 0.25p, color = black, style = solid].
     **Note**: cannot be used with LaTeX expressions.
 
 .. |Add_-XY| replace:: |Add_-XY_links|

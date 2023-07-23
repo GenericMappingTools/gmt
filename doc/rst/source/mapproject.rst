@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
+[ |-W|\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -65,7 +65,7 @@ Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
 azimuth, distances, distances to other lines, and travel-times
 along lines can all be computed by using one or more of the options
-**-A**, |-G|, |-L|, and |-Z|.
+|-A|, |-G|, |-L|, and |-Z|.
 
 Required Arguments
 ------------------
@@ -85,6 +85,8 @@ Required Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+(Note that depending on the Optional Arguments listed below, sometimes -J and -R are not actually required.)
+
 Optional Arguments
 ------------------
 
@@ -92,9 +94,9 @@ Optional Arguments
 
 **-Ab**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
-    with *lon0/lat0*.  **-Af** calculates the (forward) azimuth
-    to each data point. Use **-Ab** to get back-azimuth from data points
-    to fixed point. Use **-Ao** to get orientations (-90/90) rather than
+    with *lon0/lat0*.  |-A|\ **f** calculates the (forward) azimuth
+    to each data point. Use |-A|\ **b** to get back-azimuth from data points
+    to fixed point. Use |-A|\ **o** to get orientations (-90/90) rather than
     azimuths (0/360). Upper case **F**, **B** or **O** will convert from
     geodetic to geocentric latitudes and estimate azimuth of geodesics
     (assuming the current ellipsoid is not a sphere). If no fixed point
@@ -129,9 +131,9 @@ Optional Arguments
 
 **-E**\ [*datum*]
     Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
-    (add |-I| for the inverse conversion). Append datum ID (see **-Qd**) or give
+    (add |-I| for the inverse conversion). Append datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
+    ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84.
 
@@ -148,7 +150,7 @@ Optional Arguments
 
 **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
+    with |-G|\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic
     radius]), including **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
@@ -199,8 +201,8 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ [**d**\|\ **e**]
-    List all projection parameters. To only list datums, use **-Qd**. To
-    only list ellipsoids, use **-Qe**.
+    List all projection parameters. To only list datums, use |-Q|\d. To
+    only list ellipsoids, use |-Q|\e.
 
 .. _-S:
 
@@ -211,11 +213,11 @@ Optional Arguments
 
 **-T**\ [**h**]\ *from*\ [/*to*]
     Coordinate conversions between datums *from* and *to* using the
-    standard Molodensky transformation. Use **-Th** if 3rd input column
+    standard Molodensky transformation. Use |-T|\ **h** if 3rd input column
     has height above ellipsoid [Default assumes height = 0, i.e., on the
-    ellipsoid]. Specify datums using the datum ID (see **-Qd**) or give
+    ellipsoid]. Specify datums using the datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
+    ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84. |-T| may
     be used in conjunction with |-R| |-J| to change the datum before
@@ -230,7 +232,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
+**-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -239,13 +241,15 @@ Optional Arguments
     standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
     where a plot point is given directly. To output the rectangular domain that
-    covers an oblique area as defined by **-R -J**, append **r**,
-    or use **R** to get the result in -Rw/e/s/n string format. Similarly, if an
-    oblique domain is set via **-R**\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
+    covers an oblique area as defined by |-R| |-J|, append **r**,
+    or append **R** to get the result in -Rw/e/s/n string format. Alternatively
+    use **b** or **B** to get the bounding box in longitude and latitude. Similarly, if an
+    oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
     use **o** to return the diagonal corner coordinates in degrees (in the order
     *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
     text. To return the coordinates of the rectangular area encompassing the non-rectangular
-    area defined by your **-R -J**, use **e**, or **E** for the trailing text string.
+    area defined by your |-R| |-J|, use **e**, or **E** for the trailing text string.
+    Similarly, use **m** or **M** to get the rectangular region in projected coordinates instead.
     Alternatively (for **e** or **r**), append **+n** to set how many points [100]
     you want along each side for a closed polygon of the oblique area instead
     [Default returns the width and height of the map].
@@ -256,9 +260,9 @@ Optional Arguments
 
    Comparing oblique (red outline) and regular (just meridians and parallels; black outline) regions.
    (left) Some domains are oblique (their perimeters are not following meridians and parallels).
-   We can use **-Wr**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |-R| string
+   We can use |-W|\ **r**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |-R| string
    for that region. (right) Other domains are not oblique but their enclosing rectangular box in
-   the map projection will be.  We can explore **-We**\ \|\ **E** to obtain the geographic coordinates
+   the map projection will be.  We can explore |-W|\ **e**\ \|\ **E** to obtain the geographic coordinates
    of the encompassing oblique rectangle or the |-R| string for that region.
 
 .. _-Z:
@@ -332,16 +336,16 @@ Examples
 To transform a remote file with (latitude,longitude) into (x,y) positions in cm
 on a Mercator grid for a given scale of 0.5 cm per degree and selected region, run
 
-   ::
+::
 
-    gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
+gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
 
 To convert UTM coordinates in meters to geographic locations, given
 a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
 
-   ::
+::
 
-    gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
+gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
 
 
 To transform several 2-column, binary, double precision files with
@@ -349,33 +353,33 @@ To transform several 2-column, binary, double precision files with
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
 those points that would fall outside the map area, run
 
-   ::
+::
 
-    gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
+gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
 To convert the geodetic coordinates (lon, lat, height) in the file
 old.txt from the NAD27 CONUS datum (Datum ID 131 which uses the
 Clarke-1866 ellipsoid) to WGS 84, run
 
-   ::
+::
 
-    gmt mapproject old.txt -Th131 > new.txt
+gmt mapproject old.txt -Th131 > new.txt
 
 To compute the closest distance (in km) between each point in the input
 file quakes.txt and the line segments given in the multisegment ASCII
 file coastline.txt, run
 
-   ::
+::
 
-    gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
+gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
 
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times
 assuming a fixed speed of 12 knots.  We do this with
 
-   ::
+::
 
-    gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
+gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
 where :term:`TIME_UNIT` is set to hour so that the speed is
 measured in nm (set by |-G|) per hour (set by :term:`TIME_UNIT`).
@@ -384,36 +388,43 @@ for ISO elapsed time).
 
 To determine the geographic coordinates of the mid-point of this transverse Mercator map, try
 
-   ::
+::
 
-    gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
+gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
 
 To determine the rectangular region that encompasses the oblique region
 defined by an oblique Mercator projection, try
 
-   ::
+::
 
-    gmt mapproject -R270/20/305/25+r -JOc280/25.5/22/69/2c -WR
+gmt mapproject -R270/20/305/25+r -JOc280/25.5/22/69/2c -WR
 
 To determine the oblique region string (in degrees) that corresponds to a rectangular
 (but oblique) region specified in projected units defined by an oblique Mercator projection, try
 
-   ::
+::
 
-    gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
+gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
 
 To instead get a closed polygon of the oblique area in geographical coordinates, try
 
-   ::
+::
 
-    gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Wr+n > polygon.txt
+gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Wr+n > polygon.txt
 
 To find the region string that corresponds to the rectangular region that encompasses
 the projected region defined by a stereographic projection, try
 
-   ::
+::
 
-    gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
+gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
+
+Obtain azimuth of railroad using the points where it enters and leaves a city,
+
+::
+
+echo -87.7447873 42.1192976 -87.7725841 42.1523955 | gmt mapproject -AF+v -fg -o4
+
 
 Restrictions
 ------------
@@ -429,7 +440,7 @@ or alternatively, use **awk** to scale and shift the (x,y) values before
 transforming.
 
 For some projection, a spherical solution may be used despite the user
-having selected an ellipsoid. This occurs when the users |-R| setting
+having selected an ellipsoid. This occurs when the user's |-R| setting
 implies a region that exceeds the domain in which the ellipsoidal series
 expansions are valid. These are the conditions: (1) Lambert Conformal
 Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical

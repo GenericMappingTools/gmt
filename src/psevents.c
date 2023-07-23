@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2019-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2019-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
  * Brief synopsis: psevents handles the plotting of events for one frame of a movie.
  */
 #include "gmt_dev.h"
+#include "longopt/psevents_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psevents"
 #define THIS_MODULE_MODERN_NAME	"events"
@@ -112,7 +113,7 @@ struct PSEVENTS_CTRL {
 		unsigned int mode;
 		double length;
 	} L;
-	struct PSEVENTS_M {	/* 	-M[i|s|t|v]<val1>[+c<val2] */
+	struct PSEVENTS_M {	/* 	-M[i|s|t|v]<val1>[+c<val2>] */
 		bool active[4];
 		double value[4][2];
 	} M;
@@ -139,6 +140,7 @@ struct PSEVENTS_CTRL {
 	} W;
 	struct PSEVENTS_Z {	/* 	-Z<cmd> */
 		bool active;
+		int Slongopt;		/* Long-option (--format) used in -Z argument string instead of -S? */
 		char *module;
 		char *cmd;
 	} Z;
@@ -149,6 +151,7 @@ struct PSEVENTS_CTRL {
 
 /* The names of the three external modules.  We skip first 2 letters if in modern mode */
 static char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
+
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSEVENTS_CTRL *C;
@@ -161,6 +164,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* -Mi|s|t|v val1 defaults: 1, 1, 100, 1  val2 defaults: 0, 0, 100, 0 */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
 	C->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1]   = C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default size scale for -Ms and dz amplitude for -Mv */
+	C->Z.Slongopt = 0;			/* Assume short-option format */
 	return (C);
 }
 
@@ -184,7 +188,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+v[<value>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
-		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
+		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2>]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -248,7 +252,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set finite length of events, otherwise we assume they are all infinite. "
 		"If no arg we read lengths from file; append t for reading end times instead. "
 		"If -L0 is given the event only lasts one frame.");
-	GMT_Usage (API, 1, "\n-Mi|s|t|v<val1>[+c<val2]");
+	GMT_Usage (API, 1, "\n-Mi|s|t|v<val1>[+c<val2>]");
 	GMT_Usage (API, -2, "Append i for intensity, s for size, t for transparency, and v for dz (requires -C); repeatable. "
 		"Append value to use during rise, plateau, or decay phases. "
 		"Append +c to set a separate terminal value for the coda [no coda].");
@@ -542,7 +546,9 @@ maybe_set_two:
 
 			case 'Z':	/* Select advanced seismologic/geodetic symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got the required -S option as part of the command */
+
+				/* Check for both short- and long-option flags within the -Z argument string */
+				if (opt->arg[0] && (strstr (opt->arg, "-S") || strstr (opt->arg, "--format="))) {	/* Got the required -S option as part of the command */
 					if ((c = strchr (opt->arg, ' '))) {	/* First space in the command ends the module name */
 						char *q;
 						c[0] = '\0';	/* Temporarily hide the rest of the command so we can isolate the module name */
@@ -550,11 +556,29 @@ maybe_set_two:
 						c[0] = ' ';	/* Restore space */
 						while (c[0] == ' ' || c[0] == '\t') c++;	/* Move to first word after the module (user may have more than one space...) */
 						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a temporary buffer */
-						q = strstr (txt_a, "-S") + 3;	/* Determine the start position of the required symbol size in the command */
-						if (!(isdigit (q[0]) || (q[0] == '.' && isdigit (q[1]))))	/* Got no size, must read from data file */
+
+						/* Determine the start position of the
+						   required symbol size in the command */
+						if ((q = strstr (txt_a, "-S")) != NULL) 
+							q += 3;
+						else if ((q = strstr (txt_a, "--format=")) != NULL) {
+							Ctrl->Z.Slongopt = 1;
+							if ((q = strstr (q, ":=")) != NULL)
+								q += 2;
+						}
+						if (( q == NULL) || !(isdigit (q[0]) || (q[0] == '.' && isdigit (q[1]))))	/* Got no size, must read from data file */
 							Ctrl->S.mode = 1;
-						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-H") || strstr (txt_a, "-I") || strstr (txt_a, "-J") || strstr (txt_a, "-N") || strstr (txt_a, "-R") \
-						  || strstr (txt_a, "-W") || strstr (txt_a, "-t")) {	/* Sanity check */
+
+						/* Check for inappropriate options */
+						if (strstr (txt_a, "-C") || strstr (txt_a, "--cpt") ||
+						  strstr (txt_a, "-G") ||
+						  strstr (txt_a, "-H") || strstr (txt_a, "--scale") ||
+						  strstr (txt_a, "-I") || strstr (txt_a, "--intensity") ||
+						  strstr (txt_a, "-J") || strstr (txt_a, "--projection") ||
+						  strstr (txt_a, "-N") || strstr (txt_a, "--noclip") ||
+						  strstr (txt_a, "-R") || strstr (txt_a, "--region") ||
+						  strstr (txt_a, "-W") || strstr (txt_a, "--pen") ||
+						  strstr (txt_a, "-t") || strstr (txt_a, "--transparency")) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -H, -I, -J, -N, -R, -W, or -t in the %s command\n", Ctrl->Z.module);
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: The -C, -G, -J, -N, -R, -W options may be given to %s instead, while -H, -I, -t are not allowed\n", &events[s]);
 							n_errors++;							
@@ -645,33 +669,77 @@ GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsig
 		sprintf (Y, "%.16g", out[GMT_Y]);
 }
 
-GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd, unsigned int mode) {
+GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd, int ZSlongopt, unsigned int mode) {
 	/* Return how many data columns are needed for the selected seismo/geodetic symbol */
 	unsigned int n = 0;
-	char *S = strstr (cmd, "-S");	/* Pointer to start of symbol option */
+	char *S, *F;
+
+	/* Locate start of symbol option, then advance to format designation */
+	if (ZSlongopt) {
+		S = strstr (cmd, "--format=");
+		S += strlen ("--format=");
+	}
+	else {
+		S = strstr (cmd, "-S");
+		S += 2;
+	}
+
 	gmt_M_unused (GMT);
-	S += 2;	/* Now at format designation */
 
 	if (strstr (module, &coupe[2])) {	/* Using coupe/pscoupe */
-		switch (S[0]) {
-			case 'a': n = 7; break;
-			case 'c': n = 11; break;
-			case 'm': case 'd': case 'z': n = 10; break;
-			case 'p': n = 8; break;
-			case 'x': n = 13; break;
-			default: n = 0; break;
+		if (ZSlongopt) {
+			if (!strncmp (S, "aki", strlen ("aki"))) n = 7;
+			else if (!strncmp (S, "cmt", strlen ("cmt"))) n = 11;
+			else if (!strncmp (S, "smtfull", strlen ("smtfull"))) n = 10;
+			else if (!strncmp (S, "smtdouble", strlen ("smtdouble"))) n = 10;
+			else if (!strncmp (S, "smtdev", strlen ("smtdev"))) n = 10;
+			else if (!strncmp (S, "partial", strlen ("partial"))) n = 8;
+			else if (!strncmp (S, "axisfull", strlen ("axisfull"))) n = 13;
+			else if (!strncmp (S, "axisdouble", strlen ("axisdouble"))) n = 13;
+			else if (!strncmp (S, "axisdev", strlen ("axisdev"))) n = 13;
+			else n = 0;
+		}
+		else {
+			switch (S[0]) {
+				case 'a': n = 7; break;
+				case 'c': n = 11; break;
+				case 'm': case 'd': case 'z': n = 10; break;
+				case 'p': n = 8; break;
+				case 'x': case 'y': case 't': n = 13; break;
+				default: n = 0; break;
+			}
 		}
 	}
 	else if (strstr (module, &meca[2])) {	/* Using meca/psmeca */
-		switch (S[0]) {
-			case 'a': n = 7; break;
-			case 'c': n = 11; break;
-			case 'm': case 'd': case 'z': n = 10; break;
-			case 'p': n = 8; break;
-			case 'x': case 'y': case 't': n = 13; break;
-			default: n = 0; break;
+		if (ZSlongopt) {
+			if (!strncmp (S, "aki", strlen ("aki"))) n = 7;
+			else if (!strncmp (S, "cmt", strlen ("cmt"))) n = 11;
+			else if (!strncmp (S, "smtfull", strlen ("smtfull"))) n = 10;
+			else if (!strncmp (S, "smtdouble", strlen ("smtdouble"))) n = 10;
+			else if (!strncmp (S, "smtdev", strlen ("smtdev"))) n = 10;
+			else if (!strncmp (S, "partial", strlen ("partial"))) n = 8;
+			else if (!strncmp (S, "axisfull", strlen ("axisfull"))) n = 13;
+			else if (!strncmp (S, "axisdouble", strlen ("axisdouble"))) n = 13;
+			else if (!strncmp (S, "axisdev", strlen ("axisdev"))) n = 13;
+			else n = 0;
 		}
-		if (strstr (cmd, "-Fo")) n--;	/* No depth column in this deprecated format */
+		else {
+			switch (S[0]) {
+				case 'a': n = 7; break;
+				case 'c': n = 11; break;
+				case 'm': case 'd': case 'z': n = 10; break;
+				case 'p': n = 8; break;
+				case 'x': case 'y': case 't': n = 13; break;
+				default: n = 0; break;
+			}
+		}
+
+		/* No depth column in this deprecated format */
+		if ((F = strstr (cmd, "--mode=")) != NULL) {
+			F += strlen ("--mode=");
+			if (!strncmp (F, "nodepth", strlen ("nodepth"))) n--;
+		}
+		else if (strstr (cmd, "-Fo")) n--;
 	}
 	else if (strstr (module, &velo[2])) {	/* Using velo/psvelo */
 		switch (S[0]) {
@@ -802,7 +870,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -995,7 +1063,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	n_cols_needed = 3;	/* We always will need lon, lat and time */
 	if (Ctrl->Z.active) {	/* We read points for symbols */
-		unsigned int n_cols = psevents_determine_columns (GMT, Ctrl->Z.module, Ctrl->Z.cmd, Ctrl->S.mode);	/* Must allow for number of columns needed by the selected module */
+		unsigned int n_cols = psevents_determine_columns (GMT, Ctrl->Z.module, Ctrl->Z.cmd, Ctrl->Z.Slongopt, Ctrl->S.mode);	/* Must allow for number of columns needed by the selected module */
 		if (n_cols == 0) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to determine columns.  Bad module %s?\n", Ctrl->Z.module);
 			Return (GMT_RUNTIME_ERROR);

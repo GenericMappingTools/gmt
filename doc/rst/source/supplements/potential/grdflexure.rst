@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdflexure** *input*
-|-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
+|-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*\ [**+r**\ *rr*]
 |-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
@@ -50,11 +50,11 @@ for five different types of rheological foundations, all involving *constant thi
 These conditions will require the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
 *firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
 *viscoelastic* [4; :math:`\Phi_{ve}(\mathbf{k},t)`],
-and *general linear* (viscoelastic) response functions [5; :math:`\Phi_{gl}(\mathbf{k},t)`]
+and *general linear* (viscoelastic) response functions [5; :math:`\Phi_{gl}(\mathbf{k},t)`].
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
 (1,4) or a purely *viscous* response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids for select times and specifying a
-range of model output times.  A wide range of options allow specifying the desired
+range of model output times.  A wide range of options allows for specifying the desired
 rheology and related constants, including in-plate forces.
 
 
@@ -83,16 +83,21 @@ Required Arguments
 
     **Note**: The horizontal dimensions are expected to be in meters.  If you
     have grids in km then you can append **+uk** to do the required conversion
-    when the grid is read.  All input grids must have the same dimensions.
+    when the grid is read.  All input grids must have the same dimensions. If
+    a grid contains NaNs then they are quietly replaced with zeros; use |-V| to
+    get a report when this happens.
 
 .. _-D:
 
-**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
+**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*\ [**+r**\ *rr*]
     Sets density for mantle, load, infill, and water (or air).  If *ri* differs from
-    *rl* then an approximate solution will be found.  If *ri* is not given
-    then it defaults to *rl*.  Values may be given in km/m^3 or g/cm^3.
+    *rl* then an approximate solution will be found.  If *ri* is not given then it
+    defaults to *rl*.  Values may be given in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3`.
     **Note**: If a variable load density grid is supplied via |-H| then *rl*
-    must be given as -.
+    must be given as -. Whether the load density is variable or not, you can (via
+    the **+r** modifier) specify a fixed *root* density, i.e., the infill density
+    just beneath the load. This will force the load topography to be rescaled by
+    the ratio *rl/rr* and then *rl* will be reset to *rr* for flexure calculations.
 
 .. _-E:
 
@@ -129,8 +134,8 @@ Optional Arguments
 .. _-C:
 
 **-C**\ **p**\|\ **y**\ *value*
-    Append **p** or **y** to change the current value of Poisson's ratio [0.25]
-    or Young's modulus [7.0e10 N/m^2], respectively.
+    Append directives **p** or **y** to change the current value of Poisson's ratio [0.25]
+    or Young's modulus [7.0e10 N/m\ :sup:`2`], respectively.
 
 .. _-F:
 

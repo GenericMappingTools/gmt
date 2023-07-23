@@ -6,7 +6,7 @@
 rm -f results.txt
 echo 4.897 52.371 > pt.txt
 gmt mapproject pt.txt -J+proj=aea+ellps=WGS84+units=m+lat_1=55+lat_2=65 | gmt math -o1 STDIN -C0 334609.583974 SUB -C1 5218502.503686 SUB 0 COL HYPOT 0.01 GT = >> results.txt
-gmt mapproject pt.txt -J+proj=cass+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 333274.431072 SUB -C1 5815921.803069 SUB 0 COL HYPOT 0.01 GT = >> results.txt
+gmt mapproject pt.txt -J+proj=cass+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 333273.991537 SUB -C1 5815921.803069 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt "-J+proj=cea+ellps=WGS84+units=m+lon_0=11d32'00E" | gmt math -o1 STDIN -C0 -738753.247401 SUB -C1 5031644.669407 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=eqdc+ellps=WGS84+units=m+lat_1=60+lat_2=0 | gmt math -o1 STDIN -C0 307874.536263 SUB -C1 5810915.646438 SUB 0 COL HYPOT 0.01 GT = >> results.txt
 gmt mapproject pt.txt -J+proj=hammer+ellps=WGS84+units=m | gmt math -o1 STDIN -C0 370843.923425 SUB -C1 5630047.232233 SUB 0 COL HYPOT 0.01 GT = >> results.txt

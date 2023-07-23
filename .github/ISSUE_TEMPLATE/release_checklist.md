@@ -40,7 +40,7 @@ assignees: ''
 
 - [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS bundle (@PaulWessel)
-- [ ] create Windows installers (win32 and win64) (@joa-quim)
+- [ ] create Windows win64 installer (@joa-quim)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
 - [ ] check if the macOS bundles work well (@seisman, @maxrjones)
 - [ ] check if the Windows installers work well (volunteers needed!)

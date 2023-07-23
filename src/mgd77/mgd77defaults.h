@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2005-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2005-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 /* MGD-77 Data Record Field Defaults:
  * Paul Wessel and M. T. Hamilton (nee Chandler) *
  *
-		   Name,                          Abbrev,     Start,  Length,  FortranCode,   Factor,   readMGD77,   order,   printMGD77,   printVALS,   Not_given    */
+		   Name,                          Abbrev,     Start,  Length,  FORTRANCode,   Factor,   readMGD77,   order,   printMGD77,   printVALS,   Not_given    */
 		{ "Data Record Type",                      "drt",         1U,	   1,        "int",        1,       "%1d",       1,        "%1d",        NULL,           "9" },
 		{ "Time Zone Correction",                   "tz",        10U,	   3,        "int",        1,      "%03d",       3,      "%+03d",        NULL,         "+99" },
 		{ "Year",                                 "year",        13U,	   4,        "int",        1,      "%04d",       4,       "%04d",        NULL,        "9999" },

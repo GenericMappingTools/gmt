@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 #define TRI_NROW	6	/* Don't request arc indices from STRIPACK  */
 
 /* PW note: We largely use int64_t since it is too hard to determine which variables
- * in the Fortran-translated code could make unsigned. */
+ * in the FORTRAN-translated code could make unsigned. */
 
 struct STRIPACK_DELAUNAY {	/* Information about Delaunay triangulation */
 	uint64_t n;	/* Number of Delaunay triangles */

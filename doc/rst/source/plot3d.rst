@@ -182,13 +182,14 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
-    Do NOT clip symbols that fall outside map border [Default plots points
-    whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
-    which are always clipped to the map region. For periodic (360-longitude)
+    Do **not** clip symbols that fall outside map border [Default plots points
+    whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
     boundary. The |-N| will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
+    **Note**: A plain |-N| may also be used with lines or polygons but note that this deactivates
+    any consideration of periodicity (e.g., longitudes) and may have unintended consequences.
 
 .. _-Q:
 
@@ -217,7 +218,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. If the modifier **+cl**
+    width = 0.25p, color = black, style = solid]. If the modifier **+cl**
     is appended then the color of the line are taken from the CPT (see
     |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.

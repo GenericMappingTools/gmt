@@ -100,37 +100,39 @@
         Upper-case versions **E**, **J**, and **W** are similar to **e**, **j** and **w**
         but expect geographic azimuths and distances.
 
-    **-Se**\ *direction*/*major_axis*/*minor_axis*
+    **-Se**\ [*direction*/]\ *major_axis*\ [/*minor_axis*]
         **e**\ llipse. If not given, then *direction* (in degrees counter-clockwise from horizontal),
         *major_axis*, and *minor_axis* must be found after the *coordinates* [and *value*] columns. This option yields
         a Cartesian ellipse whose shape is unaffected by the map projection.  If only a single
-        *size* is given then we plot a degenerate ellipse (circle) with given diameter.
+        *argument* is given then we plot a degenerate ellipse (circle) with that diameter.
 
-    **-SE**\ *azimuth*/*major_axis*/*minor_axis*
+    **-SE**\ [*azimuth*/]\ *major_axis*\ [/*minor_axis*]
         Same as **-Se**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Se** leaves the directions
         unchanged.)  Furthermore, *major_axis* and *minor_axis* must be given in
         geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
-        circles) with just a *diameter* given via the input data, use **-SE-**. For a
+        circles) with just a *diameter* given via the input data, use **-SE-**, while on
+        the command line **-SE**\ *diameter* will plot the degenerate ellipse. For a
         linear projection we assume the dimensions are given in the same units as |-R|.
         For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
         if dimensions are read from the input then either just append the unit for these values
         or append the unit to each dimension in the file (do not do both) [Default is k for km].
         The shape of the ellipse will be affected by the properties of the map projection.
 
-    **-Sj**\ *direction*/*width*/*height*
+    **-Sj**\ [*direction*/]\ *width*\ [/*height*]
         Rotated rectangle. If not given, then *direction* (in degrees counter-clockwise from
         horizontal), *width*, and *height* must be found after the location [and *value*] columns.
-        If only a single *size* is given then we plot a degenerate rectangle (square) with given size.
+        If only a single *argument* is given then we plot a degenerate rectangle (square) with given size.
 
-    **-SJ**\ *azimuth*/*width*/*height*
+    **-SJ**\ [*azimuth*/]\ *width*\ [/*height*]
         Same as **-Sj**, except *azimuth* (in degrees east of north) should be
         given instead of *direction*. The *azimuth* will be mapped into an angle
         based on the chosen map projection (**-Sj** leaves the directions
         unchanged.) Furthermore, the two dimensions must be given in geographical
         instead of plot-distance units. For a degenerate rectangle (i.e., square)
-        with one *dimension* expected to be given via the input data, use **-SJ-**. For
+        with one *dimension* expected to be given via the input data, use **-SJ-**, while on
+        the command line **-SJ**\ *side* will plot the degenerate rectangle (square). For
         a linear projection we assume the dimensions are given in the same units as |-R|.
         For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
         if dimensions are read from the input then either just append the unit for these values
@@ -146,7 +148,7 @@
         **R**\ ounded rectangle. If *width*/*height*/*radius* are not given, then the
         two dimensions and corner radius must be found after the location [and *value*] columns.
 
-    **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+i**\ [*inner*]]
+    **-Sw**\ [*outer*\ [/*startdir*/*stopdir*]][**+a**\ [*dr*]][**+i**\ [*inner*]][**+p**\ *pen*][**+r**\ [*da*]]
         Pie **w**\ edge. Give the outer diameter *outer*, *startdir* and *stopdir*.
         These are directions (in degrees counter-clockwise from horizontal) for wedge.
         Parameters not appended are read from file after the location [and *value*] columns.
@@ -157,7 +159,7 @@
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
-    **-SW**\ [*outer*\ [/*startaz*/*stopaz*]][**+i**\ [*inner*]]
+    **-SW**\ [*outer*\ [/*startaz*/*stopaz*]][**+a**\ [*dr*]][**+i**\ [*inner*]][**+p**\ *pen*][**+r**\ [*da*]]
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
@@ -207,36 +209,38 @@
 
     **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*][**+s**\ [*gap*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
-        Append **q** if *size* is a quantity in x-units [Default is plot-distance units].
+        Append **q** if *size* is a quantity in x-units [Default is plot-distance units **c**\|\ **i**\|\ **p**].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar height is measured relative
         to *base* [Relative to origin]. Normally, the bar requires a single input *y*-value.
         To plot multi-band bars, please append **+v**\|\ **i**\ *ny*, where *ny* indicates the
-        total number of bands in the bar.  Here, **+i** means we must accumulate the
+        total number of bands in the bar (and hence the number of values required to follow
+        the x,y coordinate pair in the input).  Here, **+i** means we must accumulate the
         bar values from the increments *dy*, while **+v** means we get the complete
-        values relative to *base*. Normally, the bands are plotted as sections of a final single bar.
+        values relative to *base* in increasing order. Normally, the bands are plotted as sections of a final single bar.
         Use **+s** to instead split the bar into *ny* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
-        Multiband bars requires |-C| with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
+        Multi-band bars require |-C| with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
         Thus, input records are either (*x y1 y2 ... yn*) or (*x dy1 dy2 ... dyn*).
 
     **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*][**+s**\ [*gap*]]
-        Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
-        Append **q** if *size* is a quantity in y-units [Default is plot-distance units].
+        Horizontal **B**\ ar extending from *base* to x. The *size* is bar width.
+        Append **q** if *size* is a quantity in y-units [Default is plot-distance units **c**\|\ **i**\|\ **p**].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
         to *base* [Relative to origin]. Normally, the bar requires a single input *x*-value.
         To plot multi-band bars, please append **+v**\|\ **i**\ *nx*, where *nx* indicates the
-        total number of bands in the bar.  Here, **+i** means we must accumulate the
+        total number of bands in the bar (and hence the number of values required to follow
+        the x,y coordinate pair in the input).  Here, **+i** means we must accumulate the
         bar value from the increments *dx*, while **+v** means we get the complete
-        values relative to *base*. Normally, the bands are plotted as sections of a final single bar.
+        values relative to *base* in increasing order. Normally, the bands are plotted as sections of a final single bar.
         Use **+s** to instead split the bar into *nx* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
-        Multiband bars requires |-C| with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
+        Multi-band bars require |-C| with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
         Thus, input records are either (*x1 y x2 ... xn*) or (*dx1 y dx2 ... dxn*).
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
@@ -304,14 +308,18 @@
         examples to use as a template.  The language allows you to design symbols that
         take many parameters and can make decisions based on these parameters.
 
-    **-Sk**\ *name*\ /\ *size*
-        **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
+    **-S**\ [**k**\ *name*\ [/\ *size*]]
+        A **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
         (1) the current directory, (2) in ~/.gmt or (3) in **$GMT_SHAREDIR**/custom.
-        The symbol defined in the definition file is of normalized unit size by default;
+        The symbol in the definition file is of normalized unit size by default;
         the appended *size* will scale the symbol accordingly. Users may create their own
         custom \*.def files; see `Custom Symbols`_ below.
         Alternatively, you can supply an EPS file instead of a \*.def file and
-        we will scale and place that graphic as a symbol.
+        we will scale and place that graphic as a symbol.  If *size* is not given then we
+        expect in from the input file. **Note**: To also give the name of the custom
+        symbol via the input, the trailing text must start with the symbol name which must
+        include the leading **k**. The *size* must either be given as a numerical column
+        (as for all other symbols) or be added to the name with the required slash.
 
     The last group of symbols are all special *lines* with embellishments along them.
     The first symbol is called a *front* and has specific

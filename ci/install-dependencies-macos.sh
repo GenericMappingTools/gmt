@@ -21,14 +21,11 @@ packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript libomp"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" pngquant"
+    packages+=" dvc pngquant"
 fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
-    packages+=" graphicsmagick"
-    pip3 install --user dvc
-    # Add dvc to PATH
-    echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
+    packages+=" dvc graphicsmagick"
 fi
 
 if [ "$PACKAGE" = "true" ]; then
@@ -41,7 +38,7 @@ fi
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then
-	pip3 install --user sphinx dvc
+    pip3 install --user sphinx
     # Add sphinx to PATH
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi

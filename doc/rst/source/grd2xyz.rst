@@ -58,7 +58,7 @@ Optional Arguments
 **-C**\ [**f**\|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
-    **f** to start at 1 (Fortran-style counting). Alternatively, append
+    **f** to start at 1 (FORTRAN-style counting). Alternatively, append
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
 
@@ -93,7 +93,7 @@ Optional Arguments
    :align: center
 
    3-D print of Vailulu’u crater multibeam data (2006, R/V Kilo Moana off Samoa) via a GMT STL file.  Original
-   multibeam data processed with `MB-System <https://www.mbari.org/products/research-software/mb-system>`_ seen
+   multibeam data processed with `MB-System <https://www.mbari.org/technology/mb-system/>`_ seen
    on the right. Photos courtesy of Jasper Konter, U of Hawaii at Manoa.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -109,7 +109,7 @@ Optional Arguments
     weights equal to the area each node represents.  For Cartesian grids this
     is simply the product of the *x* and *y* increments (except for
     gridline-registered grids at all sides [half] and corners [quarter]).
-    For geographic grids we default to a length unit of **k** (hence area is in km^2). Change
+    For geographic grids we default to a length unit of **k** (hence area is in km\ :sup:`2`). Change
     this by appending **+u**\ *unit* (see `Units`_). For such grids, the area
     varies with latitude and also sees special cases for gridline-registered layouts
     at sides, corners, and poles.
@@ -208,19 +208,25 @@ with **-Lc**\ *0* and **-Lx**\ *xmin* (for the correct minimum x-value) yielding
 Examples
 --------
 
-To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII::
+To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to ASCII:
 
-    gmt grd2xyz @AFR.nc > AFR.xyz
+::
+
+  gmt grd2xyz @AFR.nc > AFR.xyz
 
 To write a single precision binary file without the x,y positions from
-the remote file @AFR.nc file, using scanline orientation, run::
+the remote file @AFR.nc file, using scanline orientation, run:
 
-    gmt grd2xyz @AFR.nc -ZTLf > AFR.b
+::
 
-To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter^2 as the area unit,
-and where *area* reflects the size of each grid box, run::
+  gmt grd2xyz @AFR.nc -ZTLf > AFR.b
 
-    gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
+To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter\ :sup:`2` as the area unit,
+and where *area* reflects the size of each grid box, run:
+
+::
+
+  gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
 
 See Also
 --------

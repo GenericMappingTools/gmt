@@ -144,7 +144,7 @@ Optional Arguments
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
     **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
     To skip the model evaluation entirely, simply provide **-T**\ 0.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -246,43 +246,43 @@ remote file hertzsprung-russell.txt, try::
 To do a standard least-squares regression on the *x-y* data in points.txt and return
 x, y, and model prediction with 99% confidence intervals, try
 
-   ::
+::
 
-    gmt regress points.txt -Fxymc -C99 > points_regressed.txt
+  gmt regress points.txt -Fxymc -C99 > points_regressed.txt
 
 To just get the slope for the above regression, try
 
-   ::
+::
 
-    slope=`gmt regress points.txt -Fp -o5`
+  slope=`gmt regress points.txt -Fp -o5`
 
 To do a reweighted least-squares regression on the data rough.txt and return
 x, y, model prediction and the RLS weights, try
 
-   ::
+::
 
-    gmt regress rough.txt -Fxymw > points_regressed.txt
+  gmt regress rough.txt -Fxymw > points_regressed.txt
 
 To do an orthogonal least-squares regression on the data crazy.txt but first take
 the logarithm of both x and y, then return x, y, model prediction and the normalized
 residuals (z-scores), try
 
-   ::
+::
 
-    gmt regress crazy.txt -Eo -Fxymz -i0-1l > points_regressed.txt
+  gmt regress crazy.txt -Eo -Fxymz -i0-1l > points_regressed.txt
 
 To examine how the orthogonal LMS misfits vary with angle between 0 and 90
 in steps of 0.2 degrees for the same file, try
 
-   ::
+::
 
-    gmt regress points.txt -A0/90/0.2 -Eo -Nr > points_analysis.txt
+  gmt regress points.txt -A0/90/0.2 -Eo -Nr > points_analysis.txt
 
 To force an orthogonal LMS to pick the best solution with a positive slope, try
 
-   ::
+::
 
-    gmt regress points.txt -A+fp -Eo -Nr > best_pos_slope.txt
+  gmt regress points.txt -A+fp -Eo -Nr > best_pos_slope.txt
 
 
 References
