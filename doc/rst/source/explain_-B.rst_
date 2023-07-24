@@ -182,7 +182,8 @@ the same, making it difficult to determine the appropriate *stride* in advance. 
 three spacings automatically for both axes. In case of longitude–latitude plots, this will keep the spacing the same on
 both axes. You can also use **-Bxafg -Byafg** to auto-select them separately. Note that given the myriad ways of
 specifying time-axis annotations, the automatic selections may need to be overridden with manual settings to achieve
-exactly what you need. When *stride* is omitted after **g**, the grid line are spaced the same as the minor ticks;
+exactly what you need. Also when making very small maps one might need to manually adjust annotation distance to avoid
+overlap. When *stride* is omitted after **g**, the grid line are spaced the same as the minor ticks;
 unless **g** is used in consort with **a**, in which case the grid lines are spaced the same as the annotations.
 
 *Stride units*:
