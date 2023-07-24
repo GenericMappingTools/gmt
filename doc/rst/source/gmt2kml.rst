@@ -49,7 +49,7 @@ Synopsis
 Description
 -----------
 
-**2kml** reads one or more GMT table file and converts them to a
+**2kml** reads one or more GMT table files and converts them to a
 single output file using Google Earth's KML format. Data may represent
 points, lines, polygons, or wiggles, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
