@@ -72,7 +72,10 @@ Examples
 
 To get a copy of the GMT parameter defaults in your home directory, run::
 
-    gmt defaults -D > ~/gmt.conf
+    gmt defaults -Du > ~/gmt.conf
+    or
+    gmt defaults -Ds > ~/gmt.conf
+
 
 You may now change the settings by editing this file using a text editor
 of your choice, or use :doc:`gmtset` to change specified parameters on the
