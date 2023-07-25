@@ -174,12 +174,12 @@ Optional Arguments
     - **+O** is similar to **+o** but will only shift the start time, effectively shortening
       the duration of the event).
     - **+l** specifies an alternative duration (visibility) of the text (**-Et** only) [same duration as symbol].
-    - **+r** sets the duration of the rise phase. Prepend optional raise curve shape via **c**\ osine, **l**\ inear
+    - **+r** sets the duration of the rise phase. Prepend optional raise curve shape via directive **c**\ osine, **l**\ inear
       or **q**\ uadratic [Quadratic].
     - **+p** sets the duration of the plateau phase.
-    - **+d** sets the duration of the decay phase. Prepend optional decay curve shape via **c**\ osine, **l**\ inear
+    - **+d** sets the duration of the decay phase. Prepend optional decay curve shape via directive **c**\ osine, **l**\ inear
       or **q**\ uadratic [Quadratic].
-    - **+f** sets the duration of the fade phase. Prepend optional fade curve shape via **c**\ osine, **l**\ inear
+    - **+f** sets the duration of the fade phase. Prepend optional fade curve shape via directive **c**\ osine, **l**\ inear
       or **q**\ uadratic [Linear].
 
     These are all optional [and default to zero], and can be set separately for symbols and texts.
