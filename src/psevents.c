@@ -192,7 +192,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+v[<value>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
-		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
+		"[-E[s|t][+o|O<dt>][+r[l|c|q]<dt>][+p<dt>][+d[l|c|q]<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
 		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2>]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -223,15 +223,18 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
 		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). "
 		"Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.");
-	GMT_Usage (API, 1, "\n-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]");
+	GMT_Usage (API, 1, "\n-E[s|t][+o|O<dt>][+r[l|c|q]<dt>][+p<dt>][+d[l|c|q]<dt>][+f[l|c|q]<dt>][+l<dt>]");
 	GMT_Usage (API, -2, "Set offset, rise, plateau, decay, and fade intervals for symbols (-Es [Default]) "
 		"or offset, rise, and fade intervals for text (-Et):");
 	GMT_Usage (API, 3, "+o Offsets event start and end times by <dt> [no offset]. "
 		"Use +O<dt> to only offset event start time and leave end time alone.");
-	GMT_Usage (API, 3, "+r Set the rise-time to <dt> before the event start time [no rise time].");
+	GMT_Usage (API, 3, "+r Set the rise-time to <dt> before the event start time [no rise time]. Optionally "
+		"prepend directive c(osine), l(linear), or q(uadratic) to set rise curve shape [Quadratic].");
 	GMT_Usage (API, 3, "+p set the length <dt> of the plateau after event happens [no plateau].");
-	GMT_Usage (API, 3, "+d set the decay-time <dt> after the plateau [no decay].");
-	GMT_Usage (API, 3, "+f set the fade-time <dt> after the event ends [no fade time].");
+	GMT_Usage (API, 3, "+d set the decay-time <dt> after the plateau [no decay]. Optionally "
+		"prepend directive c(osine), l(linear), or q(uadratic) to set decay curve shape [Quadratic].");
+	GMT_Usage (API, 3, "+f set the fade-time <dt> after the event ends [no fade time]. Optionally "
+		"prepend directive c(osine), l(linear), or q(uadratic) to set fade curve shape [Linear].");
 	GMT_Usage (API, 3, "+l set alternative label duration <dt> [same as symbol duration].");
 	GMT_Usage (API, 1, "\n-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
@@ -386,13 +389,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					switch (txt_a[0]) {
 						case 'd':	/* Decay duration and optional ramp directive */
 							Ctrl->E.ramp[PSEVENTS_DECAY] = psevents_parse_ramp_type (GMT, txt_a, &start);
-							Ctrl->E.dt[id][PSEVENTS_DECAY]   = atof (&txt_a[1]);
+							Ctrl->E.dt[id][PSEVENTS_DECAY] = atof (&txt_a[1]);
 							break;
-						case 'f': Ctrl->E.dt[id][PSEVENTS_FADE]    = atof (&txt_a[1]);	break;	/* Fade duration */
+						case 'f':	/* Fade duration  and optional ramp directive */
+							Ctrl->E.ramp[PSEVENTS_FADE] = psevents_parse_ramp_type (GMT, txt_a, &start);
+							if (start == 1) Ctrl->E.ramp[PSEVENTS_FADE] PSEVENTS_RAMP_LINEAR;	/* Different default here */
+							Ctrl->E.dt[id][PSEVENTS_FADE] = atof (&txt_a[start]);
+							break;
 						case 'p': Ctrl->E.dt[id][PSEVENTS_PLATEAU] = atof (&txt_a[1]);	break;	/* Plateau duration */
 						case 'r':	/* Rise duration and optional ramp directive */
 							Ctrl->E.ramp[PSEVENTS_RISE] = psevents_parse_ramp_type (GMT, txt_a, &start);
-							Ctrl->E.dt[id][PSEVENTS_RISE]   = atof (&txt_a[start]);
+							Ctrl->E.dt[id][PSEVENTS_RISE] = atof (&txt_a[start]);
 							break;
 						case 'O': Ctrl->E.trim[id] = true;	/* Intentionally fall through - offset start but not end. Fall through to case 'o' */
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt_a[1]);	break;	/* Event time offset */

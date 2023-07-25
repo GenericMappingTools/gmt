@@ -21,7 +21,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
-[ |-E|\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
+[ |-E|\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ [**c**\|\ **l**\|\ **q**]*dt*][**+p**\ *dt*][**+d**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+f**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+l**\ *dt*] ]
 [ |-F|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]] ]
 [ |-G|\ *color* ]
 [ |-H|\ *labelbox* ]
@@ -165,7 +165,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
+**-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ [**c**\|\ **l**\|\ **q**]*dt*][**+p**\ *dt*][**+d**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+f**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+l**\ *dt*] ]
     Set the relative time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_) via
     these modifiers:
 
@@ -174,10 +174,13 @@ Optional Arguments
     - **+O** is similar to **+o** but will only shift the start time, effectively shortening
       the duration of the event).
     - **+l** specifies an alternative duration (visibility) of the text (**-Et** only) [same duration as symbol].
-    - **+r** sets the duration of the rise phase.
+    - **+r** sets the duration of the rise phase. Prepend optional raise curve shape via **c**\ osine, **l**\ inear
+      or **q**\ uadratic [Quadratic].
     - **+p** sets the duration of the plateau phase.
-    - **+d** sets the duration of the decay phase.
-    - **+f** sets the duration of the fade phase.
+    - **+d** sets the duration of the decay phase. Prepend optional decay curve shape via **c**\ osine, **l**\ inear
+      or **q**\ uadratic [Quadratic].
+    - **+f** sets the duration of the fade phase. Prepend optional fade curve shape via **c**\ osine, **l**\ inear
+      or **q**\ uadratic [Linear].
 
     These are all optional [and default to zero], and can be set separately for symbols and texts.
     If neither the **s** or **t** directive is given then we set the time knots for both features.
