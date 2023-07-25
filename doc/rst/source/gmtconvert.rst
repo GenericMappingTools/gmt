@@ -302,7 +302,7 @@ columns 4-6 and write ASCII with the command::
     gmt convert results.b -o8,4-6 -bi9s | gmt plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
-first column of a file right.txt::
+first column of a file right.txt (i.e., 1 of 0,1 and 2 of 2,3)::
 
     gmt convert left.txt right.txt -A -o1,2 | gmt plot ...
 
