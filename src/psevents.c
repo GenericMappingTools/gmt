@@ -795,6 +795,7 @@ GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl
 	 */
 	unsigned int direction = (section == PSEVENTS_RISE) ? PSEVENTS_RAMP_UP : PSEVENTS_RAMP_DOWN;
 	double t_norm = 1.0 + (t_now - t[section])/Ctrl->E.dt[kind][section], ramp = 0.0;
+	if (section == PSEVENTS_FADE) t_norm -= 1.0;
 
 	t_norm = fabs (t_norm);
 	switch (Ctrl->E.ramp[section]) {	/* rise, decay, or fade */
@@ -836,7 +837,7 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 	}
 	else if (t_now < t[PSEVENTS_T_DECAY]) {	/* We are within the decay phase */
 		x = psevents_ramp (GMT, Ctrl, PSEVENTS_SYMBOL, PSEVENTS_DECAY, t, t_now);	/* Ramp function */
-		out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x);	/* Reduction of size down to the nominal size */
+		out[x_col] = (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] - 1.0) * x	+ 1.0;	/* Reduction of size down to the nominal size */
 		out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 		out[t_col] = 0.0;
 		if (Ctrl->M.active[PSEVENTS_DZ]) out[z_col] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
@@ -847,7 +848,7 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 	}
 	else if (finite_duration && t_now <= t[PSEVENTS_T_FADE]) {	/* We are within the fade phase */
 		x = psevents_ramp (GMT, Ctrl, PSEVENTS_SYMBOL, PSEVENTS_FADE, t, t_now);	/* Ramp function */
-		out[x_col] = x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Reduction of size down to coda size */
+		out[x_col] = x;	/* Reduction of size down to coda size */
 		out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
 		if (Ctrl->M.active[PSEVENTS_DZ]) out[z_col] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2] * (1.0 - x);			/* Changing of color via dz */
@@ -876,6 +877,9 @@ GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CT
 	t[PSEVENTS_T_FADE]    = t[PSEVENTS_T_END] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];
 	Ctrl->M.active[PSEVENTS_DZ] = true;
 	for (k = 0; k < 5; k++) Ctrl->E.ramp[k] = Ctrl->debug.mode;
+	Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] = 2.0;	/* Default size scale for -Ms and dz amplitude for -Mv */
+	Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1]  = 0.5;	/* Default size scale for -Mi */
+	Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2]  = 50;	/* Default size scale for -Mt coda */
 	fprintf (fp, "# t_rise = -1.0, t_event = 0.0, t_plateau = 1.0, t_decay = 2.0, t_end = 3.0, t_fade = 4.0, now = -2/5, mode = %d\n", Ctrl->debug.mode);
 	fprintf (fp, "# now\tsize\tintens\ttransp\tdz\n");
 	while (now <= 5.005) {
