@@ -27,7 +27,7 @@
 #define GMT_REMOTE_H
 
 struct GMT_RESOLUTION {	/* Struct to hold information about the various resolutions for a remote data set family */
-	char inc[GMT_LEN8];	/* Grid spacing in text format. E.g., 30m, 03s, etc. */
+	char inc[GMT_LEN32];	/* Grid spacing in text format. E.g., 30m, 03s, etc. */
 	char reg;			/* Grid/Image registration (g or p). E.g., g */
 	double resolution;	/* In number of nodes per degree. E.g, for 01m that is 60 */
 };
