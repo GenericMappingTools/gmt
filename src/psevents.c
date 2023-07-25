@@ -877,8 +877,8 @@ GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CT
 	t[PSEVENTS_T_FADE]    = t[PSEVENTS_T_END] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];
 	Ctrl->M.active[PSEVENTS_DZ] = true;
 	for (k = 0; k < 5; k++) Ctrl->E.ramp[k] = Ctrl->debug.mode;
-	Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] = 2.0;	/* Default size scale for -Ms and dz amplitude for -Mv */
-	Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1]  = 0.5;	/* Default size scale for -Mi */
+	Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] = 2.0;		/* Default size scale for -Ms and dz amplitude for -Mv */
+	Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1]  = 0.5;		/* Default size scale for -Mi */
 	Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2]  = 50;	/* Default size scale for -Mt coda */
 	fprintf (fp, "# t_rise = -1.0, t_event = 0.0, t_plateau = 1.0, t_decay = 2.0, t_end = 3.0, t_fade = 4.0, now = -2/5, mode = %d\n", Ctrl->debug.mode);
 	fprintf (fp, "# now\tsize\tintens\ttransp\tdz\n");
