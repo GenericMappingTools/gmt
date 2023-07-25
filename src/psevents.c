@@ -288,13 +288,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL unsigned int psevents_parse_ramp_type (struct GMT_CTRL *GMT, char *string, unsigned int *start) {
-	/* Detect optional ramp codes l, q, c and start of parsing text for value */
-	unsigned int type = PSEVENTS_RAMP_QUAD;	/* Default ramp */
+	/* Detect optional ramp codes c, l, q[Default] and start of parsing text for value */
+	unsigned int type = PSEVENTS_RAMP_QUAD;	/* Default ramp (except for fade which was linear) */
+
 	switch (string[0]) {
 		case 'c':	type = PSEVENTS_RAMP_COSINE;	*start = 2;	break;
 		case 'l':	type = PSEVENTS_RAMP_LINEAR;	*start = 2;	break;
 		case 'q':	type = PSEVENTS_RAMP_QUAD;		*start = 2;	break;
-		default:	*start = 1;	break;
+		default:	*start = 1;	break;	/* No code given so first value starts at position 1 in string */
 	}
 	return (type);
 }
@@ -389,7 +390,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					switch (txt_a[0]) {
 						case 'd':	/* Decay duration and optional ramp directive */
 							Ctrl->E.ramp[PSEVENTS_DECAY] = psevents_parse_ramp_type (GMT, txt_a, &start);
-							Ctrl->E.dt[id][PSEVENTS_DECAY] = atof (&txt_a[1]);
+							Ctrl->E.dt[id][PSEVENTS_DECAY] = atof (&txt_a[start]);
 							break;
 						case 'f':	/* Fade duration  and optional ramp directive */
 							Ctrl->E.ramp[PSEVENTS_FADE] = psevents_parse_ramp_type (GMT, txt_a, &start);
@@ -791,7 +792,8 @@ GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl
 	 */
 	unsigned int direction = (section == PSEVENTS_RISE) ? PSEVENTS_RAMP_UP : PSEVENTS_RAMP_DOWN;
 	double t_norm = (t_now - t[section])/Ctrl->E.dt[kind][section], ramp = 0.0;
-	switch (Ctrl->E.ramp[section]) {
+
+	switch (Ctrl->E.ramp[section]) {	/* rise, decay, or fade */
 		case PSEVENTS_RAMP_LINEAR:	/* Linear ramp */
 			ramp = t_norm;
 		case PSEVENTS_RAMP_COSINE:	/* Cosine ramp */
@@ -799,6 +801,8 @@ GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl
 			break;
 		case PSEVENTS_RAMP_QUAD:	/* Quadratic ramp */
 			ramp = 0.5 - 0.5 * cos (t_norm * M_PI);	/* Cosine ramp */
+			break;
+		default:	/* Nothing here */
 			break;
 	}
 	if (gmt_M_is_dnan (ramp)) ramp = 0.0;	/* Probably division by zero */
@@ -1343,7 +1347,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 
 					if (Ctrl->T.now < t[PSEVENTS_T_EVENT]) {	/* We are within the rise phase */
 						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_DECAY, t, Ctrl->T.now);	/* Ramp function */
-						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);		/* Magnification of opacity */
+						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0 - x);		/* Magnification of opacity */
 					}
 					else if (finite_duration && Ctrl->T.now < t[PSEVENTS_T_END])	/* We are within the normal phase, keep everything constant */
 						out[GMT_Z] = 0.0;	/* No transparency during this phase */
