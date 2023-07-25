@@ -423,7 +423,7 @@ struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const ch
 		p++;	/* Skip past the slash */
 		if (!strcmp (p, file) && (reg == GMT_NOTSET || registration[reg] == API->remote_info[k].reg)) {	/* Got one to keep */
 			R[id].resolution = urint (1.0 / API->remote_info[k].d_inc);	/* Number of nodes per degree */
-			strncpy (R[id].inc, API->remote_info[k].inc, GMT_LEN8);	/* Copy the formatted inc string */
+			strncpy (R[id].inc, API->remote_info[k].inc, GMT_LEN32);	/* Copy the formatted inc string */
 			R[id].reg = API->remote_info[k].reg;	/* Copy the registration */
 			id++;
 		}
