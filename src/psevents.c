@@ -393,7 +393,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 							break;
 						case 'f':	/* Fade duration  and optional ramp directive */
 							Ctrl->E.ramp[PSEVENTS_FADE] = psevents_parse_ramp_type (GMT, txt_a, &start);
-							if (start == 1) Ctrl->E.ramp[PSEVENTS_FADE] PSEVENTS_RAMP_LINEAR;	/* Different default here */
+							if (start == 1) Ctrl->E.ramp[PSEVENTS_FADE] = PSEVENTS_RAMP_LINEAR;	/* Different default here */
 							Ctrl->E.dt[id][PSEVENTS_FADE] = atof (&txt_a[start]);
 							break;
 						case 'p': Ctrl->E.dt[id][PSEVENTS_PLATEAU] = atof (&txt_a[1]);	break;	/* Plateau duration */
