@@ -152,6 +152,7 @@ struct PSEVENTS_CTRL {
 	} Z;
 	struct PSEVENTS_DEBUG {	/* -0 undocumented debugging option */
 		bool active;
+		unsigned int mode;
 	} debug;
 };
 
@@ -626,6 +627,8 @@ maybe_set_two:
 
 			case '/':	/* Write time-functions */
 				Ctrl->debug.active = true;
+				Ctrl->debug.mode = psevents_parse_ramp_type (GMT, opt->arg, &start);
+
 				break;
 
 			default:	/* Report bad options */
@@ -791,16 +794,18 @@ GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl
 	 * direction = PSEVENTS_RAMP_DOWN (1) if we ramp down, not up.
 	 */
 	unsigned int direction = (section == PSEVENTS_RISE) ? PSEVENTS_RAMP_UP : PSEVENTS_RAMP_DOWN;
-	double t_norm = (t_now - t[section])/Ctrl->E.dt[kind][section], ramp = 0.0;
+	double t_norm = 1.0 + (t_now - t[section])/Ctrl->E.dt[kind][section], ramp = 0.0;
 
+	t_norm = fabs (t_norm);
 	switch (Ctrl->E.ramp[section]) {	/* rise, decay, or fade */
 		case PSEVENTS_RAMP_LINEAR:	/* Linear ramp */
-			ramp = t_norm;
+			ramp = fabs (t_norm);
+			break;
 		case PSEVENTS_RAMP_COSINE:	/* Cosine ramp */
-			ramp = pow (t_norm, 2.0);	/* Quadratic function that goes from 0 to 1 */
+			ramp = 0.5 *  (1.0 - cos (t_norm * M_PI));	/* Cosine ramp */
 			break;
 		case PSEVENTS_RAMP_QUAD:	/* Quadratic ramp */
-			ramp = 0.5 - 0.5 * cos (t_norm * M_PI);	/* Cosine ramp */
+			ramp = pow (t_norm, 2.0);	/* Quadratic function that goes from 0 to 1 */
 			break;
 		default:	/* Nothing here */
 			break;
@@ -857,9 +862,12 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 
 GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl) {
 	/* debug test function to dump the four time-functions */
+	unsigned int k;
 	double t[PSEVENTS_NT], now = -2.0, out[4];
 	FILE *fp = fopen ("psevents_function.txt", "w");
 	gmt_M_memset (t, PSEVENTS_NT, double);	/* Initialize the t vector */
+	for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_SYMBOL][k] = 1.0;
+	for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_TEXT][k] = 1.0;
 	t[PSEVENTS_T_RISE]    = -Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE];
 	t[PSEVENTS_T_EVENT]   = 0.0;
 	t[PSEVENTS_T_PLATEAU] = Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];
@@ -867,8 +875,9 @@ GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CT
 	t[PSEVENTS_T_END]     = t[PSEVENTS_T_DECAY] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];
 	t[PSEVENTS_T_FADE]    = t[PSEVENTS_T_END] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];
 	Ctrl->M.active[PSEVENTS_DZ] = true;
-	fprintf (fp, "# t_rise = -1.0, t_event = 0.0, t_plateau = 1.0, t_decay = 2.0, t_end = 3.0, t_fade = 4.0, now = -2/5\n");
-	fprintf (fp, "# now\tsize\tintens\transp\tdz\n");
+	for (k = 0; k < 5; k++) Ctrl->E.ramp[k] = Ctrl->debug.mode;
+	fprintf (fp, "# t_rise = -1.0, t_event = 0.0, t_plateau = 1.0, t_decay = 2.0, t_end = 3.0, t_fade = 4.0, now = -2/5, mode = %d\n", Ctrl->debug.mode);
+	fprintf (fp, "# now\tsize\tintens\ttransp\tdz\n");
 	while (now <= 5.005) {
 		gmt_M_memset (out, 4, double);	/* Initialize the out vector */
 		psevents_set_outarray (GMT, Ctrl, now, t, true, true, 0, 1, 2, 3, out);
