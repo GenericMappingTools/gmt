@@ -317,7 +317,7 @@ GMT_LOCAL void grdview_set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z,
 	 * (i.e., north of it) and compute their projected coordinates, then calculate the angle from center to north.
 	 * We use this orientation of the grid to determine which way we loop (rows then columns or columns then rows)
 	 * and which direction.
-	 * The start and stop items work like this: start is the lower-left row,col values of the first tile,
+	 * The start and stop items work like this: start are the lower-left row,col values of the first tile,
 	 * while stop is 1 beyond the last valid index - we loop as long as current index is NOT equal to stop.
 	 */
 	unsigned int col, row, oct, one = 1;
