@@ -96,7 +96,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 
 			case 'D':	/* Get GMT system-wide defaults settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				if (opt->arg[0]) {	/* Specified and argument */
+				if (opt->arg[0]) {	/* Specified an argument */
 					n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
 					if (strchr ("su", Ctrl->D.mode) == NULL) {
 						GMT_Report (API, GMT_MSG_ERROR, "Option -D: Argument %s is not recognized.\n", opt->arg);
