@@ -142,7 +142,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ **i**\|\ **p**\|\ **r**
-    Determine how NaN-values in the input grid affects the filtered
+    Determine how NaN-values in the input grid affect the filtered
     output: Append **i** to ignore all NaNs in the calculation of
     filtered value [Default], **r** is same as **i** except if the input
     node was NaN then the output node will be set to NaN (only applies
