@@ -105,7 +105,8 @@ Geographic coordinates:
 Projected coordinates:
     These are Cartesian projected coordinates compatible with the chosen projection and are given in a length *unit*
     set via the **+u** modifier, (e.g., -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
-    on the projection center (0, 0). These coordinates are internally converted to the corresponding geographic
+    on the projection center (0, 0), shorthand: -R200/300+uk.
+    These coordinates are internally converted to the corresponding geographic
     (longitude, latitude) coordinates for the lower left and upper right corners. This form is convenient when you want
     to specify a region directly in the projected units (e.g., UTM meters). For allowable units, see Table
     :ref:`Distance units <tbl-distunits>`. **Note**: For the UTM, TM and Stereographic projections we will guess the
