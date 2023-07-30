@@ -802,7 +802,8 @@ are not very suitable as map boundaries.
 
 When working with oblique projections such as here, it is often much more convenient to specify the map domain in the
 projected coordinates relative to the map center. The figure below shows two views of New Zealand using the oblique
-Mercator projection that in both cases specifies the region using **-R**\ -1000/1000/-500/500\ **+uk**.  The unit **k**
+Mercator projection that in both cases specifies the region using **-R**\ -1000/1000/-500/500\ **+uk**
+(shorthand: -R1000/500+uk .)  The unit **k**
 means the following bounds are in projected km and we let GMT determine the geographic coordinates of the two diagonal
 corners internally.
 
