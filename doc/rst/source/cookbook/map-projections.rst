@@ -223,7 +223,7 @@ Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
 
 **Syntax**
 
-    **-Ja**\|\ **A**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width*
+    **-Ja**\|\ **A**\ *lon0/lat0*\ [*/horizon*]/\ *scale*\|\ *width*
 
 **Parameters**
 
