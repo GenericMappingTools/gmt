@@ -256,7 +256,13 @@ Optional Arguments
 
 .. include:: explain_colon.rst_
 
-.. include:: explain_distunits.rst_
+Units
+-----
+
+For map distance unit, append *unit* **d** for arc degree, **m** for arc
+minute, and **s** for arc second, or **e** for meter [Default unless stated otherwise], **f**
+for foot, **k** for km, **M** for statute mile, **n** for nautical mile,
+and **u** for US survey foot.
 
 .. include:: explain_help.rst_
 
