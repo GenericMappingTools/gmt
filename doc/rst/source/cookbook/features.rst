@@ -1945,7 +1945,7 @@ Here is a list of the attributes that is under your control:
    :align: center
 
    Example of two map scales for a Mercator projection evaluated at 53 degrees north.
-   The left-most scale was placed with **-Lj**\ *ML*\ **+c**\ 53\ **+w**\ 1000k\ **+f+l**\ "Scale at 53\\232N"
+   The left-most scale was placed with **-Lj**\ *ML*\ **+c**\ 53\ **+w**\ 1000k\ **+f+l**\ "Scale at 53@.N"
    while the scale on the right was placed with **-Lj**\ *BR*\ **+c**\ 53\ **+w**\ 1000k\ **+l+f**.
 
 .. toggle::
@@ -2016,7 +2016,7 @@ magnetic directions, which differ for nonzero declination. As for style, the two
 bit like a standard compass.  As for directional roses, a magnetic
 map rose is added with :doc:`/basemap` or :doc:`/coast` and selected by the **-Tm** option.
 As for other features, append the required *reference* point where the magnetic map rose's *anchor*
-should be pinned.  There several optional modifiers:
+should be pinned.  There are several optional modifiers:
 
 #. Specify size of map rose.  Use **+w**\ *size* to specify the full width of the rose.  E.g., a 3 cm
    rose would imply **+w**\ 3c. Alternatively, append % to set the *size* as a percentage of the map

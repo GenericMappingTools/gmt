@@ -39,7 +39,7 @@ jobs:
         shasum -a 256 baseline-images.zip
 
     - name: Upload baseline image as a release asset
-      uses: shogo82148/actions-upload-release-asset@v1.6.5
+      uses: shogo82148/actions-upload-release-asset@v1.6.6
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: baseline-images.zip

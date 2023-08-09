@@ -414,6 +414,10 @@ lines for Antarctica and is available on CD-ROM. It is published by the
 Scientific Committee on Antarctic Research, Scott Polar Research
 Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
 
+**Note**: While the data sets used have copyrights that control their
+distribution, maps made with them are yours.  You do not need permission
+from us to use such figures in journals, for instance.
+
 .. module_note_ends
 
 See Also

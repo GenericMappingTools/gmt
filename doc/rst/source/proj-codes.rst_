@@ -95,7 +95,7 @@
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
    * - :ref:`Transverse Mercator <-Jt>`
      - **-Jt**\|\ **T**
-     - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
+     - |lon0|/\ [|lat0|/]\ *scale*\|\ *width*
    * - :ref:`Universal Transverse Mercator (UTM) <-Ju>`
      - **-Ju**\|\ **U**
      - *zone*/*scale*\|\ *width*
