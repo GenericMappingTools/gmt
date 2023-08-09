@@ -31,6 +31,8 @@
 extern "C" {
 #endif
 
+#if GMT_USE_COMPAT_QSORT
+
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
@@ -62,4 +64,5 @@ static inline void qsort_r_glibc (void *base, size_t nmemb, size_t size,
 #define qsort_r qsort_r_glibc /* override builtin qsort_r */
 
 #endif /* !HAVE_QSORT_R_GLIBC */
+#endif  /* GMT_USE_COMPAT_QSORT */
 #endif /* !_QSORT_H */

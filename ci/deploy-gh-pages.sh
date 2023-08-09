@@ -38,6 +38,11 @@ echo -e "\nRemoving old files from previous builds of ${version}:"
 rm -rvf ${version}
 echo -e "\nCopying HTML files to ${version}:"
 cp -Rvf ../build/doc/rst/html/ ${version}/
+# Make a ZIP file for the HTML documentation
+cd ${version}
+zip -r ../gmt-docs-${version}.zip *
+mv ../gmt-docs-${version}.zip .
+cd ..
 # If this is a new release, update the link from /latest to it
 if [[ "${version}" != "dev" ]]; then
     echo -e "\nSetup link from ${version} to 'latest'."

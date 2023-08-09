@@ -131,7 +131,7 @@ us are shown in the table below:
 | **-Sy**\ *size*                    | vertical dash; *size* is length of dash                                                   |
 +------------------------------------+-------------------------------------------------------------------------------------------+
 
-The symbol option in :doc:`/plot`.  Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
+Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
 will fit inside a circle of given diameter.  Upper case symbols (**A, C, D, G, H, I, N, S, T, X**)
 will have area equal to that of a circle of given diameter.
 
@@ -145,7 +145,7 @@ is (optional items are in brackets []):
     x y [ z ] [ size ] [ sigma_x ] [ sigma_y ] [ symbol ]
 
 Thus, the only required input columns are the first two which must contain the
-longitude and latitude (or *x* and *y*.  The remaining items
+longitude and latitude (or *x* and *y*.)  The remaining items
 apply when one (or more) of the following conditions are met:
 
 #. If you want the color of each symbol to be determined individually,
@@ -232,7 +232,7 @@ with plot?".  The surprising answer is that we must call :doc:`/plot` twice.
 While this sounds cumbersome there is a reason for this:  Basically,
 polygons need to be kept in memory since they may need to be clipped,
 hence computer memory places a limit on how large polygons we may plot.
-Symbols, on the other hand, can be plotted one at the time so there
+Symbols, on the other hand, can be plotted one at a time so there
 is no limit to how many symbols one may plot.  Therefore, to connect
 symbols with a line we must use the overlay approach:
 

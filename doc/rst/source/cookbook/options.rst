@@ -105,7 +105,8 @@ Geographic coordinates:
 Projected coordinates:
     These are Cartesian projected coordinates compatible with the chosen projection and are given in a length *unit*
     set via the **+u** modifier, (e.g., -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
-    on the projection center (0, 0). These coordinates are internally converted to the corresponding geographic
+    on the projection center (0, 0), shorthand: -R200/300+uk.
+    These coordinates are internally converted to the corresponding geographic
     (longitude, latitude) coordinates for the lower left and upper right corners. This form is convenient when you want
     to specify a region directly in the projected units (e.g., UTM meters). For allowable units, see Table
     :ref:`Distance units <tbl-distunits>`. **Note**: For the UTM, TM and Stereographic projections we will guess the
@@ -187,17 +188,6 @@ This option selects the coordinate transformation or map projection. The general
    *width* is map width in :ref:`plot-units <plt-units>` (map height is automatically computed from the implied map scale
    and region).
 
-Since GMT version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the
-mapping package `PROJ <https://proj.org/>`_. The options thus either look like:
-
--  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a *lower-case* abbreviation that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *scale* is map scale given
-   in distance units per degree or as 1:xxxxx.
-
--  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an *capitalized* abbreviation that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *width* is map width (map
-   height is automatically computed from the implied map scale and region).
-
 The over 30 map projections and coordinate transformations available in GMT are represented in the Figure
 :ref:`GMT Projections <gmt_projections>`.
 
@@ -219,8 +209,7 @@ The over 30 map projections and coordinate transformations available in GMT are 
 
 Projections specifications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-GMT offers 31 map projections specified using the **-J** option. There are two conventions you may use: (a) GMT-style
-syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax. The codes for the GMT-style and the PROJ-style are tabulated
+GMT offers 31 map projections specified using the **-J** option. The projection codes are tabulated
 below along with the associated *parameters* and links to the cookbook sections that describe the projection syntax and
 usage.
 
@@ -545,7 +534,7 @@ Custom axes
 
 Irregularly spaced annotations or annotations based on
 look-up tables can be implemented using the *custom* annotation
-mechanism. Here, we given the **c** (custom) type to the **-B** option
+mechanism. Here, we have given the **c** (custom) type to the **-B** option
 followed by a filename that contains the annotations (and
 tick/grid-lines specifications) for one axis. The file can contain any
 number of comments (lines starting with #) and any number of records of

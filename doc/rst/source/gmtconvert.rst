@@ -302,7 +302,7 @@ columns 4-6 and write ASCII with the command::
     gmt convert results.b -o8,4-6 -bi9s | gmt plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
-first column of a file right.txt::
+first column of a file right.txt (i.e., 1 of 0,1 and 2 of 2,3)::
 
     gmt convert left.txt right.txt -A -o1,2 | gmt plot ...
 
@@ -368,6 +368,11 @@ To only read rows 100-200 and 500-600 from file junk.txt, try::
 To get all rows except those bad ones between rows 1000-2000, try::
 
     gmt convert junk.txt -q~1000-2000 > good.txt
+
+To convert miles into meters, centimeters, feet, yards, inches, and leagues, try::
+
+    gmt convert mi.txt -i0+s1609.344,0+s160934.4,0+s5280,0+s1670,0+s63360,0+d3 > mcfyil.txt
+
 
 See Also
 --------
