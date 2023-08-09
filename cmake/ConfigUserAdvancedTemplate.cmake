@@ -148,7 +148,7 @@
 #set (LICENSE_RESTRICTED GPL)
 
 # Allow building of OpenMP if compiler supports it
-#set (GMT_ENABLE_OPENMP TRUE)
+set (GMT_ENABLE_OPENMP TRUE)
 
 # Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")
