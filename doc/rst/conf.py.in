@@ -65,7 +65,7 @@ html_context = {
             "https://github.com/GenericMappingTools/gmt",
         ),
         (
-            '<i class="fa fa-download fa-fw"></i> Download HTML zip',
+            '<i class="fa fa-download fa-fw"></i> Documentation HTML zip',
             f"/{doc_version}/gmt-docs-{doc_version}.zip",
         ),
     ],

@@ -369,6 +369,11 @@ To get all rows except those bad ones between rows 1000-2000, try::
 
     gmt convert junk.txt -q~1000-2000 > good.txt
 
+To convert miles into meters, centimeters, feet, yards, inches, and leagues, try::
+
+    gmt convert mi.txt -i0+s1609.344,0+s160934.4,0+s5280,0+s1670,0+s63360,0+d3 > mcfyil.txt
+
+
 See Also
 --------
 
