@@ -669,10 +669,11 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 		}
 		I->kind = toupper ((int)I->kind);	/* Use upper case B-F to indicate that labeling is requested */
 		I->n_labels = (strchr ("EF", I->kind)) ? 2 : 1;
-		if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length-scale */
-		I->scale = atof (string);
+		if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 'z', string)) {
+			/* Gave frame time length-scale */
+			I->scale = atof (string);
+		}
 	}
-}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
 }
