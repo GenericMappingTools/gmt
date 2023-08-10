@@ -601,7 +601,7 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 	}
 	if (gmt_get_modifier (arg, 'r', string))	/* Rounded text box */
 		I->box = 4;
-	if (gmt_get_modifier (arg, 'h', string)) {	/* Shaded text box fill color*/
+	if (gmt_get_modifier (arg, 'h', string)) {	/* Shaded text box fill color +h[<dx>/<dy>/][<shade>] */
 		strcpy (I->sfill, "gray50");	/* Default shade color */
 		I->soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 		I->soff[GMT_Y] = -I->soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
