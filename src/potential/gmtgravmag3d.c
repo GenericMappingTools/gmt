@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe"
 #define THIS_MODULE_KEYS	"<D{,TD(,FD(,MD(,GG},>D)"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVfhior"
+#define THIS_MODULE_OPTIONS "-:RVfhior" GMT_ADD_xg_OPT
 
 struct GMTGRAVMAG3D_CTRL {
 	struct GMTGRAVMAG3D_C {	/* -C */
@@ -180,8 +180,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -Tv<vert_file> | -Tr|s<raw_file> | -M+s<body>/<pars> [-C<density>] [-E<thickness>] "
 		"[-F<xy_file>] [-G%s] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [%s] [-L<z_observation>] [%s] "
-		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s] [%s] [%s]%s[%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_xg_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -241,7 +241,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set z level of reference plane [Default = 0].");
 	GMT_Option (API, "bi");
 	GMT_Usage (API, 1, "\n-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.");
-	GMT_Option (API, "h,i,o,r,:,.");
+	GMT_Option (API, "h,i,o,r");
+#ifdef HAVE_GLIB_GTHREAD
+	GMT_Option (API, "x");
+#else
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with GLIB multi-threading support.");
+#endif
+	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
 }
