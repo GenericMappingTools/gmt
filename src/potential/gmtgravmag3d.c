@@ -245,7 +245,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #ifdef HAVE_GLIB_GTHREAD
 	GMT_Option (API, "x");
 #else
-	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with multi-threading support.");
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with GLIB multi-threading support.");
 #endif
 	GMT_Option (API, ":,.");
 
