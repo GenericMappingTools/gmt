@@ -605,12 +605,12 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 		strcpy (I->sfill, "gray50");	/* Default shade color */
 		I->soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 		I->soff[GMT_Y] = -I->soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
-		I->box++;	/* Rectangular shade = 1 and rounded rectangular shade = 5*/
+		I->box++;	/* Rectangular shade = 1 and rounded rectangular shade = 5 */
 		if (I->fill[0] == '-') {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +h requires +g as well\n", option);
 			n_errors++;
 		}
-		else if (string[0]) {	/* Gave an argument to +b */
+		else if (string[0]) {	/* Gave an argument to +h */
 			char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
 			int n = sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 			if (n == 1)	/* Just got a new fill */
