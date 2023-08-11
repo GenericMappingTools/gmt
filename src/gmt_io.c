@@ -953,7 +953,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 
 			default:	/* Just record, probably means this is NOT a GMT/OGR file after all */
 				gap = (unsigned int)(p - record);
-				if (gap < 3) {
+				if (gap < 3 && isupper (p[0])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad OGR/GMT: @%c not allowed before FEATURE_DATA\n", (int)p[0]);
 					GMT->current.io.ogr = GMT_OGR_FALSE;
 				}
