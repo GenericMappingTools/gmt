@@ -160,7 +160,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *intens*
-    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    Use the supplied *intens* value (nominally in the ±1 range) to
     modulate the fill color by simulating illumination [none]. If no intensity
     is provided we will instead read *intens* from the first data column after
     the symbol parameters (if given).
