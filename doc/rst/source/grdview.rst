@@ -87,7 +87,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [*intensgrid*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the (-1,+1) range,
+    Gives the name of a grid file with intensities in the ±1 range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *reliefgrid*
     via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,

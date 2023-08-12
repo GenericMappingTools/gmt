@@ -1360,7 +1360,7 @@ of zero leaves the color unchanged. Higher values will brighten the
 color, lower values will darken it, all without changing the original
 hue of the color (see Chapter :doc:`colorspace` for more details). The
 illumination is decoupled from the data grid file in that a separate
-grid file holding intensities in the [-1,+1] range must be provided.
+grid file holding intensities in the ±1 range must be provided.
 Such intensity files can be derived from the data grid using
 :doc:`/grdgradient` and modified with
 :doc:`/grdhisteq`, but could equally well be
