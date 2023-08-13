@@ -51,7 +51,7 @@ political boundaries. Alternatively, it can (1) issue clip
 paths that will contain all land or all water areas, or
 (2) dump the data to an ASCII table. The data files come
 in 5 different resolutions: (**f**)ull, (**h**)igh, (**i**)ntermediate,
-(**l**)ow, and (**c**)rude. The full resolution files amount to more
+(**l**)ow, (**c**)rude, and (**a**)uto). The full resolution files amount to more
 than 55 Mb of data and provide great detail; for maps of larger
 geographical extent it is more economical to use one of the other
 resolutions. If the user selects to paint the land-areas and does not
