@@ -114,8 +114,8 @@ of ways. GMT programs that accept actual Earth length scales like
 search radii or distances can therefore handle a variety of units. These
 choices are listed in the Table :ref:`Distance Units <tbl-distunits>`;
 simply append the desired unit to the distance value you supply. A value
-without a unit suffix will be considered to be in meters. For example, a distance
-of 30 nautical miles should be given as 30\ **n**.
+without a unit suffix will be considered to be in meters (unless otherwise stated.)
+For example, a distance of 30 nautical miles should be given as 30\ **n**.
 
 Distance calculations
 ~~~~~~~~~~~~~~~~~~~~~
