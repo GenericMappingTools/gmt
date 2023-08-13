@@ -89,7 +89,7 @@ Optional Arguments
 
 **-A**\ *out_img*\ [**=**\ *driver*]
     Save an image in a raster format instead of PostScript. Append *out_img* to select
-    the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
+    the image file name and extension. If the extension is one of .bmp, .gif, .jp[e]g, .png, or .tif
     then no driver information is required. For other output formats you must append the required
     GDAL driver. The *driver* is the driver code name used by GDAL; see your GDAL installation's
     documentation for available drivers. Append a **+c**\ *options* string where *options* is a list of
