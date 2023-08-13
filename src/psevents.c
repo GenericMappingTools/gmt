@@ -292,7 +292,7 @@ GMT_LOCAL unsigned int psevents_parse_ramp_type (struct GMT_CTRL *GMT, char *str
 	/* Detect optional ramp codes c, l, q[Default] and start of parsing text for value */
 	unsigned int type = PSEVENTS_RAMP_QUAD;	/* Default ramp (except for fade which was linear) */
 
-	switch (string[0]) {
+	switch (string[1]) {
 		case 'c':	type = PSEVENTS_RAMP_COSINE;	*start = 2;	break;
 		case 'l':	type = PSEVENTS_RAMP_LINEAR;	*start = 2;	break;
 		case 'q':	type = PSEVENTS_RAMP_QUAD;		*start = 2;	break;
