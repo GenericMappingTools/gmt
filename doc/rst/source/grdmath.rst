@@ -86,8 +86,8 @@ Optional Arguments
 
 **-D**\ *resolution*\ [**+f**]
     Selects the resolution of the data set to use with the operator **LDISTG**
-    ((**f**)ull, (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
-    resolution drops off by 80% between data sets [Default is **l**].
+    ((**f**)ull, (**h**)igh, (**i**)ntermediate, (**l**)ow, (**c**)rude, and (**a**)uto).
+    The resolution drops off by 80% between data sets [Default is **l**].
     Append **+f** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
 
