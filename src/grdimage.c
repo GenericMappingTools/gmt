@@ -37,8 +37,8 @@
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
 
 /* These are images that GDAL knows how to read for us. */
-#define N_IMG_EXTENSIONS 6
-static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "bmp"};
+#define N_IMG_EXTENSIONS 7
+static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "jpeg", "bmp"};
 
 #define GRDIMAGE_NAN_INDEX	(GMT_NAN - 3)
 
@@ -179,7 +179,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Usage (API, 1, "\n-A Return a GMT raster image instead of a PostScript plot.");
 	else {
 		GMT_Usage (API, 1, "\n-A<out_img>[=<driver>]");
-		GMT_Usage (API, -2, "Save image in a raster format (.bmp, .gif, .jpg, .png, .tif) instead of PostScript. "
+		GMT_Usage (API, -2, "Save image in a raster format (.bmp, .gif, .jp[e]g, .png, .tif) instead of PostScript. "
 			"If filename does not have any of these extensions then append =<driver> to select "
 			"the desired image format. The 'driver' is the driver code name used by GDAL. "
 			"See GDAL documentation for available drivers. Note: any vector elements are lost.");
