@@ -625,7 +625,7 @@ maybe_set_two:
 				}
 				break;
 
-			case '/':	/* Write time-functions */
+			case '/':	/* DEBUG Write time-functions and exit. Note: use /cc. /qq, or /ll (note the repeats) */
 				Ctrl->debug.active = true;
 				Ctrl->debug.mode = psevents_parse_ramp_type (GMT, opt->arg, &start);
 
