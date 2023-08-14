@@ -818,6 +818,8 @@ GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl
 GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, double t_now, double *t, bool finite_duration, bool coda, unsigned int x_col, unsigned int i_col, unsigned int t_col, unsigned int z_col, double *out) {
 	double x;
 	gmt_M_unused (GMT);
+	if (fabs (t_now - 3.5) < GMT_CONV8_LIMIT)
+		x = 0.0;
 	if (t_now < t[PSEVENTS_T_RISE]) {	/* Before the rise phase there is nothing */
 		out[x_col] = out[i_col] = 0.0;
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1];
@@ -848,7 +850,7 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 	}
 	else if (finite_duration && t_now <= t[PSEVENTS_T_FADE]) {	/* We are within the fade phase */
 		x = psevents_ramp (GMT, Ctrl, PSEVENTS_SYMBOL, PSEVENTS_FADE, t, t_now);	/* Ramp function */
-		out[x_col] = x;	/* Reduction of size down to coda size */
+		out[x_col] = x * (1.0 - Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2]) + Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];		/* Reduction of size down to coda size */
 		out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
 		if (Ctrl->M.active[PSEVENTS_DZ]) out[z_col] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2] * (1.0 - x);			/* Changing of color via dz */
@@ -867,20 +869,25 @@ GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CT
 	double t[PSEVENTS_NT], now = -2.0, out[4];
 	FILE *fp = fopen ("psevents_function.txt", "w");
 	gmt_M_memset (t, PSEVENTS_NT, double);	/* Initialize the t vector */
-	for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_SYMBOL][k] = 1.0;
-	for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_TEXT][k] = 1.0;
+	if (!Ctrl->E.active[PSEVENTS_SYMBOL]) {	/* Default dt is 1 */
+		for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_SYMBOL][k] = 1.0;
+		for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_TEXT][k] = 1.0;
+	}
 	t[PSEVENTS_T_RISE]    = -Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE];
 	t[PSEVENTS_T_EVENT]   = 0.0;
 	t[PSEVENTS_T_PLATEAU] = Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];
 	t[PSEVENTS_T_DECAY]   = t[PSEVENTS_T_PLATEAU] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];
 	t[PSEVENTS_T_END]     = t[PSEVENTS_T_DECAY] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];
 	t[PSEVENTS_T_FADE]    = t[PSEVENTS_T_END] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];
-	Ctrl->M.active[PSEVENTS_DZ] = true;
 	for (k = 0; k < 5; k++) Ctrl->E.ramp[k] = Ctrl->debug.mode;
-	Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] = 2.0;		/* Default size scale for -Ms and dz amplitude for -Mv */
-	Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1]  = 0.5;		/* Default size scale for -Mi */
-	Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2]  = 50;	/* Default size scale for -Mt coda */
-	fprintf (fp, "# t_rise = -1.0, t_event = 0.0, t_plateau = 1.0, t_decay = 2.0, t_end = 3.0, t_fade = 4.0, now = -2/5, mode = %d\n", Ctrl->debug.mode);
+	if (!Ctrl->M.active[PSEVENTS_SYMBOL]) {
+		Ctrl->M.active[PSEVENTS_DZ] = true;
+		Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] = 2.0;		/* Default size scale for -Ms and dz amplitude for -Mv */
+		Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1]  = 0.5;		/* Default size scale for -Mi */
+		Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2]  = 50;	/* Default size scale for -Mt coda */
+	}
+	fprintf (fp, "# t_rise = %lg, t_event = 0.0, t_plateau = %lg, t_decay = %lg, t_end = %lg, t_fade = %lg, now = -2/5, mode = %d\n",
+			t[PSEVENTS_T_RISE], t[PSEVENTS_T_PLATEAU], t[PSEVENTS_T_DECAY], t[PSEVENTS_T_END], t[PSEVENTS_T_FADE], Ctrl->debug.mode);
 	fprintf (fp, "# now\tsize\tintens\ttransp\tdz\n");
 	while (now <= 5.005) {
 		gmt_M_memset (out, 4, double);	/* Initialize the out vector */
