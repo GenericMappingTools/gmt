@@ -2,7 +2,7 @@
 # Test the 4 time-functions in psevents for some settings
 # Note event duration becomes sum of rise, plateau, decay times = 3
 # We run undocumented psevents -/ to get the functions for an event at t = 0.
-gmt begin psevents_functions view
+gmt begin psevents_functions ps
 	the_args="-Es+rc1+p1+dc1+fc1 -Ms1.5+c0.5 -Mi1+c-0.2 -Mt1+c0 -Mz0.8+c-0.4"
 	gmt events -/cc ${the_args}
 	# Plot the four curves
