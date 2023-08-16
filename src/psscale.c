@@ -864,10 +864,13 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		ndec = gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 	}
 	else {	/* Do annotations explicitly, one by one.  Try automatic guessing of decimals if equidistant cpt */
-		bool const_interval = true, exp_notation = false;
+		bool const_interval = true, exp_notation = false, do_this_lower;
+		bool do_last_lower = (P->n_colors == 1 || !Ctrl->S.range);	/* Make sure to annotate the lower bounds of a single slice and not if -S+r */
 		for (i = 0; i < P->n_colors; i++) {
+			if (Ctrl->S.range && (i > 0 && i < (P->n_colors - 1))) continue;
+			do_this_lower = (i == (P->n_colors - 1)) ? do_last_lower : true; 
 			if (P->data[i].label) n_use_labels++;
-			if (P->data[i].annot & GMT_CPT_L_ANNOT) {
+			if (P->data[i].annot & GMT_CPT_L_ANNOT && do_this_lower) {
 				z = P->data[i].z_low;
 				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
