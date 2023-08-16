@@ -149,6 +149,7 @@ jobs:
         run: |
           set -x -e
           cd build
+          gm version
           # Disable MinGW's path conversion, see #1035.
           if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
           # Run tests
