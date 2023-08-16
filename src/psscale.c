@@ -226,7 +226,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]");
-	GMT_Usage (API, -2, "Control annotation and gridlines when -B cannot used:");
+	GMT_Usage (API, -2, "Control annotation and gridlines when -B cannot be used:");
 	GMT_Usage (API, 3, "+a Place annotations at an angle [no slanting].");
 	GMT_Usage (API, 3, "+c Use any custom labels in the CPT for annotations, if available.");
 	GMT_Usage (API, 3, "+n Use numerical values for annotations [Default].");
