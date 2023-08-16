@@ -29,8 +29,8 @@ echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/tools/gdal" >> $GITHU
 vcpkg list
 
 # install more packages using chocolatey
-choco install ninja
-choco install ghostscript --version 9.56.1
+choco install ninja --no-progress
+choco install ghostscript --version 9.56.1 --no-progress
 
 if [ "$BUILD_DOCS" = "true" ]; then
     pip install --user sphinx dvc
@@ -41,7 +41,7 @@ if [ "$BUILD_DOCS" = "true" ]; then
 fi
 
 if [ "$RUN_TESTS" = "true" ]; then
-    choco install graphicsmagick --version 1.3.40.20230603
+    choco install graphicsmagick --version 1.3.40.20230603 --no-progress
     pip install --user dvc
     # Add GraphicsMagick to PATH
     echo 'C:\Program Files\GraphicsMagick-1.3.40-Q8' >> $GITHUB_PATH
