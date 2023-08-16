@@ -231,7 +231,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+a Place annotations at an angle [no slanting].");
 	GMT_Usage (API, 3, "+c Use any custom labels in the CPT for annotations, if available.");
 	GMT_Usage (API, 3, "+n Use numerical values for annotations [Default].");
-	GMT_Usage (API, 3, "+r Only annotate min and max color [Default follows CPT boundaries].");
+	GMT_Usage (API, 3, "+r Only annotate lower and upper CPT bounds [Default annotates all enabled CPT boundaries].");
 	GMT_Usage (API, 3, "+s Skip drawing gridlines between different color sections [Default draws lines].");
 	GMT_Usage (API, 3, "+x Set a colorbar label [No label].");
 	GMT_Usage (API, 3, "+y Set a colorbar unit [No unit].");
