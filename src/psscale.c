@@ -1333,7 +1333,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				PSL_setfill (PSL, rgb, 0);
 			}
 			if (P->bfn[id].rgb[3] > 0.0) {
-				transp[GMT_FILL_TRANSP] =P->bfn[id].rgb[3];
+				transp[GMT_FILL_TRANSP] = P->bfn[id].rgb[3];
 				PSL_settransparencies (PSL, transp);
 			}
 			PSL_plotpolygon (PSL, xp, yp, nv);
