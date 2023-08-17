@@ -112,7 +112,7 @@ toward the sun mean if we are plotting a grid of heat flow anomalies?
 While there are many ways to accomplish what we want, GMT offers
 a relatively simple way:  We may calculate the gradient of the surface
 in the direction of the sun and normalize these values to fall in
-the -1 to +1 range; +1 means maximum sun exposure and -1 means complete
+the ±1 range; +1 means maximum sun exposure and -1 means complete
 shade. Although we will not show it here, it should be added that
 GMT treats the intensities as a separate data set.  Thus, while
 these values are often derived from the relief surface we want to

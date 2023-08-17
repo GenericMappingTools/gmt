@@ -46,7 +46,7 @@ Description
 colored) map by building a rectangular image and assigning pixels
 a gray-shade (or color) based on the z-value and the CPT file.
 Optionally, illumination may be added by providing a file with
-intensities in the (-1,+1) range or instructions to derive intensities
+intensities in the ±1 range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
@@ -89,7 +89,7 @@ Optional Arguments
 
 **-A**\ *out_img*\ [**=**\ *driver*]
     Save an image in a raster format instead of PostScript. Append *out_img* to select
-    the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
+    the image file name and extension. If the extension is one of .bmp, .gif, .jp[e]g, .png, or .tif
     then no driver information is required. For other output formats you must append the required
     GDAL driver. The *driver* is the driver code name used by GDAL; see your GDAL installation's
     documentation for available drivers. Append a **+c**\ *options* string where *options* is a list of
@@ -140,7 +140,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the (-1,+1) range,
+    Gives the name of a grid file with intensities in the ±1 range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *grid*
     via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,

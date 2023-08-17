@@ -26,7 +26,7 @@ Synopsis
 [ |-N|\ [**p**\|\ *dpi* ]]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*] ]
+[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+r**][**+s**][**+x**\ *label*][**+y**\ *unit*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *scale* ]
@@ -214,11 +214,12 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*]
+**-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+r**][**+s**][**+x**\ *label*][**+y**\ *unit*]
     Control various aspects of color bar appearance when |-B| is *not* used.
     Append **+a** to place annotations at the given *angle* [default is no slanting].
     Append **+c** to use custom labels if given in the CPT as annotations.
     Append **+n** to use numerical labels [Default].
+    Append **+r** to only annotate lower and upper limits in the CPT [Default follows CPT boundaries].
     Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
     If |-L| is used then |-B| cannot be used, hence you may optionally set a bar label via **+x**\ *label*
     and any unit (i.e., y-label) via **+y**\ *unit*.
