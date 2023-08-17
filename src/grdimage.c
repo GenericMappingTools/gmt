@@ -57,6 +57,7 @@ struct GRDIMAGE_CTRL {
 		bool active;
 		double dz;	/* Rounding for min/max determined from data */
 		char *file;
+		char *savecpt;	/* For when we want to save the automatically generated CPT */
 	} C;
 	struct GRDIMAGE_D {	/* -D to read image instead of grid */
 		bool active;
@@ -190,7 +191,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"to automatically assign continuous colors over the data range [%s]; if so, "
 		"optionally append +i<dz> to quantize the range [the exact grid range]. "
 		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
-		"linear continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+		"linear continuous cpt from those colors automatically. Append +s<fname> to save the generated cpt ",
+		"in a disk file.", API->GMT->current.setting.cpt);
 	GMT_Usage (API, 1, "\n-D[r]");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, -2, "Input is an image instead of a grid. Append r to equate image region to -R region.");
@@ -245,7 +247,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 	 */
 
 	unsigned int n_errors = 0, n_files = 0, ind, off, k;
-	char *c = NULL, *file[3] = {NULL, NULL, NULL};
+	char *c = NULL, *file[3] = {NULL, NULL, NULL}, *f = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	size_t n;
@@ -319,6 +321,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if ((f = gmt_strrstr (Ctrl->C.file, "+s"))) {	/* Filename has a +s<outname>, extract that part */
+					Ctrl->C.savecpt = &f[2];
+					f[0] = '\0';		/* Remove the +s<outname> from Ctrl->C.file */
+				}
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'D':	/* Get an image via GDAL */
@@ -2064,9 +2070,14 @@ basemap_and_free:
 			Return (API->error);
 		}
 	}
-	if (Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
-		Return (API->error);
+	if (Ctrl->C.active) {
+		if (Ctrl->C.savecpt && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->C.savecpt, P) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to save the used CPT in file: %s\n", Ctrl->C.savecpt);
+		}
+		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {Return (API->error);}
 	}
+		
+	gmt_M_free (GMT, Conf);
 
 	/* May return a flag that the image/PS had no data (see -W), or just NO_ERROR */
 	ret_val = (Ctrl->W.active && !has_content) ? GMT_IMAGE_NO_DATA : GMT_NOERROR;
