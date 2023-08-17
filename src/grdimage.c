@@ -321,7 +321,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if ((f = gmt_strrstr (Ctrl->C.file, "+s"))) {	/* Filename has a +s<outname>, extract that part */
+				if (opt->arg[0] && (f = gmt_strrstr (Ctrl->C.file, "+s")) != NULL) {	/* Filename has a +s<outname>, extract that part */
 					Ctrl->C.savecpt = &f[2];
 					f[0] = '\0';		/* Remove the +s<outname> from Ctrl->C.file */
 				}
