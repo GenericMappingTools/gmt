@@ -12,5 +12,5 @@
     to build a linear continuous CPT from those colors automatically. In this case *color*\ **n** can be a r/g/b triplet,
     a color name, or an HTML hexadecimal color (e.g. #aabbcc). If no argument is given to **-C**
     then under modern mode we select the current CPT. Append +s<fname> to save the used cpt in a disk file.
-    This is useful when the cpt was generated automatically, but so far this option is only available in *grdimage*.
-    Attention, this option, if used, **must** be at the end of the **-C** option.
+    This is useful when the cpt was generated automatically, but so far this option is only available in *grdimage*
+    and *grdview* Attention, this option, if used, **must** be at the end of the **-C** option.
