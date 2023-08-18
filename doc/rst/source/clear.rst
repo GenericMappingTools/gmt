@@ -67,7 +67,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Find all the sub directories that need to be remove, but just list them to *stdout*,
+    Find all the sub directories that need to be remove, but just print them to *stdout*,
     do **not** delete any files.
 
 .. |Add_-V| replace:: |Add_-V_links|

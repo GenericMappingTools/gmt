@@ -63,7 +63,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 2, "all");
 	GMT_Usage (API, -4, "All of the above.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-N Do not delete, just list directories flagged for deletion.");
+	GMT_Usage (API, 1, "\n-N Do not delete, just output directories flagged for deletion.");
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);
