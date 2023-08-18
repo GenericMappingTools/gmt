@@ -1265,7 +1265,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Borders...");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Borders...\n");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
 		/* Must resample borders because some points may be too far apart and look like 'jumps' */
