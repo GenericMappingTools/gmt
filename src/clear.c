@@ -37,7 +37,7 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s all|cache|data[=<planet>|<prefix>]|geography[=<name>]|sessions|settings [-N] [%s]\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s all|cache|data[=<planet>|<name>]|geography[=<name>]|sessions|settings [-N] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -50,7 +50,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -4, "Deletes the user\'s data download directory:");
 	GMT_Usage (API, -4, "[%s/server]", API->GMT->session.USERDIR);
 	GMT_Usage (API, -4, "Append =<planet> to limit removal to just data for a specific <planet> [all], "
-		"or append =<prefix> to just delete that named data set.");
+		"or append =<name> to just delete that named data set.");
 	GMT_Usage (API, 2, "geography");
 	GMT_Usage (API, -4, "Deletes the user\'s geography directory (gshhg, dcw):");
 	GMT_Usage (API, -4, "[%s/geography]", API->GMT->session.USERDIR);

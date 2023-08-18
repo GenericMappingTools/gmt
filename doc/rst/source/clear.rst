@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*\|\ *prefix*] \| **geography**\ [=\ *name*] \| **sessions** \| **settings**
+**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*\|\ *name*] \| **geography**\ [=\ *name*] \| **sessions** \| **settings**
 [ |-N| ]
 [ |SYN_OPT-V| ]
 
@@ -39,11 +39,11 @@ Optional Arguments
 
 .. _clear-data:
 
-**data**\ [=\ *planet*\|\ *prefix*]]
+**data**\ [=\ *planet*\|\ *name*]]
     Delete the user's data download server directory and all of its contents.
     Alternatively, append =\ *planet* for a specific planet and we only delete
-    data for that sub-directory [all planets]. Finally, you could also specify
-    the prefix for one of those datasets which leaves the rest intact.
+    data for that sub-directory [all planets]. Finally, you could also just specify
+    the *name* for one of them, which leaves the rest intact.
 
 .. _clear-geography:
 
