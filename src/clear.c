@@ -106,7 +106,7 @@ static int clear_data (struct GMTAPI_CTRL *API, char *planet, int report_only) {
 	char **dir1, **dir2, **dir3, *del_dir = NULL, *c = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
-	if ((c = strchr (planet, '_'))) {	/* Only delete one named dataset for this planet */
+	if (planet && (c = strchr (planet, '_'))) {	/* Only delete one named dataset for this planet */
 		del_dir = strdup (planet);	/* Name of the dataset, e.g., earth_relief */
 		c[0] = '\0';		/* Hide data set so planet is now just planet, e.g., earth */
 	}
@@ -303,9 +303,10 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 		if (opt->option != GMT_OPT_INFILE) {
 			if (opt->option == 'N')
 				report_only = 1;
-			continue;	/* action target will appear as file name */
 		}
+	}
 
+	for (opt = options; opt; opt = opt->next) {
 		n_given++;
 		if (!strcmp (opt->arg, "all")) {	/* Clear all */
 			if (clear_cache (API, report_only))
