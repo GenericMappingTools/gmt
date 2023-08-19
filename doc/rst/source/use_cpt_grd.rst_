@@ -1,4 +1,4 @@
-**-C**\ [*cpt*\|\ *master*\ [**+h**\ [*hinge*]][**+i**\ *zinc*][**+u**\|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
+**-C**\ [*cpt*\|\ *master*\ [**+h**\ [*hinge*]][**+i**\ *zinc*][**+u**\|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...][+s<fname>]]
     Name of a CPT file. Alternatively, supply the name of a GMT color master
     dynamic CPT [*turbo*, but we use *geo* for @earth_relief and *srtm* for @srtm_relief data] to
     automatically determine a continuous CPT from the grid's *z*-range; you may round the range
@@ -9,7 +9,8 @@
     or from another unit to meter (append **+u**\ *unit*), with *unit* taken from
     **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
     Yet another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically.
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc).  If no argument is given to **-C**
-    then under modern mode we select the current CPT.
+    to build a linear continuous CPT from those colors automatically. In this case *color*\ **n** can be a r/g/b triplet,
+    a color name, or an HTML hexadecimal color (e.g. #aabbcc). If no argument is given to **-C**
+    then under modern mode we select the current CPT. Append +s<fname> to save the used cpt in a disk file.
+    This is useful when the cpt was generated automatically, but so far this option is only available in *grdimage*
+    and *grdview* Attention, this option, if used, **must** be at the end of the **-C** option.

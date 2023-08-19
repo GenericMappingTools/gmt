@@ -3557,6 +3557,8 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 	gmtproj_imerc_sph (GMT, &e, &n, xmax, ymax);
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[4];
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[4]);
+	GMT->current.proj.scale[GMT_X] = fabs(GMT->current.proj.scale[GMT_X]);		/* The may be negatives sometimes */
+	GMT->current.proj.scale[GMT_Y] = fabs(GMT->current.proj.scale[GMT_Y]);
 	GMT->current.proj.fwd = &gmtproj_oblmrc;
 	GMT->current.proj.inv = &gmtproj_ioblmrc;
 	GMT->current.map.outside = &gmtmap_rect_outside;
