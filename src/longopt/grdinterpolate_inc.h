@@ -33,7 +33,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          "a,g,i,l,n,o,p,r,x",     "azimuth,degrees,increment,length,npoints,origin,parallel,radius,rhumb" },
 	{ 0, 'F', "interptype",
 	          "l,a,c,n",               "linear,akima,cubic,none",
-	          "1,2",                   "fderiv,sderiv" },
+	          "d",                     "derivative" },
 	{ 0, 'S', "pointseries",
 	          "",                      "",
 	          "h",                     "header" },

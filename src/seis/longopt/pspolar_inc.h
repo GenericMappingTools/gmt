@@ -32,9 +32,10 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          "a,c,d,h,i,p,s,t,x", "star,circle,diamond,hexagon,invtriangle,point,square,triangle,cross",
 	          "",                  "" },
 	{ 0, 'N', "noclip",            "", "", "", "" },
+/* PROBLEM: +v modifier for -Q (following entry) can take arg strings which include + */
 	{ 0, 'Q', "mode",
 	          "e,f,g,h,s,t",       "extensive,focal,compressional,hypo71,spolarity,station",
-	          "v",                 "vector" },
+	          "",                  "" },
 	{ 0, 'T', "station",
 	          "",                  "",
 	          "a,f,j,o",           "angle,font,justify,offset" },
