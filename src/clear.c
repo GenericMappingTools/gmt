@@ -307,6 +307,7 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 	}
 
 	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != GMT_OPT_INFILE) continue;	/* Skip any -N -V */
 		n_given++;
 		if (!strcmp (opt->arg, "all")) {	/* Clear all */
 			if (clear_cache (API, report_only))
