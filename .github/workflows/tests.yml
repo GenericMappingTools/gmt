@@ -23,6 +23,10 @@ defaults:
     # default to use bash shell
     shell: bash
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   test:
     name: ${{ matrix.name }}
@@ -51,9 +55,6 @@ jobs:
             os: windows-latest
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: Checkout
         uses: actions/checkout@v3.5.3
 
