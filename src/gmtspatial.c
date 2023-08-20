@@ -41,6 +41,8 @@
 #define GMT_N_MODE_NOTSET	0
 #define GMT_N_MODE_REPORT	1
 #define GMT_N_MODE_ADD_ID	2
+#define GMT_N_MODE_CLOUD	3
+
 #define GMT_W   3
 
 #define POL_UNION		1
@@ -764,7 +766,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]] [-E+n|p] "
-		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
+		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+i][+p<ID>][+r][+z]] [-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
 		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [-W<dist>[<unit>][+f|l]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -808,7 +810,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-L%s/<noise>/<offset>", GMT_DIST_OPT);
 	GMT_Usage (API, -2, "Remove tile Lines.  These are superfluous lines along the -R border. "
 		"Append <dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].");
-	GMT_Usage (API, 1, "\n-N<pfile>[+a][+p<ID>][+r][+z]");
+	GMT_Usage (API, 1, "\n-N<pfile>[+a][+i][+p<ID>][+r][+z]");
 	GMT_Usage (API, -2, "Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:");
 	GMT_Usage (API, 3, "%s If OGR/GMT polygons, get polygon ID via -a for Z column, else", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Interpret segment labels (-Z<value>) as polygon IDs, else", GMT_LINE_BULLET);
@@ -816,6 +818,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s Append +p<ID> to set origin for auto-incrementing polygon IDs [0].", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Additional modifiers are available:");
 	GMT_Usage (API, 3, "+a All points of a feature (line, polygon) must be inside the ID polygon [any point].");
+	GMT_Usage (API, 3, "+i Determine ID polygon of all individual input points, add ID to record and output.");
 	GMT_Usage (API, 3, "+r No table output; just report which polygon a feature is inside.");
 	GMT_Usage (API, 3, "+z Append the ID as a new output data column [Default adds -Z<ID> to segment header].");
 	GMT_Usage (API, 1, "\n-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]");
@@ -868,7 +871,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 
 	unsigned int pos, n_errors = 0;
 	int n;
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *s = NULL, *c = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""};
+	char *s = NULL, *c = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -976,19 +980,28 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':	/* Determine containing polygons for features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				if (gmt_validate_modifiers (GMT, opt->arg, 'N', "aiprz", GMT_MSG_ERROR)) n_errors++;
 				if ((s = strchr (opt->arg, '+')) == NULL) {	/* No modifiers */
 					Ctrl->N.file = strdup (opt->arg);
 					continue;
 				}
-				s[0] = '\0';	Ctrl->N.file = strdup (opt->arg);	s[0] = '+';
-				pos = 0;
-				while (gmt_strtok (s, "+", &pos, p)) {
-					switch (p[0]) {
+				else {	/* Hide modifiers until we duplicate the polygon name */
+					s[0] = '\0';
+					Ctrl->N.file = strdup (opt->arg);
+					s[0] = '+';
+				}
+				q = gmt_first_modifier (GMT, opt->arg, "aiprz");
+				pos = 0;	txt_a[0] = 0;
+				while (gmt_getmodopt (GMT, 'N', q, "aiprz", &pos, txt_a, &n_errors) && n_errors == 0) {
+					switch (txt_a[0]) {
 						case 'a':	/* All points must be inside polygon */
 							Ctrl->N.all = true;
 							break;
+						case 'i':	/* add polygon ID for individual input points */
+							Ctrl->N.mode = GMT_N_MODE_CLOUD;
+							break;
 						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = (p[1]) ? atoi (&p[1]) : 1;
+							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;
 							break;
 						case 'r':	/* Just give a report */
 							Ctrl->N.mode = GMT_N_MODE_REPORT;
@@ -1967,10 +1980,12 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
 		bool check_next;
-		uint64_t tbl, row, first, last, n, p, np, seg, seg2, n_inside;
+		uint64_t tbl, row, col, n, p, np, seg, seg2, n_inside;
+		int64_t kk;
 		unsigned int *count = NULL, nmode;
 		int ID = -1;
-		char seg_label[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *kind[2] = {"%%d points", "All points"};
+		char seg_label[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *used = NULL;
+		double *out = NULL;
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
@@ -1985,7 +2000,18 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-		nmode = (Ctrl->N.mode == GMT_N_MODE_REPORT) ? GMT_IS_NONE : GMT_IS_LINE;
+		if (Ctrl->N.mode == GMT_N_MODE_CLOUD) {
+			nmode = GMT_IS_POINT;
+			used = gmt_M_memory (GMT, NULL, D->n_records, char);
+			out  = gmt_M_memory (GMT, NULL, D->n_columns + 1, double);
+			Out.data = out;	Out.text = NULL;
+			if ((error = GMT_Set_Columns (GMT->parent, GMT_OUT, D->n_columns + 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+				Return (GMT_RUNTIME_ERROR);
+		}
+		else {
+			nmode = (Ctrl->N.mode == GMT_N_MODE_REPORT) ? GMT_IS_NONE : GMT_IS_LINE;
+			Out.text = record;
+		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, nmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
@@ -2000,7 +2026,6 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		T = C->table[0];	/* Only one input file so only one table */
 		count = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
-		Out.text = record;
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			SH = gmt_get_DS_hidden (S2);
@@ -2019,10 +2044,25 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			else	/* Increment running polygon ID */
 				ID++;
 
+			kk = -1;	/* Start at first point when first incremented (for -N+c) */
 			for (tbl = p = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++, p++) {
 					S = D->table[tbl]->segment[seg];
 					if (S->n_rows == 0) continue;
+					if (Ctrl->N.mode == GMT_N_MODE_CLOUD) {	/* Find polygon containing this point */
+						for (row = 0; row < S->n_rows; row++) {	/* Check all points if they are inside */
+							kk++;
+							if (used[kk]) continue;	/* Already found it is inside another polygon */
+							if (gmt_inonout (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], S2) == GMT_INSIDE) {
+								used[kk] = 1;	/* Flag it is found */
+								for (col = 0; col < S->n_columns; col++) out[col] = S->data[col][row];	/* Copy over this row */
+								out[col] = (double)ID;
+								GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
+							}
+						}
+						continue;	/* All done for this point & polygon combination */
+					}
+
 					for (row = n = 0, check_next = true; check_next && row < S->n_rows; row++) {	/* Check one or all points if they are inside */
 						if (Ctrl->N.all && n < row)	/* At least one point has been found outside so with +a we stop checking for more */
 							check_next = false;
@@ -2090,6 +2130,10 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_M_free (GMT, count);
+		if (Ctrl->N.mode == GMT_N_MODE_CLOUD) {
+			gmt_M_free (GMT, used);
+			gmt_M_free (GMT, out);
+		}
 		Return (GMT_NOERROR);
 	}
 	if (Ctrl->S.active && Ctrl->S.mode == POL_SPLIT) {	/* Split polygons at dateline */
