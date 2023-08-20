@@ -815,8 +815,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s Interpret segment labels (-L<label>) as polygon IDs, else", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Append +p<ID> to set origin for auto-incrementing polygon IDs [0].", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Additional modifiers are available:");
-	GMT_Usage (API, 3, "+a All points of a feature (line, polygon) must be inside the ID polygon [mid point].");
-	GMT_Usage (API, 3, "+r No table output; just reports which polygon a feature is inside.");
+	GMT_Usage (API, 3, "+a All points of a feature (line, polygon) must be inside the ID polygon [any point].");
+	GMT_Usage (API, 3, "+r No table output; just report which polygon a feature is inside.");
 	GMT_Usage (API, 3, "+z Append the ID as a new output data column [Default adds -Z<ID> to segment header].");
 	GMT_Usage (API, 1, "\n-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]");
 	GMT_Usage (API, -2, "Measure area and handedness of polygon(s) or length of line segments.  If -fg is used "
