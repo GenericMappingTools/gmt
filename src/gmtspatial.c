@@ -1970,7 +1970,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		uint64_t tbl, row, first, last, n, p, np, seg, seg2, n_inside;
 		unsigned int *count = NULL, nmode;
 		int ID = -1;
-		char seg_label[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *kind[2] = {"Middle point", "All points"};
+		char seg_label[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *kind[2] = {"%%d points", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
@@ -2029,8 +2029,11 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						else	/* Need to see if next point is inside (which always takes place for the first point row = 0) */
 							n += (gmt_inonout (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], S2) == GMT_INSIDE);
 					}
-					if (n == 0) continue;	/* Nothing inside this polygon */
-					if (Ctrl->N.all && n < S->n_rows) continue;	/* Not all points inside this polygon */
+					if (n == 0 || (Ctrl->N.all && n < S->n_rows)) {	/* Nothing inside this polygon or not all of the points are inside (+a) */
+						SH = gmt_get_DS_hidden (S);
+						SH->mode = GMT_WRITE_SKIP;	/* Do not output this feature */
+ 						continue;
+					}
 					if (count[p]) {
 						GMT_Report (API, GMT_MSG_ERROR, "Segment %" PRIu64 "-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
 						continue;
@@ -2038,12 +2041,18 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					count[p]++;
 					/* Here the feature was fully (+a) or partly inside the polygon */
 					if (Ctrl->N.mode == GMT_N_MODE_REPORT) {	/* Just report on which polygon contains each feature */
-						sprintf (record, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d", kind[Ctrl->N.all], tbl, seg, ID);
+						if (Ctrl->N.all)
+							sprintf (record, "All points from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d", tbl, seg, ID);
+						else
+							sprintf (record, "%" PRIu64 " points from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d", n, tbl, seg, ID);
 						GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					}
 					else if (Ctrl->N.mode == GMT_N_MODE_ADD_ID) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->data[n][row] = (double)ID;
-						GMT_Report (API, GMT_MSG_INFORMATION, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+						if (Ctrl->N.all)
+							GMT_Report (API, GMT_MSG_INFORMATION, "All points from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", tbl, seg, ID);
+						else
+							GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", n, tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
 						if (gmt_parse_segment_item (GMT, S->header, "-Z", NULL))
@@ -2055,7 +2064,10 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);
-							GMT_Report (API, GMT_MSG_INFORMATION, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+							if (Ctrl->N.all)
+								GMT_Report (API, GMT_MSG_INFORMATION, "All points from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", tbl, seg, ID);
+							else
+								GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " points from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", n, tbl, seg, ID);
 						}
 					}
 				}
