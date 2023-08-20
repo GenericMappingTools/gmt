@@ -150,13 +150,13 @@ Optional Arguments
     taken from the aspatial value assigned to Z, the segment header
     (first |-Z|, then |-L| are scanned), or it is assigned the
     running number that is initialized to *start* [0]. By default the
-    input segment that are found to be inside a polygon are written to
+    input segments that are found to be inside a polygon are written to
     standard output with the polygon ID encoded in the segment header as
     **-Z**\ *ID*. Alternatively, append **+r** to just report which
     polygon contains a feature or **+z** to have the IDs added as an
     extra data column on output. Segments that fail to be inside a
     polygon are not written out. If more than one polygon contains the
-    same segment we skip the second (and further) scenario.
+    same segment we skip the second (and further) scenarios.
 
 .. _-Q:
 
