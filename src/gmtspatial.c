@@ -869,7 +869,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	bool got_i = false;
+	bool got_i = false, got_p = false;
 	unsigned int pos, n_errors = 0, got_n = 0;
 	int n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""};
@@ -1003,7 +1003,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 							got_i = true;	got_n++;
 							break;
 						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;	got_n++;
+							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;
+							got_p = true;	got_n++;
 							break;
 						case 'r':	/* Just give a report */
 							Ctrl->N.mode = GMT_N_MODE_REPORT;	got_n++;
@@ -1163,7 +1164,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Option -L requires a positive cutoff in meters\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Option -D: Cannot read file %s!\n", Ctrl->D.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Option -T: Cannot read file %s!\n", Ctrl->T.file);
-	n_errors += gmt_M_check_condition (GMT, got_i && got_n > 1, "Option -N: Cannot combine +i with other modifiers\n");
+	n_errors += gmt_M_check_condition (GMT, !(got_i && got_p && got_n == 2) && (got_i && got_n > 1), "Option -N: Cannot combine +i with other modifiers than +p\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -2029,6 +2030,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		T = C->table[0];	/* Only one input file so only one table */
 		count = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
+		if (Ctrl->N.ID) ID = Ctrl->N.ID - 1;		/* +p modifier was used*/
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			SH = gmt_get_DS_hidden (S2);
@@ -2042,7 +2044,10 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				else if (gmt_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else
-					GMT_Report (API, GMT_MSG_ERROR, "No polygon ID found; ID set to NaN\n");
+					if (Ctrl->N.mode = GMT_N_MODE_CLOUD)
+						ID++;
+					else
+						GMT_Report (API, GMT_MSG_ERROR, "No polygon ID found; ID set to -1\n");
 			}
 			else	/* Increment running polygon ID */
 				ID++;
