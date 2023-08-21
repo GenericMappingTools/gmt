@@ -811,14 +811,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Remove tile Lines.  These are superfluous lines along the -R border. "
 		"Append <dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].");
 	GMT_Usage (API, 1, "\n-N<pfile>[+a][+i][+p<ID>][+r][+z]");
-	GMT_Usage (API, -2, "Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:");
-	GMT_Usage (API, 3, "%s If OGR/GMT polygons, get polygon ID via -a for Z column, else", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s Interpret segment labels (-Z<value>) as polygon IDs, else", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s Interpret segment labels (-L<label>) as polygon IDs, else", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s Append +p<ID> to set origin for auto-incrementing polygon IDs [0].", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Determine ID of polygon (in <pfile>) enclosing each input feature (or point if +i).  By default, "
+		"the ID starts at 0 and auto-increments.  Alternatively, the ID is set as follows:");
+	GMT_Usage (API, 3, "%s If shapefile or OGR/GMT polygons, get polygon ID via -a for Z column.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment value (-Z<value>) as polygon ID.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment label (-L<label>) as polygon ID, else we increment IDs from 0.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Additional modifiers are available:");
 	GMT_Usage (API, 3, "+a All points of a feature (line, polygon) must be inside the ID polygon [any point].");
-	GMT_Usage (API, 3, "+i Determine ID polygon of all individual input points, add ID to record and output.");
+	GMT_Usage (API, 3, "+i Determine polygon IDs of all individual input points, append ID to each output row as a new data column.");
+	GMT_Usage (API, 3, "+p Change origin for auto-incrementing polygon IDs [0].");
 	GMT_Usage (API, 3, "+r No table output; just report which polygon a feature is inside.");
 	GMT_Usage (API, 3, "+z Append the ID as a new output data column [Default adds -Z<ID> to segment header].");
 	GMT_Usage (API, 1, "\n-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]");
@@ -994,6 +995,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				q = gmt_first_modifier (GMT, opt->arg, "aiprz");
 				pos = 0;	txt_a[0] = 0;
 				while (gmt_getmodopt (GMT, 'N', q, "aiprz", &pos, txt_a, &n_errors) && n_errors == 0) {
+					/* Note: +i can only be combined with +p */
 					switch (txt_a[0]) {
 						case 'a':	/* All points must be inside polygon */
 							Ctrl->N.all = true;	got_n++;
@@ -1003,7 +1005,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 							got_i = true;	got_n++;
 							break;
 						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;	got_n++;
+							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;
 							break;
 						case 'r':	/* Just give a report */
 							Ctrl->N.mode = GMT_N_MODE_REPORT;	got_n++;
@@ -1163,7 +1165,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Option -L requires a positive cutoff in meters\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Option -D: Cannot read file %s!\n", Ctrl->D.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Option -T: Cannot read file %s!\n", Ctrl->T.file);
-	n_errors += gmt_M_check_condition (GMT, got_i && got_n > 1, "Option -N: Cannot combine +i with other modifiers\n");
+	n_errors += gmt_M_check_condition (GMT, got_i && got_n > 1, "Option -N: Cannot combine +i with modifiers +a, +r, or +z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

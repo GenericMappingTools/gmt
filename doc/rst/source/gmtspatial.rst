@@ -144,7 +144,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ *pfile*\ [**+a**][**+i**][**+p**\ *start*][**+r**][**+z**]
-    Determine if one (or all, with **+a**) points of each feature in the
+    Lines and polygons: Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
     taken from the aspatial value assigned to Z, the segment header
@@ -156,8 +156,8 @@ Optional Arguments
     polygon contains a feature or **+z** to have the IDs added as an
     extra data column on output. Segments that fail to be inside a
     polygon are not written out. If more than one polygon contains the
-    same segment we skip the second (and further) scenarios. Alternatively,
-    just use modifier **+i** and we will determine the polygon ID for
+    same segment we skip the second (and further) scenarios. Point clouds:
+    Use modifier **+i** and we will determine the polygon ID for
     every **i**\ ndividual input point and add it as the last column.
 
 .. _-Q:
