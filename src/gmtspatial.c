@@ -869,7 +869,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int pos, n_errors = 0;
+	bool got_i = false;
+	unsigned int pos, n_errors = 0, got_n = 0;
 	int n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""};
 	char *s = NULL, *c = NULL, *q = NULL;
@@ -995,19 +996,20 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				while (gmt_getmodopt (GMT, 'N', q, "aiprz", &pos, txt_a, &n_errors) && n_errors == 0) {
 					switch (txt_a[0]) {
 						case 'a':	/* All points must be inside polygon */
-							Ctrl->N.all = true;
+							Ctrl->N.all = true;	got_n++;
 							break;
 						case 'i':	/* add polygon ID for individual input points */
 							Ctrl->N.mode = GMT_N_MODE_CLOUD;
+							got_i = true;	got_n++;
 							break;
 						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;
+							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;	got_n++;
 							break;
 						case 'r':	/* Just give a report */
-							Ctrl->N.mode = GMT_N_MODE_REPORT;
+							Ctrl->N.mode = GMT_N_MODE_REPORT;	got_n++;
 							break;
 						case 'z':	/* Add polygon ID as final column */
-							Ctrl->N.mode = GMT_N_MODE_ADD_ID;
+							Ctrl->N.mode = GMT_N_MODE_ADD_ID;	got_n++;
 							break;
 					}
 				}
@@ -1161,6 +1163,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Option -L requires a positive cutoff in meters\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Option -D: Cannot read file %s!\n", Ctrl->D.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Option -T: Cannot read file %s!\n", Ctrl->T.file);
+	n_errors += gmt_M_check_condition (GMT, got_i && got_n > 1, "Option -N: Cannot combine +i with other modifiers\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
