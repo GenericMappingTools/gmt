@@ -132,6 +132,7 @@ struct GMTSPATIAL_CTRL {
 	struct GMTSPATIAL_N {	/* -N<file>[+a][+p>ID>][+r][+z] */
 		bool active;
 		bool all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
+		bool p_set;		/* True if +p was used */
 		unsigned int mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
 		unsigned int ID;	/* If 1 we use running numbers */
 		char *file;
@@ -1005,7 +1006,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 							got_i = true;	got_n++;
 							break;
 						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = (txt_a[1]) ? atoi (&txt_a[1]) : 1;
+							if (txt_a[1]) {
+								Ctrl->N.ID = atoi (&txt_a[1]);
+								Ctrl->N.p_set = true;
+							}
+							else {
+								GMT_Report (API, GMT_MSG_ERROR, "Option -N: Modifier +p given no value\n");
+								n_errors++;
+							}
 							break;
 						case 'r':	/* Just give a report */
 							Ctrl->N.mode = GMT_N_MODE_REPORT;	got_n++;
@@ -2031,12 +2039,13 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		T = C->table[0];	/* Only one input file so only one table */
 		count = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
+		ID = Ctrl->N.ID - 1;	/* May be overridden below */
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			SH = gmt_get_DS_hidden (S2);
 			if (gmt_polygon_is_hole (GMT, S2)) continue;	/* Holes are handled in gmt_inonout */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
-			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
+			if (!Ctrl->N.p_set) {	/* Look for polygon IDs in the data headers */
 				if (SH->ogr)	/* OGR data */
 					ID = irint (gmt_get_aspatial_value (GMT, GMT_IS_Z, S2));
 				else if (gmt_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
@@ -2049,7 +2058,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			else	/* Increment running polygon ID */
 				ID++;
 
-			kk = -1;	/* Start at first point when first incremented (for -N+c) */
+			kk = -1;	/* Start at first point when first incremented (for -N+i) */
 			for (tbl = p = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++, p++) {
 					S = D->table[tbl]->segment[seg];
