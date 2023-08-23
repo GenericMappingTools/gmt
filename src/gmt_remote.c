@@ -1844,7 +1844,10 @@ char *gmt_dataserver_url (struct GMTAPI_CTRL *API) {
 		char name[GMT_LEN64] = {""};
 		strncpy (name, API->GMT->session.DATASERVER, GMT_LEN64-1);
 		gmt_str_tolower (name);
-		snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
+		if (strchr (name, '.'))	/* Must assume it is stuff like mybox.somedomain.type so prepend http */
+			snprintf (URL, GMT_LEN256-1, "http://%s", name);
+		else	/* Expand server name to full URL */
+			snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
 	}
 	else	/* Must use the URL as is */
 		snprintf (URL, GMT_LEN256-1, "%s", API->GMT->session.DATASERVER);
