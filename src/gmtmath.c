@@ -6605,7 +6605,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.file) n_columns = Ctrl->N.ncol;
 
 	if (!(D_in || T_in || A_in || set_equidistant_t)) {	/* Neither a file nor -T given; must read data from stdin */
-		GMT_Report (API, GMT_MSG_ERROR, "Expression must contain at least one table file or -T [and -N]\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Expression must contain at least one table file or -T [and -N], or -Q\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (D_in)	/* Obtained file structure from an input file, use this to create new stack entry */

@@ -72,6 +72,7 @@ struct GRDVIEW_CTRL {
 		bool active;
 		double dz;
 		char *file;
+		char *savecpt;	/* For when we want to save the automatically generated CPT */
 	} C;
 	struct GRDVIEW_G {	/* -G<drapefile> 1 or 3 times*/
 		bool active;
@@ -438,7 +439,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"to automatically assign continuous colors over the data range [%s]; if so, "
 		"optionally append +i<dz> to quantize the range [the exact grid range]. "
 		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
-		"linear continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+		"linear continuous cpt from those colors automatically. Append +s<fname> to save the generated cpt ",
+		"in a disk file.", API->GMT->current.setting.cpt);
 	GMT_Usage (API, 1, "\n-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>");
 	GMT_Usage (API, -2, "Specify how to color the 3-D surface defined by <topogrid>:");
 	GMT_Usage (API, 3, "%s Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.", GMT_LINE_BULLET);
@@ -511,7 +513,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 	unsigned int n_errors = 0, q_set = 0, n_commas, j, k, n, id;
 	int sval;
 	bool no_cpt = false;
-	char *c = NULL;
+	char *c = NULL, *f = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -530,6 +532,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0] && (f = gmt_strrstr (Ctrl->C.file, "+s")) != NULL) {	/* Filename has a +s<outname>, extract that part */
+					Ctrl->C.savecpt = &f[2];
+					f[0] = '\0';		/* Remove the +s<outname> from Ctrl->C.file */
+				}
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'z':	/* One image. This is an undocumented fake option but one that lets externals pass both images and grids for draping. */
@@ -2151,6 +2157,12 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to free Z\n");
+	}
+	if (Ctrl->C.active) {
+		if (Ctrl->C.savecpt && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->C.savecpt, P) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to save the used CPT in file: %s\n", Ctrl->C.savecpt);
+		}
+		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {Return (API->error);}
 	}
 
 	Return (GMT_NOERROR);

@@ -1360,7 +1360,7 @@ of zero leaves the color unchanged. Higher values will brighten the
 color, lower values will darken it, all without changing the original
 hue of the color (see Chapter :doc:`colorspace` for more details). The
 illumination is decoupled from the data grid file in that a separate
-grid file holding intensities in the [-1,+1] range must be provided.
+grid file holding intensities in the ±1 range must be provided.
 Such intensity files can be derived from the data grid using
 :doc:`/grdgradient` and modified with
 :doc:`/grdhisteq`, but could equally well be
@@ -1945,7 +1945,7 @@ Here is a list of the attributes that is under your control:
    :align: center
 
    Example of two map scales for a Mercator projection evaluated at 53 degrees north.
-   The left-most scale was placed with **-Lj**\ *ML*\ **+c**\ 53\ **+w**\ 1000k\ **+f+l**\ "Scale at 53\\232N"
+   The left-most scale was placed with **-Lj**\ *ML*\ **+c**\ 53\ **+w**\ 1000k\ **+f+l**\ "Scale at 53@.N"
    while the scale on the right was placed with **-Lj**\ *BR*\ **+c**\ 53\ **+w**\ 1000k\ **+l+f**.
 
 .. toggle::
@@ -1969,13 +1969,11 @@ have ornamental value and can be used on any map projection.  As for map scales,
 map rose is added with :doc:`/basemap` or :doc:`/coast` and selected by the **-Td** option.
 This option accepts the *reference* point where the map rose's *anchor* should be
 pinned.  In addition to the required *refpoint* and *anchor* arguments (and their standard
-modifiers discussed earlier) there is one required and two optional modifiers. The required
-modifier sets the side:
+modifiers discussed earlier) there are three optional modifiers:
 
-#. Size of map rose.  Use **+w**\ *size* to specify the full width and height of the rose.  A 3 cm
-   rose would require **+w**\ 3c.
-
-The next two modifiers are optional:
+#. Size of map rose.  Use **+w**\ *size* to specify the full width and height of the rose. E.g., a 3 cm
+   rose would require **+w**\ 3c.  Alternatively, append % to set the *size* as a percentage of the
+   map width [Default is 10% if **+w** is not given].
 
 #. Cardinal points.  By default only the four cardinal points (W, E, S, N) are included in the rose.
    You can extend that with the **+f**\ *level* modifier, where *level* is 1 [Default], 2, or 3.  Selecting
@@ -2018,12 +2016,11 @@ magnetic directions, which differ for nonzero declination. As for style, the two
 bit like a standard compass.  As for directional roses, a magnetic
 map rose is added with :doc:`/basemap` or :doc:`/coast` and selected by the **-Tm** option.
 As for other features, append the required *reference* point where the magnetic map rose's *anchor*
-should be pinned.  There is one required and several optional modifiers.  First up is the size:
+should be pinned.  There are several optional modifiers:
 
-#. Specify size of map rose.  Use **+w**\ *size* to specify the full width of the rose.  A 3 cm
-   rose would imply **+w**\ 3c.
-
-The remaining modifiers are optional:
+#. Specify size of map rose.  Use **+w**\ *size* to specify the full width of the rose.  E.g., a 3 cm
+   rose would imply **+w**\ 3c. Alternatively, append % to set the *size* as a percentage of the map
+   width [Default is 15% if **+w** is not given].
 
 #. Specify Declination.  To add the inner angular scale, append **d**\ *dec*\ [/\ *dlabel*], where
    *dec* is the declination value in decimal or ddd:mm:ss format, and *dlabel* is an optional string

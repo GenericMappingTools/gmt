@@ -27,7 +27,7 @@ Synopsis
 [ |-O| ]
 [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*] ]
+[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+r**][**+s**][**+x**\ *label*][**+y**\ *unit*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *scale* ]

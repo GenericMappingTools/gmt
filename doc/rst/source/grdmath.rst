@@ -312,7 +312,7 @@ Operator        Args   Returns                                                  
 **MODE**        1 1    Mode value (Least Median of Squares) of A                                                       Probability        
 **MODEW**       2 1    Weighted mode value (Least Median of Squares) of A for weights in B                             Probability        
 **MUL**         2 1    A x B (multiplication)                                                                          Arithmetic         
-**NAN**         2 1    Replace NaNs in A with values from B                                                            Logic              
+**NAN**         2 1    NaN if A == B, else A                                                                     Logic              
 **NEG**         1 1    Negative (-A)                                                                                   Arithmetic         
 **NEQ**         2 1    1 If A  is not equal to B, else 0                                                               Logic              
 **NORM**        1 1    Normalize (A) so min(A) = 0 and max(A) = 1                                                      Probability        

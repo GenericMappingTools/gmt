@@ -114,9 +114,10 @@ struct PSSCALE_CTRL {
 	struct PSSCALE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSSCALE_S {	/* -S[+c|n][+s][+a<angle>][+x<label>][+y<unit>] */
+	struct PSSCALE_S {	/* -S[+c|n][+s][+a<angle>][+r][+x<label>][+y<unit>] */
 		bool active;
 		bool skip;
+		bool range;
 		double angle;
 		unsigned int mode;
 		char unit[GMT_LEN256], label[GMT_LEN256];
@@ -166,7 +167,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s[+r]] "
 		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
-		"[-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
+		"[-S[+a<angle>][+c|n][+r][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
 			name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT,
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
@@ -226,10 +227,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]");
-	GMT_Usage (API, -2, "Control annotation and gridlines when -B cannot used:");
+	GMT_Usage (API, -2, "Control annotation and gridlines when -B cannot be used:");
 	GMT_Usage (API, 3, "+a Place annotations at an angle [no slanting].");
 	GMT_Usage (API, 3, "+c Use any custom labels in the CPT for annotations, if available.");
 	GMT_Usage (API, 3, "+n Use numerical values for annotations [Default].");
+	GMT_Usage (API, 3, "+r Only annotate lower and upper CPT bounds [Default annotates all enabled CPT boundaries].");
 	GMT_Usage (API, 3, "+s Skip drawing gridlines between different color sections [Default draws lines].");
 	GMT_Usage (API, 3, "+x Set a colorbar label [No label].");
 	GMT_Usage (API, 3, "+y Set a colorbar unit [No unit].");
@@ -399,13 +401,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	/* The default */
 				if (opt->arg[0]) {	/* Modern syntax with modifiers */
-					if ((c = gmt_first_modifier (GMT, opt->arg, "acnsxy"))) {	/* Process any modifiers */
+					if ((c = gmt_first_modifier (GMT, opt->arg, "acnrsxy"))) {	/* Process any modifiers */
 						unsigned int pos = 0;	/* Reset to start of new word */
-						while (gmt_getmodopt (GMT, 'S', c, "acnsxy", &pos, txt_a, &n_errors) && n_errors == 0) {
+						while (gmt_getmodopt (GMT, 'S', c, "acnrsxy", &pos, txt_a, &n_errors) && n_errors == 0) {
 							switch (txt_a[0]) {
 								case 'a': Ctrl->S.angle = atof (&txt_a[1]); Ctrl->S.mode |= PSSCALE_ANNOT_ANGLED;	break;
 								case 'c': Ctrl->S.mode |= PSSCALE_ANNOT_CUSTOM;	break;
 								case 'n': Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	break;
+								case 'r': Ctrl->S.range = true;	break;
 								case 's': Ctrl->S.skip = true;	break;
 								case 'x': strncpy (Ctrl->S.label, &txt_a[1], GMT_LEN256); break;
 								case 'y': strncpy (Ctrl->S.unit,  &txt_a[1], GMT_LEN256); break;
@@ -861,10 +864,13 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		ndec = gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 	}
 	else {	/* Do annotations explicitly, one by one.  Try automatic guessing of decimals if equidistant cpt */
-		bool const_interval = true, exp_notation = false;
+		bool const_interval = true, exp_notation = false, do_this_lower;
+		bool do_last_lower = (P->n_colors == 1 || !Ctrl->S.range);	/* Make sure to annotate the lower bounds of a single slice and not if -S+r */
 		for (i = 0; i < P->n_colors; i++) {
+			if (Ctrl->S.range && (i > 0 && i < (P->n_colors - 1))) continue;
+			do_this_lower = (i == (P->n_colors - 1)) ? do_last_lower : true; 
 			if (P->data[i].label) n_use_labels++;
-			if (P->data[i].annot & GMT_CPT_L_ANNOT) {
+			if (P->data[i].annot & GMT_CPT_L_ANNOT && do_this_lower) {
 				z = P->data[i].z_low;
 				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
@@ -1333,7 +1339,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				PSL_setfill (PSL, rgb, 0);
 			}
 			if (P->bfn[id].rgb[3] > 0.0) {
-				transp[GMT_FILL_TRANSP] =P->bfn[id].rgb[3];
+				transp[GMT_FILL_TRANSP] = P->bfn[id].rgb[3];
 				PSL_settransparencies (PSL, transp);
 			}
 			PSL_plotpolygon (PSL, xp, yp, nv);
@@ -1378,6 +1384,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 			if (!center) {
 				for (i = 0; i < P->n_colors; i++) {		/* For all z_low coordinates */
+					if (Ctrl->S.range && i > 0) continue;	/* Only annotate min color */
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
@@ -1395,6 +1402,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
 
 			for (i = 0; i < P->n_colors; i++) {
+				if (Ctrl->S.range && i > 0) continue;
 				xx = (reverse) ? xright - x1 : x1;
 				if (all || P->data[i].annot) {	/* Annotate this */
 					this_just = justify;
@@ -1726,6 +1734,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (!center) {
 				gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 				for (i = 0; i < P->n_colors; i++) {
+					if (Ctrl->S.range && i > 0) continue;
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
@@ -1743,8 +1752,9 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
 
 			for (i = 0; i < P->n_colors; i++) {
+				if (Ctrl->S.range && i > 0) continue;
 				xx = (reverse) ? xright - x1 : x1;
-				if (all || P->data[i].annot) {
+				if (all || P->data[i].annot || (Ctrl->S.range && i == 0)) {
 					this_just = justify;
 					do_annot = true;
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))

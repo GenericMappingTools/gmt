@@ -105,7 +105,8 @@ Geographic coordinates:
 Projected coordinates:
     These are Cartesian projected coordinates compatible with the chosen projection and are given in a length *unit*
     set via the **+u** modifier, (e.g., -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
-    on the projection center (0, 0). These coordinates are internally converted to the corresponding geographic
+    on the projection center (0, 0), shorthand: -R200/300+uk.
+    These coordinates are internally converted to the corresponding geographic
     (longitude, latitude) coordinates for the lower left and upper right corners. This form is convenient when you want
     to specify a region directly in the projected units (e.g., UTM meters). For allowable units, see Table
     :ref:`Distance units <tbl-distunits>`. **Note**: For the UTM, TM and Stereographic projections we will guess the
@@ -302,11 +303,28 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
    .. literalinclude:: /_verbatim/GMT_-B_linear.txt
 
+For axes with angles in radians you can also specify annotation, tick, and gridline
+intervals using multiples or fractions of :math:`\pi` (using *pi*)
+(e.g., as in Figure :ref:`Axis label <axis_radians_basemap>`)
+
+.. _axis_radians_basemap:
+
+.. figure:: /_images/GMT_-B_radians.*
+   :width: 500 px
+   :align: center
+
+   Linear Cartesian projection axis with annotations and ticks in radians.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_radians.txt
+
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
 One solution is to request slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`)
 via the **+a**\ *angle* modifier.
-
 
 .. _axis_slanted_basemap:
 

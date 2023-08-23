@@ -21,7 +21,8 @@ one of the following modifiers to any column or column range to transform the in
 - **+o** to add the given *offset* to the input values [default is 0].
 
 **Notes**: (1) The order of these optional transformations are (1) take log10, (2) scale or divide, and (3)
-add *offset*.  To read from a given column until the end of the record,
+add *offset*. Do not repeat operations: -i+d9+o8+o2+s3+d4 will be treated as -i+o2+d4.
+To read from a given column until the end of the record,
 leave off *stop* when specifying the column range. Normally,
 any trailing text will be read but when **-i** is used to specify specific input columns you must explicitly append the
 "column" **t** to retain the trailing text internally. To only ingest a single word from the trailing text, append
