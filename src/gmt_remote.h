@@ -35,7 +35,7 @@ struct GMT_RESOLUTION {	/* Struct to hold information about the various resoluti
 struct GMT_DATA_INFO {
 	int id;						/* Running number 0-(n-1) AFTER array is sorted */
 	bool used;					/* If true then do not repeat the attribution details */
-	char dir[GMT_LEN64];		/* Directory of file.  Here, / (root) means /export/gmtserver/gmt/data */
+	char dir[GMT_LEN64];		/* Directory of file.  Here, / (root) means /export/gmtserver/gmt/data (unless in candidate or test mode) */
 	char file[GMT_LEN64];		/* Full file (or tile directory) name. E.g., earth_relief_20m_g.grd or earth_relief_01m_g/ */
 	char ext[GMT_LEN8];			/* Data file extension. E.g., .grd, *tif, etc. */
 	char inc[GMT_LEN32];		/* Grid spacing in text format. E.g., 30m, 52.0732883317s */
@@ -67,8 +67,11 @@ enum GMT_tile_coverage {	/* Values in any tile coverage grid (e.g., srtm_tiles.n
 
 #define GMT_SRTM_ONLY	1	/* Mode so that when srtm_relief* is used we do not blend in earth_relief_15s */
 
-#define GMT_HASH_SERVER_FILE "gmt_hash_server.txt"
-#define GMT_INFO_SERVER_FILE "gmt_data_server.txt"
+#define GMT_HASH_SERVER_FILE		"gmt_hash_server.txt"
+#define GMT_INFO_SERVER_FILE		"gmt_data_server.txt"
+#define GMT_CANDIDATE_SERVER_NAME	"candidate"
+#define GMT_TEST_SERVER_NAME		"test"
+#define GMT_TEST_SERVER_DIR			"/reference"
 
 #define GMT_HASH_TIME_OUT		10L	/* Not waiting longer than this to time out on getting the hash file */
 #define GMT_CONNECT_TIME_OUT	10L	/* Not waiting longer than this to time out on getting a response from the server */
@@ -79,6 +82,6 @@ enum GMT_tile_coverage {	/* Values in any tile coverage grid (e.g., srtm_tiles.n
 #define GMT_TILE_EXTENSION_LOCAL_LEN	2U		/* Length of nc short int file extension */
 
 #define GMT_IMAGE_DPU_VALUE	300	/* 300 dots per inch */
-#define GMT_IMAGE_DPU_UNIT	'i'	/* 300 dpts per inch */
+#define GMT_IMAGE_DPU_UNIT	'i'	/* 300 dots per inch */
 
 #endif /* GMT_REMOTE_H */

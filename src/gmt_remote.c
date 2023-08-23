@@ -1848,6 +1848,7 @@ char *gmt_dataserver_url (struct GMTAPI_CTRL *API) {
 			snprintf (URL, GMT_LEN256-1, "http://%s", name);
 		else	/* Expand server name to full URL */
 			snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
+		if (API->GMT->session.test_run) strcat (URL, GMT_TEST_SERVER_DIR);	/* Running tests with data under this hidden directory */
 	}
 	else	/* Must use the URL as is */
 		snprintf (URL, GMT_LEN256-1, "%s", API->GMT->session.DATASERVER);

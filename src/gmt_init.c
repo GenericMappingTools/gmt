@@ -3588,8 +3588,14 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 	}
 
-	if ((this_c = getenv ("GMT_DATA_SERVER")) != NULL)		/* GMT_DATA_SERVER was set */
-		GMT->session.DATASERVER = strdup (this_c);
+	if ((this_c = getenv ("GMT_DATA_SERVER")) != NULL) {		/* GMT_DATA_SERVER was set */
+		if ((strcmp (this_c, GMT_TEST_SERVER_NAME) == 0)) {	/* Special case. Use candidate.generic-mapping-tools.org and set test_run */
+			GMT->session.DATASERVER = strdup (GMT_CANDIDATE_SERVER_NAME);
+			GMT->session.test_run = true;
+		}
+		else
+			GMT->session.DATASERVER = strdup (this_c);
+	}
 	else if ((this_c = getenv ("GMT_DATA_URL")) != NULL)		/* GMT_DATA_URL [deprecated in 6.0.0] was set */
 		GMT->session.DATASERVER = strdup (this_c);
 	else
@@ -11941,8 +11947,17 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 						break; /* stop here if string in place is equal */
 					gmt_M_str_free (GMT->session.DATASERVER);
 				}
-				/* Set session DATASERVER dir */
-				GMT->session.DATASERVER = strdup (value);
+				/* Set session DATASERVER URL */
+				if ((strcmp (value, GMT_TEST_SERVER_NAME) == 0)) {	/* Special case. Use candidate.generic-mapping-tools.org and set test_run */
+					GMT->session.DATASERVER = strdup (GMT_CANDIDATE_SERVER_NAME);
+					GMT->session.test_run = true;
+				}
+				else
+						GMT->session.DATASERVER = strdup (value);
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No server name given to GMT_DATA_SERVER.\n");
+				error = true;
 			}
 			break;
 
