@@ -71,7 +71,7 @@ enum GMT_tile_coverage {	/* Values in any tile coverage grid (e.g., srtm_tiles.n
 #define GMT_INFO_SERVER_FILE		"gmt_data_server.txt"
 #define GMT_CANDIDATE_SERVER_NAME	"candidate"
 #define GMT_TEST_SERVER_NAME		"test"
-#define GMT_TEST_SERVER_DIR			"/reference"
+#define GMT_TEST_SERVER_DIR		"/reference"
 
 #define GMT_HASH_TIME_OUT		10L	/* Not waiting longer than this to time out on getting the hash file */
 #define GMT_CONNECT_TIME_OUT	10L	/* Not waiting longer than this to time out on getting a response from the server */
