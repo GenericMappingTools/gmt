@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Bash script to install GMT dependencies on macOS via Homebrew
+# Bash script to install GMT dependencies on macOS via Homebrew and conda
 #
 # Environmental variables that can control the installation:
 #
@@ -17,12 +17,15 @@ PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
-packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript libomp"
+packages="ninja curl pcre2 netcdf gdal geos fftw libomp"
+conda_packages="ghostscript=9.56.1"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     packages+=" dvc pngquant"
+    conda_packages+=" sphinx"
 fi
+
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
     packages+=" dvc graphicsmagick"
@@ -37,10 +40,9 @@ fi
 #brew update
 brew install ${packages}
 
-if [ "$BUILD_DOCS" = "true" ]; then
-    pip3 install --user sphinx
-    # Add sphinx to PATH
-    echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
-fi
+# Install packages via conda
+conda update -n base -c defaults conda
+conda install ${conda_packages} -c conda-forge
+echo "${CONDA}/bin" >> $GITHUB_PATH
 
 set +x +e
