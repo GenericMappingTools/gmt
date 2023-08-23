@@ -2039,7 +2039,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		T = C->table[0];	/* Only one input file so only one table */
 		count = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
-		ID = Ctrl->N.ID - 1;	/* May be overridden below */
+		ID = Ctrl->N.ID - 1;	/* May be overridden below by header info, otherwise will be incremented to 0 (or whatever +p set) */
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			SH = gmt_get_DS_hidden (S2);
