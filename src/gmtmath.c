@@ -234,6 +234,26 @@ GMT_LOCAL int gmtmath_load_column (struct GMT_DATASET *to, uint64_t to_col, stru
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL void gmtmath_load_text (struct GMT_DATASET *to, struct GMT_DATASET *from) {
+	/* Copies trailing text from all input segments to all output segments */
+	uint64_t tbl, seg, row;
+	char **Tf = NULL, **Tt = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (to);
+	if (from->type != GMT_READ_MIXED) return;	/* No text in this one */
+	for (tbl = 0; tbl < from->n_tables; tbl++) {
+		for (seg = 0; seg < from->table[tbl]->n_segments; seg++) {
+			struct GMT_DATASEGMENT *Sf = from->table[tbl]->segment[seg];
+			struct GMT_DATASEGMENT *St = to->table[tbl]->segment[seg];
+			if ((Tf = Sf->text) == NULL) continue;	/* No text in this segment */
+			if ((Tt = St->text) == NULL) continue;	/* Safety valve for duplicating in to NULL array */
+			for (row = 0; row < Sf->n_rows; row++)
+				if (!Tt[row]) Tt[row] = strdup (Tf[row]);	/* Only duplicate if not set already */
+			SH = gmt_get_DS_hidden (St);
+			SH->alloc_mode_text = GMT_ALLOC_INTERNALLY;	/* So we may delete the text we allocated */
+		}
+	}
+}
+
 /* ---------------------- start convenience functions --------------------- */
 
 GMT_LOCAL int gmtmath_solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file, bool svd, double eigen_min, struct GMT_OPTION *options, struct GMT_DATASET *A) {
@@ -7003,6 +7023,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 			R = Template;
 			template_used = true;
 		}
+		gmtmath_load_text (R, Template);	/* Duplicate any trailing text from input to output */
 		DH = gmt_get_DD_hidden (R);
 		if (dimension && Ctrl->Q.active) {	/* Encountered dimensioned items on the command line, and want return in selected units */
 			R->table[0]->segment[0]->data[0][0] *= GMT->session.u2u[GMT_INCH][Ctrl->Q.unit];
@@ -7011,7 +7032,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 			gmtmath_load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */
 			gmt_set_tbl_minmax (GMT, R->geometry, R->table[0]);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)R->n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);	/* Since -bo might have been used */
+		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)R->n_columns, GMT_COL_FIX)) != GMT_NOERROR) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record per segment */
 			uint64_t row, c;
 			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columns below */
