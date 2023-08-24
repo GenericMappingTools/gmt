@@ -558,6 +558,12 @@ the unit is in inches squared and scaling by 2.54 once will give 0.3937 inch tim
 Thus, conversions only work for linear unit calculations, such as gmt math -Qp 1c 0.5i ADD =, which
 will return the result as 64.34 points.
 
+Trailing Text
+-------------
+
+Any trailing text in the first input file will be passed to the output data set.  You can turn off the
+output of text with **-on**.
+
 Examples
 --------
 
