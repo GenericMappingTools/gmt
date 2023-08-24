@@ -49,10 +49,11 @@ colors) we will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
 setting the option |-I|. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
-widths. The font used for the annotations along the scale and optional
-units is specified by :term:`FONT_ANNOT_PRIMARY`.
-If a label is requested, it is plotted with :term:`FONT_LABEL`. For
-a full overview of CPTs, see the Cookbook section on :ref:`Color palette tables <CPT_section>`.
+widths. The font used for the annotations along the scale is specified by
+:term:`FONT_ANNOT_PRIMARY` while any unit placed at the side of the
+bar is controlled by :term:`FONT_ANNOT_SECONDARY`. If a label along the bar
+is requested, it is plotted with :term:`FONT_LABEL`. For a full overview of CPTs,
+see the Cookbook section on :ref:`Color palette tables <CPT_section>`.
 
 .. figure:: /_images/GMT_colorbar.*
    :width: 500 px
