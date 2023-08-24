@@ -561,8 +561,8 @@ will return the result as 64.34 points.
 Trailing Text
 -------------
 
-Any trialing text in the first input file will be passed to the output data set.  You can turn off the
-output of text with |-o|\ **n**.
+Any trailing text in the first input file will be passed to the output data set.  You can turn off the
+output of text with **-on**.
 
 Examples
 --------
