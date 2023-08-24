@@ -238,7 +238,7 @@ GMT_LOCAL void gmtmath_load_text (struct GMT_DATASET *to, struct GMT_DATASET *fr
 	/* Copies trailing text from all input segments to all output segments */
 	uint64_t tbl, seg, row;
 	char **Tf = NULL, **Tt = NULL;
-	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (to);
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	if (from->type != GMT_READ_MIXED) return;	/* No text in this one */
 	for (tbl = 0; tbl < from->n_tables; tbl++) {
 		for (seg = 0; seg < from->table[tbl]->n_segments; seg++) {
