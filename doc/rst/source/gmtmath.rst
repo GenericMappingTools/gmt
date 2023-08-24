@@ -562,7 +562,7 @@ Trailing Text
 -------------
 
 Any trialing text in the first input file will be passed to the output data set.  You can turn off the
-output of text with |-o|\ **nn**.
+output of text with |-o|\ **n**.
 
 Examples
 --------
