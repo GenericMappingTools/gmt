@@ -154,7 +154,7 @@ Optional Arguments
     points, as determined by :term:`PROJ_LENGTH_UNIT`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
-    within the segments endpoints [Default considers points "beyond" the
+    within the segment's endpoints [Default considers points "beyond" the
     line's endpoints].
 
 .. _-N:
