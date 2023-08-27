@@ -155,7 +155,7 @@ Optional Arguments
     distances are compared to *dist*. Append **+p** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
     within the segments endpoints [Default considers points "beyond" the
-    line's endpoints.
+    line's endpoints].
 
 .. _-N:
 
