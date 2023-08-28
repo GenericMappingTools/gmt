@@ -285,7 +285,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *value*\|\ *file*\ [**+t**\|\ **T**]
-    Instead of specifying a symbol or polygon fill and outline color via |-G| and |-W|,
+    Instead of specifying a line or polygon fill and outline color via |-G| and |-W|,
     give both a *value* via |-Z| and a color lookup table via |-C|.  Alternatively,
     give the name of a *file* with one z-value (read from the last column) for each polygon
     or line in the input data. To apply the color obtained to a fill, use **-G+z**; to
