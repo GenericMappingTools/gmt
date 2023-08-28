@@ -2414,7 +2414,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 			else	/* Decorated or quoted lines */
 				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
-				//GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for selected feature. Option -l ignored.\n");
 		}
 
 		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
