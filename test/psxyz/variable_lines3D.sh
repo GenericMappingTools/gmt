@@ -25,7 +25,7 @@ cat << EOF > t.txt
 3	2	1
 4	3	0
 EOF
-gmt begin variable_lines ps
+gmt begin variable_lines3D ps
 	gmt makecpt -T0/10 -Cjet
 	gmt subplot begin 2x2 -Fs8c -R-1/5/-1/5/0/2
 	# Constant red lines
