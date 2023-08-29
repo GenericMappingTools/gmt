@@ -798,7 +798,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (Ctrl->C.active ) {
 			if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 				Return (API->error);
-				get_rgb = not_line;	/* Need to assign color from either z or text from input data file */
+			}
+			get_rgb = not_line;	/* Need to assign color from either z or text from input data file */
 		}
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
 			if (Ctrl->Z.file) {
