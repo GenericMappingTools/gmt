@@ -511,7 +511,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|r|t|x|y]] [%s] [-C<cpt>] [-D<dx>/<dy>] [%s] [-F%s] [-G<fill>|+z] "
 		"[-H[<scale>]] [-I[<intens>]] %s[%s] [-N[c|r]] %s%s [-S[<symbol>][<size>]]%s [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
-		"[-Z<value>|<file>[+f|l]] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-Z<value>|<file>[+t|T]] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, PSXY_E_OPT, GMT_SEGMENTIZE3, API->K_OPT, PLOT_L_OPT, API->O_OPT, API->P_OPT,
 		T[API->GMT->current.setting.run_mode], GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT,
@@ -706,8 +706,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", NULL, 15);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
-	GMT_Usage (API, 1, "\n-Z<value>");
-	GMT_Usage (API, -2, "Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. ");
+	GMT_Usage (API, 1, "\n-Z<value>|<file>[+t|T]");
+	GMT_Usage (API, -2, "Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. "
+		"Use <file> to get per-line or polygon <values>. Two modifiers can also be used: ");
+	GMT_Usage (API, 3, "+t Expect transparency (0-100%%) instead of z-value in the last column of <file>.");
+	GMT_Usage (API, 3, "+T Expect both transparency (0-100%%) and z-value in last two columns of <file>.");
+	GMT_Usage (API, -2, "Control if the outline or fill (for polygons only) are affected: ");
 	GMT_Usage (API, 3, "%s To use <color> for fill, also select -G+z. ", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s To use <color> for an outline pen, also select -W<pen>+z.", GMT_LINE_BULLET);
 	GMT_Option (API, "a,bi");
