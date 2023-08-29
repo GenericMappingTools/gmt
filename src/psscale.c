@@ -815,7 +815,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	double hor_annot_width, annot_off, label_off = 0.0, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
 	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], prev_del_z, this_del_z = 0.0, yt = 0.0;
 	double length = Ctrl->D.dim[GMT_X], width = Ctrl->D.dim[GMT_Y], gap = Ctrl->L.spacing, t_len, max_intens[2], xp[4], yp[4];
-	double *xpos = NULL, elength[2] = {0.0, 0.0}, t_angle, transp[2] = {0.0, 0.0};
+	double *xpos = NULL, elength[2] = {0.0, 0.0}, t_angle, transp[2] = {0.0, 0.0}, scale_down = 1.0;
 	struct GMT_FILL *f = NULL;
 	struct GMT_PLOT_AXIS *A = NULL;
 	struct GMT_MAP_PANEL *panel = Ctrl->F.panel;	/* Shorthand */
@@ -1002,6 +1002,21 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		}
 	}
 
+	/* Scale parameters to ratio of color bar length to max map dimension */
+	scale_down = sqrt (MAX (Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]) / (15.0 / 2.54));
+	GMT->current.setting.font_annot[GMT_PRIMARY].size *= scale_down;
+	GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale_down;
+	GMT->current.setting.font_label.size *= scale_down;
+	GMT->current.setting.map_frame_pen.width *= scale_down;
+	GMT->current.setting.map_tick_pen[GMT_PRIMARY].width *= scale_down;
+	GMT->current.setting.map_tick_pen[GMT_SECONDARY].width *= scale_down;
+	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] *= scale_down;
+	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] *= scale_down;
+	GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale_down;
+	GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale_down;
+	GMT->current.setting.map_label_offset[GMT_X] *= scale_down;
+	GMT->current.setting.map_label_offset[GMT_Y] *= scale_down;
+	fprintf (stderr, "scale-down = %lg\n", scale_down);
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 
