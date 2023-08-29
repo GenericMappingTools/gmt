@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v3.6.0
 
       - name: Setup vcpkg (Windows)
         uses: dawidd6/action-download-artifact@v2.27.0
