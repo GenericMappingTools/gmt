@@ -272,8 +272,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 									GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
 									n_errors++;
 								}
-								else
-									Ctrl->T.dmode = gmt_get_distance (GMT, txt_a, &(Ctrl->T.par[1]), &(Ctrl->T.unit));
+								else {
+									if (txt_a[0] == '-') {
+										GMT_Report (API, GMT_MSG_ERROR, "Negative distance given to -Tt (%s)\n", &opt->arg[1]);
+										n_errors++;
+									}
+									else
+										Ctrl->T.dmode = gmt_get_distance (GMT, txt_a, &(Ctrl->T.par[1]), &(Ctrl->T.unit));
+								}
 							}
 							else if (strchr (GMT_LEN_UNITS, opt->arg[1])) {	/* Gave the unit of the data in column 3 */
 								Ctrl->T.unit = opt->arg[1];
@@ -498,7 +504,7 @@ GMT_LOCAL double gmtvector_dist_to_degree (struct GMT_CTRL *GMT, double d_in) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
-	unsigned int tbl, error = 0, k, n, n_in, n_components, n_out, add_cols = 0, geo;
+	unsigned int tbl, error = 0, k, n, n_in, n_components, n_out, add_cols = 0, geo, n_for_output = 0;
 	bool single = false, convert;
 
 	uint64_t row, seg;
@@ -707,6 +713,10 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 						break;
 					case DO_TRANSLATE:	/* Return translated points moved a distance d in the direction of azimuth  */
 						if (Ctrl->T.a_and_d) {	/* Get azimuth and distance from input file */
+							if (Sin->data[3][row] < 0.0) {
+								GMT_Report (API, GMT_MSG_WARNING, "Some input data records have negative distances - skipped\n");
+								continue;
+							}
 							Ctrl->T.par[0] = Sin->data[2][row];
 							if (geo)
 								Ctrl->T.par[1] = (Ctrl->T.dmode == GMT_GREATCIRCLE) ? gmtvector_dist_to_degree (GMT, Sin->data[3][row]) : gmtvector_dist_to_meter (GMT, Sin->data[3][row]);	/* Make sure we have degrees or meters for calculations */
@@ -742,6 +752,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 					}
 				}
 				for (k = 0; k < n_out; k++) Sout->data[k][row] = out[k];
+				n_for_output++;
 			}
 		}
 	}
@@ -750,11 +761,13 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 
 	/* Time to write out the results */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		Return (API->error);
-	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
-		Return (API->error);
+	if (n_for_output) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 	if (single && GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
 		Return (API->error);

@@ -119,7 +119,7 @@ Optional Arguments
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **R** will instead rotate the fixed secondary vector
     by the rotations implied by the input records, **t** to translate
-    the input point by *distance* in the *azimuth* direction (append *azimuth*/*distance*\ [*unit*]
+    the input point by a positive *distance* in the *azimuth* direction (append *azimuth*/*distance*\ [*unit*]
     for the same translation for all input points, or just append
     *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
     from the third and fourth data column in the file, and **x** for cross-product.
