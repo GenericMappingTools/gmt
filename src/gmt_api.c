@@ -890,13 +890,14 @@ GMT_LOCAL int gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION
 	struct GMT_OPTION *opt;
 
 	for (opt = head; opt; opt = opt->next) {
-        if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;  /* Skip file names */
-        if (opt->next == NULL || opt->next->option != GMT_OPT_INFILE) continue;  /* Skip arg not followed by file names (we expect -png map, for instance) */
+		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;  /* Skip file names */
+		if (opt->next == NULL || opt->next->option != GMT_OPT_INFILE) continue;  /* Skip arg not followed by file names (we expect -png map, for instance) */
 		if (strchr (gmt_session_codestr, opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format */
 		if ((len = strlen (opt->arg)) == 0 || len >= GMT_GRAPHIC_MAXLEN) continue;	/* No arg or too long args that are filenames can be skipped */
-        if (opt->option == 'b' && strchr ("df", opt->arg[0])) continue;   /* Ignore [-bd|f] */
-        if (opt->option == 'b' && strchr ("io", opt->arg[0]) && strchr ("df", opt->arg[1])) continue;   /* Ignore -[b][io][d|f]] */
-        if (strchr ("bdhq", opt->option) && strchr ("io", opt->arg[0]) && (opt->arg[1] == '\0' || isdigit (opt->arg[1]))) continue;   /* Ignore -[bdhq][io][<n>]] */
+		if (opt->option == 'b' && strchr ("df", opt->arg[0])) continue;   /* Ignore [-bd|f] */
+		if (opt->option == 'b' && strchr ("io", opt->arg[0]) && strchr ("df", opt->arg[1])) continue;   /* Ignore -[b][io][d|f]] */
+		if (opt->option == 'j' && len == 1 && strchr ("efg", opt->arg[0])) continue;   /* Ignore -je|f|g */
+		if (strchr ("bdhq", opt->option) && strchr ("io", opt->arg[0]) && (opt->arg[1] == '\0' || isdigit (opt->arg[1]))) continue;   /* Ignore -[bdhq][io][<n>]] */
 		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
 		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
 		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
