@@ -152,7 +152,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"rotate the fixed secondary vector (see -S) using the input rotations.");
 	GMT_Usage (API, 3, "t: Translate input vectors to points a distance <dist> away in the azimuth <azim>. "
 		"Append <azim>/<dist> for a fixed set of azimuth and distance for all points, "
-		"otherwise we expect to read <azim>, <dist> from the input file; append a unit [e]");
+		"otherwise we expect to read <azim>, <dist> from the input file; append a unit [e]. "
+		"A negative distance implies a flip of 180 degrees.;");
 	GMT_Usage (API, 3, "x: Compute cross-product(s) with secondary vector (see -S).");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 2 [or 3; see -C, -fg] input columns.");
@@ -269,16 +270,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 						if (opt->arg[1]) {	/* Gave azimuth/distance[<unit>] or just <unit> */
 							if (strchr (opt->arg, '/')) {	/* Gave a fixed azimuth/distance[<unit>] combination */
 								if ((n = sscanf (&opt->arg[1], "%lg/%s", &Ctrl->T.par[0], txt_a)) != 2) {
-									GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
+									GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tt (%s)\n", &opt->arg[1]);
 									n_errors++;
 								}
 								else {
-									if (txt_a[0] == '-') {
-										GMT_Report (API, GMT_MSG_ERROR, "Negative distance given to -Tt (%s)\n", &opt->arg[1]);
-										n_errors++;
+									unsigned int k = 0;
+									if (txt_a[0] == '-') {	/* Skip leading sign and flip vector) */
+										k = 1;
+										Ctrl->T.par[0] += 180.0;
 									}
-									else
-										Ctrl->T.dmode = gmt_get_distance (GMT, txt_a, &(Ctrl->T.par[1]), &(Ctrl->T.unit));
+									Ctrl->T.dmode = gmt_get_distance (GMT, &txt_a[k], &(Ctrl->T.par[1]), &(Ctrl->T.unit));
 								}
 							}
 							else if (strchr (GMT_LEN_UNITS, opt->arg[1])) {	/* Gave the unit of the data in column 3 */
@@ -713,9 +714,9 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 						break;
 					case DO_TRANSLATE:	/* Return translated points moved a distance d in the direction of azimuth  */
 						if (Ctrl->T.a_and_d) {	/* Get azimuth and distance from input file */
-							if (Sin->data[3][row] < 0.0) {
-								GMT_Report (API, GMT_MSG_WARNING, "Some input data records have negative distances - skipped\n");
-								continue;
+							if (Sin->data[3][row] < 0.0) {	/* FLip the vector 180 */
+								Sin->data[3][row] = fabs (Sin->data[3][row]);
+								Ctrl->T.par[0] = Sin->data[2][row] + 180.0;
 							}
 							Ctrl->T.par[0] = Sin->data[2][row];
 							if (geo)

@@ -119,14 +119,15 @@ Optional Arguments
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **R** will instead rotate the fixed secondary vector
     by the rotations implied by the input records, **t** to translate
-    the input point by a positive *distance* in the *azimuth* direction (append *azimuth*/*distance*\ [*unit*]
+    the input point by a *distance* in the *azimuth* direction (append *azimuth*/*distance*\ [*unit*]
     for the same translation for all input points, or just append
     *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
     from the third and fourth data column in the file, and **x** for cross-product.
     If |-T| is not given then no transformation takes place; the
     output is determined by other options such as |-A|, |-C|,
-    |-E|, and |-N|. **Note**: For **-Tt** and geographic coordinates we will
-    perform a great circle calculation unless **-je** is selected.
+    |-E|, and |-N|. **Notes**: (1) For **-Tt** and geographic coordinates we will
+    perform a great circle calculation unless **-je** is selected; (2) if a distance
+    is negative then we remove the sign and add 180 degrees to the azimuth.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
