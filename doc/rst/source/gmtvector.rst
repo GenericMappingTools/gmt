@@ -126,7 +126,7 @@ Optional Arguments
     If |-T| is not given then no transformation takes place; the
     output is determined by other options such as |-A|, |-C|,
     |-E|, and |-N|. **Notes**: (1) For **-Tt** and geographic coordinates we will
-    perform a great circle calculation unless **-je** is selected; (2) if a distance
+    perform a great circle calculation unless **-je** or **-jf** is selected; (2) if a distance
     is negative then we remove the sign and add 180 degrees to the azimuth.
 
 .. |Add_-V| replace:: |Add_-V_links|
