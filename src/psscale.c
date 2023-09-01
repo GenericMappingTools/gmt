@@ -868,7 +868,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		bool do_last_lower = (P->n_colors == 1 || !Ctrl->S.range);	/* Make sure to annotate the lower bounds of a single slice and not if -S+r */
 		for (i = 0; i < P->n_colors; i++) {
 			if (Ctrl->S.range && (i > 0 && i < (P->n_colors - 1))) continue;
-			do_this_lower = (i == (P->n_colors - 1)) ? do_last_lower : true; 
+			do_this_lower = (i == (P->n_colors - 1)) ? do_last_lower : true;
 			if (P->data[i].label) n_use_labels++;
 			if (P->data[i].annot & GMT_CPT_L_ANNOT && do_this_lower) {
 				z = P->data[i].z_low;
@@ -1016,7 +1016,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale_down;
 	GMT->current.setting.map_label_offset[GMT_X] *= scale_down;
 	GMT->current.setting.map_label_offset[GMT_Y] *= scale_down;
-	fprintf (stderr, "scale-down = %lg\n", scale_down);
+
+	GMT_Report (API, GMT_MSG_DEBUG, "scale-down = %lg\n", scale_down);
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 
