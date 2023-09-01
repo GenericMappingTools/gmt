@@ -1016,7 +1016,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale_down;
 	GMT->current.setting.map_label_offset[GMT_X] *= scale_down;
 	GMT->current.setting.map_label_offset[GMT_Y] *= scale_down;
-	fprintf (stderr, "scale-down = %lg\n", scale_down);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar parameters scaled by ^lg\n", scale_down);
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 
