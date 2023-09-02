@@ -919,14 +919,14 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				/* If option -A is used, use the alternate position */
 
 				if (Ctrl->A.active) {
-					if (Ctrl->A.mode == SEIS_CART_OFFSET || fabs (xynew[GMT_X]) > SEIS_EPSILON || fabs (xynew[GMT_Y]) > SEIS_EPSILON) {
+					if (Ctrl->A.mode || fabs (xynew[GMT_X]) > SEIS_EPSILON || fabs (xynew[GMT_Y]) > SEIS_EPSILON) {
 						current_pen = Ctrl->A.pen;
 						if (Ctrl->H.active) {
 							double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 							gmt_scale_pen (GMT, &current_pen, scl);
 						}
 						gmt_setpen (GMT, &current_pen);
-						if (Ctrl->A.mode == SEIS_CART_OFFSET) {	/* Got Cartesian dx and dy in plot units */
+						if (Ctrl->A.mode) {	/* Got Cartesian dx and dy in plot units */
 							plot_xnew = plot_x + Ctrl->A.off[GMT_X];
 							plot_ynew = plot_y + Ctrl->A.off[GMT_Y];
 						}
