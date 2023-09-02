@@ -27,37 +27,33 @@
 #include <stdio.h>
 #include <math.h>
 
-#define EPSIL 0.0001
+#include "seis_defaults.h"
 
-#define SEIS_MAG_REFERENCE 5.0			/* Reference magnitude for -S */
-#define SEIS_MOMENT_MANT_REFERENCE 4.0	/* Mantissa for reference moment for -S */
-#define SEIS_MOMENT_EXP_REFERENCE 23	/* Exponent for reference moment for -S */
-
-#define SEIS_GEO_COORDINATES	0	/* Default coordinate type in optional|trailing text */
-#define SEIS_CART_COORDINATES	1	/* Cartesian plot coordinates in optional|trailing text */
-#define SEIS_CART_OFFSET	2	/* Cartesian plot offset in optional|trailing text */
-#define SEIS_CART_OFFSET_FIX	3	/* Same, but given as fixed offset with +o on option line */
-
-/* Default font, offset, and symbol sizes */
-#define DEFAULT_FONTSIZE		9.0		/* In points */
-#define DEFAULT_OFFSET			3.0		/* In points */
-#define DEFAULT_SYMBOL_SIZE		6.0		/* In points */
+#define SEIS_EPSILON 0.0001
 
 /* Reading mode values for different formats */
-#define READ_CMT	0
-#define READ_AKI	1
-#define READ_PLANES	2
-#define READ_AXIS	4
-#define READ_TENSOR	8
+#define SEIS_READ_CMT	0
+#define SEIS_READ_AKI	1
+#define SEIS_READ_PLANES	2
+#define SEIS_READ_AXIS	4
+#define SEIS_READ_TENSOR	8
 
-#define PLOT_DC		1
-#define PLOT_AXIS	2
-#define PLOT_TRACE	4
-#define PLOT_TENSOR	8
+#define SEIS_PLOT_DC		1
+#define SEIS_PLOT_AXIS	2
+#define SEIS_PLOT_TRACE	4
+#define SEIS_PLOT_TENSOR	8
+
+#define SEIS_CART_OFFSET	1	/* Cartesian plot offset in optional|trailing text */
+#define SEIS_CART_OFFSET_FIX	2	/* Same, but given as fixed offset with +o on option line */
 
 #define squared(x) ((x) * (x))
 
-#define SEIS_LINE_SYNTAX	"[+c][+o[<dx>/<dy>]][+p<pen>][+s<size>]"
+#define SEIS_LINE_SYNTAX	"[+o[<dx>/<dy>]][+p<pen>][+s<size>]"
+
+enum Seis_scaletype {
+	SEIS_READ_SCALE		= 0,
+	SEIS_CONST_SCALE	= 1
+};
 
 struct SEIS_OFFSET_LINE { 
 	bool active;
@@ -67,7 +63,7 @@ struct SEIS_OFFSET_LINE {
 	struct GMT_PEN pen;	/* Pen parameters controlling the line */
 };
 
-struct AXIS {
+struct SEIS_AXIS {
 	double str;
 	double dip;
 	double val;
@@ -75,29 +71,29 @@ struct AXIS {
 };
 /* val in 10**e dynes-cm */
 
-struct MOMENT {
+struct SEIS_MOMENT {
 	double mant;
 	int exponent;
 };
 
-struct nodal_plane {
+struct SEIS_NODAL_PLANE {
 	double str;
 	double dip;
 	double rake;
 };
 
-struct MECHANISM {
-	struct nodal_plane NP1;
-	struct nodal_plane NP2;
-	struct MOMENT moment;
+struct SEIS_MECHANISM {
+	struct SEIS_NODAL_PLANE NP1;
+	struct SEIS_NODAL_PLANE NP2;
+	struct SEIS_MOMENT moment;
 	double magms;
 };
 
-struct M_TENSOR {
+struct SEIS_M_TENSOR {
 	int expo;
 	double f[6];
 };
 /* mrr mtt mff mrt mrf mtf in 10**expo dynes-cm */
 
-typedef struct MOMENT st_mo;
-typedef struct MECHANISM st_me;
+typedef struct SEIS_MOMENT st_mo;
+typedef struct SEIS_MECHANISM st_me;

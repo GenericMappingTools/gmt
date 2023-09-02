@@ -150,7 +150,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 
 	int i;
 
-	struct AXIS N_axis;
+	struct SEIS_AXIS N_axis;
 
 	/* compute null axis strike and dip */
 	N_axis.dip = utilmeca_null_axis_dip (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip);
@@ -166,14 +166,14 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 	PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
 
 	gmt_setfill (GMT, F, outline);
-	if (fabs (pos_NP1_NP2) < EPSIL) {
+	if (fabs (pos_NP1_NP2) < SEIS_EPSILON) {
 		/* pure normal or inverse fault (null axis strike is determined
 		   with + or - 180 degrees. */
  		/* first nodal plane part */
 		i = 0;
 		increment = 1.0;
 		str = meca.NP1.str;
-		while (str <= meca.NP1.str + 180. + EPSIL) {
+		while (str <= meca.NP1.str + 180. + SEIS_EPSILON) {
 			radius = utilmeca_proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
@@ -184,7 +184,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		if (fault == -1) {
 			/* normal fault, close first compressing part */
 			str = meca.NP1.str + 180.;
-			while (str >= meca.NP1.str - EPSIL) {
+			while (str >= meca.NP1.str - SEIS_EPSILON) {
 				sincosd (str, &si, &co);
 				x[i] = x0 + si * radius_size;
 				y[i] = y0 + co * radius_size;
@@ -196,7 +196,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		}
 		/* second nodal plane part */
 		str = meca.NP2.str;
-		while (str <= meca.NP2.str + 180. + EPSIL) {
+		while (str <= meca.NP2.str + 180. + SEIS_EPSILON) {
 			radius = utilmeca_proj_radius (meca.NP2.str, meca.NP2.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
@@ -207,7 +207,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		if (fault == -1) {
 			/* normal fault, close second compressing part */
 			str = meca.NP2.str + 180.;
-			while (str >= meca.NP2.str - EPSIL) {
+			while (str >= meca.NP2.str - SEIS_EPSILON) {
 				sincosd (str, &si, &co);
 				x[i] = x0 + si * radius_size;
 				y[i] = y0 + co * radius_size;
@@ -218,9 +218,9 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		PSL_plotpolygon (PSL, x, y, i);
 	}
 	/* pure strike-slip */
-	else if (fabs (90. - N_axis.dip) < EPSIL) {
+	else if (fabs (90. - N_axis.dip) < SEIS_EPSILON) {
 
-		increment = (fabs(meca.NP1.rake) < EPSIL) ? -1.0 : 1.0;
+		increment = (fabs(meca.NP1.rake) < SEIS_EPSILON) ? -1.0 : 1.0;
 		/* first compressing part */
 		for (i = 0; i <= 90; i++) {
 			str = meca.NP1.str - 90.0 + i * increment;
@@ -251,7 +251,7 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		increment = 1.;
 		if (meca.NP1.str > N_axis.str) meca.NP1.str -= 360.;
 		str = meca.NP1.str;
-		while (fabs (90. - meca.NP1.dip) < EPSIL ? str <= meca.NP1.str + EPSIL : str <= N_axis.str + EPSIL) {
+		while (fabs (90. - meca.NP1.dip) < SEIS_EPSILON ? str <= meca.NP1.str + SEIS_EPSILON : str <= N_axis.str + SEIS_EPSILON) {
 			radius = utilmeca_proj_radius (meca.NP1.str, meca.NP1.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
@@ -264,9 +264,9 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		meca.NP2.str += (1 + fault) * 90.;
 		if (meca.NP2.str >= 360.) meca.NP2.str -= 360.;
 		increment = fault;
-		if (fault * (meca.NP2.str - N_axis.str) < -EPSIL) meca.NP2.str += fault * 360.;
-		str = fabs (90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
-		while (increment > 0. ? str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
+		if (fault * (meca.NP2.str - N_axis.str) < -SEIS_EPSILON) meca.NP2.str += fault * 360.;
+		str = fabs (90. - meca.NP2.dip) < SEIS_EPSILON ? meca.NP2.str : N_axis.str;
+		while (increment > 0. ? str <= meca.NP2.str + SEIS_EPSILON : str >= meca.NP2.str - SEIS_EPSILON) {
 			radius = utilmeca_proj_radius (meca.NP2.str - (1 + fault) * 90., meca.NP2.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
@@ -279,9 +279,9 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		meca.NP1.str = meca_zero_360(meca.NP1.str);
 		meca.NP2.str = meca_zero_360(meca.NP2.str);
 		increment = pos_NP1_NP2 >= 0. ? -fault : fault;
-		if (increment * (meca.NP1.str - meca.NP2.str) < - EPSIL) meca.NP1.str += increment * 360.;
+		if (increment * (meca.NP1.str - meca.NP2.str) < - SEIS_EPSILON) meca.NP1.str += increment * 360.;
 		str = meca.NP2.str;
-		while (increment > 0. ? str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
+		while (increment > 0. ? str <= meca.NP1.str + SEIS_EPSILON : str >= meca.NP1.str - SEIS_EPSILON) {
 			sincosd (str, &si, &co);
 			x[i] = x0 + si * radius_size;
 			y[i] = y0 + co * radius_size;
@@ -294,10 +294,10 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		/* first nodal plane till null axis */
 		i = 0;
 		meca.NP1.str = meca_zero_360 (meca.NP1.str + 180.);
-		if (meca.NP1.str - N_axis.str < - EPSIL) meca.NP1.str += 360.;
+		if (meca.NP1.str - N_axis.str < - SEIS_EPSILON) meca.NP1.str += 360.;
 		increment = -1.;
 		str = meca.NP1.str;
-		while (fabs (90. - meca.NP1.dip) < EPSIL ? str >= meca.NP1.str -EPSIL : str >= N_axis.str - EPSIL) {
+		while (fabs (90. - meca.NP1.dip) < SEIS_EPSILON ? str >= meca.NP1.str -SEIS_EPSILON : str >= N_axis.str - SEIS_EPSILON) {
 			radius = utilmeca_proj_radius (meca.NP1.str - 180., meca.NP1.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
@@ -309,9 +309,9 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		/* second nodal plane from null axis */
 		meca.NP2.str = meca_zero_360(meca.NP2.str + 180.);
 		increment = -fault;
-		if (fault * (N_axis.str - meca.NP2.str) < - EPSIL) meca.NP2.str -= fault * 360.;
-		str = fabs (90. - meca.NP2.dip) < EPSIL ? meca.NP2.str : N_axis.str;
-		while (increment > 0. ? str <= meca.NP2.str + EPSIL : str >= meca.NP2.str - EPSIL) {
+		if (fault * (N_axis.str - meca.NP2.str) < - SEIS_EPSILON) meca.NP2.str -= fault * 360.;
+		str = fabs (90. - meca.NP2.dip) < SEIS_EPSILON ? meca.NP2.str : N_axis.str;
+		while (increment > 0. ? str <= meca.NP2.str + SEIS_EPSILON : str >= meca.NP2.str - SEIS_EPSILON) {
 			radius = utilmeca_proj_radius (meca.NP2.str - (1 - fault) * 90., meca.NP2.dip, str) * radius_size;
 			sincosd (str, &si, &co);
 			x[i] = x0 + radius * si;
@@ -324,9 +324,9 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 		meca.NP1.str = meca_zero_360(meca.NP1.str);
 		meca.NP2.str = meca_zero_360(meca.NP2.str);
 		increment = pos_NP1_NP2 >= 0. ? -fault : fault;
-		if (increment * (meca.NP1.str - meca.NP2.str) < - EPSIL) meca.NP1.str += increment * 360.;
+		if (increment * (meca.NP1.str - meca.NP2.str) < - SEIS_EPSILON) meca.NP1.str += increment * 360.;
 		str = meca.NP2.str;
-		while (increment > 0. ? str <= meca.NP1.str + EPSIL : str >= meca.NP1.str - EPSIL) {
+		while (increment > 0. ? str <= meca.NP1.str + SEIS_EPSILON : str >= meca.NP1.str - SEIS_EPSILON) {
 			sincosd (str, &si, &co);
 			x[i] = x0 + si * radius_size;
 			y[i] = y0 + co * radius_size;
@@ -394,7 +394,7 @@ double meca_zero_360 (double str) {
 }
 
 /**********************************************************************/
-double meca_computed_mw (struct MOMENT moment, double ms) {
+double meca_computed_mw (struct SEIS_MOMENT moment, double ms) {
 	/* Compute mw-magnitude from seismic moment or MS magnitude. */
 
 	/* Genevieve Patau from
@@ -414,7 +414,7 @@ double meca_computed_mw (struct MOMENT moment, double ms) {
 }
 
 /*********************************************************************/
-static double utilmeca_computed_strike1 (struct nodal_plane NP1) {
+static double utilmeca_computed_strike1 (struct SEIS_NODAL_PLANE NP1) {
 	/*
 	   Compute the strike of the second nodal plane when are given
 	   strike, dip and rake for the first nodal plane with AKI & RICHARD's
@@ -428,7 +428,7 @@ static double utilmeca_computed_strike1 (struct nodal_plane NP1) {
 
 	sincosd (NP1.rake, &sr, &cr);
 	sincosd (NP1.str, &ss, &cs);
-	if (cd1 < EPSIL && fabs (cr) < EPSIL) {
+	if (cd1 < SEIS_EPSILON && fabs (cr) < SEIS_EPSILON) {
 #if 0
 		GMT_Report (API, GMT_MSG_DEBUG, "\nThe second plane is horizontal;");
 		GMT_Report (API, GMT_MSG_DEBUG, "\nStrike is undetermined.");
@@ -451,7 +451,7 @@ static double utilmeca_computed_strike1 (struct nodal_plane NP1) {
 }
 
 /*********************************************************************/
-static double utilmeca_computed_dip1 (struct nodal_plane NP1) {
+static double utilmeca_computed_dip1 (struct SEIS_NODAL_PLANE NP1) {
 	/*
 	   Compute second nodal plane dip when are given strike,
 	   dip and rake for the first nodal plane with AKI & RICHARD's
@@ -468,7 +468,7 @@ static double utilmeca_computed_dip1 (struct nodal_plane NP1) {
 }
 
 /*********************************************************************/
-static double utilmeca_computed_rake1 (struct nodal_plane NP1) {
+static double utilmeca_computed_rake1 (struct SEIS_NODAL_PLANE NP1) {
 	/*
 	   Compute rake in the second nodal plane when strike ,dip
 	   and rake are given for the first nodal plane with AKI &
@@ -485,7 +485,7 @@ static double utilmeca_computed_rake1 (struct nodal_plane NP1) {
 	sincosd (NP1.dip, &sd, &cd);
 	sincosd (NP1.str - str2, &ss, &cs);
 
-	if (fabs (dip2 - 90.0) < EPSIL)
+	if (fabs (dip2 - 90.0) < SEIS_EPSILON)
 		sinrake2 = am * cd;
 	else
 		sinrake2 = -am * sd * cs / cd;
@@ -509,7 +509,7 @@ double meca_computed_dip2 (double str1, double dip1, double str2) {
 
 	double dip2, cosdp12 = cosd(str1 - str2);
 
-	if (fabs (dip1 - 90.) < EPSIL && fabs (cosdp12) < EPSIL)
+	if (fabs (dip1 - 90.) < SEIS_EPSILON && fabs (cosdp12) < SEIS_EPSILON)
 		dip2 = 1000.0; /* (only first plane will be plotted) */
 	else
 		dip2 = d_atan2d (cosd (dip1), -sind (dip1) * cosdp12);
@@ -534,7 +534,7 @@ double meca_computed_rake2 (double str1, double dip1, double str2, double dip2, 
 	sincosd (str1 - str2, &ss, &cs);
 
 	sd = sind(dip1);        cd = cosd(dip2);
-	if (fabs (dip2 - 90.0) < EPSIL)
+	if (fabs (dip2 - 90.0) < SEIS_EPSILON)
 		sinrake2 = fault * cd;
 	else
 		sinrake2 = -fault * sd * cs / cd;
@@ -545,7 +545,7 @@ double meca_computed_rake2 (double str1, double dip1, double str2, double dip2, 
 }
 
 /*********************************************************************/
-void meca_define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2) {
+void meca_define_second_plane (struct SEIS_NODAL_PLANE NP1, struct SEIS_NODAL_PLANE *NP2) {
 	/*
 	    Compute strike, dip, slip for the second nodal plane
 	    when are given strike, dip and rake for the first one.
@@ -558,7 +558,7 @@ void meca_define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2) 
 }
 
 /***************************************************************************************/
-void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struct AXIS *N, struct AXIS *P) {
+void meca_moment2axe (struct GMT_CTRL *GMT, struct SEIS_M_TENSOR mt, struct SEIS_AXIS *T, struct SEIS_AXIS *N, struct SEIS_AXIS *P) {
 	/* This version uses gmt_jacobi and does not suffer from the convert_matrix bug */
 	unsigned int j, nrots, np = 3;
 	double *a, *d, *b, *z, *v;
@@ -601,7 +601,7 @@ void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, 
 }
 
 /***************************************************************************************/
-double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno) {
+double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct SEIS_AXIS T, struct SEIS_AXIS N, struct SEIS_AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno) {
 	/* Plot beachball for full moment tensors */
 	int d, b = 1, m, i, ii, n = 0, j1 = 1, j2 = 0, j3 = 0;
 	int bigisotestv0, bigisotestv2;
@@ -629,7 +629,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	radius_size = size * 0.5;
 
 	/* pure implosion or explosion */
-	if (fabs (squared(v[0]) + squared(v[1]) + squared(v[2])) < EPSIL) {
+	if (fabs (squared(v[0]) + squared(v[1]) + squared(v[2])) < SEIS_EPSILON) {
 		if (vi > 0.) {
 			gmt_setfill (GMT, C, 1);
 			PSL_plotsymbol (PSL, x0, y0, ssize, PSL_CIRCLE);
@@ -698,7 +698,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 		xn = can * cpd * cad + san * sfi * cpb * cab + san * cfi * cpm * cam;
 		xe = can * cpd * sad + san * sfi * cpb * sab + san * cfi * cpm * sam;
 
-		if (fabs (xn) < EPSIL && fabs (xe) < EPSIL) {
+		if (fabs (xn) < SEIS_EPSILON && fabs (xe) < SEIS_EPSILON) {
 			takeoff = 0.;
 			az = 0.;
 		}
@@ -872,7 +872,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	return (size);
 }
 
-void meca_axe2dc (struct AXIS T, struct AXIS P, struct nodal_plane *NP1, struct nodal_plane *NP2) {
+void meca_axe2dc (struct SEIS_AXIS T, struct SEIS_AXIS P, struct SEIS_NODAL_PLANE *NP1, struct SEIS_NODAL_PLANE *NP2) {
 	/*
 	  Calculate double couple from principal axes.
 	  Angles are in degrees.
@@ -919,7 +919,7 @@ void meca_axe2dc (struct AXIS T, struct AXIS P, struct nodal_plane *NP1, struct 
 	NP2->rake = meca_computed_rake2 (NP1->str, NP1->dip, NP2->str, NP2->dip, im);
 }
 
-void meca_dc2axe (st_me meca, struct AXIS *T, struct AXIS *N, struct AXIS *P) {
+void meca_dc2axe (st_me meca, struct SEIS_AXIS *T, struct SEIS_AXIS *N, struct SEIS_AXIS *P) {
 	/*
 	From FORTRAN routines of Anne Deschamps :
 	compute azimuth and plungement of P-T axis
@@ -944,7 +944,7 @@ void meca_dc2axe (st_me meca, struct AXIS *T, struct AXIS *N, struct AXIS *P) {
 	dx = atan2d (hypot(amx, amy), amz) - 90.0;
 	px = atan2d (amy, -amx);
 	if (px < 0.0) px += 360.0;
-	if (dx < EPSIL) {
+	if (dx < SEIS_EPSILON) {
 		if (px > 90.0 && px < 180.0) px += 180.0;
 		if (px >= 180.0 && px < 270.0) px -= 180.0;
 	}
@@ -956,7 +956,7 @@ void meca_dc2axe (st_me meca, struct AXIS *T, struct AXIS *N, struct AXIS *P) {
 	py = atan2d (amy, -amx);
 	if (amz > 0.0) py -= 180.0;
 	if (py < 0.0) py += 360.0;
-	if (dy < EPSIL) {
+	if (dy < SEIS_EPSILON) {
 		if (py > 90.0 && py < 180.0) py += 180.0;
 		if (py >= 180.0 && py < 270.0) py -= 180.0;
 	}
@@ -1017,18 +1017,11 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 	 * 2. -C[<pen>][+s<size>]	which was the GMT5-6.1.1 syntax
 	 * 3. -C[<pen>][P<size>]	which was the GMT4 syntax */
 
-	if ((c = gmt_first_modifier (GMT, txt, "cops"))) {	/* Found at least one valid modifier */
+	if ((c = gmt_first_modifier (GMT, txt, "ops"))) {	/* Found at least one valid modifier */
 		unsigned int pos = 0;
 		char p[GMT_LEN256] = {""};
-		while (gmt_getmodopt (GMT, option, c, "cops", &pos, p, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, option, c, "ops", &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
-				case 'c':	/* Convert alternate coordinates from geographical to Cartesian plot coordinates */
-					if (p[1]) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +c takes no arguments\n", option);
-						n_errors++;
-					}
-					L->mode |= SEIS_CART_COORDINATES;
-					break;
 				case 'o':
 					if (p[1] == '\0')	/* No args means we read dx and dy as the "alternate coordinates". Implies +c */
 						L->mode |= SEIS_CART_OFFSET;
@@ -1057,7 +1050,7 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 		c[0] = '\0';	/* Chop off the modifiers */
 	}
 	/* If the user used modern modifiers only as case 1 above then we might be done here */
-	if (arg[0] == '\0') return n_errors;
+	if (txt[0] == '\0') return n_errors;
 
 	/* Here we got older syntax: -C<pen>[+s<size>] or -C[<pen>][P<size>] (but the +s<size> would have been stripped off
 	 * so here we must either have -C<pen> or -C[<pen>][P<size>] */
@@ -1068,7 +1061,7 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 			n_errors++;
 		}
 		q[0] = '\0';	/* Chop off the Psize setting; if txt is not empty we also have an optional pen */
-		if (arg[0] && gmt_getpen (GMT, txt, &L->pen)) {
+		if (txt[0] && gmt_getpen (GMT, txt, &L->pen)) {
 			gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
 			n_errors++;
 		}
@@ -1083,10 +1076,9 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 void meca_line_usage (struct GMTAPI_CTRL *API, char option) {
 	/* Print the usage message for coupe -D and meca -A */
 	GMT_Usage (API, 1, "\n-%c%s", option, SEIS_LINE_SYNTAX);
-	GMT_Usage (API, -2, "Offset actual (or projected) focal mechanisms to alternate positions given in the last two columns of the input file before optional label. "
+	GMT_Usage (API, -2, "Offset focal mechanisms to alternate positions given in the last two columns of the input file before optional label. "
 		"A line is drawn between both positions:");
-	GMT_Usage (API, 3, "+c Convert the alternate positions from geographic to projected positions first.");
-	GMT_Usage (API, 3, "+o Offset the plot positions by <dx>/<dy>.  If none given then we expect the alternative positions to hold the offsets.");
+	GMT_Usage (API, 3, "+o Offset the plot positions by <dx>/<dy>.  If none given then we expect the alternative position columns to hold the offsets.");
 	GMT_Usage (API, 3, "+p Specify the pen used to draw the line between original and adjusted position [0.25p].");
 	GMT_Usage (API, 3, "+s Draw a small circle of indicated diameter at the original location [no circle].");
 }

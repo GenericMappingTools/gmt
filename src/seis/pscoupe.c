@@ -57,14 +57,14 @@ struct PSCOUPE_CTRL {
 		double lon1, lat1, lon2, lat2;
 		double xlonref, ylatref;
 		struct GMT_PEN pen;
-		struct nodal_plane PREF;
+		struct SEIS_NODAL_PLANE PREF;
 		char newfile[PATH_MAX], extfile[PATH_MAX];
 	} A;
 	struct PSCOUPE_C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct SEIS_OFFSET_LINE D;	/* -D[+c][+o[<dx>/<dy>]][+p<pen>][+s<size>] */
+	struct SEIS_OFFSET_LINE D;	/* -D[+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
  	struct PSCOUPE_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
@@ -160,10 +160,10 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	gmt_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	C->S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
-	C->S.font.size = DEFAULT_FONTSIZE;
+	C->S.font.size = SEIS_DEFAULT_FONTSIZE;
 	C->S.justify = PSL_TC;
 	C->S.reference = SEIS_MAG_REFERENCE;
-	C->A2.size = DEFAULT_SYMBOL_SIZE * GMT->session.u2u[GMT_PT][GMT_INCH];
+	C->A2.size = SEIS_DEFAULT_SYMBOL_SIZE * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->A2.P_symbol = C->A2.T_symbol = PSL_CIRCLE;
 	return (C);
 }
@@ -174,7 +174,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Deallo
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void pscoupe_rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar) {
+GMT_LOCAL void pscoupe_rot_axis (struct SEIS_AXIS A, struct SEIS_NODAL_PLANE PREF, struct SEIS_AXIS *Ar) {
 	/*
 	 * Change coordinates of axis from
 	 * north,east,down
@@ -207,7 +207,7 @@ GMT_LOCAL void pscoupe_rot_axis (struct AXIS A, struct nodal_plane PREF, struct 
 	}
 }
 
-GMT_LOCAL void pscoupe_rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M_TENSOR *mtr) {
+GMT_LOCAL void pscoupe_rot_tensor (struct SEIS_M_TENSOR mt, struct SEIS_NODAL_PLANE PREF, struct SEIS_M_TENSOR *mtr) {
 	/*
 	 *
 	 * Change coordinates from
@@ -243,7 +243,7 @@ GMT_LOCAL void pscoupe_rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, 
 		sa*sd*mt.f[4] - c2a*cd*mt.f[5];
 }
 
-GMT_LOCAL void pscoupe_rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct nodal_plane *PLANR) {
+GMT_LOCAL void pscoupe_rot_nodal_plane (struct SEIS_NODAL_PLANE PLAN, struct SEIS_NODAL_PLANE PREF, struct SEIS_NODAL_PLANE *PLANR) {
 /*
    Calcule l'azimut, le pendage, le glissement relatifs d'un
    mecanisme par rapport a un plan de reference PREF
@@ -280,7 +280,7 @@ GMT_LOCAL void pscoupe_rot_nodal_plane (struct nodal_plane PLAN, struct nodal_pl
 	}
 }
 
-GMT_LOCAL void pscoupe_rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
+GMT_LOCAL void pscoupe_rot_meca (st_me meca, struct SEIS_NODAL_PLANE PREF, st_me *mecar) {
 /*
    Projection d'un mecanisme sur un plan donne PREF.
    C'est la demi-sphere derriere le plan qui est representee.
@@ -289,7 +289,7 @@ GMT_LOCAL void pscoupe_rot_meca (st_me meca, struct nodal_plane PREF, st_me *mec
    Genevieve Patau, 7 septembre 1992.
 */
 
-	if (fabs (meca.NP1.str - PREF.str) < EPSIL && fabs (meca.NP1.dip - PREF.dip) < EPSIL) {
+	if (fabs (meca.NP1.str - PREF.str) < SEIS_EPSILON && fabs (meca.NP1.dip - PREF.dip) < SEIS_EPSILON) {
 		mecar->NP1.str = 0.;
 		mecar->NP1.dip = 0.;
 		mecar->NP1.rake = meca_zero_360 (270. - meca.NP1.rake);
@@ -297,7 +297,7 @@ GMT_LOCAL void pscoupe_rot_meca (st_me meca, struct nodal_plane PREF, st_me *mec
 	else
 		pscoupe_rot_nodal_plane (meca.NP1, PREF, &mecar->NP1);
 
-	if (fabs (meca.NP2.str - PREF.str) < EPSIL && fabs (meca.NP2.dip - PREF.dip) < EPSIL) {
+	if (fabs (meca.NP2.str - PREF.str) < SEIS_EPSILON && fabs (meca.NP2.dip - PREF.dip) < SEIS_EPSILON) {
 		mecar->NP2.str = 0.;
 		mecar->NP2.dip = 0.;
 		mecar->NP2.rake = meca_zero_360 (270. - meca.NP2.rake);
@@ -305,7 +305,7 @@ GMT_LOCAL void pscoupe_rot_meca (st_me meca, struct nodal_plane PREF, st_me *mec
 	else
 		pscoupe_rot_nodal_plane (meca.NP2, PREF, &mecar->NP2);
 
-	if (cosd (mecar->NP2.dip) < EPSIL && fabs (mecar->NP1.rake - mecar->NP2.rake) < 90.0) {
+	if (cosd (mecar->NP2.dip) < SEIS_EPSILON && fabs (mecar->NP1.rake - mecar->NP2.rake) < 90.0) {
 		mecar->NP1.str += 180.0;
 		mecar->NP1.rake += 180.0;
 		mecar->NP1.str = meca_zero_360 (mecar->NP1.str);
@@ -396,8 +396,8 @@ GMT_LOCAL void pscoupe_distaz (double lat1, double lon1, double lat2, double lon
 			lon1 *= D2R;
 			lat2 *= D2R;
 			lon2 *= D2R;
-			if ((M_PI_2 - fabs(lat1)) > EPSIL) lat1 = atan(CONSTANTE2 * tan(lat1));
-			if ((M_PI_2 - fabs(lat2)) > EPSIL) lat2 = atan(CONSTANTE2 * tan(lat2));
+			if ((M_PI_2 - fabs(lat1)) > SEIS_EPSILON) lat1 = atan(CONSTANTE2 * tan(lat1));
+			if ((M_PI_2 - fabs(lat2)) > SEIS_EPSILON) lat2 = atan(CONSTANTE2 * tan(lat2));
 		}
 		sincos (lat1, &slat1, &clat1);
 		sincos (lon1, &slon1, &clon1);
@@ -448,7 +448,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	font = API->GMT->current.setting.font_annot[GMT_PRIMARY];
-	font.size = DEFAULT_FONTSIZE;
+	font.size = SEIS_DEFAULT_FONTSIZE;
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
@@ -804,13 +804,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 								if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
 							} else {	/* Set default offset */
 								if (Ctrl->S.justify%4 != 2) /* Not center aligned */
-									Ctrl->S.offset[0] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+									Ctrl->S.offset[0] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 								if (Ctrl->S.justify/4 != 1) /* Not middle aligned */
-									Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+									Ctrl->S.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 							}
 							if (Ctrl->S.font.size <= 0.0) Ctrl->S.no_label = true;
 						} else {	/* Old syntax: -Fs<symbol>[<size>[/fontsize[/offset[+u]]]] */
-							Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
+							Ctrl->S.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
 							if ((p = strstr (opt->arg, "+u"))) {	/* Plot label under symbol [over] */
 								Ctrl->S.justify = PSL_BC;
 								p[0] = '\0';	/* Chop off modifier */
@@ -887,42 +887,42 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				switch (opt->arg[0]) {	/* parse format */
 					case 'c':
-						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 11;
-						Ctrl->S.plotmode = PLOT_DC;
+						Ctrl->S.readmode = SEIS_READ_CMT;	Ctrl->S.n_cols = 11;
+						Ctrl->S.plotmode = SEIS_PLOT_DC;
 						break;
 					case 'a':
-						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 7;
-						Ctrl->S.plotmode = PLOT_DC;
+						Ctrl->S.readmode = SEIS_READ_AKI;	Ctrl->S.n_cols = 7;
+						Ctrl->S.plotmode = SEIS_PLOT_DC;
 						break;
 					case 'p':
-						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 8;
-						Ctrl->S.plotmode = PLOT_DC;
+						Ctrl->S.readmode = SEIS_READ_PLANES;	Ctrl->S.n_cols = 8;
+						Ctrl->S.plotmode = SEIS_PLOT_DC;
 						break;
 					case 'x':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
-						Ctrl->S.plotmode = PLOT_TENSOR;
+						Ctrl->S.readmode = SEIS_READ_AXIS;	Ctrl->S.n_cols = 13;
+						Ctrl->S.plotmode = SEIS_PLOT_TENSOR;
 						break;
 					case 'y':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
-						Ctrl->S.plotmode = PLOT_DC;
+						Ctrl->S.readmode = SEIS_READ_AXIS;	Ctrl->S.n_cols = 13;
+						Ctrl->S.plotmode = SEIS_PLOT_DC;
 						break;
 					case 't':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
-						Ctrl->S.plotmode = PLOT_TRACE;
+						Ctrl->S.readmode = SEIS_READ_AXIS;	Ctrl->S.n_cols = 13;
+						Ctrl->S.plotmode = SEIS_PLOT_TRACE;
 						break;
 					case 'm':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
-						Ctrl->S.plotmode = PLOT_TENSOR;
+						Ctrl->S.readmode = SEIS_READ_TENSOR;	Ctrl->S.n_cols = 10;
+						Ctrl->S.plotmode = SEIS_PLOT_TENSOR;
 						Ctrl->S.zerotrace = true;
 						break;
 					case 'd':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
-						Ctrl->S.plotmode = PLOT_DC;
+						Ctrl->S.readmode = SEIS_READ_TENSOR;	Ctrl->S.n_cols = 10;
+						Ctrl->S.plotmode = SEIS_PLOT_DC;
 						Ctrl->S.zerotrace = true;
 						break;
 					case 'z':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
-						Ctrl->S.plotmode = PLOT_TRACE;
+						Ctrl->S.readmode = SEIS_READ_TENSOR;	Ctrl->S.n_cols = 10;
+						Ctrl->S.plotmode = SEIS_PLOT_TRACE;
 						Ctrl->S.zerotrace = true;
 						break;
 					default:
@@ -953,9 +953,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 						if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
 					} else {	/* Set default offset */
 						if (Ctrl->S.justify%4 != 2) /* Not center aligned */
-							Ctrl->S.offset[0] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+							Ctrl->S.offset[0] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 						if (Ctrl->S.justify/4 != 1) /* Not middle aligned */
-							Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+							Ctrl->S.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					}
 					if (Ctrl->S.font.size <= 0.0) Ctrl->S.no_label = true;
 					if (gmt_get_modifier (opt->arg, 'l', word)) {
@@ -967,7 +967,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					if (gmt_get_modifier (opt->arg, 's', word))
 						Ctrl->S.reference = atof (word);
 				} else {	/* Old syntax: -S<format><scale>[/fontsize[/offset]][+u] */
-					Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
+					Ctrl->S.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
 					if ((p = strstr (opt->arg, "+u"))) {	/* Plot label under symbol [over] */
 						Ctrl->S.justify = PSL_BC;
 						p[0] = '\0';	/* Chop off modifier */
@@ -1050,15 +1050,15 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	FILE *pnew = NULL, *pext = NULL;
 
 	double size, xy[2], xynew[2] = {0.0}, plot_x, plot_y, n_dep, distance, fault, depth;
-	double scale, P_x, P_y, T_x, T_y, in[GMT_LEN16];
+	double scale, P_x, P_y, T_x, T_y, plot_xnew, plot_ynew, in[GMT_LEN16];
 
 	char event_title[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""};
 	char *no_name = "<unnamed>", *event_name = NULL;
 
 	st_me meca, mecar;
-	struct MOMENT moment;
-	struct M_TENSOR mt, mtr;
-	struct AXIS T, N, P, Tr, Nr, Pr;
+	struct SEIS_MOMENT moment;
+	struct SEIS_M_TENSOR mt, mtr;
+	struct SEIS_AXIS T, N, P, Tr, Nr, Pr;
 	struct GMT_PALETTE *CPT = NULL;
 	struct GMT_PEN current_pen;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment input tables */
@@ -1294,7 +1294,12 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					n_scanned = sscanf (tmp_buffer, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
 					if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
 						unsigned int type;
-						if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
+						if (Ctrl->D.mode == SEIS_CART_OFFSET) {	/* Cartesian dx and dy in plot units */
+							Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, Xstring);
+							Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, Ystring);
+							fprintf (stderr, "%s %s\n", Xstring, Ystring);
+						}
+						else if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
 							if ((type = gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_X])) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
 							if ((type = gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_Y])) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
 						}
@@ -1358,6 +1363,33 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
 
+				/* If option -D is used, use the alternate position */
+
+				if (Ctrl->D.active) {
+					if (Ctrl->D.mode || fabs (xynew[GMT_X]) > SEIS_EPSILON || fabs (xynew[GMT_Y]) > SEIS_EPSILON) {
+						current_pen = Ctrl->D.pen;
+						if (Ctrl->H.active) {
+							double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+							gmt_scale_pen (GMT, &current_pen, scl);
+						}
+						gmt_setpen (GMT, &current_pen);
+						if (Ctrl->D.mode) {	/* Got fixed or variable Cartesian dx and dy in plot units */
+							plot_xnew = plot_x + Ctrl->D.off[GMT_X];
+							plot_ynew = plot_y + Ctrl->D.off[GMT_Y];
+						}
+						else	/* Got alternate geographic coordinates */
+							gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
+						gmt_setfill (GMT, &Ctrl->G.fill, 1);
+						if (Ctrl->D.size > 0.0)	/* Plot circle at actual location */
+							PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->D.size), PSL_CIRCLE);
+						/* Draw line between original and alternate location */
+						PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
+						/* Since we will plot beach ball at the alternative location, we swap them */
+						plot_x = plot_xnew;
+						plot_y = plot_ynew;
+					}
+				}
+
 				if (Ctrl->S.symbol) {
 					if (!Ctrl->Q.active) {
 						fprintf (pnew, "%f %f %f %f\n", distance, n_dep, depth, in[3]);
@@ -1366,7 +1398,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 					PSL_plotsymbol (PSL, plot_x, plot_y, &size, Ctrl->S.symbol);
 				}
-				else if (Ctrl->S.readmode == READ_CMT) {
+				else if (Ctrl->S.readmode == SEIS_READ_CMT) {
 					meca.NP1.str    = in[3];
 					meca.NP1.dip    = in[4];
 					meca.NP1.rake   = in[5];
@@ -1378,7 +1410,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					if (moment.exponent == 0) meca.magms = in[9];
 					pscoupe_rot_meca (meca, Ctrl->A.PREF, &mecar);
 				}
-				else if (Ctrl->S.readmode == READ_AKI) {
+				else if (Ctrl->S.readmode == SEIS_READ_AKI) {
 					meca.NP1.str    = in[3];
 					meca.NP1.dip    = in[4];
 					meca.NP1.rake   = in[5];
@@ -1388,7 +1420,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					meca_define_second_plane (meca.NP1, &meca.NP2);
 					pscoupe_rot_meca (meca, Ctrl->A.PREF, &mecar);
 				}
-				else if (Ctrl->S.readmode == READ_PLANES) {
+				else if (Ctrl->S.readmode == SEIS_READ_PLANES) {
 					meca.NP1.str = in[3];
 					meca.NP1.dip = in[4];
 					meca.NP2.str = in[5];
@@ -1413,7 +1445,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					pscoupe_rot_meca (meca, Ctrl->A.PREF, &mecar);
 
 				}
-				else if (Ctrl->S.readmode == READ_AXIS) {
+				else if (Ctrl->S.readmode == SEIS_READ_AXIS) {
 					T.val = in[3];
 					T.str = in[4];
 					T.dip = in[5];
@@ -1452,9 +1484,9 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					Nr.e = N.e;
 					Pr.e = P.e;
 
-					if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) meca_axe2dc (Tr, Pr, &meca.NP1, &meca.NP2);
+					if (Ctrl->S.plotmode == SEIS_PLOT_DC || Ctrl->T.active) meca_axe2dc (Tr, Pr, &meca.NP1, &meca.NP2);
 				}
-				else if (Ctrl->S.readmode == READ_TENSOR) {
+				else if (Ctrl->S.readmode == SEIS_READ_TENSOR) {
 					for (i = 3; i < 9; i++) mt.f[i-3] = in[i];
 					mt.expo = irint (in[i]);
 
@@ -1472,7 +1504,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					pscoupe_rot_tensor (mt, Ctrl->A.PREF, &mtr);
 					meca_moment2axe (GMT, mtr, &T, &N, &P);
 
-					if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+					if (Ctrl->S.plotmode == SEIS_PLOT_DC || Ctrl->T.active) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 				}
 
 				if (!Ctrl->S.symbol) {
@@ -1489,7 +1521,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					}
 
 					if (!Ctrl->Q.active) fprintf (pext, "%s\n", S->text ? S->text[row] : "");
-					if (Ctrl->S.readmode == READ_AXIS) {
+					if (Ctrl->S.readmode == SEIS_READ_AXIS) {
 						if (!Ctrl->Q.active)
 							fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 							xy[0], xy[1], depth, Tr.val, Tr.str, Tr.dip, Nr.val, Nr.str, Nr.dip,
@@ -1498,7 +1530,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 						N = Nr;
 						P = Pr;
 					}
-					else if (Ctrl->S.readmode == READ_TENSOR) {
+					else if (Ctrl->S.readmode == SEIS_READ_TENSOR) {
 						if (!Ctrl->Q.active)
 							fprintf (pnew, "%f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 							xy[0], xy[1], depth, mtr.f[0], mtr.f[1], mtr.f[2], mtr.f[3], mtr.f[4], mtr.f[5],
@@ -1514,7 +1546,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 						meca = mecar;
 					}
 
-					if (Ctrl->S.plotmode == PLOT_TENSOR) {
+					if (Ctrl->S.plotmode == SEIS_PLOT_TENSOR) {
 						current_pen = Ctrl->L.pen;
 						if (Ctrl->H.active) {
 							double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
@@ -1548,7 +1580,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 							Ctrl->T.n_plane = n_plane_old;
 						}
 					}
-					else if (Ctrl->S.plotmode == PLOT_DC) {
+					else if (Ctrl->S.plotmode == SEIS_PLOT_DC) {
 						current_pen = Ctrl->L.pen;
 						if (Ctrl->H.active) {
 							double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
@@ -1561,7 +1593,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					if (Ctrl->A2.active) {	/* Plot axis symbols */
 						double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						double asize = (Ctrl->H.active) ? Ctrl->A2.size * scl : Ctrl->A2.size;
-						if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
+						if (Ctrl->S.readmode != SEIS_READ_TENSOR && Ctrl->S.readmode != SEIS_READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
 						meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 						current_pen = Ctrl->P2.pen;
 						if (Ctrl->H.active)
