@@ -1003,3 +1003,71 @@ GMT_LOCAL int utilmeca_dump_meca (st_me meca) {
 }
 #endif
 #endif
+
+/* Parsing of meca -A and coupe -D options for offsetting symbols */
+
+unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, char option, char *arg) {
+	unsigned int n_errors = 0;
+	char txt[GMT_LEN256] = {""}, *c = NULL, *q = NULL;
+	strncpy (txt, arg, GMT_LEN256-1);
+
+	/* Deal with these possible variations of old -C and new -A options in meca:
+	 * 1. -A[+p<pen>][+s<size>]	which is the current syntax
+	 * 2. -C[<pen>][+s<size>]	which was the GMT5-6.1.1 syntax
+	 * 3. -C[<pen>][P<size>]	which was the GMT4 syntax */
+
+	if ((c = gmt_first_modifier (GMT, txt, "cops"))) {	/* Found at least one valid modifier */
+		unsigned int pos = 0;
+		char p[GMT_LEN256] = {""};
+		while (gmt_getmodopt (GMT, option, c, "cops", &pos, p, &n_errors) && n_errors == 0) {
+			switch (p[0]) {
+				case 'p':	/* Line and circle pen */
+					if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &L->pen)) {
+						gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
+						n_errors++;
+					}
+					break;
+				case 's':	/* Circle diameter */
+					if (p[1] == '\0' || (L->size = gmt_M_to_inch (GMT, &p[1])) < 0.0) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Circle diameter cannot be negative or not given!\n", option);
+						n_errors++;
+					}
+					break;
+				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		c[0] = '\0';	/* Chop off the modifiers */
+	}
+	/* If the user used modern modifiers only as case 1 above then we might be done here */
+	if (arg[0] == '\0') return n_errors;
+
+	/* Here we got older syntax: -C<pen>[+s<size>] or -C[<pen>][P<size>] (but the +s<size> would have been stripped off
+	 * so here we must either have -C<pen> or -C[<pen>][P<size>] */
+
+	if ((q = strchr (txt, 'P')) != NULL) {	/* Case 3 way of changing the diameter */
+		if (q[1] == '\0' || (L->size = gmt_M_to_inch (GMT, &q[1])) < 0.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Circle diameter cannot be negative or not given!\n", option);
+			n_errors++;
+		}
+		q[0] = '\0';	/* Chop off the Psize setting; if txt is not empty we also have an optional pen */
+		if (arg[0] && gmt_getpen (GMT, txt, &L->pen)) {
+			gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
+			n_errors++;
+		}
+	}
+	else if (gmt_getpen (GMT, txt, &L->pen)) {	/* Here we just have -C<pen> to deal with */
+		gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
+		n_errors++;
+	}
+	return n_errors;
+}
+
+void meca_line_usage (struct GMTAPI_CTRL *API, char option) {
+	GMT_Usage (API, 1, "\n-%c%s", option, SEIS_LINE_SYNTAX);
+	GMT_Usage (API, -2, "Offset actual (or projected) focal mechanisms to alternate positions given in the last two columns of the input file before optional label. "
+		"A line is drawn between both positions:");
+	GMT_Usage (API, 3, "+c Convert the alternate positions from geographic to projected positions first.");
+	GMT_Usage (API, 3, "+o Offset the plot positions by <dx>/<dy>.  If no argument given then we expect the alternative positions to hold the offsets.");
+	GMT_Usage (API, 3, "+p Specify the pen used to draw the line between original and adjusted position [0.25p].");
+	GMT_Usage (API, 3, "+s Draw a small circle of indicated diameter at the original location [no circle].");
+}

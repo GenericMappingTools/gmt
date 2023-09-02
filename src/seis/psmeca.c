@@ -44,27 +44,9 @@ PostScript code is written to stdout.
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
-#define DEFAULT_FONTSIZE		9.0	/* In points */
-#define DEFAULT_OFFSET			3.0	/* In points */
-#define DEFAULT_SYMBOL_SIZE		6.0 /* In points */
-
-#define READ_CMT	0
-#define READ_AKI	1
-#define READ_PLANES	2
-#define READ_AXIS	4
-#define READ_TENSOR	8
-
-#define PLOT_DC		1
-#define PLOT_AXIS	2
-#define PLOT_TRACE	4
-
 /* Control structure for psmeca */
 struct PSMECA_CTRL {
-	struct PSMECA_A {	/* -A[+p<pen>][+s<size>] */
-		bool active;
-		double size;
-		struct GMT_PEN pen;
-	} A;
+	struct SEIS_OFFSET_LINE A; 	/* -A[+c][+o[<dx>/<dy>]][+p<pen>][+s<size>] */
 	struct PSMECA_C {	/* -C<cpt> */
 		bool active;
 		char *file;
@@ -190,11 +172,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s "
-		"-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] [-A[+p<pen>][+s<size>]] [%s] "
+		"-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] [-A%s] [%s] "
 		"[-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] "
 		"[-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] "
 		"[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT,
+		name, GMT_J_OPT, GMT_Rgeo_OPT, SEIS_LINE_SYNTAX, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT,
 		GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -237,11 +219,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+s Set reference magnitude [%g] or moment [%ge%d] (if +l) for symbol size.", SEIS_MAG_REFERENCE, SEIS_MOMENT_MANT_REFERENCE, SEIS_MOMENT_EXP_REFERENCE);
 	GMT_Usage (API, -2, "Note: If fontsize < 0 then no label written; offset is from the limit of the beach ball.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	meca_line_usage (API, 'A');
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-A[+p<pen>][+s<size>]");
-	GMT_Usage (API, -2, "Offset focal mechanisms to the alternate positions given in the last two columns of the input file before label. "
-		"A line is drawn between both positions; see -W for pen used or specify it separately via +p [0.25p]. "
-		"Optionally, a small circle is plotted at the original location. Append +s<size> to set its diameter [no circle].");
 	GMT_Usage (API, 1, "\n-C<cpt>");
 	GMT_Usage (API, -2, "Use CPT to assign colors based on depth-value in 3rd column.");
 	GMT_Usage (API, 1, "\n-D<depmin>/<depmax>");
@@ -292,62 +271,6 @@ GMT_LOCAL bool psmeca_is_old_C_option (struct GMT_CTRL *GMT, char *arg) {
 	return false;	/* This assumes nobody would use just -C in modern mode but actually mean the old -C */
 }
 
-GMT_LOCAL unsigned int psmeca_A_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, char *arg) {
-	unsigned int n_errors = 0;
-	char txt[GMT_LEN256] = {""}, *c = NULL, *q = NULL;
-	strncpy (txt, arg, GMT_LEN256-1);
-
-	/* Deal with these possible variations of old -C and new -A options:
-	 * 1. -A[+p<pen>][+s<size>]	which is the current syntax
-	 * 2. -C[<pen>][+s<size>]	which was the GMT5-6.1.1 syntax
-	 * 3. -C[<pen>][P<size>]	which was the GMT4 syntax */
-
-	if ((c = gmt_first_modifier (GMT, txt, "ps"))) {	/* Found at least one valid modifier */
-		unsigned int pos = 0;
-		char p[GMT_LEN256] = {""};
-		while (gmt_getmodopt (GMT, 'A', c, "ps", &pos, p, &n_errors) && n_errors == 0) {
-			switch (p[0]) {
-				case 'p':	/* Line and circle pen */
-					if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-						gmt_pen_syntax (GMT, 'A', NULL, " ", NULL, 0);
-						n_errors++;
-					}
-					break;
-				case 's':	/* Circle diameter */
-					if (p[1] == '\0' || (Ctrl->A.size = gmt_M_to_inch (GMT, &p[1])) < 0.0) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Circle diameter cannot be negative or not given!\n");
-						n_errors++;
-					}
-					break;
-				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
-			}
-		}
-		c[0] = '\0';	/* Chop off the modifiers */
-	}
-	/* If the user used modern modifiers only as case 1 above then we might be done here */
-	if (arg[0] == '\0') return n_errors;
-
-	/* Here we got older syntax: -C<pen>[+s<size>] or -C[<pen>][P<size>] (but the +s<size> would have been stripped off
-	 * so here we must either have -C<pen> or -C[<pen>][P<size>] */
-
-	if ((q = strchr (txt, 'P')) != NULL) {	/* Case 3 way of changing the diameter */
-		if (q[1] == '\0' || (Ctrl->A.size = gmt_M_to_inch (GMT, &q[1])) < 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Circle diameter cannot be negative or not given!\n");
-			n_errors++;
-		}
-		q[0] = '\0';	/* Chop off the Psize setting; if txt is not empty we also have an optional pen */
-		if (arg[0] && gmt_getpen (GMT, txt, &Ctrl->A.pen)) {
-			gmt_pen_syntax (GMT, 'A', NULL, " ", NULL, 0);
-			n_errors++;
-		}
-	}
-	else if (gmt_getpen (GMT, txt, &Ctrl->A.pen)) {	/* Here we just have -C<pen> to deal with */
-		gmt_pen_syntax (GMT, 'A', NULL, " ", NULL, 0);
-		n_errors++;
-	}
-	return n_errors;
-}
-
 static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psmeca and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -371,15 +294,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 
 			/* Processes program-specific parameters */
 
-			case 'A':
+			case 'A':	/* Offset symbol from actual location and optionally draw line between these points */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
+				n_errors += meca_line_parse (GMT, &(Ctrl->A), 'A', opt->arg);
 				break;
 			case 'C':	/* Either modern -Ccpt option or a deprecated -C now served by -A */
 				/* Change position [set line attributes] */
 				if (psmeca_is_old_C_option (GMT, opt->arg)) {	/* Need the -A parser for obsolete -C syntax */
 					Ctrl->A.active = true;
-					n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
+					n_errors += meca_line_parse (GMT, &(Ctrl->A), 'A', opt->arg);
 				}
 				else {	/* Here we have the modern -C<cpt> parsing */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);

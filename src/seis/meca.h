@@ -33,7 +33,40 @@
 #define SEIS_MOMENT_MANT_REFERENCE 4.0	/* Mantissa for reference moment for -S */
 #define SEIS_MOMENT_EXP_REFERENCE 23	/* Exponent for reference moment for -S */
 
+#define SEIS_GEO_COORDINATES	0		/* Default coordinate type in optional|trailing text */
+#define SEIS_CART_COORDINATES	1		/* Cartesian plot coordinates in optional|trailing text */
+#define SEIS_CART_OFFSET		2		/* Cartesian plot offset in optional|trailing text */
+#define SEIS_CART_OFFSET_FIX	3		/* Same, but given as fixed offset with +o on option line */
+
+/* Default font, offset, and symbol sizes */
+#define DEFAULT_FONTSIZE		9.0		/* In points */
+#define DEFAULT_OFFSET			3.0		/* In points */
+#define DEFAULT_SYMBOL_SIZE		6.0		/* In points */
+
+/* Reading mode values for different formats */
+#define READ_CMT	0
+#define READ_AKI	1
+#define READ_PLANES	2
+#define READ_AXIS	4
+#define READ_TENSOR	8
+
+#define PLOT_DC		1
+#define PLOT_AXIS	2
+#define PLOT_TRACE	4
+#define PLOT_TENSOR	8
+
+
 #define squared(x) ((x) * (x))
+
+#define SEIS_LINE_SYNTAX	"[+c][+o[<dx>/<dy>]][+p<pen>][+s<size>]"
+
+struct SEIS_OFFSET_LINE { 
+		bool active;
+		unsigned int mode;	/* 0-3 as above */
+		double size;		/* Circle size if drawn */
+		double off[2];		/* Cartesian offsets from actual location [0/0] */
+		struct GMT_PEN pen;	/* Pen parameters controlling the line */
+};
 
 struct AXIS {
 	double str;

@@ -45,21 +45,6 @@ PostScript code is written to stdout.
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
-#define DEFAULT_FONTSIZE		9.0	/* In points */
-#define DEFAULT_OFFSET			3.0	/* In points */
-#define DEFAULT_SYMBOL_SIZE		6.0	/* In points */
-
-#define READ_CMT	0
-#define READ_AKI	1
-#define READ_PLANES	2
-#define READ_AXIS	4
-#define READ_TENSOR	8
-
-#define PLOT_DC		1
-#define PLOT_AXIS	2
-#define PLOT_TRACE	4
-#define PLOT_TENSOR	8
-
 /* Control structure for pscoupe */
 
 struct PSCOUPE_CTRL {
@@ -79,6 +64,7 @@ struct PSCOUPE_CTRL {
 		bool active;
 		char *file;
 	} C;
+	struct SEIS_OFFSET_LINE D;	/* -D[+c][+o[<dx>/<dy>]][+p<pen>][+s<size>] */
  	struct PSCOUPE_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
@@ -452,11 +438,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+c[n|t]][+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] "
-		"%s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] "
-		"[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
+		"%s %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] "
+		"[-C<cpt>] [-D%s] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
 		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-N] %s%s "
 		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT,
+		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, SEIS_LINE_SYNTAX, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT,
 		API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -517,6 +503,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-C<cpt>");
+	meca_line_usage (API, 'D');
 	gmt_fill_syntax (API->GMT, 'E', NULL, "Set color used for extensive parts [Default is white].");
 	GMT_Usage (API, 1, "\n-F<directive><parameters> (repeatable)");
 	GMT_Usage (API, -2, "Set various attributes of symbols depending on directive:");
@@ -730,6 +717,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 			case 'C':	/* Vary symbol color with z */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				break;
+
+			case 'D':	/* Offset symbol from actual location and optionally draw line between these points */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += meca_line_parse (GMT, &(Ctrl->D), 'D', opt->arg);
 				break;
 
 			case 'E':	/* Set color for extensive parts  */
