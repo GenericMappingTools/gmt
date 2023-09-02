@@ -1008,6 +1008,7 @@ GMT_LOCAL int utilmeca_dump_meca (st_me meca) {
 
 unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, char option, char *arg) {
 	unsigned int n_errors = 0;
+	int n;
 	char txt[GMT_LEN256] = {""}, *c = NULL, *q = NULL;
 	strncpy (txt, arg, GMT_LEN256-1);
 
@@ -1021,6 +1022,23 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 		char p[GMT_LEN256] = {""};
 		while (gmt_getmodopt (GMT, option, c, "cops", &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
+				case 'c':	/* Convert alternate coordinates from geographical to Cartesian plot coordinates */
+					if (p[1]) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +c takes no arguments\n", option);
+						n_errors++;
+					}
+					L->mode |= SEIS_CART_COORDINATES;
+					break;
+				case 'o':
+					if (p[1] == '\0')	/* No args means we read dx and dy as the "alternate coordinates". Implies +c */
+						L->mode |= SEIS_CART_OFFSET;
+					else if ((n = gmt_get_pair (GMT, &p[1], GMT_PAIR_DIM_DUP, L->off)) < 0) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Failed to parse offset arguments for +o modifier\n", option);
+						n_errors++;
+					}
+					else
+						L->mode |= SEIS_CART_OFFSET_FIX;
+					break;
 				case 'p':	/* Line and circle pen */
 					if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &L->pen)) {
 						gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
@@ -1063,11 +1081,12 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 }
 
 void meca_line_usage (struct GMTAPI_CTRL *API, char option) {
+	/* Print the usage message for coupe -D and meca -A */
 	GMT_Usage (API, 1, "\n-%c%s", option, SEIS_LINE_SYNTAX);
 	GMT_Usage (API, -2, "Offset actual (or projected) focal mechanisms to alternate positions given in the last two columns of the input file before optional label. "
 		"A line is drawn between both positions:");
 	GMT_Usage (API, 3, "+c Convert the alternate positions from geographic to projected positions first.");
-	GMT_Usage (API, 3, "+o Offset the plot positions by <dx>/<dy>.  If no argument given then we expect the alternative positions to hold the offsets.");
+	GMT_Usage (API, 3, "+o Offset the plot positions by <dx>/<dy>.  If none given then we expect the alternative positions to hold the offsets.");
 	GMT_Usage (API, 3, "+p Specify the pen used to draw the line between original and adjusted position [0.25p].");
 	GMT_Usage (API, 3, "+s Draw a small circle of indicated diameter at the original location [no circle].");
 }
