@@ -48,8 +48,8 @@ Description
 -----------
 
 **spatial** reads one or more data files (which may be multisegment
-files) that contains closed polygons and operates of these polygons in
-the specified way. Operations include area calculation, handedness
+files) that contains closed polygons, lines, or points, and operates on
+them in the specified way. Operations include area calculation, handedness
 reversals, and polygon intersections.
 
 Required Arguments
