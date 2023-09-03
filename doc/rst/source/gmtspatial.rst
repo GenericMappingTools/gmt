@@ -48,8 +48,8 @@ Description
 -----------
 
 **spatial** reads one or more data files (which may be multisegment
-files) that contains closed polygons, lines, or points, and operates on
-them in the specified way. Operations include area calculation, handedness
+files) that contains closed polygons and operates of these polygons in
+the specified way. Operations include area calculation, handedness
 reversals, and polygon intersections.
 
 Required Arguments
@@ -207,7 +207,7 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [*clippolygon*]
-    Truncate polygons against the specified polygon given, possibly
+    Truncate polygons and lines against the specified polygon given, possibly
     resulting in open polygons. If no argument is given to |-T| we
     create a clipping polygon from |-R| which then is required. Note
     that when the |-R| clipping is in effect we will also look for
