@@ -20,6 +20,7 @@ Synopsis
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
+[ |-D|\ [**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ *size*] ]
 [ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill* ]

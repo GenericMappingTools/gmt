@@ -16,7 +16,7 @@ Synopsis
 |-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
-[ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
+[ |-A|\ [**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ *size*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *depmin*/*depmax* ]
@@ -76,10 +76,12 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+p**\ *pen*][**+s**\ *size*]
+**-A**\ [**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ *size*]
     Offsets focal mechanisms to the alternate longitudes, latitudes given
     in the last two columns of the input file before the (optional) text
-    string. We will draw a line connecting the original and relocated
+    string. Alternatively, use **+o** to interpret the contents of the two
+    columns as plot offsets instead, or append fixed offset *dx/dy* for all events.
+    We will draw a line connecting the original and relocated
     beachball positions and optionally place a small circle at the original
     location.  Use **+s**\ *size* to set the diameter of the circle [no circle].
     The line pen defaults to that given via |-W| but can be overridden
