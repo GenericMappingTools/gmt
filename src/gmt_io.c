@@ -8313,7 +8313,11 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				}
 			}
 			if (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) {
-				if (GMT->current.io.record.text) GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				if (GMT->current.io.record.text) {
+					if (GMT->hidden.mem_txt == NULL)	/* Probably first file did not have text but a later file does */
+						GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, GMT->hidden.mem_rows, char *);
+					GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				}
 				*data_type = GMT_READ_MIXED;
 			}
 
