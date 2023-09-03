@@ -1379,9 +1379,16 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 						}
 						else	/* Got alternate geographic coordinates */
 							gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
-						gmt_setfill (GMT, &Ctrl->G.fill, 1);
-						if (Ctrl->D.size > 0.0)	/* Plot circle at actual location */
-							PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->D.size), PSL_CIRCLE);
+
+						if (Ctrl->D.fill_mode == SEiS_EVENT_FILL)
+							gmt_setfill (GMT, &Ctrl->G.fill, 1);
+						else if (Ctrl->D.fill_mode == SEiS_FIXED_FILL)
+							gmt_setfill (GMT, &Ctrl->D.fill, 1);
+						else	/* SEiS_NO_FILL */
+							gmt_setfill (GMT, NULL, 1);
+						if (Ctrl->D.size > 0.0)	/* Plot symbol at actual location */
+							PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->D.size), Ctrl->D.symbol);
+
 						/* Draw line between original and alternate location */
 						PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
 						/* Since we will plot beach ball at the alternative location, we swap them */

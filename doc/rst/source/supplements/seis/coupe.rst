@@ -20,7 +20,7 @@ Synopsis
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ *size*] ]
+[ |-D|\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
 [ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill* ]
@@ -139,14 +139,18 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ *size*]
+**-D**\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
     Offsets projected focal mechanisms to the alternate distance, depth given
     in the last two columns of the input file before the (optional) text
     string. Alternatively, use **+o** to interpret the contents of the two
     columns as plot offsets instead, or append fixed offset *dx/dy* for all events.
     We will draw a line connecting the original and relocated
-    beachball positions and optionally place a small circle at the original
-    location.  Use **+s**\ *size* to set the diameter of the circle [no circle].
+    beachball positions and optionally place a small symbol [circle] at the original
+    location.  Use **+s**\ *size* to set the diameter of the symbol [no symbol].
+    Change from circle to any of the standard geometric symbols in :doc:`plot </plot>`,
+    i.e., **a**\|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **i**\|\ **n**\|\ **p**\|\ **s**\|\ **t**\|\ **x** [**c**].
+    The symbol will be filled with the beachball color, but a fixed color (**+g**\ *fill*)
+    or no fill (**+g**) can be selected.
     The line pen defaults to that given via |-W| but can be overridden
     by using **+p**\ *pen* [0.25p].
 
