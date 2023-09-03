@@ -625,7 +625,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (Din->n_columns < 2) {
+		if (Din->n_columns < n_in) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %u are needed\n", (int)Din->n_columns, n_in);
 			Return (GMT_DIM_TOO_SMALL);
 		}
