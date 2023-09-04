@@ -46,7 +46,7 @@
 #define SEIS_CART_OFFSET	1	/* Cartesian plot offset in optional|trailing text */
 #define SEIS_CART_OFFSET_FIX	2	/* Same, but given as fixed offset with +o on option line */
 
-#define SEIS_EVENT_FILL		0	/* Default is to fill optional symbol with even color */
+#define SEIS_EVENT_FILL		0	/* Default is to fill optional symbol with event color */
 #define SEIS_FIXED_FILL		1	/* Used fixed color set via +g<fill> */
 #define SEIS_NO_FILL		2	/* Skip filling the symbol */
 
