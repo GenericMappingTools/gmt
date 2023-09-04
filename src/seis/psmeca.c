@@ -46,7 +46,7 @@ PostScript code is written to stdout.
 
 /* Control structure for psmeca */
 struct PSMECA_CTRL {
-	struct SEIS_OFFSET_LINE A; 	/* -A[+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
+	struct SEIS_OFFSET_LINE A; 	/* -A[+g<fill>][+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
 	struct PSMECA_C {	/* -C<cpt> */
 		bool active;
 		char *file;
