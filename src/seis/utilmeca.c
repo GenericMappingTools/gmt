@@ -1010,6 +1010,7 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 	unsigned int n_errors = 0, k;
 	int n;
 	char txt[GMT_LEN256] = {""}, *c = NULL, *q = NULL;
+	char *modifiers = (option == 'D') ? "cgops" : "gops";	/* Coupe also as +c */
 	strncpy (txt, arg, GMT_LEN256-1);
 
 	/* Deal with these possible variations of old -C and new -A options in meca:
@@ -1017,40 +1018,48 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 	 * 2. -C[<pen>][+s<size>]	which was the GMT5-6.1.1 syntax
 	 * 3. -C[<pen>][P<size>]	which was the GMT4 syntax */
 
-	if ((c = gmt_first_modifier (GMT, txt, "gops"))) {	/* Found at least one valid modifier */
+	if ((c = gmt_first_modifier (GMT, txt, modifiers))) {	/* Found at least one valid modifier */
 		unsigned int pos = 0;
 		char p[GMT_LEN256] = {""};
-		while (gmt_getmodopt (GMT, option, c, "gops", &pos, p, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, option, c, modifiers, &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
-				case 'g':	/* Symbol fill +g[<fill>]*/
-					if ( p[1] == '\0') 
-						L->fill_mode = SEiS_NO_FILL;	/* No fill */
+				case 'c':	/* Geo->cart conversion in coupe: +c */
+					if (p[1] == '\0') 
+						L->convert_geo = true;	/* ALternate location given geographically, must convert to dist/depth */
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: +c takes no argument %s\n", option, &p[1]);
+						n_errors++;
+					}
+					break;
+				case 'g':	/* Symbol fill +g<fill> or no fill +g */
+					if (p[1] == '\0') 
+						L->fill_mode = SEIS_NO_FILL;	/* No fill */
 					else if (gmt_getfill (GMT, &p[1], &L->fill)) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad +g<fill> argument %s\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Bad +g<fill> argument %s\n", option, &p[1]);
 						n_errors++;
 					}
 					else
-						L->fill_mode = SEiS_FIXED_FILL;	/* Default is to fill, with -G unless overwritten */
+						L->fill_mode = SEIS_FIXED_FILL;	/* Default is to fill, with -G unless overwritten */
 					break;
-				case 'o':
+				case 'o':	/* Variable or fixed plot offsets */
 					if (p[1] == '\0')	/* No args means we read dx and dy as the "alternate coordinates". Implies +c */
 						L->mode |= SEIS_CART_OFFSET;
 					else if ((n = gmt_get_pair (GMT, &p[1], GMT_PAIR_DIM_DUP, L->off)) < 0) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Failed to parse offset arguments for +o modifier\n", option);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse offset arguments for +o modifier\n", option);
 						n_errors++;
 					}
 					else
 						L->mode |= SEIS_CART_OFFSET_FIX;
 					break;
-				case 'p':	/* Line and circle pen */
+				case 'p':	/* Line and symbol pen */
 					if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &L->pen)) {
 						gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
 						n_errors++;
 					}
 					break;
-				case 's':	/* Circle diameter */
-					k = 2;	/* start of size if symbol type is given */
-					switch (p[1]) {
+				case 's':	/* Symbol diameter */
+					k = 2;	/* Start of size if symbol type was explicitly given */
+					switch (p[1]) {	/* Check all standard geometric symbols */
 						case 'a': L->symbol = PSL_STAR;	break;
 						case 'c': L->symbol = PSL_CIRCLE;	break;
 						case 'd': L->symbol = PSL_DIAMOND;	break;
@@ -1062,7 +1071,16 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 						case 's': L->symbol = PSL_SQUARE;	break;
 						case 't': L->symbol = PSL_TRIANGLE;	break;
 						case 'x': L->symbol = PSL_CROSS;	break;
-						default:  L->symbol = PSL_CIRCLE;	k = 1;	break;	/* No symbol type, default to circle */
+						default:	/* Presumably just size and default to circle, but check for errors */
+							if (isalpha (p[1])) {	/* Bad symbol code */
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Symbol code %s not supported\n", option, &p[1]);
+								n_errors++;
+							}
+							else {	/* No symbol type given, default to circle */
+								L->symbol = PSL_CIRCLE;
+								k = 1;
+							}
+							break;
 					}
 					if (p[1] == '\0' || (L->size = gmt_M_to_inch (GMT, &p[k])) < 0.0) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Circle diameter cannot be negative or not given!\n", option);
@@ -1100,12 +1118,15 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 
 void meca_line_usage (struct GMTAPI_CTRL *API, char option) {
 	/* Print the usage message for coupe -D and meca -A */
-	GMT_Usage (API, 1, "\n-%c%s", option, SEIS_LINE_SYNTAX);
-	GMT_Usage (API, -2, "Offset focal mechanisms to alternate positions given in the last two columns of the input file before optional label. "
+	char *insert = (option == 'D') ? "[+c]" : "";	/* Coupe also as +c */
+	GMT_Usage (API, 1, "\n-%c%s%s", option, insert, SEIS_LINE_SYNTAX);
+	GMT_Usage (API, -2, "Offset focal mechanisms to alternate positions given in the last two columns of the input file (before the optional label). "
 		"A line is drawn between both positions:");
+	if (option == 'D')
+		GMT_Usage (API, 3, "+c Alternate coupe locations given as lon, lat; convert to (distance, depth() in crossectional plane [Read Cartesian locations].");
 	GMT_Usage (API, 3, "+g Append fill for optional symbol, or chose no fill with +g [Default uses the beachball fill].");
 	GMT_Usage (API, 3, "+o Offset the plot positions by <dx>/<dy>.  If none given then we expect the alternative position columns to hold the offsets.");
 	GMT_Usage (API, 3, "+p Specify the pen used to draw the line between original and adjusted position [0.25p].");
 	GMT_Usage (API, 3, "+s Draw a small symbol of indicated size at the original location. Default symbol is a circle "
-		"but optionally any standard symbol code from a|c|d||g|h|i|n|p|s|t|x is accepted [no symbol].");
+		"but optionally any standard symbol code from a|c|d|g|h|i|n|p|s|t|x is accepted [no symbol].");
 }

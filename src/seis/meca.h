@@ -46,9 +46,9 @@
 #define SEIS_CART_OFFSET	1	/* Cartesian plot offset in optional|trailing text */
 #define SEIS_CART_OFFSET_FIX	2	/* Same, but given as fixed offset with +o on option line */
 
-#define SEiS_EVENT_FILL		0	/* Default is to fill optional symbol with even color */
-#define SEiS_FIXED_FILL		1	/* Used fixed color set via +g<fill> */
-#define SEiS_NO_FILL		2	/* Skip filling the symbol */
+#define SEIS_EVENT_FILL		0	/* Default is to fill optional symbol with even color */
+#define SEIS_FIXED_FILL		1	/* Used fixed color set via +g<fill> */
+#define SEIS_NO_FILL		2	/* Skip filling the symbol */
 
 #define squared(x) ((x) * (x))
 
@@ -61,9 +61,10 @@ enum Seis_scaletype {
 
 struct SEIS_OFFSET_LINE { 
 	bool active;
+	bool convert_geo;	/* True if coupe -D+c, i.e., given geographical coordinates as alternate location */
 	unsigned int mode;	/* 0-3 as above */
 	unsigned int symbol;	/* Default to PSL_CIRCLE */
-	unsigned int fill_mode;	/* Default to SEiS_EVENT_FILL */
+	unsigned int fill_mode;	/* Default to SEIS_EVENT_FILL */
 	double size;		/* Circle size if drawn */
 	double off[2];		/* Cartesian offsets from actual location [0/0] */
 	struct GMT_PEN pen;	/* Pen parameters controlling the line */

@@ -932,11 +932,11 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 						}
 						else	/* Got alternate geographic coordinates */
 							gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
-						if (Ctrl->A.fill_mode == SEiS_EVENT_FILL)
+						if (Ctrl->A.fill_mode == SEIS_EVENT_FILL)
 							gmt_setfill (GMT, &Ctrl->G.fill, 1);
-						else if (Ctrl->A.fill_mode == SEiS_FIXED_FILL)
+						else if (Ctrl->A.fill_mode == SEIS_FIXED_FILL)
 							gmt_setfill (GMT, &Ctrl->A.fill, 1);
-						else	/* SEiS_NO_FILL */
+						else	/* SEIS_NO_FILL */
 							gmt_setfill (GMT, NULL, 1);
 						if (Ctrl->A.size > 0.0)	/* Plot symbol at actual location */
 							PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->A.size), Ctrl->A.symbol);

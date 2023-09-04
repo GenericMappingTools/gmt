@@ -64,7 +64,7 @@ struct PSCOUPE_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct SEIS_OFFSET_LINE D;	/* -D[+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
+	struct SEIS_OFFSET_LINE D;	/* -D[+c][+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
  	struct PSCOUPE_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
@@ -439,7 +439,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+c[n|t]][+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] "
 		"%s %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] "
-		"[-C<cpt>] [-D%s] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
+		"[-C<cpt>] [-D[+c]%s] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
 		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-N] %s%s "
 		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, SEIS_LINE_SYNTAX, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT,
@@ -1373,18 +1373,30 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 							gmt_scale_pen (GMT, &current_pen, scl);
 						}
 						gmt_setpen (GMT, &current_pen);
-						if (Ctrl->D.mode) {	/* Got fixed or variable Cartesian dx and dy in plot units */
+						if (Ctrl->D.convert_geo) {	/* Alternate location given as lon lat, must project into our plane (and using epicenter depth) */
+							double distance_a, n_dep_a;
+							if (!pscoupe_dans_coupe (xynew[GMT_X], xynew[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
+								Ctrl->A.PREF.dip, Ctrl->A.p_length, Ctrl->A.p_width, &distance_a, &n_dep_a))
+								continue;
+							gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_xnew, &plot_ynew);	/* Now in inches */
+							if (Ctrl->D.mode) {	/* Adjust Cartesian dx and dy in plot units */
+								plot_xnew += Ctrl->D.off[GMT_X];
+								plot_ynew += Ctrl->D.off[GMT_Y];
+							}
+						}
+						else if (Ctrl->D.mode) {	/* Alternative location given as offsets relative to projected original point */
+							/* Got fixed or variable Cartesian dx and dy in plot units */
 							plot_xnew = plot_x + Ctrl->D.off[GMT_X];
 							plot_ynew = plot_y + Ctrl->D.off[GMT_Y];
 						}
-						else	/* Got alternate geographic coordinates */
+						else	/* Got alternate distance,depth coordinates */
 							gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
 
-						if (Ctrl->D.fill_mode == SEiS_EVENT_FILL)
+						if (Ctrl->D.fill_mode == SEIS_EVENT_FILL)
 							gmt_setfill (GMT, &Ctrl->G.fill, 1);
-						else if (Ctrl->D.fill_mode == SEiS_FIXED_FILL)
+						else if (Ctrl->D.fill_mode == SEIS_FIXED_FILL)
 							gmt_setfill (GMT, &Ctrl->D.fill, 1);
-						else	/* SEiS_NO_FILL */
+						else	/* SEIS_NO_FILL */
 							gmt_setfill (GMT, NULL, 1);
 						if (Ctrl->D.size > 0.0)	/* Plot symbol at actual location */
 							PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->D.size), Ctrl->D.symbol);
