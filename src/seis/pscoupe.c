@@ -64,7 +64,7 @@ struct PSCOUPE_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct SEIS_OFFSET_LINE D;	/* -D[+c][+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
+	struct SEIS_OFFSET_LINE D;	/* -D[+c][+g[<fill>]][+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
  	struct PSCOUPE_E {	/* -E<fill> */
 		bool active;
 		struct GMT_FILL fill;
