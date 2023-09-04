@@ -1297,7 +1297,6 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 						if (Ctrl->D.mode == SEIS_CART_OFFSET) {	/* Cartesian dx and dy in plot units */
 							Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, Xstring);
 							Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, Ystring);
-							fprintf (stderr, "%s %s\n", Xstring, Ystring);
 						}
 						else if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
 							if ((type = gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_X])) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
