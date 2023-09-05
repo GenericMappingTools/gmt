@@ -348,7 +348,7 @@ developers make decisions that affect **psconvert**.  As of version 9.16 the
 SVG device has been removed.  Fortunately, quality SVG graphics can be obtained
 by first converting to PDF and then install and use the package **pdf2svg**.
 
-See :ref:`include-gmt-graphics` of the **GMT Technical Reference and Cookbook** for more
+See :ref:`include-gmt-graphics` of the **GMT Technical Reference** for more
 information on how **psconvert** is used to produce graphics that can be
 inserted into other documents (articles, presentations, posters, etc.).
 

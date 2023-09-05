@@ -14,7 +14,7 @@ bug fixes! Here are the general updates included in 6.4:
 
 Colormaps:
 
-* Add :doc:`cmocean colour maps </cookbook/cpts>` (`#6446 <https://github.com/GenericMappingTools/gmt/pull/6446>`_)
+* Add :doc:`cmocean colour maps </reference/cpts>` (`#6446 <https://github.com/GenericMappingTools/gmt/pull/6446>`_)
 * Let one-liners with CPTs add colorbar (`#6427 <https://github.com/GenericMappingTools/gmt/pull/6427>`_)
 * Save any default CPT for remote datasets in hidden grid header (`#6178 <https://github.com/GenericMappingTools/gmt/pull/6178>`_)
 * :doc:`grdedit`: Let -D+c allow setting/removing default CPT for grid (`#6223 <https://github.com/GenericMappingTools/gmt/pull/6223>`_)
@@ -180,7 +180,7 @@ GMT 6.2 includes a new module, new common option, general code and documentation
 bug fixes! Here are the general updates included in 6.2:
 
 #. Addition of :doc:`theme-settings` (sets of GMT defaults), with a default modern theme for modern mode, and
-   :ref:`auto scaling options <cookbook/features:Automatic GMT settings>` for many GMT defaults.
+   :ref:`auto scaling options <reference/features:Automatic GMT settings>` for many GMT defaults.
 #. New :doc:`animation 13 <animations/anim13>` of seismic waveforms.
 #. New :doc:`animation 14 <animations/anim14>` of earthquake focal mechanisms.
 #. Support for **+a**\ *angle* for y-axis as well as x-axis with the :ref:`-B axes settings <gmt:Axes settings>`.
@@ -372,7 +372,7 @@ mode; the first two also work in classic mode since they are typically not usefu
 #. :doc:`clear` removes various session files or cached data files.
 #. :doc:`movie` simplifies the construction of animated sequences.
 
-The entire cookbook, tutorial and gallery examples all use modern mode. In modern mode,
+The entire GMT Technical Reference, tutorial and gallery examples all use modern mode. In modern mode,
 the default graphics format is PDF and scripts can open up the plots in the default
 viewer automatically.
 
@@ -851,7 +851,7 @@ as well. For specific enhancements, we have:
 
 *  We have consolidated how map embellishments are specified.  This group
    includes map scales, color bars, legends, map roses, map insets,
-   image overlays, the GMT logo, and a background panel.  A new section in the Cookbook is
+   image overlays, the GMT logo, and a background panel.  A new section in the Technical Reference is
    dedicated to these items and how they are specified.  Common to all is
    the concept of a *reference point* relative to which the item is
    *justified* and *offset*.

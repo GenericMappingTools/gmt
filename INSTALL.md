@@ -46,7 +46,7 @@ animated GIFs.
 
 
 **NOTE:**
-There are several options for using [GMT on non-UNIX systems](https://docs.generic-mapping-tools.org/latest/cookbook/non-unix-platforms.html)
+There are several options for using [GMT on non-UNIX systems](https://docs.generic-mapping-tools.org/latest/reference/non-unix-platforms.html)
 such as Windows, including [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/),
 MinGW/MSYS2, Cygwin, or DOS batch scripts. The last option will not provide you
 with any UNIX tools so you will be limited to what you can do with DOS batch files.

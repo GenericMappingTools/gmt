@@ -82,7 +82,7 @@ Optional Arguments
     inset, **l** for map scale, or **t** for map rose to specify which plot embellisment the |-F| parameters should be
     applied to [default uses the same panel parameters for all selected map embellishments]. The following modifiers can
     be appended to |-F|, with additional explanation and examples provided in the
-    :ref:`cookbook/features:The background panel` cookbook section:
+    :ref:`reference/features:The background panel` cookbook section:
 
     .. include:: explain_-F_box.rst_
 
