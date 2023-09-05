@@ -501,6 +501,15 @@ GMT_LOCAL void psxy_plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y
 	PSL_command (GMT->PSL, "U\n");
 }
 
+GMT_LOCAL bool psxy_is_stroke_symbol (int symbol) {
+	/* Return true if cross, x, y, - symbols */
+	if (symbol == PSL_CROSS) return true;
+	if (symbol == PSL_XDASH) return true;
+	if (symbol == PSL_YDASH) return true;
+	if (symbol == PSL_PLUS)  return true;
+	return false;
+}
+
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psxy synopsis and optionally full usage information */
 
@@ -1472,7 +1481,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
-		bool periodic = false, delayed_unit_scaling = false, E_bar_above = false, E_bar_below = false;
+		bool periodic = false, delayed_unit_scaling = false, E_bar_above = false, E_bar_below = false, stroke_symb = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, col;
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS], data_magnitude;
 		struct GMT_RECORD *In = NULL;
@@ -1706,6 +1715,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
 
+			if (psxy_is_stroke_symbol (S.symbol)) {
+				if (!Ctrl->W.active) {
+					current_pen.width = 0.20 * S.size_x * PSL_POINTS_PER_INCH;
+					if (!Ctrl->W.active)
+						gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
+				}
+			}
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (gmt_M_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
