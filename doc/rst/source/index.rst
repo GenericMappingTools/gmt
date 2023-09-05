@@ -55,7 +55,7 @@ Quick links
         :caption: Reference documentation
 
         modules
-        cookbook
+        reference
         datasets
 
     ---

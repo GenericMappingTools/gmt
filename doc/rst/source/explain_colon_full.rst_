@@ -9,6 +9,6 @@ The **-:** option
 **Description**
 The **-:** option swaps the 1st and 2nd column on input and output [default is no swapping]. Append **i** to select
 input only or **o** to select output only [default affects both]. This option is typically used to handle (latitude,
-longitude) files; see also :ref:`cookbook/options:Input columns selection: The **-i** option`. Note that command line
+longitude) files; see also :ref:`reference/options:Input columns selection: The **-i** option`. Note that command line
 arguments that may take geographic coordinates (e.g., **-R**) *always* expect longitude before latitude. Also,
 geographical grids are expected to have the longitude as first (minor) dimension.

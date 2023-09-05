@@ -11,11 +11,11 @@ The **-B** option
 **Description**
 
 This is potentially the most complicated option in GMT, but most examples of its usage are actually quite simple. We
-distinguish between two sets of information: :ref:`Frame settings <cookbook/options:Frame settings>` and
-:ref:`Axes settings <cookbook/options:Axes settings>`.  These are set separately by their own **-B** invocations; hence
-multiple **-B** specifications may be specified. The :ref:`Frame settings <cookbook/options:Frame settings>` cover
+distinguish between two sets of information: :ref:`Frame settings <reference/options:Frame settings>` and
+:ref:`Axes settings <reference/options:Axes settings>`.  These are set separately by their own **-B** invocations; hence
+multiple **-B** specifications may be specified. The :ref:`Frame settings <reference/options:Frame settings>` cover
 things such as which axes should be plotted, canvas fill, plot title (and subtitle), and what type of gridlines be
-drawn, whereas the :ref:`Axes settings <cookbook/options:Axes settings>` deal with annotation, tick, and gridline
+drawn, whereas the :ref:`Axes settings <reference/options:Axes settings>` deal with annotation, tick, and gridline
 intervals, axes labels, and annotation units.
 
 Frame settings

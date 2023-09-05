@@ -211,12 +211,12 @@ These are all the common GMT options that remain the same for all GMT
 modules. No space between the option flag and the associated arguments.
 
 .. _-B_full:
-.. |Add_-B| replace:: :ref:`(See cookbook information) <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+.. |Add_-B| replace:: :ref:`(See cookbook information) <reference/options:Map frame and axes annotations: The **-B** option>`.
 .. include:: explain_-B.rst_
 
 .. _-J_full:
 .. |Add_-J| replace:: :ref:`(See cookbook summary)
-    <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
+    <reference/options:Coordinate transformations and map projections: The **-J** option>`
     :ref:`(See projections table) <proj-codes>`.
 .. include:: explain_-J.rst_
 
@@ -229,7 +229,7 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Jproj_full.rst_
 
 .. _-R_full:
-.. |Add_-R| replace:: :ref:`(See cookbook information) <cookbook/options:Data domain or map region: The **-R** option>`.
+.. |Add_-R| replace:: :ref:`(See cookbook information) <reference/options:Data domain or map region: The **-R** option>`.
 .. include:: explain_-R.rst_
 
 .. _-Rz_full:
@@ -238,15 +238,15 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Rz_full.rst_
 
 .. _-U_full:
-.. |Add_-U| replace:: :ref:`(See cookbook information) <cookbook/options:Timestamps on plots: The **-U** option>`.
+.. |Add_-U| replace:: :ref:`(See cookbook information) <reference/options:Timestamps on plots: The **-U** option>`.
 .. include:: explain_-U.rst_
 
 .. _-V_full:
-.. |Add_-V| replace:: :ref:`(See cookbook information) <cookbook/options:Verbose feedback: The **-V** option>`.
+.. |Add_-V| replace:: :ref:`(See cookbook information) <reference/options:Verbose feedback: The **-V** option>`.
 .. include:: explain_-V.rst_
 
 .. _-XY_full:
-.. |Add_-XY| replace:: :ref:`(See cookbook information) <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+.. |Add_-XY| replace:: :ref:`(See cookbook information) <reference/options:Plot positioning and layout: The **-X** **-Y** options>`.
 .. include:: explain_-XY.rst_
 
 .. _-aspatial_full:

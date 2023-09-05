@@ -83,7 +83,7 @@ Optional Arguments
     of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
     intervals, you must append ;\ *annotation* to each z-slice in the CPT. **Note**: The |-B|
-    option relies on the |-R| and |-J| settings of the :ref:`given hierarchical level <cookbook/features:GMT Modern Mode Hierarchical Levels>`
+    option relies on the |-R| and |-J| settings of the :ref:`given hierarchical level <reference/features:GMT Modern Mode Hierarchical Levels>`
     to plot correctly. For standard |-B| operations, |Add_-B_links|
 
 .. _-C:
