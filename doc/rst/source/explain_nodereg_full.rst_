@@ -16,5 +16,4 @@ the creation of grids can use the **-r** option (or **-rp**) to select pixel reg
 Most observed data tend to be in gridline registration while processed data sometime may be distributed in pixel
 registration.  While you may convert between the two registrations this conversion looses the Nyquist frequency and
 dampens the other high frequencies. It is best to avoid any registration conversion if you can help it. Planning ahead
-may be important. (Node registrations are defined in Section :ref:`option_nodereg` of the GMT Technical Reference and
-Cookbook.)
+may be important. (Node registrations are defined in Section :ref:`option_nodereg` of the GMT Technical Reference.)

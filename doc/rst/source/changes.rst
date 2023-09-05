@@ -14,7 +14,7 @@ bug fixes! Here are the general updates included in 6.4:
 
 Colormaps:
 
-* Add :doc:`cmocean colour maps </cookbook/cpts>` (`#6446 <https://github.com/GenericMappingTools/gmt/pull/6446>`_)
+* Add :doc:`cmocean colour maps </reference/cpts>` (`#6446 <https://github.com/GenericMappingTools/gmt/pull/6446>`_)
 * Let one-liners with CPTs add colorbar (`#6427 <https://github.com/GenericMappingTools/gmt/pull/6427>`_)
 * Save any default CPT for remote datasets in hidden grid header (`#6178 <https://github.com/GenericMappingTools/gmt/pull/6178>`_)
 * :doc:`grdedit`: Let -D+c allow setting/removing default CPT for grid (`#6223 <https://github.com/GenericMappingTools/gmt/pull/6223>`_)
@@ -851,7 +851,7 @@ as well. For specific enhancements, we have:
 
 *  We have consolidated how map embellishments are specified.  This group
    includes map scales, color bars, legends, map roses, map insets,
-   image overlays, the GMT logo, and a background panel.  A new section in the Cookbook is
+   image overlays, the GMT logo, and a background panel.  A new section in the Technical Reference is
    dedicated to these items and how they are specified.  Common to all is
    the concept of a *reference point* relative to which the item is
    *justified* and *offset*.

@@ -84,7 +84,7 @@ can be appended to **-B** to control the Frame settings:
 **Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
 markers @^ or <break>.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
 with @[ markers (or alternatively <math> ... </math>) (requires ``latex`` and ``dvips`` to be installed). See the
-:doc:`/cookbook/gmt-latex` chapter for more details.
+:doc:`/reference/gmt-latex` chapter for more details.
 
 Axes settings
 ^^^^^^^^^^^^^
@@ -132,7 +132,7 @@ The following directives and modifiers can be appended to **-B** to control the 
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
 **NOTE**: To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively <math>
-... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/cookbook/gmt-latex` chapter for more
+... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/reference/gmt-latex` chapter for more
 details.
 
 **NOTE**: If any labels, prefixes, or units contain spaces or special characters you will need to enclose them in
@@ -141,7 +141,7 @@ quotes.
 **NOTE**: Text items such as *title*, *subtitle*, *label* and *seclabel* are seen by GMT as part of a long string
 containing everything passed to **-B**. Therefore, they cannot contain substrings that look like other modifiers. If
 you need to embed such sequences (e.g., **+t**\ "Solving a+b=c") you need to replace those + symbols with their
-:doc:`octal equivalent </cookbook/octal-codes>` \\053, (e.g., **+t**\ "Solving a\\053b=c").
+:doc:`octal equivalent </reference/octal-codes>` \\053, (e.g., **+t**\ "Solving a\\053b=c").
 
 **NOTE**: For non-geographical projections: Give negative scale (in **-Jx**) or axis length (in **-JX**) to change the
 direction of increasing coordinates (i.e., to make the y-axis positive down).

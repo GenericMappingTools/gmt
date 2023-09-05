@@ -154,7 +154,7 @@ The completion rules are either installed in ``/etc/bash_completion.d/gmt``
 or ``<prefix>/share/tools/gmt_completion.bash``.  Depending on the
 distribution, you may still need to source the gmt completion file from
 ``~/.bash_completion`` or ``~/.bashrc``.  For more information see Section
-:ref:`command-line-completion` in the CookBook.
+:ref:`command-line-completion` in the Technical Reference.
 
 GMT Modules
 -----------

@@ -12,7 +12,7 @@ These are
 CPTs
 ----
 
-The CPT is discussed in detail in the GMT Technical Reference and Cookbook. Please review the format before
+The CPT is discussed in detail in the GMT Technical Reference. Please review the format before
 experimenting further.
 
 CPTs can be created in any number of ways. GMT provides two mechanisms:

@@ -53,7 +53,7 @@ widths. The font used for the annotations along the scale is specified by
 :term:`FONT_ANNOT_PRIMARY` while any unit placed at the side of the
 bar is controlled by :term:`FONT_ANNOT_SECONDARY`. If a label along the bar
 is requested, it is plotted with :term:`FONT_LABEL`. For a full overview of CPTs,
-see the Cookbook section on :ref:`Color palette tables <CPT_section>`.
+see the Technical Reference section on :ref:`Color palette tables <CPT_section>`.
 
 .. figure:: /_images/GMT_colorbar.*
    :width: 500 px

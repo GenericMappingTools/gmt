@@ -16,11 +16,11 @@ Quick links
    - :ref:`Projections Specifications <proj-codes>`
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`Colors <gmtcolors>`
-   - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
-   - :doc:`Using LaTeX in text </cookbook/gmt-latex>`
-   - :doc:`Built-in CPTs </cookbook/cpts>`
-   - :doc:`Built-in patterns </cookbook/predefined-patterns>`
-   - :doc:`Octal Codes of Characters </cookbook/octal-codes>`
+   - :doc:`35 Postscript Fonts </reference/postscript-fonts>`
+   - :doc:`Using LaTeX in text </reference/gmt-latex>`
+   - :doc:`Built-in CPTs </reference/cpts>`
+   - :doc:`Built-in patterns </reference/predefined-patterns>`
+   - :doc:`Octal Codes of Characters </reference/octal-codes>`
    - :ref:`Character Escape Sequences <Char-esc-seq>`
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
