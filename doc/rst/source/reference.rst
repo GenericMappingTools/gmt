@@ -1,11 +1,11 @@
 :orphan:
 
-########
-Cookbook
-########
+###################
+Technical Reference
+###################
 
 .. note::
-   The GMT cookbook is for GMT 6 modern mode only. Looking for the classic mode cookbook?
+   The GMT Technical Reference is for GMT 6 modern mode only. Looking for the classic mode cookbook?
    Since classic mode commands haven't changed since GMT 5, please visit
    the `GMT 5 cookbook <https://docs.generic-mapping-tools.org/5.4/GMT_Docs.html>`_ instead.
 
@@ -37,24 +37,24 @@ Cookbook
    :maxdepth: 1
    :numbered:
 
-   cookbook/preface
-   cookbook/introduction
-   cookbook/features
-   cookbook/options
-   cookbook/coordinate-transformations
-   cookbook/map-projections
-   cookbook/supplemental-packages
-   cookbook/file-formats
-   cookbook/include-figures
-   cookbook/predefined-patterns
-   cookbook/octal-codes
-   cookbook/postscript-fonts
-   cookbook/gmt-latex
-   cookbook/colorspace
-   cookbook/data-filtering
-   cookbook/non-unix-platforms
-   cookbook/cpts
-   cookbook/custom-symbols
-   cookbook/contour-annotations
-   cookbook/ogrgmt-format.rst
-   cookbook/one-liner
+   reference/preface
+   reference/introduction
+   reference/features
+   reference/options
+   reference/coordinate-transformations
+   reference/map-projections
+   reference/supplemental-packages
+   reference/file-formats
+   reference/include-figures
+   reference/predefined-patterns
+   reference/octal-codes
+   reference/postscript-fonts
+   reference/gmt-latex
+   reference/colorspace
+   reference/data-filtering
+   reference/non-unix-platforms
+   reference/cpts
+   reference/custom-symbols
+   reference/contour-annotations
+   reference/ogrgmt-format.rst
+   reference/one-liner

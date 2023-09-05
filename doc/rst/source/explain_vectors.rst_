@@ -58,7 +58,7 @@ end point (**e**) of a line segment:
     their attributes scaled by length/\ *norm* [other arrow attributes remain
     invariant to length]. Optionally, append /*min* for the minimum shrink factor (in the
     0-1 range) that we will shrink to [0.25]. For Cartesian vectors, please specify a *norm*
-    in plot units, while for geovectors specify a *norm* in map units (see :ref:`cookbook/features:Distance units`) [k].
+    in plot units, while for geovectors specify a *norm* in map units (see :ref:`reference/features:Distance units`) [k].
     Alternatively, append unit **q** to indicate we should use user quantity units in making the
     decision; this means the user also must select user quantity input via **+v** or **+z**.
 

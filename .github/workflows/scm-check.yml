@@ -59,7 +59,7 @@ jobs:
             - [ ] Make sure to update the following files:
               - [ ] Version number in `admin/build-scientific-colors-cpt.sh` and `.github/workflows/scm-check.yml`
               - [ ] List of colour maps in `src/gmt_cpt_masters.h` using lines in `/tmp/cpt_strings.txt` (only if new colour maps were added)
-              - [ ] Counts of colour maps in `doc/rst/source/cookbook/cpts.rst` (only if new colour maps were added)
+              - [ ] Counts of colour maps in `doc/rst/source/reference/cpts.rst` (only if new colour maps were added)
               - [ ] List of colour maps and counts in `doc/scripts/GMT_App_M_1*.sh` (only if new colour maps were added)
             - [ ] Update the associated `doc/scripts/GMT_App_M_1*.ps` file(s)
             - [ ] Commit all changes and open a PR
