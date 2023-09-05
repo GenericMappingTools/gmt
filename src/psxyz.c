@@ -1364,7 +1364,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (psxyz_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
 				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
 				if (!Ctrl->W.active) {
-					current_pen.width = 0.20 * S.size_x * PSL_POINTS_PER_INCH;
+					current_pen.width = GMT_SYMBOL_SIZE_TO_PEN_WIDTH * S.size_x * PSL_POINTS_PER_INCH;
 					if (!Ctrl->W.active && current_fill.rgb[0] > -0.5)
 						gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
 				}
