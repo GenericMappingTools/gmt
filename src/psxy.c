@@ -1481,7 +1481,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
-		bool periodic = false, delayed_unit_scaling = false, E_bar_above = false, E_bar_below = false, stroke_symb = false;
+		bool periodic = false, delayed_unit_scaling = false, E_bar_above = false, E_bar_below = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, col;
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS], data_magnitude;
 		struct GMT_RECORD *In = NULL;
@@ -1715,7 +1715,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
 
-			if (psxy_is_stroke_symbol (S.symbol)) {
+			if (psxy_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
+				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
 				if (!Ctrl->W.active) {
 					current_pen.width = 0.20 * S.size_x * PSL_POINTS_PER_INCH;
 					if (!Ctrl->W.active)
