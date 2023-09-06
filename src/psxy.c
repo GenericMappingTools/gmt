@@ -2081,9 +2081,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						break;
 					case GMT_SYMBOL_TEXT:
-						if (Ctrl->G.active && !outline_active)
+						if (fill_active && !outline_active)
 							PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
-						else if (!Ctrl->G.active)
+						else if (fill_active)
+							PSL_setcolor (PSL, current_fill.rgb, outline_setting);
+						else
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
 						(void) gmt_setfont (GMT, &S.font);
 						direction = (S.azim) ? gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, S.angle) : S.angle;
