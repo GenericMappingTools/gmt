@@ -258,7 +258,7 @@ enum GMT_time_period {
 #define GMT_TEXT_OFFSET		20	/* Offset of text from refpoint, in percent */
 
 /* Conversion from symbol size to pen width for stroke-only symbols x,y,+, - */
-#define GMT_SYMBOL_SIZE_TO_PEN_WIDTH	0.15
+#define GMT_SYMBOL_SIZE_TO_PEN_WIDTH	15	/* 15% */
 
 #define GMT_N_MAX_MODEL	20	/* No more than 20 basis functions in a trend model */
 

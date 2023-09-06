@@ -89,7 +89,9 @@
     refers to the diameter of a circumscribed circle. (2) The stroke-only symbols
     **x**, **y**, **+** and **-** will derive their pen widths from the symbol size
     and their pen color from |-G| or |-C|. In that sense they behave as the other
-    symbols (but no outline).  You can override this behavior by specifying |-W|.
+    symbols (but no outline).  You can override this behavior by specifying |-W|,
+    modify it by adjusting :term:`MAP_STROKE_WIDTH` [15%], or set it to zero to
+    rely on pen defaults (and |-W|).
 
     The next collection shows five symbols that require two or more parameters, and
     some have optional modifiers to enhance the symbol appearance.
