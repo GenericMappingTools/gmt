@@ -1717,11 +1717,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (psxy_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
 				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
-				if (!Ctrl->W.active) {
+				if (!Ctrl->W.active)	/* No pen width given, compute from symbol size */
 					current_pen.width = GMT_SYMBOL_SIZE_TO_PEN_WIDTH * S.size_x * PSL_POINTS_PER_INCH;
-					if (!Ctrl->W.active && current_fill.rgb[0] > -0.5)
-						gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
-				}
+				if (current_fill.rgb[0] > -0.5)	/* Color given, use it for the stroke */
+					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
 			}
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
