@@ -1717,10 +1717,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (psxy_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
 				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
-				if (!Ctrl->W.active)	/* No pen width given, compute from symbol size unless conversion factor is 0 */
+				if (!outline_active)	/* No pen width given, compute from symbol size unless conversion factor is 0 */
 					current_pen.width = (gmt_M_is_zero (GMT->current.setting.map_stroke_width)) ? GMT->current.setting.map_default_pen.width : GMT->current.setting.map_stroke_width * S.size_x * PSL_POINTS_PER_INCH;
-				if (current_fill.rgb[0] > -0.5)	/* Color given, use it for the stroke */
+				if (current_fill.rgb[0] > -0.5) {	/* Color given, use it for the stroke */
+					save_pen = current_pen;
 					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
+				}
 			}
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
@@ -2346,6 +2348,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if (S.read_symbol_cmd && (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC)) {	/* Reset status */
 				current_pen = save_pen; current_fill = save_fill; Ctrl->W.active = save_W; Ctrl->G.active = save_G;
 			}
+			else if (psxy_is_stroke_symbol (S.symbol))	/* Reset */
+				gmt_M_rgb_copy (current_pen.rgb, save_pen.rgb);
 			if (Ctrl->H.active) current_pen = nominal_pen;
 		} while (true);
 		if (GMT->common.t.variable) {	/* Reset the transparencies */
