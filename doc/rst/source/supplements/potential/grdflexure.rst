@@ -75,7 +75,7 @@ Required Arguments
       as produced by :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
       These load times can be different from the evaluation times given
       via |-T|.  For load time format, see |-T|. **Note**: If *flist* has
-      three trailing words the the second will be interpreted as a load
+      three trailing words the second will be interpreted as a load
       density grid name and used for that layer instead of the fixed *rl*
       setting in |-D|. The last trailing word is a formatted age string.
     - A file list with extension ".lis" does not need the **+l** modifier
