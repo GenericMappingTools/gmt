@@ -668,7 +668,7 @@ GMT that we are feeding it data in the specific geographic or calendar
 formats (floating point data are assumed by default). We specify the
 data type via the **-f** option (which sets both input and output
 formats; use **-fi** and **-fo** to set input and output separately).
-For instance, to specify that the the first two columns are longitude
+For instance, to specify that the first two columns are longitude
 and latitude, and that the third column (e.g., *z*) is absolute
 calendar time, we add **-fi**\ 0x,1y,2T to the command line. For more
 details, see the man page for the program you need to use.
@@ -1912,7 +1912,7 @@ latitude (e.g., Mercator projection).  Thus, in placing the map scale on the map
 two locations involved: (1) The *reference* point where the map scale's *anchor* should be
 pinned, and (2) the *projection* point where the scale is computed and thus where the map
 scale is true.  Map scales can be plotted by :doc:`/basemap` or :doc:`/coast`, and in
-addition to the the required *refpoint* and anchor arguments specifying where the scale should be placed there
+addition to the required *refpoint* and anchor arguments specifying where the scale should be placed there
 are both required and optional modifiers.  These are given via these modules' **-L** option.
 Here is a list of the attributes that is under your control:
 

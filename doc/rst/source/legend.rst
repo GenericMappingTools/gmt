@@ -113,7 +113,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [*items*]
-    Modern mode only and pertains the the situation where there are **h**\ idden, auto-generated legend
+    Modern mode only and pertains the situation where there are **h**\ idden, auto-generated legend
     information created by prior plotting-modules' **-l** option and **e**\ xplicitly given information
     from input file(s) given on the command line (or via standard input).  Use |-M| to set which of
     these should be used and in what order via directives **h** and **e** [Default is **he**, meaning
