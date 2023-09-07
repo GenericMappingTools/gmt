@@ -37,7 +37,7 @@ Description
 **talwani2d** will read the multi-segment *table* from file (or standard input).
 This file contains cross-sections of one or more 2-D bodies, with one polygon
 per segment.  The segment header must contain the parameter *density*, which
-states the the density of this body (individual body
+states the density of this body (individual body
 densities may be overridden by a fixed constant density contrast given via an optional |-D|).
 We can compute anomalies on an equidistant lattice (by specifying a lattice with
 **-T**) or provide arbitrary output points specified in a file via |-N|.
