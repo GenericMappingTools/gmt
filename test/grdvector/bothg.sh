@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Test to deal with issue http://gmt.soest.hawaii.edu/boards/1/topics/6311?r=6315#message-6315
 #
+# Due to hairline differences due to arcm64 macOS and Intel we need a
+# higher rms threshold for this test to pass
+# GRAPHICSMAGICK_RMS = 0.04
 # GMT_KNOWN_FAILURE_WINDOWS
 #
 ps=bothg.ps
