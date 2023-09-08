@@ -1445,7 +1445,7 @@ GMT_LOCAL double gmtapi_get_record_value (struct GMT_CTRL *GMT, double *record, 
 GMT_LOCAL int gmtapi_bin_input_memory (struct GMT_CTRL *GMT, uint64_t n, uint64_t n_use) {
 	/* Read function which gets one record from the memory reference.
  	 * The current data record has already been read from wherever and is available in
- 	 * GMT->current.io.curr_rec so that is where we operate frome */
+ 	 * GMT->current.io.curr_rec so that is where we operate from */
 	unsigned int status;
 	gmt_M_unused(n);
 

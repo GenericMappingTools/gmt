@@ -8194,7 +8194,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	if (option == 0)	/* grid is an input file argument, not an option */
 		GMT_Usage (API, 1, "\n%s", GMT_OUTGRID);
-	else if (option == '=')	/* grdmath usees = instead of -option*/
+	else if (option == '=')	/* grdmath uses = instead of -option*/
 		GMT_Usage (API, 1, "\n= %s", GMT_OUTGRID);
 	else	/* All regular options */
 		GMT_Usage (API, 1, "\n-%c%s", option, GMT_OUTGRID);
@@ -16355,7 +16355,7 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 
 GMT_LOCAL unsigned int gmtinit_get_length (struct GMT_CTRL *GMT, char symbol, char *string, bool norm, bool is_grdvector, float *value, bool *user_unit) {
 	/* Used by gmt_parse_vector to set length scales or limits related to vectors.
-	 * Note: is_grdvector is true when being called from grdvector because we need to honor normalizations +n<lengtH> without unit to mean unit = q */
+	 * Note: is_grdvector is true when being called from grdvector because we need to honor normalizations +n<length> without unit to mean unit = q */
 	unsigned int error = GMT_NOERROR;
 	size_t len = (string) ? strlen (string) : 0;	/* Length of string */
 
