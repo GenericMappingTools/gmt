@@ -76,4 +76,9 @@ ymin=0.0001
 	grep -v NaN /tmp/sorted.log | gmt plot -Sc2p -Gorange -l"Test r.m.s. below RMS limit"+jBL
 	grep -v NaN /tmp/sorted.log | awk '{if ($2 > '"${rms_limit}"') print $0}' | gmt plot -Sc2p -Gred -l"Test r.m.s. above RMS limit"
 	awk '{if ($2 < 0) print $1, '"${yNaN}"'}' /tmp/sorted.log | gmt plot -Ss2p -Gblue -l"Known failure"
+	echo "# Failure log: rank rms scriptname" > failure-log.txt
+	echo "# rank rms (-1 means known failure so not run) scriptname" >> failure-log.txt
+	cat /tmp/sorted.log >> failure-log.txt
+	rm -f /tmp/sorted.log /tmp/raw.log
+	echo "Sorted failure rms in file: failure-log.txt"
 gmt end show
