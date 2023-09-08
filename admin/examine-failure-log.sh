@@ -45,7 +45,7 @@ Nbelow=$(awk '{if ($2 > '"${rms_limit}"') print $0}' /tmp/sorted.log | gmt info 
 FAIL=$(gmt math -Q ${N} ${Nbelow} SUB =)
 xp=$(gmt math -Q ${xmin} ${xzero} ADD 2 DIV =)
 xf=$(gmt math -Q ${xzero} ${xmax} ADD 2 DIV =)
-gmt begin rms-errors pdf
+gmt begin rms-errors png
 ymin=0.0001
 	gmt basemap -R${xmin}/${xmax}/${ymin}/${ymax} -JX16c/21cl -Bxaf+l"Test number (after sorting)" \
 		-Bya1f3+l"RMS error" -B+t"${FAIL} of ${N} scripts fail on ${chip}" -U${USER}
