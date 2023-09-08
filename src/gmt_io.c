@@ -234,7 +234,7 @@ typedef enum {
 	Int64len = 8
 } SwapWidth;
 
-/* Indicies into the 4 proj strings possible in GMT/OGR files */
+/* Indices into the 4 proj strings possible in GMT/OGR files */
 
 enum GMTIO_PROJS {
 	GMTIO_EPGS = 0,
