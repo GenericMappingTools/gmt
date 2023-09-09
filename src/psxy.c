@@ -501,6 +501,15 @@ GMT_LOCAL void psxy_plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y
 	PSL_command (GMT->PSL, "U\n");
 }
 
+GMT_LOCAL bool psxy_is_stroke_symbol (int symbol) {
+	/* Return true if cross, x, y, - symbols */
+	if (symbol == PSL_CROSS) return true;
+	if (symbol == PSL_XDASH) return true;
+	if (symbol == PSL_YDASH) return true;
+	if (symbol == PSL_PLUS)  return true;
+	return false;
+}
+
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psxy synopsis and optionally full usage information */
 
@@ -1706,6 +1715,15 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
 
+			if (psxy_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
+				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
+				if (!outline_active)	/* No pen width given, compute from symbol size unless conversion factor is 0 */
+					current_pen.width = (gmt_M_is_zero (GMT->current.setting.map_stroke_width)) ? GMT->current.setting.map_default_pen.width : GMT->current.setting.map_stroke_width * S.size_x * PSL_POINTS_PER_INCH;
+				if (current_fill.rgb[0] > -0.5) {	/* Color given, use it for the stroke */
+					save_pen = current_pen;
+					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
+				}
+			}
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (gmt_M_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
@@ -2065,9 +2083,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						break;
 					case GMT_SYMBOL_TEXT:
-						if (Ctrl->G.active && !outline_active)
+						if (fill_active && !outline_active)
 							PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
-						else if (!Ctrl->G.active)
+						else if (fill_active)
+							PSL_setcolor (PSL, current_fill.rgb, outline_setting);
+						else
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
 						(void) gmt_setfont (GMT, &S.font);
 						direction = (S.azim) ? gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, S.angle) : S.angle;
@@ -2328,6 +2348,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if (S.read_symbol_cmd && (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC)) {	/* Reset status */
 				current_pen = save_pen; current_fill = save_fill; Ctrl->W.active = save_W; Ctrl->G.active = save_G;
 			}
+			else if (psxy_is_stroke_symbol (S.symbol))	/* Reset */
+				gmt_M_rgb_copy (current_pen.rgb, save_pen.rgb);
 			if (Ctrl->H.active) current_pen = nominal_pen;
 		} while (true);
 		if (GMT->common.t.variable) {	/* Reset the transparencies */

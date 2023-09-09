@@ -12011,6 +12011,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	char text[GMT_BUFSIZ];
 	size_t s_length;
 
+	if (fabs (interval) < GMT_CONV15_LIMIT) interval = 0.0;
 	if (!strcmp (GMT->current.setting.format_float_map, "%.12g")) {	/* Default map format given means auto-detect decimals */
 
 		/* Find number of decimals needed in the format statement */

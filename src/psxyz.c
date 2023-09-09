@@ -136,6 +136,15 @@ struct PSXYZ_DATA {
 	struct GMT_CUSTOM_SYMBOL *custom;
 };
 
+GMT_LOCAL bool psxyz_is_stroke_symbol (int symbol) {
+	/* Return true if cross, x, y, - symbols */
+	if (symbol == PSL_CROSS) return true;
+	if (symbol == PSL_XDASH) return true;
+	if (symbol == PSL_YDASH) return true;
+	if (symbol == PSL_PLUS)  return true;
+	return false;
+}
+
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXYZ_CTRL *C;
 
@@ -734,7 +743,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	double bar_gap, bar_width, bar_step, nominal_size_x, nominal_size_y, *t_for_cpt = NULL;
 	double axes[2] = {0.0, 0.0}, Az = 0.0, factor = 1.0;
 
-	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen;
+	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen, save_pen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
@@ -1352,6 +1361,16 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (S.base_set & GMT_BASE_ORIGIN) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
 
+			if (psxyz_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
+				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
+				if (!outline_active)	/* No pen width given, compute from symbol size */
+					current_pen.width = (gmt_M_is_zero (GMT->current.setting.map_stroke_width)) ? GMT->current.setting.map_default_pen.width : GMT->current.setting.map_stroke_width * S.size_x * PSL_POINTS_PER_INCH;
+				if (current_fill.rgb[0] > -0.5) {	/* Color given, use it for the stroke */
+					save_pen = current_pen;
+					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
+				}
+			}
+
 			if (Ctrl->W.cpt_effect) {
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
@@ -1680,7 +1699,11 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (S.user_unit[GMT_Y]) data[n].flag |= 8;
 
 			n++;
-			if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
+			if (read_symbol) {
+				API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
+				if (psxyz_is_stroke_symbol (S.symbol))	/* Reset */
+					gmt_M_rgb_copy (current_pen.rgb, save_pen.rgb);
+			}
 		} while (true);
 
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */

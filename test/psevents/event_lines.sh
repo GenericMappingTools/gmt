@@ -22,7 +22,7 @@ cat << EOF > /tmp/def
 3	0
 5	0
 EOF
-gmt begin lines png
+gmt begin event_lines ps
 	gmt subplot begin 3x1 -Fs15c/5c -R-2/5/-1/2.5 -Bafg1 -A+jTL+gwhite+p1p
 	gmt subplot set 0 -ALinear
 	gmt plot psevents_function_l.txt -W3p,red -i0,1 -lsize
