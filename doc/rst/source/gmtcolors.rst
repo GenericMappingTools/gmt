@@ -299,7 +299,7 @@ R/G/B        Color Name            R/G/B        Color Name            R/G/B     
 Further Information
 -------------------
 
-For more information on the use of color, read Chapter :ref:`Color Space` of the **CookBook**.
+For more information on the use of color, read Chapter :ref:`Color Space` of the **Technical Reference**.
 
 See Also
 --------

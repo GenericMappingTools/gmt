@@ -36,9 +36,9 @@ The cumulative number of *ncols* may exceed the columns actually needed by the p
 assume that *type* applies to all columns and that *ncols* is implied by the expectation of the program. When using
 native binary data the user must be aware of the fact that GMT has no way of determining the actual number of columns
 in the file. Native binary files may have a header section, where the :ref:`-h option
-<cookbook/options:Header data records: The **-h** option>` can be used to skip the first *n* bytes. If the input file
+<reference/options:Header data records: The **-h** option>` can be used to skip the first *n* bytes. If the input file
 is netCDF, no **-b** is needed; simply append **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the filename to specify the
-variables to be read (see :doc:`/cookbook/file-formats` and :ref:`Modifiers for COARDS-compliant netCDF files
+variables to be read (see :doc:`/reference/file-formats` and :ref:`Modifiers for COARDS-compliant netCDF files
 <modifiers-for-CF>` for more information).
 
 .. toggle::

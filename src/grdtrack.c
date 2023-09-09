@@ -984,7 +984,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				M->n_rows = n_rows;
 				for (k = 0; k < Ctrl->G.n_grids; k++)	/* Allocate arrays for stack */
 					stack[k] = gmt_M_memory (GMT, NULL, T->n_segments, double);
-				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = gmt_M_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Ned temp array for these methods */
+				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = gmt_M_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Need temp array for these methods */
 				for (row = 0; row < n_rows; row++) {	/* For each row to stack across all segments, per data grid */
 					gmt_M_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
 					for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset extremes upon starting new stack */

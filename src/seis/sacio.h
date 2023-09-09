@@ -91,16 +91,16 @@ typedef struct sac_head {
 	float t8;               /*    user-defined time pick                      */
 	float t9;               /*    user-defined time pick                      */
 	float f;                /*    end time of event, sec > 0                  */
-	float resp0;            /*    instrument respnse parameter (not used)     */
-	float resp1;            /*    instrument respnse parameter (not used)     */
-	float resp2;            /*    instrument respnse parameter (not used)     */
-	float resp3;            /*    instrument respnse parameter (not used)     */
-	float resp4;            /*    instrument respnse parameter (not used)     */
-	float resp5;            /*    instrument respnse parameter (not used)     */
-	float resp6;            /*    instrument respnse parameter (not used)     */
-	float resp7;            /*    instrument respnse parameter (not used)     */
-	float resp8;            /*    instrument respnse parameter (not used)     */
-	float resp9;            /*    instrument respnse parameter (not used)     */
+	float resp0;            /*    instrument response parameter (not used)     */
+	float resp1;            /*    instrument response parameter (not used)     */
+	float resp2;            /*    instrument response parameter (not used)     */
+	float resp3;            /*    instrument response parameter (not used)     */
+	float resp4;            /*    instrument response parameter (not used)     */
+	float resp5;            /*    instrument response parameter (not used)     */
+	float resp6;            /*    instrument response parameter (not used)     */
+	float resp7;            /*    instrument response parameter (not used)     */
+	float resp8;            /*    instrument response parameter (not used)     */
+	float resp9;            /*    instrument response parameter (not used)     */
 	float stla;             /*  T station latititude (degree, north positive) */
 	float stlo;             /*  T station longitude (degree, east positive)   */
 	float stel;             /*  T station elevation (meters, not used)        */

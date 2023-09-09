@@ -370,7 +370,7 @@ To plot a circle with color dictated by the *t.cpt* file for the *z*-value 65::
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
 and color based on the third column via the CPT chrome on a
-linear mape::
+linear maps::
 
     gmt plot misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 -pdf map
 
