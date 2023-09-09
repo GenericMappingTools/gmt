@@ -1,0 +1,32 @@
+name: Reminders
+
+on:
+  schedule:
+    - cron: '0 0 1 */6 *' # Runs at midnight on the 1st day every 6th month
+
+jobs:
+  review-known-failures:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Find and report known failures
+      run: |
+        # Get the list of known failures
+        KNOWN_FAILURES=$(grep -rl 'GMT_KNOWN_FAILURE' test/)
+
+        # If there are known failures, create an issue
+        if [ -n "$KNOWN_FAILURES" ]; then
+          title="Review GMT's known failures"
+
+          echo "The following tests are marked as GMT_KNOWN_FAILURE and need review:" > report.md
+          echo "" >> report.md
+          while IFS= read -r line ; do echo "1. $line"; done <<< $KNOWN_FAILURES >> report.md
+
+          gh issue create --title "$title" --body-file report.md
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
