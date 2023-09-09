@@ -214,7 +214,7 @@ def visit_video_node_latex(self, node):
 
 
 def visit_video_node_unsupported(self, node):
-    """Visit unsuported video node."""
+    """Visit unsupported video node."""
     logger.warning(f"{node['platform']}: unsupported output format (node skipped)")
     raise nodes.SkipNode
 
@@ -233,7 +233,7 @@ _NODE_VISITORS = {
     "text": (visit_video_node_unsupported, depart_video_node),
 }
 
-# -- manage dowloaded images ---------------------------------------------------
+# -- manage downloaded images ---------------------------------------------------
 
 
 def merge_download_images(app, env, docnames, other):
