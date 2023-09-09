@@ -15,7 +15,7 @@ jobs:
     - name: Find and report known failures
       run: |
         # Get the list of known failures
-        KNOWN_FAILURES=$(grep -rl 'GMT_KNOWN_FAILURE' test/)
+        KNOWN_FAILURES=$(grep -rl 'GMT_KNOWN_FAILURE' test/**/*.sh)
 
         # If there are known failures, create an issue
         if [ -n "$KNOWN_FAILURES" ]; then
