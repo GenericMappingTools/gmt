@@ -1098,6 +1098,7 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 	/* Here we got older syntax: -C<pen>[+s<size>] or -C[<pen>][P<size>] (but the +s<size> would have been stripped off
 	 * so here we must either have -C<pen> or -C[<pen>][P<size>] */
 
+	L->symbol = PSL_CIRCLE;	/* Only option with this syntax */
 	if ((q = strchr (txt, 'P')) != NULL) {	/* Case 3 way of changing the diameter */
 		if (q[1] == '\0' || (L->size = gmt_M_to_inch (GMT, &q[1])) < 0.0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Circle diameter cannot be negative or not given!\n", option);
