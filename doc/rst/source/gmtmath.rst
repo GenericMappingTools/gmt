@@ -588,7 +588,7 @@ piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
     process1 | gmt math STDIN SQRT = | process3
 
-To take log10 of the average of 2 data files, use
+To take :math:`\log_{10}` of the average of 2 data files, use
 
 ::
 

@@ -15,7 +15,7 @@ GMT is a collection of freely available command-line tools under the GNU LGPL th
 manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
 projecting, etc.) and produce illustrations ranging from
 simple x-y plots, via contour maps, to artificially illuminated surfaces
-and 3-D perspective views in black/white or full color. Linear, log10,
+and 3-D perspective views in black/white or full color. Linear, :math:`\log_{10}`,
 and power scaling is supported in addition to over 30 common map
 projections. The processing and display routines within GMT are
 completely general and will handle any (x,y) or (x,y,z) data as input.

@@ -204,7 +204,7 @@ Logarithmic coordinate transformation
   in :ref:`plot-units <plt-units>` (with **-JX**). If the *y*-scale or *y*-axis length is different from that of the
   *x*-axis (which is most often the case), separate the two scales (or lengths) by a slash, e.g., **-Jx**\ 0.1i/0.5i
   or **-JX**\ 8i/5i.
-- **l** to take log10 of values before scaling.
+- **l** to take :math:`\log_{10}` of values before scaling.
 
 **Description**
 
