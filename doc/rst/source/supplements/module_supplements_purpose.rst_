@@ -116,3 +116,6 @@
 
 .. |x2sys_solve_purpose| replace:: Determine least-squares systematic correction from crossovers
 
+.. |barb_purpose| replace:: Plot wind barbs in 2D or 3D from table data
+
+.. |grdbarb_purpose| replace:: Plot wind barb field from two component grids
