@@ -29,7 +29,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdbarb"
 #define THIS_MODULE_MODERN_NAME	"grdbarb"
 #define THIS_MODULE_NAME	"grdbarb"
-#define THIS_MODULE_LIB		"windbarb"
+#define THIS_MODULE_LIB		"windbarbs"
 #define THIS_MODULE_PURPOSE	"Plot wind barb field from two component grids"
 #define THIS_MODULE_KEYS	"<G{2,CC(,>X}"
 #define THIS_MODULE_NEEDS	"gJ"

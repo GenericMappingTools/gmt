@@ -25,9 +25,10 @@
 #   SUPPL_EXAMPLE_PROGS: Example scripts
 #
 
-set (SUPPL_NAME windbarb)
-set (SUPPL_LIB_NAME windbarb)
+set (SUPPL_NAME windbarbs)
+#set (SUPPL_LIB_NAME windbarbs)
 set (SUPPL_PROGS_SRCS grdbarb.c psbarb.c)
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} windbarb.c)
+set (SUPPL_EXAMPLE_FILES README.windbarb)
 
-set (SUPPL_DLL_RENAME ${WINDBARB_DLL_RENAME})
+#set (SUPPL_DLL_RENAME ${WINDBARB_DLL_RENAME})
