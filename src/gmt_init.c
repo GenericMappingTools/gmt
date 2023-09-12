@@ -11976,7 +11976,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				}
 				/* Set session DATASERVER dir */
 				GMT->session.DATASERVER = strdup (value);
-				if ((srv_dir = gmtinit_prepend_server_name (GMT))) {	/* Redefine USERDIR and CACHE DIR by appending the ghost */
+				if ((srv_dir = gmtinit_prepend_server_name (GMT))) {	/* Redefine USERDIR and CACHEDIR by appending the ghost */
 					char path[PATH_MAX] = {""};
 					if (GMT->session.USERDIR)	/* First free what we have */
 						gmt_M_str_free (GMT->session.USERDIR);
