@@ -3431,10 +3431,10 @@ GMT_LOCAL void gmtinit_trim_off_any_slash_at_end (char *dir) {
 }
 
 GMT_LOCAL char * gmtinit_prepend_server_name (struct GMT_CTRL *GMT) {
-	/* if the current GMT server is one of candidate, static, or test, then
+	/* If the current GMT server is one of candidate, static, or test, then
 	 * we append that directory to the local path so that we do not overwrite
 	 * what we obtain from the official server [e.g., oceania, europe, ...]
-	 * which places data under the "server" name. */
+	 * which places data under the "server" directory. */
 	static char *ghost_servers[3] = {"candidate", "static", "test"};
 	unsigned int k;
 	if (GMT->session.DATASERVER == NULL) return NULL;	/* Not initialized yet */
