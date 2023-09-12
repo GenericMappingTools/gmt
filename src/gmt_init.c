@@ -11978,14 +11978,30 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->session.DATASERVER = strdup (value);
 				if ((srv_dir = gmtinit_prepend_server_name (GMT))) {	/* Redefine USERDIR and CACHEDIR by appending the ghost */
 					char path[PATH_MAX] = {""};
+					int err;
+					struct stat S;
 					if (GMT->session.USERDIR)	/* First free what we have */
 						gmt_M_str_free (GMT->session.USERDIR);
 					snprintf (path, PATH_MAX, "%s/.gmt/%s", GMT->session.HOMEDIR, srv_dir);
 					GMT->session.USERDIR = gmt_strdup_noquote (path);
+					err = stat (GMT->session.USERDIR, &S);	/* Stat the userdir path (which may not exist) */
+					if (errno == ENOENT && gmt_mkdir (GMT->session.USERDIR)) {	/* Path does not exist so we create that dir */
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Auto-downloading of data has been disabled.\n");
+						GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+						gmt_M_str_free (GMT->session.USERDIR);
+					}
 					if (GMT->session.CACHEDIR)	/* First free what we have */
 						gmt_M_str_free (GMT->session.CACHEDIR);
 					snprintf (path, PATH_MAX, "%s/.gmt/%s/cache", GMT->session.HOMEDIR, srv_dir);
 					GMT->session.CACHEDIR = gmt_strdup_noquote (path);
+					err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
+					if (errno == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Auto-downloading of cache data has been disabled.\n");
+						GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
+						gmt_M_str_free (GMT->session.CACHEDIR);
+					}
 				}
 			}
 			break;
