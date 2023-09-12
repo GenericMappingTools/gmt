@@ -141,8 +141,8 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ *parameters*
-    Modify wind barb parameters. Append wind barb *length*.
-    See WIND BARB ATTRIBUTES for specifying additional attributes.
+    Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
+    See `Wind Barb Attributes`_ for specifying additional attributes.
 
 .. _-T:
 

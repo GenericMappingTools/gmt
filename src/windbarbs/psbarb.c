@@ -97,7 +97,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->W.pen = GMT->current.setting.map_default_pen;
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	C->N.mode = PSBARB_CLIP_REPEAT;
-	C->Q.B.width = 0.0f;	C->Q.B.length = 0.0f;	C->Q.B.angle = 120.0f;	C->Q.B.scale = 5.0f;
+	C->Q.B.width = 0.1f;	C->Q.B.length = 0.2f;	C->Q.B.angle = 120.0f;	C->Q.B.scale = 5.0f;
 	return (C);
 }
 
