@@ -3435,12 +3435,12 @@ GMT_LOCAL char * gmtinit_prepend_server_name (struct GMT_CTRL *GMT) {
 	 * we append that directory to the local path so that we do not overwrite
 	 * what we obtain from the official server [e.g., oceania, europe, ...]
 	 * which places data under the "server" directory. */
-	static char *ghost_servers[3] = {"candidate", "static", "test"};
+	static char *ghost_server[3] = {"candidate", "static", "test"};
 	unsigned int k;
 	if (GMT->session.DATASERVER == NULL) return NULL;	/* Not initialized yet */
 	for (k = 0; k < 3; k++) {
-		if (!strcmp (GMT->session.DATASERVER, ghost_servers[k]))
-			return (ghost_servers[k]);
+		if (!strcmp (GMT->session.DATASERVER, ghost_server[k]))
+			return (ghost_server[k]);
 	}
 	return NULL;	/* The users default data server */
 }
