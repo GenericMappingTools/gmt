@@ -3521,7 +3521,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.USERDIR != NULL) {
 		err = stat (GMT->session.USERDIR, &S);	/* Stat the userdir path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
 			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of remote data sets has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
@@ -3541,7 +3541,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.CACHEDIR != NULL) {
 		err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
 			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of cache data has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
@@ -3565,7 +3565,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (API->session_dir != NULL) {
 		err = stat (API->session_dir, &S);	/* Stat the session path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (API->session_dir)) { /* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (API->session_dir)) { /* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT User sessions directory : %s\n", API->session_dir);
 			GMT_Report (API, GMT_MSG_ERROR, "Modern mode will fail.\n");
 		}
