@@ -205,9 +205,19 @@ GMT_LOCAL int gmtremote_remove_item (struct GMTAPI_CTRL *API, char *path, bool d
 	return error;
 }
 
+GMT_LOCAL void gmtremote_set_local_path (struct GMT_CTRL *GMT, char *local_path, char *file) {
+	/* Build the local path to the remote data files, optionally append specific file */
+	snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
+	if (file) {	/* Also append the file to the path */
+		strcat (local_path, "/");
+		strcat (local_path, file);
+	}
+}
+
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, int *n) {
 	/* Read contents of the info file into an array of structs */
-	int k = 0, nr;
+	bool parse_extra_data = false;
+	int k = 0, nr, start_here = 0;
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *I = NULL;
 	char unit, line[GMT_LEN512] = {""}, file[PATH_MAX] = {""}, *c = NULL;
@@ -257,9 +267,22 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 		return NULL;
 	}
 
+	/* Watch for "#% " records with high-res data in very odd resolutions, such as 52.0732883317s for Pluto's original grid.
+	 * Since 6.4 only used 8-bytes to hold that resolution it is not able to use that dataset - it requires >= 6.5.
+	 * Thus, such information records are flagged by a leading "#% " which turns it into a comment and it is then
+	 * always skipped by those GMT version who are not aware of this yet.  GMT 6.5 will, however, be allowed to parse
+	 * such lines (skipping the 3 leading bytes) and has a 32-byte struct member to hold the much longer string.
+	 */
+	parse_extra_data = (GMT_MAJOR_VERSION > 6 || (GMT_MAJOR_VERSION == 6 && GMT_MINOR_VERSION >= 5));
 	while (fgets (line, GMT_LEN512, fp) != NULL) {
-		if (line[0] == '#') continue;	/* Skip any comments */
-		if ((nr = sscanf (line, "%s %s %s %c %lg %lg %s %lg %s %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile_size, I[k].date, I[k].coverage, I[k].filler, I[k].CPT, I[k].remark)) != 13) {
+		start_here = 0;	/* line[0] is the start of the info record */
+		if (line[0] == '#') {	/* Skip any comments unless parse_extra_data is true */
+			if (parse_extra_data && strncmp (line, "#% ", 3U) == 0)
+				start_here = 3;
+			else	/* No, just skip the comment */
+				continue;
+		}
+		if ((nr = sscanf (&line[start_here], "%s %s %s %c %lg %lg %s %lg %s %s %s %s %[^\n]", I[k].dir, I[k].file, I[k].inc, &I[k].reg, &I[k].scale, &I[k].offset, I[k].size, &I[k].tile_size, I[k].date, I[k].coverage, I[k].filler, I[k].CPT, I[k].remark)) != 13) {
 			GMT_Report (API, GMT_MSG_WARNING, "File %s should have 13 fields but only %d read for record %d - download error???\n", file, nr, k);
 			gmt_M_free (GMT, I);
 			fclose (fp);
@@ -873,7 +896,8 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	 */
 	struct stat buf;
 	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
-	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""}, new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
+	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""};
+	char new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
 	struct LOCFILE_FP *LF = NULL;
 	struct GMT_CTRL *GMT = API->GMT;	/* Short hand */
@@ -1199,7 +1223,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
 				goto not_local;	/* Cannot have server data if no user directory created yet */
 			}
-			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
+			gmtremote_set_local_path (GMT, local_path, NULL);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
 			strcat (local_path, GMT->parent->remote_info[k_data].file);	/* Append filename */
@@ -1211,7 +1235,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
 				goto not_local;	/* Cannot have server data if no user directory created yet */
 			}
-			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
+			gmtremote_set_local_path (GMT, local_path, NULL);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[t_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
 			strcat (local_path, GMT->parent->remote_info[t_data].file);	/* Append the tiledir to get full path to dir for this type of tiles */
@@ -1230,6 +1254,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			}
 		}
 		else {	/* Must be cache file */
+			char add_cache_file[PATH_MAX] = {""};
 			if (GMT->session.CACHEDIR == NULL) {
 				GMT_Report (API, GMT_MSG_DEBUG, "No cache directory yet to store %s!\n", file);
 				goto not_local;	/* Cannot have cache data if no cache directory created yet */
