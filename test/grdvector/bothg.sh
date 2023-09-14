@@ -3,8 +3,6 @@
 #
 # Due to hairline differences due to arcm64 macOS and Intel we need a
 # higher rms threshold for this test to pass
-# GRAPHICSMAGICK_RMS = 0.04
-# GMT_KNOWN_FAILURE_WINDOWS
 #
 ps=bothg.ps
 gmt pscoast -R-180/180/-70/70 -JM18c -Dc -Sblue -Glightgray -W0.01p,black -Baf -P --FONT_ANNOT_PRIMARY=9p,Helvetica,black -K -Xc > $ps

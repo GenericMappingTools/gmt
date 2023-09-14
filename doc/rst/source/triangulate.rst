@@ -25,7 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [**n**] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**n**]  ]
+[ |-S|\ [*n*]  ]
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
@@ -167,9 +167,9 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [<n>]
-    Output triangles as polygon segments separated by a segment header record. Append _n_, where _n_ is an integer,
-    to report the polygon numbers start counting at _n_ [Default counts from zero]. Requires Delaunay triangulation.
+**-S**\ [*n*]
+    Output triangles as polygon segments separated by a segment header record. Append *n*, where *n* is an integer,
+    to report the polygon numbers start counting at *n* [Default counts from zero]. Requires Delaunay triangulation.
 
 .. _-T:
 
