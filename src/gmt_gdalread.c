@@ -1058,6 +1058,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	switch (GDALGetRasterDataType(hBand)) {
 		case GDT_Byte:
+			/* Because of a GDAL bug that misidentifies uint8 as GDT_CFloat64 (enum 14) we are forced to do this
+			   ugly patch. Make this conditional on a GDAL version when it is fixed upstream. */
+		case 14:
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
 				Ctrl->UInt8.data = prhs->c_ptr.grd;
 			else if ((Ctrl->UInt8.data = gmt_M_memory (GMT, NULL, n_alloc, uint8_t)) == NULL)
@@ -1245,6 +1248,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 				switch (GDALGetRasterDataType(hBand)) {
 					case GDT_Byte:
+						/* Because of a GDAL bug that misidentifies uint8 as GDT_CFloat64 we are forced to do this
+						   ugly patch. Make this conditional on a GDAL version when it is fixed upstream. */
+					case 14:
 						/* This chunk is kind of complicated because we want to take into account several different cases */
 						for (n = 0; n < nXSize[piece]; n++) {
 							if (do_BIP)			/* Vector for Pixel Interleaving */
