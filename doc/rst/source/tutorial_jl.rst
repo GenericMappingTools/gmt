@@ -22,8 +22,8 @@ after completion of this short tutorial.
 
 Also, not all GMT module manuals have been converted to the verbose Julia syntax so some links
 still redirect to the hard-core GMT man pages, whilst others direct users to Julia versions of
-the translated GMT manuals. A *lost case* is the GMT CookBook that is so big/complete that it
-will take long time to see a Julia version ot it.
+the translated GMT manuals. A *lost case* is the GMT Technical Reference that is so big/complete that it
+will take long time to see a Julia version of it.
 
 .. toctree::
     :maxdepth: 1

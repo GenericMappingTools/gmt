@@ -86,7 +86,7 @@ Optional Arguments
     hand side of the matrix equation alone.  If used with operators **LSQFIT** and **SVDFIT** you can
     optionally append the modifier **+e** which will instead evaluate
     the solution and write a data set with four columns: *t*, *f(t)*, the
-    model solution at *t*, and the the residuals at *t*, respectively
+    model solution at *t*, and the residuals at *t*, respectively
     [Default writes one column with model coefficients].  Append **+w**
     if *t_f(t* has a third column with weights, or append **+s** if
     *t_f(t)* has a third column with 1-sigma uncertainties.  In those two cases we
@@ -558,6 +558,12 @@ the unit is in inches squared and scaling by 2.54 once will give 0.3937 inch tim
 Thus, conversions only work for linear unit calculations, such as gmt math -Qp 1c 0.5i ADD =, which
 will return the result as 64.34 points.
 
+Trailing Text
+-------------
+
+Any trailing text in the first input file will be passed to the output data set.  You can turn off the
+output of text with **-on**.
+
 Examples
 --------
 
@@ -582,7 +588,7 @@ piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
     process1 | gmt math STDIN SQRT = | process3
 
-To take log10 of the average of 2 data files, use
+To take :math:`\log_{10}` of the average of 2 data files, use
 
 ::
 

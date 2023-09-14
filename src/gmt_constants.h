@@ -257,6 +257,9 @@ enum GMT_time_period {
 #define GMT_TEXT_CLEARANCE	15	/* Clearance around text in textboxes, in percent */
 #define GMT_TEXT_OFFSET		20	/* Offset of text from refpoint, in percent */
 
+/* Conversion from symbol size to pen width for stroke-only symbols x,y,+, - */
+#define GMT_SYMBOL_SIZE_TO_PEN_WIDTH	15	/* 15% */
+
 #define GMT_N_MAX_MODEL	20	/* No more than 20 basis functions in a trend model */
 
 #define GMT_PAIR_COORD		0	/* Tell gmt_get_pair to get both x and y as coordinates */

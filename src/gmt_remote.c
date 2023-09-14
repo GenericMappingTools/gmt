@@ -423,7 +423,7 @@ struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const ch
 		p++;	/* Skip past the slash */
 		if (!strcmp (p, file) && (reg == GMT_NOTSET || registration[reg] == API->remote_info[k].reg)) {	/* Got one to keep */
 			R[id].resolution = urint (1.0 / API->remote_info[k].d_inc);	/* Number of nodes per degree */
-			strncpy (R[id].inc, API->remote_info[k].inc, GMT_LEN8);	/* Copy the formatted inc string */
+			strncpy (R[id].inc, API->remote_info[k].inc, GMT_LEN32);	/* Copy the formatted inc string */
 			R[id].reg = API->remote_info[k].reg;	/* Copy the registration */
 			id++;
 		}
@@ -625,12 +625,16 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 	CURLcode res;
 	double filesize = 0.0;
 	size_t action = 0;
+	char curl_useragent[GMT_LEN64];
 
 	if (limit == 0) return 0;	/* Download regardless of size */
 	curl_global_init (CURL_GLOBAL_DEFAULT);
 
 	if ((curl = curl_easy_init ())) {
 		curl_easy_setopt (curl, CURLOPT_URL, URL);
+		/* Set the user agent */
+		sprintf (curl_useragent, "GMT/%s", GMT_STRING);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, curl_useragent);
 		/* Do not download the file */
 		curl_easy_setopt (curl, CURLOPT_NOBODY, 1L);
 		/* Tell libcurl to not verify the peer */
@@ -643,7 +647,7 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, gmtremote_throw_away);
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
 		/* Complete connection within 10 seconds */
-		 curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT);
+		curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT);
 
 		res = curl_easy_perform (curl);
 
@@ -668,9 +672,15 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 
 CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_file, struct FtpFile *urlfile, unsigned int time_out) {
 	/* Single function that sets up an impending CURL operation */
+	char curl_useragent[GMT_LEN64];
 	CURL *Curl = NULL;
 	if ((Curl = curl_easy_init ()) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to initiate curl - cannot obtain %s\n", url);
+		return NULL;
+	}
+	sprintf (curl_useragent, "GMT/%s", GMT_STRING);
+	if (curl_easy_setopt(Curl, CURLOPT_USERAGENT, curl_useragent)) {	/* Set the user agent */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl user agent\n");
 		return NULL;
 	}
 	if (curl_easy_setopt (Curl, CURLOPT_SSL_VERIFYPEER, 0L)) {		/* Tell libcurl to not verify the peer */
@@ -1834,7 +1844,10 @@ char *gmt_dataserver_url (struct GMTAPI_CTRL *API) {
 		char name[GMT_LEN64] = {""};
 		strncpy (name, API->GMT->session.DATASERVER, GMT_LEN64-1);
 		gmt_str_tolower (name);
-		snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
+		if (strchr (name, '.'))	/* Must assume it is stuff like mybox.somedomain.type so prepend http */
+			snprintf (URL, GMT_LEN256-1, "http://%s", name);
+		else	/* Expand server name to full URL */
+			snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
 	}
 	else	/* Must use the URL as is */
 		snprintf (URL, GMT_LEN256-1, "%s", API->GMT->session.DATASERVER);

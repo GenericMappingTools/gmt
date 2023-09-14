@@ -66,7 +66,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D[s|u]");
 	GMT_Usage (API, -2, "Print the current GMT default settings. Optionally append a directive:");
-	GMT_Usage (API, 3, "s: Print the SI version of the system defaults.");
+	GMT_Usage (API, 3, "s: Print the SI version of the system defaults [Default].");
 	GMT_Usage (API, 3, "u: Print the US version of the system defaults.");
 	GMT_Usage (API, -2, "Note: ALL settings will be written to standard output.");
 	GMT_Option (API, "V");
@@ -96,7 +96,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 
 			case 'D':	/* Get GMT system-wide defaults settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
+				if (opt->arg[0]) {	/* Specified an argument */
+					n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
+					if (strchr ("su", Ctrl->D.mode) == NULL) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -D: Argument %s is not recognized.\n", opt->arg);
+						n_errors++;
+					}
+				}
 				break;
 			case 'L':	/* List the user's current GMT defaults settings */
 				if (gmt_M_compat_check (GMT, 4)) {

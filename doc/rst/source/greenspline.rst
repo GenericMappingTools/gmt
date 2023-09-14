@@ -384,7 +384,7 @@ To apply a spline in tension instead, using a tension of 0.7, try::
 
 To make a uniform grid using the minimum curvature spline for the same
 Cartesian data set from Table 5.11 in Davis (1986) that is used in the
-GMT Technical Reference and Cookbook example 16, try::
+GMT Technical Reference example 16, try::
 
     gmt begin 2D
       gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -Z1 -GS1987.nc

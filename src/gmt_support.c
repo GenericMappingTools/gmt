@@ -7752,7 +7752,7 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 /*! . */
 void gmt_increment_adjust (struct GMT_CTRL *GMT, double *wesn, double *inc, enum GMT_enum_reg registration) {
 	/* This routine adjusts raw grid increments given with projected units and ensures they are compatible
-	 * with teh given domain boundaries.  Depending on -I settings we may need to adjust inc as well as
+	 * with the given domain boundaries.  Depending on -I settings we may need to adjust inc as well as
 	 * xmax and ymax.
 	*/
 	unsigned int one_or_zero, n_rows, n_columns;
@@ -12011,6 +12011,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	char text[GMT_BUFSIZ];
 	size_t s_length;
 
+	if (fabs (interval) < GMT_CONV15_LIMIT) interval = 0.0;
 	if (!strcmp (GMT->current.setting.format_float_map, "%.12g")) {	/* Default map format given means auto-detect decimals */
 
 		/* Find number of decimals needed in the format statement */

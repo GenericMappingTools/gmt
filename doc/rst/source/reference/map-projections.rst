@@ -8,13 +8,13 @@ quite nasty and we will refrain from presenting details in this document. The in
 [1987]\ [20]_. We will mostly be using the :doc:`/coast` command to demonstrate each of the projections. GMT map
 projections are grouped into four categories depending on the nature of the projection. The groups are
 
-#. :ref:`cookbook/map-projections:Conic projections`
+#. :ref:`reference/map-projections:Conic projections`
 
-#. :ref:`cookbook/map-projections:Azimuthal projections`
+#. :ref:`reference/map-projections:Azimuthal projections`
 
-#. :ref:`cookbook/map-projections:Cylindrical projections`
+#. :ref:`reference/map-projections:Cylindrical projections`
 
-#. :ref:`cookbook/map-projections:Miscellaneous projections`
+#. :ref:`reference/map-projections:Miscellaneous projections`
 
 Because :math:`x` and :math:`y` are coupled we can only specify one plot-dimensional scale, typically a map *scale*
 (for lower-case map projection code) or a map *width* (for upper-case map projection code). The *measurement unit*
@@ -24,10 +24,10 @@ practical to specify map *height* instead of *width*, while in other situations 
 *shortest* or *longest* map dimension. Users may select these alternatives by appending a character code to their map
 dimension [detault is **+dw**]:
 
-   - Append **+dh** to the given :ref:`dimension <cookbook/features:Dimension units>` to specify map *height*.
-   - Append **+du** to the given :ref:`dimension <cookbook/features:Dimension units>` to select the minimum map
+   - Append **+dh** to the given :ref:`dimension <reference/features:Dimension units>` to specify map *height*.
+   - Append **+du** to the given :ref:`dimension <reference/features:Dimension units>` to select the minimum map
      dimension.
-   - Append **+dl** to the given :ref:`dimension <cookbook/features:Dimension units>` to select the maximum map
+   - Append **+dl** to the given :ref:`dimension <reference/features:Dimension units>` to select the maximum map
      dimension.
 
 The ellipsoid used in map projections is user-definable. 73 commonly used ellipsoids and spheroids are currently
@@ -223,7 +223,7 @@ Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
 
 **Syntax**
 
-    **-Ja**\|\ **A**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width*
+    **-Ja**\|\ **A**\ *lon0/lat0*\ [*/horizon*]/\ *scale*\|\ *width*
 
 **Parameters**
 
@@ -802,7 +802,8 @@ are not very suitable as map boundaries.
 
 When working with oblique projections such as here, it is often much more convenient to specify the map domain in the
 projected coordinates relative to the map center. The figure below shows two views of New Zealand using the oblique
-Mercator projection that in both cases specifies the region using **-R**\ -1000/1000/-500/500\ **+uk**.  The unit **k**
+Mercator projection that in both cases specifies the region using **-R**\ -1000/1000/-500/500\ **+uk**
+(shorthand: -R1000/500+uk .)  The unit **k**
 means the following bounds are in projected km and we let GMT determine the geographic coordinates of the two diagonal
 corners internally.
 

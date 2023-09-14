@@ -91,6 +91,7 @@ struct TRIANGULATE_CTRL {
 	} Q;
 	struct TRIANGULATE_S {	/* -S */
 		bool active;
+		int firstpol;		/* Number of first polygon */
 	} S;
 	struct TRIANGULATE_T {	/* -T */
 		bool active;
@@ -145,12 +146,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef NNN_MODE
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-L<indextable>[+b]] [-M] [-N] "
-		"[-Q[n]] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
-		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
+		"[-Q[n]] [%s] [-S[<n>]] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID,
+		GMT_I_OPT, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #else
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-L<indextable>[+b]] [-M] [-N] "
-		"[-Q] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
+		"[-Q] [%s] [-S[<n>]] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #endif
@@ -187,7 +188,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append n to produce closed Voronoi polygons.");
 #endif
 	GMT_Option (API, "R");
-	GMT_Usage (API, 1, "\n-S Output triangle polygons as multiple segments separated by segment headers. Cannot be used with -Q.");
+	GMT_Usage (API, 1, "\n-S Output triangle polygons as multiple segments separated by segment headers. Append 'n',"
+		"where 'n' is an integer, to report the polygon numbers start counting at n [Default counts from zero]. Cannot be used with -Q.");
 	GMT_Usage (API, 1, "\n-T Output triangles or polygons even if gridding has been selected with -G. Default behavior "
 		"is to produce a grid based on the triangles or polygons only.");
 	GMT_Option (API, "V");
@@ -305,7 +307,11 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+				//if (strchr (opt->arg, '1')) Ctrl->S.onebased = true;
+				if (opt->arg[0])
+					Ctrl->S.firstpol = atoi(opt->arg);
+				else
+					Ctrl->S.firstpol = 0;
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
@@ -865,6 +871,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->S.active)  {	/* Write triangle polygons */
 			char area_txt[GMT_LEN64] = {""}, a_format[GMT_LEN128] = {""};
+			int first = 0 + Ctrl->S.firstpol;
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
 				error = API->error;	goto time_to_let_go;
 			}
@@ -894,7 +901,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 			else {
 				for (i = ij = 0; i < np; i++, ij += 3) {
-					sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);
+					sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i+first);
 					if (Ctrl->A.active) {	/* Compute and report area */
 						double area = 0.5 * ((xx[link[ij]] - xx[link[ij+2]]) * (yy[link[ij+1]] - yy[link[ij]]) - (xx[link[ij]] - xx[link[ij+1]]) * (yy[link[ij+2]] - yy[link[ij]]));
 						sprintf (area_txt, a_format, area);

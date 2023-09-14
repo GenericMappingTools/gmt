@@ -22,6 +22,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -142,7 +143,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ **i**\|\ **p**\|\ **r**
-    Determine how NaN-values in the input grid affects the filtered
+    Determine how NaN-values in the input grid affect the filtered
     output: Append **i** to ignore all NaNs in the calculation of
     filtered value [Default], **r** is same as **i** except if the input
     node was NaN then the output node will be set to NaN (only applies
@@ -174,6 +175,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 

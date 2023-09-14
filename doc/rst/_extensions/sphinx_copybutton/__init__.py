@@ -2,7 +2,7 @@
 from pathlib import Path
 from sphinx.util import logging
 
-__version__ = "0.5.0"
+__version__ = "0.5.2"
 
 logger = logging.getLogger(__name__)
 
@@ -62,10 +62,10 @@ def add_to_context(app, config):
             .replace("export function", "function")
         }
     )
+    config.html_context.update({"copybutton_exclude": config.copybutton_exclude})
 
 
 def setup(app):
-
     logger.verbose("Adding copy buttons to code blocks...")
     # Add our static path
     app.connect("builder-inited", scb_static_path)
@@ -80,6 +80,7 @@ def setup(app):
     app.add_config_value("copybutton_here_doc_delimiter", "", "html")
     app.add_config_value("copybutton_image_svg", "", "html")
     app.add_config_value("copybutton_selector", "div.highlight pre", "html")
+    app.add_config_value("copybutton_exclude", ".linenos", "html")
 
     # DEPRECATE THIS AFTER THE NEXT RELEASE
     app.add_config_value("copybutton_image_path", "", "html")

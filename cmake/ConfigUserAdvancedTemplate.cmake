@@ -128,8 +128,8 @@
 #set (CURL_ROOT "curl_install_prefix")
 
 # Set location of GLIB component gthread [auto].  This is an optional (and
-# experimental) option which you need to enable:
-#set (GMT_USE_THREADS TRUE)
+# experimental) option which you need to enable or disable:
+set (GMT_USE_THREADS TRUE)
 # If pkg-config is not installed (e.g. on Windows) you need to specify these:
 #set (GLIB_INCLUDE_DIR c:/path/to/glib-dev/include/glib-2.0)
 #set (GLIB_LIBRARIES c:/path/to/glib-dev/lib/glib-2.0.lib)
@@ -148,7 +148,7 @@
 #set (LICENSE_RESTRICTED GPL)
 
 # Allow building of OpenMP if compiler supports it
-#set (GMT_ENABLE_OPENMP TRUE)
+set (GMT_ENABLE_OPENMP TRUE)
 
 # Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")
