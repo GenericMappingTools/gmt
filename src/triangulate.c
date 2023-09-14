@@ -958,7 +958,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			else {	/* Write polygons with various segment header information */
 				for (i = ij = 0; i < np; i++, ij += 3) {
 					sprintf (record, "Polygon %d-%d-%d ", link[ij], link[ij+1], link[ij+2]);
-					if (Ctrl->S.mode) {
+					if (Ctrl->S.mode > TRI_POLY) {
 						double z_triangle, z_node[3];
 						for (k = 0; k < 3; k++) z_node[k] = zz[link[ij+k]];	/* Get the three vertices' z-values */
 						switch (Ctrl->S.mode) {
@@ -992,6 +992,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 					for (k = 0; k < 3; k++) {	/* Three vertices */
 						out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];
+						if (n_output == 3) out[GMT_Z] = zz[link[ij+k]];
 						GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 					}
 					/* Explicitly close the polygon */
