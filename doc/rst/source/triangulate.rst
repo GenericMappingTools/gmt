@@ -25,7 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [**n**] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [*n*]  ]
+[ |-S|\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]] ]
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
@@ -167,9 +167,16 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*n*]
-    Output triangles as polygon segments separated by a segment header record. Append *n*, where *n* is an integer,
-    to report the polygon numbers start counting at *n* [Default counts from zero]. Requires Delaunay triangulation.
+**-S**\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]]
+    Output triangles as polygon segments separated by a segment header
+    record which contains node numbers *a-b-c* and **-Z**\ *polynumber*.
+    Optionally, append *first*, where *first* is an integer, to report
+    the polygon numbers by counting from *first* [Default starts at zero].
+    Incompatible with |-Q|. Alternatively, use modifier **+z** to instead
+    request that **-Z**\ *zvalue* is placed in the segment headers, where
+    *zvalue* is the mean of the three nodes' *z* values. Append **l**
+    (lowest value), **m** (median), **p** (model) or **u** upper value
+    to select another representative *zvalue* [Default is **a** for mean].
 
 .. _-T:
 
