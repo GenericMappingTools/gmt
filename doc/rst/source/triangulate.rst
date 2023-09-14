@@ -175,9 +175,9 @@ Optional Arguments
     Incompatible with |-Q|. Alternatively, use modifier **+z** to instead
     request that **-Z**\ *zvalue* is placed in the segment headers, where
     *zvalue* is the mean of the three nodes' *z* values. Append **l**
-    (lowest value), **m** (median), **p** (model) or **u** upper value
+    (lowest value), **m** (median), **p** (mode) or **u** (upper value)
     to select another representative *zvalue* [Default is **a** for mean].
-    Implies |-Z|.
+    **Note**: Modifier **+z** implies |-Z|.
 
 .. _-T:
 
@@ -195,7 +195,7 @@ Optional Arguments
 
 **-Z**
     Controls whether we read (*x,y*) or (*x,y,z*) data and if *z* should be
-    output when |-M| or |-S| are used [Read (*x,y*) only].
+    output when |-M| or |-S| (without **+z**) are used [Read (*x,y*) only].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
