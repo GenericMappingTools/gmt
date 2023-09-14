@@ -1003,7 +1003,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 
 	/* Scale parameters to sqrt of the ratio of color bar length to default map dimension of 15 cm */
-	scale_down = sqrt (MAX (Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]) / (15.0 / 2.54));
+	scale_down = sqrt (MAX (fabs (Ctrl->D.dim[GMT_X]), fabs (Ctrl->D.dim[GMT_Y])) / (15.0 / 2.54));
 	GMT->current.setting.font_annot[GMT_PRIMARY].size *= scale_down;
 	GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale_down;
 	GMT->current.setting.font_label.size *= scale_down;
