@@ -43,6 +43,7 @@
 #define THIS_MODULE_OPTIONS "-:>JRVbdefhiqrsw" GMT_OPT("Hm")
 
 enum triangulate_enum_stat {TRI_NONE = 0,	/* No +z or +g given */
+	TRI_POLY,			/* Use median instead */
 	TRI_MEAN,			/* Use median instead */
 	TRI_MEDIAN,			/* Use median instead */
 	TRI_MODE,			/* Use mode (LMS) instead */
@@ -217,9 +218,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S[<first>][+z[a|l|m|p|u]]");
-	GMT_Usage (API, -2, "Output triangle polygons as multiple segments separated by segment headers. Append <first>,"
-		"where <first> is an integer, to report the polygon numbers start counting at n [Default counts from zero]. Cannot be used with -Q. "
-		"Alternatively, compute representative value for the triplet z-values at triangle nodes via modifier +z.  Modes can be");
+	GMT_Usage (API, -2, "Output triangle polygons as multiple segments separated by segment headers. Append <first>, "
+		"an integer, to report polygon numbers counting from <first> [Default counts from zero]. Cannot be used with -Q. "
+		"Alternatively, compute representative value for the triplet z-values at triangle nodes via modifier +z (implies -Z).  Modes are");
 	GMT_Usage (API, 3, "a: The mean of triplet [Default].");
 	GMT_Usage (API, 3, "l: The lower value of triplet.");
 	GMT_Usage (API, 3, "m: The median of triplet.");
@@ -228,7 +229,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-T Output triangles or polygons even if gridding has been selected with -G. Default behavior "
 		"is to produce a grid based on the triangles or polygons only.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].");
+	GMT_Usage (API, 1, "\n-Z Expect (x,y,z) data on input (and output); automatically set if -G or -S+z is used [Expect (x,y) data].");
 	GMT_Option (API, "bi2");
 	if (gmt_M_showusage (API))  GMT_Usage (API, 1, "\n-bo Write binary (double) index table [Default is ASCII i/o].");
 	GMT_Option (API, "d,e,f,h,i,qi,r,s,w,:,.");
@@ -356,6 +357,8 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 					}
 					c[0] = '\0';	/* Truncate the modifier */
 				}
+				else
+					Ctrl->S.mode = TRI_POLY;
 				if (opt->arg[0])
 					Ctrl->S.firstpol = atol (opt->arg);
 				else
@@ -484,11 +487,11 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 	triplets[GMT_OUT] = (n_output == 3);
 	if (Ctrl->G.active && !Ctrl->S.active && !Ctrl->T.active && !Ctrl->N.active) do_output = false;	/* If gridding then we require S, -T or -N to do output */
 	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
-	n_input = (Ctrl->G.active || Ctrl->S.mode || Ctrl->Z.active) ? 3 : 2;
+	n_input = (Ctrl->G.active || Ctrl->S.mode > TRI_POLY || Ctrl->Z.active) ? 3 : 2;
 	if (n_output > n_input) triplets[GMT_OUT] = false;	/* No can do. */
 	if (Ctrl->C.active) n_input += 2;	/* Curve requires the horizontal and vertical uncertainties */
 	triplets[GMT_IN] = (n_input == 3 || n_input == 5);	/* Either x,y,z or x,y,z,h,v input */
-	if (Ctrl->S.mode && n_input < 3) {
+	if (Ctrl->S.mode > TRI_POLY && n_input < 3) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Your modifier(s) require (x, y, z) records.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}

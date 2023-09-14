@@ -177,6 +177,7 @@ Optional Arguments
     *zvalue* is the mean of the three nodes' *z* values. Append **l**
     (lowest value), **m** (median), **p** (model) or **u** upper value
     to select another representative *zvalue* [Default is **a** for mean].
+    Implies |-Z|.
 
 .. _-T:
 
