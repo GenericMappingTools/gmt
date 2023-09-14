@@ -385,28 +385,28 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 	n_errors += gmt_check_binary_io (GMT, 2);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.binary && !GMT->common.b.active[GMT_IN], "Option -L: Cannot imply binary node input if main input is not also binary (see -bi)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
-		GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
+	                                   GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->S.active, "Option -A: Requires -S\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->Q.active, "Option -A: Not compatible with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Option -C: Must append slope grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) != 2,
-		"Must specify -R, -I, -G for gridding\n");
+	                                   "Must specify -R, -I, -G for gridding\n");
 	(void)gmt_M_check_condition (GMT, !Ctrl->G.active && GMT->common.R.active[ISET], "Option -I: not needed when -G is not set\n");
 	(void)gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->Q.active) && GMT->common.R.active[RSET],
-		"Option -R not needed when -G or -Q are not set\n");
+	                             "Option -R not needed when -G or -Q are not set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->Q.active, "Option -S: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Option -N: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active[RSET], "Option -Q: Requires -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->L.active, "Option -L: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->N.active + Ctrl->S.active) > 1, "Can only use one of -M, -N, -S at the same time since all write to stdout\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON,
-		"Option -Q: Requires Shewchuk triangulation algorithm\n");
+	                                   "Option -Q: Requires Shewchuk triangulation algorithm\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] ||
-		GMT->common.R.active[GSET]),
-		"Option -C: No -R -I [-r] allowed, domain given by slope grid\n");
+	                                   GMT->common.R.active[GSET]),
+	                                   "Option -C: No -R -I [-r] allowed, domain given by slope grid\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->D.active || Ctrl->F.active || Ctrl->M.active ||
-		Ctrl->N.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->T.active),
-		"Option -C: Cannot use -D, -F, -M, -N, -Q, -S, T\n");
+	                                   Ctrl->N.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->T.active),
+	                                   "Option -C: Cannot use -D, -F, -M, -N, -Q, -S, T\n");
 	if (!(Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) Ctrl->N.active = !Ctrl->G.active;	/* The default action */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
