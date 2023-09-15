@@ -59,7 +59,7 @@ git config user.name "github-actions[bot]"
 # If this is a dev build and the last commit was from a dev build
 # (detect if "dev" was in the previous commit message), reuse the
 # same commit
-if [[ "${version}" == "dev" && `git log -1 --format='%s'` == *"dev"* ]]; then
+if [[ "${version}" == "dev" && $(git log -1 --format='%s') == *"dev"* ]]; then
     echo -e "\nAmending last commit:"
     git commit --amend --reset-author -m "$message"
 else

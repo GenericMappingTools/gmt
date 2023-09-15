@@ -23,7 +23,7 @@ gmt math -T0/50/1 T -C0 40 ADD = | gmt psxy -R -J -O -K -W2p+o1i/0 >> $ps
 gmt math -T0/50/1 T -C0 45 ADD = | gmt psxy -R -J -O -K -Wfaint,red >> $ps
 gmt math -T0/50/1 T -C0 45 ADD = | gmt psxy -R -J -O -K -W2p+o0/1i >> $ps
 # Cartesian
-scl=`gmt math -Q 6 105 DIV =`
+scl=$(gmt math -Q 6 105 DIV =)
 gmt psbasemap -R -Jx${scl}i -O -K -Baf -Y5.5i >> $ps
 gmt math -T0/50/1 T = | gmt psxy -R -J -O -K -W2p >> $ps
 gmt math -T0/50/1 T -C0 5 ADD = | gmt psxy -R -J -O -K -Wfaint,red >> $ps
