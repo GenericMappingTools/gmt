@@ -13,7 +13,7 @@ EOF
 gmt psxy -R0/360/-75/75 -JM7i -P -Baf -BWSne -Xc -SE- -Gred -W10p,blue t.txt > $ps
 
 # To create the desired plot I had to fake it this way to make sure the above will fail
-#dy=`echo 0 -75 | mapproject -R0/360/-77/77 -JM7i -Di -o1`
+#dy=$(echo 0 -75 | mapproject -R0/360/-77/77 -JM7i -Di -o1)
 #gmt psclip -R0/360/-75/75 -JM7i -P -Xc -T -K > $ps
 #gmt psxy -R0/360/-77/77 -J -O -K -SE- -Gred -W10p,blue t.txt -Y-${dy}i >> $ps
 #gmt psclip -R -J -O -K -C >> $ps
