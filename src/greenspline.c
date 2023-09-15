@@ -82,8 +82,9 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		char *information;
 	} D;
-	struct GREENSPLINE_E {	/* -E[<file>] */
+	struct GREENSPLINE_E {	/* -E[<file>][+n] */
 		bool active;
+		bool norm;
 		unsigned int mode;
 		char *file;
 	} E;
@@ -233,7 +234,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] "
-		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
+		"[-D<information>] [-E[<misfitfile>][+n]] [-I<dx>[/<dy>[/<dz>]]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
 		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
@@ -276,10 +277,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+n Stop execution after reporting the eigenvalues - no solution is computed.");
 	GMT_Usage (API, -2, "Note: Without -C we use Gauss-Jordan elimination to solve the linear system.");
 	gmt_grdcube_info_syntax (API->GMT, 'D');
-	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
+	GMT_Usage (API, 1, "\n-E[<misfitfile>][+n]");
 	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
 		"Append a filename to save all data with two extra columns for model and misfit. "
 		"If -C+i|c are used then we instead report the history of model variance and rms misfit.");
+	GMT_Usage (API, 3, "+n: Add two last output columns with model and data norms.");
 	GMT_Usage (API, 1, "\n-I<dx>[/<dy>[/<dz>]]");
 	GMT_Usage (API, -2, "Specify a regular set of output locations. Give equidistant increment for each dimension. "
 		"Requires -R for specifying the output domain.");
@@ -567,11 +569,16 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 					Ctrl->D.information = strdup (opt->arg);
 				}
 				break;
-			case 'E':	/* Evaluate misfit -E[<file>]*/
+			case 'E':	/* Evaluate misfit -E[<file>][+n] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (opt->arg) {
+					if ((c = strstr (opt->arg, "+n"))) {
+						Ctrl->E.norm = true;
+						c[0] = '\0';	/* Hide modifier */
+					}
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.mode = 1;
+					if (Ctrl->E.norm) c[0] = '+';	/* Restore modifier */
 				}
 				break;
 			case 'G':	/* Output file */
@@ -1588,7 +1595,7 @@ GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned in
 EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	openmp_int col, row;
 	uint64_t n_read, p, k, i, j, seg, m, n, nm, n_cr = 0, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
-	unsigned int dimension = 0, normalize, n_cols, n_layers = 1, w_col, L_Max = 0;
+	unsigned int dimension = 0, normalize, n_cols, n_layers = 1, w_col, e_col, L_Max = 0;
 	int64_t *kolumn = NULL;
 	size_t n_alloc;
 	int error = GMT_NOERROR, out_ID, way, n_columns, n_use;
@@ -2639,7 +2646,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
 			uint64_t e, p;
 			gmt_grdfloat *current = NULL, *previous = NULL;
-			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted;
+			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted, modnorm = 0.0;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
 			struct GMT_SINGULAR_VALUE *eigen = NULL;
@@ -2651,7 +2658,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				previous = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
-				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 4+Ctrl->W.active};
+				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 4+Ctrl->W.active+Ctrl->E.norm};
+				e_col = 4 + Ctrl->W.active;
  				eigen = gmt_sort_svd_values (GMT, ssave, nm);	/* Get sorted eigenvalues */
 				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
@@ -2667,7 +2675,14 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)e);
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)e, GMT_SVD_EIGEN_NUMBER_CUTOFF);
+
 				/* obs (hence alpha) now has the solution for the coefficients based on the first e eigenvalues */
+				if (Ctrl->E.norm) {	/* Compute the history of model misfit */
+					for (k = 0; k < nm; k++)
+						modnorm += obs[k] * obs[k];
+					S->data[e_col][e] = sqrt (modnorm);	/* Model norm at this point */
+				}
+
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,nm,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
@@ -2774,11 +2789,12 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				char header[GMT_LEN64] = {""};
 				sprintf (header, "# eigenno\teigenval\tvar_percent\trms");
 				if (Ctrl->W.active) strcat (header, "\tchi2");
+				if (Ctrl->E.norm) strcat (header, "\tmnorm");
 				if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
 					Return (API->error);
 				}
 				gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
-				for (k = 0; k < 5; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
+				for (k = 0; k < 6; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
 					Return (API->error);
 				}
