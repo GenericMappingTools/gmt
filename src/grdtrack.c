@@ -344,7 +344,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					while (gmt_getmodopt (GMT, 'C', c, "adflrv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'a': Ctrl->C.mode |= GMT_ALTERNATE; break;		/* Select alternating direction of cross-profiles */
-							case 'f': Ctrl->C.mode |= GMT_FIXED_AZIM;	/* Deliberatily fall through to get fixed azimuth */
+							case 'f': Ctrl->C.mode |= GMT_FIXED_AZIM;	/* Deliberately fall through to get fixed azimuth */
 							case 'd': Ctrl->C.deviation = atof (&p[1]); break;		/* Less than orthogonal vy given deviation */
 							case 'l': Ctrl->C.mode |= GMT_LEFT_ONLY; break;		/* cross-profile starts at line and go to left side only */
 							case 'r': Ctrl->C.mode |= GMT_RIGHT_ONLY; break;	/* cross-profile starts at line and go to right side only */
