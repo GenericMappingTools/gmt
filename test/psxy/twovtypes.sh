@@ -13,7 +13,7 @@ cat << EOF > gvec.txt
 0	60	90	500
 EOF
 # Assign equivalent length in inches corresponding to 500 km at Equator
-len=`gmt math -Q 500 60 111.13 MUL DIV 6 MUL =`
+len=$(gmt math -Q 500 60 111.13 MUL DIV 6 MUL =)
 cat << EOF > cvec.txt
 0	0	0	${len}
 0	0	90	${len}
