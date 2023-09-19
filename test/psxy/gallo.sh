@@ -3,9 +3,9 @@
 ps=gallo.ps
 
 # Get the height of EPS file symbol relative to width
-epsfile=`gmt which -Gc @gallo.eps`
+epsfile=$(gmt which -Gc @gallo.eps)
 
-scale=`grep "%%HiResBoundingBox" $epsfile | awk '{print ($5-$3)/($4-$2)}'`
+scale=$(grep "%%HiResBoundingBox" $epsfile | awk '{print ($5-$3)/($4-$2)}')
 cat << EOF > chicks.txt
 -23 34 4c
 -35 15 5c

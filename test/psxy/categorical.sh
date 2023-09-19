@@ -3,7 +3,7 @@
 # the aspatial field NAME via the CPT to yield pen color
 ps=categorical.ps
 # get shapefile from cache
-test_data=`gmt which -Gc @RidgeTest.shp`
+test_data=$(gmt which -Gc @RidgeTest.shp)
 gmt which -Gc @RidgeTest.shx @RidgeTest.dbf @RidgeTest.prj
 # Make a text-based categorical cpt file
 cat << EOF > ridge.cpt
