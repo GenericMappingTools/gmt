@@ -37,7 +37,7 @@ FONT_ANNOT_SECONDARY		# Font for secondary axes annotations
 FONT_HEADING			# Font for heading above subplots
 FONT_LABEL			# Font for axes labels
 FONT_LOGO			# Font for GMT logo
-FONT_SUBTITLE		# Font for plot subtitles
+FONT_SUBTITLE			# Font for plot subtitles
 FONT_TAG			# Font for panel figure tags
 FONT_TITLE			# Font for plot titles
 #-------------------------------------------------------
@@ -88,8 +88,8 @@ IO_HEADER			# Are there header records?
 IO_HEADER_MARKER		# 1st char in header records for input and output
 IO_N_HEADER_RECS		# How many header records to expect
 IO_NAN_RECORDS			# How NaNs in input should be interpreted
-IO_NC4_CHUNK_SIZE	# Chunk size (lat,lon) of netCDF output
-IO_NC4_DEFLATION_LEVEL	# Deflate level for netCDF output
+IO_NC4_CHUNK_SIZE		# Chunk size (lat,lon) of netCDF output
+IO_NC4_DEFLATION_LEVEL		# Deflate level for netCDF output
 IO_LONLAT_TOGGLE		# Expect lat-lon instead of lon-lat
 IO_SEGMENT_BINARY		# Determines how binary records with NaNs are interpreted
 IO_SEGMENT_MARKER		# 1st char in segment headers for input and output
@@ -105,7 +105,7 @@ MAP_ANNOT_MIN_ANGLE		# Cut-off angle to eliminate very oblique annotations
 MAP_ANNOT_MIN_SPACING		# Cut-off distance to eliminate crowding of annotations
 MAP_DEFAULT_PEN			# Default for all pens
 MAP_DEGREE_SYMBOL		# Symbol for "degree" to use on maps
-MAP_EMBELLISHMENT_MODE	# Whether map roses and scales shall be manually or automatically scaled
+MAP_EMBELLISHMENT_MODE		# Whether map roses and scales shall be manually or automatically scaled
 MAP_FRAME_AXES			# Which axes should be plotted [WESNZ]
 MAP_FRAME_PEN			# Pen used to draw plain map frame
 MAP_FRAME_TYPE			# Type of map frame (plain or fancy)
@@ -127,7 +127,7 @@ MAP_ORIGIN_X			# x-value of lower-left corner of map relative to page [1i]
 MAP_ORIGIN_Y			# y-value of lower-left corner of map relative to page [1i]
 MAP_POLAR_CAP			# Modify gridline spacing for polar caps
 MAP_SCALE_HEIGHT		# Height of scale bar on maps
-MAP_STROKE_WIDTH		# Percent of strokable-only symbol size for stroke pen width [15%]
+MAP_SYMBOL_STROKE_FACTOR	# Percent of strokable-only symbol size for stroke pen width [15%]
 MAP_TICK_LENGTH			# Length of major and minor frame axes ticks [does not go in gmt.conf]
 MAP_TICK_LENGTH_PRIMARY		# Length of major and minor primary frame axes ticks
 MAP_TICK_LENGTH_SECONDARY	# Length of major and minor secondary frame axes ticks
