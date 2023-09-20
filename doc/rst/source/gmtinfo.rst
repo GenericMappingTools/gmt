@@ -226,7 +226,7 @@ plot all the points as small black circles using :doc:`plot`, run
 
 ::
 
-  gmt plot `gmt info -I5 -D1 @ship_15.txt` @ship_15.txt -B -Sc2p -pdf map
+  gmt plot $(gmt info -I5 -D1 @ship_15.txt$) @ship_15.txt -B -Sc2p -pdf map
 
 To find the min and max values for each of the first 3 columns, but
 rounded to integers, and return the result individually for each data

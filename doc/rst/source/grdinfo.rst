@@ -204,6 +204,11 @@ To learn about the extreme values and coordinates in the 3-D data cube S362ANI_k
 
     gmt grdinfo -M S362ANI_kmps.nc?vs
 
+**Note**: if you do a subset of a remote tiled file, e.g., earth_relief_01m, you must add |-G|
+so that any missing tiles are first downloaded::
+
+    gmt grdinfo @earth_relief_01m_p -R118/125/20/26 -G -C -M
+
 See Also
 --------
 

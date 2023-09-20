@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*] \| **geography**\ [=\ *name*] \| **sessions** \| **settings**
+**gmt clear** **all** \| **cache** \| **data**\ [=\ *planet*\|\ *name*] \| **geography**\ [=\ *name*] \| **sessions** \| **settings**
+[ |-N| ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -38,10 +39,11 @@ Optional Arguments
 
 .. _clear-data:
 
-**data**\ [=\ *planet*]
+**data**\ [=\ *planet*\|\ *name*]]
     Delete the user's data download server directory and all of its contents.
     Alternatively, append =\ *planet* for a specific planet and we only delete
-    data for that sub-directory [all planets].
+    data for that sub-directory [all planets]. Finally, you could also just specify
+    the *name* for one of them, which leaves the rest intact.
 
 .. _clear-geography:
 
@@ -58,6 +60,15 @@ Optional Arguments
 
 **settings**
     Delete the current default settings file (gmt.conf) used for the current modern session.
+
+Optional Arguments
+------------------
+
+.. _-N:
+
+**-N**
+    Find all the sub directories that need to be remove, but just print them to *stdout*,
+    do **not** delete any files.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -84,6 +95,14 @@ To remove your GMT geography directory with downloaded GSHHG and DCW data, try::
 To only wipe your GMT server directory for Earth data, try::
 
     gmt clear data=earth
+
+To just wipe your the earth_relief data set and leave other earth data intact, try::
+
+    gmt clear data=earth_relief
+
+To list all data files that would be deleted if |-N| was not set, try::
+
+    gmt clear data -N
 
 To only wipe your entire GMT server and cache directories, (carefully) try::
 

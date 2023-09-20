@@ -152,7 +152,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"rotate the fixed secondary vector (see -S) using the input rotations.");
 	GMT_Usage (API, 3, "t: Translate input vectors to points a distance <dist> away in the azimuth <azim>. "
 		"Append <azim>/<dist> for a fixed set of azimuth and distance for all points, "
-		"otherwise we expect to read <azim>, <dist> from the input file; append a unit [e]");
+		"otherwise we expect to read <azim>, <dist> from the input file; append a unit [e]. "
+		"A negative distance implies a flip of 180 degrees.;");
 	GMT_Usage (API, 3, "x: Compute cross-product(s) with secondary vector (see -S).");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 2 [or 3; see -C, -fg] input columns.");
@@ -269,11 +270,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 						if (opt->arg[1]) {	/* Gave azimuth/distance[<unit>] or just <unit> */
 							if (strchr (opt->arg, '/')) {	/* Gave a fixed azimuth/distance[<unit>] combination */
 								if ((n = sscanf (&opt->arg[1], "%lg/%s", &Ctrl->T.par[0], txt_a)) != 2) {
-									GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tr (%s)\n", &opt->arg[1]);
+									GMT_Report (API, GMT_MSG_ERROR, "Bad arguments given to -Tt (%s)\n", &opt->arg[1]);
 									n_errors++;
 								}
-								else
-									Ctrl->T.dmode = gmt_get_distance (GMT, txt_a, &(Ctrl->T.par[1]), &(Ctrl->T.unit));
+								else {
+									unsigned int k = 0;
+									if (txt_a[0] == '-') {	/* Skip leading sign and flip vector) */
+										k = 1;
+										Ctrl->T.par[0] += 180.0;
+									}
+									Ctrl->T.dmode = gmt_get_distance (GMT, &txt_a[k], &(Ctrl->T.par[1]), &(Ctrl->T.unit));
+								}
 							}
 							else if (strchr (GMT_LEN_UNITS, opt->arg[1])) {	/* Gave the unit of the data in column 3 */
 								Ctrl->T.unit = opt->arg[1];
@@ -498,7 +505,7 @@ GMT_LOCAL double gmtvector_dist_to_degree (struct GMT_CTRL *GMT, double d_in) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
-	unsigned int tbl, error = 0, k, n, n_in, n_components, n_out, add_cols = 0, geo;
+	unsigned int tbl, error = 0, k, n, n_in, n_components, n_out, add_cols = 0, geo, n_for_output = 0;
 	bool single = false, convert;
 
 	uint64_t row, seg;
@@ -618,7 +625,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (Din->n_columns < 2) {
+		if (Din->n_columns < n_in) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %u are needed\n", (int)Din->n_columns, n_in);
 			Return (GMT_DIM_TOO_SMALL);
 		}
@@ -707,6 +714,10 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 						break;
 					case DO_TRANSLATE:	/* Return translated points moved a distance d in the direction of azimuth  */
 						if (Ctrl->T.a_and_d) {	/* Get azimuth and distance from input file */
+							if (Sin->data[3][row] < 0.0) {	/* FLip the vector 180 */
+								Sin->data[3][row] = fabs (Sin->data[3][row]);
+								Ctrl->T.par[0] = Sin->data[2][row] + 180.0;
+							}
 							Ctrl->T.par[0] = Sin->data[2][row];
 							if (geo)
 								Ctrl->T.par[1] = (Ctrl->T.dmode == GMT_GREATCIRCLE) ? gmtvector_dist_to_degree (GMT, Sin->data[3][row]) : gmtvector_dist_to_meter (GMT, Sin->data[3][row]);	/* Make sure we have degrees or meters for calculations */
@@ -742,6 +753,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 					}
 				}
 				for (k = 0; k < n_out; k++) Sout->data[k][row] = out[k];
+				n_for_output++;
 			}
 		}
 	}
@@ -750,11 +762,13 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 
 	/* Time to write out the results */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		Return (API->error);
-	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
-		Return (API->error);
+	if (n_for_output) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 	if (single && GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
 		Return (API->error);

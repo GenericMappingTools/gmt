@@ -208,7 +208,7 @@ struct GMT_parameter {
 	const char *name;
 };
 
-/* These are the active GMT5+ keywords, containing no backwards-compatible variants.
+/* These are the active >= GMT5 keywords, containing no backwards-compatible variants.
  * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt, plus
  * specific entries in both gmtlib_setparameter and gmtlib_getparameter, and gmt.conf.rst */
@@ -314,6 +314,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_ORIGIN_Y"},
 	{ 0, "MAP_POLAR_CAP"},
 	{ 0, "MAP_SCALE_HEIGHT"},
+	{ 0, "MAP_STROKE_WIDTH"},
 	{ 0, "MAP_TICK_LENGTH_PRIMARY"},
 	{ 0, "MAP_TICK_LENGTH_SECONDARY"},
 	{ 0, "MAP_TICK_PEN_PRIMARY"},
@@ -2337,7 +2338,7 @@ GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	if (GMT->common.x.n_threads == 0)
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
-		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - abs (GMT->common.x.n_threads), 1);		/* Max-n but at least one */
 	if (GMT->current.setting.max_cores)	/* Limit to max core defaults setting */
 		GMT->common.x.n_threads = GMT->current.setting.max_cores;
 	return (GMT_NOERROR);
@@ -3520,7 +3521,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.USERDIR != NULL) {
 		err = stat (GMT->session.USERDIR, &S);	/* Stat the userdir path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
 			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of remote data sets has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
@@ -3540,7 +3541,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.CACHEDIR != NULL) {
 		err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
 			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of cache data has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
@@ -3564,15 +3565,15 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (API->session_dir != NULL) {
 		err = stat (API->session_dir, &S);	/* Stat the session path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (API->session_dir)) { /* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (API->session_dir)) { /* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT User sessions directory : %s\n", API->session_dir);
 			GMT_Report (API, GMT_MSG_ERROR, "Modern mode will fail.\n");
 		}
 		else if (err == 0) {	/* Path already exists, check why */
 			if (!S_ISDIR (S.st_mode))	/* Path already exists, but it is not a directory */
 				GMT_Report (API, GMT_MSG_ERROR, "A file named %s already exist and prevents us creating a session directory by that name\n", API->session_dir);
-			else if (S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0)	/* Directory already exists but is not writeable */
-				GMT_Report (API, GMT_MSG_ERROR, "Session directory %s already exist but is not writeable\n", API->session_dir);
+			else if (S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0)	/* Directory already exists but is not writable */
+				GMT_Report (API, GMT_MSG_ERROR, "Session directory %s already exist but is not writable\n", API->session_dir);
 		}
 	}
 	if (GMT->session.USERDIR)  GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
@@ -6616,6 +6617,9 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	/* MAP_POLAR_CAP */
 	GMT->current.setting.map_polar_cap[0] = 85;
 	GMT->current.setting.map_polar_cap[1] = 90;
+	/* MAP_STROKE_WIDTH */
+	GMT->current.setting.map_stroke_width = GMT_SYMBOL_SIZE_TO_PEN_WIDTH / 100.0;	/* Given as percentage */
+	GMT->current.setting.map_stroke_width_unit = '%';
 	/* MAP_SCALE_HEIGHT */
 	GMT->current.setting.map_scale_height = 5 * pt;	/* 5p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
@@ -8194,7 +8198,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	if (option == 0)	/* grid is an input file argument, not an option */
 		GMT_Usage (API, 1, "\n%s", GMT_OUTGRID);
-	else if (option == '=')	/* grdmath usees = instead of -option*/
+	else if (option == '=')	/* grdmath uses = instead of -option*/
 		GMT_Usage (API, 1, "\n= %s", GMT_OUTGRID);
 	else	/* All regular options */
 		GMT_Usage (API, 1, "\n-%c%s", option, GMT_OUTGRID);
@@ -11237,6 +11241,19 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_polar_cap[1] = inc[GMT_X];
 			}
 			break;
+		case GMTCASE_MAP_STROKE_WIDTH:
+			dval = atof (value);
+			if (value[len] == '%') {
+				dval /= 100.0;	/* Got factor as a percentage */
+				GMT->current.setting.map_stroke_width_unit = '%';
+			}
+			else	/* Got a fraction */
+				GMT->current.setting.map_stroke_width_unit = '\0';
+			if (dval < 0.0)
+				error = true;
+			else
+				GMT->current.setting.map_stroke_width = dval;
+			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
 			dval = gmt_M_to_inch (GMT, value);
 			if (dval <= 0.0)
@@ -12797,6 +12814,12 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				snprintf (value, GMT_LEN256, "none");
 			else
 				snprintf (value, GMT_LEN256, "%g/%g", GMT->current.setting.map_polar_cap[0], GMT->current.setting.map_polar_cap[1]);
+			break;
+		case GMTCASE_MAP_STROKE_WIDTH:
+			if (GMT->current.setting.map_stroke_width_unit == '%')	/* Report as percentage */
+				snprintf (value, GMT_LEN256, "%g%%", GMT->current.setting.map_stroke_width * 100.0);
+			else	/* Just a factor */
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.map_stroke_width);
 			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
 			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height * gmt_M_def_scale(GMTCASE_MAP_SCALE_HEIGHT), gmt_M_def_unit(GMTCASE_MAP_SCALE_HEIGHT));
@@ -16355,7 +16378,7 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 
 GMT_LOCAL unsigned int gmtinit_get_length (struct GMT_CTRL *GMT, char symbol, char *string, bool norm, bool is_grdvector, float *value, bool *user_unit) {
 	/* Used by gmt_parse_vector to set length scales or limits related to vectors.
-	 * Note: is_grdvector is true when being called from grdvector because we need to honor normalizations +n<lengtH> without unit to mean unit = q */
+	 * Note: is_grdvector is true when being called from grdvector because we need to honor normalizations +n<length> without unit to mean unit = q */
 	unsigned int error = GMT_NOERROR;
 	size_t len = (string) ? strlen (string) : 0;	/* Length of string */
 
