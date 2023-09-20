@@ -127,7 +127,7 @@ MAP_ORIGIN_X			# x-value of lower-left corner of map relative to page [1i]
 MAP_ORIGIN_Y			# y-value of lower-left corner of map relative to page [1i]
 MAP_POLAR_CAP			# Modify gridline spacing for polar caps
 MAP_SCALE_HEIGHT		# Height of scale bar on maps
-MAP_SYMBOL_STROKE_FACTOR	# Percent of strokable-only symbol size for stroke pen width [15%]
+MAP_SYMBOL_PEN_SCALE		# Percent of strokable-only symbol size for stroke pen width [15%]
 MAP_TICK_LENGTH			# Length of major and minor frame axes ticks [does not go in gmt.conf]
 MAP_TICK_LENGTH_PRIMARY		# Length of major and minor primary frame axes ticks
 MAP_TICK_LENGTH_SECONDARY	# Length of major and minor secondary frame axes ticks

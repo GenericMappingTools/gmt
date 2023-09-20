@@ -314,7 +314,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_ORIGIN_Y"},
 	{ 0, "MAP_POLAR_CAP"},
 	{ 0, "MAP_SCALE_HEIGHT"},
-	{ 0, "MAP_SYMBOL_STROKE_FACTOR"},
+	{ 0, "MAP_SYMBOL_PEN_SCALE"},
 	{ 0, "MAP_TICK_LENGTH_PRIMARY"},
 	{ 0, "MAP_TICK_LENGTH_SECONDARY"},
 	{ 0, "MAP_TICK_PEN_PRIMARY"},
@@ -6617,9 +6617,9 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	/* MAP_POLAR_CAP */
 	GMT->current.setting.map_polar_cap[0] = 85;
 	GMT->current.setting.map_polar_cap[1] = 90;
-	/* MAP_SYMBOL_STROKE_FACTOR */
-	GMT->current.setting.map_stroke_width = GMT_SYMBOL_SIZE_TO_PEN_WIDTH / 100.0;	/* Given as percentage */
-	GMT->current.setting.map_stroke_width_unit = '%';
+	/* MAP_SYMBOL_PEN_SCALE */
+	GMT->current.setting.map_symbol_pen_scale = GMT_SYMBOL_SIZE_TO_PEN_WIDTH / 100.0;	/* Given as percentage */
+	GMT->current.setting.map_symbol_pen_scale_unit = '%';
 	/* MAP_SCALE_HEIGHT */
 	GMT->current.setting.map_scale_height = 5 * pt;	/* 5p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
@@ -11241,25 +11241,25 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_polar_cap[1] = inc[GMT_X];
 			}
 			break;
-		case GMTCASE_MAP_SYMBOL_STROKE_FACTOR:
-			dval = atof (value);
-			if (value[len] == '%') {
-				dval /= 100.0;	/* Got factor as a percentage */
-				GMT->current.setting.map_stroke_width_unit = '%';
-			}
-			else	/* Got a fraction */
-				GMT->current.setting.map_stroke_width_unit = '\0';
-			if (dval < 0.0)
-				error = true;
-			else
-				GMT->current.setting.map_stroke_width = dval;
-			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
 			dval = gmt_M_to_inch (GMT, value);
 			if (dval <= 0.0)
 				error = true;
 			else
 				GMT->current.setting.map_scale_height = dval;
+			break;
+		case GMTCASE_MAP_SYMBOL_PEN_SCALE:
+			dval = atof (value);
+			if (value[len] == '%') {
+				dval /= 100.0;	/* Got factor as a percentage */
+				GMT->current.setting.map_symbol_pen_scale_unit = '%';
+			}
+			else	/* Got a fraction */
+				GMT->current.setting.map_symbol_pen_scale_unit = '\0';
+			if (dval < 0.0)
+				error = true;
+			else
+				GMT->current.setting.map_symbol_pen_scale = dval;
 			break;
 		case GMTCASE_TICK_LENGTH:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
@@ -12815,14 +12815,14 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else
 				snprintf (value, GMT_LEN256, "%g/%g", GMT->current.setting.map_polar_cap[0], GMT->current.setting.map_polar_cap[1]);
 			break;
-		case GMTCASE_MAP_SYMBOL_STROKE_FACTOR:
-			if (GMT->current.setting.map_stroke_width_unit == '%')	/* Report as percentage */
-				snprintf (value, GMT_LEN256, "%g%%", GMT->current.setting.map_stroke_width * 100.0);
-			else	/* Just a factor */
-				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.map_stroke_width);
-			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
 			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height * gmt_M_def_scale(GMTCASE_MAP_SCALE_HEIGHT), gmt_M_def_unit(GMTCASE_MAP_SCALE_HEIGHT));
+			break;
+		case GMTCASE_MAP_SYMBOL_PEN_SCALE:
+			if (GMT->current.setting.map_symbol_pen_scale_unit == '%')	/* Report as percentage */
+				snprintf (value, GMT_LEN256, "%g%%", GMT->current.setting.map_symbol_pen_scale * 100.0);
+			else	/* Just a factor */
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.map_symbol_pen_scale);
 			break;
 		case GMTCASE_MAP_TICK_LENGTH:
 		case GMTCASE_TICK_LENGTH:

@@ -872,7 +872,7 @@ MAP Parameters
         Sets the height (> 0) on the map of the map scale bars drawn by
         various programs [default is **5p**].
 
-    **MAP_SYMBOL_STROKE_FACTOR**
+    **MAP_SYMBOL_PEN_SCALE**
         Used to convert non-fillable (**x**, **y**, **+** and **-**) symbol sizes
         to the width of the pen used to stroke these symbols. Give a factor in the
         0-1 range (e.g., 0.18) or specify a percentage (e.g., 10%) [15%]. **Note**:
