@@ -263,7 +263,7 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	}
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
 		fclose (fp);
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate %d GMT_DATA_INFO structures!\n", *n);
 		return NULL;
 	}
 
@@ -277,8 +277,15 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	while (fgets (line, GMT_LEN512, fp) != NULL) {
 		start_here = 0;	/* line[0] is the start of the info record */
 		if (line[0] == '#') {	/* Skip any comments unless parse_extra_data is true */
-			if (parse_extra_data && strncmp (line, "#% ", 3U) == 0)
+			if (parse_extra_data && strncmp (line, "#% ", 3U) == 0) {
 				start_here = 3;
+				(*n)++;	/* Got one more data set via the #% comment - increase array */
+				if ((I = gmt_M_memory (GMT, I, *n, struct GMT_DATA_INFO)) == NULL) {
+					fclose (fp);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to reallocate %d GMT_DATA_INFO structures!\n", *n);
+					return NULL;
+				}
+			}
 			else	/* No, just skip the comment */
 				continue;
 		}
