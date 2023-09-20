@@ -2338,7 +2338,7 @@ GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	if (GMT->common.x.n_threads == 0)
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
-		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - abs (GMT->common.x.n_threads), 1);		/* Max-n but at least one */
 	if (GMT->current.setting.max_cores)	/* Limit to max core defaults setting */
 		GMT->common.x.n_threads = GMT->current.setting.max_cores;
 	return (GMT_NOERROR);
