@@ -868,16 +868,16 @@ MAP Parameters
         cap is reversed, i.e., *85/90* will draw a r = 5 radius circle at the
         center of the map with less frequent radial lines there.
 
-    **MAP_STROKE_WIDTH**
+    **MAP_SCALE_HEIGHT**
+        Sets the height (> 0) on the map of the map scale bars drawn by
+        various programs [default is **5p**].
+
+    **MAP_SYMBOL_PEN_SCALE**
         Used to convert non-fillable (**x**, **y**, **+** and **-**) symbol sizes
         to the width of the pen used to stroke these symbols. Give a factor in the
         0-1 range (e.g., 0.18) or specify a percentage (e.g., 10%) [15%]. **Note**:
         If set to 0 then no such conversion takes place and pen settings must rely on
         **-W** or module defaults.
-
-    **MAP_SCALE_HEIGHT**
-        Sets the height (> 0) on the map of the map scale bars drawn by
-        various programs [default is **5p**].
 
     **MAP_TICK_LENGTH**
         Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY`
