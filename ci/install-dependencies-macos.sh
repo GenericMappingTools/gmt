@@ -41,8 +41,8 @@ fi
 brew install ${packages}
 
 # Install packages via conda
-conda update -n base -c defaults conda
-conda install ${conda_packages} -c conda-forge
+conda update -n base -c conda-forge conda --solver libmamba
+conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
 
 set +x +e
