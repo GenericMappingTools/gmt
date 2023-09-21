@@ -377,6 +377,12 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
 AUX_SOURCE_DIRECTORY (longopt GMT_LONG_OPT_H)
 
+if (BUILD_IMGTEXTURE)
+	set (IMGTEXTURE_SRC imgtexture/terrain_filter.c imgtexture/transpose_inplace.c imgtexture/dct_fftpack.c imgtexture/fftpack.c
+	     imgtexture/compatibility.h imgtexture/dct.h imgtexture/extern_msc.h imgtexture/fftpack.h imgtexture/terrain_filter.h
+	     imgtexture/transpose_inplace.h)
+endif (BUILD_IMGTEXTURE)
+
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.h gmt_common_string.h clear.c begin.c
@@ -403,7 +409,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h ${GMT_LONG_OPT_H}
-	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${EXTRA_SOURCES})
+	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${IMGTEXTURE_SRC} ${EXTRA_SOURCES})
 
 # source codes for testing API
 if (DO_API_TESTS)

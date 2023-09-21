@@ -14,16 +14,16 @@ Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*, e.
     3.7
     ...
 
-Append **+b** if we should take log2 of *min* and *max*, get their nearest integers,
-build an equidistant log2-array using *inc* integer increments in log2, then undo
-the log2 conversion. E.g., **-T**\ 3/20/1\ **+b** will produce this sequence::
+Append **+b** if we should take :math:`\log_2` of *min* and *max*, get their nearest integers,
+build an equidistant :math:`\log_2`-array using *inc* integer increments in :math:`\log_2`, then undo
+the :math:`\log_2` conversion. E.g., **-T**\ 3/20/1\ **+b** will produce this sequence::
 
     gmt math -o0 -T3/20/1+b T =
     4
     8
     16
 
-Append **+l** if we should take log10 of *min* and *max* and build an
+Append **+l** if we should take :math:`\log_{10}` of *min* and *max* and build an
 array where *inc* can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
 (1-9 times magnitude).  E.g., **-T**\ 7/135/2\ **+l** will produce this sequence::
 

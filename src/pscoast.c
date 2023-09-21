@@ -38,7 +38,7 @@
  * If only oceans are filled, then the 'dry' areas remain transparent.  This
  * allows the user to overlay land or ocean without wiping out the plot.
  * For more information about the binned polygon file, see the GMT Technical
- * Reference and Cookbook.
+ * Reference.
  * Optionally, the user may choose to issue clip paths rather than paint the
  * polygons.  That way one may clip subsequent images to be visible only
  * inside or outside the coastline.

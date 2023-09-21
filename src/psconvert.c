@@ -576,7 +576,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 #ifdef JULIA_GHOST_JLL
 	/* In Julia when using the precompiled Artifacts, the Ghost is also shipped with but when gmt_init makes
 	   calls to psconvert it doesn't set -G with the path to the Ghostscript_jll executable and those processes
-	   fail (mostly modern mode stuff). The solution is to try to read the gs path from ~/.gmt/ghost_jll_path.txt 
+	   fail (mostly modern mode stuff). The solution is to try to read the gs path from ~/.gmt/ghost_jll_path.txt
 	   This code should only be executed by binaries created Julia's BinaryBuilder.
 	 */
 	bool found_gs = false;
@@ -745,7 +745,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "G: Select PNG (transparent where nothing is plotted).");
 	GMT_Usage (API, 3, "j: Select JPEG.");
 	GMT_Usage (API, 3, "m: Select PPM.");
-	GMT_Usage (API, 3, "s: Select SVG [if supported by your Ghostscript version].");
 	GMT_Usage (API, 3, "t: Select TIF.");
 	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
 	GMT_Usage (API, 3, "+m For b, g, j, and t, make a monochrome (grayscale) image [color].");

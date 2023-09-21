@@ -292,9 +292,9 @@ Operator        Args   Returns                                                  
 **LDISTG**      0 1    As LDIST, but operates on the GSHHG dataset (see -A, -D for options).                           Special Operators  
 **LE**          2 1    1 if A <= (equal or smaller than) B, else 0                                                     Logic              
 **LOG**         1 1    Dilogarithm (Spence's) function                                                                 Special Functions  
-**LOG10**       1 1    log10 (A) (logarithm base 10)                                                                   Arithmetic         
+**LOG10**       1 1    :math:`\log_{10}` (A) (logarithm base 10)                                                                   Arithmetic         
 **LOG1P**       1 1    log (1+A) (natural logarithm, accurate for small A)                                             Arithmetic         
-**LOG2**        1 1    log2 (A) (logarithm base 2)                                                                     Arithmetic         
+**LOG2**        1 1    :math:`\log_2` (A) (logarithm base 2)                                                                     Arithmetic         
 **LMSSCL**      1 1    LMS (Least Median of Squares) scale estimate (LMS STD) of A                                     Probability        
 **LMSSCLW**     2 1    Weighted LMS scale estimate (LMS STD) of A for weights in B                                     Probability        
 **LOWER**       1 1    The lowest (minimum) value of A                                                                 Arithmetic         
@@ -610,7 +610,7 @@ To compute all distances to north pole, try::
 
      gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc
 
-To take log10 of the average of 2 files, use::
+To take :math:`\log_{10}` of the average of 2 files, use::
 
     gmt grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 

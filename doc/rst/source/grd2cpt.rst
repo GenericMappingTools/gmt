@@ -192,8 +192,8 @@ Optional Arguments
 
 **-Q**\ [**i**\|\ **o**]
     Selects a logarithmic interpolation scheme [Default is linear].
-    **-Qi** expects input z-values to be log10(z), assigns colors, and
-    writes out z [Default]. **-Qo** takes log10(z) first, assigns
+    **-Qi** expects input z-values to be :math:`\log_{10}`(z), assigns colors, and
+    writes out z [Default]. **-Qo** takes :math:`\log_{10}`(z) first, assigns
     colors, and writes out z.
 
 .. |Add_-R| replace:: |Add_-R_links|

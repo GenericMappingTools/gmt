@@ -23,7 +23,7 @@ Description
 
 The **begin** module instructs GMT to begin a new modern mode session.  If your script only makes
 a single plot then this is the most opportune time to specify the name
-and format(s) of your plot (see also :doc:`cookbook/one-liner`).
+and format(s) of your plot (see also :doc:`reference/one-liner`).
 However, if you want to create multiple illustrations within this session,
 you will instead use :doc:`figure` to name the figure(s) you wish to make.  The session
 keeps track of all default and history settings and isolates them from any other session

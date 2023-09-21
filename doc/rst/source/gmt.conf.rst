@@ -122,7 +122,7 @@ DIR Parameters
 
     **DIR_DATA**
         Session data directory. Overrides the value of the environment variable
-        **$GMT_DATADIR** (see :ref:`Directory parameters` in the CookBook).
+        **$GMT_DATADIR** (see :ref:`Directory parameters` in the Technical Reference).
 
     **DIR_DCW**
         Path to optional Digital Chart of the World polygon files.
@@ -539,7 +539,7 @@ I/O Parameters
         invalid value, written as *ff*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*].
         The 2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
         :doc:`grdconvert` and Section :ref:`grid-file-format` of the GMT Technical
-        Reference and Cookbook for more information. You may the scale as **a**
+        Reference for more information. You may the scale as **a**
         for auto-adjusting the scale and/or offset of packed integer grids
         (=\ *ID*\ **+s**\ *a* is a shorthand for =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
         When *invalid* is omitted the appropriate value for the given format is used
@@ -548,7 +548,7 @@ I/O Parameters
     **IO_GRIDFILE_SHORTHAND**
         If **true**, all grid file names are examined to see if they use the
         file extension shorthand discussed in Section :ref:`grid-file-format` of
-        the GMT Technical Reference and Cookbook. If **false**, no filename
+        the GMT Technical Reference. If **false**, no filename
         expansion is done [default is **false**].
 
     **IO_HEADER**
@@ -871,6 +871,13 @@ MAP Parameters
     **MAP_SCALE_HEIGHT**
         Sets the height (> 0) on the map of the map scale bars drawn by
         various programs [default is **5p**].
+
+    **MAP_SYMBOL_PEN_SCALE**
+        Used to convert non-fillable (**x**, **y**, **+** and **-**) symbol sizes
+        to the width of the pen used to stroke these symbols. Give a factor in the
+        0-1 range (e.g., 0.18) or specify a percentage (e.g., 10%) [15%]. **Note**:
+        If set to 0 then no such conversion takes place and pen settings must rely on
+        **-W** or module defaults.
 
     **MAP_TICK_LENGTH**
         Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY`

@@ -234,7 +234,7 @@ typedef enum {
 	Int64len = 8
 } SwapWidth;
 
-/* Indicies into the 4 proj strings possible in GMT/OGR files */
+/* Indices into the 4 proj strings possible in GMT/OGR files */
 
 enum GMTIO_PROJS {
 	GMTIO_EPGS = 0,
@@ -7919,6 +7919,7 @@ int gmt_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_alloc_segment: Unable to reallocate string array new length %" PRIu64 "\n", n_rows);
 				return 1;
 			}
+			SH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
 		}
 		SH->n_alloc = n_rows;
 	}
@@ -7954,6 +7955,7 @@ void gmtlib_assign_segment (struct GMT_CTRL *GMT, unsigned int direction, struct
 				GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, n_rows, char *);	/* Trim back */
 			S->text = GMT->hidden.mem_txt;	/* Pass the pointer */
 			GMT->hidden.mem_txt = NULL;		/* Null this out to start over for next segment */
+			SH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
 		}
 		GMT->hidden.mem_cols = 0;	/* Flag that we need to reallocate new temp arrays for next segment, if any */
 	}
@@ -7966,6 +7968,7 @@ void gmtlib_assign_segment (struct GMT_CTRL *GMT, unsigned int direction, struct
 		if (GMT->current.io.record_type[direction] & GMT_READ_TEXT) {
 			uint64_t row;
 			S->text = gmt_M_memory (GMT, S->text, n_rows, char *);
+			SH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
 			for (row = 0; row < n_rows; row++) {
 				S->text[row] = GMT->hidden.mem_txt[row];
 				GMT->hidden.mem_txt[row] = NULL;
@@ -8310,7 +8313,11 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				}
 			}
 			if (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) {
-				if (GMT->current.io.record.text) GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				if (GMT->current.io.record.text) {
+					if (GMT->hidden.mem_txt == NULL)	/* Probably first file did not have text but a later file does */
+						GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, GMT->hidden.mem_rows, char *);
+					GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				}
 				*data_type = GMT_READ_MIXED;
 			}
 
