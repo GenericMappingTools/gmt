@@ -1005,6 +1005,30 @@ GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 	}
 }
 
+GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
+	/* Function that fills out the image in the special case of 1) image, 2) no colormap, 3) external CPT */
+	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
+	uint64_t byte, kk_s, node_s;
+	int index, k;
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
+	gmt_M_unused (GMT);
+	gmt_M_unused (Ctrl);
+
+#ifdef _OPENMP
+#pragma omp parallel for private(srow,byte,kk_s,scol,node_s,k) shared(GMT,Conf,Ctrl,H_s,image)
+#endif
+	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
+		byte = (uint64_t)srow * Conf->n_columns;
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
+		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
+			node_s = kk_s + Conf->actual_col[scol];	/* Start of current pixel node */
+			index = (int)Conf->Image->data[node_s];
+			for (k = 0; k < 3; k++)
+				image[byte++] = (unsigned char)gmt_M_s255 (Conf->P->data[index].rgb_low[k]);
+		}
+	}
+}
+
 GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
 	bool transparency = (Conf->Image->header->n_bands == 4);
@@ -1209,7 +1233,7 @@ EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
                                   (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
 
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
-	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
+	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, byte_image_no_cmap;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
 	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0, pad_mode = 0;
@@ -1327,6 +1351,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				else if (img_region_is_dimension (I->header)) Ctrl->D.mode = true;
 			}
 		}
+	}
+	byte_image_no_cmap = (I && I->type == GMT_UCHAR && I->n_indexed_colors == 0);
+	if (byte_image_no_cmap && !Ctrl->C.active) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "Byte image without indexed color requires a CPT via -C\n");
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	gmt_detect_oblique_region (GMT, Ctrl->In.file);	/* Ensure a proper and smaller -R for oblique projections */
@@ -1628,11 +1657,27 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* Get or calculate a color palette file */
 
 	has_content = (got_z_grid) ? false : true;	/* Images always have content but grids may be all NaN */
-	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
+	if (byte_image_no_cmap) {	/* Need external CPT for byte indices */
 		if (Ctrl->C.active) {	/* Read a palette file */
-			double zmin = Grid_orig->header->z_min, zmax = Grid_orig->header->z_max;
-			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file, Grid_orig->header);
-			grdimage_reset_grd_minmax (GMT, Grid_orig, &zmin, &zmax);
+			if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, 0.0, 255.0, Ctrl->C.dz)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
+				gmt_free_header (API->GMT, &header_I);
+				Return (API->error);	/* Well, that did not go so well... */
+			}
+			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
+			Conf->P = P;
+			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
+		}
+	}
+	else if (got_z_grid ) {	/* Got a single grid so need to convert z to color via a CPT */
+		if (Ctrl->C.active) {	/* Read a palette file */
+			double zmin = 0.0, zmax = 0.0;
+			char *cpt = (byte_image_no_cmap) ? strdup (Ctrl->C.file) : gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file, Grid_orig->header);
+			if (!byte_image_no_cmap) {
+				zmin = Grid_orig->header->z_min;
+				zmax = Grid_orig->header->z_max;
+				grdimage_reset_grd_minmax (GMT, Grid_orig, &zmin, &zmax);
+			}
 			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, zmin, zmax, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 				gmt_free_header (API->GMT, &header_G);
@@ -1870,7 +1915,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm + Conf->colormask_offset, unsigned char);
 			if (Ctrl->Q.transp_color)
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the specific rgb up to 0-255 range */
-			else if (P)	/* Use the CPT NaN color */
+			else if (P && !byte_image_no_cmap)	/* Use the CPT NaN color */
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
 			/* else we default to 0 0 0 of course */
 		}
@@ -1927,6 +1972,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					grdimage_img_gray_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (Ctrl->M.active) 	/* Image, color converted to gray, with intensity */
 					grdimage_img_c2s_no_intensity (GMT, Ctrl, Conf, bitimage_8);
+				else if (byte_image_no_cmap)
+					grdimage_img_byte_index (GMT, Ctrl, Conf, bitimage_24);
 				else	/* Image, color, no intensity */
 					grdimage_img_color_no_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
