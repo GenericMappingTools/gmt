@@ -3736,6 +3736,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		}
 	}
 
+	I->header->nan_value = from_gdalread->nodata;
 	I->color_interp    = from_gdalread->color_interp;     /* Must find out how to release this mem */
 	I->n_indexed_colors = from_gdalread->nIndexedColors;
 	gmt_M_str_free (I->header->ProjRefPROJ4);		/* Make sure we don't leak due to a previous copy */
