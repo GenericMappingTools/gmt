@@ -826,6 +826,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	unsigned int dump_k_val = 0;
 #endif
 
+	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
+		Ctrl->L.active = true;
+		Ctrl->L.spacing = 0.01 * PSSCALE_GAP_PERCENT * Ctrl->D.dim[GMT_X] / (P->n_colors - 1);
+		fprintf (stderr, "Gap set to %lg\n", Ctrl->L.spacing);
+	}
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
 
@@ -1936,10 +1941,6 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
-		Ctrl->L.active = true;
-		Ctrl->L.spacing = 0.01 * PSSCALE_GAP_PERCENT * Ctrl->D.dim[GMT_X] / (P->n_colors - 1);
-	}
 	if (!Ctrl->N.active && !P->is_continuous)	/* If -N not set we should default to rectangles if possible due to macOS Preview blurring */
 		Ctrl->N.mode = N_FAVOR_POLY;
 
@@ -1966,11 +1967,6 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->W.active)	/* Scale all z values */
 		gmt_scale_cpt (GMT, P, Ctrl->W.scale);
-
-	if (P->categorical) {
-		Ctrl->L.active = Ctrl->L.interval = true;
-		GMT_Report (API, GMT_MSG_INFORMATION, "CPT is for categorical data.\n");
-	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
 
@@ -2063,6 +2059,12 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 				gmtlib_parse_B_option (GMT, p);
 			gmt_M_str_free (tmp);
 		}
+	}
+
+	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
+		Ctrl->L.active = true;
+		Ctrl->L.spacing = 0.01 * PSSCALE_GAP_PERCENT * Ctrl->D.dim[GMT_X] / (P->n_colors - 1);
+		fprintf (stderr, "Gap set to %lg\n", Ctrl->L.spacing);
 	}
 
 	if (Ctrl->Z.active) {	/* Widths of slices per color is prescribed manually via this file */
