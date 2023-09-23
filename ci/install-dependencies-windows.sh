@@ -38,8 +38,8 @@ if [ "$RUN_TESTS" = "true" ]; then
     conda_packages+=" dvc"
 
     # Install graphicsmagick via choco
-    choco install graphicsmagick --version 1.3.40.20230603 --no-progress
-    echo 'C:\Program Files\GraphicsMagick-1.3.40-Q8' >> $GITHUB_PATH
+    choco install graphicsmagick --version 1.3.32 --no-progress
+    echo 'C:\Program Files\GraphicsMagick-1.3.32-Q8' >> $GITHUB_PATH
 fi
 
 # we need the GNU tar for packaging

@@ -79,9 +79,9 @@ jobs:
         shell: pwsh
         run: |
           New-Item -Path "HKLM:\Software\GPL Ghostscript"
-          New-Item -Path "HKLM:\Software\GPL Ghostscript\10.02.0"
-          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02.0" -Name GS_DLL -PropertyType String -Value "C:\Miniconda\Library\bin\gsdll64.dll"
-          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02.0" -Name GS_LIB -PropertyType String -Value "C:\Miniconda\Library\bin;C:\Miniconda\Library\lib;C\Miniconda\Library\Font;C:\Miniconda\Library\fonts"
+          New-Item -Path "HKLM:\Software\GPL Ghostscript\10.02"
+          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02" -Name GS_DLL -PropertyType String -Value "C:\Miniconda\Library\bin\gsdll64.dll"
+          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02" -Name GS_LIB -PropertyType String -Value "C:\Miniconda\Library\bin;C:\Miniconda\Library\lib;C\Miniconda\Library\Font;C:\Miniconda\Library\fonts"
         if: runner.os == 'Windows'
 
       - name: Cache GSHHG and DCW data
