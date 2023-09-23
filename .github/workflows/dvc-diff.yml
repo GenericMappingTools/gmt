@@ -78,7 +78,7 @@ jobs:
 
         # Pull image data from cloud storage
         dvc pull --remote origin
-        dvc diff --md main HEAD >> report.md
+        dvc diff --md master HEAD >> report.md
 
         # Get just the filename of the added and modified image from the report
         awk 'NF==5 && NR>=7 && $2=="added" {print $4}' report.md > added_files.txt
