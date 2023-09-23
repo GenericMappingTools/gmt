@@ -88,8 +88,9 @@ jobs:
         awk 'NF==5 && NR>=7 && $2=="modified" && $4 ~ /.ps$/ {print $4}' report.md > modified_files.txt
 
         # Backup new images in a different directory
-        mkdir newbaseline/
-        cp -r test/baseline doc/examples/images doc/scripts/images newbaseline/
+        mkdir -p newbaseline/test && cp -r test/baseline newbaseline/test/
+        mkdir -p newbaseline/doc/examples && cp -r doc/examples/images newbaseline/doc/examples/
+        mkdir -p newbaseline/doc/scripts && cp -r doc/scripts/images newbaseline/doc/scripts/
         # Pull images in the master branch from cloud storage
         git checkout master
         dvc pull --remote origin
