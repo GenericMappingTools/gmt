@@ -89,6 +89,7 @@ jobs:
         mkdir -p newbaseline/doc/examples && cp -r doc/examples/images newbaseline/doc/examples/
         mkdir -p newbaseline/doc/scripts && cp -r doc/scripts/images newbaseline/doc/scripts/
         # Pull images in the master branch from cloud storage
+        git fetch origin master
         git checkout master
         dvc pull --remote origin
 
