@@ -61,9 +61,9 @@ jobs:
     #
     # | Status   | Path                                |
     # |----------|-------------------------------------|
-    # | added    | pygmt/tests/baseline/test_image.png |
-    # | deleted  | pygmt/tests/baseline/test_image2.png |
-    # | modified | pygmt/tests/baseline/test_image3.png |
+    # | added    | test/baseline/test_image.png |
+    # | deleted  | test/baseline/test_image2.png |
+    # | modified | test/baseline/test_image3.png |
     #
     # ## Image diff(s)
     #
@@ -84,12 +84,12 @@ jobs:
         dvc diff --md master HEAD >> report.md
 
         # Get just the filename of the added and modified image from the report
-        awk 'NF==5 && NR>=7 && $2=="added" {print $4}' report.md > added_files.txt
-        awk 'NF==5 && NR>=7 && $2=="modified" {print $4}' report.md > modified_files.txt
+        awk 'NF==5 && NR>=7 && $2=="added" && $4 ~ /.ps$/ {print $4}' report.md > added_files.txt
+        awk 'NF==5 && NR>=7 && $2=="modified" && $4 ~ /.ps$/ {print $4}' report.md > modified_files.txt
 
         # Backup new images in a different directory
         mkdir newbaseline/
-        cp -r test/baseline doc/examples/images doc/scripts/images newbaseline
+        cp -r test/baseline doc/examples/images doc/scripts/images newbaseline/
         # Pull images in the master branch from cloud storage
         git checkout master
         dvc pull --remote origin
