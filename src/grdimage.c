@@ -1014,7 +1014,11 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 	gmt_M_unused (GMT);
 	gmt_M_unused (Ctrl);
 
-	start = (Conf->P->data[0].z_low == 1.0) ? 1 : 0;
+	if (gmt_M_is_dnan (Conf->Image->header->nan_value)) /* Nodata not set, offset to 1 if CPT indicates first key is 1 */
+		start = (irint (Conf->P->data[0].z_low) == 1) ? 1 : 0;	/* No "0" key in CPT so we skip it */
+	else	/* Check if the nan_value is 0 or 255 */
+		start = (irint (Conf->Image->header->nan_value) == 0) ? 1 : 0;	/* No "0" key in CPT so we skip it */
+
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,scol,node_s,k) shared(GMT,Conf,Ctrl,H_s,image)
 #endif
@@ -1841,9 +1845,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	Conf->int_mode  = use_intensity_grid;
 	Conf->nm        = header_work->nm;
 
-	if (byte_image_no_cmap && Conf->P->data[0].z_low == 1.0) {	/* Means 0 is No data */
-		Ctrl->Q.active = true;
-		rgb_cube_scan = true;
+	if (byte_image_no_cmap) {	/* Check if we have a nan_value (No data pixel) */
+		if (gmt_M_is_dnan (Conf->Image->header->nan_value) || irint (Conf->Image->header->nan_value) == 0 || irint (Conf->P->data[0].z_low) == 1) { /* Nodata given as 0 */
+			Ctrl->Q.active = true;
+			rgb_cube_scan = true;
+		}
 	}
 
 	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];	/* Determine which color represents a NaN grid node */
