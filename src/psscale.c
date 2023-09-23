@@ -829,7 +829,6 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
 		Ctrl->L.active = true;
 		Ctrl->L.spacing = 0.01 * PSSCALE_GAP_PERCENT * Ctrl->D.dim[GMT_X] / (P->n_colors - 1);
-		fprintf (stderr, "Gap set to %lg\n", Ctrl->L.spacing);
 	}
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
