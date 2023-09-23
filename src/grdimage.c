@@ -1017,7 +1017,7 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 	if (gmt_M_is_dnan (Conf->Image->header->nan_value)) /* Nodata not set, offset to 1 if CPT indicates first key is 1 */
 		start = (irint (Conf->P->data[0].z_low) == 1) ? 1 : 0;	/* No "0" key in CPT so we skip it */
 	else	/* Check if the nan_value is 0 or 255 */
-		start = (irint (Conf->Image->header->nan_value) == 0) ? 1 : 0;	/* No "0" key in CPT so we skip it */
+		start = (irint (Conf->Image->header->nan_value) == 0 || irint (Conf->P->data[0].z_low) == 1) ? 1 : 0;	/* No "0" key in CPT so we skip it */
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,scol,node_s,k) shared(GMT,Conf,Ctrl,H_s,image)
