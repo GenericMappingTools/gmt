@@ -79,7 +79,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.0
 
       - name: Install vcpkg libraries
         run: bash ci/install-dependencies-windows.sh
