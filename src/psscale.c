@@ -826,11 +826,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	unsigned int dump_k_val = 0;
 #endif
 
-	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
-		Ctrl->L.active = true;
-		Ctrl->L.spacing = 0.01 * PSSCALE_GAP_PERCENT * Ctrl->D.dim[GMT_X] / (P->n_colors - 1);
-		fprintf (stderr, "Gap set to %lg\n", Ctrl->L.spacing);
+	if (P->categorical) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
+		Ctrl->L.spacing = gap = 0.01 * PSSCALE_GAP_PERCENT * fabs (length) / (P->n_colors - 1);
+		B_set = false;
 	}
+
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
 
@@ -1944,6 +1944,10 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	if (!Ctrl->N.active && !P->is_continuous)	/* If -N not set we should default to rectangles if possible due to macOS Preview blurring */
 		Ctrl->N.mode = N_FAVOR_POLY;
 
+	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
+		Ctrl->L.active = true;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Categorical CPT - Activating -L with 15%% of the bar length used for gaps between categories\n");
+	}
 	if (Ctrl->D.extend && P->is_wrapping) {
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot use +e for cycling color bar; +e deactivated\n");
 		Ctrl->D.extend = false;
@@ -2059,12 +2063,6 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 				gmtlib_parse_B_option (GMT, p);
 			gmt_M_str_free (tmp);
 		}
-	}
-
-	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
-		Ctrl->L.active = true;
-		Ctrl->L.spacing = 0.01 * PSSCALE_GAP_PERCENT * Ctrl->D.dim[GMT_X] / (P->n_colors - 1);
-		fprintf (stderr, "Gap set to %lg\n", Ctrl->L.spacing);
 	}
 
 	if (Ctrl->Z.active) {	/* Widths of slices per color is prescribed manually via this file */
