@@ -1005,15 +1005,16 @@ GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDI
 	}
 }
 
-GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
+GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image, unsigned char *rgb_used) {
 	/* Function that fills out the image in the special case of 1) 1-byte image, 2) no colormap, 3) external CPT given */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t byte, kk_s, node_s;
+	uint64_t byte, kk_s, node_s, start;
 	int index, k;
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (GMT);
 	gmt_M_unused (Ctrl);
 
+	start = (Conf->P->data[0].z_low == 1.0) ? 1 : 0;
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,scol,node_s,k) shared(GMT,Conf,Ctrl,H_s,image)
 #endif
@@ -1023,8 +1024,15 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol];	/* Start of current pixel node */
 			index = (int)Conf->Image->data[node_s];
-			for (k = 0; k < 3; k++)
-				image[byte++] = (unsigned char)gmt_M_s255 (Conf->P->data[index].rgb_low[k]);
+			if (index < start) {	/* E.g., data is 0 for Nodata */
+				for (k = 0; k < 3; k++)
+					image[byte++] = (unsigned char)gmt_M_s255 (Conf->P->bfn[GMT_NAN].rgb[k]);
+			}
+			else {
+				for (k = 0; k < 3; k++)
+					image[byte++] = (unsigned char)gmt_M_s255 (Conf->P->data[index-start].rgb_low[k]);
+				rgb_used[index] = true;
+			}
 		}
 	}
 }
@@ -1833,8 +1841,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	Conf->int_mode  = use_intensity_grid;
 	Conf->nm        = header_work->nm;
 
+	if (byte_image_no_cmap && Conf->P->data[0].z_low == 1.0) {	/* Means 0 is No data */
+		Ctrl->Q.active = true;
+		rgb_cube_scan = true;
+	}
+
 	NaN_rgb = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];	/* Determine which color represents a NaN grid node */
-	if (got_z_grid && Ctrl->Q.active) {	/* Want colormasking via the grid's NaN entries */
+	if ((got_z_grid || byte_image_no_cmap) && Ctrl->Q.active) {	/* Want colormasking via the grid's NaN entries */
 		if (gray_only) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Your image is gray scale only but -Q requires building a 24-bit image; your image will be expanded to 24-bit.\n");
 			gray_only = false;	/* Since we cannot do 8-bit and colormasking */
@@ -1915,7 +1928,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm + Conf->colormask_offset, unsigned char);
 			if (Ctrl->Q.transp_color)
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the specific rgb up to 0-255 range */
-			else if (P && !byte_image_no_cmap)	/* Use the CPT NaN color */
+			else if (P && Ctrl->Q.active)	/* Use the CPT NaN color */
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
 			/* else we default to 0 0 0 of course */
 		}
@@ -1973,7 +1986,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				else if (Ctrl->M.active) 	/* Image, color converted to gray, with intensity */
 					grdimage_img_c2s_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (byte_image_no_cmap)
-					grdimage_img_byte_index (GMT, Ctrl, Conf, bitimage_24);
+					grdimage_img_byte_index (GMT, Ctrl, Conf, bitimage_24, rgb_used);
 				else	/* Image, color, no intensity */
 					grdimage_img_color_no_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
