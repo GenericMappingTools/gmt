@@ -32,6 +32,19 @@ jobs:
     - name: Setup continuous machine learning (CML)
       uses: iterative/setup-cml@v1.2.3
 
+    - name: Setup Micromamba
+      uses: mamba-org/setup-micromamba@v1.4.4
+      with:
+        environment-name: gmt
+        condarc: |
+          channels:
+            - conda-forge
+            - nodefaults
+        cache-downloads: true
+        cache-environment: true
+        create-args: >-
+          gmt
+
     # workaround from https://github.com/iterative/cml/issues/1377
     - name: Setup NodeJS
       uses: actions/setup-node@v3.8.1
