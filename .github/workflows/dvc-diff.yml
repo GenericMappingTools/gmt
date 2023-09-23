@@ -76,6 +76,9 @@ jobs:
         echo -e "## Summary of changed images\n" > report.md
         echo -e "This is an auto-generated report of images that have changed on the DVC remote\n" >> report.md
 
+        # Fetch the master branch
+        git fetch origin master
+
         # Pull image data from cloud storage
         dvc pull --remote origin
         dvc diff --md master HEAD >> report.md
@@ -89,7 +92,6 @@ jobs:
         mkdir -p newbaseline/doc/examples && cp -r doc/examples/images newbaseline/doc/examples/
         mkdir -p newbaseline/doc/scripts && cp -r doc/scripts/images newbaseline/doc/scripts/
         # Pull images in the master branch from cloud storage
-        git fetch origin master
         git checkout master
         dvc pull --remote origin
 
