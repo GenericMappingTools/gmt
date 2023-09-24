@@ -75,13 +75,13 @@ jobs:
         env:
           EXCLUDE_OPTIONAL: ${{ matrix.EXCLUDE_OPTIONAL }}
 
-      - name: Fix Ghostscript 9.56.1 registry for GraphicsMagick<1.3.37
-        # Related to https://github.com/GenericMappingTools/gmt/issues/4231
+      - name: Add Ghostscript registry so that GraphicsMagick can find it [Windows]
         shell: pwsh
         run: |
-          Get-ChildItem -Path "HKLM:\SOFTWARE\GPL Ghostscript"
-          Rename-Item -Path "HKLM:\SOFTWARE\GPL Ghostscript\9.56.1" -NewName "9.56"
-          Get-ChildItem -Path "HKLM:\SOFTWARE\GPL Ghostscript"
+          New-Item -Path "HKLM:\Software\GPL Ghostscript"
+          New-Item -Path "HKLM:\Software\GPL Ghostscript\10.02"
+          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02" -Name GS_DLL -PropertyType String -Value "C:\Miniconda\Library\bin\gsdll64.dll"
+          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02" -Name GS_LIB -PropertyType String -Value "C:\Miniconda\Library\bin;C:\Miniconda\Library\lib;C\Miniconda\Library\Font;C:\Miniconda\Library\fonts"
         if: runner.os == 'Windows'
 
       - name: Cache GSHHG and DCW data
@@ -182,3 +182,12 @@ jobs:
           name: BuildDirectory-${{ runner.os }}
           path: build/
         if: failure()
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3.1.4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          fail_ci_if_error: false
+          gcov: true
+        if: always()
