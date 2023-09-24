@@ -305,7 +305,7 @@ GMT_LOCAL void xyz2grd_protect_J (struct GMTAPI_CTRL *API, struct GMT_OPTION *op
 EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
-	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1, was;
+	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1, was, n_ave = 0;
 	uint64_t n_empty = 0, n_confused = 0;
 	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
@@ -796,8 +796,10 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			else {	/* Enough values went to this node */
 				if (Amode == 'n')
 					Grid->data[ij] = (gmt_grdfloat)flag[ij];
-				else if (Amode == 'm')
+				else if (Amode == 'm') {
 					Grid->data[ij] /= (gmt_grdfloat)flag[ij];
+					if (flag[ij] > 1) n_ave++;
+				}
 				else if (Amode == 'r')
 					Grid->data[ij] = (gmt_grdfloat)sqrt (Grid->data[ij] / (gmt_grdfloat)flag[ij]);
 				else if (Amode == 'd')
@@ -810,6 +812,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				n_filled++;
 			}
 		}
+		if (n_ave) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " nodes had multiple entries and were averaged\n", n_ave);
 		gmt_M_free (GMT, flag);
 		gmt_M_free (GMT, data);
 
