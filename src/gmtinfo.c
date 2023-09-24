@@ -411,7 +411,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, lonmin);  gmt_M_free (GMT, lonmax); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_M_free (GMT, Z); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
-	bool got_stuff = false, first_data_record, give_r_string = false, save_t;
+	bool got_stuff = false, first_data_record, give_r_string = false, save_t, first_time = true;;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0;
@@ -591,7 +591,10 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			gmt_quad_reset (GMT, Q, ncol);
 			if (gmt_M_rec_is_segment_header (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
 		}
-
+		if (first_time && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Learned that an OGR file is geographic so output is the same */
+			gmt_set_geographic (GMT, GMT_OUT);
+			first_time = false;
+		}
 		if (gmt_M_rec_is_segment_header (GMT) || (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) || gmt_M_rec_is_eof (GMT)) {	/* Time to report */
 			if (Ctrl->A.active) {
 				if (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) {
