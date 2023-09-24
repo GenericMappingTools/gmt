@@ -909,6 +909,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (gmtgdalread_populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer))
 			return(GMT_NOTSET);
 
+		/* See if uint8 images have set a noData */
+		if (Ctrl->band_field_names[0].nodata > -1e10)
+			Ctrl->nodata = Ctrl->band_field_names[0].nodata;
+
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
 		if (!Ctrl->hdr[6]) {		/* Grid registration */
 			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;

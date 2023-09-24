@@ -183,7 +183,10 @@ Optional Arguments
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
     instead. If |-I| is used then each rectangle will have its
-    constant color modified by the specified intensity.
+    constant color modified by the specified intensity.  **Note**: For
+    categorical CPTs we default to activating |-L| with a *gap* such
+    that the sum of all the gaps equal 15% of the bar width.  You may
+    chose no gaps by giving |-L| only or explicitly set *gap = 0*.
 
 .. _-M:
 

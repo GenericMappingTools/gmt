@@ -43,6 +43,7 @@ EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int ty
 #define PSSCALE_L_SCALE	80	/* Set scale length to 80% of map side length under auto-setting */
 #define PSSCALE_W_SCALE	4	/* Set scale width to 4% of scale length under auto-setting */
 #define PSSCALE_CYCLE_DIM 0.45	/* Cyclic symbol radius is 0.45 of width */
+#define PSSCALE_GAP_PERCENT 15	/* Percentage of bar length set aside for gaps for categorical CPTs */
 #define N_FAVOR_IMAGE	1
 #define N_FAVOR_POLY	2
 
@@ -213,7 +214,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append i to annotate the interval range instead of lower/upper. "
 		"If <gap> is appended, we separate each rectangle by <gap> units and center each "
 		"lower (z0) annotation on the rectangle.  Ignored if not a discrete CPT. "
-		"If -I is used then each rectangle will have the illuminated constant color.");
+		"If -I is used then each rectangle will have the illuminated constant color. "
+		"Note: If the CPT is categorical and -L not set we default to -L with gaps making up %d%% of the bar width.", PSSCALE_GAP_PERCENT);
 	GMT_Usage (API, 1, "\n-M");
 	GMT_Usage (API, -2, "Force monochrome colorbar using the YIQ transformation.");
 	GMT_Usage (API, 1, "\n-N[p|<dpi>]");
@@ -823,6 +825,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 #ifdef DEBUG
 	unsigned int dump_k_val = 0;
 #endif
+
+	if (P->categorical) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
+		Ctrl->L.spacing = gap = 0.01 * PSSCALE_GAP_PERCENT * fabs (length) / (P->n_colors - 1);
+		B_set = false;	/* And no -B can be used now */
+	}
 
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
@@ -1937,6 +1944,10 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	if (!Ctrl->N.active && !P->is_continuous)	/* If -N not set we should default to rectangles if possible due to macOS Preview blurring */
 		Ctrl->N.mode = N_FAVOR_POLY;
 
+	if (P->categorical && !Ctrl->L.active) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
+		Ctrl->L.active = true;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Categorical CPT - Activating -L with 15%% of the bar length used for gaps between categories\n");
+	}
 	if (Ctrl->D.extend && P->is_wrapping) {
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot use +e for cycling color bar; +e deactivated\n");
 		Ctrl->D.extend = false;
@@ -1960,11 +1971,6 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->W.active)	/* Scale all z values */
 		gmt_scale_cpt (GMT, P, Ctrl->W.scale);
-
-	if (P->categorical) {
-		Ctrl->L.active = Ctrl->L.interval = true;
-		GMT_Report (API, GMT_MSG_INFORMATION, "CPT is for categorical data.\n");
-	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
 
