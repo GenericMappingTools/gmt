@@ -530,6 +530,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	delimiter[0] = (Ctrl->C.active || Ctrl->I.mode == BOUNDBOX) ? '\t' : '/';
 	delimiter[1] = '\0';
 	off = (GMT->common.R.active[GSET]) ? 0.5 : 0.0;
+	save_range = GMT->current.io.geo.range;
 
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);
@@ -566,7 +567,6 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	save_range = GMT->current.io.geo.range;
 	GMT->current.io.geo.range = GMT_IGNORE_RANGE;	/* Ensure no adjustment will happen since we control it here */
 	d_ptr = (Ctrl->C.active || Ctrl->E.active) ? GMT->current.io.curr_rec : ((Ctrl->I.mode == BOUNDBOX) ? out : NULL);
 	t_ptr = (d_ptr && !Ctrl->E.active) ? NULL : record;
@@ -709,6 +709,20 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_INFORMATION,
 					            "Initial -R: %g/%g/%g/%g [n_columns = %u n_rows = %u] --> Suggested -R:  %g/%g/%g/%g [n_columns = %u n_rows = %u].\n",
 						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], out_dim[GMT_X], out_dim[GMT_Y]);
+				}
+			}
+
+			if (gmt_M_is_geographic (GMT, GMT_OUT)) {
+				/* Special handling since lon1/lon2 must first have been ensured (above) to satisfy lon2 > lon1, but
+			 	* we may wish for a specific range format, so listen to what save_range was before we set it to GMT_IGNORE_RANGE */
+				if (wesn[XLO] > 0.0 && save_range == GMT_IS_M180_TO_P180_RANGE) {
+					wesn[XLO] -= 360.0;	wesn[XHI] -= 360.0;
+				}
+				else if (save_range == GMT_IS_0_TO_P360_RANGE && wesn[XHI] < 0.0) {
+					wesn[XLO] += 360.0;	wesn[XHI] += 360.0;
+				}
+				else if (save_range == GMT_IS_M360_TO_0_RANGE && wesn[XHI] > 0.0) {
+					wesn[XLO] -= 360.0;	wesn[XHI] -= 360.0;
 				}
 			}
 			if (give_r_string) {	/* Return -R string */
