@@ -42,7 +42,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The standard 44 CPTs supported by GMT.
+   The standard 46 CPTs supported by GMT.
 
 .. toggle::
 
