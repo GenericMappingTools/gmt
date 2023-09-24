@@ -18,7 +18,7 @@ PACKAGE="${PACKAGE:-false}"
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
 packages="ninja curl pcre2 netcdf gdal geos fftw libomp"
-conda_packages="ghostscript=9.56.1"
+conda_packages="ghostscript=10.02.0"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
@@ -41,8 +41,8 @@ fi
 brew install ${packages}
 
 # Install packages via conda
-conda update -n base -c defaults conda
-conda install ${conda_packages} -c conda-forge
+conda update -n base -c conda-forge conda --solver libmamba
+conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
 
 set +x +e

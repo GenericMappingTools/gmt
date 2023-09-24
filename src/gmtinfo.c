@@ -411,7 +411,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, lonmin);  gmt_M_free (GMT, lonmax); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_M_free (GMT, Z); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
-	bool got_stuff = false, first_data_record, give_r_string = false, save_t;
+	bool got_stuff = false, first_data_record, give_r_string = false, save_t, first_time = true;;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0;
@@ -530,6 +530,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	delimiter[0] = (Ctrl->C.active || Ctrl->I.mode == BOUNDBOX) ? '\t' : '/';
 	delimiter[1] = '\0';
 	off = (GMT->common.R.active[GSET]) ? 0.5 : 0.0;
+	save_range = GMT->current.io.geo.range;
 
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);
@@ -566,7 +567,6 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	save_range = GMT->current.io.geo.range;
 	GMT->current.io.geo.range = GMT_IGNORE_RANGE;	/* Ensure no adjustment will happen since we control it here */
 	d_ptr = (Ctrl->C.active || Ctrl->E.active) ? GMT->current.io.curr_rec : ((Ctrl->I.mode == BOUNDBOX) ? out : NULL);
 	t_ptr = (d_ptr && !Ctrl->E.active) ? NULL : record;
@@ -591,7 +591,10 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			gmt_quad_reset (GMT, Q, ncol);
 			if (gmt_M_rec_is_segment_header (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
 		}
-
+		if (first_time && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Learned that an OGR file is geographic so output is the same */
+			gmt_set_geographic (GMT, GMT_OUT);
+			first_time = false;
+		}
 		if (gmt_M_rec_is_segment_header (GMT) || (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) || gmt_M_rec_is_eof (GMT)) {	/* Time to report */
 			if (Ctrl->A.active) {
 				if (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) {
@@ -709,6 +712,20 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_INFORMATION,
 					            "Initial -R: %g/%g/%g/%g [n_columns = %u n_rows = %u] --> Suggested -R:  %g/%g/%g/%g [n_columns = %u n_rows = %u].\n",
 						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], out_dim[GMT_X], out_dim[GMT_Y]);
+				}
+			}
+
+			if (gmt_M_is_geographic (GMT, GMT_OUT)) {
+				/* Special handling since lon1/lon2 must first have been ensured (above) to satisfy lon2 > lon1, but
+			 	* we may wish for a specific range format, so listen to what save_range was before we set it to GMT_IGNORE_RANGE */
+				if (wesn[XLO] > 0.0 && save_range == GMT_IS_M180_TO_P180_RANGE) {
+					wesn[XLO] -= 360.0;	wesn[XHI] -= 360.0;
+				}
+				else if (save_range == GMT_IS_0_TO_P360_RANGE && wesn[XHI] < 0.0) {
+					wesn[XLO] += 360.0;	wesn[XHI] += 360.0;
+				}
+				else if (save_range == GMT_IS_M360_TO_0_RANGE && wesn[XHI] > 0.0) {
+					wesn[XLO] -= 360.0;	wesn[XHI] -= 360.0;
 				}
 			}
 			if (give_r_string) {	/* Return -R string */
