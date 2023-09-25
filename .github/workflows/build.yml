@@ -102,7 +102,7 @@ jobs:
 
       - name: Compile GMT (Linux/macOS)
         run: |
-          export CMAKE_CXX_COMPILER_LAUNCHER=ccache
+          export CMAKE_C_COMPILER_LAUNCHER=ccache
           mkdir build
           cd build
           cmake -G Ninja ..
