@@ -615,9 +615,11 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 			do_report = true;
 			if (Ctrl->L.active && !gmt_M_rec_is_eof (GMT)) do_report = false;	/* Only final report for -L */
- 			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must update longitudes separately */
-				gmt_find_range (GMT, Z[col], n_items, &xyzmin[col], &xyzmax[col]);
-				n_items = 0;
+ 			for (col = 0; col < ncol; col++) {		/* Must update longitudes separately */
+				if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {
+					gmt_find_range (GMT, Z[col], n_items, &xyzmin[col], &xyzmax[col]);
+					n_items = 0;
+				}
 			}
 			if (Ctrl->I.active) {	/* Must report multiples of dx/dy etc */
 				if (n > 1 && fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
