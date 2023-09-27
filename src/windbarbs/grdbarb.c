@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,16 +23,17 @@
  * Version:	6 API
  */
 
-#include "gmt_dev.h"
-#include "windbarb.h"
-
 #define THIS_MODULE_CLASSIC_NAME	"grdbarb"
 #define THIS_MODULE_MODERN_NAME	"grdbarb"
-#define THIS_MODULE_NAME	"grdbarb"
 #define THIS_MODULE_LIB		"windbarbs"
 #define THIS_MODULE_PURPOSE	"Plot wind barb field from two component grids"
 #define THIS_MODULE_KEYS	"<G{2,CC(,>X}"
-#define THIS_MODULE_NEEDS	"gJ"
+#define THIS_MODULE_NEEDS	"Jg"
+
+#include "gmt_dev.h"
+#include "windbarb.h"
+#include "longopt/grdbarb_inc.h"
+
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfptxy" GMT_OPT("c")
 
 EXTERN_MSC int GMT_grdbarb(void *API, int mode, void *args);
@@ -98,39 +99,42 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDBARB_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdbarb <gridx> <gridy> %s %s [-A] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] [-K] [-N] [-O] [-P] [-Q[<len>][<attr>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W<pen>] [%s]\n\t[%s] [-Z] [%s]\n\t[%s] [%s]\n\n", 
-		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Usage (API, 0, "usage: %s <gridx> <gridy> %s [-A] [%s] [-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] "
+		"%s[-N] %s%s[-Q<params>] [%s] [-T] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
+		"%s [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
+		GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<gridx> <gridy> are grid files with the two wind components.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<gridx> <gridy> are grid files with the two wind components.");
 	GMT_Option (API, "J-");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Grids have (speed, theta) wind components [Default is (u, v) components].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Grids have (speed, theta) components [Default is (u, v) components].");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on wind speed. Optionally, instead give name\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of a master cpt to automatically assign 16 continuous colors over the data range [rainbow].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a linear\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   continuous cpt from those colors automatically.\n");
-	gmt_fill_syntax (API->GMT, 'G', NULL, "Select wind barb fill [Default is outlines only].");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Plot only those nodes that are <dx>/<dy> apart [Default is all nodes].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Ix<fact>[/<yfact>] to give multiples of grid spacing.\n");
+	GMT_Usage (API, 1, "\n-C[<cpt>]");
+	GMT_Usage (API, -2, "Color palette file to convert wind speed to colors. Optionally, name a master cpt "
+		"to automatically assign continuous colors over the data range [%s]; if so, "
+		"optionally append +i<dz> to quantize the range [the exact grid range]. "
+		"Another option is to specify -Ccolor1,color2[,color3,...] to build a linear "
+		"continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+	gmt_fill_syntax (API->GMT, 'G', NULL, "Select penant fill [Default is outlines only].");
+	GMT_Usage (API, 1, "\n-I[x]<dx>/<dy>");
+	GMT_Usage (API, -2, "Plot only those nodes that are <dx>/<dy> apart [Default is all nodes]. "
+		"Optionally, use -Ix<fact>[/<yfact>] to give multiples of grid spacing.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip wind barbs that exceed the map boundaries [Default will clip].\n");
+	GMT_Usage (API, 1, "\n-N Do Not clip wind barbs that exceed the map boundaries [Default will clip].");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Modify wind barb attributes.\n");
-	gmt_barb_syntax (API->GMT, 0);
+	gmt_barb_syntax (API->GMT, 'Q', "Modify wind barb attributes [Default gives stick-plot].", 0);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
+	GMT_Usage (API, 1, "\n-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes.", NULL, 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", gmt_putpen(API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, -2, "Default pen attributes [%s].", gmt_putpen(API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z The theta grid provided has azimuths rather than directions (implies -A).\n");
+	GMT_Usage (API, 1, "\n-Z The theta grid provided has azimuths rather than directions (implies -A).");
 	GMT_Option (API, "f,p,t,.");
 	
 	return (GMT_MODULE_USAGE);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,19 +38,21 @@
 #include "windbarb.h"
 
 /*! Use mode to control which options are displayed */
-void gmt_barb_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
+void gmt_barb_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode) {
 	/* Mode is composed of bit-flags to control which lines are printed.
 	 * Items without if-test are common to all barbs.
 	 * 1	= Accepts +z (not mathangle)
 	 */
-	gmt_message (GMT, "\t   Append length of wind barbs, with optional modifiers:\n");
-	gmt_message (GMT, "\t     +a<angle> to set angle of wind barb [120]\n");
-	gmt_message (GMT, "\t     +g<fill> to set fill or use - to turn off fill [default fill].\n");
-	gmt_message (GMT, "\t     +j<just> to justify wind barb at (b)eginning [default], (e)nd, or (c)enter.\n");
-	gmt_message (GMT, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off outlines [default pen and outline].\n");
-	gmt_message (GMT, "\t     +s[scale] to set the wind speed which corresponds to a long wind barb [default 5]\n");
-	gmt_message (GMT, "\t     +w[width] to set the width of wind barbs\n");
-	if (mode & 1) gmt_message (GMT, "\t     +z if (u,v) wind components are given instead of (azimuth,speed) on input.\n");
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, 1, "\n-%c<params>", option);
+	GMT_Usage (API, -2, "%s Append length of wind barbs, with optional modifiers:", string);
+	GMT_Usage (API, 3, "+a<angle> to set angle of wind barb [120]");
+	GMT_Usage (API, 3, "+g<fill> to set fill or use - to turn off fill [default fill].");
+	GMT_Usage (API, 3, "+j<just> to justify wind barb at (b)eginning [default], (e)nd, or (c)enter.");
+	GMT_Usage (API, 3, "+p[-][<pen>] to set pen attributes, prepend - to turn off outlines [default pen and outline].");
+	GMT_Usage (API, 3, "+s[scale] to set the wind speed which corresponds to a long wind barb [default 5]");
+	GMT_Usage (API, 3, "+w[width] to set the width of wind barbs");
+	if (mode & 1) GMT_Usage (API, 3, "+z if (u,v) wind components are given instead of (azimuth,speed) on input.");
 }
 
 int gmt_draw_barb (struct GMT_CTRL *GMT, double x0, double y0, double lat, double theta, double spd, struct GMT_BARB_ATTR B, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)

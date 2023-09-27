@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ struct GMT_BARB_ATTR {
 	struct GMT_FILL fill;	/* Fill */
 };
 
-EXTERN_MSC void gmt_barb_syntax (struct GMT_CTRL *GMT, unsigned int mode);
+EXTERN_MSC void gmt_barb_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode);
 EXTERN_MSC int gmt_draw_barb (struct GMT_CTRL *GMT, double x0, double y0, double lat, double theta, double spd, struct GMT_BARB_ATTR B, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline);
 EXTERN_MSC int gmt_init_barb_param (struct GMT_CTRL *GMT, struct GMT_BARB_ATTR *B, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill);
 EXTERN_MSC int gmt_parse_barb (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B);
