@@ -22,4 +22,4 @@ gmt makecpt -T0/45/5 -Z > wind.cpt
 gmt psbarb wind.txt -Q0.4c -C./wind.cpt -JS-60/90/14c -R0/360/-20/90 -Ba30g30 -B+t"$title" -K -P > $ps
 gmt psscale -C./wind.cpt -J -R -DJMR -O >> $ps
 
-\rm wind.txt wind.cpt
+rm -f wind.txt wind.cpt

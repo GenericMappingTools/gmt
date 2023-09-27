@@ -22,4 +22,4 @@ gmt makecpt -T0/50/5 -Z > wind.cpt
 gmt grdbarb spd.grd dir.grd -Z -C./wind.cpt -W -JL135/30/60/30/14c -R${ropt}+r -Ba30g30 -B+t"$title" -K -P > $ps
 gmt psscale -C./wind.cpt -J -R -DJMR -O >> $ps
 
-\rm *.grd wind.cpt
+rm -f *.grd wind.cpt

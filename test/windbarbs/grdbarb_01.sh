@@ -13,4 +13,4 @@ gmt grdmath dir.grd 180 SUB COSD spd.grd MUL = v.grd
 
 gmt grdbarb u.grd v.grd -W -JX15c/0 -Rg -Ba -BWSen+t"$title" -P > $ps
 
-\rm *.grd
+rm -f *.grd

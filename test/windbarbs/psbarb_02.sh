@@ -21,4 +21,4 @@ BEGIN {
 
 gmt psbarb wind.txt -Q0.4c -Wdefault,black -JQ15c -R0/360/-90/90/0/200 -Ba -BwESnZ1234+t"$title" -JZ6c -Bza50 -p150/45 -P > $ps
 
-\rm wind.txt
+rm -f wind.txt
