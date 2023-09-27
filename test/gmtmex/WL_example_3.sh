@@ -9,7 +9,7 @@ gmt begin WL_example_3 ps
   # Import sea surface temperature grids from several HDF5 layers (lon, lat, sst, sst_qual)
   # Speed up processing by using native binary intermediary files
   file="A2016152023000.L2_LAC_SST.nc"
-  args="=gd?=gd?NETCDF:A2016152023000.L2_LAC_SST.nc"
+  args="=gd?NETCDF:A2016152023000.L2_LAC_SST.nc"
   gmt which -Gc @${file}
   gmt grd2xyz @${file}${args}://geophysical_data/qual_sst -ZTLf > qual_sst.b
   gmt grd2xyz @${file}${args}://geophysical_data/sst -ZTLf > sst.b

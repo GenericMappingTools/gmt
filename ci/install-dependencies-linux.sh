@@ -18,7 +18,7 @@ EXCLUDE_OPTIONAL=${EXCLUDE_OPTIONAL:-false}
 # packages installed via apt-get
 packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev curl git libgdal-dev"
 # packages installed via conda
-conda_packages="ghostscript=9.56.1"
+conda_packages="ghostscript=10.02.0"
 
 # optional packages
 if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
@@ -41,8 +41,8 @@ sudo apt-get update
 sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 
 # Install packages via conda
-conda update -n base -c defaults conda
-conda install ${conda_packages} -c conda-forge
+conda update -n base -c conda-forge conda --solver libmamba
+conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
 
 set +x +e
