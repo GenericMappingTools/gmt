@@ -24,7 +24,6 @@ Synopsis
 [ |-I|\ *intens* ]
 [ |-N| ]
 [ |-Q|\ *parameters* ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -134,16 +133,6 @@ Optional Arguments
 **-Q**\ *parameters*
     Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
     See `Wind Barb Attributes`_ for specifying additional attributes.
-
-.. _-T:
-
-**-T**
-    Ignore all input files, including standard input. This is the same
-    as specifying /dev/null (or NUL for Windows users) as input file.
-    Use this to activate only the options that are not related to
-    plotting of lines or symbols, such as **barb** **-R** **-J** **-O**
-    **-T** to terminate a sequence of GMT plotting commands without
-    producing any plotting output.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_

@@ -112,13 +112,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psbarb synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
-	const char *T[2] = {" [-T]", ""};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [%s] [-C<cpt>] [-D<dx>/<dy>] [-G<fill>|+z] "
-		"[-I[<intens>]] %s [-N[c|r]] %s%s [-Q[<params>]]%s [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
+		"[-I[<intens>]] %s [-N[c|r]] %s%s [-Q[<params>]] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
 		"[-Z<value>|<file>[+t|T]] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
-		T[API->GMT->current.setting.run_mode], GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT,
+		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT,
 		GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -147,8 +146,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: May also be used with lines or polygons but no periodicity will be honored.");
 	GMT_Option (API, "O,P");
 	gmt_barb_syntax (API->GMT, 'Q', "Modify wind barb attributes.", 1);
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
-		GMT_Usage (API, 1, "\n-T Ignore all input files.");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", NULL, 8);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");

@@ -27,7 +27,6 @@ Synopsis
 [ |-N| ]
 [ |-O| ] [ |-P| ]
 [ |-Q|\ *parameters* ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
