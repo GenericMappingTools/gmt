@@ -328,6 +328,8 @@ Supplemental Modules
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
+    - :doc:`/supplements/windbarbs/grdbarb`
+    - :doc:`/supplements/windbarbs/psbarb`
     - :doc:`/supplements/x2sys/x2sys_binlist`
     - :doc:`/supplements/x2sys/x2sys_cross`
     - :doc:`/supplements/x2sys/x2sys_datalist`

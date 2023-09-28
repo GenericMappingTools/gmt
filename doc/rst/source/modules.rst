@@ -340,7 +340,7 @@ Supplemental Modules
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
-    - :doc:`/supplements/windbarbs/psbarb`
+    - :doc:`/supplements/windbarbs/barb`
     - :doc:`/supplements/windbarbs/grdbarb`
     - :doc:`/supplements/x2sys/x2sys_binlist`
     - :doc:`/supplements/x2sys/x2sys_cross`
