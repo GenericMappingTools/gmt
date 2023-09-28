@@ -1,8 +1,8 @@
 .. index:: ! grdbarb
 
-*********
+*******
 grdbarb
-*********
+*******
 
 .. only:: not man
 

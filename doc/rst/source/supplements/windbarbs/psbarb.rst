@@ -47,6 +47,8 @@ Synopsis
     :start-after: .. module_common_begins
     :end-before: .. module_common_ends
 
+.. include:: ../../common_classic.rst_
+
 Examples
 --------
 

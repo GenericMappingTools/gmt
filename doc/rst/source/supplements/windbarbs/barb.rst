@@ -42,6 +42,8 @@ Synopsis
 
 |No-spaces|
 
+.. module_common_begins
+
 Description
 -----------
 
@@ -189,6 +191,7 @@ Optional Arguments
 .. include:: explain_windbarbs.rst_
 **+z** to input (u,v) wind components instead of (azimuth,speed)
 
+.. module_common_ends
 
 Examples
 --------
