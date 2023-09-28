@@ -30,7 +30,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"psbarb"
 #define THIS_MODULE_MODERN_NAME	"barb"
 #define THIS_MODULE_LIB		"windbarbs"
-#define THIS_MODULE_PURPOSE	"Plot wind barbs in 3-D"
+#define THIS_MODULE_PURPOSE	"Plot wind barbs in 2-D and 3-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefhiptxy" GMT_OPT("EZHMmc")
