@@ -35,8 +35,6 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefhiptxy" GMT_OPT("EZHMmc")
 
-EXTERN_MSC int GMT_psbarb(void *API, int mode, void *args);
-
 /* Control structure for psbarb */
 
 struct PSBARB_CTRL {
@@ -291,7 +289,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBARB_CTRL *Ctrl, struct GMT_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psbarb (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psbarb task */
 	bool penset_OK = true, old_is_world;
 	bool get_rgb, clip_set = false, fill_active;
@@ -645,4 +643,15 @@ int GMT_psbarb (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);
+}
+
+
+int GMT_barb (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
+		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: barb\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psbarb (V_API, mode, args);
 }

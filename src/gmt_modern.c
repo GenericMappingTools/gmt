@@ -70,14 +70,14 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	else if (!strncmp (module, "rose",         4U)) { strcpy (modname, "psrose");      return module; }
 	else if (!strncmp (module, "mask",         4U)) { strcpy (modname, "psmask");      return module; }
 	else if (!strncmp (module, "clip",         4U)) { strcpy (modname, "psclip");      return module; }
+	else if (!strncmp (module, "barb",         4U)) { strcpy (modname, "psbarb");      return module; }
 	else if (!strncmp (module, "sac",          3U)) { strcpy (modname, "pssac");       return module; }
-	else if (!strncmp (module, "barb",         3U)) { strcpy (modname, "psbarb");      return module; }
 	/* Then look for modules that now have a different modern mode name */
 	else if (!strncmp (module, "pshistogram", 11U)) { strcpy (modname, module); return "histogram"; }
 	else if (!strncmp (module, "psternary",    9U)) { strcpy (modname, module); return "ternary";   }
 	else if (!strncmp (module, "pscontour",    9U)) { strcpy (modname, module); return "contour";   }
 	else if (!strncmp (module, "psbasemap",    9U)) { strcpy (modname, module); return "basemap";   }
-	else if (!strncmp (module, "psbarb",       9U)) { strcpy (modname, module); return "barb";      }
+	else if (!strncmp (module, "psbarb",       6U)) { strcpy (modname, module); return "barb";      }
 	else if (!strncmp (module, "psevents",     8U)) { strcpy (modname, module); return "events";    }
 	else if (!strncmp (module, "pswiggle",     8U)) { strcpy (modname, module); return "wiggle";    }
 	else if (!strncmp (module, "pslegend",     8U)) { strcpy (modname, module); return "legend";    }
@@ -141,7 +141,7 @@ const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module)
 	else if (!strncmp (module, "psternary",    9U)) return "ternary";
 	else if (!strncmp (module, "pscontour",    9U)) return "contour";
 	else if (!strncmp (module, "psbasemap",    9U)) return "basemap";
-	else if (!strncmp (module, "psbarb",       9U)) return "barb";
+	else if (!strncmp (module, "psbarb",       6U)) return "barb";
 	else if (!strncmp (module, "psevents",     8U)) return "events";
 	else if (!strncmp (module, "pswiggle",     8U)) return "wiggle";
 	else if (!strncmp (module, "pslegend",     8U)) return "legend";
@@ -194,8 +194,8 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module) {
 	else if (!strncmp (module, "clip",       6U)) is_modern = true;
 	else if (!strncmp (module, "plot3d",     5U)) is_modern = true;
 	else if (!strncmp (module, "plot",       4U)) is_modern = true;
+	else if (!strncmp (module, "barb",       4U)) is_modern = true;
 	else if (!strncmp (module, "sac",        3U)) is_modern = true;
-	else if (!strncmp (module, "barb",       3U)) is_modern = true;
 	return is_modern;
 }
 
