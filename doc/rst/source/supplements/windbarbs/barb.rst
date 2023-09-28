@@ -14,10 +14,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**barb** [ *table* ] |-J|\ *parameters* |-J|\ **z**\ \|\ **Z**\ *parameters*
+**barb** [ *table* ]
+|-J|\ *parameters* |-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ |-C|\ *cpt* ] [ |-D|\ *dx*/*dy*\ [/*dz*] ]
+[ |-C|\ *cpt* ]
+[ |-D|\ *dx*/*dy*\ [/*dz*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ *intens* ]
 [ |-N| ]
@@ -202,6 +204,10 @@ Optional Arguments
 Examples
 --------
 
+.. include:: ../../explain_example.rst_
+
+.. include:: ../../oneliner_info.rst_
+
 To plot blue columns (width = 1.25 cm) at the positions listed in the
 file heights.xyz on a 3-D projection of the space (0-10), (0-10),
 (0-100), with tickmarks every 2, 2, and 10, viewing it from the
@@ -216,22 +222,22 @@ Segment Header Parsing
 Segment header records may contain one of more of the following options:
 
 **-G**\ *fill*
-    Use the new *fill* and turn filling on
+    Use the new *fill* and turn filling on.
 **-G-**
-    Turn filling off
+    Turn filling off.
 **-G**
-    Revert to default fill (none if not set on command line)
+    Revert to default fill (none if not set on command line).
 **-W**\ *pen*
-    Use the new *pen* and turn outline on
+    Use the new *pen* and turn outline on.
 **-W**
-    Revert to default pen :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
-    (if not set on command line)
+    Revert to default pen :term:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
+    (if not set on command line).
 **-W-**
-    Turn outline off
+    Turn outline off.
 **-Z**\ *zval*
-    Obtain fill via cpt lookup using z-value *zval*
+    Obtain fill via cpt lookup using z-value *zval*.
 **-Z**\ *NaN*
-    Get the NaN color from the CPT
+    Get the NaN color from the CPT.
 
 See Also
 --------

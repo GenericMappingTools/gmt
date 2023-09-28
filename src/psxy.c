@@ -102,7 +102,7 @@ struct PSXY_CTRL {
 		bool active;
 		char *arg;
 	} S;
-	struct PSXY_T {	/* -T */
+	struct PSXY_T {	/* -T [Deprecated] */
 		bool active;
 	} T;
 	struct PSXY_W {	/* -W<pen>[+z] */

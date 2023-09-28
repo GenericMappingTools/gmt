@@ -63,7 +63,7 @@ struct PSBARB_CTRL {
 	struct Q {	/* -Q<size>[+<mods>] */
 		struct GMT_BARB_ATTR B;
 	} Q;
-	struct T {	/* -T */
+	struct T {	/* -T [Deprecated] */
 		bool active;
 	} T;
 	struct W {	/* -W<pen>[+c[l|f]] */

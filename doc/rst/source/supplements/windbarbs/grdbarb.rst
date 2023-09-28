@@ -13,12 +13,16 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdbarb** *compx.nc* *compy.nc* **-J**\ *parameters* [ |-A| ]
+**grdbarb**
+*compx.nc* *compy.nc*
+**-J**\ *parameters*
+[ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
-[ |-K| ] [ |-N| ] [ |-O| ] [ |-P| ] [ |-Q|\ *parameters* ]
+[ |-N| ]
+[ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
@@ -45,9 +49,11 @@ Required Arguments
 ------------------
 
 *compx.nc*
-    Contains the x-components of the wind field.
+    Contains the x-components of the wind field. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 *compy.nc*
-    Contains the y-components of the wind field. (See GRID FILE FORMATS below.)
+    Contains the y-components of the wind field. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-J:
 
@@ -96,8 +102,6 @@ Optional Arguments
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
     multiples *multx*\ [/*multy*] directly [Default plots every node]. 
 
-.. _-K:
-
 .. include:: ../../explain_-K.rst_
 
 .. _-N:
@@ -105,15 +109,7 @@ Optional Arguments
 **-N**
     Do NOT clip wind barbs at map boundaries [Default will clip]. 
 
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
-
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
-
-.. _-Q:
+... _-Q:
 
 **-Q**\ *parameters*
     Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
@@ -176,15 +172,19 @@ Optional Arguments
 Examples
 --------
 
+.. include:: ../../explain_example.rst_
+
+.. include:: ../../oneliner_info.rst_
+
 To draw the wind field given by the files r.nc and theta.nc on a
 barb plot with 0.1 inch length and centered on the node locations, run::
 
- gmt grdbarb r.nc theta.nc -Jx5c -A -Q0.1i+jc > gradient.ps
+ gmt grdbarb r.nc theta.nc -Jx5c -A -Q0.1i+jc -png gradient
 
 To plot a geographic data sets given the files comp_x.nc and comp_y.nc,
 and only plot every 3rd node in either direction, try::
 
- gmt grdbarb comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+jc > globe.ps
+ gmt grdbarb comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+jc -png globe
 
 See Also
 --------
