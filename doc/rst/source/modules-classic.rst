@@ -165,6 +165,8 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/spotter/polespotter
     supplements/spotter/rotconverter
     supplements/spotter/rotsmoother
+    supplements/windbarbs/psbarb
+    supplements/windbarbs/grdbarb
     supplements/x2sys/x2sys_binlist
     supplements/x2sys/x2sys_cross
     supplements/x2sys/x2sys_datalist
@@ -711,6 +713,15 @@ spotter
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/rotsmoother`  | |rotsmoother_purpose|  |
 +------------------------------------------+------------------------+
+
+windbarbs
+---------
+
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/psbarb`   | |psbarb_purpose|  |
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/grdbarb`  | |grdbarb_purpose| |
++----------------------------------------+-------------------+
 
 x2sys
 -----
