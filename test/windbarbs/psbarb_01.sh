@@ -5,7 +5,7 @@
 #
 
 ps=psbarb_01.ps
-title="$ps  Stereographic Projection"
+title="Stereographic Projection"
 
 awk '
 function abs(x) { return x>=0 ? x : -x }

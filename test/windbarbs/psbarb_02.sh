@@ -5,7 +5,7 @@
 #
 
 ps=psbarb_02.ps
-title="$ps  3-D plot with -JZ -p"
+title="3-D plot with -JZ -p"
 
 awk '
 function abs(x) { return x>=0 ? x : -x }
@@ -19,6 +19,6 @@ BEGIN {
     }
 }' > wind.txt
 
-gmt psbarb wind.txt -Q0.4c -Wdefault,black -JQ15c -R0/360/-90/90/0/200 -Ba -BwESnZ1234+t"$title" -JZ6c -Bza50 -p150/45 -P > $ps
+gmt barb wind.txt -Q0.4c -Wdefault,black -JQ15c -R0/360/-90/90/0/200 -Baf -BwESnZ1234+t"$title" -JZ6c -Bza50 -p150/45 -ps psbarb_02
 
 rm -f wind.txt
