@@ -1,4 +1,4 @@
-#! /bin/sh -xe
+#!/usr/bin/env bash -ex
 #
 #       Examples of how to use psbarb
 #
