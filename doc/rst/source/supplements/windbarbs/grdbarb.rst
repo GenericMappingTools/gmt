@@ -109,7 +109,7 @@ Optional Arguments
 **-N**
     Do NOT clip wind barbs at map boundaries [Default will clip]. 
 
-... _-Q:
+.. _-Q:
 
 **-Q**\ *parameters*
     Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
