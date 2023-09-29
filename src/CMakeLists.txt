@@ -695,7 +695,7 @@ if (BUILD_SUPPLEMENTS)
 	# supplement directories to be built as supplement libraries
 	# SUPPL_EXTRA_DIRS are directories for custom supplements.
 	# See cmake/ConfigUserAdvancedTemplate.cmake for details.
-	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${SUPPL_EXTRA_DIRS})
+	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys windbarbs ${SUPPL_EXTRA_DIRS})
 
 	# process supplement directories and collect information for each supplement libraries
 	set (GMT_SUPPL_LIBRARIES) # empty the library list
