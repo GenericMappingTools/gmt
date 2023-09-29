@@ -7,7 +7,7 @@
 #
 gmt begin ex33
 	# Extract a subset of earth_relief_01m for the East Pacific Rise
-	gmt grdcut @earth_relief_01m -R118W/107W/49S/42S -Gspac_33.nc
+	gmt grdcut @earth_relief_01m_g -R118W/107W/49S/42S -Gspac_33.nc
 	gmt makecpt -Crainbow -T-5000/-2000
 	gmt grdimage spac_33.nc -I+a15+ne0.75 -JM15c -B --FORMAT_GEO_MAP=dddF
 	# Select two points along the ridge

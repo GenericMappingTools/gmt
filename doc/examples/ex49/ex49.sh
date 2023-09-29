@@ -8,8 +8,8 @@
 
 gmt begin ex49
 	# Pull depth and age subsets from the global remote files
-	gmt grdcut @earth_relief_02m -R30W/5E/30S/5S -Gdepth_pixel.nc
-	gmt grdcut @earth_age_02m -R30W/5E/30S/5S -Gage_pixel.nc
+	gmt grdcut @earth_relief_02m_g -R30W/5E/30S/5S -Gdepth_pixel.nc
+	gmt grdcut @earth_age_02m_g -R30W/5E/30S/5S -Gage_pixel.nc
 	# Flip to positive depths in km
 	gmt grdmath depth_pixel.nc NEG 1000 DIV = depth_pixel.nc
 	# Obtain depth, age pairs by dumping grids and pasting results

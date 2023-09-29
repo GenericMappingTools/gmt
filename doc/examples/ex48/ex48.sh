@@ -15,7 +15,7 @@ gmt begin ex48
 	118.2437W	34.0522N	142  306	LAX	BL	2c
 	EOF
 	gmt makecpt -Clightgray -T-12000,12000 -N
-	gmt grdimage @earth_relief_10m -I+a45+nt2 -Rg -JG205/-10/18c
+	gmt grdimage @earth_relief_10m_p -I+a45+nt2 -Rg -JG205/-10/18c
 	gmt sphtriangulate airports.txt -Qv > near_area.txt
 	gmt makecpt -Ccategorical -T0/6/1 -N
 	gmt plot near_area.txt -L -C -t65

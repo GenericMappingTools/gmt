@@ -12,7 +12,7 @@ gmt begin ex38
 	gmt makecpt -Crainbow -T0/15/1 -H > c.cpt
 	gmt makecpt -Crainbow -T-3/3 -H > n.cpt
 	gmt makecpt -Crainbow -T0/15 -H > q.cpt
-	gmt grdcut @earth_relief_02m -R-60/-45/-20/-10 -Gtopo_38.nc
+	gmt grdcut @earth_relief_02m_g -R-60/-45/-20/-10 -Gtopo_38.nc
 
 	gmt subplot begin 2x2 -Fs7c -A+jTR+gwhite+p1p+o0.2c/0.2c -M0.75c/1.2c -Rtopo_38.nc -JM7c -B5 -BWSen -Y10c
 		gmt subplot set 0 -A"Original"
