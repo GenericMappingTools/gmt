@@ -12,6 +12,8 @@
 
 .. |img2grd_purpose| replace:: Extract a subset from an img file in Mercator or Geographic format
 
+.. |terrain_filter_purpose| replace:: Callable function to do image texture
+
 .. |mgd77convert_purpose| replace:: Convert MGD77 data to other formats
 
 .. |mgd77header_purpose| replace:: Create MGD77 headers from A77 files
@@ -95,6 +97,12 @@
 .. |rotconverter_purpose| replace:: Manipulate total reconstruction and stage rotations
 
 .. |rotsmoother_purpose| replace:: Get mean rotations and covariance matrices from set of finite rotations
+
+.. |grdbarb_purpose| replace:: Plot wind barb field from two component grids
+
+.. |barb_purpose| replace:: Plot wind barbs in 3-D
+
+.. |psbarb_purpose| replace:: Plot wind barbs in 3-D
 
 .. |x2sys_binlist_purpose| replace:: Create bin index listing from track data files
 
