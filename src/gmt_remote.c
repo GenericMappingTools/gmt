@@ -205,13 +205,15 @@ GMT_LOCAL int gmtremote_remove_item (struct GMTAPI_CTRL *API, char *path, bool d
 	return error;
 }
 
-GMT_LOCAL void gmtremote_set_local_path (struct GMT_CTRL *GMT, char *local_path, char *file) {
+GMT_LOCAL void gmtremote_set_local_path (struct GMT_CTRL *GMT, char *local_path) {
 	/* Build the local path to the remote data files, optionally append specific file */
-	snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
-	if (file) {	/* Also append the file to the path */
-		strcat (local_path, "/");
-		strcat (local_path, file);
-	}
+	char *srv_dir = gmtlib_prepend_server_name (GMT);	/* The server directory to use [server] */
+
+	/* Set the top-level directory for user data */
+	if (strcmp (srv_dir, "server"))	/* One of the ghost-servers */
+		snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.USERDIR, srv_dir);
+	else
+		snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);
 }
 
 GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, int *n) {
@@ -221,9 +223,11 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	FILE *fp = NULL;
 	struct GMT_DATA_INFO *I = NULL;
 	char unit, line[GMT_LEN512] = {""}, file[PATH_MAX] = {""}, *c = NULL;
+	char *srv_dir = gmtlib_prepend_server_name (API->GMT);	/* The server directory to use [server] */
+
 	struct GMT_CTRL *GMT = API->GMT;
 
-	snprintf (file, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, GMT_INFO_SERVER_FILE);
+	snprintf (file, PATH_MAX, "%s/%s/%s", GMT->session.USERDIR, srv_dir, GMT_INFO_SERVER_FILE);
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
@@ -906,16 +910,18 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""};
 	char new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
-	struct LOCFILE_FP *LF = NULL;
 	struct GMT_CTRL *GMT = API->GMT;	/* Short hand */
+	char *srv_dir = gmtlib_prepend_server_name (GMT);	/* The server directory to use [server] */
+	struct LOCFILE_FP *LF = NULL;
 
 	if (GMT->current.io.refreshed[index]) return GMT_NOERROR;	/* Already been here */
 
-	snprintf (indexpath, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, index_file);
+	/* Set the full local path to the index_file */
+	snprintf (indexpath, PATH_MAX, "%s/%s/%s", GMT->session.USERDIR, srv_dir, index_file);
 
 	if (access (indexpath, R_OK)) {    /* Not found locally so need to download the first time */
 		char serverdir[PATH_MAX] = {""};
-		snprintf (serverdir, PATH_MAX, "%s/server", GMT->session.USERDIR);
+		snprintf (serverdir, PATH_MAX, "%s/%s", GMT->session.USERDIR, srv_dir);
 		if (access (serverdir, R_OK) && gmt_mkdir (serverdir)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT server directory : %s\n", serverdir);
 			return 1;
@@ -1230,7 +1236,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
 				goto not_local;	/* Cannot have server data if no user directory created yet */
 			}
-			gmtremote_set_local_path (GMT, local_path, NULL);	/* This is the top-level directory for user data */
+			gmtremote_set_local_path (GMT, local_path);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
 			strcat (local_path, GMT->parent->remote_info[k_data].file);	/* Append filename */
@@ -1242,7 +1248,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
 				goto not_local;	/* Cannot have server data if no user directory created yet */
 			}
-			gmtremote_set_local_path (GMT, local_path, NULL);	/* This is the top-level directory for user data */
+			gmtremote_set_local_path (GMT, local_path);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[t_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
 			strcat (local_path, GMT->parent->remote_info[t_data].file);	/* Append the tiledir to get full path to dir for this type of tiles */
@@ -1324,7 +1330,8 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 				if (GMT->session.USERDIR == NULL || access (GMT->session.USERDIR, R_OK))
 					GMT_Report (API, GMT_MSG_ERROR, "User directory storage requested for %s but your user directory is undefined or does not exist\n", file);
 				else {	/* Have a user dir */
-					snprintf (local_path, PATH_MAX, "%s/server", GMT->session.USERDIR);
+					char *srv_dir = gmtlib_prepend_server_name (GMT);	/* The server directory to use [server] */
+					snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.USERDIR, srv_dir);
 					if (access (local_path, R_OK) && gmt_mkdir (local_path))	/* Have or just made a server subdirectory */
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
 					if (is_tile) {	/* One of the tiles */
@@ -1336,9 +1343,9 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 						strcat (local_path, jp2_file);
 					}
 					else if (!strcmp (API->remote_info[k_data].dir, "/"))	/* One of the symbolic links in server */
-						snprintf (local_path, PATH_MAX, "%s/server/%s", GMT->session.USERDIR, API->remote_info[k_data].file);
+						snprintf (local_path, PATH_MAX, "%s/%s/%s", GMT->session.USERDIR, srv_dir, API->remote_info[k_data].file);
 					else {
-						snprintf (local_path, PATH_MAX, "%s%s", GMT->session.USERDIR, API->remote_info[k_data].dir);
+						snprintf (local_path, PATH_MAX, "%s/%s%s", GMT->session.USERDIR, srv_dir, API->remote_info[k_data].dir);
 						if (access (local_path, R_OK) && gmt_mkdir (local_path))	/* Have or just made a subdirectory under server */
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
 						strcat (local_path, API->remote_info[k_data].file);
@@ -1411,6 +1418,21 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	gmt_M_str_free (clean_file);
 
 	return GMT_FILE_NOT_FOUND;
+}
+
+char * gmtlib_prepend_server_name (struct GMT_CTRL *GMT) {
+	/* If the current GMT server is one of candidate, static, or test, then
+	 * we append that directory to the local path so that we do not overwrite
+	 * what we obtain from the official server [e.g., oceania, europe, ...]
+	 * which places data under the "server" directory. */
+	static char *ghost_server[4] = {"candidate", "static", "test", "server"};
+	unsigned int k;
+	if (GMT->session.DATASERVER == NULL) return NULL;	/* Not initialized yet */
+	for (k = 0; k < 3; k++) {
+		if (!strcmp (GMT->session.DATASERVER, ghost_server[k]))
+			return (ghost_server[k]);
+	}
+	return ghost_server[k];	/* The users default data server (k = 3) */
 }
 
 int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file) {
