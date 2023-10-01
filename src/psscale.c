@@ -827,7 +827,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 #endif
 
 	if (P->categorical) {	/* For categorical CPTs the default is -L<gap> with sum of all gaps = 15% of bar length  */
-		Ctrl->L.spacing = gap = 0.01 * PSSCALE_GAP_PERCENT * fabs (length) / (P->n_colors - 1);
+		if (Ctrl->L.spacing > 0) Ctrl->L.spacing = gap = 0.01 * PSSCALE_GAP_PERCENT * fabs (length) / (P->n_colors - 1);	/* Use a default only if not set before. */
 		B_set = false;	/* And no -B can be used now */
 	}
 

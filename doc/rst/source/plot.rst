@@ -26,7 +26,6 @@ Synopsis
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -236,12 +235,6 @@ Optional Arguments
 .. _-S:
 
 .. include:: explain_symbols.rst_
-
-.. _-T:
-
-**-T**
-    Ignore all input files.  If |-B| is not used then **-R -J** are not required.
-    Typically used to move plot origin via |-X| and |-Y|.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_

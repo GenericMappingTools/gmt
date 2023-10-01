@@ -512,8 +512,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 	                                   "Option -A: Must provide an output filename for image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.file && Ctrl->Out.file,
 								       "Option -A, -> options: Cannot provide two output files\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active,
-								       "Options -C and -D options are mutually exclusive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.transp_color && Ctrl->Q.z_given,
 								       "Option Q: Cannot both specify a r/g/b and a z-value\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
