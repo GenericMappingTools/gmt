@@ -100,9 +100,9 @@
 
 .. |grdbarb_purpose| replace:: Plot wind barb field from two component grids
 
-.. |barb_purpose| replace:: Plot wind barbs in 3-D
+.. |barb_purpose| replace:: Plot wind barbs in 2-D and 3-D
 
-.. |psbarb_purpose| replace:: Plot wind barbs in 3-D
+.. |psbarb_purpose| replace:: Plot wind barbs in 2-D and 3-D
 
 .. |x2sys_binlist_purpose| replace:: Create bin index listing from track data files
 
