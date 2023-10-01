@@ -28,7 +28,6 @@ Synopsis
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-O| ] [ |-P| ]
 [ |-S|\ [*symbol*][*size*] ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -153,8 +152,7 @@ See Also
         gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i >> $ps</br>
         gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xr -X3.25i >> $ps</br>
         gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i >> $ps</br>
-        gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
-        gmt psxy -R -J -O -T >> $ps</br>
+        gmt psxy -R -J -O -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
         </p>
     </div>
    </div>

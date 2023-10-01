@@ -1994,7 +1994,9 @@ GMT_LOCAL bool gmtio_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GM
 
 	/* Then get the actual order by inverting table */
 
-	for (k = 0; k < 4; k++) for (j = 0; j < 4; j++) if (S->item_pos[j] == k) S->item_order[k] = j;
+	for (k = 0; k < 4; k++)
+		for (j = 0; j < 4; j++)
+			if (S->item_pos[j] == k) S->item_order[k] = j;
 	S->Y2K_year = (n_y == 2);		/* Must supply the century when reading and take it out when writing */
 	S->truncated_cal_is_ok = true;		/* May change in the next loop */
 	for (i = 1, last = S->item_order[0]; S->truncated_cal_is_ok && i < 4; i++) {
