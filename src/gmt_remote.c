@@ -1083,7 +1083,7 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
 	}
 
-	if (err1 || err2) {	/* SCrewed, might as well turn off */
+	if (err1 || err2) {	/* Screwed, might as well turn off */
 		API->GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
 		API->GMT->current.io.internet_error = true;		/* No point trying again */
 	}
@@ -1188,8 +1188,18 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	unsigned int pos;
 	bool is_url = false, is_query = false, is_tile = false, srtm_switch = false, skip_checks = false;
 	char was, *c = NULL, *jp2_file = NULL, *clean_file = NULL, *srv_dir = NULL;
+	char cache_dir[PATH_MAX] = {""};
 	struct GMTAPI_CTRL *API = GMT->parent;
 
+	if (GMT->session.DATASERVER && GMT->session.CACHEDIR == NULL) {	/* Set via --GMT_DATA_SERVER=xxxx */
+		char *srv_dir = gmtlib_prepend_server_name (GMT, true);	/* The server directory to use [server] */
+		if (srv_dir)	/* Place cache under ghostserver dir */
+			sprintf (cache_dir, "%s/%s/cache", GMT->session.USERDIR, srv_dir);
+		else	/* Place in user dir */
+			sprintf (cache_dir, "%s/cache", GMT->session.USERDIR);
+		GMT->session.CACHEDIR = strdup (cache_dir);
+	}
+	
 	local_path[0] = remote_path[0] = '\0';
 
 	/* 0. Were we even given an argument? */
@@ -1267,17 +1277,17 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			}
 		}
 		else {	/* Must be cache file */
-			char add_cache_file[PATH_MAX] = {""};
 			char *srv_dir = gmtlib_prepend_server_name (GMT, true);	/* The server directory to use [server] */
 			if (srv_dir && GMT->session.CACHEDIR && strstr (GMT->session.CACHEDIR, srv_dir) == NULL) {	/* Must look for cache under the ghostservers instead of in .gmt */
-				char cache_dir[PATH_MAX] = {""};
 				sprintf (cache_dir, "%s/%s/cache", GMT->session.USERDIR, srv_dir);
 				if (GMT->session.CACHEDIR == NULL) gmt_M_str_free (GMT->session.CACHEDIR);
 				GMT->session.CACHEDIR = strdup (cache_dir);
 			}
-			if (GMT->session.CACHEDIR == NULL) {
-				GMT_Report (API, GMT_MSG_DEBUG, "No cache directory yet to store %s!\n", file);
-				goto not_local;	/* Cannot have cache data if no cache directory created yet */
+			if (GMT->session.CACHEDIR == NULL) {	/* Create the needed path now */
+				if (srv_dir)	/* Place cache under ghostserver dir */
+					sprintf (cache_dir, "%s/%s/cache", GMT->session.USERDIR, srv_dir);
+				else	/* Place in user dir */
+					sprintf (cache_dir, "%s/cache", GMT->session.USERDIR);
 			}
 			clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
 			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &clean_file[1]);	/* This is where all cache files live */
@@ -1444,13 +1454,14 @@ char * gmtlib_prepend_server_name (struct GMT_CTRL *GMT, bool cache) {
 	 * we append that directory to the local path so that we do not overwrite
 	 * what we obtain from the official server [e.g., oceania, europe, ...]
 	 * which places data under the "server" directory. */
-	static char *ghost_server[4] = {"candidate", "static", "test", "server"};
+	static char *ghost_server[5] = {"candidate", "static", "test", "server", GMT_DATA_SERVER};
 	unsigned int k;
 	if (GMT->session.DATASERVER == NULL) return NULL;	/* Not initialized yet */
 	for (k = 0; k < 3; k++) {
 		if (!strcmp (GMT->session.DATASERVER, ghost_server[k]))
 			return (ghost_server[k]);
 	}
+	if (k > 3) k--;	/* Since oceania is the same as server in this context */
 	return (cache) ? NULL : ghost_server[k];	/* The users default data server (k = 3) except cache is not under server on oceania */
 }
 

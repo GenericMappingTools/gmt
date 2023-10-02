@@ -3543,7 +3543,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		gmt_dos_path_fix (GMT->session.CACHEDIR);
 		gmtinit_trim_off_any_slash_at_end (GMT->session.CACHEDIR);
 	}
-	if (GMT->session.CACHEDIR != NULL) {
+	if (GMT->session.CACHEDIR != NULL && GMT->session.DATASERVER) {
 		err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
 		if (errno == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
@@ -3597,8 +3597,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.DATASERVER = strdup (this_c);
 	else if ((this_c = getenv ("GMT_DATA_URL")) != NULL)		/* GMT_DATA_URL [deprecated in 6.0.0] was set */
 		GMT->session.DATASERVER = strdup (this_c);
-	else
-		GMT->session.DATASERVER = strdup (GMT_DATA_SERVER);	/* SOEST default */
+	else if (GMT->session.DATASERVER == NULL)	/* SOEST default */
+		GMT->session.DATASERVER = strdup (GMT_DATA_SERVER);
 	if (GMT->session.DATASERVER)
 		gmtinit_trim_off_any_slash_at_end (GMT->session.DATASERVER);
 
