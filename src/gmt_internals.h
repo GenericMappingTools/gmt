@@ -53,7 +53,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
-EXTERN_MSC char * gmtlib_prepend_server_name (struct GMT_CTRL *GMT);
+EXTERN_MSC char * gmtlib_prepend_server_name (struct GMT_CTRL *GMT, bool cache);
 EXTERN_MSC int gmtlib_adjust_we_if_central_lon_set (struct GMT_CTRL *GMT, double *west, double *east);
 EXTERN_MSC int gmtlib_colon_pos (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC bool gmtlib_invalid_symbolname (struct GMT_CTRL *GMT, char *name);
