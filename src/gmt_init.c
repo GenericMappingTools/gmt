@@ -186,6 +186,10 @@
 #define GMT_COMPAT_INFO "Please see " GMT_DOC_URL "/changes.html#new-features-in-gmt-5 for more information.\n"
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keyword[case_val])
 
+#define GMT_IS_NOT_REMOTE	0
+#define GMT_IS_REMOTE	1
+#define GMT_FILE_IS_INVALID	2
+
 #define gmt_M_compat_change(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keyword[case_val], new_P)
 #define gmt_M_compat_translate(new_P) error = (gmt_M_compat_check (GMT, 4) ? gmt_M_compat_change (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
 #define gmt_M_compat_opt(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
@@ -15252,18 +15256,22 @@ GMT_LOCAL bool gmtinit_mapproject_needs_RJ (struct GMTAPI_CTRL *API, struct GMT_
 	return (true);	/* We get here when a classic command like "gmt mapproject -R -J file" in modern mode looks like "gmt mapproject file" and thus -R -J is required */
 }
 
-GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
+GMT_LOCAL unsigned int gmtinit_might_be_remotefile (char *file) {
 	bool quote = false;	/* We are outside any quoted text */
 	size_t k;
-	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
-	if (gmt_M_file_is_memory (file)) return false;	/* Not a remote file but a memory reference */
-	if (file[0] == '@') return true;	/* Definitively a remote file */
+	static char *text_escapes = "~%:;+-#_!.@[";	/* If any of these follow leading @ it is pstext junk passed as file */
+	if (strchr (file, '@') == NULL) return GMT_IS_NOT_REMOTE;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return GMT_IS_NOT_REMOTE;	/* Not a remote file but a memory reference */
+	if (file[0] == '@') {
+		if (file[1] && strchr (text_escapes, file[1])) return GMT_FILE_IS_INVALID;	/* text junk not a file */
+		return GMT_IS_REMOTE;	/* Definitively a remote file */
+	}
 	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
 	for (k = 0; k < strlen (file); k++) {
 		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
-		if (file[k] == '@' && !quote) return true;	/* Found an unquoted at-symbol */
+		if (file[k] == '@' && !quote) return GMT_IS_REMOTE;	/* Found an unquoted at-symbol */
 	}
-	return false;	/* Nothing */
+	return GMT_IS_NOT_REMOTE;	/* Nothing */
 }
 
 /*! . */
@@ -15377,13 +15385,18 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* First handle any halfhearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
+		unsigned int err_code;
 		/* Treat -V in advance because gmt_set_unspecified_remote_registration needs to already know about it.*/
 		for (opt = *options; opt; opt = opt->next) {
 			if (opt->option == 'V')
 				gmt_parse_common_options (API->GMT, "V", opt->option, opt->arg);
 		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+			if ((err_code = gmtinit_might_be_remotefile (opt->arg)) == 0) continue;
+			if (err_code == 2) {
+				GMT_Report (API, GMT_MSG_ERROR, "File %s is not a file and looks like pstext strings.\n", opt->arg);
+				return NULL;
+			}
 			if (remote_first) {
 				gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 				remote_first = false;
