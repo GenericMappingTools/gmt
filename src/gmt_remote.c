@@ -1343,8 +1343,11 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 				if (GMT->session.USERDIR == NULL || access (GMT->session.USERDIR, R_OK))
 					GMT_Report (API, GMT_MSG_ERROR, "User directory storage requested for %s but your user directory is undefined or does not exist\n", file);
 				else {	/* Have a user dir */
-					char *srv_dir = gmtlib_prepend_server_name (GMT, false);	/* The server directory to use [server] */
-					snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.USERDIR, srv_dir);
+					char *srv_dir = gmtlib_prepend_server_name (GMT, true);	/* The server directory to use [server] */
+					if (srv_dir)	/* Must add in ghostserver name since actual file starts with /server */
+						snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.USERDIR, srv_dir);
+					else
+						snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);
 					if (access (local_path, R_OK) && gmt_mkdir (local_path))	/* Have or just made a server subdirectory */
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
 					if (is_tile) {	/* One of the tiles */
@@ -1358,7 +1361,10 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 					else if (!strcmp (API->remote_info[k_data].dir, "/"))	/* One of the symbolic links in server */
 						snprintf (local_path, PATH_MAX, "%s/%s/%s", GMT->session.USERDIR, srv_dir, API->remote_info[k_data].file);
 					else {
-						snprintf (local_path, PATH_MAX, "%s/%s%s", GMT->session.USERDIR, srv_dir, API->remote_info[k_data].dir);
+						if (srv_dir)	/* Must add in ghostserver name since actual file starts with /server */
+							snprintf (local_path, PATH_MAX, "%s/%s%s", GMT->session.USERDIR, srv_dir, API->remote_info[k_data].dir);
+						else
+							snprintf (local_path, PATH_MAX, "%s%s", GMT->session.USERDIR, API->remote_info[k_data].dir);
 						if (access (local_path, R_OK) && gmt_mkdir (local_path))	/* Have or just made a subdirectory under server */
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
 						strcat (local_path, API->remote_info[k_data].file);
