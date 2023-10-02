@@ -186,6 +186,10 @@
 #define GMT_COMPAT_INFO "Please see " GMT_DOC_URL "/changes.html#new-features-in-gmt-5 for more information.\n"
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keyword[case_val])
 
+#define GMT_IS_NOT_REMOTE	0
+#define GMT_IS_REMOTE	1
+#define GMT_FILE_IS_INVALID	2
+
 #define gmt_M_compat_change(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keyword[case_val], new_P)
 #define gmt_M_compat_translate(new_P) error = (gmt_M_compat_check (GMT, 4) ? gmt_M_compat_change (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
 #define gmt_M_compat_opt(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
@@ -15256,18 +15260,18 @@ GMT_LOCAL unsigned int gmtinit_might_be_remotefile (char *file) {
 	bool quote = false;	/* We are outside any quoted text */
 	size_t k;
 	static char *text_escapes = "~%:;+-#_!.@[";	/* If any of these follow leading @ it is pstext junk passed as file */
-	if (strchr (file, '@') == NULL) return 0;	/* No @ anywhere */
-	if (gmt_M_file_is_memory (file)) return 0;	/* Not a remote file but a memory reference */
+	if (strchr (file, '@') == NULL) return GMT_IS_NOT_REMOTE;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return GMT_IS_NOT_REMOTE;	/* Not a remote file but a memory reference */
 	if (file[0] == '@') {
-		if (file[1] && strchr (text_escapes, file[1])) return 2;	/* text junk not a file */
-		return 1;	/* Definitively a remote file */
+		if (file[1] && strchr (text_escapes, file[1])) return GMT_FILE_IS_INVALID;	/* text junk not a file */
+		return GMT_IS_REMOTE;	/* Definitively a remote file */
 	}
 	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
 	for (k = 0; k < strlen (file); k++) {
 		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
-		if (file[k] == '@' && !quote) return 1;	/* Found an unquoted at-symbol */
+		if (file[k] == '@' && !quote) return GMT_IS_REMOTE;	/* Found an unquoted at-symbol */
 	}
-	return 0;	/* Nothing */
+	return GMT_IS_NOT_REMOTE;	/* Nothing */
 }
 
 /*! . */
