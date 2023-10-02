@@ -17965,7 +17965,6 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	/* 5. Get the increment (or count) */
 	if (has_inc && !T->spatial) {
 		gmt_scanf_float (GMT, txt[ns], &(T->inc));
-		//if (gmt_M_is_zero (T->inc)) {
 		if (fabs (T->inc) < DBL_EPSILON) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Increment is zero\n", option);
 			return GMT_PARSE_ERROR;
