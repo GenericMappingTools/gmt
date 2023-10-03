@@ -14,9 +14,9 @@ cat << EOF > badpol.txt
 130	+10
 90	+10
 EOF
-scl=`gmt math -Q 6 360 DIV =`
-xa=`gmt math -Q 96 -110 SUB $scl MUL =`
-xb=`gmt math -Q 130 -110 SUB $scl MUL =`
+scl=$(gmt math -Q 6 360 DIV =)
+xa=$(gmt math -Q 96 -110 SUB $scl MUL =)
+xb=$(gmt math -Q 130 -110 SUB $scl MUL =)
 gmt psxy -R-120/160/0/9 -Jx${scl}i/1i -P -K -W0.25p,- -X1.5i << EOF > $ps
 >
 90	0
@@ -25,7 +25,7 @@ gmt psxy -R-120/160/0/9 -Jx${scl}i/1i -P -K -W0.25p,- -X1.5i << EOF > $ps
 130	0
 130	9
 EOF
-x=`gmt math -Q $scl 10 MUL =`
+x=$(gmt math -Q $scl 10 MUL =)
 gmt psxy -R-120/80/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -K >> $ps
 gmt psxy -R-110/90/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -K -X${x}i -Y0.95i >> $ps
 if [ $generate -eq 1 ]; then

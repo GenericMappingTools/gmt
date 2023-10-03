@@ -207,7 +207,7 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [*clippolygon*]
-    Truncate polygons against the specified polygon given, possibly
+    Truncate polygons and lines against the specified polygon given, possibly
     resulting in open polygons. If no argument is given to |-T| we
     create a clipping polygon from |-R| which then is required. Note
     that when the |-R| clipping is in effect we will also look for

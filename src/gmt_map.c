@@ -3346,6 +3346,19 @@ GMT_LOCAL void gmtmap_translate_point_spherical (struct GMT_CTRL *GMT, double lo
 		*back_azimuth = gmtmap_az_backaz_sphere (GMT, lon, lat, *tlon, *tlat, true);
 }
 
+GMT_LOCAL void gmtmap_translate_point_flatearth (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
+	/* compute new point dist degrees from input point along azimuth using flat Earth geometry*/
+	double sa, ca, cy;
+	gmt_M_unused (GMT);
+	sincosd (azimuth,  &sa, &ca);
+	cy = cosd (lat);
+	distance /= GMT->current.proj.DIST_M_PR_DEG;
+	*tlon = lon + distance * sa / cy;
+	*tlat = lat + distance * ca;
+	if (back_azimuth)
+		*back_azimuth = gmtmap_az_backaz_flatearth (GMT, lon, lat, *tlon, *tlat, true);
+}
+
 void gmtlib_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
 	/* compute new point dist degrees from input point along azimuth */
 	gmtmap_translate_point_spherical (GMT, lon, lat, azimuth, distance, tlon, tlat, back_azimuth);
@@ -6540,6 +6553,7 @@ GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsign
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
 			GMT->current.map.dist[type].func = &gmtmap_flatearth_dist_meter;
 			GMT->current.map.azimuth_func  = &gmtmap_az_backaz_flatearth;
+			GMT->current.map.second_point = &gmtmap_translate_point_flatearth;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
@@ -6558,6 +6572,7 @@ GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsign
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			GMT->current.map.dist[type].func = gmtmap_flatearth_dist_degree;
 			GMT->current.map.azimuth_func = &gmtmap_az_backaz_flatearth;
+			GMT->current.map.second_point = &gmtmap_translate_point_flatearth;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */

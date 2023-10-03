@@ -2579,7 +2579,11 @@ int geos_method_linestring(struct GMT_CTRL *GMT, struct GMT_DATASET *Din, struct
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create output GEOS sequence for table %d, segment %d.\n", nt, ns);
 				continue;
 			}
-
+			/* geom_out's size and seq_out's size are different */
+			if (GEOSCoordSeq_getSize_r(handle, seq_out, &n_pts) == 0 ) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get size of GEOS sequence for table %d, segment %d.\n", nt, ns);
+				continue;
+			}
 			Dout->table[nt]->segment[ns] = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, (uint64_t)n_pts, n_col, NULL, NULL);
 			Dout->table[nt]->segment[ns]->n_rows = (uint64_t)n_pts;
 			Dout->table[nt]->n_records += (uint64_t)n_pts;

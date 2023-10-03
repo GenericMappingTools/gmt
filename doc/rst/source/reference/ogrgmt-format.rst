@@ -9,8 +9,8 @@ Background
 The National Institute for Water and Atmospheric Research (NIWA) in New
 Zealand has funded the implementation of a GMT driver (read and write)
 for the OGR package. OGR is an Open Source toolkit for accessing or
-reformatting vector (spatial) data stored in a variety of formats and is
-part of the. The intention was to enable the easy rendering (using
+reformatting vector (spatial) data stored in a variety of formats.
+The intention was to enable the easy rendering (using
 GMT) of spatial data held in non-\ GMT formats, and the export of
 vector data (e.g., contours) created by GMT for use with other GIS and
 mapping packages. While *ogr2ogr* (part of `GDAL <https://gdal.org/>`_

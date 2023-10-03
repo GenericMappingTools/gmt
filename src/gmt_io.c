@@ -234,7 +234,7 @@ typedef enum {
 	Int64len = 8
 } SwapWidth;
 
-/* Indicies into the 4 proj strings possible in GMT/OGR files */
+/* Indices into the 4 proj strings possible in GMT/OGR files */
 
 enum GMTIO_PROJS {
 	GMTIO_EPGS = 0,
@@ -1994,7 +1994,9 @@ GMT_LOCAL bool gmtio_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GM
 
 	/* Then get the actual order by inverting table */
 
-	for (k = 0; k < 4; k++) for (j = 0; j < 4; j++) if (S->item_pos[j] == k) S->item_order[k] = j;
+	for (k = 0; k < 4; k++)
+		for (j = 0; j < 4; j++)
+			if (S->item_pos[j] == k) S->item_order[k] = j;
 	S->Y2K_year = (n_y == 2);		/* Must supply the century when reading and take it out when writing */
 	S->truncated_cal_is_ok = true;		/* May change in the next loop */
 	for (i = 1, last = S->item_order[0]; S->truncated_cal_is_ok && i < 4; i++) {
@@ -8313,7 +8315,11 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				}
 			}
 			if (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) {
-				if (GMT->current.io.record.text) GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				if (GMT->current.io.record.text) {
+					if (GMT->hidden.mem_txt == NULL)	/* Probably first file did not have text but a later file does */
+						GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, GMT->hidden.mem_rows, char *);
+					GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				}
 				*data_type = GMT_READ_MIXED;
 			}
 

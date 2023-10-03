@@ -4,31 +4,31 @@ GMT Coordinate Transformations
 GMT programs read real-world coordinates and convert them to positions on a plot. This is achieved by selecting one of
 several coordinate transformations or projections. We distinguish between three sets of such conversions:
 
--  :ref:`Cartesian coordinate transformations <cookbook/coordinate-transformations:Cartesian coordinate transformations>`
+-  :ref:`Cartesian coordinate transformations <reference/coordinate-transformations:Cartesian coordinate transformations>`
 
--  :ref:`Polar coordinate transformations <cookbook/coordinate-transformations:Polar coordinate transformations>`
+-  :ref:`Polar coordinate transformations <reference/coordinate-transformations:Polar coordinate transformations>`
 
 -  :doc:`Map coordinate transformations <map-projections>`
 
 The next Chapter will be dedicated to GMT map projections in its entirety. Meanwhile, the present Chapter will summarize
-the properties of the :ref:`Cartesian <cookbook/coordinate-transformations:Cartesian coordinate transformations>` and
-:ref:`Polar <cookbook/coordinate-transformations:Polar coordinate transformations>` coordinate transformations available
+the properties of the :ref:`Cartesian <reference/coordinate-transformations:Cartesian coordinate transformations>` and
+:ref:`Polar <reference/coordinate-transformations:Polar coordinate transformations>` coordinate transformations available
 in GMT, list which parameters define them, and demonstrate how they are used to create simple plot axes. We will mostly
 be using :doc:`/basemap` (and occasionally :doc:`/plot`) to demonstrate the various transformations. Our illustrations
 may differ from those you reproduce with the same commands because of different settings in our ``gmt.conf`` file.
 Finally, note that while we will specify dimensions in inches (by appending **i**), you may want to use cm (**c**), or
-points (**p**) as :ref:`unit <cookbook/features:Dimension units>` instead.
+points (**p**) as :ref:`unit <reference/features:Dimension units>` instead.
 
 Cartesian coordinate transformations
 --------------------------------------------------------------------------------
 
 GMT Cartesian coordinate transformations come in three flavors:
 
--  :ref:`cookbook/coordinate-transformations:Linear coordinate transformation`
+-  :ref:`reference/coordinate-transformations:Linear coordinate transformation`
 
--  :ref:`cookbook/coordinate-transformations:Logarithmic coordinate transformation`
+-  :ref:`reference/coordinate-transformations:Logarithmic coordinate transformation`
 
--  :ref:`cookbook/coordinate-transformations:Power (exponential) coordinate transformation`
+-  :ref:`reference/coordinate-transformations:Power (exponential) coordinate transformation`
 
 These transformations convert input coordinates :math:`(x,y)` to locations :math:`(x', y')` on a plot. There is no
 coupling between :math:`x` and :math:`y` (i.e., :math:`x' = f(x)` and :math:`y' = g(y)`); it is a **one-dimensional**
@@ -55,11 +55,11 @@ Linear coordinate transformation
 There are in fact three different uses of the Cartesian linear transformation, each associated with specific command
 line options. The different manifestations result from specific properties of three kinds of data:
 
-#. :ref:`cookbook/coordinate-transformations:Regular floating point coordinates`
+#. :ref:`reference/coordinate-transformations:Regular floating point coordinates`
 
-#. :ref:`cookbook/coordinate-transformations:Geographic coordinates`
+#. :ref:`reference/coordinate-transformations:Geographic coordinates`
 
-#. :ref:`cookbook/coordinate-transformations:Calendar time coordinates`
+#. :ref:`reference/coordinate-transformations:Calendar time coordinates`
 
 Regular floating point coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -204,7 +204,7 @@ Logarithmic coordinate transformation
   in :ref:`plot-units <plt-units>` (with **-JX**). If the *y*-scale or *y*-axis length is different from that of the
   *x*-axis (which is most often the case), separate the two scales (or lengths) by a slash, e.g., **-Jx**\ 0.1i/0.5i
   or **-JX**\ 8i/5i.
-- **l** to take log10 of values before scaling.
+- **l** to take :math:`\log_{10}` of values before scaling.
 
 **Description**
 

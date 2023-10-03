@@ -163,7 +163,7 @@ The remaining items apply when one (or more) of the following conditions are met
 Before we try some examples we need to review two key switches; they
 specify pen attributes and symbol or polygon fill. Please consult
 the :ref:`General Features <GMT_General_Features>` section the
-GMT Technical Reference and Cookbook before experimenting
+GMT Technical Reference before experimenting
 with the examples below.
 
 Examples:
@@ -281,7 +281,7 @@ Apart from comment lines (starting with #), each record in the CPT governs the c
 *z* value falls in the range between *z_0* and *z_1*. If the colors for the lower and upper levels differ
 then an intermediate color will be linearly interpolated given the *z* value. Here, we have chosen
 constant color intervals. You may wish to consult the :ref:`Color palette tables <CPT_section>` section
-in the Cookbook. This color table was generated as part of the script (below).
+in the Technical Reference. This color table was generated as part of the script (below).
 
 We may now complete our example using the Mercator projection:
 

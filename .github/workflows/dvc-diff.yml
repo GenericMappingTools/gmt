@@ -1,0 +1,125 @@
+# Report changes in test images
+#
+# This workflow checks for image diffs in a pull request and adds a GitHub
+# comment showing the diff.
+#
+# It is triggered in a PR when any *.png.dvc files have been added, modified,
+# or deleted. A GitHub comment will be published that contains a summary table
+# of the images that have changed along with a visual report.
+#
+name: DVC image diff
+
+on:
+  pull_request:
+    paths:
+      - '**/*.dvc'
+
+jobs:
+  dvc-diff:
+    name: DVC image diff
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.0.0
+
+    - name: Setup data version control (DVC)
+      uses: iterative/setup-dvc@v1.1.2
+
+    - name: Setup continuous machine learning (CML)
+      uses: iterative/setup-cml@v2.0.0
+
+    - name: Setup Micromamba
+      uses: mamba-org/setup-micromamba@v1.4.4
+      with:
+        environment-name: gmt
+        condarc: |
+          channels:
+            - conda-forge
+            - nodefaults
+        cache-downloads: true
+        cache-environment: true
+        create-args: >-
+          gmt
+
+    # workaround from https://github.com/iterative/cml/issues/1377
+    - name: Setup NodeJS
+      uses: actions/setup-node@v3.8.1
+      with:
+        node-version: '16'
+
+    # Produce the markdown diff report, which should look like:
+    # ## Summary of changed images
+    #
+    # This is an auto-generated report of images that have changed on the DVC remote
+    #
+    # | Status   | Path                                |
+    # |----------|-------------------------------------|
+    # | added    | test/baseline/test_image.png |
+    # | deleted  | test/baseline/test_image2.png |
+    # | modified | test/baseline/test_image3.png |
+    #
+    # ## Image diff(s)
+    #
+    # <details>
+    # ...
+    # </details>
+    #
+    # Report last updated at commit abcdef
+    - name: Generate the image diff report
+      env:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        echo -e "## Summary of changed images\n" > report.md
+        echo -e "This is an auto-generated report of images that have changed on the DVC remote\n" >> report.md
+
+        # Fetch the master branch
+        git fetch origin master
+
+        # Pull image data from cloud storage
+        dvc pull --remote origin
+        dvc diff --md master HEAD >> report.md
+
+        # Get just the filename of the added and modified image from the report
+        awk 'NF==5 && NR>=7 && $2=="added" && $4 ~ /.ps$/ {print $4}' report.md > added_files.txt
+        awk 'NF==5 && NR>=7 && $2=="modified" && $4 ~ /.ps$/ {print $4}' report.md > modified_files.txt
+
+        # Backup new images in a different directory
+        mkdir -p newbaseline/test && cp -r test/baseline newbaseline/test/
+        mkdir -p newbaseline/doc/examples && cp -r doc/examples/images newbaseline/doc/examples/
+        mkdir -p newbaseline/doc/scripts && cp -r doc/scripts/images newbaseline/doc/scripts/
+        # Pull images in the master branch from cloud storage
+        git checkout master
+        dvc pull --remote origin
+
+        # Append each image to the markdown report
+        echo -e "## Image diff(s)\n" >> report.md
+        echo -e "<details>\n" >> report.md
+
+        # Added images
+        echo -e "### Added images\n" >> report.md
+        while IFS= read -r line; do
+          gmt psconvert -A -P -Tg $line "newbaseline/$line"
+          echo -e "- ${line%.*}.png \n" >> report.md
+          echo -e "![](newbaseline/${line%.*}.png)" >> report.md
+        done < added_files.txt
+
+        # Modified images
+        echo -e "### Modified images\n" >> report.md
+        echo -e "| Path | Old | New |" >> report.md
+        echo -e "|---|---|---|" >> report.md
+        while IFS= read -r line; do
+          gmt psconvert -A -P -Tg $line "newbaseline/$line"
+          echo -e "| $line | ![](${line%.*}.png) | ![](newbaseline/${line%.*}.png) |" >> report.md
+        done < modified_files.txt
+
+        echo -e "</details>\n" >> report.md
+
+        # Mention git commit SHA in the report
+        echo -e "Report last updated at commit ${{ github.event.pull_request.head.sha }}" >> report.md
+
+        # create/update PR comment
+        cml comment update report.md
