@@ -204,9 +204,8 @@ set (GMT_ENABLE_OPENMP TRUE)
 #set (DO_SUPPLEMENT_TESTS ON)
 
 # Uncomment the following line if you need to run the full tests suite using
-# the gmtserver "test" distribution instead of the default server.
-# You may wish to rename existing cache and server dirs so you can restore afterwards
-# set (GMT_DATA_SERVER "test")
+# the gmtserver "static" distribution instead of the default server.
+# set (GMT_DATA_SERVER "static")
 
 # List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
 # that link against the full gmt libs. (For building codes that only need the GMT API,
