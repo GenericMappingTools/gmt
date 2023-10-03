@@ -1243,6 +1243,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	}
 
 	if (file[0] == '@') {	/* Either a cache file or a remote data set */
+		gmt_refresh_server (GMT->parent);
 		if ((k_data = gmt_remote_dataset_id (API, file)) != GMT_NOTSET) {
 			/* Got a valid remote server data filename and we know the local path to those */
 			if (GMT->session.USERDIR == NULL) {
