@@ -50,6 +50,8 @@ jobs:
                 @earth_age_02m \
                 @earth_mask_05m \
                 @earth_mask_30s_p"
+          # Use the static server
+          export GMT_DATA_SERVER=static
           # Download remote data multiple times to make sure all are downloaded
           gmt which -Ga $data
           gmt which -Ga $data
