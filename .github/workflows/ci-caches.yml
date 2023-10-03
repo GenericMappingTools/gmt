@@ -10,7 +10,7 @@ on:
   # Uncomment the "push:" line to manually re-cache data artifacts in pushes
   #push:
   # Uncomment the 'pull_request:' line to manually re-cache data artifacts in PRs
-  #pull_request:
+  pull_request:
   # Schedule runs on 12 noon every Sunday
   schedule:
     - cron: '0 12 * * 0'
