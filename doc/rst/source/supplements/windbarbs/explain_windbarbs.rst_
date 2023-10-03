@@ -1,0 +1,24 @@
+Wind Barb Attributes
+--------------------
+
+Several modifiers may be appended to the windbarb-producing options to
+specify the placement of barbs, their shapes, and the
+justification of the wind barb. Below, left and right refers to the
+side of the wind barb line when viewed from the start point to the
+end point of the segment:
+
+**+a**\ *angle* sets the angle of the wind barb [120].
+
+**+g**-\ \|\ *fill* turns off wind barb fill (if -) or sets the wind
+barb fill [Default fill is used, which may be no fill].
+
+**+p**\ [-][*pen*] sets the wind barb pen attributes. If *pen* has a
+leading - then the outline is not drawn. [Default pen is used, and
+outline is drawn]
+
+**+j**\ *just* determines how the input *x*,\ *y* point relates to the
+wind barb. Choose from **b**\ eginning [default], **e**\ nd, or **c**\ enter.
+
+**+s** to set the wind speed which corresponds to a long barb [default 5]
+
+**+w** to set the *width* of wind barbs

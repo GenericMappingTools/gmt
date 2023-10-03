@@ -20,7 +20,7 @@ Tutorial setup
    cd into that directory, and run the commands there to keep things tidy.
 
 #. As we discuss GMT principles it may be a good idea to
-   consult :doc:`the GMT Cookbook </cookbook>` for more
+   consult :doc:`the GMT Technical Reference </reference>` for more
    detailed explanations.
 
 #. The tutorial data sets are distributed via the GMT cache server.
@@ -70,7 +70,7 @@ Input data
 ~~~~~~~~~~
 
 A GMT module may or may not take input files.  Three different
-types of input are recognized (more details can be found in :doc:`/cookbook/file-formats`):
+types of input are recognized (more details can be found in :doc:`/reference/file-formats`):
 
 #. Data tables.
    These are rectangular tables with a fixed number of columns and

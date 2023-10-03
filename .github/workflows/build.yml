@@ -5,15 +5,25 @@ name: Build
 
 on:
   pull_request:
+    paths-ignore:
+      - 'doc/**'
+      - '!doc/**/CMakeLists.txt'
   push:
     branches:
       - master
       - 6.[0-9]+
+    paths-ignore:
+      - 'doc/**'
+      - '!doc/**/CMakeLists.txt'
 
 defaults:
   run:
     # default to use bash shell
     shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   build:
@@ -46,14 +56,11 @@ jobs:
             EXCLUDE_OPTIONAL : true
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v3.6.0
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.27.0
+        uses: dawidd6/action-download-artifact@v2.28.0
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -107,7 +114,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.27.0
+        uses: dawidd6/action-download-artifact@v2.28.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache

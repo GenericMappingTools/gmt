@@ -38,6 +38,7 @@
  */
 
 #include "gmt_dev.h"
+#include "seis_defaults.h"
 #include "longopt/pspolar_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pspolar"
@@ -47,9 +48,6 @@
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehiqt" GMT_OPT("c")
-
-#define DEFAULT_FONTSIZE	12.0	/* In points */
-#define DEFAULT_OFFSET		3.0	/* In points */
 
 /* Control structure for pspolar */
 
@@ -143,7 +141,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	gmt_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0);
 	C->T.justify = PSL_TC;
-	C->T.font.size = DEFAULT_FONTSIZE;
+	C->T.font.size = SEIS_DEFAULT_FONTSIZE;
 	return (C);
 }
 
@@ -168,7 +166,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	font = API->GMT->current.setting.font_annot[GMT_PRIMARY];
-	font.size = DEFAULT_FONTSIZE;
+	font.size = SEIS_DEFAULT_FONTSIZE;
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Usage (API, 1, "\n-D<lon>/<lat>");
@@ -479,9 +477,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 							if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->T.offset) < 0) n_errors++;
 						} else {	/* Set default offset */
 							if (Ctrl->T.justify%4 != 2) /* Not center aligned */
-								Ctrl->T.offset[0] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+								Ctrl->T.offset[0] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 							if (Ctrl->T.justify/4 != 1) /* Not middle aligned */
-								Ctrl->T.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+								Ctrl->T.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 						}
 					} else {
 						/* Old syntax: -T<angle>/<form>/<justify>/<fontsize> */

@@ -255,6 +255,14 @@ have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
 gridding and turns *off* anti-aliasing.  Alternatively, use |-T|
 instead to plot individual polygons centered on each node.
 
+Imaging Categorical Images
+--------------------------
+
+If a 1-byte single layer image is given and the file has no color map then we will
+interpret the byte values as categories and a categorical CPT is required via |-C|.
+If no |-C| is given then we assume the image is a grayscale image with values in the
+0-255 range.
+
 Image formats recognized
 ------------------------
 

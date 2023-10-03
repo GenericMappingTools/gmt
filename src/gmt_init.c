@@ -188,6 +188,10 @@
 #define GMT_COMPAT_INFO "Please see " GMT_DOC_URL "/changes.html#new-features-in-gmt-5 for more information.\n"
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keyword[case_val])
 
+#define GMT_IS_NOT_REMOTE	0
+#define GMT_IS_REMOTE	1
+#define GMT_FILE_IS_INVALID	2
+
 #define gmt_M_compat_change(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keyword[case_val], new_P)
 #define gmt_M_compat_translate(new_P) error = (gmt_M_compat_check (GMT, 4) ? gmt_M_compat_change (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
 #define gmt_M_compat_opt(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
@@ -210,7 +214,7 @@ struct GMT_parameter {
 	const char *name;
 };
 
-/* These are the active GMT5+ keywords, containing no backwards-compatible variants.
+/* These are the active >= GMT5 keywords, containing no backwards-compatible variants.
  * Also, some grouped keywords such as FONT and FONT_ANNOT are also not listed since they are not in gmt.conf.
  * If new keywords are added they need to be added here as well as to gmt_keywords.txt, plus
  * specific entries in both gmtlib_setparameter and gmtlib_getparameter, and gmt.conf.rst */
@@ -316,6 +320,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_ORIGIN_Y"},
 	{ 0, "MAP_POLAR_CAP"},
 	{ 0, "MAP_SCALE_HEIGHT"},
+	{ 0, "MAP_SYMBOL_PEN_SCALE"},
 	{ 0, "MAP_TICK_LENGTH_PRIMARY"},
 	{ 0, "MAP_TICK_LENGTH_SECONDARY"},
 	{ 0, "MAP_TICK_PEN_PRIMARY"},
@@ -2422,7 +2427,7 @@ GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	if (GMT->common.x.n_threads == 0)
 		GMT->common.x.n_threads = 1;
 	else if (GMT->common.x.n_threads < 0)
-		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - abs (GMT->common.x.n_threads), 1);		/* Max-n but at least one */
 	if (GMT->current.setting.max_cores)	/* Limit to max core defaults setting */
 		GMT->common.x.n_threads = GMT->current.setting.max_cores;
 	return (GMT_NOERROR);
@@ -3605,7 +3610,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (GMT->session.USERDIR != NULL) {
 		err = stat (GMT->session.USERDIR, &S);	/* Stat the userdir path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
 			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of remote data sets has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
@@ -3623,9 +3628,9 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		gmt_dos_path_fix (GMT->session.CACHEDIR);
 		gmtinit_trim_off_any_slash_at_end (GMT->session.CACHEDIR);
 	}
-	if (GMT->session.CACHEDIR != NULL) {
+	if (GMT->session.CACHEDIR != NULL && GMT->session.DATASERVER) {
 		err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
 			GMT_Report (API, GMT_MSG_WARNING, "Auto-downloading of cache data has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
@@ -3649,15 +3654,15 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	}
 	if (API->session_dir != NULL) {
 		err = stat (API->session_dir, &S);	/* Stat the session path (which may not exist) */
-		if (err == ENOENT && gmt_mkdir (API->session_dir)) { /* Path does not exist so we create that dir */
+		if (errno == ENOENT && gmt_mkdir (API->session_dir)) { /* Path does not exist so we create that dir */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT User sessions directory : %s\n", API->session_dir);
 			GMT_Report (API, GMT_MSG_ERROR, "Modern mode will fail.\n");
 		}
 		else if (err == 0) {	/* Path already exists, check why */
 			if (!S_ISDIR (S.st_mode))	/* Path already exists, but it is not a directory */
 				GMT_Report (API, GMT_MSG_ERROR, "A file named %s already exist and prevents us creating a session directory by that name\n", API->session_dir);
-			else if (S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0)	/* Directory already exists but is not writeable */
-				GMT_Report (API, GMT_MSG_ERROR, "Session directory %s already exist but is not writeable\n", API->session_dir);
+			else if (S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0)	/* Directory already exists but is not writable */
+				GMT_Report (API, GMT_MSG_ERROR, "Session directory %s already exist but is not writable\n", API->session_dir);
 		}
 	}
 	if (GMT->session.USERDIR)  GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
@@ -3677,8 +3682,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.DATASERVER = strdup (this_c);
 	else if ((this_c = getenv ("GMT_DATA_URL")) != NULL)		/* GMT_DATA_URL [deprecated in 6.0.0] was set */
 		GMT->session.DATASERVER = strdup (this_c);
-	else
-		GMT->session.DATASERVER = strdup (GMT_DATA_SERVER);	/* SOEST default */
+	else if (GMT->session.DATASERVER == NULL)	/* SOEST default */
+		GMT->session.DATASERVER = strdup (GMT_DATA_SERVER);
 	if (GMT->session.DATASERVER)
 		gmtinit_trim_off_any_slash_at_end (GMT->session.DATASERVER);
 
@@ -6701,6 +6706,9 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	/* MAP_POLAR_CAP */
 	GMT->current.setting.map_polar_cap[0] = 85;
 	GMT->current.setting.map_polar_cap[1] = 90;
+	/* MAP_SYMBOL_PEN_SCALE */
+	GMT->current.setting.map_symbol_pen_scale = GMT_SYMBOL_SIZE_TO_PEN_WIDTH / 100.0;	/* Given as percentage */
+	GMT->current.setting.map_symbol_pen_scale_unit = '%';
 	/* MAP_SCALE_HEIGHT */
 	GMT->current.setting.map_scale_height = 5 * pt;	/* 5p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_SCALE_HEIGHT] = 'p';
@@ -8279,7 +8287,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	if (option == 0)	/* grid is an input file argument, not an option */
 		GMT_Usage (API, 1, "\n%s", GMT_OUTGRID);
-	else if (option == '=')	/* grdmath usees = instead of -option*/
+	else if (option == '=')	/* grdmath uses = instead of -option*/
 		GMT_Usage (API, 1, "\n= %s", GMT_OUTGRID);
 	else	/* All regular options */
 		GMT_Usage (API, 1, "\n-%c%s", option, GMT_OUTGRID);
@@ -9014,6 +9022,24 @@ bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 		return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
+GMT_LOCAL unsigned int gmtinit_might_be_remotefile (char *file) {
+	bool quote = false;	/* We are outside any quoted text */
+	size_t k;
+	static char *text_escapes = "~%:;+-#_!.@[";	/* If any of these follow leading @ it is pstext junk passed as file */
+	if (strchr (file, '@') == NULL) return GMT_IS_NOT_REMOTE;	/* No @ anywhere */
+	if (gmt_M_file_is_memory (file)) return GMT_IS_NOT_REMOTE;	/* Not a remote file but a memory reference */
+	if (file[0] == '@') {
+		if (file[1] && strchr (text_escapes, file[1])) return GMT_FILE_IS_INVALID;	/* text junk not a file */
+		return GMT_IS_REMOTE;	/* Definitively a remote file */
+	}
+	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
+	for (k = 0; k < strlen (file); k++) {
+		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
+		if (file[k] == '@' && !quote) return GMT_IS_REMOTE;	/* Found an unquoted at-symbol */
+	}
+	return GMT_IS_NOT_REMOTE;	/* Nothing */
+}
+
 /*! . */
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0, x_type, y_type;
@@ -9063,12 +9089,22 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	got_r = (strstr (item, "+r") != NULL);
 	got_country = (got_r || (strstr (item, "+R") != NULL));	/* May have given DCW (true of +R, maybe if +r since the latter also means oblique) */
 
+	if (gmtinit_might_be_remotefile (item)) {	/* Must check if registration is specified; if not add it */
+		char *tmp = strdup (item);
+		gmt_refresh_server (GMT->parent);
+		if (gmt_set_unspecified_remote_registration (GMT->parent, &tmp)) {	/* If argument is a remote file name then this handles any missing registration _p|_g */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -R: Revised remote file name argument %s to %s\n", item, tmp);
+			strcpy (item, tmp);
+			gmt_M_str_free (tmp);
+		}
+	}
+
 	strncpy (GMT->common.R.string, item, GMT_LEN256-1);	/* Verbatim copy */
 
 	if (gmt_remote_dataset_id (GMT->parent, item) != GMT_NOTSET) {	/* Silly, but user set -R@earth_relief_xxy or similar */
 		/* These are always -Rd */
-		GMT->common.R.wesn[XLO] = -180.0, GMT->common.R.wesn[XHI] = 180.0;
-		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
+		GMT->common.R.wesn[XLO] = -180.0;	GMT->common.R.wesn[XHI] = +180.0;
+		GMT->common.R.wesn[YLO] =  -90.0;	GMT->common.R.wesn[YHI] =  +90.0;
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		return (GMT_NOERROR);
@@ -11329,6 +11365,19 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				GMT->current.setting.map_scale_height = dval;
 			break;
+		case GMTCASE_MAP_SYMBOL_PEN_SCALE:
+			dval = atof (value);
+			if (value[len] == '%') {
+				dval /= 100.0;	/* Got factor as a percentage */
+				GMT->current.setting.map_symbol_pen_scale_unit = '%';
+			}
+			else	/* Got a fraction */
+				GMT->current.setting.map_symbol_pen_scale_unit = '\0';
+			if (dval < 0.0)
+				error = true;
+			else
+				GMT->current.setting.map_symbol_pen_scale = dval;
+			break;
 		case GMTCASE_TICK_LENGTH:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				gmt_M_compat_change ("MAP_TICK_LENGTH");
@@ -12885,6 +12934,12 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
 			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height * gmt_M_def_scale(GMTCASE_MAP_SCALE_HEIGHT), gmt_M_def_unit(GMTCASE_MAP_SCALE_HEIGHT));
+			break;
+		case GMTCASE_MAP_SYMBOL_PEN_SCALE:
+			if (GMT->current.setting.map_symbol_pen_scale_unit == '%')	/* Report as percentage */
+				snprintf (value, GMT_LEN256, "%g%%", GMT->current.setting.map_symbol_pen_scale * 100.0);
+			else	/* Just a factor */
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.map_symbol_pen_scale);
 			break;
 		case GMTCASE_MAP_TICK_LENGTH:
 		case GMTCASE_TICK_LENGTH:
@@ -15314,20 +15369,6 @@ GMT_LOCAL bool gmtinit_mapproject_needs_RJ (struct GMTAPI_CTRL *API, struct GMT_
 	return (true);	/* We get here when a classic command like "gmt mapproject -R -J file" in modern mode looks like "gmt mapproject file" and thus -R -J is required */
 }
 
-GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
-	bool quote = false;	/* We are outside any quoted text */
-	size_t k;
-	if (strchr (file, '@') == NULL) return false;	/* No @ anywhere */
-	if (gmt_M_file_is_memory (file)) return false;	/* Not a remote file but a memory reference */
-	if (file[0] == '@') return true;	/* Definitively a remote file */
-	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
-	for (k = 0; k < strlen (file); k++) {
-		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
-		if (file[k] == '@' && !quote) return true;	/* Found an unquoted at-symbol */
-	}
-	return false;	/* Nothing */
-}
-
 /*! . */
 GMT_LOCAL int gmtinit_compare_resolutions (const void *point_1, const void *point_2) {
 	/* Sorts differences from desired nodes-per-degree from small to big  */
@@ -15439,18 +15480,25 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* First handle any halfhearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
+		unsigned int err_code;
 		/* Treat -V in advance because gmt_set_unspecified_remote_registration needs to already know about it.*/
 		for (opt = *options; opt; opt = opt->next) {
 			if (opt->option == 'V')
 				gmt_parse_common_options (API->GMT, "V", opt->option, opt->arg);
 		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+			if (opt->option != GMT_OPT_INFILE) continue;	/* Only check command line input files */
+			if ((err_code = gmtinit_might_be_remotefile (opt->arg)) == 0) continue;
+			if (err_code == 2) {
+				GMT_Report (API, GMT_MSG_ERROR, "File %s is not a file and looks like pstext strings.\n", opt->arg);
+				return NULL;
+			}
 			if (remote_first) {
 				gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 				remote_first = false;
 			}
-			gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
+			if (gmt_set_unspecified_remote_registration (API, &(opt->arg)))	/* If argument is a remote file name then this handles any missing registration _p|_g */
+				GMT_Report (API, GMT_MSG_DEBUG, "Revised remote file name to %s\n", opt->arg);
 		}
 	}
 
@@ -16440,7 +16488,7 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 
 GMT_LOCAL unsigned int gmtinit_get_length (struct GMT_CTRL *GMT, char symbol, char *string, bool norm, bool is_grdvector, float *value, bool *user_unit) {
 	/* Used by gmt_parse_vector to set length scales or limits related to vectors.
-	 * Note: is_grdvector is true when being called from grdvector because we need to honor normalizations +n<lengtH> without unit to mean unit = q */
+	 * Note: is_grdvector is true when being called from grdvector because we need to honor normalizations +n<length> without unit to mean unit = q */
 	unsigned int error = GMT_NOERROR;
 	size_t len = (string) ? strlen (string) : 0;	/* Length of string */
 

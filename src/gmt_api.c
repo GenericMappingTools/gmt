@@ -890,13 +890,14 @@ GMT_LOCAL int gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION
 	struct GMT_OPTION *opt;
 
 	for (opt = head; opt; opt = opt->next) {
-        if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;  /* Skip file names */
-        if (opt->next == NULL || opt->next->option != GMT_OPT_INFILE) continue;  /* Skip arg not followed by file names (we expect -png map, for instance) */
+		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;  /* Skip file names */
+		if (opt->next == NULL || opt->next->option != GMT_OPT_INFILE) continue;  /* Skip arg not followed by file names (we expect -png map, for instance) */
 		if (strchr (gmt_session_codestr, opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format */
 		if ((len = strlen (opt->arg)) == 0 || len >= GMT_GRAPHIC_MAXLEN) continue;	/* No arg or too long args that are filenames can be skipped */
-        if (opt->option == 'b' && strchr ("df", opt->arg[0])) continue;   /* Ignore [-bd|f] */
-        if (opt->option == 'b' && strchr ("io", opt->arg[0]) && strchr ("df", opt->arg[1])) continue;   /* Ignore -[b][io][d|f]] */
-        if (strchr ("bdhq", opt->option) && strchr ("io", opt->arg[0]) && (opt->arg[1] == '\0' || isdigit (opt->arg[1]))) continue;   /* Ignore -[bdhq][io][<n>]] */
+		if (opt->option == 'b' && strchr ("df", opt->arg[0])) continue;   /* Ignore [-bd|f] */
+		if (opt->option == 'b' && strchr ("io", opt->arg[0]) && strchr ("df", opt->arg[1])) continue;   /* Ignore -[b][io][d|f]] */
+		if (opt->option == 'j' && len == 1 && strchr ("efg", opt->arg[0])) continue;   /* Ignore -je|f|g */
+		if (strchr ("bdhq", opt->option) && strchr ("io", opt->arg[0]) && (opt->arg[1] == '\0' || isdigit (opt->arg[1]))) continue;   /* Ignore -[bdhq][io][<n>]] */
 		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
 		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
 		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
@@ -1444,7 +1445,7 @@ GMT_LOCAL double gmtapi_get_record_value (struct GMT_CTRL *GMT, double *record, 
 GMT_LOCAL int gmtapi_bin_input_memory (struct GMT_CTRL *GMT, uint64_t n, uint64_t n_use) {
 	/* Read function which gets one record from the memory reference.
  	 * The current data record has already been read from wherever and is available in
- 	 * GMT->current.io.curr_rec so that is where we operate frome */
+ 	 * GMT->current.io.curr_rec so that is where we operate from */
 	unsigned int status;
 	gmt_M_unused(n);
 
@@ -9609,7 +9610,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				/* Maybe using the API without a module call first so server has not been refreshed yet */
 				gmt_refresh_server (API);
 			}
-			gmt_set_unspecified_remote_registration (API, &input);	/* Same, this call otherwise only happens with modules */
+			if (gmt_set_unspecified_remote_registration (API, &input))   /* If argument is a remote file name then this handles any missing registration _p|_g */
+				GMT_Report (API, GMT_MSG_DEBUG, "Revised remote file name to %s\n", input);
 			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 			strncpy (file, &input[first], PATH_MAX-1);
 			if ((k_data = gmt_remote_no_extension (API, input)) != GMT_NOTSET)	/* A remote @earth_relief_xxm|s grid without extension */
@@ -15996,7 +15998,8 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 		return GMT_NOERROR;
 	}
 
-	if ((mode & GMT_FILE_CHECK) == 0) gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
+	if ((mode & GMT_FILE_CHECK) == 0 && gmt_set_unspecified_remote_registration (API, file_ptr))	/* Complete remote filenames without registration information */
+		GMT_Report (API, GMT_MSG_DEBUG, "Revised remote file name to %s\n", file_ptr);
 
 	gmt_filename_get (file);	/* Replace any ASCII 29 with spaces (if filename had spaces they may now be ASCII 29) */
 

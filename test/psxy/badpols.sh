@@ -10,19 +10,19 @@ proj=M6i
 ps=badpols.ps
 region=-80/120/0/53
 gmt convert $cob -Q31 -fg > tmp
-area=`gmt info -fg tmp -I0.1`
+area=$(gmt info -fg tmp -I0.1)
 gmt psxy -R$region -J$proj -Glightblue -P -K tmp -Xc > $ps
 gmt psxy -R -J -W0.25p -O -K tmp >> $ps
 gmt pstext -R -J -O -K -Baf -F+cTC+jTC+f18p+t"$area" -Dj0/0.2i >> $ps
 region=-80/120/0/53
 gmt convert $cob -Q49 -fg > tmp
-area=`gmt info -fg tmp -I0.1`
+area=$(gmt info -fg tmp -I0.1)
 gmt psxy -R$region -J -Glightred -O -K -Y3i tmp >> $ps
 gmt psxy -R -J -W0.25p -O -K tmp >> $ps
 gmt pstext -R -J -O -K -Baf -F+cTC+jTC+f18p+t"$area" -Dj0/0.2i >> $ps
 region=-80/120/-72/-20
 gmt convert $cob -Q78 -fg > tmp
-area=`gmt info -fg tmp -I0.1`
+area=$(gmt info -fg tmp -I0.1)
 gmt psxy -R$region -J -Glightgreen -P -O -K -Y3i tmp >> $ps
 gmt convert $cob -Q78 -fg | gmt psxy -R -J -W0.25p -O -K >> $ps
 gmt pstext -R -J -O -Baf -F+cTC+jTC+f18p+t"$area" -Dj0/0.2i >> $ps

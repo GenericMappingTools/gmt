@@ -31,7 +31,7 @@ Synopsis
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *value*\|\ *file*]
+[ |-Z|\ *value*\|\ *file*]\ [**+t**\|\ **T**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -234,11 +234,16 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *value*\|\ *file*
-    Instead of specifying a symbol or polygon fill and outline color via |-G| and |-W|,
+**-Z**\ *value*\|\ *file*\ [**+t**\|\ **T**]
+    Instead of specifying a line or polygon fill and outline color via |-G| and |-W|,
     give both a *value* via |-Z| and a color lookup table via |-C|.  Alternatively,
-    give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
-    To apply the color obtained to a fill, use **-G+z**; to apply it to the pen color, append **+z** to |-W|.
+    give the name of a *file* with one z-value (read from the last column) for each polygon
+    or line in the input data. To apply the color obtained to a fill, use **-G+z**; to
+    apply it to the pen color, append **+z** to |-W|.
+    To just modulate the transparency of the polygon or line instead, append **+t** and the
+    *z*-value will be assumed to be transparency in the 0-100 % range.  Finally, append **+T**
+    and supply two columns via *file*: The last column must be the *z*-value while the next
+    to last column must have transparencies (in 0-100 % range).
 
 .. include:: explain_-aspatial.rst_
 

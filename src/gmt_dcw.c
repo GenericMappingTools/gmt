@@ -762,6 +762,18 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((retval = nc_get_att_double (ncid, yvarid, "min", &south))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "max", &north))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "scale", &yscl))) continue;
+		if (GMT->current.setting.format_geo_out[0] == 'D') {	/* [-180 180]*/
+			if (west > 180) west -= 360;
+			if (east > 180) east -= 360;
+		}
+		else if (GMT->current.setting.format_geo_out[0] == '+') {	/* [0 360]*/
+			if (west < 0) west += 360;
+			if (east < 0) east += 360;
+		}
+		else if (GMT->current.setting.format_geo_out[0] == '-') {	/* [-360 0]*/
+			if (west > 0) west -= 360;
+			if (east > 0) east -= 360;
+		}
 		if (mode & GMT_DCW_REGION) {	/* Just update wesn */
 			Z[r_item].west = west;	Z[r_item++].east = east;
 			if (south < wesn[YLO]) wesn[YLO] = south;

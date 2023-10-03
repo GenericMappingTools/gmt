@@ -7145,7 +7145,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		int js;
 		double base, d_base, dx_f, dx_a, bar_height, bar_tick_len;
 		PSL_comment (PSL, "Draw fancy map scale\n");
-		/* Based on magnitue of length, determine reasonable annotation spacings */
+		/* Based on magnitude of length, determine reasonable annotation spacings */
 		js = irint (floor (d_log10 (GMT, ms->length / 0.95)));
 		base = pow (10.0, (double)js);
 		i = urint (ms->length / base) - 1;

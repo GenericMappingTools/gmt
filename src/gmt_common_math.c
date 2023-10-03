@@ -207,8 +207,8 @@ bool doubleAlmostEqualUlps(double A, double B, int maxUlpsDiff) {
 	bool signedA, signedB;
 	int64_t ulpsDiff;
 
-	/* Ensure that either A or B are not close to zero. */
-	assert ( (fabs(A) > 5 * DBL_EPSILON) || (fabs(B) > 5 * DBL_EPSILON) );
+	if ((fabs(A) < DBL_EPSILON) && (fabs(B) < DBL_EPSILON))		/* If they are both zero return now */
+		return true;
 
 	/* Initialize unions with floats. */
 	uA.f = A;

@@ -28,13 +28,12 @@ Synopsis
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-O| ] [ |-P| ]
 [ |-S|\ [*symbol*][*size*] ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *value* [**+f**\|\ **l**] ]
+[ |-Z|\ *value*\ [**+t**\|\ **T**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -88,7 +87,7 @@ To plot a point with color dictated by the *t.cpt* file for the *z*-value 65, tr
 
    ::
 
-    echo 175 30 | gmt psxy -R150/200/20/50 -JX15c -Sc0.5c -Zf65 -Ct.cpt > map.ps
+    echo 175 30 | gmt psxy -R150/200/20/50 -JX15c -Sc0.5c -Z65 -Ct.cpt > map.ps
 
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
@@ -153,8 +152,7 @@ See Also
         gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i >> $ps</br>
         gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xr -X3.25i >> $ps</br>
         gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i >> $ps</br>
-        gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
-        gmt psxy -R -J -O -T >> $ps</br>
+        gmt psxy -R -J -O -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
         </p>
     </div>
    </div>
