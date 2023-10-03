@@ -523,18 +523,19 @@ bool gmt_file_is_cache (struct GMTAPI_CTRL *API, const char *file) {
 	return true;
 }
 
-void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **file_ptr) {
+int gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **file_ptr) {
 	/* If a remote file is missing _g or _p we find which one we should use and revise the file accordingly.
 	 * There are a few different scenarios where this can happen:
 	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
-	 * 2. Users who do not care about registration.  If so, they get p if available. */
+	 * 2. Users who do not care about registration.  If so, they get p if available.
+	 * We return 1 if filename was changed, otherwise 0. */
 	char newfile[GMT_LEN256] = {""}, dir[GMT_LEN128] = {""}, reg[2] = {'p', 'g'};
 	char *file = NULL, *infile = NULL, *c = NULL, *p = NULL, *q = NULL;
-	int k_data, k, kstart = 0, kstop = 2, kinc = 1;
+	int k_data, k, kstart = 0, kstop = 2, kinc = 1, reg_added = 0;
 	size_t L;
-	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
-	if (gmt_M_file_is_memory (file)) return;	/* Not a remote file for sure */
-	if (file[0] != '@') return;
+	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return 0;
+	if (gmt_M_file_is_memory (file)) return 0;	/* Not a remote file for sure */
+	if (file[0] != '@') return 0;
 	infile = strdup (file);
 	if ((c = strchr (infile, '+')))	/* Got modifiers, probably from grdimage or similar, chop off for now */
 		c[0] = '\0';
@@ -547,7 +548,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	strncpy (dir, API->remote_info[k_data].dir, L);	dir[L] = '\0';	/* Duplicate dir without slash */
 	p = strrchr (dir, '/') + 1;	/* Start of final subdirectory (skipping over the slash we found) */
 	q = strstr (file, p);	/* Start of the file name (most likely the same as &file[1] but we want to make sure) */
-	if (q == NULL) return;	/* Should never happen but definitively nothing more to do here - just a safety valve */
+	if (q == NULL) return 0;	/* Should never happen but definitively nothing more to do here - just a safety valve */
 	q += strlen (p);	/* Move to the end of family name after which any registration codes would be found */
 	if (strstr (q, "_p") || strstr (q, "_g")) goto clean_up;	/* Already have the registration codes */
 	if (API->use_gridline_registration) {	/* Switch order so checking for g first, then p */
@@ -571,11 +572,13 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 			*file_ptr = strdup (newfile);
 			API->remote_id = k_data;
 			GMT_Report (API, GMT_MSG_DEBUG, "Input remote grid modified to have registration: %s\n", newfile);
+			reg_added = 1;
 			goto clean_up;
 		}
 	}
 clean_up:
 	gmt_M_str_free (infile);
+	return (reg_added);
 }
 
 int gmt_remote_no_extension (struct GMTAPI_CTRL *API, const char *file) {

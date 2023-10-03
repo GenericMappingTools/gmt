@@ -9610,7 +9610,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				/* Maybe using the API without a module call first so server has not been refreshed yet */
 				gmt_refresh_server (API);
 			}
-			gmt_set_unspecified_remote_registration (API, &input);	/* Same, this call otherwise only happens with modules */
+			if (gmt_set_unspecified_remote_registration (API, &input))   /* If argument is a remote file name then this handles any missing registration _p|_g */
+				GMT_Report (API, GMT_MSG_DEBUG, "Revised remote file name to %s\n", input);
 			first = gmt_download_file_if_not_found (API->GMT, input, 0);	/* Deal with downloadable GMT data sets first */
 			strncpy (file, &input[first], PATH_MAX-1);
 			if ((k_data = gmt_remote_no_extension (API, input)) != GMT_NOTSET)	/* A remote @earth_relief_xxm|s grid without extension */
@@ -15997,7 +15998,8 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 		return GMT_NOERROR;
 	}
 
-	if ((mode & GMT_FILE_CHECK) == 0) gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
+	if ((mode & GMT_FILE_CHECK) == 0 && gmt_set_unspecified_remote_registration (API, file_ptr))	/* Complete remote filenames without registration information */
+		GMT_Report (API, GMT_MSG_DEBUG, "Revised remote file name to %s\n", file_ptr);
 
 	gmt_filename_get (file);	/* Replace any ASCII 29 with spaces (if filename had spaces they may now be ASCII 29) */
 
