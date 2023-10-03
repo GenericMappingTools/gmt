@@ -15402,7 +15402,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				gmt_parse_common_options (API->GMT, "V", opt->option, opt->arg);
 		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-			if (opt->option != GMT_OPT_INFILE) continue;	/* Only check command line input files */
+			if (strchr (opt->arg, '@') == NULL) continue;/* Cannot be a remote file */
 			if ((err_code = gmtinit_might_be_remotefile (opt->arg)) == 0) continue;
 			if (err_code == 2) {
 				GMT_Report (API, GMT_MSG_ERROR, "File %s is not a file and looks like pstext strings.\n", opt->arg);
