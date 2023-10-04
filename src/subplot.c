@@ -687,9 +687,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 			}
 			if (Bx) {	/* Did get separate x-axis annotation settings */
-				if ((c = gmt_first_modifier (GMT, Bx->arg, "ls"))) {	/* Gave valid axes modifiers for custom labels */
+				if ((c = gmt_first_modifier (GMT, Bx->arg, "lpsu"))) {	/* Gave valid axes modifiers for custom labels */
 					pos = error = 0;
-					while (gmt_getmodopt (GMT, 'B', c, "ls", &pos, p, &error) && error == 0) {
+					while (gmt_getmodopt (GMT, 'B', c, "lpsu", &pos, p, &error) && error == 0) {
 						switch (p[0]) {
 							case 'l':	/* Regular x-axis label */
 								Ctrl->S[GMT_X].label[GMT_PRIMARY] = strdup (&p[1]);	break;
@@ -708,9 +708,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			else if (Bxy)	/* Did common x and y-axes annotation settings */
 				Ctrl->S[GMT_X].b = strdup (Bxy->arg);
 			if (By) {	/* Did get y-axis annotation settings */
-				if ((c = gmt_first_modifier (GMT, By->arg, "ls"))) {	/* Gave valid axes modifiers for custom labels */
+				if ((c = gmt_first_modifier (GMT, By->arg, "lpsu"))) {	/* Gave valid axes modifiers for custom labels */
 					pos = 0;
-					while (gmt_getmodopt (GMT, 'B', c, "ls", &pos, p, &error) && error == 0) {
+					while (gmt_getmodopt (GMT, 'B', c, "lpsu", &pos, p, &error) && error == 0) {
 						switch (p[0]) {
 							case 'l':	/* Regular y-axis label */
 								Ctrl->S[GMT_Y].label[GMT_PRIMARY] = strdup (&p[1]);	break;
