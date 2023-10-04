@@ -8937,11 +8937,13 @@ bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 		return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
-GMT_LOCAL unsigned int gmtinit_might_be_remotefile (char *file) {
+GMT_LOCAL unsigned int gmtinit_might_be_remotefile (struct GMT_CTRL *GMT, char *file) {
 	bool quote = false;	/* We are outside any quoted text */
+	unsigned int n_at = 0;
 	size_t k;
 	static char *text_escapes = "~%:;+-#_!.@[";	/* If any of these follow leading @ it is pstext junk passed as file */
 	if (strchr (file, '@') == NULL) return GMT_IS_NOT_REMOTE;	/* No @ anywhere */
+	if ((n_at = gmt_count_char (GMT, file, '@')) > 1) return GMT_IS_NOT_REMOTE;	/* More than one @ is clearly a title of some sort */
 	if (gmt_M_file_is_memory (file)) return GMT_IS_NOT_REMOTE;	/* Not a remote file but a memory reference */
 	if (file[0] == '@') {
 		if (file[1] && strchr (text_escapes, file[1])) return GMT_FILE_IS_INVALID;	/* text junk not a file */
@@ -9004,7 +9006,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	got_r = (strstr (item, "+r") != NULL);
 	got_country = (got_r || (strstr (item, "+R") != NULL));	/* May have given DCW (true of +R, maybe if +r since the latter also means oblique) */
 
-	if (gmtinit_might_be_remotefile (item)) {	/* Must check if registration is specified; if not add it */
+	if (gmtinit_might_be_remotefile (GMT, item)) {	/* Must check if registration is specified; if not add it */
 		char *tmp = strdup (item);
 		gmt_refresh_server (GMT->parent);
 		if (gmt_set_unspecified_remote_registration (GMT->parent, &tmp)) {	/* If argument is a remote file name then this handles any missing registration _p|_g */
@@ -15403,7 +15405,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (strchr (opt->arg, '@') == NULL) continue;/* Cannot be a remote file */
-			if ((err_code = gmtinit_might_be_remotefile (opt->arg)) == 0) continue;
+			if ((err_code = gmtinit_might_be_remotefile (API->GMT, opt->arg)) == 0) continue;
 			if (err_code == 2) {
 				GMT_Report (API, GMT_MSG_ERROR, "File %s is not a file and looks like pstext strings.\n", opt->arg);
 				return NULL;
