@@ -141,6 +141,8 @@ struct SUBPLOT_CTRL {
 		char axes[4];		/* W|e|w|e|l|r for -Sr,  S|s|N|n|b|t for -Sc [Default is MAP_FRAME_AXES] */
 		char *b;		/* Any hardwired choice for afg settings for this axis [af] */
 		char *label[2];		/* The constant primary [and alternate] y labels */
+		char *prefix[2];	/* Any prefix units for x or y axes */
+		char *unit[2];		/* Any annotation units for x or y axes */
 		char *extra;		/* Special -B frame args, such as fill */
 		unsigned int ptitle;	/* 0 = no subplot titles, 1 = column titles, 2 = all subplot titles */
 		unsigned annotate;	/* 1 if only l|r or t|b, 0 for both */
@@ -269,6 +271,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "VX.");
 
 	return (GMT_MODULE_USAGE);
+}
+
+GMT_LOCAL char * subplot_prep_annot_args (struct SUBPLOT_CTRL *Ctrl, struct GMT_OPTION *B, unsigned int dim) {
+	char *bstring = NULL;
+	if (Ctrl->S[dim].unit[GMT_PRIMARY] || Ctrl->S[dim].prefix[GMT_PRIMARY]) {
+		char buffer[GMT_LEN128] = {""};
+		strcpy (buffer, &B->arg[1]);
+		if (Ctrl->S[dim].prefix[GMT_PRIMARY]) strcat (buffer, "+p"), strcat (buffer, Ctrl->S[dim].prefix[GMT_PRIMARY]);
+		if (Ctrl->S[dim].unit[GMT_PRIMARY])   strcat (buffer, "+u"), strcat (buffer, Ctrl->S[dim].unit[GMT_PRIMARY]);
+		bstring = strdup (buffer);
+	}
+	else
+		bstring = strdup (&B->arg[1]);
+	return bstring;
 }
 
 static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -693,8 +709,12 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						switch (p[0]) {
 							case 'l':	/* Regular x-axis label */
 								Ctrl->S[GMT_X].label[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 'p':	/* Annotation prefix */
+								Ctrl->S[GMT_X].prefix[GMT_SECONDARY] = strdup (&p[1]);	break;
 							case 's':	/* Secondary x-axis label */
 								Ctrl->S[GMT_X].label[GMT_SECONDARY] = strdup (&p[1]);	break;
+							case 'u':	/* Annotation units */
+								Ctrl->S[GMT_X].unit[GMT_PRIMARY] = strdup (&p[1]);	break;
 							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 								break;
 						}
@@ -702,7 +722,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					c[0] = '\0';	/* Chop off for now */
 					if (Ctrl->S[GMT_X].label[GMT_PRIMARY] || Ctrl->S[GMT_X].label[GMT_SECONDARY]) Ctrl->S[GMT_X].has_label = true;
 				}
-				Ctrl->S[GMT_X].b = strdup (&Bx->arg[1]);
+				Ctrl->S[GMT_X].b = subplot_prep_annot_args (Ctrl, Bx, GMT_X);
 				if (c) c[0] = '+';
 			}
 			else if (Bxy)	/* Did common x and y-axes annotation settings */
@@ -714,8 +734,12 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						switch (p[0]) {
 							case 'l':	/* Regular y-axis label */
 								Ctrl->S[GMT_Y].label[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 'p':	/* Annotation prefix */
+								Ctrl->S[GMT_Y].prefix[GMT_PRIMARY] = strdup (&p[1]);	break;
 							case 's':	/* Secondary y-axis label */
 								Ctrl->S[GMT_Y].label[GMT_SECONDARY] = strdup (&p[1]);	break;
+							case 'u':	/* Annotation units */
+								Ctrl->S[GMT_Y].unit[GMT_PRIMARY] = strdup (&p[1]);	break;
 							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 								break;
 						}
@@ -723,7 +747,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					if (Ctrl->S[GMT_Y].label[GMT_PRIMARY] || Ctrl->S[GMT_Y].label[GMT_SECONDARY]) Ctrl->S[GMT_Y].has_label = true;
 					c[0] = '\0';	/* Chop off for now */
 				}
-				Ctrl->S[GMT_Y].b = strdup (&By->arg[1]);
+				Ctrl->S[GMT_Y].b = subplot_prep_annot_args (Ctrl, By, GMT_Y);
 				if (c) c[0] = '+';
 			}
 			else if (Bxy)	/* Did common x and y-axes annotation settings */
@@ -1392,7 +1416,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		else {	/* plot is required, since nothing is plotted (except for possibly the canvas fill/outline) */
 			sprintf (command, "-R0/%g/0/%g -Jx1i -T%s --GMT_HISTORY=readonly", width, height, origin_shift);
 			if (Bopt[0]) strcat (command, Bopt);	/* The -B was set above, so include it in the command */
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for : %s\n", command);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
 				Return (API->error);
 		}
