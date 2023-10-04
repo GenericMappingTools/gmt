@@ -141,7 +141,7 @@ struct SUBPLOT_CTRL {
 		char axes[4];		/* W|e|w|e|l|r for -Sr,  S|s|N|n|b|t for -Sc [Default is MAP_FRAME_AXES] */
 		char *b;		/* Any hardwired choice for afg settings for this axis [af] */
 		char *label[2];		/* The constant primary [and alternate] y labels */
-		char *prefix[2];	/* Any prefix units for x or y axes */
+		char *prefix[2];	/* Any prefix for x or y axes */
 		char *unit[2];		/* Any annotation units for x or y axes */
 		char *extra;		/* Special -B frame args, such as fill */
 		unsigned int ptitle;	/* 0 = no subplot titles, 1 = column titles, 2 = all subplot titles */
