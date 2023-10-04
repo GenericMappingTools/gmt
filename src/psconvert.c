@@ -2715,38 +2715,37 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				So we'll move halph pixel inward. */
 			west  += x_inc / 2.0;	north -= y_inc / 2.0;
 
-			if (!Ctrl->W.warp) {	/* No need to write a world file for GeoTiff */
-				if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
-				if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
-					pos_ext = get_extension_period (out_file);	/* Get beginning of file extension */
-					out_file[pos_ext] = '\0';	/* Remove/restore extension to get world_file prefix */
-					strcat(world_file, out_file);
-					out_file[pos_ext] = '.';
-				}
-				else
-					strncat (world_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
-
-				s = ext[Ctrl->T.device];
-				wext = strdup(ext[Ctrl->T.device]);
-				wext[1] = s[1];		wext[2] = s[3];		wext[3] = 'w';
-				strcat (world_file, wext);
-
-				if ((fpw = fopen (world_file, "w")) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "Unable to open file %s for writing\n", world_file);
-				}
-				else {
-					fprintf (fpw, "%.12f\n0.0\n0.0\n%.12f\n%.12f\n%.12f", x_inc, -y_inc, west, north);
-					fclose (fpw);	fpw = NULL;
-					GMT_Report (API, GMT_MSG_INFORMATION, "Wrote world file %s\n", world_file);
-					if (proj4_cmd)
-						GMT_Report (API, GMT_MSG_INFORMATION, "Proj4 definition: %s\n", proj4_cmd);
-				}
-				gmt_M_str_free (wext);
+			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
+				pos_ext = get_extension_period (out_file);	/* Get beginning of file extension */
+				out_file[pos_ext] = '\0';	/* Remove/restore extension to get world_file prefix */
+				strcat(world_file, out_file);
+				out_file[pos_ext] = '.';
 			}
+			else
+				strncat (world_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+
+			s = ext[Ctrl->T.device];
+			wext = strdup(ext[Ctrl->T.device]);
+			wext[1] = s[1];		wext[2] = s[3];		wext[3] = 'w';
+			strcat (world_file, wext);
+
+			if ((fpw = fopen (world_file, "w")) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to open file %s for writing\n", world_file);
+			}
+			else {
+				fprintf (fpw, "%.12f\n0.0\n0.0\n%.12f\n%.12f\n%.12f", x_inc, -y_inc, west, north);
+				fclose (fpw);	fpw = NULL;
+				GMT_Report (API, GMT_MSG_INFORMATION, "Wrote world file %s\n", world_file);
+				if (proj4_cmd)
+					GMT_Report (API, GMT_MSG_INFORMATION, "Proj4 definition: %s\n", proj4_cmd);
+			}
+			gmt_M_str_free (wext);
 
 			if (Ctrl->W.warp && proj4_cmd && proj4_cmd[1] == 'p') {	/* We got a usable Proj4 string. Run it (if gdal is around) */
 				/* The true geotiff file will have the same base name plus a .tiff extension.
 				   We will reuse the world_file variable because all it is need is to replace the extension */
+				char *delete_world_file = strdup (world_file);
 				pos_ext = get_extension_period (world_file);	/* Get beginning of file extension */
 				world_file[pos_ext] = '\0';
 				strcat (world_file, ".tiff");
@@ -2768,6 +2767,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				if (!Ctrl->T.active)	/* Get rid of the intermediate JPG file if -T was not set */
 					gmt_remove_file (GMT, out_file);
+				if (delete_world_file) gmt_remove_file (GMT, delete_world_file);	/* No longer needed now we have a Geotiff file */
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
 				GMT_Report (API, GMT_MSG_ERROR, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
