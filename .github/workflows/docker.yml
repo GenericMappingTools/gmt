@@ -41,11 +41,8 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - ubuntu:14.04  # CMake 2.8.12 + GNU 4.8.4;  EOL: 2024-04-25
-          - ubuntu:16.04  # CMake 3.5.1  + GNU 5.4.0;  EOL: 2026-04-23
-          - ubuntu:18.04  # CMake 3.10.2 + GNU 7.4.0;  EOL: 2028-04-26
-          - ubuntu:20.04  # CMake 3.16.3 + GNU 9.3.0;  EOL: 2030-04-23
-          - ubuntu:22.04  # CMake 3.22.1 + GNU 11.2.0; EOL: 2032-04-21
+          - ubuntu:20.04  # CMake 3.16.3 + GNU 9.3.0;  EOL: 2025-04-23
+          - ubuntu:22.04  # CMake 3.22.1 + GNU 11.2.0; EOL: 2027-04-21
           - ubuntu:23.04  # CMake 3.24.1 + GNU 12.2.0; EOL: 2024-01-20
           - debian:10     # CMake 3.13.4 + GNU 8.3.0;  EOL: 2024-06-01
           - debian:11     # CMake 3.18.4 + GNU 10.2.1; EOL: 2026-06-01
