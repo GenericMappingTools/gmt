@@ -1362,11 +1362,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	byte_image_no_cmap = (I && I->type == GMT_UCHAR && I->n_indexed_colors == 0 && I->header->n_bands == 1);
-	if (byte_image_no_cmap && !Ctrl->C.active) {
-		GMT_Report (API, GMT_MSG_ERROR, "Byte image without indexed color requires a CPT via -C\n");
-		Return (GMT_RUNTIME_ERROR);
-	}
+	byte_image_no_cmap = (I && I->type == GMT_UCHAR && I->n_indexed_colors == 0 && I->header->n_bands == 1 && Ctrl->C.active);
 
 	gmt_detect_oblique_region (GMT, Ctrl->In.file);	/* Ensure a proper and smaller -R for oblique projections */
 
