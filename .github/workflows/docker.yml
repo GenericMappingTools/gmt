@@ -9,6 +9,9 @@ on:
     branches:
       - master
       - 6.[0-9]+
+    paths-ignore:
+      - 'doc/**'
+      - '!doc/**/CMakeLists.txt'
 
 defaults:
   run:
