@@ -1367,7 +1367,11 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 					if (is_tile) {	/* One of the tiles */
 						if (jp2_file) gmt_M_str_free (jp2_file);
 						jp2_file = gmt_strrep (&file[1], GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
-						snprintf (local_path, PATH_MAX, "%s%s%s", GMT->session.USERDIR, GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file);
+						if (srv_dir)	/* Must add in ghostserver name since actual file starts with /server */
+							snprintf (local_path, PATH_MAX, "%s/%s%s%s", GMT->session.USERDIR, srv_dir, GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file);
+						else
+							snprintf (local_path, PATH_MAX, "%s%s%s", GMT->session.USERDIR, GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file);
+
 						if (access (local_path, R_OK) && gmt_mkdir (local_path))	/* Have or just made a server/tile subdirectory */
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT data directory : %s\n", local_path);
 						strcat (local_path, jp2_file);
