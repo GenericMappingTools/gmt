@@ -8937,6 +8937,26 @@ bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 		return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
+GMT_LOCAL unsigned int gmtinit_might_be_remotefile (struct GMT_CTRL *GMT, char *file) {
+	bool quote = false;	/* We are outside any quoted text */
+	unsigned int n_at = 0;
+	size_t k;
+	static char *text_escapes = "~%:;+-#_!.@[";	/* If any of these follow leading @ it is pstext junk passed as file */
+	if (strchr (file, '@') == NULL) return GMT_IS_NOT_REMOTE;	/* No @ anywhere */
+	if ((n_at = gmt_count_char (GMT, file, '@')) > 1) return GMT_IS_NOT_REMOTE;	/* More than one @ is clearly a title of some sort */
+	if (gmt_M_file_is_memory (file)) return GMT_IS_NOT_REMOTE;	/* Not a remote file but a memory reference */
+	if (file[0] == '@') {
+		if (file[1] && strchr (text_escapes, file[1])) return GMT_FILE_IS_INVALID;	/* text junk not a file */
+		return GMT_IS_REMOTE;	/* Definitively a remote file */
+	}
+	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
+	for (k = 0; k < strlen (file); k++) {
+		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
+		if (file[k] == '@' && !quote) return GMT_IS_REMOTE;	/* Found an unquoted at-symbol */
+	}
+	return GMT_IS_NOT_REMOTE;	/* Nothing */
+}
+
 /*! . */
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0, x_type, y_type;
@@ -8986,12 +9006,22 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	got_r = (strstr (item, "+r") != NULL);
 	got_country = (got_r || (strstr (item, "+R") != NULL));	/* May have given DCW (true of +R, maybe if +r since the latter also means oblique) */
 
+	if (gmtinit_might_be_remotefile (GMT, item)) {	/* Must check if registration is specified; if not add it */
+		char *tmp = strdup (item);
+		gmt_refresh_server (GMT->parent);
+		if (gmt_set_unspecified_remote_registration (GMT->parent, &tmp)) {	/* If argument is a remote file name then this handles any missing registration _p|_g */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -R: Revised remote file name argument %s to %s\n", item, tmp);
+			strcpy (item, tmp);
+			gmt_M_str_free (tmp);
+		}
+	}
+
 	strncpy (GMT->common.R.string, item, GMT_LEN256-1);	/* Verbatim copy */
 
 	if (gmt_remote_dataset_id (GMT->parent, item) != GMT_NOTSET) {	/* Silly, but user set -R@earth_relief_xxy or similar */
 		/* These are always -Rd */
-		GMT->common.R.wesn[XLO] = -180.0, GMT->common.R.wesn[XHI] = 180.0;
-		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
+		GMT->common.R.wesn[XLO] = -180.0;	GMT->common.R.wesn[XHI] = +180.0;
+		GMT->common.R.wesn[YLO] =  -90.0;	GMT->common.R.wesn[YHI] =  +90.0;
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		return (GMT_NOERROR);
@@ -15256,24 +15286,6 @@ GMT_LOCAL bool gmtinit_mapproject_needs_RJ (struct GMTAPI_CTRL *API, struct GMT_
 	return (true);	/* We get here when a classic command like "gmt mapproject -R -J file" in modern mode looks like "gmt mapproject file" and thus -R -J is required */
 }
 
-GMT_LOCAL unsigned int gmtinit_might_be_remotefile (char *file) {
-	bool quote = false;	/* We are outside any quoted text */
-	size_t k;
-	static char *text_escapes = "~%:;+-#_!.@[";	/* If any of these follow leading @ it is pstext junk passed as file */
-	if (strchr (file, '@') == NULL) return GMT_IS_NOT_REMOTE;	/* No @ anywhere */
-	if (gmt_M_file_is_memory (file)) return GMT_IS_NOT_REMOTE;	/* Not a remote file but a memory reference */
-	if (file[0] == '@') {
-		if (file[1] && strchr (text_escapes, file[1])) return GMT_FILE_IS_INVALID;	/* text junk not a file */
-		return GMT_IS_REMOTE;	/* Definitively a remote file */
-	}
-	/* Get here when a @ is not in the first position. Return true unless @ is inside quotes */
-	for (k = 0; k < strlen (file); k++) {
-		if (file[k] == '\"' || file[k] == '\'') quote = !quote;
-		if (file[k] == '@' && !quote) return GMT_IS_REMOTE;	/* Found an unquoted at-symbol */
-	}
-	return GMT_IS_NOT_REMOTE;	/* Nothing */
-}
-
 /*! . */
 GMT_LOCAL int gmtinit_compare_resolutions (const void *point_1, const void *point_2) {
 	/* Sorts differences from desired nodes-per-degree from small to big  */
@@ -15392,8 +15404,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				gmt_parse_common_options (API->GMT, "V", opt->option, opt->arg);
 		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-			if (opt->option != GMT_OPT_INFILE) continue;	/* Only check command line input files */
-			if ((err_code = gmtinit_might_be_remotefile (opt->arg)) == 0) continue;
+			if (strchr (opt->arg, '@') == NULL) continue;/* Cannot be a remote file */
+			if ((err_code = gmtinit_might_be_remotefile (API->GMT, opt->arg)) == 0) continue;
 			if (err_code == 2) {
 				GMT_Report (API, GMT_MSG_ERROR, "File %s is not a file and looks like pstext strings.\n", opt->arg);
 				return NULL;
@@ -15402,7 +15414,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
 				remote_first = false;
 			}
-			gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
+			if (gmt_set_unspecified_remote_registration (API, &(opt->arg)))	/* If argument is a remote file name then this handles any missing registration _p|_g */
+				GMT_Report (API, GMT_MSG_DEBUG, "Revised remote file name to %s\n", opt->arg);
 		}
 	}
 

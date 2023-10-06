@@ -110,7 +110,8 @@ Optional Arguments
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
-        you must append a trailing comma to separate it from a contour interval.
+        you must append a trailing comma to separate it from a constant contour
+        interval.
         The |-A| option offers the same list choice so they may be used together
         to plot only specific annotated and non-annotated contours.
 
