@@ -8959,7 +8959,7 @@ GMT_LOCAL unsigned int gmtinit_might_be_remotefile (struct GMT_CTRL *GMT, char *
 
 /*! . */
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
-	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0, x_type, y_type;
+	unsigned int i, icol, pos, cnt = 0, error = 0, n_slash = 0, first = 0, x_type, y_type;
 	int got, col_type[2], expect_to_read;
 	size_t length;
 	bool inv_project = false, scale_coord = false, got_r, got_country, done[3] = {false, false, false};
@@ -9102,7 +9102,16 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	if (!gmt_M_file_is_memory (ptr) && ptr[0] == '@') {	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, item, 0);
 	}
-	if (!gmt_access (GMT, &item[first], R_OK)) {	/* Gave a readable file, presumably a grid */
+
+
+	for (i = first; item[i]; i++)
+		if (item[i] == '/') cnt++;
+
+	if ((cnt == 3 || cnt == 5) && (item[first] == '-' || item[first] == '+' || isdigit(item[first]))) {	/* Plain old -Rw/e/s/n */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got regular w/e/s/n for region (%s)\n", item);
+		strncpy (string, item, GMT_BUFSIZ-1);
+	}
+	else if (!gmt_access (GMT, &item[first], R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
 		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, &item[first], NULL)) == NULL) {	/* Read header */
 			return (GMT->parent->error);
@@ -9192,9 +9201,9 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters\n", string);
 		}
 	}
-	else {	/* Plain old -Rw/e/s/n */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got regular w/e/s/n for region (%s)\n", item);
-		strncpy (string, item, GMT_BUFSIZ-1);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Please report the situation when it occured.\n");
+		return (GMT_NOTSET);
 	}
 
 	/* Now decode the string */
@@ -9211,6 +9220,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	else
 		GMT->common.R.oblique = false;
+
 	i = pos = 0;
 	gmt_M_memset (p, 6, double);
 	if (inv_project || scale_coord) {	/* Plain floating points in selected distance units */
