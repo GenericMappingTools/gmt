@@ -75,8 +75,7 @@ Required Arguments
 
     (**g**) Gaussian: Weights are given by the Gaussian function.
 
-    For further information, see the :ref:`filtering-of-data-in-gmt` section.
-
+    For further information, see the :ref:`reference/data-filtering:filtering of data in gmt` section.
 
     Non-convolution filter types are:
 
