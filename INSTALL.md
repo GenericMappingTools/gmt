@@ -192,9 +192,6 @@ You may also install other optional dependencies for more capabilities within GM
 **NOTE:** The Ubuntu/Debian official repositories may provide old GMT versions.
 If you want the latest GMT 6.x release, your best bet then is to
 [build the latest release from source](BUILDING.md).
-Keep in mind that Ubuntu 16.04 LTS for mysterious reasons does not
-include the [supplemental modules](https://docs.generic-mapping-tools.org/latest/modules.html#supplemental-modules),
-but you can obtain them by [building from source](BUILDING.md) or upgrading to Ubuntu 18.04 LTS (or newer).
 
 Install GMT via:
 
