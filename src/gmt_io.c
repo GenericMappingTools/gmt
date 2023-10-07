@@ -913,7 +913,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 				if (p[1] == '\0' || p[1] == ' ' || strchr ("egpw", p[1]) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad OGR/GMT: @J given unknown format (%c)\n", (int)p[1]);
 					GMT->current.io.ogr = GMT_OGR_FALSE;
-					return (false);					
+					return (false);
 				}
 				switch (p[1]) {
 					case 'e': k = GMTIO_EPGS;	break;	/* EPSG code */
@@ -9642,7 +9642,7 @@ int gmt_remove_file (struct GMT_CTRL *GMT, const char *file) {
 	/* Try to remove a file - give error message if it fails.  Depends on extern int errno */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Delete %s\n", file);
 	if (!access (file, F_OK) && remove (file)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to remove %s! [remove error: %s]\n", file, strerror (errno));
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Failed to remove %s! [remove error: %s]\n", file, strerror (errno));
 		return errno;
 	}
 	return GMT_NOERROR;
