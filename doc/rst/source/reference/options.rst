@@ -44,7 +44,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-h <option_-h>`          | Specify that input/output tables have header record(s)             |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-i <option_-i>`          | Specify which input columns to read                                |
+| :ref:`-i <option_-i>`          | Specify which input columns to read and optionally transform       |
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-j <option_-j_distcalc>` | Specify how spherical distances should be computed                 |
 +--------------------------------+--------------------------------------------------------------------+
@@ -52,7 +52,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-n <option_-n>`          | Specify grid interpolation settings                                |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-o <option_-o>`          | Specify which output columns to write                              |
+| :ref:`-o <option_-o>`          | Specify which output columns to optionally transform and write     |
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-p <option_-p>`          | Control perspective views for plots                                |
 +--------------------------------+--------------------------------------------------------------------+
@@ -803,7 +803,8 @@ Output columns selection: The **-o** option
 **Examples**
 
 To write out just the 4th and 2nd data column to the output, use **-o**\ 3,1 (since 0 is the first column).
-To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3.
+To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3. As for **-** you can transform columns using the
+**+d**, **+l**, **+o**, and **+s** modifiers.
 
 .. _option_-p:
 
