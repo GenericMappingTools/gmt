@@ -9500,7 +9500,7 @@ GMT_LOCAL unsigned int gmtinit_parse_e_option (struct GMT_CTRL *GMT, char *arg) 
 /*! Routine will decode the -i|o<col>|<colrange>|t[+l][+d<divisor>][+s<scale>][+o<offset>],... arguments or just -in or -on */
 GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned int dir) {
 
-	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, *c = NULL;
+	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, *c = NULL, code[2] = {'i', 'o'};
 	bool new_style;
 	unsigned int k = 0, pos = 0, pos_p, uerr = 0;
 	int convert;
@@ -9527,14 +9527,15 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 	new_style = gmt_found_modifier (GMT, arg, "dlos");
 
 	strncpy (C->string, arg, GMT_LEN64-1);	/* Verbatim copy */
-	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
+	if (dir == GMT_IN)
+		for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
 
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process the comma-separated sections */
 		convert = 0, scale = 1.0, offset = 0.0;	/* Reset for next column selection */
 		if (new_style) {	/* New format as of 5.4: -i<col>|<colrange>[+l][+d<divide>][+s<scale>][+o<offset>],... */
 			if ((c = gmt_first_modifier (GMT, p, "dlos"))) {	/* Process modifiers */
 				pos_p = 0;	/* Reset to start of new word */
-				while (gmt_getmodopt (GMT, 'i', c, "dlos", &pos_p, word, &uerr) && uerr == 0) {
+				while (gmt_getmodopt (GMT, code[dir], c, "dlos", &pos_p, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
 						case 'd': convert |= 1;	scale = 1.0 / atof (&word[1]); break;
 						case 'l': convert |= 2; break;
@@ -9554,7 +9555,7 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 				if (uerr) return (GMT_PARSE_ERROR);
 			}
 		}
-		else {	/* Old-style: -i<col>|<colrange>[l][s<scale>][o<offset>],... */
+		else {	/* Old-style: -i<col>|<colrange>[l][s<scale>][o<offset>],... or -o<col>|<colrange> */
 			char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 			if ((c = strchr (p, 'o'))) {	/* Look for offset */
 				c[0] = '\0';	/* Wipe out the 'o' so that next scan terminates there */
@@ -9568,7 +9569,7 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 					convert = (p[i] == 'l') ? 2 : 1;
 					i = sscanf (&c[1], "%[^/]/%[^l]", txt_a, txt_b);
 					if (i == 0) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-i...s contains bad scale info\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%c...s contains bad scale info\n", code[dir]);
 						return (GMT_PARSE_ERROR);
 					}
 					scale = atof (txt_a);
@@ -9585,7 +9586,7 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 		}
 
 		if (p[0] == '\0') {	/* No range given */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-i: No columns specified\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%c: No columns specified\n", code[dir]);
 				return (GMT_PARSE_ERROR);
 		}
 
@@ -9594,7 +9595,7 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 			if (p[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
 				int64_t k = atol (&p[1]);
 				if (k < 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot give negative word position\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%c: Cannot give negative word position\n", code[dir]);
 					return GMT_PARSE_ERROR;
 				}
 				else {
@@ -9612,7 +9613,8 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 			/* Now set the code for these columns */
 
 			for (i = start; i <= stop; i += inc, k++) {
-				GMT->current.io.col_skip[i] = false;	/* Do not skip these */
+				if (dir == GMT_IN)	/* Do not skip these input columns */
+					GMT->current.io.col_skip[i] = false;
 				GMT->current.io.col[dir][k].col = (unsigned int)i;	/* Requested physical column */
 				GMT->current.io.col[dir][k].order = k;		/* Requested logical order of columns */
 				GMT->current.io.col[dir][k].convert = convert;
