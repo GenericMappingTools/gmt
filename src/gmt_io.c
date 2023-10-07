@@ -470,7 +470,7 @@ GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 	int64_t order;
 	static double tmp[GMT_BUFSIZ];
 	struct GMT_COL_INFO *S = NULL;
-	for (col = 0; col < GMT->common.i.n_cols; col++) {
+	for (col = 0; col < GMT->common.i.col.n_cols; col++) {
 		S = &(GMT->current.io.col[GMT_IN][col]);
 		order = S->order;
 		if (GMT->current.io.cycle_col == order)
@@ -493,8 +493,8 @@ GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 				break;
 		}
 	}
-	gmt_M_memcpy (GMT->current.io.curr_rec, tmp, GMT->common.i.n_cols, double);
-	return (GMT->common.i.n_cols);
+	gmt_M_memcpy (GMT->current.io.curr_rec, tmp, GMT->common.i.col.n_cols, double);
+	return (GMT->common.i.col.n_cols);
 }
 
 /*! Return the floating point value associated with the aspatial value V given its type as a double */
@@ -1094,9 +1094,9 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 	if (gmt_skip_output (GMT, ptr, n)) return (GMT_NOTSET);	/* Record was skipped via -s[a|r] */
 	if (GMT->current.setting.io_lonlat_toggle[GMT_OUT])		/* Write lat/lon instead of lon/lat */
 		gmt_M_double_swap (ptr[GMT_X], ptr[GMT_Y]);
-	n_out = (GMT->common.o.select) ? GMT->common.o.n_cols : n;
+	n_out = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : n;
 	for (i = 0, k = 0; i < n_out; i++) {
-		col_pos = (GMT->common.o.select) ? GMT->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
+		col_pos = (GMT->common.o.col.select) ? GMT->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
 		val = (col_pos >= n) ? GMT->session.d_NaN : ptr[col_pos];	/* If we request beyond length of array, return NaN */
 		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_OUT];	/* Write this value instead of NaNs */
 		if (gmt_M_type (GMT, GMT_OUT, col_pos) == GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);
@@ -1115,12 +1115,12 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 	gmt_M_unused (txt);
 
 	if (gmt_skip_output (GMT, ptr, n)) return (GMT_NOTSET);	/* Record was skipped via -s[a|r] */
-	n_out = (GMT->common.o.select) ? GMT->common.o.n_cols : n;
+	n_out = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : n;
 
 	last = n_out - 1;				/* Last filed, need to output linefeed instead of delimiter */
 
 	for (i = 0; i < n_out && e >= 0; i++) {		/* Keep writing all fields unless there is a read error (e == -1) */
-		if (GMT->common.o.select)	/* Which data column to pick */
+		if (GMT->common.o.col.select)	/* Which data column to pick */
 			col = GMT->current.io.col[GMT_OUT][i].col;
 		else if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && i < 2)
 			col = 1 - i;	/* Write lat/lon instead of lon/lat */
@@ -1142,17 +1142,17 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 
 GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, bool separator, char *txt) {
 	/* Output the trailing text, if it is not NULL */
-	if (GMT->common.o.word) {	/* Must output a specific word from the trailing text only */
+	if (GMT->common.o.col.word) {	/* Must output a specific word from the trailing text only */
 		char *word = NULL, *orig = strdup (txt), *trail = orig;
 		uint64_t col = 0;
-		while (col != GMT->common.o.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
+		while (col != GMT->common.o.col.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
 			if (*word != '\0')	/* Skip empty strings */
 				col++;
 		}
 		if (word)	/* Only write word if not NULL */
 			(separator && GMT->current.setting.io_col_separator[0]) ? fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, word) :  fprintf (fp, "%s", word);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.col.w_col);
 		gmt_M_str_free (orig);
 	}
 	else if	(txt) /* Output the whole enchilada (unless NULL) */
@@ -1177,10 +1177,10 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 	double val;
 
 	if (gmt_skip_output (GMT, ptr, n)) return (GMT_NOTSET);	/* Record was skipped via -s[a|r] */
-	n_out = (GMT->common.o.select) ? GMT->common.o.n_cols : n;
+	n_out = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : n;
 
 	for (i = 0; i < n_out && e >= 0; i++) {		/* Keep writing all fields unless there is a read error (e == -1) */
-		if (GMT->common.o.select)	/* Which data column to pick */
+		if (GMT->common.o.col.select)	/* Which data column to pick */
 			col = GMT->current.io.col[GMT_OUT][i].col;
 		else if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && i < 2)
 			col = 1 - i;	/* Write lat/lon instead of lon/lat */
@@ -1203,7 +1203,7 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	/* First time we decide if we have floats only or a mix and finalize pointer settings */
 	if (txt && GMT->current.io.trailing_text[GMT_OUT]) {
-		if (n == 0 || (GMT->common.o.select && GMT->common.o.n_cols == 0))
+		if (n == 0 || (GMT->common.o.col.select && GMT->common.o.col.n_cols == 0))
 			GMT->current.io.output = gmtlib_ascii_output_trailing_text;	/* Just print trailing text */
 		else
 			GMT->current.io.output = gmtio_ascii_output_with_text;	/* Have trailing text after numerical output */
@@ -3300,7 +3300,7 @@ GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, i
 		status = gmtlib_process_binary_input (GMT, n_use);
 		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
-	n_read = (GMT->common.i.select) ? gmtio_bin_colselect (GMT) : *n;	/* We may use -i and select fewer of the input columns */
+	n_read = (GMT->common.i.col.select) ? gmtio_bin_colselect (GMT) : *n;	/* We may use -i and select fewer of the input columns */
 
 	if (gmtlib_gap_detected (GMT)) { *retval = gmtlib_set_gap (GMT); return (&GMT->current.io.record); }
 	GMT->current.io.has_previous_rec = true;
@@ -3397,9 +3397,9 @@ GMT_LOCAL enum gmt_col_enum gmtio_physical_coltype (struct GMT_CTRL *GMT, unsign
 	 * column (we are scanning across the physical record) and returns the corresponding
 	 * logical column type. With no -i they are the same, otherwise not.
 	 */
-	if (GMT->common.i.select && GMT->common.i.n_cols) {	/* Logical record differs from physical */
+	if (GMT->common.i.col.select && GMT->common.i.col.n_cols) {	/* Logical record differs from physical */
 		unsigned int k;
-		for (k = 0; k < GMT->common.i.n_cols; k++) {
+		for (k = 0; k < GMT->common.i.col.n_cols; k++) {
 			if (GMT->current.io.col[GMT_IN][k].col == col)	/* Found one of the physical columns that will be column = order */
 				return gmt_M_type (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order);
 		}
@@ -3417,9 +3417,9 @@ GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned i
 	 * the module may know more than we do and have already set what the column types should be,
 	 * at least for critical columns.  If so we are not allowed to change that even if we may know better.
 	 */
-	if (GMT->common.i.select && GMT->common.i.n_cols) {	/* Logical record differs from physical */
+	if (GMT->common.i.col.select && GMT->common.i.col.n_cols) {	/* Logical record differs from physical */
 		unsigned int k;
-		for (k = 0; k < GMT->common.i.n_cols; k++) {
+		for (k = 0; k < GMT->common.i.col.n_cols; k++) {
 			if (GMT->current.io.col[GMT_IN][k].col == col) {	/* Found one of the physical columns that will be column = order */
 				if (!GMT->current.io.col_set[GMT_IN][GMT->current.io.col[GMT_IN][k].order])
 					gmt_set_column_type (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order, type);
@@ -3488,14 +3488,14 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		}
 		*tpos = pos;
 	}
-	if (found_text && col == 0 && !GMT->common.i.select && phys_col_type != GMT_IS_STRING) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
+	if (found_text && col == 0 && !GMT->common.i.col.select && phys_col_type != GMT_IS_STRING) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
 		if (strncmp (GMT->init.module_name, "gmtinfo", 7U) && strncmp (GMT->init.module_name, "batch", 5U) && strncmp (GMT->init.module_name, "movie", 5U)) {	/* Make exception for these modules what often will just read text lines */
 			gmt_M_free (GMT, type);
 			return GMT_NOT_OUTPUT_OBJECT;
 		}
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
-	if (GMT->common.i.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
+	if (GMT->common.i.col.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
 		gmtlib_reparse_i_option (GMT, col);
 
 	if (found_text) {	/* Determine record type */
@@ -3524,9 +3524,9 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		static char *tt = " NYY";
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "ASCII source scanned: Numerical columns: %" PRIu64 ", Trailing text: %c, Record type: %s\n",
 			*n_columns, tt[ret_val], flavor[ret_val]);
-		if (GMT->common.i.select && GMT->common.i.n_cols > 0) {	/* Made a selection with -i */
+		if (GMT->common.i.col.select && GMT->common.i.col.n_cols > 0) {	/* Made a selection with -i */
 			message[0] = '\0';
-			for (pos = 0; pos < GMT->common.i.n_cols; pos++) {
+			for (pos = 0; pos < GMT->common.i.col.n_cols; pos++) {
 				k = gmtio_get_coltype_name_index (GMT, GMT_IN, pos);
 				if (pos < 50) {
 					if (pos) strcat (message, ",");
@@ -3540,9 +3540,9 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Selected col types: (%s)\n", message);
 		}
-		if (GMT->common.o.select) {
+		if (GMT->common.o.col.select) {
 			message[0] = '\0';
-			for (pos = 0; pos < GMT->common.o.n_cols; pos++) {
+			for (pos = 0; pos < GMT->common.o.col.n_cols; pos++) {
 				col = GMT->current.io.col[GMT_OUT][pos].col;
 				k = gmtio_get_coltype_name_index (GMT, GMT_OUT, col);
 				if (pos < 50) {
@@ -3563,17 +3563,17 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 }
 
 GMT_LOCAL void gmtio_extract_trailing_text (struct GMT_CTRL *GMT, size_t start_of_text) {
-	if (GMT->common.i.word) {	/* Need to extract a specific column from the trailing text */
+	if (GMT->common.i.col.word) {	/* Need to extract a specific column from the trailing text */
 		char *word = NULL, *orig = strdup (&GMT->current.io.curr_text[start_of_text]), *trail = orig;
 		uint64_t col = 0;
-		while (col != GMT->common.i.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
+		while (col != GMT->common.i.col.w_col && (word = strsep (&trail, GMT_TOKEN_SEPARATORS)) != NULL) {
 			if (*word != '\0')	/* Skip empty strings */
 				col++;
 		}
 		if (word)
 			strncpy (GMT->current.io.curr_trailing_text, word, GMT_BUFSIZ-1);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trailing text did not have %" PRIu64 " words - no trailing word read\n", GMT->common.i.w_col);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trailing text did not have %" PRIu64 " words - no trailing word read\n", GMT->common.i.col.w_col);
 		gmt_M_str_free (orig);
 	}
 	else	/* Get the whole enchilada */
@@ -3759,7 +3759,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 						*status = 1;
 						return (&GMT->current.io.record);
 					}
-					*n = (GMT->common.i.select) ? GMT->common.i.n_cols : n_cols_this_record;
+					*n = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : n_cols_this_record;
 					strscan = (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
 					add_aspatial_to_expected = true;	/* Since counts does not include any aspatial additions */
 				}
@@ -3780,7 +3780,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		stringp = line;
 		while (!bad_record && col_no < n_use && (token = strscan (&stringp, GMT->current.io.scan_separators, &start_of_text)) != NULL) {	/* Get one field at the time until we run out or have issues */
 			++in_col;	/* This is the actual column number in the input file */
-			if (GMT->common.i.select) {	/* Must do special column-based processing since the -i option was set */
+			if (GMT->common.i.col.select) {	/* Must do special column-based processing since the -i option was set */
 				if (GMT->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
 				col_pos = GMT->current.io.col[GMT_IN][col_no].order;	/* Which data column will receive this value */
 			}
@@ -3808,7 +3808,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_pos]);
 				col_no++;		/* Count up number of columns found */
 				n_ok++;
-				while (GMT->common.i.select && col_no < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col_no].col == GMT->current.io.col[GMT_IN][col_no-1].col) {
+				while (GMT->common.i.col.select && col_no < GMT->common.i.col.n_cols && GMT->current.io.col[GMT_IN][col_no].col == GMT->current.io.col[GMT_IN][col_no-1].col) {
 					/* This input column is requested more than once */
 					col_pos = GMT->current.io.col[GMT_IN][col_no].order;	/* The data column that will receive this value */
 					GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
@@ -4732,7 +4732,7 @@ void * gmt_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 		GMT->current.io.status = GMT_IO_EOF;
 		return (NULL);
 	}
-	if (GMT->common.i.select)	/* We need to scale this single item */
+	if (GMT->common.i.col.select)	/* We need to scale this single item */
 		GMT->current.io.curr_rec[GMT_X] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][GMT_X], GMT->current.io.curr_rec[GMT_X]);
 
 	return (&GMT->current.io.record);
@@ -4757,7 +4757,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
 			if (gmt_input_col_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no], col_no))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
-			else if (GMT->common.i.select)	/* Cannot check here, done in gmtio_bin_colselect instead when order is set */
+			else if (GMT->common.i.col.select)	/* Cannot check here, done in gmtio_bin_colselect instead when order is set */
 				continue;
 			else {	/* Still clean, so possibly adjust value and skip to next column */
 				switch (gmt_M_type (GMT, GMT_IN, col_no)) {
@@ -5196,11 +5196,11 @@ int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
 		if (direction == GMT_OUT) GMT->common.b.o_delay = true;
 		return GMT_OK;
 	}
-	if (direction == GMT_IN && GMT->common.i.select && GMT->common.b.ncol[GMT_IN] < GMT->common.i.n_actual_cols) {
+	if (direction == GMT_IN && GMT->common.i.col.select && GMT->common.b.ncol[GMT_IN] < GMT->common.i.col.n_actual_cols) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Number of input columns set by -i exceeds those set by -bi!\n");
 		return GMT_DIM_TOO_LARGE;
 	}
-	if (direction == GMT_OUT && GMT->common.o.select && GMT->common.b.ncol[GMT_OUT] < GMT->common.o.n_cols) {
+	if (direction == GMT_OUT && GMT->common.o.col.select && GMT->common.b.ncol[GMT_OUT] < GMT->common.o.col.n_cols) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Number of output columns set by -o exceeds those set by -bo!\n");
 		return GMT_DIM_TOO_LARGE;
 	}
@@ -5271,12 +5271,12 @@ uint64_t gmt_get_cols (struct GMT_CTRL *GMT, unsigned int direction) {
 	if (! (direction == GMT_IN || direction == GMT_OUT)) return (GMT_NOT_A_VALID_DIRECTION);
 
 	if (direction == GMT_IN) {
-		n_cols = (GMT->common.i.select) ? GMT->common.i.n_cols : GMT->common.b.ncol[GMT_IN];
+		n_cols = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : GMT->common.b.ncol[GMT_IN];
 	}
 	else {
-		uint64_t in_n_cols = (GMT->common.i.select) ? GMT->common.i.n_cols : GMT->common.b.ncol[GMT_IN];
+		uint64_t in_n_cols = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : GMT->common.b.ncol[GMT_IN];
 		if (GMT->common.b.active[GMT_OUT])
-			n_cols = (GMT->common.o.select) ? in_n_cols : GMT->common.b.ncol[GMT_OUT];
+			n_cols = (GMT->common.o.col.select) ? in_n_cols : GMT->common.b.ncol[GMT_OUT];
 		else
 			n_cols = GMT->common.b.ncol[GMT_OUT];
 	}
@@ -5333,9 +5333,9 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 			return error;
 		GMT->common.b.o_delay = false;
 	}
-	if (direction == GMT_IN && expected && GMT->common.i.select && GMT->common.i.n_actual_cols > expected)
+	if (direction == GMT_IN && expected && GMT->common.i.col.select && GMT->common.i.col.n_actual_cols > expected)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n",
-					mode[GMT_IN], expected, GMT->common.i.n_actual_cols);
+					mode[GMT_IN], expected, GMT->common.i.col.n_actual_cols);
 	return (GMT_OK);
 }
 
@@ -6015,8 +6015,8 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 /*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
 void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Temporarily turn off any -i, -h selections */
-	GMT->common.i.select = false;
-	GMT->common.o.select = false;
+	GMT->common.i.col.select = false;
+	GMT->common.o.col.select = false;
 	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
 	GMT->current.setting.io_header[GMT_IN] = false;
 	GMT->common.g.active = false;	/* Turn this off (if set) for now */
@@ -6031,8 +6031,8 @@ void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
 /*! Routine will re-enable any suspended -b, -i, -g, -h selections */
 void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Turn on again any -i, -h selections */
-	GMT->common.i.select = GMT->common.i.orig;
-	GMT->common.o.select = GMT->common.o.orig;
+	GMT->common.i.col.select = GMT->common.i.col.orig;
+	GMT->common.o.col.select = GMT->common.o.col.orig;
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
 	GMT->common.g.active = GMT->common.g.selected;	/* Turn this back on (if set) */
 	if (GMT->common.b.bin_primary) {	/* Switch back to primary i/o mode which was binary */
@@ -8123,7 +8123,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 	if (use_GMT_io) {	/* Use GMT->current.io.info settings to determine if input is ASCII/binary, else it defaults to ASCII */
 		if (GMT->common.b.active[GMT_IN]) {	/* May return fewer than # of binary columns if -i was set */
-			n_returned = (GMT->common.i.select) ? GMT->common.i.n_cols : GMT->common.b.ncol[GMT_IN];
+			n_returned = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : GMT->common.b.ncol[GMT_IN];
 			n_expected_fields = GMT->common.b.ncol[GMT_IN];
 		}
 		else
@@ -8651,9 +8651,9 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL, *TinH = NULL;
 
-	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
+	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.col.select) {
 		/* Cannot copy segments but must go via -i */
-		D = gmt_alloc_dataset (GMT, Din, 0, GMT->common.i.n_cols, mode);
+		D = gmt_alloc_dataset (GMT, Din, 0, GMT->common.i.col.n_cols, mode);
 		gmtio_duplicate_dataset_cols (GMT, Din, D);
 		if (geometry)
 			*geometry = D->geometry;
@@ -8692,12 +8692,12 @@ void gmtlib_change_out_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	struct GMT_DATASEGMENT *S;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-	if (!GMT->common.o.select) return;	/* Nutin' to do */
+	if (!GMT->common.o.col.select) return;	/* Nutin' to do */
 	temp = gmt_M_memory (GMT, NULL, D->n_columns, double *);
 	used = gmt_M_memory (GMT, NULL, D->n_columns, unsigned int);
-	if (GMT->common.o.n_cols > D->n_columns)	/* Must allocate more columns first */
+	if (GMT->common.o.col.n_cols > D->n_columns)	/* Must allocate more columns first */
 		extend = true;
-	if (GMT->common.o.n_cols != D->n_columns)	/* Must free/realloc some columns afterwards */
+	if (GMT->common.o.col.n_cols != D->n_columns)	/* Must free/realloc some columns afterwards */
 		adjust = true;
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];	/* Current atble */
@@ -8705,9 +8705,9 @@ void gmtlib_change_out_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 			S = T->segment[seg];	/* Current segment */
 			SH = gmt_get_DS_hidden (S);
 			if (extend)	{	/* Allocate more arrays first */
-				S->data = gmt_M_memory (GMT, S->data, GMT->common.o.n_cols, double *);
-				SH->alloc_mode = gmt_M_memory (GMT, SH->alloc_mode, GMT->common.o.n_cols, enum GMT_enum_alloc);
-				for (col = D->n_columns; col < GMT->common.o.n_cols; col++) {
+				S->data = gmt_M_memory (GMT, S->data, GMT->common.o.col.n_cols, double *);
+				SH->alloc_mode = gmt_M_memory (GMT, SH->alloc_mode, GMT->common.o.col.n_cols, enum GMT_enum_alloc);
+				for (col = D->n_columns; col < GMT->common.o.col.n_cols; col++) {
 					S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
 					SH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
 				}
@@ -8717,14 +8717,14 @@ void gmtlib_change_out_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 			gmt_M_memset (used, S->n_columns, unsigned int);	/* Reset used counters */
 			gmt_M_memset (S->data, S->n_columns, double *);	/* Reset pointers */
 			/* During the first pass we can set pointers only once per source column */
-			for (col = 0; col < GMT->common.o.n_cols; col++) {	/* These are final output columns */
+			for (col = 0; col < GMT->common.o.col.n_cols; col++) {	/* These are final output columns */
 				src_col = GMT->current.io.col[GMT_OUT][col].col;	/* Corresponding original column */
 				if (used[src_col] == 0)	/* Can set pointer the first time */
 					S->data[col] = temp[src_col];
 				used[src_col]++;	/* Used this column one more time */
 			}
 			/* During second pass we must allocate space for any repeated columns */
-			for (col = 0; col < GMT->common.o.n_cols; col++) {	/* These are again final output columns */
+			for (col = 0; col < GMT->common.o.col.n_cols; col++) {	/* These are again final output columns */
 				if (S->data[col]) continue;	/* Set this one via pointer in pass one */
 				S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
 				src_col = GMT->current.io.col[GMT_OUT][col].col;	/* Corresponding original column */
@@ -8734,28 +8734,28 @@ void gmtlib_change_out_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 				if (used[col] == 0) gmt_M_free (GMT, temp[col]);
 			}
 			if (adjust) {	/* Modify length of min/max arrays */
-				S->min  = gmt_M_memory (GMT, S->min, GMT->common.o.n_cols, double);
-				S->max  = gmt_M_memory (GMT, S->max, GMT->common.o.n_cols, double);
+				S->min  = gmt_M_memory (GMT, S->min, GMT->common.o.col.n_cols, double);
+				S->max  = gmt_M_memory (GMT, S->max, GMT->common.o.col.n_cols, double);
 				if (!extend) {
-					S->data = gmt_M_memory (GMT, S->data, GMT->common.o.n_cols, double *);
-					SH->alloc_mode = gmt_M_memory (GMT, SH->alloc_mode, GMT->common.o.n_cols, enum GMT_enum_alloc);
+					S->data = gmt_M_memory (GMT, S->data, GMT->common.o.col.n_cols, double *);
+					SH->alloc_mode = gmt_M_memory (GMT, SH->alloc_mode, GMT->common.o.col.n_cols, enum GMT_enum_alloc);
 				}
 			}
-			S->n_columns = GMT->common.o.n_cols;	/* New column count */
+			S->n_columns = GMT->common.o.col.n_cols;	/* New column count */
 		}
 		if (adjust) {	/* Modify length of table min/max arrays */
-			T->min = gmt_M_memory (GMT, T->min, GMT->common.o.n_cols, double);
-			T->max = gmt_M_memory (GMT, T->max, GMT->common.o.n_cols, double);
+			T->min = gmt_M_memory (GMT, T->min, GMT->common.o.col.n_cols, double);
+			T->max = gmt_M_memory (GMT, T->max, GMT->common.o.col.n_cols, double);
 		}
-		T->n_columns = GMT->common.o.n_cols;	/* New column count */
+		T->n_columns = GMT->common.o.col.n_cols;	/* New column count */
 	}
 	gmt_M_free (GMT, temp);
 	gmt_M_free (GMT, used);
 	if (adjust) {	/* Modify length of dataset min/max arrays */
-		D->min = gmt_M_memory (GMT, D->min, GMT->common.o.n_cols, double);
-		D->max = gmt_M_memory (GMT, D->max, GMT->common.o.n_cols, double);
+		D->min = gmt_M_memory (GMT, D->min, GMT->common.o.col.n_cols, double);
+		D->max = gmt_M_memory (GMT, D->max, GMT->common.o.col.n_cols, double);
 	}
-	D->n_columns = GMT->common.o.n_cols;	/* New column count */
+	D->n_columns = GMT->common.o.col.n_cols;	/* New column count */
 	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 }
 
