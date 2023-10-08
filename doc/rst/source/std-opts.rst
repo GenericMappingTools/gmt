@@ -70,7 +70,7 @@ Common Options
 .. rubric:: Standardized Command Line Options available in GMT Classic Mode Only
 
 In GMT classic mode, options **-c** and **-l** are **NOT** available,
-but the following common options are available:
+but the following common options are:
 
 .. list-table::
    :widths: 50 50
