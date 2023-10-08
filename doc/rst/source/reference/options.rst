@@ -803,7 +803,7 @@ Output columns selection: The **-o** option
 **Examples**
 
 To write out just the 4th and 2nd data column to the output, use **-o**\ 3,1 (since 0 is the first column).
-To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3. As for **-** you can transform columns using the
+To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3. As for **-i** you can transform columns using the
 **+d**, **+l**, **+o**, and **+s** modifiers.
 
 .. _option_-p:
