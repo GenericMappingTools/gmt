@@ -78,7 +78,6 @@ Quick links
         :maxdepth: 1
         :caption: Classic Mode
 
-        std-opts-classic
         modules-classic
 
     ---
