@@ -1681,10 +1681,18 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_compare_cols (const void *point_1, const void *point_2) {
+GMT_LOCAL int gmtinit_compare_cols_in (const void *point_1, const void *point_2) {
 	/* Sorts cols into ascending order  */
 	if (((struct GMT_COL_INFO *)point_1)->col < ((struct GMT_COL_INFO *)point_2)->col) return (-1);
 	if (((struct GMT_COL_INFO *)point_1)->col > ((struct GMT_COL_INFO *)point_2)->col) return (+1);
+	return (0);
+}
+
+/*! . */
+GMT_LOCAL int gmtinit_compare_cols_out (const void *point_1, const void *point_2) {
+	/* Sorts order into ascending order  */
+	if (((struct GMT_COL_INFO *)point_1)->order < ((struct GMT_COL_INFO *)point_2)->order) return (-1);
+	if (((struct GMT_COL_INFO *)point_1)->order > ((struct GMT_COL_INFO *)point_2)->order) return (+1);
 	return (0);
 }
 
@@ -9624,7 +9632,10 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 		}
 	}
 	/* Use mergesort since qsort is unstable (i.e., unpredictable order) when items are identical */
-	mergesort (GMT->current.io.col[dir], k, sizeof (struct GMT_COL_INFO), gmtinit_compare_cols);
+	if (dir == GMT_IN)
+		mergesort (GMT->current.io.col[dir], k, sizeof (struct GMT_COL_INFO), gmtinit_compare_cols_in);
+	else
+		mergesort (GMT->current.io.col[dir], k, sizeof (struct GMT_COL_INFO), gmtinit_compare_cols_out);
 	C->n_cols = k;
 	if (k) {	/* Because the user may have repeated some columns we also determine how many unique columns were requested */
 		C->n_actual_cols = 1;

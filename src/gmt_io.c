@@ -1127,8 +1127,7 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 		else
 			col = i;	/* Just goto next column */
 
-		val = (col >= n) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][col], ptr[col]);
-		//val = (col >= n) ? GMT->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
+		val = (col >= n) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][i], ptr[col]);
 		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val))	/* Write this value instead of NaNs */
 			val = GMT->common.d.nan_proxy[GMT_OUT];
 
@@ -1188,7 +1187,7 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 			col = 1 - i;	/* Write lat/lon instead of lon/lat */
 		else
 			col = i;	/* Just goto next column */
-		val = (col >= n) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][col], ptr[col]);	/* If we request beyond length of array, return NaN */
+		val = (col >= n) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][i], ptr[col]);	/* If we request beyond length of array, return NaN */
 		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val))	/* Write this value instead of NaNs */
 			val = GMT->common.d.nan_proxy[GMT_OUT];
 
@@ -3903,7 +3902,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	bool ASCII, close_file = false, append, was;
 	int save = 0;
 	unsigned int k;
-	uint64_t row = 0, seg, col, col_use, n_out;
+	uint64_t row = 0, seg, col;
 	int *fd = NULL;
 	char open_mode[4] = {""}, file[PATH_MAX] = {""}, tmpfile[PATH_MAX] = {""}, *out_file = tmpfile, *txt = NULL;
 	double *out = NULL;
@@ -4033,19 +4032,9 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 						out_file, (int)seg, GMT->current.io.geo.range, SH->range);
 			save = GMT->current.io.geo.range; GMT->current.io.geo.range = SH->range;
 		}
-		n_out = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : S->n_columns;
 		for (row = 0; row < S->n_rows; row++) {
 			txt = (S->text) ? S->text[row] : NULL;
-
-			for (col = 0; col < n_out; col++) {
-				if (GMT->common.o.col.select)	/* Which data column to pick */
-					col_use = GMT->current.io.col[GMT_OUT][col].order;
-				else if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && col < 2)
-					col_use = 1 - col;	/* Write lat/lon instead of lon/lat */
-				else
-					col_use = col;	/* Just goto next column */
-				out[col_use] = (col >= S->n_columns) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][col], S->data[col][row]);	/* If we request beyond length of array, return NaN */
-			}
+			for (col = 0; col < S->n_columns; col++) out[col] = S->data[col][row];	/* If we request beyond length of array, return NaN */
 			GMT->current.io.output (GMT, fp, S->n_columns, out, txt);
 		}
 		if (SH->range) GMT->current.io.geo.range = save; 	/* Restore formatting */
