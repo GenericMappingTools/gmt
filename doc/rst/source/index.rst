@@ -42,6 +42,7 @@ Quick links
         :maxdepth: 1
         :caption: Getting started
 
+        install
         gallery
         animations
         tutorial
