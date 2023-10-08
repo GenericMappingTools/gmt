@@ -898,10 +898,12 @@ GMT_LOCAL void gmtremote_init_paths (struct GMTAPI_CTRL *API) {
 	/* If GMT_DATA_SERVER is static|test|candidate then we need to update internal paths */
 	char *srv_dir = NULL, path[PATH_MAX] = {""};
 	struct GMT_CTRL *GMT = API->GMT;	/* Short hand */
+
 	if (API->paths_initialized) return;	/* Been here done that */
+	GMT_Report (API, GMT_MSG_NOTICE, "GMT_DATA_SERVER is %s\n", (GMT->session.DATASERVER == NULL) ? "NOT set" : GMT->session.DATASERVER);
 	if (GMT->session.DATASERVER == NULL) return;
 	if ((srv_dir = gmtlib_prepend_server_name (GMT, false)) == NULL) return;
-	if (!strcmp (srv_dir, "server") || !strcmp (srv_dir, GMT_DATA_SERVER)) return;
+	if (!strcmp (srv_dir, "server") || !strcmp ("oceania", GMT_DATA_SERVER)) return;
 
 	/* One of the ghost-servers */
 	gmt_M_str_free (GMT->session.USERDIR);
@@ -911,8 +913,7 @@ GMT_LOCAL void gmtremote_init_paths (struct GMTAPI_CTRL *API) {
 	snprintf (path, PATH_MAX, "%s/.gmt/%s/cache", GMT->session.HOMEDIR, srv_dir);
 	GMT->session.CACHEDIR = gmt_strdup_noquote (path);
 	API->paths_initialized = true;
-	GMT_Report (API, GMT_MSG_DEBUG, "USERDIR  is now\n", GMT->session.USERDIR);
-	GMT_Report (API, GMT_MSG_DEBUG, "CACHEDIR is now\n", GMT->session.CACHEDIR);
+	GMT_Report (API, GMT_MSG_DEBUG, "USERDIR is now %s and CACHEDIR is now %s\n", GMT->session.USERDIR, GMT->session.CACHEDIR);
 }
 
 GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
