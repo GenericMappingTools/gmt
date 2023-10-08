@@ -20268,38 +20268,3 @@ void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	gmtinit_reparse_io_option (GMT, n_columns, GMT_OUT);
 }
-
-#if 0
-void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
-	char text[GMT_LEN8] = {""}, token[PATH_MAX] = {""};
-	bool o_trailing = GMT->current.io.trailing_text[GMT_OUT];	/* Since -i parsing below will wipe any -o setting that excludes trailing text */
-	size_t k;
-	if (n_columns == 0) return;	/* Cannot update the string */
-	for (k = strlen (GMT->common.i.col.string) - 1; k && !(GMT->common.i.col.string[k] == ':' || GMT->common.i.col.string[k] == '-'); k--);	/* Find the last : or - in open-ended sequence */
-	strncpy (token, GMT->common.i.col.string, k+1);	/* Get duplicate, this ends with - or : */
-	sprintf (text, "%d", (int)n_columns-1);
-	strcat (token, text);	/* Add explicit last column to include */
-	if (GMT->common.i.col.string[k+1] == ',') strncat (token, &GMT->common.i.col.string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
-	GMT->common.i.active = false;	/* So we can parse again */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reparse -i%s\n", token);
-	gmt_parse_common_options (GMT, "i", 'i', token);	/* Re-parse updated -i */
-	GMT->current.io.trailing_text[GMT_OUT] = o_trailing;	/* Reset to what was parsed initially */
-}
-
-void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
-	char text[GMT_LEN8] = {""}, token[PATH_MAX] = {""};
-	size_t k;
-	if (n_columns == 0) {
-		GMT->current.io.output = gmtlib_ascii_output_trailing_text;	/* Just print trailing text */
-		return;	/* Cannot update the string */
-	}
-	for (k = strlen (GMT->common.o.col.string) - 1; k && !(GMT->common.o.col.string[k] == ':' || GMT->common.o.col.string[k] == '-'); k--);	/* Find the last : or - in open-ended sequence */
-	strncpy (token, GMT->common.o.col.string, k+1);	/* Get duplicate, this ends with - or : */
-	sprintf (text, "%d", (int)n_columns-1);
-	strcat (token, text);	/* Add explicit last column to include */
-	if (GMT->common.o.col.string[k+1] == ',') strncat (token, &GMT->common.o.col.string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
-	GMT->common.o.active = false;	/* So we can parse again */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reparse -o%s\n", token);
-	gmt_parse_common_options (GMT, "o", 'o', token);	/* Re-parse updated -o */
-}
-#endif
