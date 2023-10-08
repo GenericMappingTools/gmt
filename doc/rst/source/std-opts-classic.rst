@@ -47,13 +47,13 @@ Common Options (Classic Mode)
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
      - :ref:`ASCII tables have header record[s] <-h_full>`
    * - **-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*\|\ **d**\|\ **k**][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
-     - :ref:`Selection of input columns <-icols_full>`
+     - :ref:`Selection of input columns and optional transformations <-icols_full>`
    * - **-je**\|\ **f**\|\ **g**
      - :ref:`Mode of spherical distance calculation <-distcalc_full>`
    * - **-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+c**][**+t**\ *threshold*]
      - :ref:`Set grid interpolation mode <-n_full>`
    * - **-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
-     - :ref:`Selection of output columns <-ocols_full>`
+     - :ref:`Selection of output columns and optional transformations <-ocols_full>`
    * - **-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]][**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
      - :ref:`Control 3-D perspective view <perspective_full>`
    * - **-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **t**\|\ **s**]
