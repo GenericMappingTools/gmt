@@ -8187,6 +8187,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		return (NULL);
 	}
 
+	strcpy (GMT->current.io.filename[GMT_IN], file);
 	/* Skip binary header first, if binary and there is a header given in # of bytes */
 	if (GMT->common.b.active[GMT_IN]) {
 		if (GMT->current.setting.io_n_header_items) {
@@ -8300,10 +8301,8 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 		while (! (GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 " in file %s\n",
-							status, n_expected_fields, n_read, file);
-				if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
-				return NULL;
+				In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
+				if ((GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) break; 
 			}
 
 			gmt_prep_tmp_arrays (GMT, GMT_IN, row, S->n_columns);	/* Init or reallocate tmp read vectors */
