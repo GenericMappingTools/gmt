@@ -142,7 +142,7 @@ jobs:
           cmake --build . --target docs_man
           # Show warnings saved in html.log and man.log but filter out "duplicate label" warnings.
           # See https://github.com/GenericMappingTools/gmt/issues/7253
-          grep -v 'WARNING: duplicate label -' html.log
+          grep -v 'WARNING: duplicate label -' doc/rst/html.log
 
       - name: Install GMT
         run: |
