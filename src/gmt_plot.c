@@ -10889,7 +10889,7 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
 	gmt_free_segment (GMT, &S);
 }
 
-/* We have to segments S1 and S2 that we want to fill in the area between them.
+/* We have two segments S1 and S2 that we want to fill in the area between them.
  * Here, the curves are y1(x) and y2(x), and if the two curves intersect then
  * we want to find the polygons y1 > y2 and y2 < y1 and fill them separately.
  * Requires two fills, one of which may be NULL and then we only fill the area
@@ -10897,11 +10897,11 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
  *
  * How do we provide input? Two ways:
  * x y1 y2
- *   i.e., a 3-column file with coincident points with common x.
- * Two separate segments, S1 and S2
- * Requires an option
- * -L<fill1>/<fill2>[+s]
- *   where one of the two fills may be - (no fill) and +s indicates 3-column file */
+ *   i.e., a 3-column single file with coincident points with common x.
+ * Two separate tables with coincident segments, S1 and S2 (for all segments).
+ * Requires an option modification, e,g.,
+ *    -L<fill1>/<fill2>[+s]
+ * where one of the two fills may be - (no fill) and +s indicates 3-column file */
 
  /*! Structure with info on all track cross-over */
 struct GMT_CURVES_CROSS {

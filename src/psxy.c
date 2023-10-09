@@ -94,6 +94,9 @@ struct PSXY_CTRL {
 		double value;
 		struct GMT_PEN pen;
 	} L;
+	struct PSXY_M {	/* -M<fill1>/<fill2>[+s] */
+		bool active;
+	} M;
 	struct PSXY_N {	/* -N[r|c] */
 		bool active;
 		unsigned int mode;
@@ -969,6 +972,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 					}
 					Ctrl->L.outline = 1;
 				}
+				break;
+			case 'M':		/* Fill areas between two curves */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				break;
 			case 'N':		/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -2486,8 +2492,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_setpen (GMT, &current_pen);
 			}
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, seg_out++) {	/* For each segment in the table */
-
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+
+				if (Ctrl->M.active) {
+					gmt_two_curve_fill (GMT, L, NULL, NULL, NULL);
+					continue;
+				}
 
 				if (gmt_segment_BB_outside_map_BB (GMT, L)) continue;
 				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
