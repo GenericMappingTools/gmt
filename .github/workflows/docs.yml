@@ -140,6 +140,9 @@ jobs:
           # if html.log isn't empty (i.e., sphinx raise warnings), return 1
           ! [ -s doc/rst/html.log ]
           cmake --build . --target docs_man
+          # Show warnings saved in html.log and man.log but filter out "duplicate label" warnings.
+          # See https://github.com/GenericMappingTools/gmt/issues/7253
+          grep -v 'WARNING: duplicate label -' html.log
 
       - name: Install GMT
         run: |
