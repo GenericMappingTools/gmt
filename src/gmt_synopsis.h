@@ -133,7 +133,7 @@
 #else
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #endif
-#define GMT_o_OPT	"-o<cols>[,...][,t[<word>]]"
+#define GMT_o_OPT	"-o<cols>[+l][+d<divisor>][+s<scale>|d|k][+o<offset>][,...][,t[<word>]]"
 #define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|t|s]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>]][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"

@@ -1097,7 +1097,7 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 	n_out = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : n;
 	for (i = 0, k = 0; i < n_out; i++) {
 		col_pos = (GMT->common.o.col.select) ? GMT->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
-		val = (col_pos >= n) ? GMT->session.d_NaN : ptr[col_pos];	/* If we request beyond length of array, return NaN */
+		val = (col_pos >= n) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][col_pos], ptr[col_pos]);
 		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_OUT];	/* Write this value instead of NaNs */
 		if (gmt_M_type (GMT, GMT_OUT, col_pos) == GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);
 		if (GMT->current.io.fmt[GMT_OUT][i].skip < 0) gmtio_x_write (GMT, fp, -GMT->current.io.fmt[GMT_OUT][i].skip);	/* Pre-fill */
@@ -1126,7 +1126,8 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 			col = 1 - i;	/* Write lat/lon instead of lon/lat */
 		else
 			col = i;	/* Just goto next column */
-		val = (col >= n) ? GMT->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
+
+		val = (col >= n) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][i], ptr[col]);
 		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val))	/* Write this value instead of NaNs */
 			val = GMT->common.d.nan_proxy[GMT_OUT];
 
@@ -1186,7 +1187,7 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 			col = 1 - i;	/* Write lat/lon instead of lon/lat */
 		else
 			col = i;	/* Just goto next column */
-		val = (col >= n) ? GMT->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
+		val = (col >= n) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_OUT][i], ptr[col]);	/* If we request beyond length of array, return NaN */
 		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val))	/* Write this value instead of NaNs */
 			val = GMT->common.d.nan_proxy[GMT_OUT];
 
@@ -4033,7 +4034,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 		}
 		for (row = 0; row < S->n_rows; row++) {
 			txt = (S->text) ? S->text[row] : NULL;
-			for (col = 0; col < S->n_columns; col++) out[col] = S->data[col][row];
+			for (col = 0; col < S->n_columns; col++) out[col] = S->data[col][row];	/* If we request beyond length of array, return NaN */
 			GMT->current.io.output (GMT, fp, S->n_columns, out, txt);
 		}
 		if (SH->range) GMT->current.io.geo.range = save; 	/* Restore formatting */
@@ -6014,7 +6015,7 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 
 /*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
 void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
-	/* Temporarily turn off any -i, -h selections */
+	/* Temporarily turn off any -b, -i, -g, h selections */
 	GMT->common.i.col.select = false;
 	GMT->common.o.col.select = false;
 	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
@@ -6030,7 +6031,7 @@ void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
 
 /*! Routine will re-enable any suspended -b, -i, -g, -h selections */
 void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT) {
-	/* Turn on again any -i, -h selections */
+	/* Turn on again any -b, -i, -g, -h selections */
 	GMT->common.i.col.select = GMT->common.i.col.orig;
 	GMT->common.o.col.select = GMT->common.o.col.orig;
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
