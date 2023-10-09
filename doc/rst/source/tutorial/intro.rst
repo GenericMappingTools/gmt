@@ -39,7 +39,7 @@ GMT modules.  GMT uses architecture-independent file formats.
 GMT installation considerations
 -------------------------------
 
-See the :doc:`install guide <install>`
+See the :doc:`install guide </install>`
 for instructions and to make sure you have all required dependencies installed.
 Alternatively, you can build GMT from source by following the
 `building guide <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
