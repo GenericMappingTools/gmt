@@ -42,6 +42,7 @@ Quick links
         :maxdepth: 1
         :caption: Getting started
 
+        install
         gallery
         animations
         tutorial
@@ -77,7 +78,6 @@ Quick links
         :maxdepth: 1
         :caption: Classic Mode
 
-        std-opts-classic
         modules-classic
 
     ---

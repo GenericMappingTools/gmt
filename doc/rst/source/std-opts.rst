@@ -66,3 +66,19 @@ Common Options
      - :ref:`Set number of cores in multi-threaded modules <core_full>`
    * - **-:**\ [**i**\|\ **o**]
      - :ref:`Expect y/x input rather than x/y <colon_full>`
+
+.. rubric:: Standardized Command Line Options available in GMT Classic Mode Only
+
+In GMT classic mode, options **-c** and **-l** are **NOT** available,
+but the following common options are:
+
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
+
+   * - **-K**
+     - :ref:`Append more PS later <-K_full>`
+   * - **-O**
+     - :ref:`This is an overlay plot <-O_full>`
+   * - **-P**
+     - :ref:`Select Portrait orientation <-P_full>`

@@ -205,7 +205,7 @@ Optional Arguments
 
 **-Q**
     Select logarithmic scale and power of ten annotations. All z-values
-    in the CPT will be converted to p = :math:`\log_{10}`(z) and only integer p
+    in the CPT will be converted to p = :math:`\log_{10}(z)` and only integer p
     values will be annotated using the 10^p format [Default is linear scale].
 
 .. _-R:

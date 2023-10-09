@@ -203,6 +203,7 @@ Optional Arguments
       entire segment (or we keep the entire segment if **+hk** was given), otherwise it is
       subject to the test(s) using the constant *z* for each segment.
     - **+i** - Reverses the tests to pass record with a *z* value **not** in the given range.
+
 .. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].

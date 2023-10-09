@@ -73,7 +73,7 @@ Required Arguments
     simply driven by the boundary conditions set via |-A|.  If no rigidity or
     elastic thickness file is given via |-E| then you must also append arguments
     to create the locations used for the calculations; for details on array creation,
-    see `Generate 1D Array`_.
+    see `Generate 1-D Array`_.
     **-Qq**\ [*loadfile*] is a file (or standard input if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
     (or standard input if not given) with (x,load in m or km, positive up); see |-M| for
