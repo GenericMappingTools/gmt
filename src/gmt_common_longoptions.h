@@ -117,7 +117,7 @@
     {   0, 'n', "interpolation",
                 "b,c,l,n",               "bspline,bicubic,linear,nearneighbor",
                 "a,b,c,t",               "anti_alias,bc,clip,threshold" },
-    { ',', 'i', "outcols",
+    { ',', 'o', "outcols",
                 "",                      "",
                 "l,d,o,s",               "log10,divide,offset,scale" },
     {   0, 'p', "perspective",
