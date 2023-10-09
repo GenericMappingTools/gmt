@@ -1,2 +1,2 @@
-**-o**\ *cols*\ [,...][,\ **t**\ [*word*]] :ref:`(more ...) <-ocols_full>`
-    Select output columns (0 is first column; **t** is trailing text, append *word* to write one word only).
+**-o**\ *cols*\ [**+l**][**+d**\ *divisor*][**+s**\ *scale*\|\ **d**\|\ **k**][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]] :ref:`(more ...) <-ocols_full>`
+    Select output columns and transformations (0 is first column, **t** is trailing text, append *word* to write one word only).

@@ -1,4 +1,5 @@
 .. index:: ! grdbarb
+.. include:: ../module_supplements_purpose.rst_
 
 *******
 grdbarb
@@ -85,7 +86,7 @@ Optional Arguments
     the grid's z-range.  If the dynamic CPT has a default range then
     that range will be imposed instead.
     Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous cpt from those colors automatically.  
+    to build a linear continuous cpt from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
@@ -100,14 +101,14 @@ Optional Arguments
     Only plot wind barbs at nodes every *x\_inc*, *y\_inc* apart (must be
     multiples of original grid spacing). Append **m** for arc minutes or
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
-    multiples *multx*\ [/*multy*] directly [Default plots every node]. 
+    multiples *multx*\ [/*multy*] directly [Default plots every node].
 
 .. include:: ../../explain_-K.rst_
 
 .. _-N:
 
 **-N**
-    Do NOT clip wind barbs at map boundaries [Default will clip]. 
+    Do NOT clip wind barbs at map boundaries [Default will clip].
 
 .. _-Q:
 
@@ -142,7 +143,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes used for wind barb outlines [Default: width =
-    default, color = black, style = solid]. 
+    default, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
@@ -152,7 +153,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The theta grid provided contains azimuths rather than directions (implies **-A**). 
+    The theta grid provided contains azimuths rather than directions (implies **-A**).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-f.rst_
@@ -164,7 +165,7 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
-.. include:: ../../explain_grd_inout_short.rst_
+.. include:: ../../explain_grd_inout.rst_
 
 .. include:: explain_windbarbs.rst_
 
