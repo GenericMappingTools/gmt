@@ -1115,7 +1115,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_DATASET *Decorate = NULL;
-	struct GMT_DATASEGMENT *L = NULL;
+	struct GMT_DATASEGMENT *L = NULL, *S1 = NULL, *S2 = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -2495,7 +2495,14 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 
 				if (Ctrl->M.active) {
-					gmt_two_curve_fill (GMT, L, NULL, NULL, NULL);
+					if (S1 == NULL) {	/* Setting S1 and wait for next segment */
+						S1 = L;
+						continue;
+					}
+					else if (S2 == NULL)	/* Setting S2 and do the plotting */
+						S2 = L;
+					gmt_two_curve_fill (GMT, S1, S2, NULL, NULL);
+					S1 = S2 = NULL;	/* Reset */
 					continue;
 				}
 
