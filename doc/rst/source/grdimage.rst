@@ -68,7 +68,9 @@ pixel, their average will dominate in the calculation of the pixel
 value. Interpolation and aliasing is controlled with the **-n** option.
 
 The |-R| option can be used to select a map region larger or smaller
-than that implied by the extent of the grid.
+than that implied by the extent of the grid. Finally, |-A| allows the
+creation of a direct output to a raster file instead of plotting via
+PostScript.
 
 Required Arguments
 ------------------
@@ -96,7 +98,8 @@ Optional Arguments
     one or more concatenated number of GDAL **-co** options. For example, to write a GeoPDF with the
     TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
     then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
-    otherwise a plain tiff file is produced. (2) Any vector elements will be lost.
+    otherwise a plain tiff file is produced. (2) Any vector elements will be lost. **Note**: The **-B**
+    option is not compatible with |-A| since no PostScript output is allowed.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
