@@ -16400,6 +16400,29 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		gmt_reload_settings (GMT);	// Re-read local GMT default settings (if any) and override with user settings
 	}
 	*/
+
+	/* Repeat part of what gmtlib_io_init() does but we can't call it because it resets too much
+	   without calling gmt_begin() again. This is need in externals that want to keep using the API
+	   contents between diferent module calls.
+	*/
+	/* Reset default input column order */
+	for (i = 0; i < GMT_MAX_COLUMNS; i++)
+		GMT->current.io.col[GMT_IN][i].col = GMT->current.io.col[GMT_IN][i].order = i;	/* Default order */
+	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = false;	/* Consider all input columns */
+	/* Reset default output column order */
+	for (i = 0; i < GMT_MAX_COLUMNS; i++)
+		GMT->current.io.col[GMT_OUT][i].col = GMT->current.io.col[GMT_OUT][i].order = i;	/* Default order */
+
+	for (i = 0; i < 2; i++) GMT->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
+	for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
+	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
+	gmt_M_memset (GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
+	gmt_M_memset (GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */
+	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
+	gmt_M_memset (GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
+	GMT->current.io.record.data = GMT->current.io.curr_rec;
+	/* Time periodicity column */
+	GMT->current.io.cycle_col = GMT_NOTSET;
 	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
 
 	/* Reset these GDAL in/out stuff */
