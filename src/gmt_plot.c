@@ -10958,6 +10958,8 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 			X[k].s0_i1 = X[k].s1_i1 = -1;
 		}
 	}
+	gmt_x_free (GMT, &XC);	/* Done with crossovers */
+
 	/* See if there are NaNs along one or both curves */
 	for (k = 0, S = S0; k < 2; k++) {
 		row = 0;
