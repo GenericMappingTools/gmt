@@ -1282,7 +1282,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 
-	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
+	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor && !Ctrl->M.active);
 	if (S.symbol == PSL_DOT) penset_OK = false;	/* Dots have no outline */
 
 	Ctrl->E.width *= 0.5;	/* Since we draw half-way in either direction */
