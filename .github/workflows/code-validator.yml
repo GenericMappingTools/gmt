@@ -71,9 +71,3 @@ jobs:
             fi
           done
           exit $error
-
-      - name: Setup DVC
-        uses: iterative/setup-dvc@v1
-
-      - name: Check if DVC files are missing from the remote
-        run: dvc data status --not-in-remote --json | grep -v not_in_remote
