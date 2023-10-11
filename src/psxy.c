@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 2-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,S?(=2,ZD(,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("Mmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("mc")
 
 /* Control structure for psxy */
 
@@ -94,8 +94,12 @@ struct PSXY_CTRL {
 		double value;
 		struct GMT_PEN pen;
 	} L;
-	struct PSXY_M {	/* -M<fill1>/<fill2>[+s] */
+	struct PSXY_M {	/* -M[p][+g<fill>][+p<pen>] */
 		bool active;
+		bool do_fill, do_draw;
+		unsigned int mode;
+		struct GMT_FILL fill;
+		struct GMT_PEN pen;
 	} M;
 	struct PSXY_N {	/* -N[r|c] */
 		bool active;
@@ -798,7 +802,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ztype, n_files = 0;
+	unsigned int n_errors = 0, ztype, k, n_files = 0;
 	int j;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -973,8 +977,35 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 					Ctrl->L.outline = 1;
 				}
 				break;
-			case 'M':		/* Fill areas between two curves */
+			case 'M':		/* Fill areas between two curves -M[p][+g<fill>][+p<pen1] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				if (opt->arg[0] == 'p')
+					Ctrl->M.mode = 1;
+				if (gmt_found_modifier (GMT, &(opt->arg[Ctrl->M.mode]), "gp")) {
+					char p[GMT_LEN64] = {""};
+					unsigned int pos = 0;
+					while (gmt_getmodopt (GMT, 'M', &(opt->arg[Ctrl->M.mode]), "gp", &pos, p, &n_errors) && n_errors == 0) {
+						switch (p[0]) {
+							case 'g':	/* Fill for alternate when 2nd curve is below primary */
+								if (p[1] && gmt_getfill (GMT, &p[1], &Ctrl->M.fill)) {
+									gmt_fill_syntax (GMT, 'M', NULL, " ");
+									n_errors++;
+								}
+								Ctrl->M.do_fill = true;
+								break;
+							case 'p':
+								if (p[1] && gmt_getpen (GMT, &p[1], &Ctrl->M.pen)) {
+									gmt_pen_syntax (GMT, 'E', NULL, "sets error bar pen attributes", NULL, 0);
+									n_errors++;
+								}
+								Ctrl->M.do_draw = true;
+								break;
+							default:
+								/* Just for Coverity */
+								break;
+						}
+					}
+				}
 				break;
 			case 'N':		/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -2501,7 +2532,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					else if (S2 == NULL)	/* Setting S2 and do the plotting */
 						S2 = L;
-					gmt_two_curve_fill (GMT, S1, S2, NULL, NULL);
+					gmt_two_curve_fill (GMT, S1, S2, &Ctrl->G.fill, &Ctrl->M.fill, &Ctrl->W.pen, &Ctrl->M.pen);
 					S1 = S2 = NULL;	/* Reset */
 					continue;
 				}

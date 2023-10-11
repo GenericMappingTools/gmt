@@ -10903,10 +10903,14 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
  *    -L<fill1>/<fill2>[+s]
  * where one of the two fills may be - (no fill) and +s indicates 3-column file */
 
+#define GMT_CURVE_GAP		0
+#define GMT_CURVE_CUT		1
+#define GMT_CURVE_CROSSING	2
+
  /*! Structure with info on all track cross-over */
 struct GMT_CURVES_CROSS {
 	char type;	/* 0 for NaN, 1 for crossing */
-	uint64_t s0_i0, s0_i1, s1_i0, s1_i1;
+	int64_t s0_i0, s0_i1, s1_i0, s1_i1;
 	double x;	/* x */
 	double y0;	/* y0 */
 	double y1;	/* y1 */
@@ -10920,15 +10924,17 @@ GMT_LOCAL int compare_curves (const void *p1, const void *p2) {
 	return (0);
 }
 
-int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F1, struct GMT_FILL *F2) {
+int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1) {
 	bool free_S1 = false;
 	int result;
-	uint64_t k, k0, k1, r, row, nx, n, n_add, np, start[2] = {0, 0}, stop[2] = {0, 0}, last, n_alloc;
+	uint64_t k, k0, k1, kk, r, row, nx, n, n_add, np, start[2] = {0, 0}, stop[2] = {0, 0}, last, n_alloc;
 	double *xp, *yp;
+	char *debug_code = "GCX";
 	struct GMT_CURVES_CROSS *X = NULL;
 	struct GMT_XOVER XC;
 	struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_FILL *F = NULL;
 
 	if (S1 == NULL) {	/* Got a 3-column segment, split off S1 */
 		S1 = gmt_duplicate_segment (GMT, S0);
@@ -10939,19 +10945,17 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	/* Find the crossings between segments S0 and S1 */
 	gmt_init_track (GMT, S0->data[GMT_Y], S0->n_rows, &ylist1);
 	gmt_init_track (GMT, S1->data[GMT_Y], S1->n_rows, &ylist2);
-	nx = gmt_crossover (GMT, S0->data[GMT_X], S0->data[GMT_Y], NULL, ylist1, S0->n_rows, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist2, S1->n_rows, false, false, &XC);
+	np = nx = gmt_crossover (GMT, S0->data[GMT_X], S0->data[GMT_Y], NULL, ylist1, S0->n_rows, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist2, S1->n_rows, false, false, &XC);
 	if (nx > 0) {	/* More work to do */
-		np = nx;
 		X  = gmt_M_memory (GMT, NULL, np, struct GMT_CURVES_CROSS);
 		for (k = 0; k < np; k++) {
 			X[k].x  = XC.x[k];
 			X[k].y0 = XC.y[k];
 			X[k].y1 = XC.y[k];
-			X[k].type = 1;
-			X[k].s0_i0 = (uint64_t)floor (XC.xnode[GMT_X][k]);
-			X[k].s1_i0 = (uint64_t)floor (XC.xnode[GMT_Y][k]);
-			X[k].s0_i1 = (uint64_t)ceil  (XC.xnode[GMT_X][k]);
-			X[k].s1_i1 = (uint64_t)ceil  (XC.xnode[GMT_Y][k]);
+			X[k].type = GMT_CURVE_CROSSING;
+			X[k].s0_i0 = (uint64_t)ceil (XC.xnode[GMT_X][k]);
+			X[k].s1_i0 = (uint64_t)ceil (XC.xnode[GMT_Y][k]);
+			X[k].s0_i1 = X[k].s1_i1 = -1;
 		}
 	}
 	/* See if there are NaNs along one or both curves */
@@ -10962,15 +10966,22 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 			if (gmt_M_is_dnan (S->data[GMT_Y][row+1])) {	/* Next point is NaN so save the previous */
 				X  = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);
 				X[np].x  = S->data[GMT_X][row];
+				X[np].s0_i0 = X[np].s1_i0 = X[np].s0_i1 = X[np].s1_i1 = -1;
 				if (S == S0) {
 					X[np].y0 = S0->data[GMT_Y][row];
 					X[np].s0_i0 = row;
 					result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+					kk = 0;
+					while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
+					X[np].s1_i0 = kk;
 				}
 				else {
 					X[np].y1 = S1->data[GMT_Y][row];
 					X[np].s1_i0 = row;
 					result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[GMT_Y], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+					kk = 0;
+					while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
+					X[np].s0_i0 = kk;
 				}
 				np++;
 				row++;
@@ -10982,12 +10993,19 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 						X[np].y0 = S0->data[GMT_Y][row];
 						X[np].s0_i0 = row;
 						result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+						kk = 0;
+						while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
+						X[np].s1_i0 = kk;
 					}
 					else {
 						X[np].y1 = S1->data[GMT_Y][row];
 						X[np].s1_i0 = row;
 						result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[GMT_Y], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+						kk = 0;
+						while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
+						X[np].s0_i0 = kk;
 					}
+					X[np].s0_i1 = X[np].s1_i1 = -1;
 					np++;
 				}
 			}
@@ -11004,6 +11022,8 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		while (S1->data[GMT_X][start[1]] < S0->data[GMT_X][0]) start[1]++;
 		X[np].s0_i0 = 0;
 		X[np].s1_i0 = start[1];
+		X[np].type = GMT_CURVE_CUT;
+		X[np].s0_i1 = X[np].s1_i1 = -1;
 		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
 		np++;
 	}
@@ -11014,6 +11034,8 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		while (S0->data[GMT_X][start[0]] < S1->data[GMT_X][0]) start[0]++;
 		X[np].s0_i0 = start[0];
 		X[np].s1_i0 = 0;
+		X[np].type = GMT_CURVE_CUT;
+		X[np].s0_i1 = X[np].s1_i1 = -1;
 		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[GMT_Y], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
 		np++;
 	}
@@ -11024,8 +11046,10 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		while (S1->data[GMT_X][stop[1]] > S0->data[GMT_X][last]) stop[1]--;
 		X[np].x  = S0->data[GMT_X][last];
 		X[np].y0 = S0->data[GMT_Y][last];
-		X[np].s0_i1 = last;
-		X[np].s1_i1 = stop[1];
+		X[np].s0_i0 = last;
+		X[np].s1_i0 = stop[1];
+		X[np].type = GMT_CURVE_CUT;
+		X[np].s0_i1 = X[np].s1_i1 = -1;
 		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
 		np++;
 	}
@@ -11035,73 +11059,108 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		while (S0->data[GMT_X][stop[0]] > S1->data[GMT_X][last]) stop[0]--;
 		X[np].x  = S1->data[GMT_X][last];
 		X[np].y1 = S1->data[GMT_Y][last];
-		X[np].s0_i1 = stop[0];
-		X[np].s1_i1 = last;
+		X[np].s0_i0 = stop[0];
+		X[np].s1_i0 = last;
+		X[np].s0_i1 = X[np].s1_i1 = -1;
 		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[GMT_Y], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+		X[np].type = GMT_CURVE_CUT;
 		np++;
 	}
 
 	/* Sort critical points on x */
 
 	qsort (X, np, sizeof (struct GMT_CURVES_CROSS), compare_curves);
-
+#if 0
 	fprintf (stderr, "code\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
 	for (k = 0; k < np; k++)
-		fprintf (stderr, "%d\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", X[k].type, X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
+		fprintf (stderr, "%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
+#endif
+
+	for (k0 = 0, k1 = 1; k1 < np; k0++, k1++) {
+		if (X[k1].type == GMT_CURVE_CROSSING) {
+			X[k0].s0_i1 = (X[k1].s0_i0) ? X[k1].s0_i0 - 1 : 0;
+			X[k0].s1_i1 = (X[k1].s1_i0) ? X[k1].s1_i0 - 1 : 0;
+		}
+		else {
+			X[k0].s0_i1 = X[k1].s0_i0;
+			X[k0].s1_i1 = X[k1].s1_i0;
+		}
+	}
+#if 0
+	fprintf (stderr, "\ncode\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
+	for (k = 0; k < np; k++)
+		fprintf (stderr, "%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
+#endif
 
 	/* Build the polygons */
 
-	n_alloc = GMT_CHUNK;
+	gmt_setfill (GMT, F1, 0);
+
+	n_alloc = (S0->n_rows + S1->n_rows) + 2 * np;
 	xp  = gmt_M_memory (GMT, NULL,  n_alloc, double);
 	yp  = gmt_M_memory (GMT, NULL,  n_alloc, double);
-	for (k0 = 0, k1 = 1; k0 < (np-1); k0++, k1++) {	/* For each segment */
-		xp[0] = X[k0].x;	yp[0] = X[k0].y0;	n = 1;	/* Start of polygon */
+	n = 0;
+	for (k0 = 0, k1 = 1; k1 < np; k0++, k1++) {	/* For each segment */
+		n = 0;
+		if (X[k1].type == GMT_CURVE_GAP && X[k0].type == GMT_CURVE_GAP) continue;	/* Cannot fill between two gap ends */
+		xp[n] = X[k0].x;	yp[n] = X[k0].y0;	n = 1;	/* Start of polygon */
 		/* First copy S0 section from critical point up to NaN or crossing (i.e., next critical point) */
-		n_add = X[k1].s0_i1 - X[k0].s0_i0;
-		while (n_alloc < (n + n_add)) {
-			n_alloc <<= 1;	/* Double it */
-			xp  = gmt_M_memory (GMT, xp,  n_alloc, double);
-			yp  = gmt_M_memory (GMT, yp,  n_alloc, double);
-		}
+		n_add = X[k0].s0_i1 - X[k0].s0_i0;
 		if (n_add) {
 			gmt_M_memcpy (&xp[n], &(S0->data[GMT_X][X[k0].s0_i0]), n_add, double);
-			gmt_M_memcpy (&yp[n], &(S0->data[GMT_X][X[k0].s0_i0]), n_add, double);
+			gmt_M_memcpy (&yp[n], &(S0->data[GMT_Y][X[k0].s0_i0]), n_add, double);
 			n += n_add;	
 		}
 		xp[n] = X[k1].x;	yp[n] = X[k1].y0;	n++; /* End of S0's section of polygon at crossing or point before NaN */
 
-		if (X[k1].type == 0) {	/* Add other NaN point since not a crossing */
+		if (X[k1].type == GMT_CURVE_GAP) {	/* Add other NaN point since not a crossing */
 			xp[n] = X[k1].x;
 			yp[n] = X[k1].y1;
 			n++;
 		}
 		/* Now go back along S1 */
-		n_add = X[k1].s1_i0 - X[k0].s1_i1;
-		while (n_alloc < (n + n_add)) {
-			n_alloc <<= 1;	/* Double it */
-			xp  = gmt_M_memory (GMT, xp,  n_alloc, double);
-			yp  = gmt_M_memory (GMT, yp,  n_alloc, double);
-		}
 		for (r = X[k0].s1_i1; r >= X[k0].s1_i0; r--) {	/* Go backwards */
 			xp[n] = S1->data[GMT_X][r];
 			yp[n] = S1->data[GMT_Y][r];
 			n++;
 		}
-		if (X[k0].type) {	/* Add starting critical point */
+		xp[n] = X[k0].x;
+		yp[n] = X[k0].y1;
+		n++;
+		if (X[k0].type == GMT_CURVE_GAP) {	/* Add starting critical point */
 			xp[n] = X[k0].x;
-			yp[n] = X[k0].y1;
+			yp[n] = X[k0].y0;
 			n++;
 		}
+#if 0
 		fprintf (stderr, "> Polygon %d\n", (int)k0);
 		for (row = 0; row < n; row++) {
 			fprintf (stderr, "%lg\t%lg\n", xp[row], yp[row]);
 		}
+#endif
+
 		if (k1 == 0) return 0;
+		gmt_setfill (GMT, (k0%2) ? F1 : F0, 0);
+		GMT->current.plot.n = gmt_cart_to_xy_line (GMT, xp, yp, n);
+		PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+	}
+	if (P0) {
+		gmt_setpen (GMT, P0);
+		GMT->current.plot.n = gmt_cart_to_xy_line (GMT, S0->data[GMT_X], S0->data[GMT_Y], S0->n_rows);
+		gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, P0->mode);
+	}
+	if (P1) {
+		gmt_setpen (GMT, P1);
+		GMT->current.plot.n = gmt_cart_to_xy_line (GMT, S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows);
+		gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, P1->mode);
 	}
 
 	if (free_S1) gmt_M_free (GMT, S1);
 	gmt_M_free (GMT, ylist1);
 	gmt_M_free (GMT, ylist2);
+	gmt_M_free (GMT, xp);
+	gmt_M_free (GMT, yp);
+	gmt_M_free (GMT, X);
 
 	return (GMT_NOERROR);
 }
