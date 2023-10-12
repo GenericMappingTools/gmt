@@ -10974,7 +10974,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 			gmt_setpen (GMT, P1);
 			GMT->current.plot.n = gmt_cart_to_xy_line (GMT, S1->data[GMT_X], S1->data[col_y1], S1->n_rows);
 			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, P1->mode);
-			if (sec_label && sec_label[0]) {
+			if (GMT->current.setting.run_mode == GMT_MODERN && sec_label && sec_label[0]) {	/* if psxy there is no -l and hence no auto-legend */
 				strncpy (GMT->common.l.item.label, sec_label, GMT_LEN128-1);
 				gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, P1, &(GMT->common.l.item), NULL);
 			}
