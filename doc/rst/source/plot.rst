@@ -24,7 +24,7 @@ Synopsis
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
-[ |-M|\ [**c**\|\ **s**][**+g**\ *fill*][**p**\ *pen*] ]
+[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
 [ |SYN_OPT-U| ]
@@ -223,15 +223,20 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**c**\|\ **s**][**+g**\ *fill*][**p**\ *pen*] ]
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*] ]
     Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
-    given via two consecutive and separate segment files (you can also use **-Ms** but that is
-    the default choice). Use **-Mc** to indicate that :math:`y_1(x)` is co-registered with
-    :math:`y_0(x)` and is given as column 2 (i.e., third) in a single segment of three columns.
+    given via one or more pairs of separate tables, each pair of tables having the same
+    number of segments (which can vary from pair to pair). Thus, the order of the even
+    number of tables given on the command line is important.
+    Alternatively, use **-Mc** to indicate that :math:`y_1(x)` is co-registered with
+    :math:`y_0(x)` and is given as column 2 (i.e., third) in any number of files having
+    three columns. Each file may contain any number of segments per file.
     We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds :math:`y_1(x)`
     and the *fill* set via **+g** for the opposite case.  Finally, you can draw the two curves
-    using |-W| for :math:`y_0(x)` and **+p** for :math:`y_1(x)`. **Note**: You must at least
-    specify either one fill or one pen, depending on desired result.
+    using |-W| for :math:`y_0(x)` and **+p** for :math:`y_1(x)`. To add a legend entry for the
+    primary :math:`y_0(x)` or the fill, see |SYN_OPT-l|. To add a legend entry for the
+    secondary curve or the fill, use modifier **+l** to give a secondary label.  **Note**: You
+    must at least specify either one fill or one pen, depending on desired result.
 
 .. _-N:
 

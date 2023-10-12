@@ -10928,7 +10928,7 @@ GMT_LOCAL int compare_curves (const void *p1, const void *p2) {
 	return (0);
 }
 
-int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1) {
+int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, char *sec_label) {
 	/* We are given two segments S0 [y0(xx)] and S1 [y1(x)].  If S1 == NULL then S1 contains
 	 * three columns and (x, y0(x), y1(x)) and we select col = GMT_Z for the second curve.
 	 * The two curves may cross each other, there may be sections of just NaNs, and they may
@@ -10958,6 +10958,30 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		S1 = S0;	/* It is the same segment... */
 		col_y1 = GMT_Z;	/* ...but a different column */
 	}
+
+	if (F0 == NULL && F1 == NULL) {	/* Just draw lines, no polygon assembly needed */
+		struct GMT_SYMBOL Sy;
+		gmt_M_memset (&Sy, 1, struct GMT_SYMBOL);
+		Sy.symbol = GMT_SYMBOL_LINE;
+		if (P0) {	/* Must draw curve S0 with selected pen */
+			gmt_setpen (GMT, P0);
+			GMT->current.plot.n = gmt_cart_to_xy_line (GMT, S0->data[GMT_X], S0->data[col_y0], S0->n_rows);
+			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, P0->mode);
+			if (GMT->common.l.active)
+				gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, P0, &(GMT->common.l.item), NULL);
+		}
+		if (P1) {	/* Must draw curve S1 with selected pen */
+			gmt_setpen (GMT, P1);
+			GMT->current.plot.n = gmt_cart_to_xy_line (GMT, S1->data[GMT_X], S1->data[col_y1], S1->n_rows);
+			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, P1->mode);
+			if (sec_label && sec_label[0]) {
+				strncpy (GMT->common.l.item.label, sec_label, GMT_LEN128-1);
+				gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, P1, &(GMT->common.l.item), NULL);
+			}
+		}
+		return (GMT_NOERROR);
+	}
+
 	stop[0] = S0->n_rows - 1;	/* Last point in S0 */
 	stop[1] = S1->n_rows - 1;	/* Last point in S1 */
 	/* Find the crossings between segments S0 and S1 */
@@ -11197,10 +11221,15 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 
 	/* Legend, if selected */
 	if (GMT->common.l.active) {
-		struct GMT_SYMBOL S;
-		gmt_M_memset (&S, 1, struct GMT_SYMBOL);
-		S.symbol = (F0) ? PSL_RECT : GMT_SYMBOL_LINE;
-		gmt_add_legend_item (GMT->parent, &S, F0 != NULL, F0, P0 != NULL, P0, &(GMT->common.l.item), NULL);
+		struct GMT_SYMBOL Sy;
+		gmt_M_memset (&Sy, 1, struct GMT_SYMBOL);
+		Sy.symbol = (F0) ? PSL_RECT : GMT_SYMBOL_LINE;
+		gmt_add_legend_item (GMT->parent, &Sy, F0 != NULL, F0, P0 != NULL, P0, &(GMT->common.l.item), NULL);
+		if ((F1 || P1) && sec_label && sec_label[0]) {	/* Set secondary label entry */
+			Sy.symbol = (F1) ? PSL_RECT : GMT_SYMBOL_LINE;
+			strncpy (GMT->common.l.item.label, sec_label, GMT_LEN128-1);
+			gmt_add_legend_item (GMT->parent, &Sy, F1 != NULL, F1, P1 != NULL, P1, &(GMT->common.l.item), NULL);
+		}
 	}
 
 	/* Free memory allocations */
