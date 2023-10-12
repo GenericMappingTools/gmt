@@ -2498,7 +2498,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 
-		if (!seq_legend && GMT->common.l.active) {
+		if (!seq_legend && GMT->common.l.active && !Ctrl->M.active) {
 			if (S.symbol == GMT_SYMBOL_LINE) {
 				if (polygon || conf_line) {	/* Place a rectangle in the legend */
 					int symbol = S.symbol;

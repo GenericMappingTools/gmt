@@ -11195,6 +11195,14 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, P1->mode);
 	}
 
+	/* Legend, if selected */
+	if (GMT->common.l.active) {
+		struct GMT_SYMBOL S;
+		gmt_M_memset (&S, 1, struct GMT_SYMBOL);
+		S.symbol = (F0) ? PSL_RECT : GMT_SYMBOL_LINE;
+		gmt_add_legend_item (GMT->parent, &S, F0 != NULL, F0, P0 != NULL, P0, &(GMT->common.l.item), NULL);
+	}
+
 	/* Free memory allocations */
 	gmt_M_free (GMT, ylist1);
 	gmt_M_free (GMT, ylist2);
