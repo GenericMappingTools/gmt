@@ -24,6 +24,7 @@ Synopsis
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
+[ |-M|\ [**p**][**+g**\ *fill*][**p**\ *pen*] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
 [ |SYN_OPT-U| ]
@@ -219,6 +220,17 @@ Optional Arguments
     Polygon may be painted (|-G|) and optionally outlined by adding **+p**\ *pen* [no outline].
     **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
     your segments are interpreted as polygons, else they are seen as lines.
+
+.. _-M:
+
+**-M**\ [**p**][**+g**\ *fill*][**p**\ *pen*] ]
+    Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
+    two consecutive segment files. Use **-Mp** to indicate that :math:`y_1(x)` is co-registered
+    with :math:`y_0(x)` and is given as column 2 (third) in a single segment of three columns.
+    We use the fill set via |-G| to fill the areas where :math:`y_0(x)` exceeds :math:`y_1(x)`
+    and the fill set via **+g** for the opposite case.  Finally, you can draw the two curves
+    using |-W| for :math:`y_0(x)` and **+p** for :math:`y_1(x)`. You must at the minimum set
+    either one fill or one pen, depending on desired result.
 
 .. _-N:
 
