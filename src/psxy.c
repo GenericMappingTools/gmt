@@ -94,10 +94,10 @@ struct PSXY_CTRL {
 		double value;
 		struct GMT_PEN pen;
 	} L;
-	struct PSXY_M {	/* -M[p][+g<fill>][+p<pen>] */
+	struct PSXY_M {	/* -M[c|s][+g<fill>][+p<pen>] */
 		bool active;
 		bool do_fill, do_draw;	/* True if we used +g or +p */
-		unsigned int mode;	/* 0 for 2 segments, 1 for a pair in one segment with 3 columns */
+		unsigned int mode;	/* 0 for 2 separate segments, 1 for a single segment with 3 columns */
 		struct GMT_FILL fill;	/* Fill where S1 > S2 [optional] */
 		struct GMT_PEN pen;		/* Pen to draw curve S1 [optional] */
 	} M;
@@ -525,7 +525,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|r|t|x|y]] [%s] [-C<cpt>] [-D<dx>/<dy>] [%s] [-F%s] [-G<fill>|+z] "
-		"[-H[<scale>]] [-I[<intens>]] %s[%s] [-M[p][+g<fill>][+p<pen>]] [-N[c|r]] %s%s [-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
+		"[-H[<scale>]] [-I[<intens>]] %s[%s] [-M[c|s][+g<fill>][+p<pen>]] [-N[c|r]] %s%s [-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
 		"[-Z<value>|<file>[+t|T]] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, PSXY_E_OPT, GMT_SEGMENTIZE3, API->K_OPT, PLOT_L_OPT, API->O_OPT, API->P_OPT,
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT,
@@ -587,9 +587,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+y Connect 1st and last point to anchor points at b (ymin), t (ymax), or y0.");
 	GMT_Usage (API, 3, "+p Draw polygon outline with <pen> [no outline].");
 	GMT_Usage (API, -2, "The polygon created may be painted via -G.");
-	GMT_Usage (API, 1, "\n-M[p][+g<fill>][+p<pen>]");
+	GMT_Usage (API, 1, "\n-M[c|s][+g<fill>][+p<pen>]");
 	GMT_Usage (API, -2, "Filling of area between to curves y0(x) and y1(x). We expect two consecutive segments "
-		"in that order. Use directive p to indicate that y1(x) is the third column in a 3-column file. "
+		"in that order. Use directive c to indicate that y0(x) and y1(0) are combined in the same file, "
+		"with y1(x) in the third column in a single 3-column file. Alternatively, use directive s to indicate "
+		"the two segments are given in two consecutive and separate files [Default]. "
 		"Use -G to set fill for areas where y0 > y1 [no fill] and -W to draw the line y0(x) [no line].");
 	GMT_Usage (API, 3, "+g Optional fill color for areas where y1 > y0 [no fill].");
 	GMT_Usage (API, 3, "+p Optional pen to draw line y1(x).");
@@ -983,14 +985,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 					Ctrl->L.outline = 1;
 				}
 				break;
-			case 'M':		/* Fill areas between two curves -M[p][+g<fill>][+p<pen1] */
+			case 'M':		/* Fill areas between two curves -M[c|s][+g<fill>][+p<pen1] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				if (opt->arg[0] == 'p')
-					Ctrl->M.mode = 1;
-				if (gmt_found_modifier (GMT, &(opt->arg[Ctrl->M.mode]), "gp")) {
+				switch (opt->arg[0]) {	/* How the two segments are provided */
+					case 'c':	Ctrl->M.mode = GMT_CURVES_COREGISTERED; j = 1;	break;
+					case 's':	Ctrl->M.mode = GMT_CURVES_SEPARATE; j = 1;	break;	/* Default but gave -Ms anyway */
+					default:	Ctrl->M.mode = GMT_CURVES_SEPARATE; j = 0;	break;	/* No directive given */
+				}
+				if (gmt_found_modifier (GMT, &(opt->arg[j]), "gp")) {
 					char p[GMT_LEN64] = {""};
 					unsigned int pos = 0;
-					while (gmt_getmodopt (GMT, 'M', &(opt->arg[Ctrl->M.mode]), "gp", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'M', &(opt->arg[j]), "gp", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'g':	/* Fill for alternate when 2nd curve is below primary */
 								if (p[1] && gmt_getfill (GMT, &p[1], &Ctrl->M.fill)) {
@@ -2407,7 +2412,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Line/polygon part */
-		uint64_t seg, seg_out = 0, n_new, n_cols = (Ctrl->M.mode) ? 3 : 2;
+		uint64_t seg, seg_out = 0, n_new, n_cols = (Ctrl->M.mode == GMT_CURVES_COREGISTERED) ? 3 : 2;
 		bool duplicate, resampled, conf_line = false, no_line_clip = (Ctrl->N.active && S.symbol == GMT_SYMBOL_LINE);
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 		struct GMT_PALETTE *A = NULL;
@@ -2537,7 +2542,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					struct GMT_FILL *F1 = (Ctrl->M.do_fill) ? &Ctrl->M.fill : NULL;
 					struct GMT_PEN  *P0 = (Ctrl->W.active)  ? &Ctrl->W.pen  : NULL;
 					struct GMT_PEN  *P1 = (Ctrl->M.do_draw) ? &Ctrl->M.pen  : NULL;
-					if (Ctrl->M.mode) {	/* Got single 3-column segments with two curves y0(x) and y1(x) */
+					if (Ctrl->M.mode == GMT_CURVES_COREGISTERED) {	/* Got single 3-column segments with two curves y0(x) and y1(x) */
 						gmt_two_curve_fill (GMT, L, NULL, F0, F1, P0, P1);
 						continue;
 					}
