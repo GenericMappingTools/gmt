@@ -10782,7 +10782,7 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 
 /*! . */
 int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
-	/* Writes a single data record to destimation.
+	/* Writes a single data record to destination.
 	 * We use mode to signal the kind of record:
 	 *   GMT_WRITE_TABLE_HEADER:   Write an ASCII table header
 	 *   GMT_WRITE_SEGMENT_HEADER: Write an ASCII or binary segment header
