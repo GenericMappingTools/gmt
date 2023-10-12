@@ -55,7 +55,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 #define THIS_MODULE_PURPOSE	"Filter a grid in the space (or time) domain"
 #define THIS_MODULE_KEYS	"<G{,FG(=1,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-RVfr" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-RVfr" GMT_ADD_xg_OPT
 
 struct GRDFILTER_CTRL {
 	struct GRDFILTER_In {
@@ -597,7 +597,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s -D<flag> -F<type><width>[/<width2>][+c|+h|+l|+q<quantile>|+u] -G%s "
 		"[%s] [-Ni|p|r] [%s] [-T] [%s] [%s] [%s]%s[%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT,
-		GMT_V_OPT, GMT_f_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		GMT_V_OPT, GMT_f_OPT, GMT_r_OPT, GMT_xg_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -670,7 +670,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
 	GMT_Usage (API, -2, "For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes. "
 		"[Default uses the same region as the input grid].");
-	GMT_Option (API, "V,f,r,x");
+	GMT_Option (API, "V,f,r");
+#ifdef HAVE_GLIB_GTHREAD
+	GMT_Option (API, "x");
+#else
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with multi-threading support.");
+#endif
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);

@@ -26,7 +26,7 @@ Synopsis
 [ |-N|\ [**p**\|\ *dpi* ]]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*] ]
+[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+r**][**+s**][**+x**\ *label*][**+y**\ *unit*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *scale* ]
@@ -49,10 +49,11 @@ colors) we will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
 setting the option |-I|. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
-widths. The font used for the annotations along the scale and optional
-units is specified by :term:`FONT_ANNOT_PRIMARY`.
-If a label is requested, it is plotted with :term:`FONT_LABEL`. For
-a full overview of CPTs, see the Cookbook section on :ref:`Color palette tables <CPT_section>`.
+widths. The font used for the annotations along the scale is specified by
+:term:`FONT_ANNOT_PRIMARY` while any unit placed at the side of the
+bar is controlled by :term:`FONT_ANNOT_SECONDARY`. If a label along the bar
+is requested, it is plotted with :term:`FONT_LABEL`. For a full overview of CPTs,
+see the Technical Reference section on :ref:`Color palette tables <CPT_section>`.
 
 .. figure:: /_images/GMT_colorbar.*
    :width: 500 px
@@ -82,7 +83,7 @@ Optional Arguments
     of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
     intervals, you must append ;\ *annotation* to each z-slice in the CPT. **Note**: The |-B|
-    option relies on the |-R| and |-J| settings of the :ref:`given hierarchical level <cookbook/features:GMT Modern Mode Hierarchical Levels>`
+    option relies on the |-R| and |-J| settings of the :ref:`given hierarchical level <reference/features:GMT Modern Mode Hierarchical Levels>`
     to plot correctly. For standard |-B| operations, |Add_-B_links|
 
 .. _-C:
@@ -182,7 +183,10 @@ Optional Arguments
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
     instead. If |-I| is used then each rectangle will have its
-    constant color modified by the specified intensity.
+    constant color modified by the specified intensity.  **Note**: For
+    categorical CPTs we default to activating |-L| with a *gap* such
+    that the sum of all the gaps equal 15% of the bar width.  You may
+    chose no gaps by giving |-L| only or explicitly set *gap = 0*.
 
 .. _-M:
 
@@ -201,7 +205,7 @@ Optional Arguments
 
 **-Q**
     Select logarithmic scale and power of ten annotations. All z-values
-    in the CPT will be converted to p = log10(z) and only integer p
+    in the CPT will be converted to p = :math:`\log_{10}(z)` and only integer p
     values will be annotated using the 10^p format [Default is linear scale].
 
 .. _-R:
@@ -214,11 +218,12 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*]
+**-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+r**][**+s**][**+x**\ *label*][**+y**\ *unit*]
     Control various aspects of color bar appearance when |-B| is *not* used.
     Append **+a** to place annotations at the given *angle* [default is no slanting].
     Append **+c** to use custom labels if given in the CPT as annotations.
     Append **+n** to use numerical labels [Default].
+    Append **+r** to only annotate lower and upper limits in the CPT [Default follows CPT boundaries].
     Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
     If |-L| is used then |-B| cannot be used, hence you may optionally set a bar label via **+x**\ *label*
     and any unit (i.e., y-label) via **+y**\ *unit*.

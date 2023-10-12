@@ -154,8 +154,8 @@ Optional Arguments
     points, as determined by :term:`PROJ_LENGTH_UNIT`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
-    within the segments endpoints [Default considers points "beyond" the
-    line's endpoints.
+    within the segment's endpoints [Default considers points "beyond" the
+    line's endpoints].
 
 .. _-N:
 
@@ -203,6 +203,7 @@ Optional Arguments
       entire segment (or we keep the entire segment if **+hk** was given), otherwise it is
       subject to the test(s) using the constant *z* for each segment.
     - **+i** - Reverses the tests to pass record with a *z* value **not** in the given range.
+
 .. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].

@@ -512,7 +512,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 	switch (*res) {
 		case 'a':	/* Automatic selection via -J or -R, if possible */
 			if (GMT->common.J.active && !gmt_M_is_linear (GMT)) {	/* Use map scale xxxx as in 1:xxxx */
-				double i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
+				double i_scale = 1.0 / (0.0254 * fabs(GMT->current.proj.scale[GMT_X]));
 				if (i_scale > GMT_CRUDE_THRESHOLD)
 					base = 4;	/* crude */
 				else if (i_scale > GMT_LOW_THRESHOLD)

@@ -82,7 +82,7 @@ Optional Arguments
     inset, **l** for map scale, or **t** for map rose to specify which plot embellisment the |-F| parameters should be
     applied to [default uses the same panel parameters for all selected map embellishments]. The following modifiers can
     be appended to |-F|, with additional explanation and examples provided in the
-    :ref:`cookbook/features:The background panel` cookbook section:
+    :ref:`reference/features:The background panel` cookbook section:
 
     .. include:: explain_-F_box.rst_
 
@@ -198,7 +198,7 @@ A 10-cm-wide basemap using the Cassini projection may be obtained by
 
 ::
 
-gmt basemap -R20/50/20/35 -JC35/28/10c -Bafg -B+tCassini -pdf cassini
+  gmt basemap -R20/50/20/35 -JC35/28/10c -Bafg -B+tCassini -pdf cassini
 
 Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~
@@ -228,7 +228,7 @@ To create a page-size global oblique Mercator basemap for a pole at
 
 ::
 
-  gmt basemap -R0/360/-70/70 -Joc0/0/90/30/0.064cd -B30g30 -B+t"Oblique Mercator" -pdf oblmerc
+  gmt basemap -R0/360/-70/70 -Joc0/0/90/30/0.064c -B30g30 -B+t"Oblique Mercator" -pdf oblmerc
 
 Transverse Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

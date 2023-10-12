@@ -4,11 +4,10 @@
 #	[skip srtm which is just a special version of dem2]
 #
 # We have five sets of CPT figures to make:
-# 1a) Our regular, traditional GMT CPTs [44]
-# 1b) The regular Scientific Color Maps* [30]
-# 1c) Categorical CPTs [18]
-# 1d) Cyclic CPTs [7]
-# 1e) Colormaps from cmocean [22]
+# 1a) Our regular, traditional GMT CPTs [46]
+# 1b) The regular Scientific Color Maps* [55]
+# 1c) Cyclic CPTs [7]
+# 1d) Colormaps from cmocean [22]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 

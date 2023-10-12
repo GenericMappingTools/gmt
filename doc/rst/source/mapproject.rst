@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
+[ |-W|\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -84,6 +84,8 @@ Required Arguments
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+(Note that depending on the Optional Arguments listed below, sometimes -J and -R are not actually required.)
 
 Optional Arguments
 ------------------
@@ -230,7 +232,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
+**-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -240,12 +242,14 @@ Optional Arguments
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
     where a plot point is given directly. To output the rectangular domain that
     covers an oblique area as defined by |-R| |-J|, append **r**,
-    or use |-R| to get the result in -Rw/e/s/n string format. Similarly, if an
+    or append **R** to get the result in -Rw/e/s/n string format. Alternatively
+    use **b** or **B** to get the bounding box in longitude and latitude. Similarly, if an
     oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
     use **o** to return the diagonal corner coordinates in degrees (in the order
     *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
     text. To return the coordinates of the rectangular area encompassing the non-rectangular
     area defined by your |-R| |-J|, use **e**, or **E** for the trailing text string.
+    Similarly, use **m** or **M** to get the rectangular region in projected coordinates instead.
     Alternatively (for **e** or **r**), append **+n** to set how many points [100]
     you want along each side for a closed polygon of the oblique area instead
     [Default returns the width and height of the map].
@@ -330,16 +334,12 @@ Examples
 .. include:: explain_example.rst_
 
 To transform a remote file with (latitude,longitude) into (x,y) positions in cm
-on a Mercator grid for a given scale of 0.5 cm per degree and selected region, run
-
-::
+on a Mercator grid for a given scale of 0.5 cm per degree and selected region, run::
 
   gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
 
 To convert UTM coordinates in meters to geographic locations, given
-a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
-
-::
+a file utm.txt and knowing the UTM zone (and zone or hemisphere), try::
 
   gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
 
@@ -347,33 +347,25 @@ a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
 To transform several 2-column, binary, double precision files with
 (latitude,longitude) into (x,y) positions in inch on a Transverse
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
-those points that would fall outside the map area, run
-
-::
+those points that would fall outside the map area, run::
 
   gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
 To convert the geodetic coordinates (lon, lat, height) in the file
 old.txt from the NAD27 CONUS datum (Datum ID 131 which uses the
-Clarke-1866 ellipsoid) to WGS 84, run
-
-::
+Clarke-1866 ellipsoid) to WGS 84, run::
 
   gmt mapproject old.txt -Th131 > new.txt
 
 To compute the closest distance (in km) between each point in the input
 file quakes.txt and the line segments given in the multisegment ASCII
-file coastline.txt, run
-
-::
+file coastline.txt, run::
 
   gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
 
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times
-assuming a fixed speed of 12 knots.  We do this with
-
-::
+assuming a fixed speed of 12 knots.  We do this with::
 
   gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
@@ -382,38 +374,32 @@ measured in nm (set by |-G|) per hour (set by :term:`TIME_UNIT`).
 Elapsed times will be reported in hours (unless **+f** is added to |-Z|
 for ISO elapsed time).
 
-To determine the geographic coordinates of the mid-point of this transverse Mercator map, try
-
-::
+To determine the geographic coordinates of the mid-point of this transverse Mercator map, try::
 
   gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
 
 To determine the rectangular region that encompasses the oblique region
-defined by an oblique Mercator projection, try
-
-::
+defined by an oblique Mercator projection, try::
 
   gmt mapproject -R270/20/305/25+r -JOc280/25.5/22/69/2c -WR
 
 To determine the oblique region string (in degrees) that corresponds to a rectangular
-(but oblique) region specified in projected units defined by an oblique Mercator projection, try
-
-::
+(but oblique) region specified in projected units defined by an oblique Mercator projection, try::
 
   gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
 
-To instead get a closed polygon of the oblique area in geographical coordinates, try
-
-::
+To instead get a closed polygon of the oblique area in geographical coordinates, try::
 
   gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Wr+n > polygon.txt
 
 To find the region string that corresponds to the rectangular region that encompasses
-the projected region defined by a stereographic projection, try
-
-::
+the projected region defined by a stereographic projection, try::
 
   gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
+
+To obtain the azimuth of a railroad using the points where it enters and leaves a city, try::
+
+  echo -87.7447873 42.1192976 -87.7725841 42.1523955 | gmt mapproject -AF+v -fg -o4
 
 Restrictions
 ------------
@@ -429,7 +415,7 @@ or alternatively, use **awk** to scale and shift the (x,y) values before
 transforming.
 
 For some projection, a spherical solution may be used despite the user
-having selected an ellipsoid. This occurs when the users |-R| setting
+having selected an ellipsoid. This occurs when the user's |-R| setting
 implies a region that exceeds the domain in which the ellipsoidal series
 expansions are valid. These are the conditions: (1) Lambert Conformal
 Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical

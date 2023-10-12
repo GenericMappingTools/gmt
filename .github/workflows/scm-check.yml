@@ -21,7 +21,7 @@ jobs:
       - name: Check the latest release
         id: scm
         run: |
-          scm_version_in_gmt=7.0.1
+          scm_version_in_gmt=8.0.0
 
           # Get version string and date from Zenodo API
           # https://doi.org/10.5281/zenodo.1243862
@@ -30,11 +30,11 @@ jobs:
           echo "SCM version ${scm_version} (${scm_version_date})"
 
           # Set output of the current step
-          echo "::set-output name=scm_version::${scm_version}"
-          echo "::set-output name=scm_version_date::${scm_version_date}"
+          echo "scm_version=${scm_version}" >> $GITHUB_OUTPUT
+          echo "scm_version_date=${scm_version_date}" >> $GITHUB_OUTPUT
           if [ "${scm_version}" != ${scm_version_in_gmt} ]; then
             echo "The latest SCM version (${scm_version}) is different from the one in GMT (${scm_version_in_gmt})!"
-            echo "::set-output name=error_code::2"
+            echo "error_code=2" >> $GITHUB_OUTPUT
           fi
 
       - name: Create an update request
@@ -59,7 +59,7 @@ jobs:
             - [ ] Make sure to update the following files:
               - [ ] Version number in `admin/build-scientific-colors-cpt.sh` and `.github/workflows/scm-check.yml`
               - [ ] List of colour maps in `src/gmt_cpt_masters.h` using lines in `/tmp/cpt_strings.txt` (only if new colour maps were added)
-              - [ ] Counts of colour maps in `doc/rst/source/cookbook/cpts.rst` (only if new colour maps were added)
+              - [ ] Counts of colour maps in `doc/rst/source/reference/cpts.rst` (only if new colour maps were added)
               - [ ] List of colour maps and counts in `doc/scripts/GMT_App_M_1*.sh` (only if new colour maps were added)
             - [ ] Update the associated `doc/scripts/GMT_App_M_1*.ps` file(s)
             - [ ] Commit all changes and open a PR

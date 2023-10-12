@@ -182,6 +182,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	while ( gmt_fgets (GMT, line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
 		sscanf (line, "%s %s %[^\n]", Country[k].continent, Country[k].code,  Country[k].name);
+		gmt_chop (Country[k].name);	/* Eliminate any nasty CR/LF from Windows */
 		k++;
 		if (k == n_alloc) {
 			n_alloc += GMT_LEN128;
@@ -207,6 +208,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	while ( gmt_fgets (GMT, line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
 		sscanf (line, "%s %s %[^\n]", State[k].country, State[k].code,  State[k].name);
+		gmt_chop (State[k].name);	/* Eliminate any nasty CR/LF from Windows */
 		if (k && strcmp (State[k].country, State[k-1].country)) ns++;	/* New country with states */
 		k++;
 		if (k == n_alloc) {
@@ -262,6 +264,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 				goto bail;
 			}
 			nf = sscanf (&line[5], "%s %[^\n]", Collection[k].region, Collection[k].name);
+			gmt_chop (Collection[k].name);	/* Eliminate any nasty CR/LF from Windows */
 			if (nf == 2 && !isalpha (Collection[k].name[0])) {	/* Gave a name that do not start with a letter */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Collection name must start with a letter (%s)\n", (Collection[k].name));
 				goto bail;
@@ -759,6 +762,18 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((retval = nc_get_att_double (ncid, yvarid, "min", &south))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "max", &north))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "scale", &yscl))) continue;
+		if (GMT->current.setting.format_geo_out[0] == 'D') {	/* [-180 180]*/
+			if (west > 180) west -= 360;
+			if (east > 180) east -= 360;
+		}
+		else if (GMT->current.setting.format_geo_out[0] == '+') {	/* [0 360]*/
+			if (west < 0) west += 360;
+			if (east < 0) east += 360;
+		}
+		else if (GMT->current.setting.format_geo_out[0] == '-') {	/* [-360 0]*/
+			if (west > 0) west -= 360;
+			if (east > 0) east -= 360;
+		}
 		if (mode & GMT_DCW_REGION) {	/* Just update wesn */
 			Z[r_item].west = west;	Z[r_item++].east = east;
 			if (south < wesn[YLO]) wesn[YLO] = south;
@@ -901,7 +916,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (special) {	/* Plot via psxy or clip via psclip, then free dataset */
 		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};
-		static char *module[2] = {"psxy", "psclip"};
+		static char *module[4] = {"psxy", "psclip", "plot", "clip"};
+		if (GMT->current.setting.run_mode == GMT_MODERN) special += 2;	/* Use modern mode module names */
 		/* Get a virtual file for the current DCW dataset */
 		if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, in_string) == GMT_NOTSET) {
 			return (NULL);

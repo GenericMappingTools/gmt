@@ -19,8 +19,8 @@ Synopsis
 [ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
-[ -L|\ *dist*\ /*noise*\ /*offset* ]
-[ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
+[ |-L|\ *dist*\ /*noise*\ /*offset* ]
+[ |-N|\ *pfile*\ [**+a**][**+i**][**+p**\ *start*][**+r**][**+z**] ]
 [ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
@@ -143,20 +143,22 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**]
-    Determine if one (or all, with **+a**) points of each feature in the
+**-N**\ *pfile*\ [**+a**][**+i**][**+p**\ *start*][**+r**][**+z**]
+    Lines and polygons: Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
     taken from the aspatial value assigned to Z, the segment header
     (first |-Z|, then |-L| are scanned), or it is assigned the
     running number that is initialized to *start* [0]. By default the
-    input segment that are found to be inside a polygon are written to
+    input segments that are found to be inside a polygon are written to
     standard output with the polygon ID encoded in the segment header as
     **-Z**\ *ID*. Alternatively, append **+r** to just report which
     polygon contains a feature or **+z** to have the IDs added as an
     extra data column on output. Segments that fail to be inside a
     polygon are not written out. If more than one polygon contains the
-    same segment we skip the second (and further) scenario.
+    same segment we skip the second (and further) scenarios. Point clouds:
+    Use modifier **+i** and we will determine the polygon ID for
+    every **i**\ ndividual input point and add it as the last column.
 
 .. _-Q:
 
@@ -205,7 +207,7 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [*clippolygon*]
-    Truncate polygons against the specified polygon given, possibly
+    Truncate polygons and lines against the specified polygon given, possibly
     resulting in open polygons. If no argument is given to |-T| we
     create a clipping polygon from |-R| which then is required. Note
     that when the |-R| clipping is in effect we will also look for
@@ -281,6 +283,11 @@ To turn all lines in the multisegment file lines.txt into closed polygons,
 run::
 
     gmt spatial lines.txt -F > polygons.txt
+
+To append the polygon ID of every individual point in cloud.txt that is inside the
+polygons in the file poly.txt and write that ID as the last column per output row, run::
+
+    gmt spatial cloud.txt -Npoly.txt+i  > cloud_IDs.txt
 
 To compute the area of all geographic polygons in the multisegment file
 polygons.txt, run::
