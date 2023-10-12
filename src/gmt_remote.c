@@ -900,7 +900,7 @@ GMT_LOCAL void gmtremote_init_paths (struct GMTAPI_CTRL *API) {
 	struct GMT_CTRL *GMT = API->GMT;	/* Short hand */
 
 	if (API->paths_initialized) return;	/* Been here done that */
-	GMT_Report (API, GMT_MSG_NOTICE, "GMT_DATA_SERVER is %s\n", (GMT->session.DATASERVER == NULL) ? "NOT set" : GMT->session.DATASERVER);
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_DATA_SERVER is %s\n", (GMT->session.DATASERVER == NULL) ? "NOT set" : GMT->session.DATASERVER);
 	if (GMT->session.DATASERVER == NULL) return;
 	if ((srv_dir = gmtlib_prepend_server_name (GMT, false)) == NULL) return;
 	if (!strcmp (srv_dir, "server") || !strcmp ("oceania", GMT_DATA_SERVER)) return;

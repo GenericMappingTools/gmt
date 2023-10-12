@@ -31,8 +31,7 @@ In addition to the GMT installer, you also need to download and install
 `GraphicsMagick <http://www.graphicsmagick.org/>`__ if you want to
 create animated GIFs.
 
-**NOTE:** There are several options for using `GMT on non-UNIX
-systems <https://docs.generic-mapping-tools.org/latest/reference/non-unix-platforms.html>`__
+**NOTE:** There are several options for using :doc:`/reference/non-unix-platforms`
 such as Windows, including `Windows Subsystem for
 Linux <https://docs.microsoft.com/en-us/windows/wsl/>`__, MinGW/MSYS2,
 Cygwin, or DOS batch scripts. The last option will not provide you with
