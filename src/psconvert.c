@@ -576,7 +576,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 #ifdef JULIA_GHOST_JLL
 	/* In Julia when using the precompiled Artifacts, the Ghost is also shipped with but when gmt_init makes
 	   calls to psconvert it doesn't set -G with the path to the Ghostscript_jll executable and those processes
-	   fail (mostly modern mode stuff). The solution is to try to read the gs path from ~/.gmt/ghost_jll_path.txt 
+	   fail (mostly modern mode stuff). The solution is to try to read the gs path from ~/.gmt/ghost_jll_path.txt
 	   This code should only be executed by binaries created Julia's BinaryBuilder.
 	 */
 	bool found_gs = false;
@@ -745,7 +745,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "G: Select PNG (transparent where nothing is plotted).");
 	GMT_Usage (API, 3, "j: Select JPEG.");
 	GMT_Usage (API, 3, "m: Select PPM.");
-	GMT_Usage (API, 3, "s: Select SVG [if supported by your Ghostscript version].");
 	GMT_Usage (API, 3, "t: Select TIF.");
 	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
 	GMT_Usage (API, 3, "+m For b, g, j, and t, make a monochrome (grayscale) image [color].");
@@ -2687,7 +2686,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (Ctrl->W.active && found_proj && !Ctrl->W.kml) {	/* Write a world file */
+		if (Ctrl->W.active && found_proj && !Ctrl->W.kml) {	/* Write a world file unless KML [and Geotiff if -W+g] */
 			double x_inc, y_inc;
 			char world_file[PATH_MAX] = "", *wext = NULL, *s = NULL;
 
@@ -2741,12 +2740,12 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (proj4_cmd)
 					GMT_Report (API, GMT_MSG_INFORMATION, "Proj4 definition: %s\n", proj4_cmd);
 			}
-
 			gmt_M_str_free (wext);
 
 			if (Ctrl->W.warp && proj4_cmd && proj4_cmd[1] == 'p') {	/* We got a usable Proj4 string. Run it (if gdal is around) */
 				/* The true geotiff file will have the same base name plus a .tiff extension.
 				   We will reuse the world_file variable because all it is need is to replace the extension */
+				char *delete_world_file = strdup (world_file);
 				pos_ext = get_extension_period (world_file);	/* Get beginning of file extension */
 				world_file[pos_ext] = '\0';
 				strcat (world_file, ".tiff");
@@ -2768,6 +2767,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				if (!Ctrl->T.active)	/* Get rid of the intermediate JPG file if -T was not set */
 					gmt_remove_file (GMT, out_file);
+				if (delete_world_file) gmt_remove_file (GMT, delete_world_file);	/* No longer needed now we have a Geotiff file */
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
 				GMT_Report (API, GMT_MSG_ERROR, "Could not find the Proj4 command in the PS file. No conversion performed.\n");

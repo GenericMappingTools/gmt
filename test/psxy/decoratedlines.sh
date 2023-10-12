@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Place 7 decorated lines with symbols along them
+# Due to hairline differences due to arcm64 macOS and Intel we need a
+# higher rms threshold for this test to pass
+# GRAPHICSMAGICK_RMS = 0.04
 ps=decoratedlines.ps
 cat << EOF > vert.txt
 90	0

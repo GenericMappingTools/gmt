@@ -25,6 +25,12 @@ if (SPHINX_FOUND)
 		add_depend_to_target (gmt_release _scripts_images_release)
 	endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
+	if (GMT_DOCS_DEPEND_ON_GMT)
+		set (_gmt_command ${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt)
+	else (GMT_DOCS_DEPEND_ON_GMT)
+		set (_gmt_command gmt)
+	endif (GMT_DOCS_DEPEND_ON_GMT)
+
 	# Convert PS to PNG
 	file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
 	set (_scripts_png)
@@ -35,7 +41,7 @@ if (SPHINX_FOUND)
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 			COMMAND ${CMAKE_COMMAND} -E env
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+			${_gmt_command} psconvert
 			-A -P -E150 -Tg -Qg4 -Qt4
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
@@ -53,7 +59,7 @@ if (SPHINX_FOUND)
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND ${CMAKE_COMMAND} -E env
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
+			${_gmt_command} psconvert -A -P -Tf
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

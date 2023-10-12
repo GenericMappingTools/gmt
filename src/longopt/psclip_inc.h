@@ -24,21 +24,13 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
-	          "",                  "",
+	{ 0, 'A', "straightlines|steps",
+	          "m,p,x,y,r,t",       "meridian,parallel,x,y,r,theta",
 	          "",                  "" },
-	{ 0, 'C', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
+	{ 0, 'C', "endclip",    "", "", "", "" },
+	{ 0, 'N', "invert",     "", "", "", "" },
+	{ 0, 'T', "clipregion", "", "", "", "" },
+	{ 0, 'W', "pen",        "", "", "", "" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
 };
 #endif  /* !PSCLIP_INC_H */

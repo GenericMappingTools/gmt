@@ -224,8 +224,8 @@ Optional Arguments
     * 1 = frequency_percent
     * 2 = log (1.0 + count)
     * 3 = log (1.0 + frequency_percent)
-    * 4 = log10 (1.0 + count)
-    * 5 = log10 (1.0 + frequency_percent).
+    * 4 = :math:`\log_{10}` (1.0 + count)
+    * 5 = :math:`\log_{10}` (1.0 + frequency_percent).
 
     To use weights provided as a second data column instead of pure counts,
     append **+w**.

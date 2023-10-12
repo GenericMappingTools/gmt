@@ -166,6 +166,7 @@ struct GMTAPI_CTRL {
 	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
 	bool use_gridline_registration_warn;	/* true if we should warn about the above */
 	bool ignore_BC;       	   /* temporarily set true for, say, weight grids in grdfilter which do not need a BC wrap-around check */
+	bool paths_initialized;		/* True when we set default USERDIR and CACHEDIR */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */

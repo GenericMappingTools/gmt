@@ -16,11 +16,11 @@ Quick links
    - :ref:`Projections Specifications <proj-codes>`
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`Colors <gmtcolors>`
-   - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
-   - :doc:`Using LaTeX in text </cookbook/gmt-latex>`
-   - :doc:`Built-in CPTs </cookbook/cpts>`
-   - :doc:`Built-in patterns </cookbook/predefined-patterns>`
-   - :doc:`Octal Codes of Characters </cookbook/octal-codes>`
+   - :doc:`35 Postscript Fonts </reference/postscript-fonts>`
+   - :doc:`Using LaTeX in text </reference/gmt-latex>`
+   - :doc:`Built-in CPTs </reference/cpts>`
+   - :doc:`Built-in patterns </reference/predefined-patterns>`
+   - :doc:`Octal Codes of Characters </reference/octal-codes>`
    - :ref:`Character Escape Sequences <Char-esc-seq>`
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
@@ -42,11 +42,10 @@ Quick links
         :maxdepth: 1
         :caption: Getting started
 
+        install
         gallery
         animations
         tutorial
-        tutorial_jl
-        Tutorials in PyGMT <https://www.pygmt.org/latest/tutorials/index.html>
 
     ---
 
@@ -55,8 +54,9 @@ Quick links
         :caption: Reference documentation
 
         modules
-        cookbook
+        reference
         datasets
+        modules-classic
 
     ---
 
@@ -70,15 +70,6 @@ Quick links
         deprecated-defaults
         switching
         migrating
-
-    ---
-
-    .. toctree::
-        :maxdepth: 1
-        :caption: Classic Mode
-
-        std-opts-classic
-        modules-classic
 
     ---
 

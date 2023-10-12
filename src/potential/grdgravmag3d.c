@@ -44,7 +44,7 @@
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
 #define THIS_MODULE_KEYS	"<G{+,FD(,CG(,MG(,GG}"
 #define THIS_MODULE_NEEDS	"g"
-#define THIS_MODULE_OPTIONS "-:RVfx"
+#define THIS_MODULE_OPTIONS "-:RVf" GMT_ADD_xg_OPT
 
 typedef void (*PFV) ();		/* pointer to a function returning void */
 typedef double (*PFD) ();		/* pointer to a function returning double */
@@ -199,8 +199,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <grdfile_top> [<grdfile_bot>] [-C<density>] [-D] [-E<thickness>] [-F<xy_file>] "
 		"[-G%s] [-H<params>] [%s] [-L<z_obs>] [-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]] "
-		"[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] %s[%s]\n",
-		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		"[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg]%s[%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_xg_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -255,7 +255,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #ifdef HAVE_GLIB_GTHREAD
 	GMT_Option (API, "x");
 #else
-	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with multi-threading support.");
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with GLIB multi-threading support.");
 #endif
 	GMT_Option (API, ":,.");
 

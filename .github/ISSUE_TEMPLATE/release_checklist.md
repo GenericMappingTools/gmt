@@ -25,7 +25,7 @@ assignees: ''
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](https://github.com/GenericMappingTools/gmt/blob/master/doc/rst/source/changes.rst)
 - [ ] update the version information in CITATION.cff
-- [ ] check installation instructions in [INSTALL.md](https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md)
+- [ ] check installation instructions in [install.rst](https://github.com/GenericMappingTools/gmt/tree/master/doc/rst/source/install.rst)
 - [ ] check if there are any warnings when building the documentation
 - [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
@@ -41,6 +41,7 @@ assignees: ''
 - [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS bundle (@PaulWessel)
 - [ ] create Windows win64 installer (@joa-quim)
+- [ ] create Windows win64 portable (@joa-quim?)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
 - [ ] check if the macOS bundles work well (@seisman, @maxrjones)
 - [ ] check if the Windows installers work well (volunteers needed!)

@@ -40,8 +40,8 @@ tile size.  We downsample the grid depending on the
 viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
-intensities in the (-1,+1) range or by giving instructions to derive intensities
-from the input data grid automatically (see |-I|). Values outside the (-1,+1) intensity range will be
+intensities in the ±1 range or by giving instructions to derive intensities
+from the input data grid automatically (see |-I|). Values outside the ±1 intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
 :doc:`grdimage`. Otherwise, we must first make a PostScript plot that is then converted to raster image via
@@ -110,7 +110,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the (-1,+1) range,
+    Gives the name of a grid file with intensities in the ±1 range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *grid*
     via a call to :doc:`grdgradient`; append **+a**\ *azimuth* and **+n**\ *args*
