@@ -2407,7 +2407,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Line/polygon part */
-		uint64_t seg, seg_out = 0, n_new, n_cols = 2;
+		uint64_t seg, seg_out = 0, n_new, n_cols = (Ctrl->M.mode) ? 3 : 2;
 		bool duplicate, resampled, conf_line = false, no_line_clip = (Ctrl->N.active && S.symbol == GMT_SYMBOL_LINE);
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 		struct GMT_PALETTE *A = NULL;
