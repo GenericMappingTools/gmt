@@ -10928,7 +10928,7 @@ GMT_LOCAL int compare_curves (const void *p1, const void *p2) {
 	return (0);
 }
 
-int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, struct GMT_PEN *PD, char *sec_label) {
+int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, struct GMT_PEN *PR, char *sec_label) {
 	/* We are given two segments S0 [y0(xx)] and S1 [y1(x)].  If S1 == NULL then S1 contains
 	 * three columns and (x, y0(x), y1(x)) and we select col = GMT_Z for the second curve.
 	 * The two curves may cross each other, there may be sections of just NaNs, and they may
@@ -11233,14 +11233,14 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	if (GMT->common.l.active) {
 		struct GMT_SYMBOL Sy;
 		gmt_M_memset (&Sy, 1, struct GMT_SYMBOL);
-		if (PD && F0) {	/* Change color of pen to match fill */
+		if (PR && F0) {	/* Change color of pen to match fill */
 			Sy.symbol = GMT_SYMBOL_LINE;
-			gmt_M_rgb_copy (PD->rgb, F0->rgb);
-			gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, PD, &(GMT->common.l.item), NULL);
+			gmt_M_rgb_copy (PR->rgb, F0->rgb);
+			gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, PR, &(GMT->common.l.item), NULL);
 			if (F1 && sec_label && sec_label[0]) {	/* Set secondary label entry */
-			gmt_M_rgb_copy (PD->rgb, F1->rgb);
+			gmt_M_rgb_copy (PR->rgb, F1->rgb);
 				strncpy (GMT->common.l.item.label, sec_label, GMT_LEN128-1);
-				gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, PD, &(GMT->common.l.item), NULL);
+				gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, PR, &(GMT->common.l.item), NULL);
 			}
 		}
 		else {	/* Do as indicated (fill rect or pen) */

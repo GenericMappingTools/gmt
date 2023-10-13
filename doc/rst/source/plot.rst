@@ -24,7 +24,7 @@ Synopsis
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
-[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+y**\ [*level*]] ]
+[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
 [ |SYN_OPT-U| ]
@@ -223,7 +223,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+y**\ [*level*]] ]
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
     Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
     given via one or more pairs of separate tables, each pair of tables having the same
     number of segments (which can vary from pair to pair). Thus, the order of the even
@@ -237,8 +237,12 @@ Optional Arguments
     and the *fill* set via **+g** for the opposite case.  Finally, you can draw the two curves
     using |-W| for :math:`y_0(x)` and **+p** for :math:`y_1(x)`. To add a legend entry for the
     primary :math:`y_0(x)` or the fill, see |SYN_OPT-l|. To add a legend entry for the
-    secondary curve or the fill, use modifier **+l** to give a secondary label.  **Note**: You
-    must at least specify either one fill or one pen, depending on desired result.
+    secondary curve or the fill, use modifier **+l** to give a secondary label.  Normally, we show
+    one (|-G|) or two (**+g**) filled rectangles in the legend if fill was selected for the
+    alternating areas between the two curves. Use **+r** to instead specify a pen to simply
+    draw a line instead in the legend, but replace the color information from the fill settings
+    (i.e., only the *pen* width is used as specified, the color is not used).  **Note**: You
+    must at least specify either one fill or one pen, depending on your desired result.
 
 .. _-N:
 
