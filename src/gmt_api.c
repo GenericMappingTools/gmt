@@ -1379,7 +1379,7 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 GMT_LOCAL unsigned int gmtapi_pick_out_col_number (struct GMT_CTRL *GMT, unsigned int col) {
 	/* Return the next column to be reported on output */
 	unsigned int col_pos;
-	if (GMT->common.o.select)	/* -o has selected specific columns */
+	if (GMT->common.o.col.select)	/* -o has selected specific columns */
 		col_pos = GMT->current.io.col[GMT_OUT][col].col;	/* Which data column to pick */
 	else if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && col < GMT_Z)	/* Worry about -: for lon,lat */
 		col_pos = 1 - col;	/* Write lat/lon instead of lon/lat */
@@ -1420,7 +1420,7 @@ unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, 
 	 * col_pos_out will uniquely touch the same values as col loops over, but col_pos_in may be outside that range
 	 * and even have repeated column values (e.g., due to -i0,1,2,2+s5). */
 	unsigned int col_pos_out;
-	if (GMT->common.i.select) {	/* -i has selected some columns */
+	if (GMT->common.i.col.select) {	/* -i has selected some columns */
 		*col_pos_in = GMT->current.io.col[GMT_IN][col].col;   /* Which data column to take the value from input */
 		col_pos_out = GMT->current.io.col[GMT_IN][col].order; /* Which data column to place it on output */
 	}
@@ -3769,7 +3769,7 @@ GMT_LOCAL void gmtapi_switch_cols (struct GMT_CTRL *GMT, struct GMT_DATASET *D, 
 GMT_LOCAL bool gmtapi_vector_data_must_be_duplicated (struct GMTAPI_CTRL *API, struct GMT_VECTOR *V) {
     /* Check if referenced vector data arrays must be scaled/offset and hence must be duplicated instead */
     for (unsigned int col = 0; col < V->n_columns; col++) {
-        if (API->GMT->common.i.select && API->GMT->current.io.col[GMT_IN][col].convert) return (true); /* Cannot pass as read-only if it must be converted */
+        if (API->GMT->common.i.col.select && API->GMT->current.io.col[GMT_IN][col].convert) return (true); /* Cannot pass as read-only if it must be converted */
     }
     return false;    /* Seems OK */
 }
@@ -3951,7 +3951,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				/* Allocate a table with a single segment given matrix dimensions, but if nan-record we may end up with more segments */
 				smode = (M_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
-				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : M_obj->n_columns;
+				n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : M_obj->n_columns;
 				if ((D_obj->table[D_obj->n_tables] = gmt_get_table (GMT)) == NULL) return NULL;
 				if ((D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *)) == NULL) return NULL;
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, M_obj->n_rows, n_columns, NULL, NULL);
@@ -4027,7 +4027,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				/* Allocate a single table with one segment - there may be more if there are nan-records */
 				smode = (V_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a vector has text we have a mixed record */
-				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : V_obj->n_columns;
+				n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : V_obj->n_columns;
 				if ((D_obj->table[D_obj->n_tables] = gmt_get_table (GMT)) == NULL) return NULL;
 				if ((D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *)) == NULL) return NULL;
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, V_obj->n_rows, n_columns, NULL, NULL);
@@ -4106,7 +4106,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				/* Each column double array source becomes preallocated column arrays in a separate table with a single segment */
 				smode = (V_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
-				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : V_obj->n_columns;
+				n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : V_obj->n_columns;
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
 				            V_obj->n_columns, V_obj->n_rows);
 				if ((D_obj->table[D_obj->n_tables] = gmt_get_table (GMT)) == NULL) return NULL;
@@ -4115,7 +4115,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				if (S == NULL) return NULL;
 				SH = gmt_get_DS_hidden (S);
 				for (col = 0; col < V_obj->n_columns; col++) {
-					if (GMT->common.i.select) {	/* -i has selected some columns */
+					if (GMT->common.i.col.select) {	/* -i has selected some columns */
 						col_pos = GMT->current.io.col[GMT_IN][col].col;	/* Which data column to pick */
 						col_pos_out = GMT->current.io.col[GMT_IN][col].order; /* Which data column to place it on output */
 					}
@@ -4321,8 +4321,8 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 #endif
 	}
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
-	if (API->GMT->common.o.end || GMT->common.o.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
-		gmtlib_reparse_o_option (GMT, (GMT->common.o.text) ? 0 : D_obj->n_columns);
+	if (API->GMT->common.o.col.end || GMT->common.o.col.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
+		gmtlib_reparse_o_option (GMT, (GMT->common.o.col.text) ? 0 : D_obj->n_columns);
 	toggle = (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && D_obj->n_columns >= 2);
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT] = GMT->current.io.data_record_number_in_seg[GMT_OUT] = 0;
 	DH = gmt_get_DD_hidden (D_obj);
@@ -4368,7 +4368,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			save = GMT->current.io.multi_segments[GMT_OUT];
 			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
 			n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of rows needed to hold the data [incl any segment headers] */
-			n_columns = (GMT->common.o.select) ? GMT->common.o.n_cols : D_obj->n_columns;					/* Number of columns needed to hold the data records */
+			n_columns = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : D_obj->n_columns;					/* Number of columns needed to hold the data records */
 			if ((M_obj = S_obj->resource) == NULL) {	/* Must allocate suitable matrix */
 				M_obj = gmtlib_create_matrix (GMT, 1U, 0);	/* 1-layer matrix (i.e., 2-D) */
 				/* Allocate final output space since we now know all dimensions */
@@ -4441,7 +4441,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table to user column arrays location\n");
 			save = GMT->current.io.multi_segments[GMT_OUT];
 			if (GMT->current.io.skip_headers_on_outout) GMT->current.io.multi_segments[GMT_OUT] = false;
-			n_columns = (GMT->common.o.select) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
+			n_columns = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
 			n_rows = (GMT->current.io.multi_segments[GMT_OUT]) ? D_obj->n_records + D_obj->n_segments : D_obj->n_records;	/* Number of data records [and any segment headers] */
 			if ((V_obj = S_obj->resource) == NULL) {	/* Must create output container given data dimensions */
 				if ((V_obj = gmt_create_vector (GMT, n_columns, GMT_OUT)) == NULL)
@@ -4506,7 +4506,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				GMT_Report (API, GMT_MSG_WARNING, "Output may be truncated or an error may occur!\n");
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table to user column arrays location\n");
-			n_columns = (GMT->common.o.select) ? GMT->common.o.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
+			n_columns = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : D_obj->n_columns;	/* Number of columns needed to hold the data records */
 			n_rows = D_obj->n_records;	/* Number of data records */
 			S = D_obj->table[0]->segment[0];	/* Shorthand for this single segment */
 			if ((V_obj = S_obj->resource) == NULL) {	/* Must create output container given data dimensions */
@@ -9221,7 +9221,7 @@ GMT_LOCAL void gmtapi_maybe_change_method_to_duplicate (struct GMTAPI_CTRL *API,
         S_obj->method = GMT_IS_DUPLICATE;   /* Must duplicate this resource */
         GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
     }
-    else if (S_obj->actual_family == GMT_IS_DATASET && S_obj->family == GMT_IS_DATASET && API->GMT->common.i.select) {
+    else if (S_obj->actual_family == GMT_IS_DATASET && S_obj->family == GMT_IS_DATASET && API->GMT->common.i.col.select) {
         S_obj->method = GMT_IS_DUPLICATE;   /* Must duplicate this resource */
         GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input dataset needs to be operated on to become output GMT dataset\n");
     }
@@ -10070,7 +10070,7 @@ GMT_LOCAL struct GMT_RECORD *gmtapi_get_record_matrix (struct GMTAPI_CTRL *API, 
 			API->get_next_record = true;	/* Since we haven't read the next record yet */
 		}
 		API->current_get_M = gmtapi_get_matrix_data (S->resource);
-		API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
+		API->current_get_n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : S->n_columns;
 		if ((API->current_get_M_index = gmtapi_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL)) == NULL)
 			return NULL;
 		if ((API->current_get_M_val = gmtapi_select_get_function (API, API->current_get_M->type)) == NULL)
@@ -10130,7 +10130,7 @@ GMT_LOCAL struct GMT_RECORD *gmtapi_get_record_vector (struct GMTAPI_CTRL *API, 
 			API->get_next_record = true;	/* Since we haven't read the next record yet */
 		}
 		API->current_get_V = gmtapi_get_vector_data (S->resource);
-		API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
+		API->current_get_n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : S->n_columns;
 		API->current_get_V_val = gmt_M_memory (GMT, API->current_get_V_val, API->current_get_V->n_columns, GMT_getfunction);	/* Array of functions */
 		for (col = 0; col < API->current_get_V->n_columns; col++)	/* We know the number of columns from registration */
 			API->current_get_V_val[col] = gmtapi_select_get_function (API, API->current_get_V->type[col]);
@@ -10259,7 +10259,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* Here we copy/read from a user memory location which is a matrix */
 		case GMT_IS_REFERENCE|GMT_VIA_MATRIX:
 			API->current_get_M = gmtapi_get_matrix_data (S->resource);
-			API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
+			API->current_get_n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : S->n_columns;
 			if ((API->current_get_M_index = gmtapi_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "GMTAPI: Internal error: gmtapi_get_record_init called gmtapi_get_2d_to_index with wring shape\n");
 			}
@@ -10270,7 +10270,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 
 		 case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:	/* Here we copy from a user memory location that points to an array of column vectors */
 		 case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
-			API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
+			API->current_get_n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : S->n_columns;
 			API->current_get_V = gmtapi_get_vector_data (S->resource);
 			API->current_get_V_val = gmt_M_memory (GMT, NULL, API->current_get_V->n_columns, GMT_getfunction);	/* Array of functions */
 			for (col = 0; col < API->current_get_V->n_columns; col++)	/* We know the number of columns from registration */
@@ -10283,7 +10283,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 		case GMT_IS_REFERENCE:	/* Only for datasets */
 			API->current_get_D_set = gmtapi_get_dataset_data (S->resource);	/* Get the right dataset */
 			gmt_set_dataset_verify (GMT, API->current_get_D_set);    /* Basic sanity checking of incoming dataset */
-			API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : API->current_get_D_set->n_columns;
+			API->current_get_n_columns = (GMT->common.i.col.select) ? GMT->common.i.col.n_cols : API->current_get_D_set->n_columns;
 			API->api_get_record = gmtapi_get_record_dataset;
 			if (!(API->current_get_D_set->type & GMT_READ_TEXT)) GMT->current.io.record.text = NULL;
 			break;
@@ -10616,8 +10616,8 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 			API->api_put_record = gmtapi_put_record_fp;
 			API->current_fp = S_obj->fp;
 			API->current_put_n_columns = S_obj->n_columns;
-			if (API->GMT->common.o.end || API->GMT->common.o.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
-				gmtlib_reparse_o_option (API->GMT, (API->GMT->common.o.text) ? 0 : S_obj->n_columns);
+			if (API->GMT->common.o.col.end || API->GMT->common.o.col.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
+				gmtlib_reparse_o_option (API->GMT, (API->GMT->common.o.col.text) ? 0 : S_obj->n_columns);
 			error = gmtapi_put_record_fp (API, mode, record);
 			break;
 
@@ -10657,7 +10657,7 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 				D_obj = gmtlib_create_dataset (GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, smode, true);	/* 1 table, alloc segments array; no cols or rows yet */
 				S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
 				GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = GMT_NOTSET;	/* Start at seg = -1 and increment at first segment header */
-				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
+				col = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if ((GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_DATA) && col == 0) {	/* Still don't know # of columns */
 					if (GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS) {	/* Hail Mary pass to input columns */
 						col = GMT->common.b.ncol[GMT_IN];	/* Set output cols to equal input cols since not set */
@@ -10694,7 +10694,7 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 				GMT_Report (API, GMT_MSG_WARNING, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if (S_obj->resource == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				size_t size;
-				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
+				col = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && GMT->current.io.multi_segments[GMT_OUT]) {
 					/* Cannot place the NaN records since we don't know the number of columns yet */
 					S_obj->delay++;
@@ -10738,7 +10738,7 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_WARNING, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if ((V_obj = S_obj->resource) == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
-				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
+				col = (GMT->common.o.col.select) ? GMT->common.o.col.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && GMT->current.io.multi_segments[GMT_OUT]) {
 					/* Cannot place the NaN records since we don't know the number of columns yet */
 					S_obj->delay++;
@@ -10782,7 +10782,7 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 
 /*! . */
 int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
-	/* Writes a single data record to destimation.
+	/* Writes a single data record to destination.
 	 * We use mode to signal the kind of record:
 	 *   GMT_WRITE_TABLE_HEADER:   Write an ASCII table header
 	 *   GMT_WRITE_SEGMENT_HEADER: Write an ASCII or binary segment header
@@ -13757,9 +13757,9 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 		case 'f':	if (API->common_snapshot->f.active[GMT_IN]) ret = GMT_IN; else if (API->common_snapshot->f.active[GMT_OUT]) ret = GMT_OUT; break;
 		case 'g':	if (API->common_snapshot->g.active) ret = 0; break;
 		case 'h':	if (API->common_snapshot->h.active) ret = API->common_snapshot->h.mode; break;
-		case 'i':	if (API->common_snapshot->i.select) ret = (int)API->common_snapshot->i.n_cols; break;
+		case 'i':	if (API->common_snapshot->i.col.select) ret = (int)API->common_snapshot->i.col.n_cols; break;
 		case 'n':	if (API->common_snapshot->n.active) ret = 0; break;
-		case 'o':	if (API->common_snapshot->o.select) ret = (int)API->common_snapshot->o.n_cols; break;
+		case 'o':	if (API->common_snapshot->o.col.select) ret = (int)API->common_snapshot->o.col.n_cols; break;
 		case 'p':	if (API->common_snapshot->p.active) ret = 0; break;
 		case 'r':	if (API->common_snapshot->R.active[GSET]) ret = API->common_snapshot->R.registration; break;
 		case 's':	if (API->common_snapshot->s.active) ret = 0; break;

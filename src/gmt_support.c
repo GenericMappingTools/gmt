@@ -17783,7 +17783,6 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 */
 
 	char txt[3][GMT_LEN32] = {{""}, {""}, {""}}, *m = NULL;
-	bool has_inc = false;
 	int ns = 0;
 	size_t len = 0;
 
@@ -17897,11 +17896,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid [min/max/]inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
-	has_inc = (ns != 2);	/* This means we gave an increment */
-	if (ns == 1 && (flags & GMT_ARRAY_SCALAR)) has_inc = false;	/* Actually, just a single -T<value */
+	T->has_inc = (ns != 2);	/* This means we gave an increment */
+	if (ns == 1 && (flags & GMT_ARRAY_SCALAR)) T->has_inc = false;	/* Actually, just a single -T<value */
 	ns--;	/* ns is now the index to the txt array with the increment or count (2 or 0) */
 	len = strlen (txt[ns]);	if (len) len--;	/* Now txt[ns][len] holds a unit (or not) */
-	if (!has_inc && (T->logarithmic || T->logarithmic2)) {
+	if (!T->has_inc && (T->logarithmic || T->logarithmic2)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Logarithmic array requires an increment argument\n", option);
 		return GMT_PARSE_ERROR;
 	}
@@ -17919,7 +17918,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 #endif
 		/* Now worry about an increment with time units */
-		if (has_inc) T->unit = txt[ns][len];
+		if (T->has_inc) T->unit = txt[ns][len];
 	}
 	if (ns == 0 && strchr (GMT_TIME_UNITS, txt[ns][len]) && (T->temporal || (gmt_M_type (GMT, GMT_IN, tcol) & GMT_IS_RATIME))) {	/* Giving time increments only so need to switch to temporal */
 		T->temporal = true;	/* May already be set but who cares */
@@ -17932,7 +17931,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		gmt_set_column_type (GMT, GMT_IN, tcol, GMT_IS_ABSTIME);	/* Set input column type as time */
 		/* Set output column type as time unless -fo has been set */
 		if (!GMT->common.f.active[GMT_OUT]) gmt_set_column_type (GMT, GMT_OUT, tcol, GMT_IS_ABSTIME);
-		if (has_inc) {	/* Gave a time increment */
+		if (T->has_inc) {	/* Gave a time increment */
 			if (strchr (GMT_TIME_UNITS, T->unit))	/* Gave a valid time unit */
 				txt[ns][len] = '\0';	/* Chop off time unit since we are done with it */
 			else	/* User relied on the setting of TIME_UNIT */
@@ -17944,7 +17943,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			T->unit = GMT->current.setting.time_system.unit;
 	}
 	/* 4. Consider spatial distances */
-	if (has_inc && !T->temporal && strchr (GMT_LEN_UNITS "c", txt[ns][len])) {	/* Geospatial or Cartesian distances */
+	if (T->has_inc && !T->temporal && strchr (GMT_LEN_UNITS "c", txt[ns][len])) {	/* Geospatial or Cartesian distances */
 		if (!(flags & GMT_ARRAY_DIST)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Distance units not allowed for this module\n", option);
 			return GMT_PARSE_ERROR;
@@ -17963,7 +17962,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	}
 
 	/* 5. Get the increment (or count) */
-	if (has_inc && !T->spatial) {
+	if (T->has_inc && !T->spatial) {
 		gmt_scanf_float (GMT, txt[ns], &(T->inc));
 		if (fabs (T->inc) < DBL_EPSILON) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Increment is zero\n", option);
@@ -17986,7 +17985,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 	}
 	/* 6. If the min/max limits were given via argument then it is OK to parse */
-	T->set = (has_inc) ? 1 : 0;	/* Maybe have inc so far */
+	T->set = (T->has_inc) ? 1 : 0;	/* Maybe have inc so far */
 	if (ns >= 1) {
 		if (!strcmp (txt[GMT_X], "-"))	/* Must get this value later */
 			T->delay[GMT_X] = true;
@@ -18036,7 +18035,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		T->max = T->min;
 	}
-	if (has_inc && ns == 0 && (flags & GMT_ARRAY_NOMINMAX)) {	/* The min/max will be set later */
+	if (T->has_inc && ns == 0 && (flags & GMT_ARRAY_NOMINMAX)) {	/* The min/max will be set later */
 		T->delay[GMT_X] = T->delay[GMT_Y] = true;
 	}
 	if (flags & GMT_ARRAY_ROUND)	/* Adjust increment to fit min/max so (max-min)/inc is an integer */
@@ -18162,10 +18161,12 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	}
 	if (T->set == 2) return (GMT_NOERROR);	/* Probably makecpt giving just a range */
 
-	if (doubleAlmostEqualZero (t0, t1) && gmt_M_is_zero (T->inc) && gmt_M_is_zero ((t1 - t0)/T->inc)) {	/* Got a single item for our "array" */
-		T->array = gmt_M_memory (GMT, NULL, 1, double);
-		T->array[0] = t0;
-		T->n = 1;
+	if (doubleAlmostEqualZero (t0, t1)) {	/* min = max, probably a single entry */
+		if (!T->has_inc || (T->has_inc && gmt_M_is_zero (T->inc) && gmt_M_is_zero ((t1 - t0)/T->inc))) {	/* Got a single item for our "array" */
+			T->array = gmt_M_memory (GMT, NULL, 1, double);
+			T->array[0] = t0;
+			T->n = 1;
+		}
 	}
 	else if (T->vartime)	/* Must call special function that knows about variable months and years */
 		T->n = gmtsupport_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
@@ -18201,7 +18202,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Information from -%c option: (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, tmp_t1);
 				break;
 			case 2:
-				if (inc != 1.0 && gmt_M_is_zero (t0) && gmt_M_is_zero (t1) && gmt_M_is_zero ((t1 - t0)/T->inc)) {	/* Allow for somebody explicitly saying -T0/0/1, otherwise an error */
+				if (inc != 1.0 && T->has_inc && gmt_M_is_zero (t0) && gmt_M_is_zero (t1) && gmt_M_is_zero ((t1 - t0)/T->inc)) {	/* Allow for somebody explicitly saying -T0/0/1, otherwise an error */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: (max - min) is <= 0\n", option);
 					return (GMT_PARSE_ERROR);
 				}
@@ -18475,7 +18476,7 @@ char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 			case 'f': strcat (opts, GMT->common.f.string); break;
 			case 'g': strcat (opts, GMT->common.g.string); break;
 			case 'h': strcat (opts, GMT->common.h.string); break;
-			case 'i': strcat (opts, GMT->common.i.string); break;
+			case 'i': strcat (opts, GMT->common.i.col.string); break;
 			case 'n': strcat (opts, GMT->common.n.string); break;
 			case 's': strcat (opts, GMT->common.s.string); break;
 			case 'V': string[0] = gmt_set_V (GMT->current.setting.verbose);

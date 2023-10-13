@@ -512,6 +512,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 	                                   "Option -A: Must provide an output filename for image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.file && Ctrl->Out.file,
 								       "Option -A, -> options: Cannot provide two output files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY],
+								       "Option -A: Cannot draw base frame (-B) when creating just a raster image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.transp_color && Ctrl->Q.z_given,
 								       "Option Q: Cannot both specify a r/g/b and a z-value\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -1362,11 +1364,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	byte_image_no_cmap = (I && I->type == GMT_UCHAR && I->n_indexed_colors == 0);
-	if (byte_image_no_cmap && !Ctrl->C.active) {
-		GMT_Report (API, GMT_MSG_ERROR, "Byte image without indexed color requires a CPT via -C\n");
-		Return (GMT_RUNTIME_ERROR);
-	}
+	byte_image_no_cmap = (I && I->type == GMT_UCHAR && I->n_indexed_colors == 0 && I->header->n_bands == 1 && Ctrl->C.active);
 
 	gmt_detect_oblique_region (GMT, Ctrl->In.file);	/* Ensure a proper and smaller -R for oblique projections */
 

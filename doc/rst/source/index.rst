@@ -42,11 +42,10 @@ Quick links
         :maxdepth: 1
         :caption: Getting started
 
+        install
         gallery
         animations
         tutorial
-        tutorial_jl
-        Tutorials in PyGMT <https://www.pygmt.org/latest/tutorials/index.html>
 
     ---
 
@@ -57,6 +56,7 @@ Quick links
         modules
         reference
         datasets
+        modules-classic
 
     ---
 
@@ -70,15 +70,6 @@ Quick links
         deprecated-defaults
         switching
         migrating
-
-    ---
-
-    .. toctree::
-        :maxdepth: 1
-        :caption: Classic Mode
-
-        std-opts-classic
-        modules-classic
 
     ---
 

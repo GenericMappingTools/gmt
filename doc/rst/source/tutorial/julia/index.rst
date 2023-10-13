@@ -27,9 +27,10 @@ will take long time to see a Julia version of it.
 
 .. toctree::
     :maxdepth: 1
+    :hidden:
 
-    tutorial/intro_jl
-    tutorial/session-1_jl
-    tutorial/session-2_jl
-    tutorial/session-3_jl
-    tutorial/session-4_jl
+    intro
+    session-1
+    session-2
+    session-3
+    session-4
