@@ -3378,17 +3378,21 @@ GMT_LOCAL unsigned int gmtio_get_coltype_name_index (struct GMT_CTRL *GMT, unsig
 bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 	size_t k;
 	unsigned int n_dash, n_slash;
+	int start = -1;
 	gmt_M_unused (GMT);
-	if (strchr (txt, 'T')) return true;	/* Might be [<date>]T[<clock>], else if is likely text */
+	if (strchr (txt, 'T')) return true;	/* Might be [<date>]T[<clock>], else it is likely text */
 	if (strchr (txt, 'e') || strchr (txt, 'E')) return false;	/* Check for exponentials since -0.5e-2 would trigger on two dashes */
-	/* Here there are no T, but perhaps somebody forgot to add T to 2004-10-19 or 1999/04/05 ? */
+	/* Here there is no T, but perhaps somebody forgot to add T to 2004-10-19 or 1999/04/05 ? */
 	n_dash = n_slash = 0;
 	for (k = 0; k < strlen (txt); k++) {	/* Count slashes and dashes */
-		if (txt[k] == '-') n_dash++;
-		else if (txt[k] == '/') n_slash++;
+		if (txt[k] == '-') { n_dash++; if (start == -1) start = k; }
+		else if (txt[k] == '/') { n_slash++;; if (start == -1) start = k; }
 	}
-	if (((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected */
+	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected */
 		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
+	/* Last ditch check for Julian days */
+	if (start > 0 && (n_dash + n_slash) == 1)
+		return true;	/* Might be yyyy/jjj or yyyy-jjj with missing trailing T */
 	return false;
 }
 
@@ -3437,6 +3441,58 @@ GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned i
 	}
 }
 
+GMT_LOCAL void gmtio_check_format_is_valid (struct GMT_CTRL *GMT, char *token) {
+	/* Do a fairly extensive check that when givenan absolute time token,
+	 * check if it is consistent with the C format for reading, and if not
+	 * rebuild the symbolic format (e.g., dd/mm/yyyy) and update the C format
+	 * The non-standard formats we may anticipate are:
+	 *   dd-mm-yyyy [US probably]
+	 *   dd-month_abbrev-yyyy [US, likely 3-char upper case month abbreviation, e.g. JAN, OCT]
+	 *   jjj-yyyy or yyyy-jjj for Day of Year specifications
+	 */
+	static char *delimiter = "-/.";	/* Most common date delimiters */
+	char copy[GMT_LEN32] = {""}, s1[GMT_LEN16] = {""}, *c = NULL;
+	int n, d0, d1, d2;
+	unsigned int k, n_delim_template[3] = {0, 0, 0}, n_delim_token[3] = {0, 0, 0};
+	unsigned int token_delim, template_delim, delim;
+
+	if (strncmp (GMT->current.setting.format_date_in, "yyyy-mm-dd", 10U)) return;	/* No longer set to default so we trust use */
+	/* Here, format_date_in is the ISO default yyyy-mm-dd and we will see if token suggests another choice */
+	strcpy (copy, token);	/* Only mess with a copy */
+	if ((c = strchr (copy, 'T'))) c[0] = '\0';	/* Is abs time token but here we worry about the date only */
+	for (delim = 0; delim < 3; delim++) {	/* Figure out what delimiters there are in template and token (should be the same) */
+		for (k = 0; k < strlen (copy); k++)
+			if (copy[k] == delimiter[delim]) { n_delim_token[delim]++, token_delim = delim; }
+		for (k = 0; k < strlen (GMT->current.setting.format_date_in); k++)
+			if (GMT->current.setting.format_date_in[k] == delimiter[delim]) { n_delim_template[delim]++, template_delim = delim; }
+	}
+	gmt_M_memset (GMT->current.setting.format_date_in, GMT_LEN64, char);	/* Wipe the useless template */
+	gmt_strrepc (copy, delimiter[token_delim], ' ');	/* Replace delimiter we found in token with space */
+	n = sscanf (copy, "%d %s %d", &d0, s1, &d2);
+	d1 = atoi (s1);
+	if (n == 2) { /* Must be Julian Day */
+		if (d0 <= 367 && d1 > 366)	/* Must be jjj-yyyy */
+			sprintf (GMT->current.setting.format_date_in, "jjj%cyyyy", delimiter[token_delim]);
+		else
+			sprintf (GMT->current.setting.format_date_in, "yyyy%cjjj", delimiter[token_delim]);
+	}
+	else {	/* Three items, which order? */
+		gmt_strrepc (GMT->current.setting.format_date_in, delimiter[template_delim], delimiter[token_delim]);	/* Replace delimiter we found in token with space */
+		if (strlen (s1) > 2) {	/* Got month name, so probably dd-month-yyyy */
+			if (d0 < 32 || d2 > 31)	/* Need dd-o-yyyy */
+				sprintf (GMT->current.setting.format_date_in, "dd%co%cyyyy", delimiter[token_delim], delimiter[token_delim]);
+			else	/* Need yyyy-o-dd */
+				sprintf (GMT->current.setting.format_date_in, "yyyy%co%cdd", delimiter[token_delim], delimiter[token_delim]);
+		}
+		else if (d0 < 32 && d1 < 13)	/* Backwards dd-mm-yyyy */
+			sprintf (GMT->current.setting.format_date_in, "dd%cmm%cyyyy", delimiter[token_delim], delimiter[token_delim]);
+		else	/* Must be yyyy/mm/dd then */
+			sprintf (GMT->current.setting.format_date_in, "yyyy%cmm%cdd", delimiter[token_delim], delimiter[token_delim]);
+	}
+	/* Reprocess template to yield C format */
+	gmtlib_date_C_format (GMT, GMT->current.setting.format_date_in, &GMT->current.io.date_input, 0);
+}
+
 /*! . */
 GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char *record, size_t *tpos, uint64_t *n_columns) {
 	/* Examines this data record to determine the nature of the input.  There
@@ -3467,6 +3523,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		else {	/* Auto-guess from examining the token */
 			phys_col_type = gmtio_physical_coltype (GMT, col);
 			if (phys_col_type == GMT_IS_ABSTIME || gmtlib_maybe_abstime (GMT, token)) {	/* Is or might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
+                gmtio_check_format_is_valid (GMT, token);   /* Ensure token is ccompatible with selected FORMAT_DATE_IN */
 				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
 			}
 			else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
