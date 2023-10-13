@@ -10928,7 +10928,7 @@ GMT_LOCAL int compare_curves (const void *p1, const void *p2) {
 	return (0);
 }
 
-int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, char *sec_label) {
+int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, struct GMT_PEN *PD, char *sec_label) {
 	/* We are given two segments S0 [y0(xx)] and S1 [y1(x)].  If S1 == NULL then S1 contains
 	 * three columns and (x, y0(x), y1(x)) and we select col = GMT_Z for the second curve.
 	 * The two curves may cross each other, there may be sections of just NaNs, and they may
@@ -10944,7 +10944,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	 */
 	unsigned int col, col_y0 = GMT_Y, col_y1 = GMT_Y;
 	int result;
-	uint64_t k, k0, k1, kk, row, nx, n, n_add, np, start[2] = {0, 0}, stop[2] = {0, 0}, last, n_alloc;
+	uint64_t k, k0, k1, kk, row, nx, n, n_add, np, first[2] = {0, 0}, last[2] = {0, 0}, start[2] = {0, 0}, stop[2] = {0, 0}, n_alloc;
 	int64_t r;
 	double min_S0, min_S1, max_S0, max_S1, *xp = NULL, *yp = NULL;
 	char *debug_code = "GCX";
@@ -10982,8 +10982,6 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		return (GMT_NOERROR);
 	}
 
-	stop[0] = S0->n_rows - 1;	/* Last point in S0 */
-	stop[1] = S1->n_rows - 1;	/* Last point in S1 */
 	/* Find the crossings between segments S0 and S1 */
 	gmt_init_track (GMT, S0->data[col_y0], S0->n_rows, &ylist1);
 	gmt_init_track (GMT, S1->data[col_y1], S1->n_rows, &ylist2);
@@ -11002,11 +11000,23 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	}
 	gmt_x_free (GMT, &XC);	/* Done with crossover structure */
 
+	/* If a line starts or ends with NaNs we skip then by setting first[] and shrinking S->n_rows */
+	first[0] = 0;
+	while (gmt_M_is_dnan (S0->data[col_y0][first[0]]) && first[0] < S0->n_rows) first[0]++;	/* Move past any initial NaNs */
+	first[1] = 0;
+	while (gmt_M_is_dnan (S1->data[col_y0][first[1]]) && first[1] < S1->n_rows) first[1]++;	/* Move past any initial NaNs */
+	last[0] = S0->n_rows - 1;
+	while (gmt_M_is_dnan (S0->data[col_y1][last[0]]) && last[0] > 0) last[0]--;	/* Move past any initial NaNs */
+	last[1] = S1->n_rows - 1;
+	while (gmt_M_is_dnan (S1->data[col_y1][last[1]]) && last[1] > 0) last[1]--;	/* Move past any initial NaNs */
+	start[0] = first[0];	start[1] = first[1];
+	stop[0] = last[0];	/* Last point in S0 */
+	stop[1] = last[1];	/* Last point in S1 */
+
 	/* See if there are NaNs along one or both curves */
 	for (k = 0, S = S0, col = col_y0; k < 2; k++) {
-		row = 0;
-		while (gmt_M_is_dnan (S->data[col][row]) && row < S->n_rows) row++;	/* Move past any initial NaNs */
-		while (row < (S->n_rows - 1)) {
+		row = first[k];
+		while (row < last[k]) {
 			if (gmt_M_is_dnan (S->data[col][row+1])) {	/* Next point is NaN so save the previous */
 				X  = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
 				X[np].x  = S->data[GMT_X][row];	/* Critical point's x coordinate (start of NaN section) */
@@ -11030,8 +11040,8 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					X[np].s0_i0 = kk;	/* Set first S0 index inside this section */
 				}
 				np++;	row++;
-				while (gmt_M_is_dnan (S->data[col][row]) && row < S->n_rows) row++;	/* Skip to end of the NaN-sequence */
-				if (row < S->n_rows) {	/* Add start of non-NaN sequences as critical point */
+				while (gmt_M_is_dnan (S->data[col][row]) && row <= last[k]) row++;	/* Skip to end of the NaN-sequence */
+				if (row <= last[k]) {	/* Add start of non-NaN sequences as critical point */
 					X  = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
 					X[np].x = S->data[GMT_X][row];	/* Critical point's x coordinate (end of NaN section) */
 					if (S == S0) {	/* Working on S0 */
@@ -11063,12 +11073,12 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	}
 
 	/* If S0 starts before S1 or the other way around we must get the y-value at the largest start point (CUT critical points) */
-	if (S0->data[GMT_X][0] >= S1->data[GMT_X][0]) {	/* S1 has the minimum x */
+	if (S0->data[GMT_X][first[0]] >= S1->data[GMT_X][first[1]]) {	/* S1 has the minimum x */
 		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
-		X[np].x  = S0->data[GMT_X][0];	/* Critical point's x coordinate (start of overlap of S0 and S1) */
-		X[np].y0 = S0->data[col_y0][0];	/* Critical point's y0 coordinate (start of overlap of S0 and S1) */
-		while (S1->data[GMT_X][start[1]] < S0->data[GMT_X][0]) start[1]++;	/* Wind to first S1 point >= S0's first point */
-		X[np].s0_i0 = 0;		/* First S0 in overlap is its first point */
+		X[np].x  = S0->data[GMT_X][first[0]];	/* Critical point's x coordinate (start of overlap of S0 and S1) */
+		X[np].y0 = S0->data[col_y0][first[0]];	/* Critical point's y0 coordinate (start of overlap of S0 and S1) */
+		while (S1->data[GMT_X][start[1]] < S0->data[GMT_X][first[0]]) start[1]++;	/* Wind to first S1 point >= S0's first point */
+		X[np].s0_i0 = first[0];		/* First S0 in overlap is its first point */
 		X[np].s1_i0 = start[1];	/* S1 has been wound to start[1] */
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
@@ -11078,11 +11088,11 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	}
 	else if (S1->data[GMT_X][0] >= S0->data[GMT_X][0]) {	/* S0 has the minimum x */
 		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
-		X[np].x  = S1->data[GMT_X][0];	/* Critical point's x coordinate (start of overlap of S0 and S1) */
-		X[np].y0 = S1->data[col_y1][0];	/* Critical point's y0 coordinate (start of overlap of S0 and S1) */
-		while (S0->data[GMT_X][start[0]] < S1->data[GMT_X][0]) start[0]++;	/* Wind to first S0 point >= S1's first point */
+		X[np].x  = S1->data[GMT_X][first[1]];	/* Critical point's x coordinate (start of overlap of S0 and S1) */
+		X[np].y0 = S1->data[col_y1][first[1]];	/* Critical point's y0 coordinate (start of overlap of S0 and S1) */
+		while (S0->data[GMT_X][start[0]] < S1->data[GMT_X][first[1]]) start[0]++;	/* Wind to first S0 point >= S1's first point */
 		X[np].s0_i0 = start[0];	/* S0 has been wound to start[0] */
-		X[np].s1_i0 = 0;		/* First S1 in overlap is its first point */
+		X[np].s1_i0 = first[1];		/* First S1 in overlap is its first point */
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		/* Must interpolate to get the corresponding value at x along S0 (y0) */
@@ -11090,27 +11100,27 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		np++;
 	}
 	/* If S0 ends before S1 or the other way around we must get the y-value at the smallest end point */
-	if (S0->data[GMT_X][S0->n_rows-1] <= S1->data[GMT_X][S1->n_rows-1]) {	/* S1 has maximum x value */
+	if (S0->data[GMT_X][last[0]] <= S1->data[GMT_X][last[1]]) {	/* S1 has maximum x value */
 		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
-		last = S0->n_rows - 1;	/* Last point of S0 which is were the filled polygon ends */
-		X[np].x  = S0->data[GMT_X][last];	/* Critical point's x coordinate (end of overlap of S0 and S1) */
-		X[np].y0 = S0->data[col_y0][last];	/* Critical point's y0 coordinate (end of overlap of S0 and S1) */
-		while (S1->data[GMT_X][stop[1]] > S0->data[GMT_X][last]) stop[1]--;	/* Wind backwards to first S1 point <= S0's last point */
-		X[np].s0_i0 = last;		/* Last S0 in overlap is its last point */
+		/* Start at last point of S0 which is were the filled polygon ends */
+		X[np].x  = S0->data[GMT_X][last[0]];	/* Critical point's x coordinate (end of overlap of S0 and S1) */
+		X[np].y0 = S0->data[col_y0][last[0]];	/* Critical point's y0 coordinate (end of overlap of S0 and S1) */
+		while (S1->data[GMT_X][stop[1]] > S0->data[GMT_X][last[0]]) stop[1]--;	/* Wind backwards to first S1 point <= S0's last point */
+		X[np].s0_i0 = last[0];		/* Last S0 in overlap is its last point */
 		X[np].s1_i0 = stop[1];	/* S1 has been wound back to stop[1] */
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
 		np++;
 	}
-	else if (S1->data[GMT_X][S1->n_rows-1] <= S0->data[GMT_X][S0->n_rows-1]) {
+	else if (S1->data[GMT_X][last[1]] <= S0->data[GMT_X][last[0]]) {
 		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
-		last = S1->n_rows - 1;	/* Last point of S1 */
-		X[np].x  = S1->data[GMT_X][last];	/* Critical point's x coordinate (end of overlap of S0 and S1) */
-		X[np].y1 = S1->data[col_y1][last];	/* Critical point's y1 coordinate (end of overlap of S0 and S1) */
-		while (S0->data[GMT_X][stop[0]] > S1->data[GMT_X][last]) stop[0]--;	/* Wind backwards to first S0 point <= S1's last point */
+		/* Start at last point of S1 */
+		X[np].x  = S1->data[GMT_X][last[1]];	/* Critical point's x coordinate (end of overlap of S0 and S1) */
+		X[np].y1 = S1->data[col_y1][last[1]];	/* Critical point's y1 coordinate (end of overlap of S0 and S1) */
+		while (S0->data[GMT_X][stop[0]] > S1->data[GMT_X][last[1]]) stop[0]--;	/* Wind backwards to first S0 point <= S1's last point */
 		X[np].s0_i0 = stop[0];	/* S0 has been wound back to stop[0] */
-		X[np].s1_i0 = last;	/* Last S1 in overlap is its last point */
+		X[np].s1_i0 = last[1];	/* Last S1 in overlap is its last point */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
@@ -11223,12 +11233,24 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	if (GMT->common.l.active) {
 		struct GMT_SYMBOL Sy;
 		gmt_M_memset (&Sy, 1, struct GMT_SYMBOL);
-		Sy.symbol = (F0) ? PSL_RECT : GMT_SYMBOL_LINE;
-		gmt_add_legend_item (GMT->parent, &Sy, F0 != NULL, F0, P0 != NULL, P0, &(GMT->common.l.item), NULL);
-		if ((F1 || P1) && sec_label && sec_label[0]) {	/* Set secondary label entry */
-			Sy.symbol = (F1) ? PSL_RECT : GMT_SYMBOL_LINE;
-			strncpy (GMT->common.l.item.label, sec_label, GMT_LEN128-1);
-			gmt_add_legend_item (GMT->parent, &Sy, F1 != NULL, F1, P1 != NULL, P1, &(GMT->common.l.item), NULL);
+		if (PD && F0) {	/* Change color of pen to match fill */
+			Sy.symbol = GMT_SYMBOL_LINE;
+			gmt_M_rgb_copy (PD->rgb, F0->rgb);
+			gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, PD, &(GMT->common.l.item), NULL);
+			if (F1 && sec_label && sec_label[0]) {	/* Set secondary label entry */
+			gmt_M_rgb_copy (PD->rgb, F1->rgb);
+				strncpy (GMT->common.l.item.label, sec_label, GMT_LEN128-1);
+				gmt_add_legend_item (GMT->parent, &Sy, false, NULL, true, PD, &(GMT->common.l.item), NULL);
+			}
+		}
+		else {	/* Do as indicated (fill rect or pen) */
+			Sy.symbol = (F0) ? PSL_RECT : GMT_SYMBOL_LINE;
+			gmt_add_legend_item (GMT->parent, &Sy, F0 != NULL, F0, P0 != NULL, P0, &(GMT->common.l.item), NULL);
+			if ((F1 || P1) && sec_label && sec_label[0]) {	/* Set secondary label entry */
+				Sy.symbol = (F1) ? PSL_RECT : GMT_SYMBOL_LINE;
+				strncpy (GMT->common.l.item.label, sec_label, GMT_LEN128-1);
+				gmt_add_legend_item (GMT->parent, &Sy, F1 != NULL, F1, P1 != NULL, P1, &(GMT->common.l.item), NULL);
+			}
 		}
 	}
 

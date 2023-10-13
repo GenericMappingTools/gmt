@@ -97,12 +97,14 @@ struct PSXY_CTRL {
 	struct PSXY_M {	/* -M[c|s][+g<fill>][+l<seclabel>][+p<pen>] */
 		bool active;
 		bool do_fill, do_draw;	/* True if we used +g or +p */
+		bool do_lines;	/* True if legend should have line with fill color */
 		bool constant;	/* If +y[<level>] is set */
 		unsigned int mode;	/* 0 for N separate segments via pairs of inputs, 1 for segments with 3 columns in each file */
 		double level;	/* The level if set [0] */
 		char seclabel[GMT_LEN128];	/* Secondary legend label for S1 (S0 handled via -l) */
 		struct GMT_FILL fill;	/* Fill where S1 > S2 [optional] */
 		struct GMT_PEN pen;		/* Pen to draw curve S1 [optional] */
+		struct GMT_PEN dpen;	/* Pen to draw color lines in any legend */
 	} M;
 	struct PSXY_N {	/* -N[r|c] */
 		bool active;
@@ -997,11 +999,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 					case 's':	Ctrl->M.mode = GMT_CURVES_SEPARATE; j = 1;	break;	/* Default but gave -Ms anyway */
 					default:	Ctrl->M.mode = GMT_CURVES_SEPARATE; j = 0;	break;	/* No directive given */
 				}
-				if (gmt_found_modifier (GMT, &(opt->arg[j]), "glpy")) {
+				if (gmt_found_modifier (GMT, &(opt->arg[j]), "dglpy")) {
 					char p[GMT_LEN64] = {""};
 					unsigned int pos = 0;
-					while (gmt_getmodopt (GMT, 'M', &(opt->arg[j]), "glpy", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'M', &(opt->arg[j]), "dglpy", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
+							case 'd':
+								if (p[1] && gmt_getpen (GMT, &p[1], &Ctrl->M.dpen)) {
+									gmt_pen_syntax (GMT, 'M', NULL, "sets error bar pen attributes", NULL, 0);
+									n_errors++;
+								}
+								else /* Guesswork */
+									Ctrl->M.dpen.width = 2.5;	/* In points */
+								Ctrl->M.do_lines = true;
+								break;
 							case 'g':	/* Fill for alternate when 2nd curve is below primary */
 								if (p[1] && gmt_getfill (GMT, &p[1], &Ctrl->M.fill)) {
 									gmt_fill_syntax (GMT, 'M', NULL, " ");
@@ -1023,6 +1034,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 									n_errors++;
 								}
 								Ctrl->M.do_draw = true;
+								break;
 							case 'y':
 								if (p[1]) Ctrl->M.level = atof (&p[1]);
 								Ctrl->M.constant = true;
@@ -2580,10 +2592,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 				if (Ctrl->M.active) {	/* Most work done in gmt_two_curve_fill, so we continue after that */
 					/* Set pointers to fills and pens [NULL] */
-					struct GMT_FILL *F0 = (Ctrl->G.active)  ? &Ctrl->G.fill : NULL;
-					struct GMT_FILL *F1 = (Ctrl->M.do_fill) ? &Ctrl->M.fill : NULL;
-					struct GMT_PEN  *P0 = (Ctrl->W.active)  ? &Ctrl->W.pen  : NULL;
-					struct GMT_PEN  *P1 = (Ctrl->M.do_draw) ? &Ctrl->M.pen  : NULL;
+					struct GMT_FILL *F0 = (Ctrl->G.active)   ? &Ctrl->G.fill : NULL;
+					struct GMT_FILL *F1 = (Ctrl->M.do_fill)  ? &Ctrl->M.fill : NULL;
+					struct GMT_PEN  *P0 = (Ctrl->W.active)   ? &Ctrl->W.pen  : NULL;
+					struct GMT_PEN  *P1 = (Ctrl->M.do_draw)  ? &Ctrl->M.pen  : NULL;
+					struct GMT_PEN  *PD = (Ctrl->M.do_lines) ? &Ctrl->M.dpen : NULL;
 					S0 = L;	/* First curve is called S0 */
 					if (Ctrl->M.constant) {	/* Must make a horizontal curve */
 						S1 = gmt_get_segment (GMT, 2U);
@@ -2594,7 +2607,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					else
 						S1 = (Ctrl->M.mode == GMT_CURVES_COREGISTERED) ? NULL : D->table[tbl+1]->segment[seg];	/* Second curve is called S1 and depends on -M directive  */
-					gmt_two_curve_fill (GMT, S0, S1, F0, F1, P0, P1, Ctrl->M.seclabel);	/* Plot/fill the matched segments */
+					gmt_two_curve_fill (GMT, S0, S1, F0, F1, P0, P1, PD, Ctrl->M.seclabel);	/* Plot/fill the matched segments */
 					if (Ctrl->M.constant)	/* Must free the segment */
 						gmt_free_segment (GMT, &S1);
 					else if (Ctrl->M.mode == GMT_CURVES_SEPARATE && seg == (D->table[tbl]->n_segments - 1))	/* Jump to next even table number */
