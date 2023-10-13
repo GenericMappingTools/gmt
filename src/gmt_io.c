@@ -3441,7 +3441,7 @@ GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned i
 	}
 }
 
-GMT_LOCAL void gmtio_check_format_is_valid (struct GMT_CTRL *GMT, char *token) {
+GMT_LOCAL void gmtio_check_abstime_format_is_suitable (struct GMT_CTRL *GMT, char *token) {
 	/* Do a fairly extensive check that when given an absolute time token,
 	 * check if it is consistent with the C format for reading, and if not
 	 * rebuild the symbolic format (e.g., dd/mm/yyyy) and update the C format
@@ -3525,7 +3525,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		else {	/* Auto-guess from examining the token */
 			phys_col_type = gmtio_physical_coltype (GMT, col);
 			if (phys_col_type == GMT_IS_ABSTIME || gmtlib_maybe_abstime (GMT, token)) {	/* Is or might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
-                gmtio_check_format_is_valid (GMT, token);   /* Ensure token is ccompatible with selected FORMAT_DATE_IN */
+                gmtio_check_abstime_format_is_suitable (GMT, token);   /* Ensure token is ccompatible with selected FORMAT_DATE_IN */
 				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
 			}
 			else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
