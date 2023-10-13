@@ -24,7 +24,7 @@ Synopsis
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
-[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*] ]
+[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+y**\ [*level*]] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
 [ |SYN_OPT-U| ]
@@ -223,11 +223,13 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*] ]
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+y**\ [*level*]] ]
     Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
     given via one or more pairs of separate tables, each pair of tables having the same
     number of segments (which can vary from pair to pair). Thus, the order of the even
-    number of tables given on the command line is important.
+    number of tables given on the command line is important. If you instead simply want to
+    compare your data with a horizontal constant line then set the level via **+y** and the
+    :math:`y_1(x)` curve is generated for you and all input files will be compared with it.
     Alternatively, use **-Mc** to indicate that :math:`y_1(x)` is co-registered with
     :math:`y_0(x)` and is given as column 2 (i.e., third) in any number of files having
     three columns. Each file may contain any number of segments per file.
