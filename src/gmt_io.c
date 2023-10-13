@@ -3442,7 +3442,7 @@ GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned i
 }
 
 GMT_LOCAL void gmtio_check_format_is_valid (struct GMT_CTRL *GMT, char *token) {
-	/* Do a fairly extensive check that when givenan absolute time token,
+	/* Do a fairly extensive check that when given an absolute time token,
 	 * check if it is consistent with the C format for reading, and if not
 	 * rebuild the symbolic format (e.g., dd/mm/yyyy) and update the C format
 	 * The non-standard formats we may anticipate are:
@@ -3456,10 +3456,12 @@ GMT_LOCAL void gmtio_check_format_is_valid (struct GMT_CTRL *GMT, char *token) {
 	unsigned int k, n_delim_template[3] = {0, 0, 0}, n_delim_token[3] = {0, 0, 0};
 	unsigned int token_delim, template_delim, delim;
 
-	if (strncmp (GMT->current.setting.format_date_in, "yyyy-mm-dd", 10U)) return;	/* No longer set to default so we trust use */
-	/* Here, format_date_in is the ISO default yyyy-mm-dd and we will see if token suggests another choice */
+	if (strncmp (GMT->current.setting.format_date_in, "yyyy-mm-dd", 10U)) return;	/* No longer set to default so we trust user */
+
+	/* Here, format_date_in is the ISO default yyyy-mm-dd and we will see if token suggests another format */
+
 	strcpy (copy, token);	/* Only mess with a copy */
-	if ((c = strchr (copy, 'T'))) c[0] = '\0';	/* Is abs time token but here we worry about the date only */
+	if ((c = strchr (copy, 'T'))) c[0] = '\0';	/* Is an abs time token but here we worry about the date format only */
 	for (delim = 0; delim < 3; delim++) {	/* Figure out what delimiters there are in template and token (should be the same) */
 		for (k = 0; k < strlen (copy); k++)
 			if (copy[k] == delimiter[delim]) { n_delim_token[delim]++, token_delim = delim; }
@@ -3468,12 +3470,12 @@ GMT_LOCAL void gmtio_check_format_is_valid (struct GMT_CTRL *GMT, char *token) {
 	}
 	gmt_M_memset (GMT->current.setting.format_date_in, GMT_LEN64, char);	/* Wipe the useless template */
 	gmt_strrepc (copy, delimiter[token_delim], ' ');	/* Replace delimiter we found in token with space */
-	n = sscanf (copy, "%d %s %d", &d0, s1, &d2);
-	d1 = atoi (s1);
+	n = sscanf (copy, "%d %s %d", &d0, s1, &d2);	/* Read the three items, but use string for the middle in case of month name */
+	d1 = atoi (s1);	/* Convert to int if not month which will give 0 */
 	if (n == 2) { /* Must be Julian Day */
-		if (d0 <= 367 && d1 > 366)	/* Must be jjj-yyyy */
+		if (d0 <= 367 && d1 > 366)	/* Must be jjj-yyyy unless year is < 366 */
 			sprintf (GMT->current.setting.format_date_in, "jjj%cyyyy", delimiter[token_delim]);
-		else
+		else	/* Must be yyyy-jjj */
 			sprintf (GMT->current.setting.format_date_in, "yyyy%cjjj", delimiter[token_delim]);
 	}
 	else {	/* Three items, which order? */
