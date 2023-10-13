@@ -244,6 +244,14 @@ Optional Arguments
     (i.e., only the *pen* width is used as specified, the color is not used).  **Note**: You
     must at least specify either one fill or one pen, depending on your desired result.
 
+    .. figure:: /_images/GMT_fill_curves.*
+        :width: 600 px
+        :align: center
+
+        Use the |-M| option to paint the area between curves.  intersections and NaN-gaps are
+        found and the color depends on which curve is on top. Legends can be set as filled
+        rectangles or lines with colors from the fill selections via **+r**..
+
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
