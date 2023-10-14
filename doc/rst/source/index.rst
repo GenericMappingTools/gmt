@@ -65,7 +65,6 @@ Quick links
         :caption: Resources
 
         changes
-        users-contrib-scripts
         users-contrib-symbols
         deprecated-defaults
         switching
