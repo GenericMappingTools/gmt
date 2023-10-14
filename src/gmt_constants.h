@@ -579,6 +579,9 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 	GMT_ANCHOR_VSCALE,	/* Anchor for vertical scale */
 	GMT_ANCHOR_NTYPES};	/* Number of such types */
 
+enum GMT_enum_fillcurves {	/*! Various mode for accepting two segments for curve-filling */
+	GMT_CURVES_SEPARATE = 0, GMT_CURVES_COREGISTERED = 1};
+
 enum GMT_enum_scales {	/* Various scale issues */
 	GMT_SCALE_MAP = 1,
 	GMT_SCALE_FREE = 2};

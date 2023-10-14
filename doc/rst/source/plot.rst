@@ -24,6 +24,7 @@ Synopsis
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
+[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
 [ |SYN_OPT-U| ]
@@ -219,6 +220,37 @@ Optional Arguments
     Polygon may be painted (|-G|) and optionally outlined by adding **+p**\ *pen* [no outline].
     **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
     your segments are interpreted as polygons, else they are seen as lines.
+
+.. _-M:
+
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
+    Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
+    given via one or more pairs of separate tables, each pair of tables having the same
+    number of segments (which can vary from pair to pair). Thus, the order of the even
+    number of tables given on the command line is important. If you instead simply want to
+    compare your data with a horizontal constant line then set the level via **+y** and the
+    :math:`y_1(x)` curve is generated for you and all input files will be compared with it.
+    Alternatively, use **-Mc** to indicate that :math:`y_1(x)` is co-registered with
+    :math:`y_0(x)` and is given as column 2 (i.e., third) in any number of files having
+    three columns. Each file may contain any number of segments per file.
+    We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds :math:`y_1(x)`
+    and the *fill* set via **+g** for the opposite case.  Finally, you can draw the two curves
+    using |-W| for :math:`y_0(x)` and **+p** for :math:`y_1(x)`. To add a legend entry for the
+    primary :math:`y_0(x)` or the fill, see |SYN_OPT-l|. To add a legend entry for the
+    secondary curve or the fill, use modifier **+l** to give a secondary label.  Normally, we show
+    one (|-G|) or two (**+g**) filled rectangles in the legend if fill was selected for the
+    alternating areas between the two curves. Use **+r** to instead specify a pen to simply
+    draw a line instead in the legend, but replace the color information from the fill settings
+    (i.e., only the *pen* width is used as specified, the color is not used).  **Note**: You
+    must at least specify either one fill or one pen, depending on your desired result.
+
+    .. figure:: /_images/GMT_fill_curves.*
+        :width: 600 px
+        :align: center
+
+        Use the |-M| option to paint the area between curves.  intersections and NaN-gaps are
+        found and the color depends on which curve is on top. Legends can be set as filled
+        rectangles or lines with colors from the fill selections via **+r**..
 
 .. _-N:
 
