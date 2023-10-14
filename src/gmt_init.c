@@ -9091,7 +9091,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	/* Parse the -R option.  Full syntax:
 	 * -R<west/east/south/north>
 	 * -R<LLx/LLy/URx/URy>+r
-	 * -R<xmin/xmax/ymin/ymax>[+u<unit>]
+	 * -R<xmin/xmax/ymin/ymax>[+u<unit>] -R<halfwidth[/halfheight][+u<unit>]
 	 * -R<grdfile>[+u<unit>]
 	 * -Rg|d as global shorthand for 0/360/-90/90 or -180/180/-90/90
 	 * -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows>
@@ -9201,7 +9201,6 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		first = gmt_download_file_if_not_found (GMT, item, 0);
 	}
 
-
 	for (i = first; item[i]; i++)
 		if (item[i] == '/') cnt++;
 
@@ -9299,8 +9298,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters\n", string);
 		}
 	}
+	else if (scale_coord || inv_project)
+		strncpy (string, item, GMT_BUFSIZ-1);
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Please report the situation when it occured.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Please report the situation when it occurred.\n");
 		return (GMT_NOTSET);
 	}
 
@@ -9608,7 +9609,7 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 	GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
 	C->end = false;
 	if (!strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to process the numerical columns */
-	if (!strcmp (arg, "t") || !strcmp (arg, ",t")) {	/* Cannot just input trailing text, must use -ot instead */
+	if (dir == GMT_IN && (!strcmp (arg, "t") || !strcmp (arg, ",t"))) {	/* Cannot just input trailing text, must use -ot instead */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Selection -i%s (just trailing text, no numerical input) is not allowed.  Consider using -ot instead, if available.\n", arg);
 		return GMT_PARSE_ERROR;
 	}
