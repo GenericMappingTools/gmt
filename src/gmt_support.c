@@ -1818,7 +1818,7 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				else if (j == 0)	/* Start at the beginning */
 					v[i] = y[0];
 				else	/* Pick the smallest before the step happens */
-					v[i] = MIN (y[j], y[j+1]);
+					v[i] = (y[j+1] >= y[j]) ? MIN (y[j], y[j+1]) : MAX (y[j], y[j+1]);
 				break;
 			case GMT_SPLINE_LINEAR+GMT_SPLINE_SLOPE:	/* Linear spline v'(u) */
 				v[i] = (y[j+1]-y[j])/(x[j+1]-x[j]);
@@ -18476,7 +18476,7 @@ char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 			case 'f': strcat (opts, GMT->common.f.string); break;
 			case 'g': strcat (opts, GMT->common.g.string); break;
 			case 'h': strcat (opts, GMT->common.h.string); break;
-			case 'i': strcat (opts, GMT->common.i.string); break;
+			case 'i': strcat (opts, GMT->common.i.col.string); break;
 			case 'n': strcat (opts, GMT->common.n.string); break;
 			case 's': strcat (opts, GMT->common.s.string); break;
 			case 'V': string[0] = gmt_set_V (GMT->current.setting.verbose);

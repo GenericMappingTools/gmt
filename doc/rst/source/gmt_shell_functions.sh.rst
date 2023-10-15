@@ -60,7 +60,7 @@ Description
 -----------
 
 **gmt_shell_functions.sh** provides a set of functions to Bourne
-(again) shell scripts in support of GMT. The calling shell script
+(Again) shell scripts in support of GMT. The calling shell script
 should include the following line, before the functions can be used:
 
 **. gmt_shell_functions.sh**
