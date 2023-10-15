@@ -19121,6 +19121,7 @@ unsigned int gmt_rectangle_dimension (struct GMT_CTRL *GMT, struct GMT_SCALED_RE
 			}
 		}
 		else {	/* Only gave width in percentage */
+			R->fraction[GMT_X] = true;
 			R->scl[GMT_X] = atof (string) * 0.01;	/* Convert to fraction */
 			R->dim[GMT_X] = 0.0;	/* Wipe back to zero */
 		}
