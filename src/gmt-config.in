@@ -62,6 +62,12 @@ else
   CONFIG_LAPACK_ENABLED=no
 fi
 
+if [ "@GMT_CONFIG_GTHREAD_MESSAGE@" == "enabled" ]; then
+  CONFIG_GTHREAD_ENABLED=yes
+else
+  CONFIG_GTHREAD_ENABLED=no
+fi
+
 if [ "@GMT_CONFIG_OPENMP_MESSAGE@" == "enabled" ]; then
   CONFIG_OPENMP_ENABLED=yes
 else
@@ -81,26 +87,27 @@ Usage: gmt-config [OPTIONS]
 
 Available values for OPTIONS include:
 
-  --help        display this help message and exit
-  --all         display all options
-  --bits        whether library is build 32-bit or 64-bit
-  --cc          C compiler
-  --cflags      pre-processor and compiler flags
-  --datadir     GMT's data directories
-  --dataserver  URL of the remote GMT data server
-  --dcw         location of used DCW
-  --dep-libs    dependent libraries
-  --gshhg       location of used GSHHG
-  --has-fftw    whether FFTW is used in build
-  --has-pcre    whether PCRE is used in build
-  --has-lapack  whether LAPACK is used in build
-  --has-openmp  whether GMT was built with OpenMP support
-  --includedir  include directory
-  --libdir      library directory
-  --libs        library linking information
-  --plugindir   GMT's plugin directory
-  --prefix      install prefix
-  --version     library version
+  --help         display this help message and exit
+  --all          display all options
+  --bits         whether library is build 32-bit or 64-bit
+  --cc           C compiler
+  --cflags       pre-processor and compiler flags
+  --datadir      GMT's data directories
+  --dataserver   URL of the remote GMT data server
+  --dcw          location of used DCW
+  --dep-libs     dependent libraries
+  --gshhg        location of used GSHHG
+  --has-fftw     whether FFTW is used in build
+  --has-pcre     whether PCRE is used in build
+  --has-lapack   whether LAPACK is used in build
+  --has-openmp   whether GMT was built with OpenMP support
+  --has-gthreads whether GMT was built with GTHREADS support
+  --includedir   include directory
+  --libdir       library directory
+  --libs         library linking information
+  --plugindir    GMT's plugin directory
+  --prefix       install prefix
+  --version      library version
 EOF
   exit $1
 }
@@ -125,6 +132,7 @@ This GMT $CONFIG_VERSION has been built with the following features:
   --has-pcre    -> $CONFIG_PCRE_ENABLED
   --has-lapack  -> $CONFIG_LAPACK_ENABLED
   --has-openmp  -> $CONFIG_OPENMP_ENABLED
+  --has-gthreds -> $CONFIG_GTHREADS_ENABLED
 
   --prefix      -> $CONFIG_PREFIX
   --includedir  -> $CONFIG_INCLUDEDIR
@@ -189,6 +197,10 @@ for arg in "$@"; do
 
     --has-openmp)
     echo $CONFIG_OPENMP_ENABLED
+    ;;
+
+    --has-gthreads)
+    echo $CONFIG_GTHREADS_ENABLED
     ;;
 
     --includedir)
