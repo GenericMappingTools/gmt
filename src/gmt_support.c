@@ -19075,6 +19075,63 @@ double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, 
 	return (s);
 }
 
+/* Function to assist in parsing of +w<width>[c|i|p|%][/<height[c|i|p|%]] for legends, scales etc.
+ * Some features can completely auto-determine the width (e.g., the legend computes height from
+ * the number of items and width from length of texts etc, while other has a default percentage
+ * to use if not specified (e.g., 4% of the bar length is default bar height)
+ * If +w<arg> was not given then if the def_percent_w/h are set we pass that out via R->scl. */
+
+unsigned int gmt_rectangle_dimension (struct GMT_CTRL *GMT, struct GMT_SCALED_RECT_DIM *R, double def_percent_w, double def_percent_h, char *string) {
+	int n;
+	unsigned int n_percent;
+
+	if (string == NULL || string[0] == '\0') {	/* Set default scales if given */
+		R->scl[GMT_X] = 0.01 * def_percent_w;
+		R->scl[GMT_Y] = 0.01 * def_percent_h;
+		return (GMT_NOERROR);
+	}
+	if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, R->dim)) == 0)
+		return (GMT_RUNTIME_ERROR);
+	n_percent = gmt_count_char (GMT, string, '%');
+
+	if (n_percent) { /* Gave at least one dimension as percent of plot dimension */
+		char *p = strchr (string, '%'), *slash = strchr (string, '/');	/* Find position of % and / */
+		gmt_strrepc (string, '%', ' ');	/* Replace any % with spaces */
+		if (n == 2) {	/* Got width/height: Check if we got 1 or 2 percentage(s) */
+			slash[0] = ' ';	/* Replace / with space as well */
+			if (n_percent == 2) { /* Both length and width given as percentages of plot dimensions */
+				R->fraction[GMT_X] = R->fraction[GMT_Y] = true;
+				sscanf (string, "%lf %lf", &R->scl[GMT_X], &R->scl[GMT_Y]);
+				R->scl[GMT_X] *= 0.01;	R->scl[GMT_Y] *= 0.01;	/* Convert percent to fraction */
+				gmt_M_memset (R->dim, 2U, double);	/* Wipe back to zero sine still unknown */
+			}
+			else {	/* Got one percent and one fixed dimension */
+				if (p < slash) {	/* Gave width as percentage of plot width */
+					R->fraction[GMT_X] = true;
+					sscanf (string, "%lf %*s", &R->scl[GMT_X]);
+					R->scl[GMT_X] *= 0.01;	/* Convert to fraction */
+					R->dim[GMT_X] = 0.0;	/* Wipe back to zero (height was set by gmt_get_pair) */
+				}
+				else {	/* Gave height as percentage of plot height */
+					R->fraction[GMT_Y] = true;
+					sscanf (string, "%*s %lf", &R->scl[GMT_Y]);
+					R->scl[GMT_Y] *= 0.01;	/* Convert to fraction */
+					R->dim[GMT_Y] = R->dim[GMT_X] * R->scl[GMT_Y];	/* Wipe back to zero (width was set by gmt_get_pair) */
+				}
+			}
+		}
+		else {	/* Only gave width in percentage */
+			R->scl[GMT_X] = atof (string) * 0.01;	/* Convert to fraction */
+			R->dim[GMT_X] = 0.0;	/* Wipe back to zero */
+		}
+	}	/* No percentages, got 1 or 2 dimensions */
+	else {	/* If n == 2 then we got both fixed dimensions */
+		if (n == 1 && fabs (R->dim[GMT_X]) > 0.0)	/* Set height as <def_percent_h>% of width */
+		R->dim[GMT_Y] = R->scl[GMT_Y] * fabs (R->dim[GMT_X]);
+	}
+	return (GMT_NOERROR);
+}
+
 /* Helper functions to handle the parsing of option and modifier arguments that are required.
  * If argument is missing then that is an error, otherwise we parse and return */
 
