@@ -32,7 +32,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",             "",
 	          "d,n,o,s",      "divide,nan,offset,scale" },
 	GMT_INCREMENT_KW,         /* quasi-common -I option from gmt_constants.h */
-	{ 0, 'L', "stdoutscript", "", "", "", "" },
+	{ 0, 'L', "script", "", "", "", "" },
 	{ 0, 'N', "secondary_filter|secfilter",
 	          "l,u,a,m,p",    "min,max,average,median,mode",
 	          "l,u",          "lower,upper" },
