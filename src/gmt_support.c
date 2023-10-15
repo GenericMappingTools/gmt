@@ -14864,13 +14864,13 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 	bool new_a, new_b, new_a_time = false, xa_OK = false, xb_OK = false;
 	uint64_t *sa = NULL, *sb = NULL;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
+	double amin, amax, bmin, bmax;
 	double xshift = 0.0;	/* This may become +/-360 or 0 depending on longitude shifts for geo, else 0 */
 	double dx_ab;		/* Be careful due to longitude jumps are lurking everywhere; use this variable for that */
 
 	if (na < 2 || nb < 2) return (0);	/* Need at least 2 points to make a segment */
 
 	if (geo) {	/* Since our algorithm is Cartesian we must do some extra checking to prevent shits */
-		double amin, amax, bmin, bmax;
 		gmtlib_get_lon_minmax (GMT, xa, na, &amin, &amax);
 		gmtlib_get_lon_minmax (GMT, xb, nb, &bmin, &bmax);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First line lon range: %g %g  Second line lon range: %g %g\n", amin, amax, bmin, bmax);
@@ -14880,6 +14880,21 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Second geographic line has 360-degree range.  This may fool the Cartesian crossover algorithm\n");
 		gmt_eliminate_lon_jumps (GMT, xa, na);
 		if (!internal) gmt_eliminate_lon_jumps (GMT, xb, nb);
+	}
+	else {	/* Might still be geographic if user did not indicate with -fg */
+		uint64_t k;
+		amin = bmin = DBL_MAX;	amax = bmax = -DBL_MAX;
+		for (k = 0; k < na; k++) {
+			if (xa[k] < amin) amin = xa[k];
+			if (xa[k] > amax) amax = xa[k];
+		}
+		for (k = 0; k < nb; k++) {
+			if (xb[k] < bmin) bmin = xb[k];
+			if (xb[k] > bmax) bmax = xb[k];
+		}
+
+		if (((amin < -150.0 && amax > 150.0) || (bmin < -150.0 && bmax > 150.0)) && ((amax-amin) <= 360.0 && (bmax-bmin) <= 360.0))
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your Cartesian tracks could be geographic - did you forget -fg?\n");
 	}
 
 	this_a = this_b = nx = 0;
