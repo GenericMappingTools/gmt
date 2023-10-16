@@ -524,9 +524,12 @@ I/O Parameters
 .. glossary::
 
     **IO_COL_SEPARATOR**
-        This setting determines what character will separate ASCII output
-        data columns written by GMT. Choose from **tab**, **space**, **comma**, and
-        **none** [default is **tab**].
+        This setting determines what character will separate ASCII *output*
+        data columns written by GMT. Choose from **tab**, **space**, **comma**,
+        **semicolon** and **none** [default is **tab**]. You may also just give
+        any character or string (e.g., "--|--"). **Note**: When reading input
+        data GMT automatically skips white-space, commas, and semi-colons; you
+        cannot select an individual input column separator.
 
     **IO_FIRST_HEADER**
         This setting determines if the first segment header is written when

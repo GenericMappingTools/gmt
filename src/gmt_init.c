@@ -11736,6 +11736,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				strncpy (GMT->current.setting.io_col_separator, " ", 8U);
 			else if (!strcmp (lower_value, "comma"))
 				strncpy (GMT->current.setting.io_col_separator, ",", 8U);
+			else if (!strcmp (lower_value, "semicolon"))
+				strncpy (GMT->current.setting.io_col_separator, ";", 8U);
+			else if (!strcmp (lower_value, "semi-colon"))
+				strncpy (GMT->current.setting.io_col_separator, ";", 8U);
 			else if (!strcmp (lower_value, "none"))
 				GMT->current.setting.io_col_separator[0] = 0;
 #ifdef WIN32
