@@ -101,7 +101,7 @@ Available values for OPTIONS include:
   --has-pcre     whether PCRE is used in build
   --has-lapack   whether LAPACK is used in build
   --has-openmp   whether GMT was built with OpenMP support
-  --has-gthreads whether GMT was built with GTHREADS support
+  --has-gthread  whether GMT was built with GTHREAD support
   --includedir   include directory
   --libdir       library directory
   --libs         library linking information
@@ -132,7 +132,7 @@ This GMT $CONFIG_VERSION has been built with the following features:
   --has-pcre    -> $CONFIG_PCRE_ENABLED
   --has-lapack  -> $CONFIG_LAPACK_ENABLED
   --has-openmp  -> $CONFIG_OPENMP_ENABLED
-  --has-gthreds -> $CONFIG_GTHREADS_ENABLED
+  --has-gthred  -> $CONFIG_GTHREADS_ENABLED
 
   --prefix      -> $CONFIG_PREFIX
   --includedir  -> $CONFIG_INCLUDEDIR
@@ -199,7 +199,7 @@ for arg in "$@"; do
     echo $CONFIG_OPENMP_ENABLED
     ;;
 
-    --has-gthreads)
+    --has-gthread)
     echo $CONFIG_GTHREADS_ENABLED
     ;;
 

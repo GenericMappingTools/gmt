@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Testing gmt grdfilter if gthreads is enabled.
-ps=threads.ps # Basically same as test openmp.sh but using GTHREADS
+ps=threads.ps # Basically same as test openmp.sh but using GTHREAD
 
 if [ "X$(gmt-config --has-gthreads)" = "Xyes" ]; then
 	_thread_opt=-x+a
