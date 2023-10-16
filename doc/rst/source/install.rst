@@ -283,9 +283,10 @@ Cross Platform Install Instructions
 Install via conda
 ~~~~~~~~~~~~~~~~~
 
-You can use the `conda package manager <https://conda.io/>`__ that comes
-with the `Anaconda Python
-Distribution <https://www.anaconda.com/distribution/>`__ to install GMT.
+You can use the `conda package manager <https://conda.io/>`__ that comes with the
+`Anaconda Python Distribution <https://www.anaconda.com/download>`__
+or `Miniconda <https://www.anaconda.com/download>`__ (recommended)
+to install GMT.
 
 1. Download and install the `latest
    Miniconda <https://conda.io/en/latest/miniconda.html>`__. This will
