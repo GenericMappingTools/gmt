@@ -284,17 +284,20 @@ if (GLIB_FOUND AND GMT_USE_THREADS)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARIES})
 	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled (${GLIB_VERSION})"
 		CACHE INTERNAL "GTHREAD config message")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled" CACHE INTERNAL "GLIB config message")
 endif (GLIB_FOUND AND GMT_USE_THREADS)
 if (GLIB_FOUND AND NOT GMT_USE_THREADS)
 	set (HAVE_GLIB_GTHREAD FALSE CACHE INTERNAL "User disabled threads")
 	message (STATUS "User variable GMT_USE_THREADS not set: disabling GThread.")
 	set (GMT_CONFIG_GTHREAD_MESSAGE "disabled"
 		CACHE INTERNAL "GTHREAD config message")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "disabled" CACHE INTERNAL "GLIB config message")
 endif (GLIB_FOUND AND NOT GMT_USE_THREADS)
 if (GMT_USE_THREADS AND NOT GLIB_FOUND)
 	message (FATAL_ERROR "User variable GMT_USE_THREADS set but GLIB component gthread not found.")
 	set (GMT_CONFIG_GTHREAD_MESSAGE "unavailable"
 		CACHE INTERNAL "GTHREAD config message")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "unavailable" CACHE INTERNAL "GLIB config message")
 endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 # FreeBSD uses a separate library for backtracking
