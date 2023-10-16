@@ -3517,6 +3517,8 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
 			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
 				code = GMT_IS_GRID;
+			else if (I->type == GMT_FLOAT)		/* No doubt in this case */
+				code = GMT_IS_GRID;
 			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
 				code = GMT_IS_IMAGE;
 			else if (I->header->n_bands > 1)	/* Whatever it is we must return multiband as an image */
