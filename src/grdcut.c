@@ -299,13 +299,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 			if (ftype == GMT_IS_IMAGE)	/* Must read file as an image */
 				Ctrl->In.type = GMT_IS_IMAGE;
 			else if (ftype == GMT_IS_GRID) {	/* Check extension in case of special case */
-				if (strstr (Ctrl->G.file, ".tif"))	/* Want to write a single band (normally written as a grid) to geotiff instead */
-					Ctrl->In.type = GMT_IS_IMAGE;
-				else
-					Ctrl->In.type = GMT_IS_GRID;
+				Ctrl->In.type = GMT_IS_GRID;
+				//if (strstr (Ctrl->G.file, ".tif"))	/* Want to write a single band (normally written as a grid) to geotiff instead */
+					//Ctrl->In.type = GMT_IS_IMAGE;
+				//else
+					//Ctrl->In.type = GMT_IS_GRID;
 			}
 			else	/* Just have to assume it is a grid */
 				Ctrl->In.type = GMT_IS_GRID;
+
 			if (Ctrl->In.type == GMT_IS_IMAGE) {
 				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -N: Cannot be used with an image\n");
 				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -Z: Cannot be used with an image\n");
