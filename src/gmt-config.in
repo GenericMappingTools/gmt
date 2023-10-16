@@ -132,7 +132,7 @@ This GMT $CONFIG_VERSION has been built with the following features:
   --has-pcre    -> $CONFIG_PCRE_ENABLED
   --has-lapack  -> $CONFIG_LAPACK_ENABLED
   --has-openmp  -> $CONFIG_OPENMP_ENABLED
-  --has-gthred  -> $CONFIG_GTHREADS_ENABLED
+  --has-gthred  -> $CONFIG_GTHREAD_ENABLED
 
   --prefix      -> $CONFIG_PREFIX
   --includedir  -> $CONFIG_INCLUDEDIR
