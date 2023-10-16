@@ -200,7 +200,7 @@ for arg in "$@"; do
     ;;
 
     --has-gthread)
-    echo $CONFIG_GTHREADS_ENABLED
+    echo $CONFIG_GTHREAD_ENABLED
     ;;
 
     --includedir)
