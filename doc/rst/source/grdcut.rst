@@ -31,14 +31,16 @@ Synopsis
 Description
 -----------
 
-**grdcut** will produce a new *outgrid* file which is a subregion of
-*ingrid*. The subregion may be specified with |-R| as in other programs;
+**grdcut** will produce a new *outgrid* file which is a sub-region of
+*ingrid*. The sub-region may be specified with |-R| as in other programs;
 the specified range must not exceed the range of *ingrid* (but see |-N|).
-If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
-indirectly via a range check on the node values or via distances from a
-fixed point. Finally, you can use |-J| for oblique projections to determine
-the corresponding rectangular |-R| setting that will give a subregion that fully
-covers the oblique domain.  **Note**: If the input grid is actually an image (gray-scale,
+If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the
+sub-region indirectly via a range check on the node values or via distances from
+a fixed point. Furthermore, you can use |-J| for oblique projections to determine
+the corresponding rectangular |-R| setting that will give a sub-region that fully
+covers the oblique domain.  Finally, use |-F| to specify a polygon and either use
+its bounding box for sub-region or set grid nodes inside or outside the polygon
+to NaN. **Note**: If the input grid is actually an image (gray-scale,
 RGB, or RGBA), then options |-N| and |-Z| are unavailable, while for multi-layer
 Geotiff files only options |-R|, |-S| and |-G| are supported, i.e., you can cut out
 a sub-region only (which we do via *gdal_translate* if you have multiple bands).
