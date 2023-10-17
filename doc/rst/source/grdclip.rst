@@ -64,15 +64,15 @@ Optional Arguments
 .. _-S:
 
 **-Sa**\ *high/above*\ [**+e**]
-    Set all data[i] > *high* to *above*.  Modifier **+e** includes the equality, i.e., data[i] >= *high*.
+    Set all data[i] > *high* to *above*. Modifier **+e** includes the equality, i.e., data[i] >= *high*.
 **-Sb**\ *low/below*\ [**+e**]
-    Set all data[i] < *low* to *below*.  Modifier **+e** includes the equality, i.e., data[i] <= *low*.
+    Set all data[i] < *low* to *below*. Modifier **+e** includes the equality, i.e., data[i] <= *low*.
 **-Si**\ *low/high/between*
     Set all data[i] >= *low* and <= *high* to *between*.
     Repeat the option for as many intervals as are needed.
 **-Sr**\ *old/new*
-    Set all data[i] == *old* to *new*.  This is mostly useful when
-    your data are known to be integer values.  Repeat the option
+    Set all data[i] == *old* to *new*. This is mostly useful when
+    your data are known to be integer values. Repeat the option
     for as many replacements as are needed.
 
 .. |Add_-V| replace:: |Add_-V_links|
