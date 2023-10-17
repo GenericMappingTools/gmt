@@ -21,7 +21,7 @@ if (SPHINX_FOUND)
 
 	# Copy reST sources to build tree
 	include (CopyDirIfDifferent)
-	foreach (subdir source themes _static _templates _extensions)
+	foreach (subdir source _static _templates)
 		copy_dir_if_different (_docs_copy_rst_tree_${subdir}
 			${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/
 			${CMAKE_CURRENT_BINARY_DIR}/${subdir})
@@ -50,11 +50,9 @@ if (SPHINX_FOUND)
 	add_custom_target (_rst_clean
 		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_doctrees
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_extensions
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_static
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/_templates
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/source
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/themes
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/html
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Removing rst tree")
@@ -78,7 +76,7 @@ if (SPHINX_FOUND)
 			COMMAND ${SPHINX_EXECUTABLE} -q -b man
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${CMAKE_CURRENT_BINARY_DIR}/_doctrees_man"
-			-t nosphinxpanels
+			-t nosphinxdesign
 			${CMAKE_CURRENT_BINARY_DIR}/source
 			${CMAKE_CURRENT_BINARY_DIR}/man
 			2> "${CMAKE_CURRENT_BINARY_DIR}/man.log"
