@@ -22,7 +22,7 @@ is cm, inch, or point, depending on the :term:`PROJ_LENGTH_UNIT` setting in **gm
 the command line by appending **c**, **i**, or **p** to the *scale* or *width* values. In some cases it would be more
 practical to specify map *height* instead of *width*, while in other situations it would be nice to set either the
 *shortest* or *longest* map dimension. Users may select these alternatives by appending a character code to their map
-dimension [detault is **+dw**]:
+dimension [default is **+dw**]:
 
    - Append **+dh** to the given :ref:`dimension <reference/features:Dimension units>` to specify map *height*.
    - Append **+du** to the given :ref:`dimension <reference/features:Dimension units>` to select the minimum map
