@@ -33,7 +33,7 @@ fi
 
 # packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-	conda_packages+=" pngquant sphinx dvc"
+    conda_packages+=" pngquant sphinx dvc"
 fi
 
 # Install packages via apt-get
@@ -44,5 +44,10 @@ sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 conda update -n base -c conda-forge conda --solver libmamba
 conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
+
+# Install Sphinx extensions
+if [ "$BUILD_DOCS" = "true" ]; then
+    ${CONDA}/bin/python -m pip install --user -r doc/rst/requirements.txt
+fi
 
 set +x +e

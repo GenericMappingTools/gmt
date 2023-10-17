@@ -36,52 +36,54 @@ Quick links
    gmtcolors
    theme-settings
 
-.. panels::
+.. grid:: 1 2 2 2
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Getting started
+    .. grid-item-card::
 
-        install
-        gallery
-        animations
-        tutorial
+        .. toctree::
+            :maxdepth: 1
+            :caption: Getting started
 
-    ---
+            install
+            gallery
+            animations
+            tutorial
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Reference documentation
+    .. grid-item-card::
 
-        modules
-        reference
-        datasets
-        modules-classic
+        .. toctree::
+            :maxdepth: 1
+            :caption: Reference documentation
 
-    ---
+            modules
+            reference
+            datasets
+            modules-classic
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Resources
+    .. grid-item-card::
 
-        changes
-        users-contrib-symbols
-        deprecated-defaults
-        switching
-        migrating
+        .. toctree::
+            :maxdepth: 1
+            :caption: Resources
 
-    ---
+            changes
+            users-contrib-symbols
+            deprecated-defaults
+            switching
+            migrating
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Development
+    .. grid-item-card::
 
-        Code of Conduct <https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md>
-        /devdocs/contributing
-        /devdocs/maintenance
-        /devdocs/team
-        reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
-        Debugging GMT </devdocs/debug>
-        GMT C API </devdocs/api>
-        PostScriptLight C API </devdocs/postscriptlight>
-        /devdocs/devdocs
+        .. toctree::
+            :maxdepth: 1
+            :caption: Development
+
+            Code of Conduct <https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md>
+            /devdocs/contributing
+            /devdocs/maintenance
+            /devdocs/team
+            reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
+            Debugging GMT </devdocs/debug>
+            GMT C API </devdocs/api>
+            PostScriptLight C API </devdocs/postscriptlight>
+            /devdocs/devdocs
