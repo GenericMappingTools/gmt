@@ -107,7 +107,7 @@
     { ',', 'i', "incols",
                 "",                      "",
                 "l,d,o,s",               "log10,divide,offset,scale" },
-    {   0, 'j', "distance",
+    {   0, 'j', "metric|spherical|distcalc",
                 "e,f,g",                 "ellipsoidal,flatearth,spherical",
                 "",                      "" },
     {   0, 'l', "legend",
