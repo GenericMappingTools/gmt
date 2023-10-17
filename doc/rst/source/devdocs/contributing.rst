@@ -239,14 +239,17 @@ You may need to know some basic reST syntax before making changes. Please refer 
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you 
-need to `build GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_. Be sure 
-to also satisfy the 
-`development dependencies <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md#development-dependencies>`_ 
-before proceeding. Have a look at the options in ``cmake/ConfigUserAdvanced.cmake`` if you want to change the 
+Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you
+need to `build GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_. Be sure
+to also satisfy the
+`development dependencies <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md#development-dependencies>`_
+before proceeding. Have a look at the options in ``cmake/ConfigUserAdvanced.cmake`` if you want to change the
 target directory for the documentation you are about to build.
 
-After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, 
+To build the documentation, you also need to install some Python packages (the Sphinx theme and extensions). These packages are listed in ``doc/rst/requirements.txt`` and can be installed via::
+    $ pip install -r doc/rst/requirements.txt
+
+After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_,
 you can then build the GMT documentation using the following commands within the ``build`` directory::
 
   dvc pull
