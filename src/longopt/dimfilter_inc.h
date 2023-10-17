@@ -24,7 +24,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "distance",     "", "", "", "" },
+	{ 0, 'D', "disttype",     "", "", "", "" },
 	{ 0, 'F', "filter",
 	          "b,c,g,m,p",    "boxcar,cosarch,gaussian,median,maxprob",
 	          "l,u",          "lower,upper" },
@@ -32,7 +32,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",             "",
 	          "d,n,o,s",      "divide,nan,offset,scale" },
 	GMT_INCREMENT_KW,         /* quasi-common -I option from gmt_constants.h */
-	{ 0, 'L', "script", "", "", "", "" },
+	{ 0, 'L', "script",       "", "", "", "" },
 	{ 0, 'N', "sector_filter|secfilter",
 	          "l,u,a,m,p",    "min,max,average,median,mode",
 	          "l,u",          "lower,upper" },

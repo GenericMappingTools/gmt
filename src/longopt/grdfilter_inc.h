@@ -24,13 +24,13 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "distance",     "", "", "", "" },
+	{ 0, 'D', "disttype",          "", "", "", "" },
 	{ 0, 'F', "filter",
 	          "b,c,g,f,o,m,p,h,l,L,u,U",
  				       "boxcar,cosarch,gaussian,custom,operator,median,mlprob,histogram,minall,minpos,maxall,maxneg",
 	          "c,h,l,q,u",         "center,highpass,lower,quantile,upper" },
 	{ 0, 'G', "outgrid",
-	          "",             "",
+	          "",                  "",
 	          "d,n,o,s,c",         "divide,nan,offset,scale,gdal" },
 	GMT_INCREMENT_KW,              /* quasi-common -I option from gmt_constants.h */
 	{ 0, 'N', "nans",
