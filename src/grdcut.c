@@ -301,7 +301,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 			else if (ftype == GMT_IS_GRID) {	/* Check extension in case of special case */
 				Ctrl->In.type = GMT_IS_GRID;
 				//if (strstr (Ctrl->G.file, ".tif"))	/* Want to write a single band (normally written as a grid) to geotiff instead */
-					//Ctrl->In.type = GMT_IS_IMAGE;
+					//Ctrl->In.type = GMT_IS_IMAGE;		/* CAN'T DO. IF INPUT IS A GRID, OUTPUT CAN'T BE AN IMAGE. */
 				//else
 					//Ctrl->In.type = GMT_IS_GRID;
 			}
