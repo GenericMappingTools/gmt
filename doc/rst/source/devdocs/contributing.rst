@@ -247,7 +247,8 @@ before proceeding. Have a look at the options in ``cmake/ConfigUserAdvanced.cmak
 target directory for the documentation you are about to build.
 
 To build the documentation, you also need to install some Python packages (the Sphinx theme and extensions). These packages are listed in ``doc/rst/requirements.txt`` and can be installed via::
-    $ pip install -r doc/rst/requirements.txt
+
+    $ python -m pip install -r doc/rst/requirements.txt
 
 After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_,
 you can then build the GMT documentation using the following commands within the ``build`` directory::
