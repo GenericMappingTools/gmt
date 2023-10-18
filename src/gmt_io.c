@@ -3556,7 +3556,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
 	if (GMT->common.i.col.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
-		gmtlib_reparse_i_option (GMT, col);
+		gmt_reparse_i_option (GMT, col);
 
 	if (found_text) {	/* Determine record type */
 		ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
@@ -6072,9 +6072,9 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	GMT->current.io.cycle_col = GMT_NOTSET;
 }
 
-/*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
+/*! Routine will temporarily suspend any -b, -g, -h, -i, -o selections for secondary inputs */
 void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
-	/* Temporarily turn off any -b, -i, -g, h selections */
+	/* Temporarily turn off any -b, -g, -h, -i, -o selections */
 	GMT->common.i.col.select = false;
 	GMT->common.o.col.select = false;
 	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
@@ -6088,9 +6088,9 @@ void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
 	}
 }
 
-/*! Routine will re-enable any suspended -b, -i, -g, -h selections */
+/*! Routine will re-enable any suspended -b, -g, -h, -i, -o selections */
 void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT) {
-	/* Turn on again any -b, -i, -g, -h selections */
+	/* Turn on again any -b, -g, -h, -i, -o selections */
 	GMT->common.i.col.select = GMT->common.i.col.orig;
 	GMT->common.o.col.select = GMT->common.o.col.orig;
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
