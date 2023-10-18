@@ -149,8 +149,8 @@
  *	gmtlib_putcmyk
  *	gmtlib_putfill
  *	gmtlib_puthsv
- *	gmtlib_reparse_i_option
- *	gmtlib_reparse_o_option
+ *	gmt_reparse_i_option
+ *	gmt_reparse_o_option
  *	gmtlib_report_func
  *	gmtlib_set_case_and_kind
  *	gmtlib_setparameter
@@ -20362,10 +20362,14 @@ GMT_LOCAL void gmtinit_reparse_io_option (struct GMT_CTRL *GMT, uint64_t n_colum
 	}
 	if (n_columns == 0) return;	/* Cannot update the string */
 	for (k = strlen (C->string) - 1; k && !(C->string[k] == ':' || C->string[k] == '-'); k--);	/* Find the last : or - in open-ended sequence */
-	strncpy (token, C->string, k+1);	/* Get duplicate, this ends with - or : */
-	sprintf (text, "%d", (int)n_columns-1);
-	strcat (token, text);	/* Add explicit last column to include */
-	if (C->string[k+1] == ',') strncat (token, &C->string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
+	if (k == 0)
+		strcpy (token, C->string);	/* Get duplicate */
+	else {
+		strncpy (token, C->string, k+1);	/* Get duplicate, this ends with - or : */
+		sprintf (text, "%d", (int)n_columns-1);
+		strcat (token, text);	/* Add explicit last column to include */
+		if (C->string[k+1] == ',') strncat (token, &C->string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
+	}
 	if (dir == GMT_IN)
 		GMT->common.i.active = false;	/* So we can parse -i again */
 	else
@@ -20376,10 +20380,10 @@ GMT_LOCAL void gmtinit_reparse_io_option (struct GMT_CTRL *GMT, uint64_t n_colum
 		GMT->current.io.trailing_text[GMT_OUT] = o_trailing;	/* Reset to what was parsed initially */
 }
 
-void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
+void gmt_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	gmtinit_reparse_io_option (GMT, n_columns, GMT_IN);
 }
 
-void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
+void gmt_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	gmtinit_reparse_io_option (GMT, n_columns, GMT_OUT);
 }

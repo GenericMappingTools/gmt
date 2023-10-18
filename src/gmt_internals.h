@@ -112,8 +112,6 @@ EXTERN_MSC int gmtlib_polar_prepare_label (struct GMT_CTRL *GMT, double angle, u
 EXTERN_MSC bool gmtlib_B_is_frame (struct GMT_CTRL *GMT, char *in);
 EXTERN_MSC int64_t gmtlib_parse_index_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop);
 EXTERN_MSC int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt);
-EXTERN_MSC void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns);
-EXTERN_MSC void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns);
 EXTERN_MSC void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset);
 EXTERN_MSC void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API);
 EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module);

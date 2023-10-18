@@ -4322,7 +4322,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 	}
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
 	if (API->GMT->common.o.col.end || GMT->common.o.col.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
-		gmtlib_reparse_o_option (GMT, (GMT->common.o.col.text) ? 0 : D_obj->n_columns);
+		gmt_reparse_o_option (GMT, (GMT->common.o.col.text) ? 0 : D_obj->n_columns);
 	toggle = (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && D_obj->n_columns >= 2);
 	GMT->current.io.data_record_number_in_tbl[GMT_OUT] = GMT->current.io.data_record_number_in_seg[GMT_OUT] = 0;
 	DH = gmt_get_DD_hidden (D_obj);
@@ -10617,7 +10617,7 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 			API->current_fp = S_obj->fp;
 			API->current_put_n_columns = S_obj->n_columns;
 			if (API->GMT->common.o.col.end || API->GMT->common.o.col.text)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
-				gmtlib_reparse_o_option (API->GMT, (API->GMT->common.o.col.text) ? 0 : S_obj->n_columns);
+				gmt_reparse_o_option (API->GMT, (API->GMT->common.o.col.text) ? 0 : S_obj->n_columns);
 			error = gmtapi_put_record_fp (API, mode, record);
 			break;
 
