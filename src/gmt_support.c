@@ -1818,7 +1818,7 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 				else if (j == 0)	/* Start at the beginning */
 					v[i] = y[0];
 				else	/* Pick the smallest before the step happens */
-					v[i] = MIN (y[j], y[j+1]);
+					v[i] = (y[j+1] >= y[j]) ? MIN (y[j], y[j+1]) : MAX (y[j], y[j+1]);
 				break;
 			case GMT_SPLINE_LINEAR+GMT_SPLINE_SLOPE:	/* Linear spline v'(u) */
 				v[i] = (y[j+1]-y[j])/(x[j+1]-x[j]);
@@ -14864,13 +14864,13 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 	bool new_a, new_b, new_a_time = false, xa_OK = false, xb_OK = false;
 	uint64_t *sa = NULL, *sb = NULL;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
+	double amin, amax, bmin, bmax;
 	double xshift = 0.0;	/* This may become +/-360 or 0 depending on longitude shifts for geo, else 0 */
 	double dx_ab;		/* Be careful due to longitude jumps are lurking everywhere; use this variable for that */
 
 	if (na < 2 || nb < 2) return (0);	/* Need at least 2 points to make a segment */
 
 	if (geo) {	/* Since our algorithm is Cartesian we must do some extra checking to prevent shits */
-		double amin, amax, bmin, bmax;
 		gmtlib_get_lon_minmax (GMT, xa, na, &amin, &amax);
 		gmtlib_get_lon_minmax (GMT, xb, nb, &bmin, &bmax);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First line lon range: %g %g  Second line lon range: %g %g\n", amin, amax, bmin, bmax);
@@ -14880,6 +14880,21 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Second geographic line has 360-degree range.  This may fool the Cartesian crossover algorithm\n");
 		gmt_eliminate_lon_jumps (GMT, xa, na);
 		if (!internal) gmt_eliminate_lon_jumps (GMT, xb, nb);
+	}
+	else {	/* Might still be geographic if user did not indicate with -fg */
+		uint64_t k;
+		amin = bmin = DBL_MAX;	amax = bmax = -DBL_MAX;
+		for (k = 0; k < na; k++) {
+			if (xa[k] < amin) amin = xa[k];
+			if (xa[k] > amax) amax = xa[k];
+		}
+		for (k = 0; k < nb; k++) {
+			if (xb[k] < bmin) bmin = xb[k];
+			if (xb[k] > bmax) bmax = xb[k];
+		}
+
+		if (((amin < -150.0 && amax > 150.0) || (bmin < -150.0 && bmax > 150.0)) && ((amax-amin) <= 360.0 && (bmax-bmin) <= 360.0))
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your Cartesian tracks could be geographic - did you forget -fg?\n");
 	}
 
 	this_a = this_b = nx = 0;
@@ -18476,7 +18491,7 @@ char * gmt_add_options (struct GMT_CTRL *GMT, const char *list) {
 			case 'f': strcat (opts, GMT->common.f.string); break;
 			case 'g': strcat (opts, GMT->common.g.string); break;
 			case 'h': strcat (opts, GMT->common.h.string); break;
-			case 'i': strcat (opts, GMT->common.i.string); break;
+			case 'i': strcat (opts, GMT->common.i.col.string); break;
 			case 'n': strcat (opts, GMT->common.n.string); break;
 			case 's': strcat (opts, GMT->common.s.string); break;
 			case 'V': string[0] = gmt_set_V (GMT->current.setting.verbose);
@@ -19073,6 +19088,64 @@ double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, 
 	if (s < v->v_norm_limit) s = v->v_norm_limit;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given vector value %g and shrink limit %g, returned scale = %g\n", val, v->v_norm, s);
 	return (s);
+}
+
+/* Function to assist in parsing of +w<width>[c|i|p|%][/<height[c|i|p|%]] for legends, scales etc.
+ * Some features can completely auto-determine the width (e.g., the legend computes height from
+ * the number of items and width from length of texts etc, while other has a default percentage
+ * to use if not specified (e.g., 4% of the bar length is default bar height)
+ * If +w<arg> was not given then if the def_percent_w/h are set we pass that out via R->scl. */
+
+unsigned int gmt_rectangle_dimension (struct GMT_CTRL *GMT, struct GMT_SCALED_RECT_DIM *R, double def_percent_w, double def_percent_h, char *string) {
+	int n;
+	unsigned int n_percent;
+
+	if (string == NULL || string[0] == '\0') {	/* Set default scales if given */
+		R->scl[GMT_X] = 0.01 * def_percent_w;
+		R->scl[GMT_Y] = 0.01 * def_percent_h;
+		return (GMT_NOERROR);
+	}
+	if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, R->dim)) == 0)
+		return (GMT_RUNTIME_ERROR);
+	n_percent = gmt_count_char (GMT, string, '%');
+
+	if (n_percent) { /* Gave at least one dimension as percent of plot dimension */
+		char *p = strchr (string, '%'), *slash = strchr (string, '/');	/* Find position of % and / */
+		gmt_strrepc (string, '%', ' ');	/* Replace any % with spaces */
+		if (n == 2) {	/* Got width/height: Check if we got 1 or 2 percentage(s) */
+			slash[0] = ' ';	/* Replace / with space as well */
+			if (n_percent == 2) { /* Both length and width given as percentages of plot dimensions */
+				R->fraction[GMT_X] = R->fraction[GMT_Y] = true;
+				sscanf (string, "%lf %lf", &R->scl[GMT_X], &R->scl[GMT_Y]);
+				R->scl[GMT_X] *= 0.01;	R->scl[GMT_Y] *= 0.01;	/* Convert percent to fraction */
+				gmt_M_memset (R->dim, 2U, double);	/* Wipe back to zero sine still unknown */
+			}
+			else {	/* Got one percent and one fixed dimension */
+				if (p < slash) {	/* Gave width as percentage of plot width */
+					R->fraction[GMT_X] = true;
+					sscanf (string, "%lf %*s", &R->scl[GMT_X]);
+					R->scl[GMT_X] *= 0.01;	/* Convert to fraction */
+					R->dim[GMT_X] = 0.0;	/* Wipe back to zero (height was set by gmt_get_pair) */
+				}
+				else {	/* Gave height as percentage of plot height */
+					R->fraction[GMT_Y] = true;
+					sscanf (string, "%*s %lf", &R->scl[GMT_Y]);
+					R->scl[GMT_Y] *= 0.01;	/* Convert to fraction */
+					R->dim[GMT_Y] = R->dim[GMT_X] * R->scl[GMT_Y];	/* Wipe back to zero (width was set by gmt_get_pair) */
+				}
+			}
+		}
+		else {	/* Only gave width in percentage */
+			R->fraction[GMT_X] = true;
+			R->scl[GMT_X] = atof (string) * 0.01;	/* Convert to fraction */
+			R->dim[GMT_X] = 0.0;	/* Wipe back to zero */
+		}
+	}	/* No percentages, got 1 or 2 dimensions */
+	else {	/* If n == 2 then we got both fixed dimensions */
+		if (n == 1 && fabs (R->dim[GMT_X]) > 0.0)	/* Set height as <def_percent_h>% of width */
+		R->dim[GMT_Y] = R->scl[GMT_Y] * fabs (R->dim[GMT_X]);
+	}
+	return (GMT_NOERROR);
 }
 
 /* Helper functions to handle the parsing of option and modifier arguments that are required.

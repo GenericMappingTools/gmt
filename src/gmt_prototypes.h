@@ -58,6 +58,8 @@ EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *i
 
 /* gmt_init.c: */
 
+EXTERN_MSC void gmt_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns);
+EXTERN_MSC void gmt_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns);
 EXTERN_MSC void gmt_update_keys (struct GMT_CTRL *GMT, bool arg);
 EXTERN_MSC void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC unsigned int gmt_subplot_status (struct GMTAPI_CTRL *API, int fig);
@@ -267,6 +269,7 @@ EXTERN_MSC struct GMT_GRID * gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GM
 #ifdef _POSTSCRIPTLIGHT_H
 /* gmt_plot.c prototypes only included if postscriptlight has been included */
 
+EXTERN_MSC int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S1, struct GMT_DATASEGMENT *S2, struct GMT_FILL *F1, struct GMT_FILL *F2, struct GMT_PEN *P1, struct GMT_PEN *P2, struct GMT_PEN *P3, char *sec_label);
 EXTERN_MSC void gmt_plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item);
 EXTERN_MSC void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity);
 EXTERN_MSC double gmt_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth);
@@ -426,6 +429,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC unsigned int gmt_rectangle_dimension (struct GMT_CTRL *GMT, struct GMT_SCALED_RECT_DIM *R, double def_percent_w, double def_percent_h, char *string);
 EXTERN_MSC int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, bool binary, uint64_t n, int **link);
 EXTERN_MSC unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option, char modifier);
 EXTERN_MSC unsigned int gmt_get_required_uint64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, uint64_t *value);

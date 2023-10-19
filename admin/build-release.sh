@@ -20,7 +20,7 @@
 #	4. Since the latest macports is fucked related to GDAL we must get GDAL and executables
 #	   from homebrew installation instead.
 
-CLANG_V=11	# Current Clang version to use
+CLANG_V=15	# Current Clang version to use [Oct-2023]
 # Temporary ftp site for pre-release files:
 GMT_FTP_URL=ftp.soest.hawaii.edu
 GMT_FTP_DIR=/export/ftp1/ftp/pub/gmtrelease

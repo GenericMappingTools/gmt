@@ -45,4 +45,9 @@ conda update -n base -c conda-forge conda --solver libmamba
 conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
 
+# Install Sphinx extensions
+if [ "$BUILD_DOCS" = "true" ]; then
+    ${CONDA}/bin/python -m pip install --user -r doc/rst/requirements.txt
+fi
+
 set +x +e

@@ -5,11 +5,18 @@
 #
 import sys, os
 import glob
-sys.path.append(os.path.abspath('_extensions'))
 
 # -- General configuration -----------------------------------------------------
 needs_sphinx = '1.8'
-extensions = ['sphinx.ext.mathjax', 'sphinx.ext.autosectionlabel', 'jinja', 'youtube', 'sphinx_panels', 'sphinx_togglebutton', 'sphinx_copybutton']
+extensions = [
+    'sphinx.ext.mathjax',
+    'sphinx.ext.autosectionlabel',
+    'sphinx_copybutton',
+    'sphinx_design',
+    'sphinx_jinja',
+    'sphinx_togglebutton',
+    'sphinxcontrib.youtube',
+]
 source_encoding = 'utf-8-sig'
 source_suffix = '.rst'
 master_doc = 'index'
@@ -24,8 +31,8 @@ autosectionlabel_prefix_document = True
 togglebutton_hint = "Click to show example script"
 
 # Disable sphinx_panels extension for manpage build
-if tags.has("nosphinxpanels"):
-    extensions.remove("sphinx_panels")
+if tags.has("nosphinxdesign"):
+    extensions.remove("sphinx_design")
 
 # -- Project configuration ------------------------------------------------
 project = 'GMT'
@@ -40,8 +47,7 @@ else:
     doc_version = version
 
 # -- Options for HTML output ---------------------------------------------------
-html_theme = 'rtd'
-html_theme_path = ["themes"]
+html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'sticky_navigation': False,
     'includehidden': False,

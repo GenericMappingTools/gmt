@@ -14,7 +14,7 @@
      * Such an option is then expected to correspond exactly to this long-option format:
      *
      * General long-option syntax:
-     *        --<long_option>[=<long_directives>[:=<arg>]][+<long_modifier1>[=<arg1>]][+<long_modifier2>[=<arg2>]][...]
+     *        --<long_option>[=<long_directives>[:<arg>]][+<long_modifier1>[:<arg1>]][+<long_modifier2>[:<arg2>]][...]
      *
      * As we run into module options that DO NOT follow this template we will most likely need
      * to introduce a revised syntax and allow for a backwards compatible parsing option.
@@ -48,15 +48,15 @@
      *
      * Aliases may be specified within the above-defined entry structure for any <long_option>,
      * <long_directives> or <long_modifierN> via the '|' character. For example, you could specify
-     * two aliases for the "--region" long option and a single alias for its "rectangular"
+     * an alias for the "--region" long option and a single alias for its "rectangular"
      * long-modifier via the entry
      *
-     *     {   0, 'R', "region|reg|domain",
+     *     {   0, 'R', "region|limits",
      *                 "",                      "",
      *                 "r,u",                   "rectangular|rect,unit" },
      *
      * Blank spaces (but not tabs or other whitespace) around the '|' character are permitted
-     * for legibility as desired, e.g., "region | reg | domain".
+     * for legibility as desired, e.g., "region | limits".
      *
      */
 
@@ -107,7 +107,7 @@
     { ',', 'i', "incols",
                 "",                      "",
                 "l,d,o,s",               "log10,divide,offset,scale" },
-    {   0, 'j', "distance",
+    {   0, 'j', "metric|spherical|distcalc",
                 "e,f,g",                 "ellipsoidal,flatearth,spherical",
                 "",                      "" },
     {   0, 'l', "legend",
@@ -117,7 +117,9 @@
     {   0, 'n', "interpolation",
                 "b,c,l,n",               "bspline,bicubic,linear,nearneighbor",
                 "a,b,c,t",               "anti_alias,bc,clip,threshold" },
-    { ',', 'o', "outcols",               "", "", "", "" },
+    { ',', 'o', "outcols",
+                "",                      "",
+                "l,d,o,s",               "log10,divide,offset,scale" },
     {   0, 'p', "perspective",
                 "x,y,z",                 "x,y,z",
                 "v,w",                   "view,world" },
