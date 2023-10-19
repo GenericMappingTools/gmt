@@ -149,8 +149,8 @@
  *	gmtlib_putcmyk
  *	gmtlib_putfill
  *	gmtlib_puthsv
- *	gmtlib_reparse_i_option
- *	gmtlib_reparse_o_option
+ *	gmt_reparse_i_option
+ *	gmt_reparse_o_option
  *	gmtlib_report_func
  *	gmtlib_set_case_and_kind
  *	gmtlib_setparameter
@@ -9091,7 +9091,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	/* Parse the -R option.  Full syntax:
 	 * -R<west/east/south/north>
 	 * -R<LLx/LLy/URx/URy>+r
-	 * -R<xmin/xmax/ymin/ymax>[+u<unit>]
+	 * -R<xmin/xmax/ymin/ymax>[+u<unit>] -R<halfwidth[/halfheight][+u<unit>]
 	 * -R<grdfile>[+u<unit>]
 	 * -Rg|d as global shorthand for 0/360/-90/90 or -180/180/-90/90
 	 * -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows>
@@ -9201,7 +9201,6 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		first = gmt_download_file_if_not_found (GMT, item, 0);
 	}
 
-
 	for (i = first; item[i]; i++)
 		if (item[i] == '/') cnt++;
 
@@ -9299,8 +9298,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters\n", string);
 		}
 	}
+	else if (scale_coord || inv_project)
+		strncpy (string, item, GMT_BUFSIZ-1);
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Please report the situation when it occured.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Programming error. Please report the situation when it occurred.\n");
 		return (GMT_NOTSET);
 	}
 
@@ -9608,7 +9609,7 @@ GMT_LOCAL int gmtinit_parse_io_option (struct GMT_CTRL *GMT, char *arg, unsigned
 	GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
 	C->end = false;
 	if (!strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to process the numerical columns */
-	if (!strcmp (arg, "t") || !strcmp (arg, ",t")) {	/* Cannot just input trailing text, must use -ot instead */
+	if (dir == GMT_IN && (!strcmp (arg, "t") || !strcmp (arg, ",t"))) {	/* Cannot just input trailing text, must use -ot instead */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Selection -i%s (just trailing text, no numerical input) is not allowed.  Consider using -ot instead, if available.\n", arg);
 		return GMT_PARSE_ERROR;
 	}
@@ -11735,6 +11736,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				strncpy (GMT->current.setting.io_col_separator, " ", 8U);
 			else if (!strcmp (lower_value, "comma"))
 				strncpy (GMT->current.setting.io_col_separator, ",", 8U);
+			else if (!strcmp (lower_value, "semicolon"))
+				strncpy (GMT->current.setting.io_col_separator, ";", 8U);
+			else if (!strcmp (lower_value, "semi-colon"))
+				strncpy (GMT->current.setting.io_col_separator, ";", 8U);
 			else if (!strcmp (lower_value, "none"))
 				GMT->current.setting.io_col_separator[0] = 0;
 #ifdef WIN32
@@ -19845,6 +19850,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to append to existing current legend file %s !\n", file);
 			return;
 		}
+#if 0	/* Not sure about this - would need to check previous legend items added for these to make sense */
 		if (item->ID == 0) {	/* Only warn unless auto-legend for multiple lines or polygons */
 			if (item->scale > 0.0)
 				GMT_Report (API, GMT_MSG_WARNING, "Your -l+s<scale> is ignored - only applicable to the first instance of -l.\n");
@@ -19853,6 +19859,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			if (item->width)
 				GMT_Report (API, GMT_MSG_WARNING, "Your -l+w<width> is ignored - only applicable to the first instance of -l.\n");
 		}
+#endif
 	}
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Add record to current legend file%s\n", file);
@@ -20355,10 +20362,14 @@ GMT_LOCAL void gmtinit_reparse_io_option (struct GMT_CTRL *GMT, uint64_t n_colum
 	}
 	if (n_columns == 0) return;	/* Cannot update the string */
 	for (k = strlen (C->string) - 1; k && !(C->string[k] == ':' || C->string[k] == '-'); k--);	/* Find the last : or - in open-ended sequence */
-	strncpy (token, C->string, k+1);	/* Get duplicate, this ends with - or : */
-	sprintf (text, "%d", (int)n_columns-1);
-	strcat (token, text);	/* Add explicit last column to include */
-	if (C->string[k+1] == ',') strncat (token, &C->string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
+	if (k == 0)
+		strcpy (token, C->string);	/* Get duplicate */
+	else {
+		strncpy (token, C->string, k+1);	/* Get duplicate, this ends with - or : */
+		sprintf (text, "%d", (int)n_columns-1);
+		strcat (token, text);	/* Add explicit last column to include */
+		if (C->string[k+1] == ',') strncat (token, &C->string[k+1],PATH_MAX-1);	/* Probably trailing text selections */
+	}
 	if (dir == GMT_IN)
 		GMT->common.i.active = false;	/* So we can parse -i again */
 	else
@@ -20369,10 +20380,10 @@ GMT_LOCAL void gmtinit_reparse_io_option (struct GMT_CTRL *GMT, uint64_t n_colum
 		GMT->current.io.trailing_text[GMT_OUT] = o_trailing;	/* Reset to what was parsed initially */
 }
 
-void gmtlib_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
+void gmt_reparse_i_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	gmtinit_reparse_io_option (GMT, n_columns, GMT_IN);
 }
 
-void gmtlib_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
+void gmt_reparse_o_option (struct GMT_CTRL *GMT, uint64_t n_columns) {
 	gmtinit_reparse_io_option (GMT, n_columns, GMT_OUT);
 }

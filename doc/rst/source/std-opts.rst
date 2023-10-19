@@ -2,12 +2,14 @@
 Common Options
 ##############
 
+.. rubric:: Standardized Command Line Options
+
 .. list-table::
    :widths: 50 50
    :header-rows: 1
 
-   * - STANDARDIZED COMMAND LINE OPTIONS
-     -
+   * - Option
+     - Description
    * - **-B**\ *information*
      - :ref:`Specify map frame and axes parameters <-B_full>`
    * - **-J**\ *parameters*
@@ -76,6 +78,8 @@ but the following common options are:
    :widths: 50 50
    :header-rows: 1
 
+   * - Option
+     - Description
    * - **-K**
      - :ref:`Append more PS later <-K_full>`
    * - **-O**

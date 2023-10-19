@@ -93,12 +93,11 @@ Optional Arguments
 .. _-F:
 
 **-Fl**\|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
-    Choose from **a** (Akima spline), **e** (step-up curve), **c** (natural cubic spline),
+    Choose from **a** (Akima spline), **e** (step curve), **c** (natural cubic spline),
     **l** (Linear), **n** (no interpolation: nearest point), or **s** (smoothing cubic
     spline; append fit parameter *p*) [Default is **-Fa**]. You may change the default interpolant; see :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
-    by appending **+d1** or **+d2**, respectively. **Notes**: (1) The **e** directive
-    expects your data to be monotonically increasing, (2) If you use the derivatives
+    by appending **+d1** or **+d2**, respectively. **Note**: If you use the derivatives
     with directives **e** or **n** then the result is always zero.
 
 .. figure:: /_images/GMT_splines.*

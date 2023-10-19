@@ -30,7 +30,7 @@ vcpkg list
 
 conda_packages="ninja ghostscript=10.02.0"
 if [ "$BUILD_DOCS" = "true" ]; then
-	conda_packages+=" sphinx dvc"
+    conda_packages+=" sphinx dvc"
     # choco install pngquant
 fi
 
@@ -52,5 +52,10 @@ $CONDA\\condabin\\conda.bat update -n base -c conda-forge conda --solver libmamb
 $CONDA\\condabin\\conda.bat install ${conda_packages} -c conda-forge --solver libmamba
 echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
 echo "$CONDA\\Scripts" >> $GITHUB_PATH
+
+# Install Sphinx extensions
+if [ "$BUILD_DOCS" = "true" ]; then
+    ${CONDA}/python -m pip install --user -r doc/rst/requirements.txt
+fi
 
 set +x +e
