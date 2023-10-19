@@ -40,7 +40,7 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --canvassize=4320p >> $b
+gmt $m $l2s --canvas=4320p >> $b
 gmt $m $l2s --name=starwars >> $b
 gmt $m $l2s --frames=25 --frames=0/100/5+nframes >> $b
 gmt $m $l2s --frames=/my/timefile+tagwidth:4 --frames=250+first:100 >> $b
@@ -50,17 +50,17 @@ gmt $m $l2s --audio=/some/audio/file.mp3+exact >> $b
 gmt $m $l2s --displayrate=32 >> $b
 gmt $m $l2s --title=somescript+duration:8s+fadetime:3s+fadecolor:green >> $b
 gmt $m $l2s --title=somescript+fadetime:i6+fadetime:o4s >> $b
-gmt $m $l2s --videoformat=gif+loop:7 --videoformat=mp4+encode:someopts >> $b
-gmt $m $l2s --videoformat=webm+stride:5 --videoformat=png+transparent+view >> $b
+gmt $m $l2s --format=gif+loop:7 --format=mp4+encode:someopts >> $b
+gmt $m $l2s --format=webm+stride:5 --format=png+transparent+view >> $b
 gmt $m $l2s --fill=25/125/77+pen:2p >> $b
-gmt $m $l2s --tempscale=3 >> $b
+gmt $m $l2s --subpixel=3 >> $b
 gmt $m $l2s --include=/include/file.txt >> $b
 gmt $m $l2s --fade+length:i4+color:white+preserve:i --fade+length:o8s+preserve:o >> $b
 gmt $m $l2s --label=e+scale:0.5+clearance:1p/2p+fill:green+pen:2p >> $b
 gmt $m $l2s --label=sSomeString+font:helvetica+fill:red+shade:gray >> $b
 gmt $m $l2s --label=f+refpoint:TL --label=p+offset:1/1 >> $b
 gmt $m $l2s --label=c5+fill:green+rounded --label=t7+format:'%s' >> $b
-gmt $m $l2s --master=20,tif+altdpu:12 --master=first >> $b
+gmt $m $l2s --master=20,tif+dpu:12 --master=first >> $b
 #gmt $m $l2s --master=middle,png+view --master=last,+view >> $b
 gmt $m $l2s --progress=pie+font:helvetica --progress=wheel+annotate:c7 >> $b
 gmt $m $l2s --progress=arrow+mfill:red+sfill:green --progress=line+mpen:2p+spen:1p >> $b
