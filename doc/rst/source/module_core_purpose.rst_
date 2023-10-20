@@ -70,7 +70,7 @@
 
 .. |grdblend_purpose| replace:: Blend several partially overlapping grids into one larger grid
 
-.. |grdclip_purpose| replace:: 
+.. |grdclip_purpose| replace:: Clip the range of grid values
 
 .. |grdcontour_purpose| replace:: Make contour map using a grid
 
