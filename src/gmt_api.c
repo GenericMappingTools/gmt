@@ -11491,7 +11491,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				C->x = G->x;	C->y = G->y;	/* Let these be the cube's arrays from now on */
 				G->x = G->y = NULL;	/* No longer anything to do with G */
 				HU = gmt_get_U_hidden (C);
-				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = HU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
+				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = HU->xyz_alloc_mode[GMT_Z] = HU->alloc_mode = GMT_ALLOC_INTERNALLY;
 				HU->alloc_level = API->GMT->hidden.func_level;   /* Must be freed at this level. */
 				if (gmtapi_destroy_grid (API, &G))	/* Use this instead of GMT_Destroy_Data since G was local and never registered */
 		 			return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
