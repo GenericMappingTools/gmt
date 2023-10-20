@@ -56,6 +56,11 @@ struct GRDCUT_CTRL {
 		bool text;
 		bool quit;
 	} D;
+	struct GRDCUT_E {	/* -Dx|y<value> */
+		bool active;
+		unsigned dim;	/* GMT_X or GMT_Y */
+		double coord;	/* THe x- or y-value we wish to cut a cube vertically */
+	} E;
 	struct GRDCUT_F {	/* -Fpolfile[+c][+i] */
 		bool active;
 		bool crop;
@@ -114,7 +119,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-D[+t]] [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-D[+t]] [-Ex|y<coord>] [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -130,6 +135,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D[+t]");
 	GMT_Usage (API, -2, "Dry-run mode. No grid is written but its domain and increment will be "
 		"written to standard output in w e s n dx dy numerical format.  Append +t to instead receive text strings -Rw/e/s/n -Idx/dy.");
+	GMT_Usage (API, 1, "\n-Ex|y<coord>");
+	GMT_Usage (API, -2, "Cut a vertical grid from the input cube along x = <coord> or y == <coord>.\n");
 	GMT_Usage (API, 1, "\n-F<polygontable>[+c][+i]");
 	GMT_Usage (API, -2, "Specify a multi-segment closed polygon table that describes the grid subset "
 		"to be extracted (nodes between grid boundary and polygons will be set to NaN).");
@@ -189,6 +196,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[0] && strstr (opt->arg, "done-in-gmt_init_module")) {
 					Ctrl->D.quit = true;	/* Reporting has already happened */
 					gmt_M_str_free (opt->arg);	/* Free internal marker */
+				}
+				break;
+			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				switch (opt->arg[0]) {
+					case 'x':	Ctrl->E.dim = GMT_X;	break;
+					case 'y':	Ctrl->E.dim = GMT_Y;	break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Must select directive x or y\n");
+						n_errors++;
+						break;
+				}
+				if (opt->arg[1]) {
+					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, Ctrl->E.dim),
+					                                     gmt_scanf_arg (GMT, &opt->arg[1], gmt_M_type (GMT, GMT_IN, Ctrl->E.dim), false,
+					                                     &Ctrl->E.coord), &opt->arg[1]);
 				}
 				break;
 			case 'F':
@@ -416,6 +439,15 @@ GMT_LOCAL unsigned int grdcut_node_is_outside (struct GMT_CTRL *GMT, struct GMT_
 	return ((inside) ? 0 : 1);	/* 1 if outside */
 }
 
+GMT_LOCAL int grdcut_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *C; unsigned int dim, double coord) {
+	G = gmt_get_grid (GMT);
+	G->header.n_columns = C->header->n_bands;	/* Vertical dimension */
+	G->header.n_rows = (dim == GMT_X) ? C->header->n_rows : C->header->n_columns;
+	GMT->west[XLO] = (dim == GMT_X) ? C->header->wesn[YLO] : C->header->wesn[XLO];
+	GMT->west[XHI] = (dim == GMT_X) ? C->header->wesn[YHI] : C->header->wesn[XHI];
+	GMT->west[YLO] = C->z_range[0];
+	GMT->west[YHI] = C->z_range[1];
+}
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
