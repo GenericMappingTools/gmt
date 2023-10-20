@@ -32,8 +32,8 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdcut"
 #define THIS_MODULE_MODERN_NAME	"grdcut"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Extract subregion from a grid or image"
-#define THIS_MODULE_KEYS	"<G{,FD(=,>DD,G?}"
+#define THIS_MODULE_PURPOSE	"Extract subregion from a grid or image or a slice from a cube"
+#define THIS_MODULE_KEYS	"<?{,FD(=,>DD,G?}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-JRVf"
 
@@ -310,7 +310,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->G.file, "Option -D: Cannot specify -G since no grid will be returned\n");
-	//n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !GMT->common.J.active, "Option -D: Requires -R and -J\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
 	F_or_R_or_J = GMT->common.R.active[RSET] || Ctrl->F.active || GMT->common.J.active;
 	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->E.active+ Ctrl->Z.active) != 1,
@@ -320,8 +319,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->G.active, "Option -E: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && n_files != 1, "Option -E: Must supply an input cube\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !gmt_nc_is_cube (API, Ctrl->In.file), "Option -E: Must supply an input cube, not grid\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (F_or_R_or_J + Ctrl->N.active + Ctrl->S.active + Ctrl->Z.active), "Option -E: Can only be used with -G\n");
 
-	if (n_errors == 0) {
+	if (n_errors == 0 && !Ctrl->E.active) {
 		if (!Ctrl->D.quit) {
 			int ftype = gmt_raster_type(GMT, Ctrl->In.file, true);
 			if (ftype == GMT_IS_IMAGE)	/* Must read file as an image */
@@ -490,16 +490,15 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	gmt_grd_set_datapadding (GMT, true);	/* Turn on grid padding when reading a subset */
 
-	if (Ctrl->E.active) {
+	if (Ctrl->E.active) {	/* Extract a vertical slice grid aligned with x or y axis from a cube */
 		struct GMT_CUBE *C = NULL;
-		struct GMT_GRID *S = NULL;
 		if ((C = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL)
 			Return (GMT_DATA_READ_ERROR);
-		if ((S = gmt_vertical_cube_cut (GMT, C, Ctrl->E.dim, Ctrl->E.coord)) == NULL)
+		if ((G = gmt_vertical_cube_cut (GMT, C, Ctrl->E.dim, Ctrl->E.coord)) == NULL)
 			Return (API->error);
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, S))
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G))
 			Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, S) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		GMT_Destroy_Data (API, &C);

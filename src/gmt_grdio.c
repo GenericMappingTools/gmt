@@ -3960,7 +3960,14 @@ bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT
 
 struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *C, unsigned int dim, double coord) {
 	uint64_t row, col, xrow, xcol, layer, ijg, ijc;
-	struct GMT_GRID *G = gmt_create_grid (GMT);
+	struct GMT_GRID *G = NULL;
+
+	if (gmtlib_var_inc (C->z, C->header->n_bands)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cube has non-equidistant spacing in the third dimension\n");
+		GMT->parent->error = GMT_RUNTIME_ERROR;
+		return (NULL);
+	}
+	G = gmt_create_grid (GMT);
 	G->header->n_columns = C->header->n_bands;	/* Vertical dimension */
 	G->header->n_rows = (dim == GMT_X) ? C->header->n_rows : C->header->n_columns;
 	G->header->wesn[XLO] = (dim == GMT_X) ? C->header->wesn[YLO] : C->header->wesn[XLO];

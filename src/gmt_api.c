@@ -13421,11 +13421,14 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "pscoupe", 7U)) {
 		type = ((opt = GMT_Find_Option (API, 'A', *head)) && strstr (opt->arg, "+c")) ? 'D' : 'X';
 	}
-	/* 1x. Check if grdcut is just getting information and if input is a grid or image */
+	/* 1x. Check if grdcut is just getting information and if input is a grid, image or cube */
 	else if (!strncmp (module, "grdcut", 6U)) {
 		if (GMT_Find_Option (API, 'D', *head))
 			deactivate_output = true;   /* Turn off implicit output since none is in effect, only secondary -D output */
-		type = (GMT_Find_Option (API, 'I', *head)) ? 'I' : 'G'; /* Giving -I means we are reading an image */
+		else if (GMT_Find_Option (API, 'E', *head))
+			type = 'U'; /* Giving -E means we are reading a 3-D cube */
+		else
+			type = 'G'; /* Default is a grid */
 	}
 	/* 1y. Check if this is the gravprisms module, where primary dataset input should be turned off if -C is used */
 	else if (!strncmp (module, "gravprisms", 10U) && (opt = GMT_Find_Option (API, 'C', *head))) {
