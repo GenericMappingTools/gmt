@@ -11073,7 +11073,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	}
 
 	/* If S0 starts before S1 or the other way around we must get the y-value at the largest start point (CUT critical points) */
-	if (S0->data[GMT_X][first[0]] >= S1->data[GMT_X][first[1]]) {	/* S1 has the minimum x */
+	if (S0->data[GMT_X][first[0]] > S1->data[GMT_X][first[1]]) {	/* S1 has the minimum x */
 		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
 		X[np].x  = S0->data[GMT_X][first[0]];	/* Critical point's x coordinate (start of overlap of S0 and S1) */
 		X[np].y0 = S0->data[col_y0][first[0]];	/* Critical point's y0 coordinate (start of overlap of S0 and S1) */
@@ -11100,7 +11100,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		np++;
 	}
 	/* If S0 ends before S1 or the other way around we must get the y-value at the smallest end point */
-	if (S0->data[GMT_X][last[0]] <= S1->data[GMT_X][last[1]]) {	/* S1 has maximum x value */
+	if (S0->data[GMT_X][last[0]] < S1->data[GMT_X][last[1]]) {	/* S1 has maximum x value */
 		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
 		/* Start at last point of S0 which is were the filled polygon ends */
 		X[np].x  = S0->data[GMT_X][last[0]];	/* Critical point's x coordinate (end of overlap of S0 and S1) */
