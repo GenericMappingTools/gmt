@@ -70,13 +70,13 @@
 
 .. |grdblend_purpose| replace:: Blend several partially overlapping grids into one larger grid
 
-.. |grdclip_purpose| replace:: Clip the range of grid values
+.. |grdclip_purpose| replace:: 
 
 .. |grdcontour_purpose| replace:: Make contour map using a grid
 
 .. |grdconvert_purpose| replace:: Convert between different grid formats
 
-.. |grdcut_purpose| replace:: Extract subregion from a grid or image
+.. |grdcut_purpose| replace:: Extract subregion from a grid or image or a slice from a cube
 
 .. |grdedit_purpose| replace:: Modify header or content of a grid
 
