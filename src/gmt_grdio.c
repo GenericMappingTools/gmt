@@ -3957,3 +3957,13 @@ bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT
 	}
 	return (true);
 }
+
+struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *C, unsigned int dim, double coord) {
+	struct GMT_GRID *G = gmt_get_grid (GMT);
+	G->header->n_columns = C->header->n_bands;	/* Vertical dimension */
+	G->header->n_rows = (dim == GMT_X) ? C->header->n_rows : C->header->n_columns;
+	G->header->wesn[XLO] = (dim == GMT_X) ? C->header->wesn[YLO] : C->header->wesn[XLO];
+	G->header->wesn[XHI] = (dim == GMT_X) ? C->header->wesn[YHI] : C->header->wesn[XHI];
+	G->header->wesn[YLO] = C->z_range[0];
+	G->header->wesn[YHI] = C->z_range[1];
+}

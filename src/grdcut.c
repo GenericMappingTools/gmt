@@ -171,7 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 */
 
 	bool F_or_R_or_J, do_file_check = true;
-	unsigned int n_errors = 0, k;
+	unsigned int n_errors = 0, k, n_files = 0;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -186,6 +186,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->In.file));
 				if (do_file_check && GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_files++;
 			break;
 
 			/* Processes program-specific parameters */
@@ -312,10 +313,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	//n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !GMT->common.J.active, "Option -D: Requires -R and -J\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
 	F_or_R_or_J = GMT->common.R.active[RSET] || Ctrl->F.active || GMT->common.J.active;
-	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->Z.active) != 1,
+	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->E.active+ Ctrl->Z.active) != 1,
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->D.active, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify one input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->G.active, "Option -E: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && n_files != 1, "Option -E: Must supply an input cube\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !gmt_nc_is_cube (API, Ctrl->In.file), "Option -E: Must supply an input cube, not grid\n");
+
 	if (n_errors == 0) {
 		if (!Ctrl->D.quit) {
 			int ftype = gmt_raster_type(GMT, Ctrl->In.file, true);
@@ -439,16 +444,6 @@ GMT_LOCAL unsigned int grdcut_node_is_outside (struct GMT_CTRL *GMT, struct GMT_
 	return ((inside) ? 0 : 1);	/* 1 if outside */
 }
 
-GMT_LOCAL int grdcut_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *C; unsigned int dim, double coord) {
-	G = gmt_get_grid (GMT);
-	G->header.n_columns = C->header->n_bands;	/* Vertical dimension */
-	G->header.n_rows = (dim == GMT_X) ? C->header->n_rows : C->header->n_columns;
-	GMT->west[XLO] = (dim == GMT_X) ? C->header->wesn[YLO] : C->header->wesn[XLO];
-	GMT->west[XHI] = (dim == GMT_X) ? C->header->wesn[YHI] : C->header->wesn[XHI];
-	GMT->west[YLO] = C->z_range[0];
-	GMT->west[YHI] = C->z_range[1];
-}
-
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -493,7 +488,23 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->D.quit)	/* Already reported information deep inside gmt_init_module */
 		Return (GMT_NOERROR);
 
-	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on grid padding when reading a subset */
+
+	if (Ctrl->E.active) {
+		struct GMT_CUBE *C = NULL;
+		struct GMT_GRID *S = NULL;
+		if ((C = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL)
+			Return (GMT_DATA_READ_ERROR);
+		if ((S = gmt_vertical_cube_cut (GMT, C, Ctrl->E.dim, Ctrl->E.coord)) == NULL)
+			Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, S))
+			Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, S) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		GMT_Destroy_Data (API, &C);
+		Return (GMT_NOERROR);
+	}
 
 	if (!Ctrl->Z.active) {	/* All of -F, -R, -S selections first needs the header */
 		if (Ctrl->In.type == GMT_IS_IMAGE) {
