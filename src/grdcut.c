@@ -136,7 +136,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Dry-run mode. No grid is written but its domain and increment will be "
 		"written to standard output in w e s n dx dy numerical format.  Append +t to instead receive text strings -Rw/e/s/n -Idx/dy.");
 	GMT_Usage (API, 1, "\n-Ex|y<coord>");
-	GMT_Usage (API, -2, "Cut a vertical grid from the input cube along x = <coord> or y == <coord>.\n");
+	GMT_Usage (API, -2, "Cut a vertical grid from an input cube along x = <coord> or y == <coord>.\n");
 	GMT_Usage (API, 1, "\n-F<polygontable>[+c][+i]");
 	GMT_Usage (API, -2, "Specify a multi-segment closed polygon table that describes the grid subset "
 		"to be extracted (nodes between grid boundary and polygons will be set to NaN).");

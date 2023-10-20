@@ -17,6 +17,7 @@ Synopsis
 |-G|\ *outgrid*
 |SYN_OPT-R|
 [ |-D|\ [**+t**] ]
+[ |-E|\ **x**\|\ **y**\ *coord* ]
 [ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
@@ -79,6 +80,13 @@ Optional Arguments
     to standard output. The increments will reflect the input grid unless it is a
     remote gridded data set without implied resolution. Append **+t** to instead receive
     the information as the trailing string "-Rwest/east/south/north -Ixinc/yinc".
+
+.. _-E:
+
+**-E**\ **x**\|\ **y**\ *coord*
+    We extract a vertical slice going along the **x**\ -column *coord* or along the
+    **y**\ -row *coord*, depending on the given directive.
+    **Note**: Input file must be a 3-D netCDF cube, and |-E| can only be used with option |-G|.
 
 .. _-F:
 
