@@ -3959,11 +3959,38 @@ bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT
 }
 
 struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *C, unsigned int dim, double coord) {
-	struct GMT_GRID *G = gmt_get_grid (GMT);
+	uint64_t row, col, xrow, xcol, layer, ijg, ijc;
+	struct GMT_GRID *G = gmt_create_grid (GMT);
 	G->header->n_columns = C->header->n_bands;	/* Vertical dimension */
 	G->header->n_rows = (dim == GMT_X) ? C->header->n_rows : C->header->n_columns;
 	G->header->wesn[XLO] = (dim == GMT_X) ? C->header->wesn[YLO] : C->header->wesn[XLO];
 	G->header->wesn[XHI] = (dim == GMT_X) ? C->header->wesn[YHI] : C->header->wesn[XHI];
+	G->header->inc[GMT_X] = (dim == GMT_X) ? C->header->inc[GMT_Y] : C->header->inc[GMT_X];
 	G->header->wesn[YLO] = C->z_range[0];
 	G->header->wesn[YHI] = C->z_range[1];
+	G->header->inc[GMT_Y] = C->z_inc;
+	gmt_set_grddim (GMT, G->header);
+	if (dim == GMT_X)
+		xcol = gmt_M_grd_x_to_col (GMT, coord, C->header);
+	else
+		xrow = gmt_M_grd_y_to_row (GMT, coord, C->header);
+	G->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);
+
+	for (layer = 0; layer < C->header->n_bands; layer++) {
+		ijg = gmt_M_ijp (G->header, layer, 0);
+		if (dim == GMT_X) {
+			ijc = gmt_M_ijp (C->header, 0, xcol) + layer * C->header->size;
+			/* row here is basically the column in the 2-D grid */
+			for (row = 0; row < C->header->n_rows; row++, ijg++)
+				G->data[ijg] = C->data[ijc];
+		}
+		else {
+			ijc = gmt_M_ijp (C->header, xrow, 0) + layer * C->header->size;
+			/* col here is the column in the 2-D grid */
+			ijc = gmt_M_ijp (C->header, xrow, 0) + layer * C->header->size;
+			for (col = 0; col < C->header->n_columns; col++, ijg++)
+				G->data[ijg] = C->data[ijc];
+		}
+	}
+	return (G);
 }
