@@ -2675,24 +2675,24 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
 
-GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, unsigned int axis, bool below) {
+GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, unsigned int axis, bool below, unsigned int feature) {
 	/* Function to use to set axis labels for Cartesian basemaps and colorbars */
 	struct PSL_CTRL *PSL= GMT->PSL;
 	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
-
+	struct GMT_FONT *F = (feature == GMT_FEATURE_LABEL) ? &GMT->current.setting.font_label : &GMT->current.setting.font_tag;
+	double offset = (feature == GMT_FEATURE_LABEL) ? GMT->current.setting.map_label_offset[GMT_Y] : 0.0;
 	if (gmt_text_is_latex (GMT, label)) {	/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 		bool set_L_off = (axis == GMT_X && !below);	/* May need to ensure extra offset for title */
 		double w, h;
 		unsigned char *eps = NULL;
 		struct imageinfo header;
-
-		if ((eps = gmtplot_latex_eps (GMT, &GMT->current.setting.font_label, label, &header)) == NULL) {
+		if ((eps = gmtplot_latex_eps (GMT, F, label, &header)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtplot_map_label: Conversion of LaTeX label to EPS failed\n");
 			return;	/* Done */
 		}
 		/* Scale up EPS dimensions by the ratio of label font size to LaTeX default size of 10p */
-		w = (header.width / 72.0)  * (GMT->current.setting.font_label.size / 10.0);
-		h = (header.height / 72.0) * (GMT->current.setting.font_label.size / 10.0);
+		w = (header.width / 72.0)  * (F->size / 10.0);
+		h = (header.height / 72.0) * (F->size / 10.0);
 		/* Place EPS file as label, then free eps */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtplot_map_label: Conversion of LaTeX label gave dimensions %g x %g\n", w, h);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
@@ -2703,10 +2703,10 @@ GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char
 			if (fabs (angle) > 0.0) PSL_command (PSL, "currentpoint T %g R\n", angle); else PSL_command (PSL, "currentpoint T\n");
 			if (below) PSL_command (PSL, "0 %d PSL_LH sub neg M currentpoint T\n", (int)lrint (h * PSL->internal.y2iy));
 			/* I am somehow missing the label offset for y-axes so I need to account for it here in order to get correct result */
-			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*GMT->current.setting.map_label_offset[GMT_Y] * PSL->internal.y2iy));
+			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*offset * PSL->internal.y2iy));
 		}
 		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label; keep for future debugging */
-		PSL_plotlatexeps (PSL, x, y, w, h, PSL_BC, eps, GMT->current.setting.font_label.fill.rgb, &header);	/* Place the EPS plot */
+		PSL_plotlatexeps (PSL, x, y, w, h, PSL_BC, eps, F->fill.rgb, &header);	/* Place the EPS plot */
 		PSL_command (PSL, "U\n");	/* Close up the block */
 		if (set_L_off)	/* Must reset the value of PSL_LH to the EPS image height so the title baseline can be adjusted */
 			PSL_command (PSL, "/PSL_LH %d def\n", (int)lrint (h * PSL->internal.y2iy));
@@ -2714,9 +2714,9 @@ GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char
 		return;	/* Done on this end */
 	}
 	else {	/* Regular text label */
-		int form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+		int form = gmt_setfont (GMT, F);
 		double s = (pos_set) ? -1.0 : +1.0;
-		PSL_plottext (PSL, x, y, s * GMT->current.setting.font_label.size, label, angle, just, form);
+		PSL_plottext (PSL, x, y, s * F->size, label, angle, just, form);
 	}
 }
 
@@ -2988,7 +2988,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
 			PSL_setcurrentpoint (PSL, 0.0, 0.0);	/* Make the center point of axis the current point */
 			PSL_command (PSL, "0 PSL_AH1 %d add %sG\n", PSL_IZ (PSL, off), neg);	/* Move outwards in the x-direction by the annotation width and offset */
-			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, true);	/* Place the label */
+			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, true, GMT_FEATURE_LABEL);	/* Place the label */
 			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);	/* Undo the coordinate system change */
 		}
 		if (GMT->current.map.frame.side[we_side[1]] & GMT_AXIS_ANNOT) {
@@ -3001,7 +3001,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
 			PSL_setcurrentpoint (PSL, 0.0, 0.0);	/* Make the center point of axis the current point */
 			PSL_command (PSL, "0 PSL_AH1 %d add %sG\n", PSL_IZ (PSL, off), neg);	/* Move outwards in the x-direction by the annotation width and offset */
-			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, false);
+			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, false, GMT_FEATURE_LABEL);
 			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);	/* Undo the coordinate system change */
 		}
 	}
@@ -6003,7 +6003,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			PSL_command (PSL, "%d PSL_L_y PSL_slant_x add MM\n", PSL_IZ (PSL, 0.5 * length));
 		else
 			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
-		gmtplot_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
+		gmtplot_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below, GMT_FEATURE_LABEL);
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
@@ -9288,10 +9288,17 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				}
 				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
 				/* Finally place the tag text in the box */
-				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, NULL, 0.0, justify, form);
+				PSL_setorigin (PSL, plot_x, plot_y, 0.0, PSL_FWD);
+				PSL_setcurrentpoint (PSL, 0.0, 0.0);	/* Make the center point of axis the current point */
+				gmtplot_map_label (GMT, 0.0, 0.0, P->tag, 0.0, justify, GMT_X, false, GMT_FEATURE_TAG);
+				PSL_setorigin (PSL, -plot_x, -plot_y, 0.0, PSL_INV);	/* Undo the coordinate system change */
+
+				//PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, NULL, 0.0, justify, form);
 			}
-			else   /* Just place the tag text */
-				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
+			else   /* Just place the tag text */ {
+				gmtplot_map_label (GMT, plot_x, plot_y, P->tag, 0.0, justify, 0, false, GMT_FEATURE_TAG);
+				//PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
+			}
 			gmtplot_reset_PSL (GMT, PSL);	/* Reset anything we may have set in building the completion PS procedure */
 			PSL_comment (PSL, "End of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_command (PSL, "U\n}!\n");

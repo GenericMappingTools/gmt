@@ -464,6 +464,11 @@ enum GMT_enum_axes {
 	GMT_AXIS_ANNOT = 4,
 	GMT_AXIS_ALL   = 7};
 
+/*! Various mode for gmtplot_map_label */
+enum GMT_enum_feature {
+	GMT_FEATURE_LABEL  = 0,
+	GMT_FEATURE_TAG  = 1};
+
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
