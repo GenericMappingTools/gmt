@@ -2675,7 +2675,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
 
-GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, unsigned int axis, bool below, unsigned int feature) {
+GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char *label, double angle, int just, unsigned int axis, bool below, enum GMT_enum_feature feature) {
 	/* Function to use to set axis labels for Cartesian basemaps and colorbars */
 	struct PSL_CTRL *PSL= GMT->PSL;
 	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y));	/* If the current point has already been placed */
