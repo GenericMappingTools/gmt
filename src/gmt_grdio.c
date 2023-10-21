@@ -3969,6 +3969,7 @@ struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *
 	uint64_t row, col, xrow, xcol, layer, ijg, ijc;
 	double pos = 0.0;
 	struct GMT_GRID *G = NULL;
+	struct GMT_GRID_HIDDEN *GH = NULL;
 
 	if (gmtlib_var_inc (C->z, C->header->n_bands)) {	/* Check if equidistant in z direction */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cube has non-equidistant spacing in the third dimension (consider grdinterpolate instead)\n");
@@ -3993,7 +3994,7 @@ struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *
 	}
 	else {	/* Received an y-coordinate, find corresponding row */
 		xrow = gmt_M_grd_y_to_row (GMT, coord, C->header);
-		pos = gmt_M_grd_row_to_y (GMT, xcol, C->header);
+		pos = gmt_M_grd_row_to_y (GMT, xrow, C->header);
 	}
 	if (!doubleAlmostEqualZero (coord, pos)) {	/* Not aligned with cube nodes */
 		static char *axis = "xy";
@@ -4006,6 +4007,8 @@ struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *
 	/* Checks passed, time to do the work */
 
 	G->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);	/* Allocate grid and padding */
+	GH = gmt_get_G_hidden (G);
+	GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 
 	/* Loop over the output grids rows and columns and match to nodes in the cube */
 	for (layer = 0; layer < G->header->n_rows; layer++) {	/* This is the loop over the rows in the output grid */

@@ -501,7 +501,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Destroy_Data (API, &C);
+		gmt_free_grid (GMT, &G, true);
 		Return (GMT_NOERROR);
 	}
 

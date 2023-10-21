@@ -6149,6 +6149,8 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					z_min = U_obj->header->z_min;	/* Initialize cube min/max values based on this first layer */
 					z_max = U_obj->header->z_max;
 					here = 0;	/* Initialize offset into k'th layer */
+					UH = gmt_get_U_hidden (U_obj);
+					UH->alloc_mode = GMT_ALLOC_INTERNALLY;
 				}
 				else {	/* Here we update min/max for subsequent layers read */
 					if (G->header->z_min < z_min) z_min = G->header->z_min;
