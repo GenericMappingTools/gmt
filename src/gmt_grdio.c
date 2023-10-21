@@ -3959,45 +3959,69 @@ bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT
 }
 
 struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *C, unsigned int dim, double coord) {
+	/* Special case of slicing a cube vertically and along the cube's node structure.  For
+	 * oblique cuts and resampling and for grids with variable spacing/time in the third
+	 * dimension, see grdinterpolate instead.
+	 * Here, dim is either GMT_X or GMT_Y which informs us whether coord is an x-
+	 * or y-coordinate and that defines the vertical plan to be at that constant
+	 * coordinate and parallel to the z-axis and the other axis (y or x).
+	 */
 	uint64_t row, col, xrow, xcol, layer, ijg, ijc;
+	double pos = 0.0;
 	struct GMT_GRID *G = NULL;
 
-	if (gmtlib_var_inc (C->z, C->header->n_bands)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cube has non-equidistant spacing in the third dimension\n");
+	if (gmtlib_var_inc (C->z, C->header->n_bands)) {	/* Check if equidistant in z direction */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cube has non-equidistant spacing in the third dimension (consider grdinterpolate instead)\n");
 		GMT->parent->error = GMT_RUNTIME_ERROR;
 		return (NULL);
 	}
-	G = gmt_create_grid (GMT);
-	G->header->n_columns = C->header->n_bands;	/* Vertical dimension */
-	G->header->n_rows = (dim == GMT_X) ? C->header->n_rows : C->header->n_columns;
-	G->header->wesn[XLO] = (dim == GMT_X) ? C->header->wesn[YLO] : C->header->wesn[XLO];
-	G->header->wesn[XHI] = (dim == GMT_X) ? C->header->wesn[YHI] : C->header->wesn[XHI];
+	G = gmt_create_grid (GMT);	/* Create empty grid structure */
+	/* The number of columns in the output grid depends which of the two planes we selected */
+	G->header->n_columns  = (dim == GMT_X) ? C->header->n_rows     : C->header->n_columns;
+	G->header->wesn[XLO]  = (dim == GMT_X) ? C->header->wesn[YLO]  : C->header->wesn[XLO];
+	G->header->wesn[XHI]  = (dim == GMT_X) ? C->header->wesn[YHI]  : C->header->wesn[XHI];
 	G->header->inc[GMT_X] = (dim == GMT_X) ? C->header->inc[GMT_Y] : C->header->inc[GMT_X];
-	G->header->wesn[YLO] = C->z_range[0];
-	G->header->wesn[YHI] = C->z_range[1];
+	/* The number of rows in the output grid is always the third dimension in the cube and independent of dim */
+	G->header->n_rows     = C->header->n_bands;	
+	G->header->wesn[YLO]  = C->z_range[0];
+	G->header->wesn[YHI]  = C->z_range[1];
 	G->header->inc[GMT_Y] = C->z_inc;
-	gmt_set_grddim (GMT, G->header);
-	if (dim == GMT_X)
+	gmt_set_grddim (GMT, G->header);	/* Determine dimensions, mx, pad etc */
+	if (dim == GMT_X) {	/* Received an x-coordinate, find corresponding column */
 		xcol = gmt_M_grd_x_to_col (GMT, coord, C->header);
-	else
+		pos = gmt_M_grd_col_to_x (GMT, xcol, C->header);
+	}
+	else {	/* Received an y-coordinate, find corresponding row */
 		xrow = gmt_M_grd_y_to_row (GMT, coord, C->header);
-	G->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);
+		pos = gmt_M_grd_row_to_y (GMT, xcol, C->header);
+	}
+	if (!doubleAlmostEqualZero (coord, pos)) {	/* Not aligned with cube nodes */
+		static char *axis = "xy";
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E%c: Your %c-coordinate is not aligned with the cube %c-nodes (%lg vs %lg).\n", axis[dim], axis[dim], axis[dim], coord, pos);
+		GMT->parent->error = GMT_RUNTIME_ERROR;
+		gmt_free_grid (GMT, &G, true);
+		return (NULL);
+	}
 
-	for (layer = 0; layer < C->header->n_bands; layer++) {
-		ijg = gmt_M_ijp (G->header, layer, 0);
-		if (dim == GMT_X) {
-			ijc = gmt_M_ijp (C->header, 0, xcol) + layer * C->header->size;
-			/* row here is basically the column in the 2-D grid */
-			for (row = 0; row < C->header->n_rows; row++, ijg++)
+	/* Checks passed, time to do the work */
+
+	G->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);	/* Allocate grid and padding */
+
+	/* Loop over the output grids rows and columns and match to nodes in the cube */
+	for (layer = 0; layer < G->header->n_rows; layer++) {	/* This is the loop over the rows in the output grid */
+		ijg = gmt_M_ijp (G->header, layer, 0);	/* TL node in output grid */
+		if (dim == GMT_X) {	/* Must loop over the cube's y-dimension */
+			ijc = gmt_M_ijp (C->header, 0, xcol) + layer * C->header->size;	/* Corresponding point in the cube */
+			/* col loops over the columns in the 2-D grid which are rows in the cube */
+			for (col = 0; col < G->header->n_columns; col++, ijg++, ijc += G->header->mx)
 				G->data[ijg] = C->data[ijc];
 		}
-		else {
-			ijc = gmt_M_ijp (C->header, xrow, 0) + layer * C->header->size;
-			/* col here is the column in the 2-D grid */
-			ijc = gmt_M_ijp (C->header, xrow, 0) + layer * C->header->size;
-			for (col = 0; col < C->header->n_columns; col++, ijg++)
+		else {	/* Must loop over the cube's x-dimension */
+			ijc = gmt_M_ijp (C->header, xrow, 0) + layer * C->header->size;/* Corresponding point in the cube */
+			/* col here is the column in the 2-D grid which are also cols in the cube */
+			for (col = 0; col < C->header->n_columns; col++, ijg++, ijc++)
 				G->data[ijg] = C->data[ijc];
 		}
 	}
-	return (G);
+	return (G);	/* Return the fully allocated local grid */
 }
