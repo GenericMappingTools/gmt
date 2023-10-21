@@ -192,6 +192,11 @@ that is using an oblique projection to display the remote Earth Relief data grid
 
     gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D+t -V
 
+To extract a vertical grid slice at *x = 35* and parallel to the *y-z* plane
+from the 3-D model seis3D.nc, try::
+
+    gmt grdcut seis3D.nc -Gslice_x35.nc -Ex35 -V
+
 Notes
 -----
 
