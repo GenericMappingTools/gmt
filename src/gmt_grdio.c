@@ -4012,7 +4012,7 @@ struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *
 
 	/* Loop over the output grids rows and columns and match to nodes in the cube */
 	for (layer = 0; layer < G->header->n_rows; layer++) {	/* This is the loop over the rows in the output grid */
-		ijg = gmt_M_ijp (G->header, layer, 0);	/* TL node in output grid */
+		ijg = gmt_M_ijp (G->header, G->header->n_rows-1-layer, 0);	/* TL node in output grid */
 		if (dim == GMT_X) {	/* Must loop over the cube's y-dimension */
 			ijc = gmt_M_ijp (C->header, 0, xcol) + layer * C->header->size;	/* Corresponding point in the cube */
 			/* col loops over the columns in the 2-D grid which are rows in the cube */
