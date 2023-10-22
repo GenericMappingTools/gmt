@@ -1235,6 +1235,10 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	string[1] = header->y_units;
 	string[2] = header->z_units;
 
+	/* Safety valve for geographic grids */
+	if (strstr (string[GMT_X], "longitude")) gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+	if (strstr (string[GMT_Y], "latitude"))  gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+
 	/* Use input data type as backup for output data type */
 	for (i = 0; i < 3; i++)
 		if (gmt_M_type (GMT, GMT_OUT, i) == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];
