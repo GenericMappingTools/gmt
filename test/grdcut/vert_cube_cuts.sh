@@ -14,8 +14,8 @@ gmt begin vert_cube_cuts
 	# Compute the yx and xz vertical grids directly using -R with x|y and z
 	gmt grdmath -R-10/10/1/8 -I1 X Y 0.25 MUL HYPOT Y DIV 4 POW -0.5 MUL EXP 5 MUL 8 Y SUB ADD = orig_y.grd
 	gmt grdmath -R-10/10/1/8 -I1 X 6 HYPOT Y 0.25 MUL HYPOT Y DIV 4 POW -0.5 MUL EXP 5 MUL 8 Y SUB ADD = orig_x.grd
+	gmt makecpt -T0/12
 	gmt subplot begin 2x2 -Fs8c -Sct+tc -Srl -Blrbt -A1+gwhite -R-10/10/1/8 -JX10c/-5c -M0.5c -T"Cuts of @[5 e^{\left [-\frac{1}{2}\left( \frac{r}{z}\right)^4\right]} + 8 - z@["
-		gmt makecpt -T0/12
 		gmt grdimage orig_x.grd -c -B+t"y-z cut x = 0"
 		gmt grdimage orig_y.grd -c -B+t"x-z cut y = 6"
 		gmt grdimage x.grd -c
