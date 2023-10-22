@@ -632,9 +632,9 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
 					if (k == start_k) {	/* Set the segment header just once */
 						if (Si->text && Si->text[row])
-							sprintf (header, "Location %g,%g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
+							sprintf (header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
 						else
-							sprintf (header, "Location %g,%g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
+							sprintf (header, "Location %.12g,%.12g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
 						So->header = strdup (header);
 					}
 					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
