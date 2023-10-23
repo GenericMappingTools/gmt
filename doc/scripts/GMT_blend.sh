@@ -1,43 +1,97 @@
 #!/usr/bin/env bash
-# Demonstrate blending and weights
-# Large grid has no inner boundary
-# Crossection shows output values are correct
+#
+
+# "Inner" regions when blending (dashed lines)
+cat << EOF > info.txt
+a.nc	-R1/5/1/5	1
+b.nc	-R5/10/1/4	1
+c.nc	-R5/9/5/9	1
+d.nc	-R1/5/5/9	1
+EOF
+# Make 4 constant grids
+gmt grdmath -R0/6/0/6 -I0.1   0 = a.nc
+gmt grdmath -R4/10/0/5 -I0.1  2 = b.nc
+gmt grdmath -R0/6/4/10 -I0.1  8 = c.nc
+gmt grdmath -R4/10/4/10 -I0.1 4 = d.nc
+
 gmt begin GMT_blend
-	gmt set GMT_THEME cookbook
-	gmt grdmath -R0/100/0/45  -I0.2 1 = 1.grd
-	gmt grdmath -R10/60/15/40 -I0.2 2 = 2.grd
-	gmt grdmath -R45/75/5/35  -I0.2 3 = 3.grd
-	cat <<- EOF > blend.lis
-	1.grd	1
-	2.grd	25/55/20/33	2
-	3.grd	48/70/7/25	4
+	gmt set GMT_THEME cookbook FONT_TAG 10p,Helvetica-Bold,black FONT_ANNOT_PRIMARY 8p
+	gmt makecpt -Crainbow -T0/8
+	gmt subplot begin 2x3 -Fs5c/3c -Sct -Srl -R0/10/0/10 -A0+jTR
+	gmt subplot set 0 -Aaverage
+	# 0. Just add them up
+	gmt grdblend ?.nc -R0/10/0/10 -I0.1 -Gblend.nc
+	gmt grdimage blend.nc
+	# Draw grid outlines
+	cat <<- EOF > lines.txt
+	> a
+	6	0
+	6	6
+	0	6
+	> b
+	4	0
+	4	5
+	10	5
+	> c
+	4	10
+	4	4
+	10	4
+	> d
+	6	10
+	6	4
+	0	4
 	EOF
-	gmt grdblend blend.lis -R1.grd -Gblend.grd
-	cat <<- EOF > t.cpt
-	1	lightyellow	2	lightorange
-	2	lightorange	3	lightred
+	gmt plot lines.txt -W1p
+	# 1. Blend the overlapping grids
+	gmt grdblend info.txt -I0.1 -Gblend.nc
+	gmt subplot set 1 -Ablend
+	gmt grdimage blend.nc
+	gmt plot lines.txt -W1p
+	# Draw the inside regions
+	gmt plot -W0.5p,- -L <<- EOF
+	> a
+	1	1
+	5	1
+	5	5
+	1	5
+	> b
+	5	1
+	10	1
+	10	4
+	5	4
+	> c
+	5	5
+	9	5
+	9	9
+	5	9
+	> d
+	1	5
+	5	5
+	5	9
+	1	9
 	EOF
-	gmt grdimage blend.grd -Jx0.18c -B -Ct.cpt
-	gmt grdinfo -Ib 2.grd | gmt plot -W2p
-	gmt grdinfo -Ib 3.grd | gmt plot -W2p
-	gmt plot -W0.5,- -L <<- EOF
-	> Inner region for grid 2
-	25	20
-	55	20
-	55	35
-	25	35
-	> Inner region for grid 3
-	48	7
-	70	7
-	70	25
-	48	25
-	EOF
-	printf "0	22\n100	22\n" | gmt plot -W1p,blue
-	gmt text -F+f12p,Times-Italic+j -Dj4p <<- EOF
-	0	45 TL z = 1, w = 1
-	60  40 TR z = 2, w = 2
-	75  35 TR z = 3, w = 4
-	EOF
-	gmt colorbar -DjRM -F+gwhite+p0.25p -Bx -By+lz
-	gmt grdtrack -Gblend.grd -E0/22/100/22 -o0,2 | gmt plot -R0/100/0.8/2.8 -Jx0.18c/1c -Bya1g1 -BWbrt -Y9.2c -W1p,blue
+	# 2. Last grid encountered matters
+	gmt grdblend ?.nc -Co -I0.1 -Gblend.nc
+	gmt subplot set 2 -Alast
+	gmt grdimage blend.nc 
+	gmt plot lines.txt -W1p
+	# 3. First grid encountered matters
+	gmt grdblend ?.nc -Cf -I0.1 -Gblend.nc
+	gmt subplot set 3 -Afirst
+	gmt grdimage blend.nc
+	gmt plot  lines.txt -W1p
+	# 4. Grid with lowest value matters
+	gmt grdblend ?.nc -Cl -I0.1 -Gblend.nc
+	gmt subplot set 4 -Alow
+	gmt grdimage blend.nc
+	gmt plot lines.txt -W1p
+	# 5. Grid with highest value matters
+	gmt grdblend ?.nc -Cu -I0.1 -Gblend.nc
+	gmt subplot set 5 -Ahigh
+	gmt grdimage blend.nc
+	gmt plot lines.txt -W1p
+	gmt subplot end
+	gmt colorbar -DJRM -B1
 gmt end show
+
+
