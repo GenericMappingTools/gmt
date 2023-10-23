@@ -123,8 +123,9 @@ Optional Arguments
    :align: center
 
    Blending is just one option what happens in areas of overlap. The dashed
-   lines indicates the "inner" regions where weights are 1 and between the
-   dashed lines and the grid borders the weights are cosine-tapered to 0.
+   lines indicates the "inner" regions where the relative weights are 1 and
+   between the dashed lines and the grid borders the relative weights are
+   cosine-tapered down to 0.
 
 .. _-Q:
 
