@@ -27,8 +27,11 @@ gmt begin GMT_segmentize
 	gmt set FONT_ANNOT_PRIMARY 9p
 	gmt subplot begin 2x3 -Fs5c/4.5c -R0/50/0/45  -Sct -Srl -Jx0.1cd -M1p
 		# Show the data and its natural connectivity
-		gmt plot -W0.25p,- t[12].txt -c
-		plotpts TWO DATA TABLES
+		gmt plot -W0.25p,- t[12].txt -c -l"Data connections"+jTL+o2p/12p+gwhite+f6p
+		printf "5 35\n20 35\n" | gmt plot -W1p -l"New connections"
+		gmt plot -Sc5p -Ggreen -Wfaint t1.txt -l"Table 1"+jTL+o2p/12p+gwhite
+		gmt plot -Sc5p -Gblue  -Wfaint t2.txt -l"Table 2"
+		gmt text -F+cTL+jTL+f7p,Helvetica-Bold+t"TWO DATA TABLES" -Dj3p
 		# Lines from dataset origin
 		gmt plot -W0.25p,- t[12].txt -c
 		gmt plot -W1p t[12].txt -Fra
