@@ -117,6 +117,15 @@ Optional Arguments
     for subsequent grids we only consider them in the decision if the
     values are :math:`z \ge 0` (**+p**) or :math:`z \le 0` (**+n**), respectively.
 
+
+.. figure:: /_images/GMT_blendtype.*
+   :width: 500 px
+   :align: center
+
+   Blending is just one option what happens in areas of overlap. The dashed
+   lines indicates the "inner" regions where weights are 1 and between the
+   dashed lines and the grid borders the weights are cosine-tapered to 0.
+
 .. _-Q:
 
 **-Q**

@@ -14,7 +14,7 @@ gmt grdmath -R4/10/0/5 -I0.1  2 = b.nc
 gmt grdmath -R0/6/4/10 -I0.1  8 = c.nc
 gmt grdmath -R4/10/4/10 -I0.1 4 = d.nc
 
-gmt begin GMT_blend
+gmt begin GMT_blendtype
 	gmt set GMT_THEME cookbook FONT_TAG 10p,Helvetica-Bold,black FONT_ANNOT_PRIMARY 8p
 	gmt makecpt -Crainbow -T0/8
 	gmt subplot begin 2x3 -Fs5c/3c -Sct -Srl -R0/10/0/10 -A0+jTR
