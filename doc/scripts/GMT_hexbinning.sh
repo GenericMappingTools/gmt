@@ -34,7 +34,7 @@ gmt grdmath -R0.866025403785/4.33012701893/0.5/2.5 -I1.73205080757/1 0 = r.grd
 # Only nodes that are not hexagon centers
 gmt grdmath -R0/5.19615242271/0/3 -I0.866025403785/0.5 0 = t.grd
 H=$(gmt math -Q 3.46410161514 2 DIV =)
-gmt begin GMT_hexbinning pdf
+gmt begin GMT_hexbinning
 	gmt grd2xyz b.grd | gmt plot -Sh${H}c -Glightblue@50 -W1p -N -R0/5.19615242271/0/3 -Jx1.5c -X0.5i
 	gmt grd2xyz b.grd | gmt plot -Sh${H}c -Glightblue -W1p
 	gmt grd2xyz r.grd | gmt plot -Sh${H}c -Glightred@50 -W1p -N
