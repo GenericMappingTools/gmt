@@ -121,6 +121,16 @@ Optional Arguments
     *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in |-R| to
     fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.
 
+.. figure:: /_images/GMT_hexbinning.*
+   :width: 500 px
+   :align: center
+
+   a) Hexagonal polygons (light blue and light red) used for binning. The red are all inside the
+   gridding region while the blue are outside along the border. Yellow squares are test data,
+   black nodes are grid nodes supported by a hexagon center, and while squares are nodes that fall 
+   between. b) Grid showing result of hexagonal binning which yields a constant value inside each
+   polygon.
+
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
