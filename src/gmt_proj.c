@@ -1188,7 +1188,7 @@ GMT_LOCAL void gmtproj_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, 
 
 GMT_LOCAL void gmtproj_vtm (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	/* Set up an TM projection */
-	double e1, s2, c2;
+	double e1, s2, s4, s6;
 
 	/* gmtproj_check_R_J (&lon0); */
 	e1 = (1.0 - d_sqrt (GMT->current.proj.one_m_ECC2)) / (1.0 + d_sqrt (GMT->current.proj.one_m_ECC2));
@@ -1204,8 +1204,10 @@ GMT_LOCAL void gmtproj_vtm (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	GMT->current.proj.t_i5 = (1097.0/64.0) * pow (e1, 4.0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.t_lat0 = lat0 * D2R;	/* In radians */
-	sincos (2.0 * GMT->current.proj.t_lat0, &s2, &c2);
-	GMT->current.proj.t_M0 = GMT->current.proj.EQ_RAD * (GMT->current.proj.t_c1 * GMT->current.proj.t_lat0 + s2 * (GMT->current.proj.t_c2 + c2 * (GMT->current.proj.t_c3 + c2 * GMT->current.proj.t_c4)));
+	s2 = sin (2.0 * GMT->current.proj.t_lat0);
+	s4 = sin (4.0 * GMT->current.proj.t_lat0);
+	s6 = sin (6.0 * GMT->current.proj.t_lat0);
+	GMT->current.proj.t_M0 = GMT->current.proj.EQ_RAD * (GMT->current.proj.t_c1 * GMT->current.proj.t_lat0 + s2 * (GMT->current.proj.t_c2 + s4 * (GMT->current.proj.t_c3 + s6 * GMT->current.proj.t_c4)));
 	GMT->current.proj.t_r = GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor;
 	GMT->current.proj.t_ir = 1.0 / GMT->current.proj.t_r;
 }
@@ -1214,7 +1216,7 @@ GMT_LOCAL void gmtproj_vtm (struct GMT_CTRL *GMT, double lon0, double lat0) {
 
 GMT_LOCAL void gmtproj_tm (struct GMT_CTRL *P, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to TM x/y */
-	double N, T, T2, C, A, M, dlon, tan_lat, A2, A3, A5, s, c, s2, c2;
+	double N, T, T2, C, A, M, dlon, tan_lat, A2, A3, A4, A5, A6, s, c, s2, s4, s6;
 
 	if (doubleAlmostEqual (fabs (lat), 90.0)) {
 		M = P->current.proj.EQ_RAD * P->current.proj.t_c1 * M_PI_2;
@@ -1224,64 +1226,66 @@ GMT_LOCAL void gmtproj_tm (struct GMT_CTRL *P, double lon, double lat, double *x
 	else {
 		lat *= D2R;
 		sincos (lat, &s, &c);
-		sincos (2.0 * lat, &s2, &c2);
 		tan_lat = s / c;
-		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * (P->current.proj.t_c2 + c2 * (P->current.proj.t_c3 + c2 * P->current.proj.t_c4)));
+		s2 = sin (2.0 * lat);
+		s4 = sin (4.0 * lat);
+		s6 = sin (6.0 * lat);
+		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * (P->current.proj.t_c2 + s4 * (P->current.proj.t_c3 + s6 * P->current.proj.t_c4)));
 		gmt_M_set_delta_lon (P->current.proj.central_meridian, lon, dlon);
-		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s * s);
+		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s2);
 		T = tan_lat * tan_lat;
 		T2 = T * T;
 		C = P->current.proj.t_e2 * c * c;
 		A = dlon * D2R * c;
-		A2 = A * A;	A3 = A2 * A;	A5 = A3 * A2;
+		A2 = A * A;	A3 = A2 * A;	A4 = A3 * A; A5 = A4 * A;	A6 = A5 * A;
 		*x = P->current.setting.proj_scale_factor * N * (A + (1.0 - T + C) * (A3 * 0.16666666666666666667)
 			+ (5.0 - 18.0 * T + T2 + 72.0 * C - 58.0 * P->current.proj.t_e2) * (A5 * 0.00833333333333333333));
-		A3 *= A;	A5 *= A;
-		*y = P->current.setting.proj_scale_factor * (M - P->current.proj.t_M0 + N * tan_lat * (0.5 * A2 + (5.0 - T + 9.0 * C + 4.0 * C * C) * (A3 * 0.04166666666666666667)
-			+ (61.0 - 58.0 * T + T2 + 600.0 * C - 330.0 * P->current.proj.t_e2) * (A5 * 0.00138888888888888889)));
+		*y = P->current.setting.proj_scale_factor * (M - P->current.proj.t_M0 + N * tan_lat * (0.5 * A2 + (5.0 - T + 9.0 * C + 4.0 * C * C) * (A4 * 0.04166666666666666667)
+			+ (61.0 - 58.0 * T + T2 + 600.0 * C - 330.0 * P->current.proj.t_e2) * (A6 * 0.00138888888888888889)));
 	}
 }
 
 GMT_LOCAL void gmtproj_itm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert TM x/y to lon/lat */
-	double M, mu, u2, s, c, phi1, C1, C12, T1, T12, tmp, tmp2, N1, R_1, D, D2, D3, D5, tan_phi1, cp2;
+	double M, mu, s, c, s2, c2, s4, s6, s8, phi1, C1, C12, T1, T12, tmp, tmp2, N1, R_1, D, D2, D3, D4, D5, D6, tan_phi1, cp2;
 
 	M = y / GMT->current.setting.proj_scale_factor + GMT->current.proj.t_M0;
 	mu = M * GMT->current.proj.t_i1;
 
-	u2 = 2.0 * mu;
-	sincos (u2, &s, &c);
-	phi1 = mu + s * (GMT->current.proj.t_i2 + c * (GMT->current.proj.t_i3 + c * (GMT->current.proj.t_i4 + c * GMT->current.proj.t_i5)));
+	sincos (2.0 * mu, &s2, &c2);
+	s4 = sin (4.0 * mu);
+	s6 = sin (6.0 * mu);
+	s8 = sin (8.0 * mu);
+	phi1 = mu + s2 * (GMT->current.proj.t_i2 + s4 * (GMT->current.proj.t_i3 + s6 * (GMT->current.proj.t_i4 + s8 * GMT->current.proj.t_i5)));
 
 	sincos (phi1, &s, &c);
 	tan_phi1 = s / c;
 	cp2 = c * c;
 	C1 = GMT->current.proj.t_e2 * cp2;
 	C12 = C1 * C1;
-	T1 = tan_phi1 * tan_phi1;
+	T1 = s2 / c2;
 	T12 = T1 * T1;
 	tmp = 1.0 - GMT->current.proj.ECC2 * (1.0 - cp2);
 	tmp2 = d_sqrt (tmp);
 	N1 = GMT->current.proj.EQ_RAD / tmp2;
 	R_1 = GMT->current.proj.EQ_RAD * GMT->current.proj.one_m_ECC2 / (tmp * tmp2);
 	D = x / (N1 * GMT->current.setting.proj_scale_factor);
-	D2 = D * D;	D3 = D2 * D;	D5 = D3 * D2;
+	D2 = D * D;	D3 = D2 * D;	D4 = D2 * D2; D5 = D3 * D2;	D6 = D5 * D;
 
 	*lon = GMT->current.proj.central_meridian + R2D * (D - (1.0 + 2.0 * T1 + C1) * (D3 * 0.16666666666666666667)
 		+ (5.0 - 2.0 * C1 + 28.0 * T1 - 3.0 * C12 + 8.0 * GMT->current.proj.t_e2 + 24.0 * T12)
 		* (D5 * 0.00833333333333333333)) / c;
-	D3 *= D;	D5 *= D;
 	*lat = phi1 - (N1 * tan_phi1 / R_1) * (0.5 * D2 -
-		(5.0 + 3.0 * T1 + 10.0 * C1 - 4.0 * C12 - 9.0 * GMT->current.proj.t_e2) * (D3 * 0.04166666666666666667)
-		+ (61.0 + 90.0 * T1 + 298 * C1 + 45.0 * T12 - 252.0 * GMT->current.proj.t_e2 - 3.0 * C12) * (D5 * 0.00138888888888888889));
+		(5.0 + 3.0 * T1 + 10.0 * C1 - 4.0 * C12 - 9.0 * GMT->current.proj.t_e2) * (D4 * 0.04166666666666666667)
+		+ (61.0 + 90.0 * T1 + 298 * C1 + 45.0 * T12 - 252.0 * GMT->current.proj.t_e2 - 3.0 * C12) * (D6 * 0.00138888888888888889));
 	(*lat) *= R2D;
 }
 
-/*Spherical TM functions */
+/* Spherical TM functions */
 
 GMT_LOCAL void gmtproj_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to TM x/y by spherical formula */
-	double dlon, b, clat, slat, clon, slon, xx, yy;
+	double dlon, B, clat, slat, clon, slon, xx, yy;
 
 	gmt_M_set_delta_lon (GMT->current.proj.central_meridian, lon, dlon);
 	if (fabs (lat) > 90.0) {
@@ -1295,8 +1299,8 @@ GMT_LOCAL void gmtproj_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, dou
 
 	sincosd (lat, &slat, &clat);
 	sincosd (dlon, &slon, &clon);
-	b = clat * slon;
-	if (fabs(b) >= 1.0) {
+	B = clat * slon;
+	if (fabs(B) >= 1.0) {
 		/* This corresponds to the transverse "pole"; the point at x = +-infinity, y = -lat0.
 			Treat as in gmtproj_merc_sph(), but transversely:  */
 		*x = copysign (1.0e100, dlon);
@@ -1304,7 +1308,7 @@ GMT_LOCAL void gmtproj_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, dou
 		return;
 	}
 
-	xx = atanh (b);
+	xx = atanh (B);
 
 	/* this should get us "over the pole";
 	   see not Snyder's formula but his example Fig. 10 on p. 50:  */
@@ -1318,15 +1322,15 @@ GMT_LOCAL void gmtproj_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, dou
 GMT_LOCAL void gmtproj_itm_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert TM x/y to lon/lat by spherical approximation.  */
 
-	double xx, yy, sinhxx, coshxx, sind, cosd, lambda, phi;
+	double xx, D, sinhxx, coshxx, sind, cosd, lambda, phi;
 
 	xx = x * GMT->current.proj.t_ir;
-	yy = y * GMT->current.proj.t_ir + GMT->current.proj.t_lat0;
+	D = y * GMT->current.proj.t_ir + GMT->current.proj.t_lat0;
 
 	sinhxx = sinh (xx);
 	coshxx = cosh (xx);
 
-	sincos (yy, &sind, &cosd);
+	sincos (D, &sind, &cosd);
 	phi = asind (sind / coshxx);
 	*lat = phi;
 
