@@ -2442,7 +2442,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			else if (Ctrl->N.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->N.fade_level > 0.0) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
 				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->N.fade_fill.rgb);
-				GMT_Report (API, GMT_MSG_NOTICE, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fade_fill.rgb), irint (100.0*Ctrl->N.fade_level));
+				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fade_fill.rgb), irint (100.0*Ctrl->N.fade_level));
 				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
 				transparency = true;
 			}
