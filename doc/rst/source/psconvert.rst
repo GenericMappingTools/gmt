@@ -419,7 +419,7 @@ use it.
 Deprecations
 ------------
 
-- 6.5.0: Modifier +i of the |-N| option is deprecated (but honored). `#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_
+- 6.5.0: Modifier +i of the |-N| option is deprecated (but honored). `#7972 <https://github.com/GenericMappingTools/gmt/pull/7972>`_
 - 6.3.0: Modifiers +m, +g et al of |-A| option are moved to |-I|, |-N|, or |-W| option. `#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_
 
 See Also
