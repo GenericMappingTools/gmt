@@ -1994,7 +1994,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
-		if (Ctrl->E.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
+		if (Ctrl->E.fill) {strcat (extra, "+k"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
 		if (Ctrl->E.PS) {	/* Need to place a background title first (which will be in parent dir when loop script is run) */
 			strcat (extra, ",Mb../../");
 			strcat (extra, Ctrl->E.file);
@@ -2280,7 +2280,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->K.active) {
 			sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
-			if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
+			if (Ctrl->K.fill) {strcat (extra, "+k"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 		}
 		else
 			sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
@@ -2483,7 +2483,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->K.active) {
 		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
-		if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
+		if (Ctrl->K.fill) {strcat (extra, "+k"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 	}
 	else
 		sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
