@@ -413,6 +413,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 						}
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to colors %s\n", gmt_putrgb (GMT, fill->b_rgb));
 					}
+					fill->set_b_rgb = true;
 					break;
 				case 'f':	/* Foreground color. Giving no argument means transparent [also checking for obsolete -] */
 					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
@@ -426,6 +427,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 						}
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to colors %s\n", gmt_putrgb (GMT, fill->f_rgb));
 					}
+					fill->set_f_rgb = true;
 					break;
 				case 'r':	/* Dots-per-inch resolution */
 					if (p[1] == '-') {
@@ -437,6 +439,10 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 					break;
 				default: break;
 			}
+		}
+		if (fill->set_b_rgb && fill->set_f_rgb && fill->b_rgb[0] < 0.0 && fill->f_rgb[0] < 0.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pattern fore- and back-ground pixels cannot both be transparent!\n");
+			return (GMT_PARSE_ERROR);
 		}
 		if (uerr) return (GMT_PARSE_ERROR);
 	}
