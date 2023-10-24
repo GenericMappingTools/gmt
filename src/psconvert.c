@@ -146,10 +146,10 @@ struct PSCONVERT_CTRL {
 		bool active;
 		char *file;
 	} M[2];
-	struct PSCONVERT_N {             /* -N[+f<fade>][+g<backfill>][+i][+k<fadefill>][+p<pen>] */
+	struct PSCONVERT_N {             /* -N[+f<fade>][+g<backfill>][+k<fadefill>][+p<pen>] with deprecated [+i] */
 		bool active;
 		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
-		bool paint;        /* Paint box behind plot with selected fill (+g) */
+		bool BB_paint;        /* Paint box behind plot with selected fill (+g) */
 		bool fade;         /* If true we must fade out the plot to black [or what +kfill says] */
 		bool use_ICC_profiles;
 		double fade_level;      /* Fade to black at this level of transparency */
@@ -347,7 +347,7 @@ GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, s
 }
 
 GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
-	/* Syntax: -N[+f<fade>][+g<backfill>][+i][+k<fadefill>][+p<pen>] */
+	/* Syntax: -N[+f<fade>][+g<backfill>][+k<fadefill>][+p<pen>]  with deprecated [+i] */
 
 	unsigned int pos = 0, error = 0;
 	char p[GMT_LEN128] = {""};
@@ -369,7 +369,7 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 				Ctrl->N.fade = true;
 				break;
 			case 'g':	/* Fill background */
-				Ctrl->N.paint = true;
+				Ctrl->N.BB_paint = true;
 				if (!p[1]) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N+g: Append the background fill\n");
 					error++;
@@ -385,14 +385,14 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 				   and that is what psconvert does by default, unless option -I is set.
 				   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied
 				   to all but PDF format. We have no solution to offer other than ... upgrade GS. */
-				Ctrl->N.use_ICC_profiles = true;
+				Ctrl->N.use_ICC_profiles = true;	/* Deprecated in docs but still honored under hood */
 				break;
 			case 'k':	/* Fill for fading */
 				if (!p[1]) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N+k: Append the fade fill [black]\n");
 					error++;
 				}
-				else if (gmt_getfill (GMT, &p[1], &Ctrl->N.back_fill)) {
+				else if (gmt_getfill (GMT, &p[1], &Ctrl->N.fade_fill)) {
 					gmt_rgb_syntax (GMT, 'N', "Modifier +k sets background fill attributes");
 					error++;
 				}
@@ -410,7 +410,7 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 				break;
 		}
 	}
-	if (Ctrl->N.fade) Ctrl->N.paint = false;	/* With fading, the paint color is the terminal color */
+	//if (Ctrl->N.fade) Ctrl->N.BB_paint = false;	/* With fading, the paint color is the terminal color */
 
 	return (error);
 }
@@ -469,6 +469,10 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 	}
 	if (gmt_get_modifier (arg, 'g', string)) {
 		strcat (N_option, "+g");
+		strcat (N_option, string);
+	}
+	if (gmt_get_modifier (arg, 'k', string)) {
+		strcat (N_option, "+k");
 		strcat (N_option, string);
 	}
 	if (gmt_get_modifier (arg, 'p', string)) {
@@ -662,7 +666,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
-		"[-N[+f<fade>][+g<backfill>][+i][+k<fadefill>][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
+		"[-N[+f<fade>][+g<backfill>][+k<fadefill>][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
 		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
@@ -726,12 +730,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Sandwich current psfile between background and foreground plots:");
 	GMT_Usage (API, 3, "b: Append the name of a background PostScript plot [none].");
 	GMT_Usage (API, 3, "f: Append name of foreground PostScript plot [none].");
-	GMT_Usage (API, 1, "\n-N[+f<fade>][+g<backfill>][+i][+k<fadefill>][+p[<pen>]]");
+	GMT_Usage (API, 1, "\n-N[+f<fade>][+g<backfill>][+k<fadefill>][+p[<pen>]]");
 	GMT_Usage (API, -2, "Specify painting, fading, or outline of the BoundingBox via optional modifiers:");
-	GMT_Usage (API, 3, "+f Append <fade> (0-100) to fade entire plot to black (100%% fade)[no fading]. "
-		"Use +g to change the fade color [black].");
+	GMT_Usage (API, 3, "+f Append <fade> (0-100) to fade entire plot to black (100%% fade)[no fading].");
 	GMT_Usage (API, 3, "+g Append <backfill> to paint the BoundingBox first [no fill].");
-	GMT_Usage (API, 3, "+i Change gray-shades by using ICC profiles [Default sets -dUseFastColor=true].");
 	GMT_Usage (API, 3, "+k Append <fadefill> to indicate color at full fade [black].");
 	GMT_Usage (API, 3, "+p Outline the BoundingBox, optionally append <pen> [%s].",
 		gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
@@ -1145,7 +1147,7 @@ GMT_LOCAL void psconvert_possibly_fill_or_outline_BB (struct GMT_CTRL *GMT, stru
 	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
 	char *ptr = NULL;
 	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
-	if (N->paint) {	/* Paint the background of the page */
+	if (N->BB_paint) {	/* Paint the background of the page */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->back_fill.rgb));
 		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->back_fill.rgb));
 		ptr = PSL_makecolor (GMT->PSL, N->back_fill.rgb);
@@ -2215,7 +2217,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		has_transparency = transparency = add_grestore = false;
-		set_background = (Ctrl->N.paint || Ctrl->N.outline);
+		set_background = (Ctrl->N.BB_paint || Ctrl->N.outline);
 		trans_line = 0;
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
@@ -2440,7 +2442,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			else if (Ctrl->N.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->N.fade_level > 0.0) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
 				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->N.fade_fill.rgb);
-				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fade_fill.rgb), irint (100.0*Ctrl->N.fade_level));
+				GMT_Report (API, GMT_MSG_NOTICE, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fade_fill.rgb), irint (100.0*Ctrl->N.fade_level));
 				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
 				transparency = true;
 			}
