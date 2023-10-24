@@ -13763,14 +13763,14 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 			snprintf (text, PATH_MAX+GMT_LEN256, "P%d/%s", F->dpi, F->pattern);
 		if (F->set_f_rgb) {	/* Change the foreground pixel color */
 			if (F->f_rgb[0] < 0.0)	/* Set transparent foreground */
-				strcpy (add_fb, "+f-");
+				strcpy (add_fb, "+f");
 			else	/* Opaque foreground pixels */
 				snprintf (add_fb, GMT_LEN64, "+f%.5g/%.5g/%.5g", gmt_M_t255(F->f_rgb,0), gmt_M_t255(F->f_rgb,1), gmt_M_t255(F->f_rgb,2));
 			strcat (text, add_fb);
 		}
 		if (F->set_b_rgb) {	/* Change the background pixel color */
 			if (F->b_rgb[0] < 0.0)	/* Set transparent background */
-				strcpy (add_fb, "+b-");
+				strcpy (add_fb, "+b");
 			else	/* Opaque background pixels */
 				snprintf (add_fb, GMT_LEN64, "+b%.5g/%.5g/%.5g", gmt_M_t255(F->b_rgb,0), gmt_M_t255(F->b_rgb,1), gmt_M_t255(F->b_rgb,2));
 			strcat (text, add_fb);
