@@ -1232,7 +1232,7 @@ GMT_LOCAL void gmtproj_tm (struct GMT_CTRL *P, double lon, double lat, double *x
 		s6 = sin (6.0 * lat);
 		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * (P->current.proj.t_c2 + s4 * (P->current.proj.t_c3 + s6 * P->current.proj.t_c4)));
 		gmt_M_set_delta_lon (P->current.proj.central_meridian, lon, dlon);
-		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s2);
+		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s * s);
 		T = tan_lat * tan_lat;
 		T2 = T * T;
 		C = P->current.proj.t_e2 * c * c;
