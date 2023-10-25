@@ -10928,6 +10928,8 @@ GMT_LOCAL int compare_curves (const void *p1, const void *p2) {
 	return (0);
 }
 
+#define FILL_DEBUG
+
 int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, struct GMT_PEN *PR, char *sec_label) {
 	/* We are given two segments S0 [y0(xx)] and S1 [y1(x)].  If S1 == NULL then S1 contains
 	 * three columns and (x, y0(x), y1(x)) and we select col = GMT_Z for the second curve.
@@ -11130,8 +11132,8 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	/* Sort critical points on increasing x */
 
 	qsort (X, np, sizeof (struct GMT_CURVES_CROSS), compare_curves);
-#if 0
-	/* Print out critical point information so far before looking across boundaries */
+#ifdef FILL_DEBUG
+	fprintf (stderr, "\nPrint out critical point information so far before looking across boundaries\n");
 	fprintf (stderr, "code\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
 	for (k = 0; k < np; k++)
 		fprintf (stderr, "%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
@@ -11147,8 +11149,8 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 			X[k0].s1_i1 = X[k1].s1_i0;
 		}
 	}
-#if 0
-	/* Print out critical point information after updating across boundaries */
+#ifdef FILL_DEBUG
+	fprintf (stderr, "\nPrint out critical point information after updating across boundaries\n");
 	fprintf (stderr, "\ncode\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
 	for (k = 0; k < np; k++)
 		fprintf (stderr, "%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
@@ -11204,8 +11206,9 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 			yp[n] = X[k0].y0;
 			n++;
 		}
-#if 0
+#ifdef FILL_DEBUG
 		/* Dump this polygon */
+		fprintf (stderr, "\nDump this polygon\n");
 		fprintf (stderr, "> Polygon %d\n", (int)k0);
 		for (row = 0; row < n; row++) {
 			fprintf (stderr, "%lg\t%lg\n", xp[row], yp[row]);
