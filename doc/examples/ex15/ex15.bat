@@ -12,19 +12,20 @@ gmt begin ex15
 	gmt subplot begin 2x2 -M0.3c/0.1c -Fs7.5c/0 %region% -JM7.5c -BWSne -T"Gridding with missing data"
 		REM   Raw nearest neighbor contouring
 		gmt nearneighbor %region% -I10m -S40k -Gship.nc ship.b -bi
-		gmt grdcontour ship.nc -JM -C250 -A1000 -Gd5c -c1,0
+        gmt grdimage ship.nc -c1,0
+        gmt plot ship.b -bi3d -Sc0.005c
 		REM   Grid via surface but mask out area with no data using coastlines
+		gmt mask -I10m ship.b -T -Gorange -bi3d -c1,1
+        gmt plot ship.b -bi3d -Sc0.005c
+		REM   Grid via surface but mask out area with no data
 		gmt blockmedian ship.b -b3d > ship_10m.b
 		gmt surface ship_10m.b -Gship.nc -bi
-		gmt mask -I10m ship.b -T -Glightgray -bi3d -c1,1
-		gmt grdcontour ship.nc -C250 -L-8000/0 -A1000 -Gd5c
-		REM   Grid via surface but mask out area with no data
 		gmt mask -I10m ship_10m.b -bi3d -c0,0
-		gmt grdcontour ship.nc -C250 -A1000 -L-8000/0 -Gd5c
+   		gmt grdimage ship.nc
 		gmt mask -C
 		REM   Clip data above sealevel then overlay land
 		gmt grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
-		gmt grdcontour ship_clipped.nc -C250 -A1000 -L-8000/0 -Gd5c -c0,1
+   		gmt grdimage ship_clipped.nc -c0,1
 		gmt coast -Ggray -Wthinnest
 		gmt grdinfo -Cn -M ship.nc | gmt plot -Sa0.5c -Wthick -i10,11 -Gred
 	gmt subplot end
