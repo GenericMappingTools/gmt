@@ -1,7 +1,7 @@
 REM		GMT EXAMPLE 15
 REM
 REM Purpose:	Gridding and clipping when data are missing
-REM GMT modules:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo
+REM GMT modules:	blockmedian, gmtconvert, grdclip, grdinfo, grdimage
 REM GMT modules:	info, nearneighbor, coast, mask, surface, plot
 REM DOS calls: del
 REM

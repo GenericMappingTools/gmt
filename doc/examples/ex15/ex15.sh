@@ -2,7 +2,7 @@
 #		GMT EXAMPLE 15
 #
 # Purpose:	Gridding and clipping when data are missing
-# GMT modules:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo
+# GMT modules:	blockmedian, gmtconvert, grdclip, grdinfo, grdimage
 # GMT modules:	info, nearneighbor, coast, mask, surface, plot
 # Unix progs:	rm
 #
