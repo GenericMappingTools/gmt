@@ -1194,20 +1194,20 @@ GMT_LOCAL void gmtproj_vtm (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	e1 = (1.0 - d_sqrt (GMT->current.proj.one_m_ECC2)) / (1.0 + d_sqrt (GMT->current.proj.one_m_ECC2));
 	GMT->current.proj.t_e2 = GMT->current.proj.ECC2 * GMT->current.proj.i_one_m_ECC2;
 	GMT->current.proj.t_c1 = 1.0 - (1.0/4.0) * GMT->current.proj.ECC2 - (3.0/64.0) * GMT->current.proj.ECC4 - (5.0/256.0) * GMT->current.proj.ECC6;
-	GMT->current.proj.t_c2 = -((3.0/8.0) * GMT->current.proj.ECC2 + (3.0/32.0) * GMT->current.proj.ECC4 + (25.0/768.0) * GMT->current.proj.ECC6);
-	GMT->current.proj.t_c3 = (15.0/128.0) * GMT->current.proj.ECC4 + (45.0/512.0) * GMT->current.proj.ECC6;
-	GMT->current.proj.t_c4 = -(35.0/768.0) * GMT->current.proj.ECC6;
+	GMT->current.proj.t_c2 = -((3.0/8.0) * GMT->current.proj.ECC2 + (3.0/32.0) * GMT->current.proj.ECC4 + (45.0/1024.0) * GMT->current.proj.ECC6);
+	GMT->current.proj.t_c3 = (15.0/256.0) * GMT->current.proj.ECC4 + (45.0/1024.0) * GMT->current.proj.ECC6;
+	GMT->current.proj.t_c4 = -(35.0/3072.0) * GMT->current.proj.ECC6;
 	GMT->current.proj.t_i1 = 1.0 / (GMT->current.proj.EQ_RAD * GMT->current.proj.t_c1);
-	GMT->current.proj.t_i2 = (3.0/2.0) * e1 - (29.0/12.0) * pow (e1, 3.0);
-	GMT->current.proj.t_i3 = (21.0/8.0) * e1 * e1 - (1537.0/128.0) * pow (e1, 4.0);
-	GMT->current.proj.t_i4 = (151.0/24.0) * pow (e1, 3.0);
-	GMT->current.proj.t_i5 = (1097.0/64.0) * pow (e1, 4.0);
-	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.t_i2 = (3.0/2.0) * e1 - (27.0/32.0) * pow (e1, 3.0);
+	GMT->current.proj.t_i3 = (21.0/16.0) * e1 * e1 - (55.0/32.0) * pow (e1, 4.0);
+	GMT->current.proj.t_i4 = (151.0/96.0) * pow (e1, 3.0);
+	GMT->current.proj.t_i5 = (1097.0/512.0) * pow (e1, 4.0);
+	GMT->current.proj.central_meridian = lon0;	/* In degrees */
 	GMT->current.proj.t_lat0 = lat0 * D2R;	/* In radians */
 	s2 = sin (2.0 * GMT->current.proj.t_lat0);
 	s4 = sin (4.0 * GMT->current.proj.t_lat0);
 	s6 = sin (6.0 * GMT->current.proj.t_lat0);
-	GMT->current.proj.t_M0 = GMT->current.proj.EQ_RAD * (GMT->current.proj.t_c1 * GMT->current.proj.t_lat0 + s2 * (GMT->current.proj.t_c2 + s4 * (GMT->current.proj.t_c3 + s6 * GMT->current.proj.t_c4)));
+	GMT->current.proj.t_M0 = GMT->current.proj.EQ_RAD * (GMT->current.proj.t_c1 * GMT->current.proj.t_lat0 + s2 * GMT->current.proj.t_c2 + s4 * GMT->current.proj.t_c3 + s6 * GMT->current.proj.t_c4);
 	GMT->current.proj.t_r = GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor;
 	GMT->current.proj.t_ir = 1.0 / GMT->current.proj.t_r;
 }
@@ -1230,7 +1230,7 @@ GMT_LOCAL void gmtproj_tm (struct GMT_CTRL *P, double lon, double lat, double *x
 		s2 = sin (2.0 * lat);
 		s4 = sin (4.0 * lat);
 		s6 = sin (6.0 * lat);
-		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * (P->current.proj.t_c2 + s4 * (P->current.proj.t_c3 + s6 * P->current.proj.t_c4)));
+		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * P->current.proj.t_c2 + s4 * P->current.proj.t_c3 + s6 * P->current.proj.t_c4);
 		gmt_M_set_delta_lon (P->current.proj.central_meridian, lon, dlon);
 		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s * s);
 		T = tan_lat * tan_lat;
@@ -1256,16 +1256,15 @@ GMT_LOCAL void gmtproj_itm (struct GMT_CTRL *GMT, double *lon, double *lat, doub
 	s4 = sin (4.0 * mu);
 	s6 = sin (6.0 * mu);
 	s8 = sin (8.0 * mu);
-	phi1 = mu + s2 * (GMT->current.proj.t_i2 + s4 * (GMT->current.proj.t_i3 + s6 * (GMT->current.proj.t_i4 + s8 * GMT->current.proj.t_i5)));
+	phi1 = mu + s2 * GMT->current.proj.t_i2 + s4 * GMT->current.proj.t_i3 + s6 * GMT->current.proj.t_i4 + s8 * GMT->current.proj.t_i5;
 
 	sincos (phi1, &s, &c);
 	tan_phi1 = s / c;
-	cp2 = c * c;
-	C1 = GMT->current.proj.t_e2 * cp2;
+	C1 = GMT->current.proj.t_e2 * c * c;
 	C12 = C1 * C1;
-	T1 = s2 / c2;
+	T1 = tan_phi1 * tan_phi1;
 	T12 = T1 * T1;
-	tmp = 1.0 - GMT->current.proj.ECC2 * (1.0 - cp2);
+	tmp = 1.0 - GMT->current.proj.ECC2 * s * s;
 	tmp2 = d_sqrt (tmp);
 	N1 = GMT->current.proj.EQ_RAD / tmp2;
 	R_1 = GMT->current.proj.EQ_RAD * GMT->current.proj.one_m_ECC2 / (tmp * tmp2);
