@@ -6,7 +6,7 @@
 # GMT modules:	info, nearneighbor, coast, mask, surface, plot
 # Unix progs:	rm
 #
-gmt begin ex15 png
+gmt begin ex15
 	gmt convert @ship_15.txt -bo > ship.b
 	region=$(gmt info ship.b -I1 -bi3d)
 	gmt subplot begin 2x2 -M0.3c/0.1c -Fs7.5c/0 $region -JM7.5c -BWSne -T"Gridding with missing data" -Scb -Srl 
