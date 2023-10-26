@@ -11,7 +11,7 @@ gmt begin ex15
 	region=$(gmt info ship.b -I1 -bi3d)
 	gmt subplot begin 2x2 -M0.3c/0.1c -Fs7.5c/0 $region -JM7.5c -BWSne -T"Gridding with missing data" -Scb -Srl 
 		#   Raw nearest neighbor contouring
-        	gmt nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi
+		gmt nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi
 		gmt grdimage ship.nc -c1,0
 		gmt plot ship.b -bi3d -Sc0.005c
 		#   Grid via surface but mask out area with no data using coastlines
