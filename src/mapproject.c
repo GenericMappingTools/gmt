@@ -47,7 +47,7 @@
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformations, datum conversions and geodesy"
 #define THIS_MODULE_KEYS	"<D{,LD(=,>D},W-("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>JrVbdefghijopqs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>JRVbdefghijopqs" GMT_OPT("HMm")
 
 enum GMT_mp_Gcodes {	/* Support for -G parsing */
 	GMT_MP_VAR_POINT   = 1,	/* Compute distances from points given along a track */

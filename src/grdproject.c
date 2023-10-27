@@ -34,7 +34,7 @@
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformation of grids"
 #define THIS_MODULE_KEYS	"<G{,GG}"
 #define THIS_MODULE_NEEDS	"J"
-#define THIS_MODULE_OPTIONS "-JrVjnr" GMT_OPT("S")
+#define THIS_MODULE_OPTIONS "-JRVjnr" GMT_OPT("S")
 
 struct GRDPROJECT_CTRL {
 	struct GRDPROJECT_In {	/* Input grid */
