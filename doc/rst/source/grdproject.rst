@@ -18,6 +18,7 @@ Synopsis
 [ |-E|\ *dpi* ] [ |-F|\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**] ] [ |-I| ] [ |-M|\ **c**\|\ **i**\|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
@@ -142,6 +143,8 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. include:: explain_-j.rst_
+
 .. include:: explain_-n.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
@@ -187,14 +190,16 @@ as the measure unit:
 
   gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
 
-Restrictions
-------------
+Output Region Issues
+--------------------
 
 The boundaries of a projected (rectangular) data set will not
 necessarily give rectangular geographical boundaries (Mercator is one
 exception). In those cases some nodes may be unconstrained (set to NaN).
 To get a full grid back, your input grid may have to cover a larger area
 than you are interested in.
+
+.. include:: explain_ellipsoidal.rst_
 
 See Also
 --------

@@ -5413,7 +5413,6 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	int i, j, k = 0, n, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	int n_slashes = 0, last_pos = 0, error = 0;
 	unsigned int mod_flag = 0;
-	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *dd = NULL, *d = NULL, *args;
@@ -5430,7 +5429,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	if (!GMT->common.J.active)	/* Down want to clobber this during -Jz/Z after the horizontal part has been set */
 		GMT->current.proj.lon0 = GMT->current.proj.central_meridian = GMT->current.proj.lat0 = GMT->session.d_NaN;	/* Projection center, to be set via -J */
 
-	project = gmtinit_project_type (args, &i, &width_given);
+	project = gmtinit_project_type (args, &i, &GMT->common.J.width_given);
 	if (project == GMT_NO_PROJ) return (true);	/* No valid projection specified */
 
 	if (project == GMT_ZAXIS)
@@ -5439,7 +5438,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 		strncpy (GMT->common.J.string, args, GMT_LEN128-1);	/* Verbatim copy or map -J */
 
 	args += i;		/* Skip to first argument */
-	if (width_given) {	/* If given size (not scale) then we may have modifiers */
+	if (GMT->common.J.width_given) {	/* If given size (not scale) then we may have modifiers */
 		mod_flag = 1;	/* Default is that size meant width */
 		if ((dd = strstr (args, "+d"))) {	/* Specify type of size argument via modifier +d */
 			switch (dd[2]) {
@@ -5497,7 +5496,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	switch (project) {
 		case GMT_LINEAR:	/* Linear x/y scaling */
 			gmt_set_cartesian (GMT, GMT_IN);	/* This will be overridden below if -Jx or -Jp, for instance */
-			GMT->current.proj.compute_scale[GMT_X] = GMT->current.proj.compute_scale[GMT_Y] = width_given;
+			GMT->current.proj.compute_scale[GMT_X] = GMT->current.proj.compute_scale[GMT_Y] = GMT->common.J.width_given;
 
 			/* Default is not involving geographical coordinates */
 			gmt_set_column_type (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
@@ -5612,7 +5611,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 
 		case GMT_ZAXIS:	/* 3D plot */
 
-			GMT->current.proj.compute_scale[GMT_Z] = width_given;
+			GMT->current.proj.compute_scale[GMT_Z] = GMT->common.J.width_given;
 			error += (n_slashes > 0) ? 1 : 0;
 			gmt_set_column_type (GMT, GMT_IN, GMT_Z, GMT_IS_UNKNOWN);
 
@@ -5855,7 +5854,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, &GMT->current.proj.pars[3]);
 				if (GMT->current.proj.pars[3] != 0.0) GMT->current.proj.pars[3] = 1.0 / (GMT->current.proj.pars[3] * GMT->current.proj.unit);
 			}
-			else if (width_given) {
+			else if (GMT->common.J.width_given) {
 				if (n_slashes == 2)	/* Got lon0/lat0/width */
 					n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
 				else if (n_slashes == 3)	/* Got lon0/lat0/lath/width */
@@ -5882,7 +5881,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);  /* As co-latitude it may be 180 so cannot parse as latitude */
-			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] > 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
+			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] > 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && GMT->common.J.width_given));
 			error += (project == GMT_GNOMONIC && GMT->current.proj.pars[2] >= 90.0);
 			//error += (project == GMT_ORTHO && GMT->current.proj.pars[2] >= 180.0);
 			error += (project == GMT_ORTHO && GMT->current.proj.pars[2] > 90.0);
@@ -5918,7 +5917,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				}
 				if (GMT->current.proj.pars[3] != 0.0) GMT->current.proj.pars[3] = 1.0 / (GMT->current.proj.pars[3] * GMT->current.proj.unit);
 			}
-			else if (width_given) {	/* Got -JS<lon>/<lat>/<width> */
+			else if (GMT->common.J.width_given) {	/* Got -JS<lon>/<lat>/<width> */
 				if (n_slashes == 2)
 					n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
 				else if (n_slashes == 3)	/* Got -JS<lon>/<lat>/<horizon>/<width> */
@@ -5956,16 +5955,16 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);	/* [90] Using GMT_IS_LON since we may get args like 180 */
-			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] >= 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
+			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] >= 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && GMT->common.J.width_given));
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
 
 		case GMT_GENPER:	/* General perspective */
 
 			if (n_slashes <= 3)	/* Simple orthographic or modernized general perspective */
-				error += gmtinit_parse_genper_modern (GMT, &GMT->common.J.string[1], k >= 0, width_given);
+				error += gmtinit_parse_genper_modern (GMT, &GMT->common.J.string[1], k >= 0, GMT->common.J.width_given);
 			else	/* The old deprecated long syntax for general perspective */
-				error += gmtinit_parse_genper_deprecated (GMT, args, k >= 0, width_given);
+				error += gmtinit_parse_genper_deprecated (GMT, args, k >= 0, GMT->common.J.width_given);
 			break;
 
 		case GMT_OBLIQUE_MERC:		/* Oblique Mercator, specifying origin and azimuth or second point */
@@ -8115,7 +8114,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'A':	/* -j option for spherical distance calculation mode */
 
 			GMT_Usage (API, 1, "\n%s", GMT_j_OPT);
-			GMT_Usage (API, -2, "Set spherical distance calculation mode for modules that offer that flexibility. "
+			GMT_Usage (API, -2, "Set spherical distance calculation or coordinate transformation mode for modules that offer that flexibility. "
 				"Append e for Ellipsoidal, f for Flat, or g for Spherical Earth (Great Circle) [Default].");
 			break;
 
