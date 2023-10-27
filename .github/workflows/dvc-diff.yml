@@ -80,8 +80,8 @@ jobs:
         git fetch origin master
 
         # Pull image data from cloud storage
-        dvc pull --remote origin
-        dvc pull --remote origin
+        dvc pull --remote origin --force
+        dvc pull --remote origin --force
         dvc diff --md master HEAD >> report.md
 
         # Get just the filename of the added and modified image from the report
@@ -94,8 +94,8 @@ jobs:
         mkdir -p newbaseline/doc/scripts && cp -r doc/scripts/images newbaseline/doc/scripts/
         # Pull images in the master branch from cloud storage
         git checkout master
-        dvc pull --remote origin
-        dvc pull --remote origin
+        dvc pull --remote origin --force
+        dvc pull --remote origin --force
 
         # Append each image to the markdown report
         echo -e "## Image diff(s)\n" >> report.md
