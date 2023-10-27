@@ -13756,10 +13756,29 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 		return (text);
 	}
 	if (F->use_pattern) {
+		char add_mods[GMT_LEN64] = {""};
 		if (F->pattern_no)
-			snprintf (text, PATH_MAX+GMT_LEN256, "P%d/%d", F->dpi, F->pattern_no);
+			snprintf (text, PATH_MAX+GMT_LEN256, "P%d", F->pattern_no);
 		else
-			snprintf (text, PATH_MAX+GMT_LEN256, "P%d/%s", F->dpi, F->pattern);
+			snprintf (text, PATH_MAX+GMT_LEN256, "P%s", F->pattern);
+		if (F->dpi != PSL_DOTS_PER_INCH_PATTERN) {	/* If not default 300 we must set it via +r */
+			sprintf (add_mods, "+r%d", F->dpi);
+			strcat (text, add_mods);
+		}
+		if (F->set_f_rgb) {	/* Change the foreground pixel color */
+			if (F->f_rgb[0] < 0.0)	/* Set transparent foreground */
+				strcpy (add_mods, "+f");
+			else	/* Opaque foreground pixels */
+				snprintf (add_mods, GMT_LEN64, "+f%.5g/%.5g/%.5g", gmt_M_t255(F->f_rgb,0), gmt_M_t255(F->f_rgb,1), gmt_M_t255(F->f_rgb,2));
+			strcat (text, add_mods);
+		}
+		if (F->set_b_rgb) {	/* Change the background pixel color */
+			if (F->b_rgb[0] < 0.0)	/* Set transparent background */
+				strcpy (add_mods, "+b");
+			else	/* Opaque background pixels */
+				snprintf (add_mods, GMT_LEN64, "+b%.5g/%.5g/%.5g", gmt_M_t255(F->b_rgb,0), gmt_M_t255(F->b_rgb,1), gmt_M_t255(F->b_rgb,2));
+			strcat (text, add_mods);
+		}
 	}
 	else if (F->rgb[0] < -0.5)
 		strcpy (text, "-");
