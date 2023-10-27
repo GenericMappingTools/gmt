@@ -65,25 +65,14 @@ Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
 azimuth, distances, distances to other lines, and travel-times
 along lines can all be computed by using one or more of the options
-|-A|, |-G|, |-L|, and |-Z|.
+|-A|, |-G|, |-L|, and |-Z|. **Note**: Depending on the Optional Arguments
+listed below, most times **-J** or **-R** are not actually required.
 
 Required Arguments
 ------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
-
-.. |Add_-R| replace:: Special case for the UTM projection: If |-C| is used and |-R| is not given then the
-    region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
-    (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
-.. include:: explain_-R.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 (Note that depending on the Optional Arguments listed below, sometimes -J and -R are not actually required.)
 
@@ -170,6 +159,11 @@ Optional Arguments
 **-I**
     Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.
 
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-L:
 
 **-L**\ *table*\ [**+p**][**+u**\ *unit* \|\ *c*  \|\ *C*]
@@ -203,6 +197,10 @@ Optional Arguments
 **-Q**\ [**d**\|\ **e**]
     List all projection parameters. To only list datums, use |-Q|\d. To
     only list ellipsoids, use |-Q|\e.
+
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 

@@ -143,7 +143,7 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. include:: explain_-j.rst_
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_-n.rst_
 

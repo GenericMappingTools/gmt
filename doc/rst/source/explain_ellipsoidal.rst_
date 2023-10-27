@@ -30,8 +30,9 @@ may experience mismatches of tens to hundreds of meters. (3) Finally, be
 aware that :term:`PROJ_SCALE_FACTOR` have certain default values for some
 projections so you may have to override the setting in order to match
 results produced with other settings. The decision of ellipsoidal
-(if available) versus spherical is taken thus:
+(if available) versus spherical is taken in this order:
 
+    - The user specifies **-je** which forces the ellipsoidal solution.
     - The user specifies **-jg** which forces the spherical solution.
     - A specific region is set via **-R** which implies that portions
       of that region will be more than stated limit of longitude from
