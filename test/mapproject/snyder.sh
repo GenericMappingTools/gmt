@@ -93,6 +93,12 @@ p="TM(Spherical)"
 blabber --PROJ_ELLIPSOID=$unit --FORMAT_FLOAT_OUT=%9.7lf -R-77/-72/35/45 -Jt-75/0/1:1 >> fail
 
 #----------------------------------------------------------------------------
+# Transverse Mercator, Ellipsoidal
+
+sf=(-73.5 40.5)
+si=(127106.5 4484124.4)
+p="TM(Elliptical)"
+blabber --PROJ_ELLIPSOID=$snyder --PROJ_SCALE_FACTOR=0.9996 --FORMAT_FLOAT_OUT=%9.7lf -R-77/-72/35/45 -Jt-75/0/1:1 >> fail
 
 #----------------------------------------------------------------------------
 # Oblique Mercator, Spherical
