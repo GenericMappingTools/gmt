@@ -285,47 +285,57 @@ GMT_LOCAL bool gmtmap_quickconic (struct GMT_CTRL *GMT) {
 
 	double s, dlon, width;
 
-	if (GMT->current.proj.gave_map_width) {	/* Gave width */
-		dlon = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];
-		width = GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M];	/* Convert to meters */
-		s = (dlon * GMT->current.proj.M_PR_DEG) / width;
-	}
-	else if (GMT->current.proj.units_pr_degree) {	/* Gave scale */
-		/* Convert to meters */
-		s = GMT->current.proj.M_PR_DEG / (GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M]);
-	}
-	else {	/* Got 1:xxx that was changed */
-		s = (1.0 / GMT->current.proj.pars[4]) / GMT->current.proj.unit;
-	}
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GEODESIC) return (false);	/* Used -je for full ellipsoidal terms */
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GREATCIRCLE) return (true);	/* Used -jg for spherical mode */
+	if (GMT->common.R.active[RSET]) {	/* Use longitudinal extent to decide best option */
+		if (GMT->current.proj.gave_map_width) {	/* Gave width */
+			dlon = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];
+			width = GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M];	/* Convert to meters */
+			s = (dlon * GMT->current.proj.M_PR_DEG) / width;
+		}
+		else if (GMT->current.proj.units_pr_degree) {	/* Gave scale */
+			/* Convert to meters */
+			s = GMT->current.proj.M_PR_DEG / (GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M]);
+		}
+		else {	/* Got 1:xxx that was changed */
+			s = (1.0 / GMT->current.proj.pars[4]) / GMT->current.proj.unit;
+		}
 
-	if (s > 1.0e7) {	/* if s in 1:s exceeds 1e7 we do the quick thing */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with conformal latitudes\n");
-		return (true);
+		if (s > 1.0e7) {	/* if s in 1:s exceeds 1e7 we do the quick thing */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with conformal latitudes\n");
+			return (true);
+		}
+		else /* Use full ellipsoidal terms */
+			return (false);
 	}
-	else /* Use full ellipsoidal terms */
-		return (false);
+	return (true);	/* Do the fast and easy if neighter -je|g nor -R is given */
 }
 
 /*! . */
 GMT_LOCAL bool gmtmap_quicktm (struct GMT_CTRL *GMT, double lon0, double limit) {
 	/* Returns true if the region chosen is too large for the
 	 * ellipsoidal series to be valid; hence use spherical equations
-	 * with authalic latitudes instead.
+	 * with conformal latitudes instead.
 	 * We let +-limit degrees from central meridian be the cutoff.
 	 */
 
 	double d_left, d_right;
 
-	d_left  = lon0 - GMT->common.R.wesn[XLO] - 360.0;
-	d_right = lon0 - GMT->common.R.wesn[XHI] - 360.0;
-	while (d_left  < -180.0) d_left  += 360.0;
-	while (d_right < -180.0) d_right += 360.0;
-	if (fabs (d_left) > limit || fabs (d_right) > limit) {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with authalic latitudes\n");
-		return (true);
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GEODESIC) return (false);	/* Used -je for full ellipsoidal terms */
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GREATCIRCLE) return (true);	/* Used -jg for spherical mode */
+	if (GMT->common.R.active[RSET]) {	/* Use longitudinal extent to decide best option */
+		d_left  = lon0 - GMT->common.R.wesn[XLO] - 360.0;
+		d_right = lon0 - GMT->common.R.wesn[XHI] - 360.0;
+		while (d_left  < -180.0) d_left  += 360.0;
+		while (d_right < -180.0) d_right += 360.0;
+		if (fabs (d_left) > limit || fabs (d_right) > limit) {
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with conformal latitudes since area too big for ellipsoidal series\n");
+			return (true);
+		}
+		else /* Use full ellipsoidal terms */
+			return (false);
 	}
-	else /* Use full ellipsoidal terms */
-		return (false);
+	return (true);	/* If neither -je|g nor -R is set we just do spherical */
 }
 
 /*! . */

@@ -95,6 +95,7 @@ struct GMT_COMMON {
 	} B;
 	struct J {	/* -J<params> */
 		bool active, zactive;
+		bool width_given;	/* If true then -R is required too */
 		unsigned int id;
 		char string[GMT_LEN128];
 		char zstring[GMT_LEN128];	/* For -Jz|Z */
