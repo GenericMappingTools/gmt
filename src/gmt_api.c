@@ -6149,6 +6149,8 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					z_min = U_obj->header->z_min;	/* Initialize cube min/max values based on this first layer */
 					z_max = U_obj->header->z_max;
 					here = 0;	/* Initialize offset into k'th layer */
+					UH = gmt_get_U_hidden (U_obj);
+					UH->alloc_mode = GMT_ALLOC_INTERNALLY;
 				}
 				else {	/* Here we update min/max for subsequent layers read */
 					if (G->header->z_min < z_min) z_min = G->header->z_min;
@@ -11491,7 +11493,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				C->x = G->x;	C->y = G->y;	/* Let these be the cube's arrays from now on */
 				G->x = G->y = NULL;	/* No longer anything to do with G */
 				HU = gmt_get_U_hidden (C);
-				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = HU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
+				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = HU->xyz_alloc_mode[GMT_Z] = HU->alloc_mode = GMT_ALLOC_INTERNALLY;
 				HU->alloc_level = API->GMT->hidden.func_level;   /* Must be freed at this level. */
 				if (gmtapi_destroy_grid (API, &G))	/* Use this instead of GMT_Destroy_Data since G was local and never registered */
 		 			return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
@@ -13421,11 +13423,14 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "pscoupe", 7U)) {
 		type = ((opt = GMT_Find_Option (API, 'A', *head)) && strstr (opt->arg, "+c")) ? 'D' : 'X';
 	}
-	/* 1x. Check if grdcut is just getting information and if input is a grid or image */
+	/* 1x. Check if grdcut is just getting information and if input is a grid, image or cube */
 	else if (!strncmp (module, "grdcut", 6U)) {
 		if (GMT_Find_Option (API, 'D', *head))
 			deactivate_output = true;   /* Turn off implicit output since none is in effect, only secondary -D output */
-		type = (GMT_Find_Option (API, 'I', *head)) ? 'I' : 'G'; /* Giving -I means we are reading an image */
+		else if (GMT_Find_Option (API, 'E', *head))
+			type = 'U'; /* Giving -E means we are reading a 3-D cube */
+		else
+			type = 'G'; /* Default is a grid */
 	}
 	/* 1y. Check if this is the gravprisms module, where primary dataset input should be turned off if -C is used */
 	else if (!strncmp (module, "gravprisms", 10U) && (opt = GMT_Find_Option (API, 'C', *head))) {
