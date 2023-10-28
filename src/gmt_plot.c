@@ -10928,7 +10928,7 @@ GMT_LOCAL int compare_curves (const void *p1, const void *p2) {
 	return (0);
 }
 
-#define FILL_DEBUG
+/* #define FILL_DEBUG	Un-comment to get debug output */
 
 int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, struct GMT_PEN *PR, char *sec_label) {
 	/* We are given two segments S0 [y0(xx)] and S1 [y1(x)].  If S1 == NULL then S1 contains
