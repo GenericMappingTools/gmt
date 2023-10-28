@@ -84,10 +84,6 @@ jobs:
         run: bash ci/download-coastlines.sh
         if: steps.cache-coastline.outputs.cache-hit != 'true'
 
-      # Pull baseline image data from dvc remote (DAGsHub)
-      - name: Pull baseline image data from dvc remote
-        run: dvc pull
-
       - name: Configure GMT
         run: |
           if [ "$RUNNER_OS" != "Windows" ]; then
@@ -114,19 +110,19 @@ jobs:
           cmake --build .
         if: runner.os == 'Windows'
 
-      - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.28.0
-        with:
-          workflow: ci-caches.yml
-          name: gmt-cache
-          path: .gmt
-
-      # Move downloaded files to ~/.gmt directory and list them
-      - name: Move and list downloaded remote files
+      - name: Add conda to PATH
         run: |
-          mkdir -p ~/.gmt
-          mv .gmt/* ~/.gmt
-          ls -lRh ~/.gmt
+          os=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
+          if [[ "$os" == "linux" || "$os" == "macos" ]]; then
+            echo "${CONDA}/bin" >> $GITHUB_PATH
+          elif [[ "$os" == "windows" ]]; then
+            echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
+            echo "$CONDA\\Scripts" >> $GITHUB_PATH
+          fi
+
+      # Pull baseline image data from dvc remote (DAGsHub)
+      - name: Pull baseline image data from dvc remote
+        run: dvc pull
 
       - name: Build documentation
         run: |

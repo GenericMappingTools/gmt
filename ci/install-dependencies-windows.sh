@@ -50,8 +50,8 @@ fi
 # install more packages using conda
 $CONDA\\condabin\\conda.bat update -n base -c conda-forge conda --solver libmamba
 $CONDA\\condabin\\conda.bat install ${conda_packages} -c conda-forge --solver libmamba
-echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
-echo "$CONDA\\Scripts" >> $GITHUB_PATH
+#echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
+#echo "$CONDA\\Scripts" >> $GITHUB_PATH
 
 # Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then

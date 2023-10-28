@@ -6,6 +6,7 @@ set -e
 
 cat > cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
+set (CMAKE_IGNORE_PATH "$ENV{CONDA_PREFIX}/bin")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 
