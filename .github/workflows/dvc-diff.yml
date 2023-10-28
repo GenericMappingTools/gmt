@@ -3,7 +3,7 @@
 # This workflow checks for image diffs in a pull request and adds a GitHub
 # comment showing the diff.
 #
-# It is triggered in a PR when any *.png.dvc files have been added, modified,
+# It is triggered in a PR when any *.dvc files have been added, modified,
 # or deleted. A GitHub comment will be published that contains a summary table
 # of the images that have changed along with a visual report.
 #
@@ -92,6 +92,7 @@ jobs:
         mkdir -p newbaseline/test && cp -r test/baseline newbaseline/test/
         mkdir -p newbaseline/doc/examples && cp -r doc/examples/images newbaseline/doc/examples/
         mkdir -p newbaseline/doc/scripts && cp -r doc/scripts/images newbaseline/doc/scripts/
+        rm -r test/baseline/**/*.ps doc/examples/images/*.ps doc/scripts/images/*.ps
         # Pull images in the master branch from cloud storage
         git checkout master
         dvc pull --remote origin
