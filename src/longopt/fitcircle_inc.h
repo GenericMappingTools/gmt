@@ -24,7 +24,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,     long_directives,
 	          short_modifiers,      long_modifiers */
-	{ 0, 'F', "data_coordinates|coords",
+	{ 0, 'F', "coordinates|coords",
                                         "", "", "", "" },
 	{ 0, 'L', "solution|norm",
 	          "1,2,3",              "absolutes,squares,both",
