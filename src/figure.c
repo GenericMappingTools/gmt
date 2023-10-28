@@ -65,7 +65,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2,	"Contains one or more comma-separated options that"
 		" will be passed to psconvert when preparing this figure [%s].", GMT_SESSION_CONVERT);
 	GMT_Usage (API, -2, "\nThe valid subset of psconvert options are");
-	GMT_Usage (API, -3, "A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S");
+	GMT_Usage (API, -3, "A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,I<args>,Mb|f<file>,N<args>,Q<args>,S");
 	GMT_Usage (API, -2, "See the psconvert documentation for details.");
 	GMT_Option (API, "V,;");
 
