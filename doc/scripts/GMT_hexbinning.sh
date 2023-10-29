@@ -24,23 +24,30 @@
 #gmt math -T1/100/1 0 $n RAND = y
 #gmt math -T1/100/1 50 25 NRAND = z
 #gmt convert -A x y z -o1,3,5 > hex_data.txt
+#  hex_data.txt lives in the cache
 
 # Create grids to find nodes of hexagons
+# All nodes in the grid
 gmt grdmath -R0/5.19615242271/0/3 -I1.73205080757/1 0 = b.grd
+# Only nodes that yield hexagons wholly falling inside
 gmt grdmath -R0.866025403785/4.33012701893/0.5/2.5 -I1.73205080757/1 0 = r.grd
+# Only nodes that are not hexagon centers
 gmt grdmath -R0/5.19615242271/0/3 -I0.866025403785/0.5 0 = t.grd
-gmt begin hexbinning ps
-	gmt grd2xyz b.grd | gmt plot -Sh3.46410161514c -Glightblue@50 -W1p -N -R0/5.19615242271/0/3 -Jx3c -X3.2c
-	gmt grd2xyz b.grd | gmt plot -Sh3.46410161514c -Glightblue -W1p
-	gmt grd2xyz r.grd | gmt plot -Sh3.46410161514c -Glightred@50 -W1p -N
-	gmt grd2xyz r.grd | gmt plot -Sh3.46410161514c -Glightred -W1p
-	gmt grdmath -R0/5.19615242271/0/3 -I0.866025403785/0.5 0 = t.grd
-	gmt grd2xyz t.grd | gmt plot -Sc0.2c -Gwhite -Wfaint -N
-	gmt grd2xyz r.grd b.grd | gmt plot -Sc0.2c -Gblack -N
+H=$(gmt math -Q 3.46410161514 2 DIV =)
+gmt begin GMT_hexbinning
+	gmt grd2xyz b.grd | gmt plot -Sh${H}c -Glightblue@50 -W1p -N -R0/5.19615242271/0/3 -Jx1.5c -X0.5i
+	gmt grd2xyz b.grd | gmt plot -Sh${H}c -Glightblue -W1p
+	gmt grd2xyz r.grd | gmt plot -Sh${H}c -Glightred@50 -W1p -N
+	gmt grd2xyz r.grd | gmt plot -Sh${H}c -Glightred -W1p
+	gmt grd2xyz t.grd | gmt plot -Sc0.1c -Gwhite -Wfaint -N
+	gmt grd2xyz r.grd b.grd | gmt plot -Sc0.1c -Gblack -N
 	gmt basemap -Bxafg0.866025403785 -Byafg0.5
-	gmt plot hex_data.txt -Ss0.2c -Gyellow -Wfaint
-	gmt binstats hex_data.txt -R0/5/0/3 -I1 -Th -Cn > bin.txt
+	gmt plot @hex_data.txt -Ss0.1c -Gyellow -Wfaint
+	echo "a)" | gmt text -F+f12p+cTL -Dj-26p -N
+	gmt binstats @hex_data.txt -R0/5/0/3 -I1 -Th -Cn > bin.txt
 	gmt makecpt -Cjet -T1/10/1 -A50
-	gmt plot -Baf -Y12c bin.txt -C -Sh3.46410161514c -W1p -B+t"Hexagonal Binning"
-	gmt text bin.txt -F+f14p,Helvetica-Bold -Gwhite -W0.25p -N
+	gmt plot -Baf -X9.25c bin.txt -C -Sh${H}c -W1p -Baf
+	gmt text bin.txt -F+f7p,Helvetica-Bold -Gwhite -W0.25p -N
+	echo "b)" | gmt text -F+f12p+cTL -Dj-12p/-26p -N
+	gmt colorbar -DJRM+o4p/0
 gmt end show

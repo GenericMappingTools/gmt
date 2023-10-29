@@ -17,6 +17,7 @@ Synopsis
 |-G|\ *outgrid*
 |SYN_OPT-R|
 [ |-D|\ [**+t**] ]
+[ |-E|\ **x**\|\ **y**\ *coord* ]
 [ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
@@ -38,9 +39,10 @@ If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the
 sub-region indirectly via a range check on the node values or via distances from
 a fixed point. Furthermore, you can use |-J| for oblique projections to determine
 the corresponding rectangular |-R| setting that will give a sub-region that fully
-covers the oblique domain.  Finally, use |-F| to specify a polygon and either use
+covers the oblique domain.  You can use |-F| to specify a polygon and either use
 its bounding box for sub-region or set grid nodes inside or outside the polygon
-to NaN. **Note**: If the input grid is actually an image (gray-scale,
+to NaN. Finally, if the input is a 3-D netCDF cube then you can make a vertical
+slice through existing nodes. **Note**: If the input grid is actually an image (gray-scale,
 RGB, or RGBA), then options |-N| and |-Z| are unavailable, while for multi-layer
 Geotiff files only options |-R|, |-S| and |-G| are supported, i.e., you can cut out
 a sub-region only (which we do via *gdal_translate* if you have multiple bands).
@@ -79,6 +81,15 @@ Optional Arguments
     to standard output. The increments will reflect the input grid unless it is a
     remote gridded data set without implied resolution. Append **+t** to instead receive
     the information as the trailing string "-Rwest/east/south/north -Ixinc/yinc".
+
+.. _-E:
+
+**-E**\ **x**\|\ **y**\ *coord*
+    We extract a vertical slice going along the **x**\ -column *coord* or along the
+    **y**\ -row *coord*, depending on the given directive.
+    **Note**: (1) Input file must be a 3-D netCDF cube, and |-E| can only be used with
+    option |-G|. (2) *coord* must exactly match the coordinates given by th cube. We are
+    not interpolating between nodes and only do a clean slice through existing cube nodes.
 
 .. _-F:
 
@@ -183,6 +194,11 @@ To determine what grid region and resolution (in text format) most suitable for 
 that is using an oblique projection to display the remote Earth Relief data grid, try::
 
     gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D+t -V
+
+To extract a vertical grid slice at *x = 35* and parallel to the *y-z* plane
+from the 3-D model seis3D.nc, try::
+
+    gmt grdcut seis3D.nc -Gslice_x35.nc -Ex35 -V
 
 Notes
 -----
