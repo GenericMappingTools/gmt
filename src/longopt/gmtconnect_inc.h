@@ -26,8 +26,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          short_modifiers,     long_modifiers */
 	{ 0, 'C', "closed",            "", "", "", "", },
 	{ 0, 'D', "dump",              "", "", "", "", },
-	{ 0, 'L', "link_file",         "", "", "", "", },
-	{ 0, 'Q', "list_file",         "", "", "", "", },
+	{ 0, 'L', "links",             "", "", "", "", },
+	{ 0, 'Q', "lists",             "", "", "", "", },
 	{ 0, 'T', "tolerance",
 	          "",                  "",
 	          "s",                 "second" },
