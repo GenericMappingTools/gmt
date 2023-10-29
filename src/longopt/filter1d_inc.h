@@ -34,7 +34,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'N', "time_col",          "", "", "", "" },
 	{ 0, 'Q', "quality",           "", "", "", "" },
 	{ 0, 'S', "symmetry",          "", "", "", "" },
-	{ 0, 'T', "equispace",
+	{ 0, 'T', "range|series",
 		  "",                  "",
 		  "a,e,i,n",           "array,exact,inverse,number" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
