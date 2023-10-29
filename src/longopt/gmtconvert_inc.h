@@ -40,7 +40,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'N', "sort",
 	          "",                  "",
 	          "a,d",               "ascend,descend" },
-	{ 0, 'Q', "select_number|select_num",
+	{ 0, 'Q', "segments",
 	          "",                  "",
 	          "f",                 "file" },
 	{ 0, 'S', "select_header|select_hdr",
