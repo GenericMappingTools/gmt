@@ -197,7 +197,7 @@ enum GMT_time_period {
 
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
-#define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
+#define GMT_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
