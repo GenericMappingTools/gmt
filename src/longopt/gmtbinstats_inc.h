@@ -32,9 +32,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'G', "outgrid",
 	          "",                  "",
 	          "d,n,o,s,c",         "divide,nan,offset,scale,gdal" },
-	{ '/', 'I', "increment|spacing",
-	          "",                  "",
-	          "e,n",               "exact,number" },
+    GMT_INCREMENT_KW,   /* Defined in gmt_constant.h since not a true GMT common option (but almost) */
 	{ 0, 'N', "normalize",         "", "", "", "" },
 	{ 0, 'S', "search_radius",     "", "", "", "" },
 	{ 0, 'T', "tiling",
