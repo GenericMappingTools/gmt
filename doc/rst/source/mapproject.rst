@@ -65,25 +65,14 @@ Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
 azimuth, distances, distances to other lines, and travel-times
 along lines can all be computed by using one or more of the options
-|-A|, |-G|, |-L|, and |-Z|.
+|-A|, |-G|, |-L|, and |-Z|. **Note**: Depending on the Optional Arguments
+listed below, most times **-J** or **-R** are not actually required.
 
 Required Arguments
 ------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
-
-.. |Add_-R| replace:: Special case for the UTM projection: If |-C| is used and |-R| is not given then the
-    region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
-    (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
-.. include:: explain_-R.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 (Note that depending on the Optional Arguments listed below, sometimes -J and -R are not actually required.)
 
@@ -170,6 +159,11 @@ Optional Arguments
 **-I**
     Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.
 
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-L:
 
 **-L**\ *table*\ [**+p**][**+u**\ *unit* \|\ *c*  \|\ *C*]
@@ -203,6 +197,10 @@ Optional Arguments
 **-Q**\ [**d**\|\ **e**]
     List all projection parameters. To only list datums, use |-Q|\d. To
     only list ellipsoids, use |-Q|\e.
+
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -401,8 +399,8 @@ To obtain the azimuth of a railroad using the points where it enters and leaves 
 
   echo -87.7447873 42.1192976 -87.7725841 42.1523955 | gmt mapproject -AF+v -fg -o4
 
-Restrictions
-------------
+Centering Output Region
+-----------------------
 
 The rectangular input region set with |-R| will in general be mapped
 into a non-rectangular grid. Unless |-C| is set, the leftmost point on
@@ -411,52 +409,10 @@ this grid has xvalue = 0.0, and the lowermost point will have yvalue =
 through **mapproject** using the appropriate scale and see what (x,y)
 values they are mapped onto. Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly,
-or alternatively, use **awk** to scale and shift the (x,y) values before
-transforming.
+or alternatively, use **gmt math** to scale and shift the (x,y) values
+before transforming.
 
-For some projection, a spherical solution may be used despite the user
-having selected an ellipsoid. This occurs when the user's |-R| setting
-implies a region that exceeds the domain in which the ellipsoidal series
-expansions are valid. These are the conditions: (1) Lambert Conformal
-Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical
-solution when the map scale exceeds 1.0E7. (2) Transverse Mercator
-(**-JT**) and UTM (**-JU**) will will use the spherical solution when
-either the west or east boundary given in |-R| is more than 10 degrees
-from the central meridian, and (3) same for Cassini
-(**-JC**) but with a limit of only 4 degrees.
-
-Ellipsoids And Spheroids
-------------------------
-
-GMT will use ellipsoidal formulae if they are implemented and the
-user have selected an ellipsoid as the reference shape (see
-:term:`PROJ_ELLIPSOID`). The user needs to be aware of a
-few potential pitfalls: (1) For some projections, such as Transverse
-Mercator, Albers, and Lambert's conformal conic we use the ellipsoidal
-expressions when the areas mapped are small, and switch to the spherical
-expressions (and substituting the appropriate auxiliary latitudes) for
-larger maps. The ellipsoidal formulae are used as follows: (a)
-Transverse Mercator: When all points are within 10 degrees of central
-meridian, (b) Conic projections when longitudinal range is less than 90
-degrees, (c) Cassini projection when all points are within 4 degrees of
-central meridian. (2) When you are trying to match some historical data
-(e.g., coordinates obtained with a certain projection and a certain
-reference ellipsoid) you may find that GMT gives results that are
-slightly different. One likely source of this mismatch is that older
-calculations often used less significant digits. For instance, Snyder's
-examples often use the Clarke 1866 ellipsoid (defined by him as having a
-flattening f = 1/294.98). From f we get the eccentricity squared to be
-0.00676862818 (this is what GMT uses), while Snyder rounds off and
-uses 0.00676866. This difference can give discrepancies of several tens
-of cm. If you need to reproduce coordinates projected with this slightly
-different eccentricity, you should specify your own ellipsoid with the
-same parameters as Clarke 1866, but with f = 1/294.97861076. Also, be
-aware that older data may be referenced to different datums, and unless
-you know which datum was used and convert all data to a common datum you
-may experience mismatches of tens to hundreds of meters. (3) Finally, be
-aware that :term:`PROJ_SCALE_FACTOR` have certain default values for some
-projections so you may have to override the setting in order to match
-results produced with other settings.
+.. include:: explain_ellipsoidal.rst_
 
 Output Order
 ------------

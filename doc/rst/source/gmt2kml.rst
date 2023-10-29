@@ -84,8 +84,8 @@ Optional Arguments
 **-A**\ **a**\|\ **g**\|\ **s**\ [*alt*\|\ **x**\ *scale*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the feature: **a** absolute
-    altitude, **g** altitude relative to sea surface or ground, **s**
-    altitude relative to seafloor or ground. To plot the features at a
+    altitude, **g** altitude relative to the ground, or **s**
+    altitude relative to seafloor. To plot the features at a
     fixed altitude, append an altitude *alt* (in m). Use 0 to clamp the
     features to the chosen reference surface. Append **x**\ *scale* to
     scale the altitude from the input file by that factor. If no value

@@ -8873,7 +8873,7 @@ GMT_LOCAL void gmtplot_prog_indicator_E (struct GMT_CTRL *GMT, double x, double 
 GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double y, double t, double w, int justify, char *P1, char *F1, char *label, char kind, double width, double fsize, struct GMT_FONT *F) {
 	/* Place time axis indicator via call to basemap plus adding triangle here */
 	int symbol = PSL_INVTRIANGLE;	/* Time marker when labels are below the line */
-	char cmd[GMT_LEN256] = {""}, region[GMT_LEN64] = {""}, unit[4] = {""}, axis = 0;
+	char cmd[GMT_LEN512] = {""}, region[GMT_LEN256] = {""}, unit[4] = {""}, axis = 0;
 	bool was = GMT->current.map.frame.init;
 	double fx, fy, dy, dy2, xt, s = 1.0, angle = 0.0, h;
 	struct GMT_PEN pen;
@@ -8907,7 +8907,7 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 		sprintf (region, "-R%s", &label[k]);
 	}
 	else	/* Use as is */
-		strncpy (region, label, GMT_LEN64-1);
+		strncpy (region, label, GMT_LEN256-1);
 	PSL_setorigin (GMT->PSL, x, y, angle, PSL_FWD);	/* Origin (0,0) is now at left end-point of time axis */
 		GMT->common.R.active[RSET] = GMT->common.J.active = false;
 	if (fsize == 0.0)
@@ -10928,6 +10928,8 @@ GMT_LOCAL int compare_curves (const void *p1, const void *p2) {
 	return (0);
 }
 
+/* #define FILL_DEBUG	Un-comment to get debug output */
+
 int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct GMT_DATASEGMENT *S1, struct GMT_FILL *F0, struct GMT_FILL *F1, struct GMT_PEN *P0, struct GMT_PEN *P1, struct GMT_PEN *PR, char *sec_label) {
 	/* We are given two segments S0 [y0(xx)] and S1 [y1(x)].  If S1 == NULL then S1 contains
 	 * three columns and (x, y0(x), y1(x)) and we select col = GMT_Z for the second curve.
@@ -11014,11 +11016,16 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	stop[1] = last[1];	/* Last point in S1 */
 
 	/* See if there are NaNs along one or both curves */
+	n_alloc = nx;
 	for (k = 0, S = S0, col = col_y0; k < 2; k++) {
 		row = first[k];
 		while (row < last[k]) {
 			if (gmt_M_is_dnan (S->data[col][row+1])) {	/* Next point is NaN so save the previous */
-				X  = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
+				if ((np + 1) > n_alloc) {
+					n_alloc += GMT_SMALL_CHUNK;
+					X = gmt_M_memory (GMT, X, n_alloc, struct GMT_CURVES_CROSS);	/* Allocate more space */
+					gmt_M_memset (&X[np], n_alloc - np, struct GMT_CURVES_CROSS);	/* Initialize new memory to NULL/0 */
+				}
 				X[np].x  = S->data[GMT_X][row];	/* Critical point's x coordinate (start of NaN section) */
 				X[np].s0_i0 = X[np].s1_i0 = X[np].s0_i1 = X[np].s1_i1 = -1;	/* Flag as not set */
 				if (S == S0) {	/* Working on S0 */
@@ -11042,7 +11049,11 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 				np++;	row++;
 				while (gmt_M_is_dnan (S->data[col][row]) && row <= last[k]) row++;	/* Skip to end of the NaN-sequence */
 				if (row <= last[k]) {	/* Add start of non-NaN sequences as critical point */
-					X  = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
+					if ((np + 1) > n_alloc) {
+						n_alloc += GMT_SMALL_CHUNK;
+						X = gmt_M_memory (GMT, X, n_alloc, struct GMT_CURVES_CROSS);	/* Allocate more space */
+						gmt_M_memset (&X[np], n_alloc - np, struct GMT_CURVES_CROSS);	/* Initialize new memory to NULL/0 */
+					}
 					X[np].x = S->data[GMT_X][row];	/* Critical point's x coordinate (end of NaN section) */
 					if (S == S0) {	/* Working on S0 */
 						X[np].y0 = S0->data[col_y0][row];	/* Critical point's y0 coordinate */
@@ -11074,7 +11085,11 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 
 	/* If S0 starts before S1 or the other way around we must get the y-value at the largest start point (CUT critical points) */
 	if (S0->data[GMT_X][first[0]] >= S1->data[GMT_X][first[1]]) {	/* S1 has the minimum x */
-		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
+		if ((np + 1) > n_alloc) {
+			n_alloc += GMT_SMALL_CHUNK;
+			X = gmt_M_memory (GMT, X, n_alloc, struct GMT_CURVES_CROSS);	/* Allocate more space */
+			gmt_M_memset (&X[np], n_alloc - np, struct GMT_CURVES_CROSS);	/* Initialize new memory to NULL/0 */
+		}
 		X[np].x  = S0->data[GMT_X][first[0]];	/* Critical point's x coordinate (start of overlap of S0 and S1) */
 		X[np].y0 = S0->data[col_y0][first[0]];	/* Critical point's y0 coordinate (start of overlap of S0 and S1) */
 		while (S1->data[GMT_X][start[1]] < S0->data[GMT_X][first[0]]) start[1]++;	/* Wind to first S1 point >= S0's first point */
@@ -11087,7 +11102,11 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		np++;
 	}
 	else if (S1->data[GMT_X][0] >= S0->data[GMT_X][0]) {	/* S0 has the minimum x */
-		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
+		if ((np + 1) > n_alloc) {
+			n_alloc += GMT_SMALL_CHUNK;
+			X = gmt_M_memory (GMT, X, n_alloc, struct GMT_CURVES_CROSS);	/* Allocate more space */
+			gmt_M_memset (&X[np], n_alloc - np, struct GMT_CURVES_CROSS);	/* Initialize new memory to NULL/0 */
+		}
 		X[np].x  = S1->data[GMT_X][first[1]];	/* Critical point's x coordinate (start of overlap of S0 and S1) */
 		X[np].y0 = S1->data[col_y1][first[1]];	/* Critical point's y0 coordinate (start of overlap of S0 and S1) */
 		while (S0->data[GMT_X][start[0]] < S1->data[GMT_X][first[1]]) start[0]++;	/* Wind to first S0 point >= S1's first point */
@@ -11101,7 +11120,11 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	}
 	/* If S0 ends before S1 or the other way around we must get the y-value at the smallest end point */
 	if (S0->data[GMT_X][last[0]] <= S1->data[GMT_X][last[1]]) {	/* S1 has maximum x value */
-		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
+		if ((np + 1) > n_alloc) {
+			n_alloc += GMT_SMALL_CHUNK;
+			X = gmt_M_memory (GMT, X, n_alloc, struct GMT_CURVES_CROSS);	/* Allocate more space */
+			gmt_M_memset (&X[np], n_alloc - np, struct GMT_CURVES_CROSS);	/* Initialize new memory to NULL/0 */
+		}
 		/* Start at last point of S0 which is were the filled polygon ends */
 		X[np].x  = S0->data[GMT_X][last[0]];	/* Critical point's x coordinate (end of overlap of S0 and S1) */
 		X[np].y0 = S0->data[col_y0][last[0]];	/* Critical point's y0 coordinate (end of overlap of S0 and S1) */
@@ -11114,7 +11137,11 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		np++;
 	}
 	else if (S1->data[GMT_X][last[1]] <= S0->data[GMT_X][last[0]]) {
-		X = gmt_M_memory (GMT, X, np + 1, struct GMT_CURVES_CROSS);	/* Allocate one more */
+		if ((np + 1) > n_alloc) {
+			n_alloc += GMT_SMALL_CHUNK;
+			X = gmt_M_memory (GMT, X, n_alloc, struct GMT_CURVES_CROSS);	/* Allocate more space */
+			gmt_M_memset (&X[np], n_alloc - np, struct GMT_CURVES_CROSS);	/* Initialize new memory to NULL/0 */
+		}
 		/* Start at last point of S1 */
 		X[np].x  = S1->data[GMT_X][last[1]];	/* Critical point's x coordinate (end of overlap of S0 and S1) */
 		X[np].y1 = S1->data[col_y1][last[1]];	/* Critical point's y1 coordinate (end of overlap of S0 and S1) */
@@ -11126,15 +11153,23 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		np++;
 	}
+	X = gmt_M_memory (GMT, X, np, struct GMT_CURVES_CROSS);	/* Trim back to the needed np */
+
+#ifdef FILL_DEBUG
+	fprintf (stderr, "\nPrint out critical point information so far before sorting\n");
+	fprintf (stderr, "type\tcode\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
+	for (k = 0; k < np; k++)
+		fprintf (stderr, "%d\t%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", X[k].type, debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
+#endif
 
 	/* Sort critical points on increasing x */
 
 	qsort (X, np, sizeof (struct GMT_CURVES_CROSS), compare_curves);
-#if 0
-	/* Print out critical point information so far before looking across boundaries */
-	fprintf (stderr, "code\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
+#ifdef FILL_DEBUG
+	fprintf (stderr, "\nPrint out critical point information so far before looking across boundaries\n");
+	fprintf (stderr, "type\tcode\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
 	for (k = 0; k < np; k++)
-		fprintf (stderr, "%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
+		fprintf (stderr, "%d\t%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", X[k].type, debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
 #endif
 	/* Update the unset (-1) indices */
 	for (k0 = 0, k1 = 1; k1 < np; k0++, k1++) {
@@ -11147,11 +11182,11 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 			X[k0].s1_i1 = X[k1].s1_i0;
 		}
 	}
-#if 0
-	/* Print out critical point information after updating across boundaries */
-	fprintf (stderr, "\ncode\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
+#ifdef FILL_DEBUG
+	fprintf (stderr, "\nPrint out critical point information after updating across boundaries\n");
+	fprintf (stderr, "\n%d\tcode\ts0_i0\ts0_i1\ts1_i0\ts1_i1\tx\ty0\ty1\n");
 	for (k = 0; k < np; k++)
-		fprintf (stderr, "%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
+		fprintf (stderr, "%d\t%c\t%d\t%d\t%d\t%d\t%g\t%g\t%g\n", X[k].type, debug_code[X[k].type], X[k].s0_i0, X[k].s0_i1, X[k].s1_i0, X[k].s1_i1, X[k].x, X[k].y0, X[k].y1);
 #endif
 
 	/* Build the closed polygons */
@@ -11204,8 +11239,9 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 			yp[n] = X[k0].y0;
 			n++;
 		}
-#if 0
+#ifdef FILL_DEBUG
 		/* Dump this polygon */
+		fprintf (stderr, "\nDump this polygon\n");
 		fprintf (stderr, "> Polygon %d\n", (int)k0);
 		for (row = 0; row < n; row++) {
 			fprintf (stderr, "%lg\t%lg\n", xp[row], yp[row]);
