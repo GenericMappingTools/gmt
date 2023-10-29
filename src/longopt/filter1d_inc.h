@@ -31,7 +31,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 				       "boxcar,rboxcar,cosarch,rcosarch,gaussian,rgaussian,custom,rcustom,median,rmedian,mlprob,rmlprob,minall,minpos,maxall,maxneg",
 	          "h,l,u",             "highpass,lower,upper" },
 	{ 0, 'L', "gap_width",         "", "", "", "" },
-	{ 0, 'N', "time_col",          "", "", "", "" },
+	{ 0, 'N', "time_column|time_col",          "", "", "", "" },
 	{ 0, 'Q', "quality",           "", "", "", "" },
 	{ 0, 'S', "symmetry",          "", "", "", "" },
 	{ 0, 'T', "range|series",
