@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *force* ]
 [ |-L| ]
-[ |-M|\ [**x**][**z**] ]
+[ |-M|\ [**h**][**v**] ]
 [ |-S| ]
 [ |-T|\ *wfile*]
 [ |SYN_OPT-V| ]
@@ -112,10 +112,10 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**x**][**z**]
-    Optionally append one or both of **x** and **z**: Use **x** to indicated that all
-    x-distances are in km [meters] and **z** to
-    indicate that all z-deflections are in km [meters].
+**-M**\ [**h**][**v**]
+    Optionally append one or both of **h** and **v**: Use **h** to indicated that all
+    horizontal distances are in km [meters] and **z** to
+    indicate that all vertical deflections are in km [meters].
 
 .. _-S:
 
