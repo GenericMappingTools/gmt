@@ -167,10 +167,6 @@ Optional Arguments
     will be time in years, while the last trailing text word is formatted time. 
     The output records thus contain *time flexuregrid timetag*.
 
-.. _-N:
-
-.. include:: ../../explain_fft.rst_
-
 .. _-M:
 
 **-M**\ *tm*
@@ -178,6 +174,10 @@ Optional Arguments
     thickness specified via |-E|.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
     Cannot be used in conjunctions with |-F|.
+
+.. _-N:
+
+.. include:: ../../explain_fft.rst_
 
 .. _-Q:
 
