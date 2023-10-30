@@ -10494,10 +10494,10 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	if (plane < 0)			/* Reset to original matrix */
 		PSL_command (PSL, "PSL_GPP setmatrix\n"); /* Return to normal current transformation matrix */
 	else {	/* New perspective plane: compute all derivatives and use full matrix */
-		if (plane >= GMT_ZW) level = gmt_z_to_zz (GMT, level);	/* First convert world z coordinate to projected z coordinate */
 		switch (plane % 3) {
 			case GMT_X:	/* Constant x, Convert y,z to x',y' */
 				a = GMT->current.proj.z_project.sin_az;
+				if (plane >= GMT_ZW) level = gmt_x_to_xx (GMT, level);	/* First convert world x coordinate to projected x coordinate */
 				b = -GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.sin_el;
 				c = 0.0;
 				d = GMT->current.proj.z_project.cos_el;
@@ -10505,6 +10505,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 				f = GMT->current.proj.z_project.y_off - level * GMT->current.proj.z_project.sin_az * GMT->current.proj.z_project.sin_el;
 				break;
 			case GMT_Y:	/* Constant y. Convert x,z to x',y' */
+				if (plane >= GMT_ZW) level = gmt_y_to_yy (GMT, level);	/* First convert world y coordinate to projected y coordinate */
 				a = -GMT->current.proj.z_project.cos_az;
 				b = -GMT->current.proj.z_project.sin_az * GMT->current.proj.z_project.sin_el;
 				c = 0.0;
@@ -10513,6 +10514,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 				f = GMT->current.proj.z_project.y_off - level * GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.sin_el;
 				break;
 			case GMT_Z:	/* Constant z. Convert x,y to x',y' */
+				if (plane >= GMT_ZW) level = gmt_z_to_zz (GMT, level);	/* First convert world z coordinate to projected z coordinate */
 				a = -GMT->current.proj.z_project.cos_az;
 				b = -GMT->current.proj.z_project.sin_az * GMT->current.proj.z_project.sin_el;
 				c = GMT->current.proj.z_project.sin_az;
