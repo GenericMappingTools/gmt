@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |-C|\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
 |SYN_OPT-R|
-|-S|\ *search_radius*
+|-S|\ *radius*
 [ |-E|\ *empty* ]
 [ |-N| ]
 [ |-T|\ [**h**\|\ **r**] ]
@@ -104,8 +104,8 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search_radius*
-    Sets the *search_radius* that determines which data points are
+**-S**\ *radius*
+    Sets the search *radius* that determines which data points are
     considered close to a node. Append the distance unit (see `Units`_).
     Not compatible with |-T|.
 
