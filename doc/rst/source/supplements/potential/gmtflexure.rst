@@ -114,7 +114,7 @@ Optional Arguments
 
 **-M**\ [**h**][**v**]
     Optionally append one or both of **h** and **v**: Use **h** to indicated that all
-    horizontal distances are in km [meters] and **z** to
+    horizontal distances are in km [meters] and **v** to
     indicate that all vertical deflections are in km [meters].
 
 .. _-S:
