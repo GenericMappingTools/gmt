@@ -476,7 +476,8 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
  * Without these we are blind to the keyword arrays.  Note that while you can test the
  * common options without the module options, you cannot do the reverse.
  *
- * Note: For the near-global option -I (--increment), see gmt_constants.h for GMT_INCREMENT_KW definition.
+ * Note: For the quasi-global options -{C,G,I,W,...}, see gmt_constants.h for
+ * various GMT_?_???_KW definitions, e.g., GMT_I_INCREMENT_KW.
  */
 
 static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
