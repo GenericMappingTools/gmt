@@ -223,10 +223,12 @@ enum GMT_time_period {
  * supported module documentation (e.g., manual pages) rather than these
  * non-user-facing translation entries.
  */
+/* next line is temporary, remove after all conversions to GMT_I_INCREMENT_KW are complete */
 #define GMT_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
-#define GMT_CPT_KW	{ '/', 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit" }
-#define GMT_OUTGRID_KW	{ '/', 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list" }
-#define GMT_PEN_KW	{ '/', 'W', "pen", "", "", "c", "color" }
+#define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
+#define GMT_C_CPT_KW	{ '/', 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit" }
+#define GMT_G_OUTGRID_KW { '/', 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list" }
+#define GMT_W_PEN_KW	{ '/', 'W', "pen", "", "", "c", "color" }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
