@@ -195,9 +195,40 @@ enum GMT_time_period {
 	GMT_CYCLE_ANNUAL,
 	GMT_CYCLE_CUSTOM};
 
-/* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
- * Modules that need it in their module_kw[] array can just add it to their list. */
+/* The following long-option-related definitions are for quasi-global command
+ * line short-options which are common to many but not all modules, i.e.,
+ * (i) many modules will use exactly the same particular long-to-short-option
+ * translation (e.g., --increment to -I) as provided here, but (ii) other
+ * modules will use the same short-option for some entirely different purpose
+ * with a different (or even no) long-to-short-option translation and should
+ * thus most definitely NOT use such a quasi-global definition).
+ *
+ * Any particular module can simply incorporate or NOT incorporate any of the
+ * following long-option translation definitions into its module_kw[] array
+ * depending upon whether or not it respectively conforms to or departs from
+ * the particular quasi-global usage as defined here.
+ *
+ * Note that certain quasi-global short-options (e.g., -G), while common to
+ * many modules, differ in the availability of particular modifiers (e.g., +d)
+ * across the set of modules which use that same quasi-global short-option.
+ * We maximize the benefit of using the commonized translation definitions
+ * below by including in these definitions all such non-universal modifiers,
+ * using aliases where necessary in the case of conflicts of meaning for a
+ * particular modifier between modules. These definitions are therefore not
+ * intended as accurate and complete expressions of modifier capabilities
+ * for all modules which employ them; rather, we rely on each module to
+ * properly reject the use of any inappropriate modifier after the
+ * long-to-short-option translation dictated by any of the below definitions
+ * is performed, assuming that users will base their usage on officially
+ * supported module documentation (e.g., manual pages) rather than these
+ * non-user-facing translation entries.
+ */
+/* next line is temporary, remove after all conversions to GMT_I_INCREMENT_KW are complete */
 #define GMT_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
+#define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
+#define GMT_C_CPT_KW	{ '/', 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit" }
+#define GMT_G_OUTGRID_KW { '/', 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list" }
+#define GMT_W_PEN_KW	{ '/', 'W', "pen", "", "", "c", "color" }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
