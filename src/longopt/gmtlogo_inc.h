@@ -24,14 +24,14 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "",
+	{ 0, 'D', "position",
+	          "g,j,J,n,x",         "user|map,justify,mirror,normalize,plot",
+	          "w,h,j,o",           "width,height,justify,offset" },
+	{ 0, 'F', "border|box",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
+	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
+	{ 0, 'S', "label|style",
+	          "l,n,u",             "standard,none,url",
 	          "",                  "" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
 };
