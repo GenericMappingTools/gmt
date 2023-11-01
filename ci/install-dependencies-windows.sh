@@ -53,6 +53,9 @@ $CONDA\\condabin\\conda.bat install ${conda_packages} -c conda-forge --solver li
 echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
 echo "$CONDA\\Scripts" >> $GITHUB_PATH
 
+# Remove pcre-config from the CONDA's PATH to avoid conflicts
+rm -f ${CONDA}\\Library\\bin\\pcre-config
+
 # Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then
     ${CONDA}/python -m pip install --user -r doc/rst/requirements.txt
