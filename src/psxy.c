@@ -1733,7 +1733,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							last_spiderpen = current_pen;
 					}
 				}
-				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
+				else if (S.symbol == PSL_DOT && !fill_active)	/* No -G, must switch on default black fill */
 					current_fill = black;
 				if (Ctrl->E.active) {	/* Must update decision on where error bars go since symbol has changed */
 					E_bar_above = (S.symbol == GMT_SYMBOL_BARX || S.symbol == GMT_SYMBOL_BARY);
@@ -1888,7 +1888,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 			else if (!may_intrude_inside) {
 				gmt_setfill (GMT, &current_fill, outline_setting);
-				gmt_setpen (GMT, &current_pen);
+				if (outline_setting) gmt_setpen (GMT, &current_pen);
 			}
 
 			if (S.base_set & GMT_BASE_READ) {

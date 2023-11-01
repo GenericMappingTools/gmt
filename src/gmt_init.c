@@ -19947,6 +19947,19 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			fprintf (fp, "S - L %s %s %s - %s\n", size_string, gmtlib_putfill (API->GMT, fill), (cpen) ? gmt_putpen (API->GMT, cpen) : "-", label);
 			fprintf (fp, "S - - %s - %s - %s\n", size_string, gmt_putpen (API->GMT, pen), "");
 		}
+		else if (symbol == PSL_DOT) {	/* Only fill so if -G not set but -W we steal the fill color */
+			if (do_fill)	/* Gave a fill so use it */
+				fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+			else {	/* Pick either pen color or default pen color if neither fill nor pen was set */
+				struct GMT_FILL *F = gmt_M_memory (API->GMT, NULL, 1, struct GMT_FILL);
+				if (do_line)	/* Probably gave a pen instead of a fill so take its color */
+					gmt_M_rgb_copy(F->rgb, pen->rgb);
+				else	/* Got nuthin, use default pen color (which could have changed so not assuming black) */
+					gmt_M_rgb_copy(F->rgb, API->GMT->current.setting.map_default_pen.rgb);
+				fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, gmtlib_putfill (API->GMT, F), "-", label);
+				gmt_M_free (API->GMT, F);
+			}
+		}
 		else
 			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
