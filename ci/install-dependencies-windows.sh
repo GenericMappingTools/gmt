@@ -54,7 +54,7 @@ echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
 echo "$CONDA\\Scripts" >> $GITHUB_PATH
 
 # Remove pcre-config from the CONDA's PATH to avoid conflicts
-rm -f ${CONDA}\\Library\\bin\\pcre-config
+rm -f ${CONDA}\\Library\\bin\\pcre-config ${CONDA}\\Library\\bin\\pcre.dll
 
 # Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then
