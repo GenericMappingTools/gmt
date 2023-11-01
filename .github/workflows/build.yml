@@ -113,13 +113,6 @@ jobs:
           cmake --build .
         if: runner.os == 'Windows'
 
-      - name: Install GMT
-        run: |
-          cd build
-          cmake --build . --target install
-          # Add GMT PATH to bin
-          echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
-
       - name: Download cached GMT remote data from GitHub Artifacts
         uses: dawidd6/action-download-artifact@v2.28.0
         with:
@@ -134,15 +127,12 @@ jobs:
           mv .gmt/* ~/.gmt
           ls -lRh ~/.gmt
 
-      - name: Add conda to PATH
+      - name: Install GMT
         run: |
-          os=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
-          if [[ "$os" == "linux" || "$os" == "macos" ]]; then
-            echo "${CONDA}/bin" >> $GITHUB_PATH
-          elif [[ "$os" == "windows" ]]; then
-            echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
-            echo "$CONDA\\Scripts" >> $GITHUB_PATH
-          fi
+          cd build
+          cmake --build . --target install
+          # Add GMT PATH to bin
+          echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Check a few simple commands
         run: bash ci/simple-gmt-tests.sh
