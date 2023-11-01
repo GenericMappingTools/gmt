@@ -45,7 +45,7 @@ conda update -n base -c conda-forge conda --solver libmamba
 conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
 
-# Remove pcre-config from the CONDA's PATH to avoid conflicts
+# Remove pcre-config from conda's path so cmake won't find the conda's one
 rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
 
 # Install Sphinx extensions

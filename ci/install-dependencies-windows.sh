@@ -53,7 +53,8 @@ $CONDA\\condabin\\conda.bat install ${conda_packages} -c conda-forge --solver li
 echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
 echo "$CONDA\\Scripts" >> $GITHUB_PATH
 
-# Add the vcpkg path again so it's before the conda's path
+# Add the vcpkg path again so it's prepended before conda's path and cmake can find
+# the vcpkg library correctly
 echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/bin" >> $GITHUB_PATH
 
 # Install Sphinx extensions
