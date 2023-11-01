@@ -224,9 +224,9 @@ enum GMT_time_period {
  * non-user-facing translation entries.
  */
 #define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
-#define GMT_C_CPT_KW	{ '/', 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit" }
-#define GMT_G_OUTGRID_KW { '/', 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list" }
-#define GMT_W_PEN_KW	{ '/', 'W', "pen", "", "", "c", "color" }
+#define GMT_C_CPT_KW	{ 0, 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit" }
+#define GMT_G_OUTGRID_KW { 0, 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list" }
+#define GMT_W_PEN_KW	{ 0, 'W', "pen", "", "", "c", "color" }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
