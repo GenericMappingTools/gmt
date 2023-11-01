@@ -53,8 +53,8 @@ $CONDA\\condabin\\conda.bat install ${conda_packages} -c conda-forge --solver li
 echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
 echo "$CONDA\\Scripts" >> $GITHUB_PATH
 
-# Remove pcre-config from the CONDA's PATH to avoid conflicts
-rm -f ${CONDA}\\Library\\bin\\pcre-config ${CONDA}\\Library\\bin\\pcre2-config ${CONDA}\\Library\\lib\\pcre.lib ${CONDA}\\Library\\bin\\pcre.dll \
+# Add the vcpkg path again so it's before the conda's path
+echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/bin" >> $GITHUB_PATH
 
 # Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then
