@@ -24,10 +24,10 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "range|ranges",
+	{ 0, 'A', "report",
 	          "a,t,s",             "all,per_table,per_segment",
 	          "",                  "" },
-	{ 0, 'C', "per_column",        "", "", "", "" },
+	{ 0, 'C', "columns",        "", "", "", "" },
 	{ 0, 'D', "center",            "", "", "", "" },
 	{ 0, 'E', "get_record",
 	          "l,L,h,H",           "min,minabs,max,maxabs",
