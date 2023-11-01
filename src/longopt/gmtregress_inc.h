@@ -38,7 +38,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'S', "restrict_outliers|restrict",
 	          "r",                 "reverse",
 	          "",                  "" },
-	{ 0, 'T', "equispace",
+	{ 0, 'T', "range|series",
 	          "",                  "",
 	          "i,n",               "inverse,number" },
 	{ 0, 'W', "weighted",          "", "", "", "" },
