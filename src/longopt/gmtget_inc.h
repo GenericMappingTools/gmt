@@ -24,7 +24,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "data|data_directory", "", "", "", "" },
+	{ 0, 'D', "data|dataset",      "", "", "", "" },
 	{ 0, 'G', "gmtconf",           "", "", "", "" },
 	GMT_I_INCREMENT_KW,
 	{ 0, 'L', "lines",             "", "", "", "" },
