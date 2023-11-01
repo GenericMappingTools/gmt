@@ -9,7 +9,7 @@ GMT Color Picker
         .color-box {
             width: 30px; /* Increase the width to 30px */
             height: 30px; /* Increase the height to 30px */
-            margin: 2px; /* Decreased horizontal spacing between columns */
+            margin: 0px; /* Decreased horizontal spacing between columns */
             display: inline-block;
             cursor: pointer;
             transition: transform 0.2s, border 0.2s; /* Add smooth transition effects for transform and border */
@@ -66,6 +66,8 @@ GMT Color Picker
             <div class="color-box" title="Name: mistyrose RGB: 255/228/225" style="background-color: rgb(255, 228, 225);" onclick="copyToClipboard('mistyrose', '255/228/225', notification)"></div>
             <div class="color-box" title="Name: midnightblue RGB: 25/25/112" style="background-color: rgb(25, 25, 112);" onclick="copyToClipboard('midnightblue', '25/25/112', notification)"></div>
             <div class="color-box" title="Name: navy RGB: 0/0/128" style="background-color: rgb(0, 0, 128);" onclick="copyToClipboard('navy', '0/0/128', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: navyblue RGB: 0/0/128" style="background-color: rgb(0, 0, 128);" onclick="copyToClipboard('navyblue', '0/0/128', notification)"></div>
             <div class="color-box" title="Name: cornflowerblue RGB: 100/149/237" style="background-color: rgb(100, 149, 237);" onclick="copyToClipboard('cornflowerblue', '100/149/237', notification)"></div>
             <div class="color-box" title="Name: darkslateblue RGB: 72/61/139" style="background-color: rgb(72, 61, 139);" onclick="copyToClipboard('darkslateblue', '72/61/139', notification)"></div>
@@ -91,6 +93,8 @@ GMT Color Picker
             <div class="color-box" title="Name: powderblue RGB: 176/224/230" style="background-color: rgb(176, 224, 230);" onclick="copyToClipboard('powderblue', '176/224/230', notification)"></div>
             <div class="color-box" title="Name: paleturquoise RGB: 175/238/238" style="background-color: rgb(175, 238, 238);" onclick="copyToClipboard('paleturquoise', '175/238/238', notification)"></div>
             <div class="color-box" title="Name: cadetblue RGB: 95/158/160" style="background-color: rgb(95, 158, 160);" onclick="copyToClipboard('cadetblue', '95/158/160', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: darkturquoise RGB: 0/206/209" style="background-color: rgb(0, 206, 209);" onclick="copyToClipboard('darkturquoise', '0/206/209', notification)"></div>
             <div class="color-box" title="Name: mediumturquoise RGB: 72/209/204" style="background-color: rgb(72, 209, 204);" onclick="copyToClipboard('mediumturquoise', '72/209/204', notification)"></div>
             <div class="color-box" title="Name: turquoise RGB: 64/224/208" style="background-color: rgb(64, 224, 208);" onclick="copyToClipboard('turquoise', '64/224/208', notification)"></div>
@@ -116,6 +120,8 @@ GMT Color Picker
             <div class="color-box" title="Name: limegreen RGB: 50/205/50" style="background-color: rgb(50, 205, 50);" onclick="copyToClipboard('limegreen', '50/205/50', notification)"></div>
             <div class="color-box" title="Name: yellowgreen RGB: 154/205/50" style="background-color: rgb(154, 205, 50);" onclick="copyToClipboard('yellowgreen', '154/205/50', notification)"></div>
             <div class="color-box" title="Name: forestgreen RGB: 34/139/34" style="background-color: rgb(34, 139, 34);" onclick="copyToClipboard('forestgreen', '34/139/34', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: olivedrab RGB: 107/142/35" style="background-color: rgb(107, 142, 35);" onclick="copyToClipboard('olivedrab', '107/142/35', notification)"></div>
             <div class="color-box" title="Name: darkolivegreen RGB: 85/107/47" style="background-color: rgb(85, 107, 47);" onclick="copyToClipboard('darkolivegreen', '85/107/47', notification)"></div>
             <div class="color-box" title="Name: darkkhaki RGB: 189/183/107" style="background-color: rgb(189, 183, 107);" onclick="copyToClipboard('darkkhaki', '189/183/107', notification)"></div>
@@ -141,6 +147,8 @@ GMT Color Picker
             <div class="color-box" title="Name: tan RGB: 210/180/140" style="background-color: rgb(210, 180, 140);" onclick="copyToClipboard('tan', '210/180/140', notification)"></div>
             <div class="color-box" title="Name: chocolate RGB: 210/105/30" style="background-color: rgb(210, 105, 30);" onclick="copyToClipboard('chocolate', '210/105/30', notification)"></div>
             <div class="color-box" title="Name: firebrick RGB: 178/34/34" style="background-color: rgb(178, 34, 34);" onclick="copyToClipboard('firebrick', '178/34/34', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: lightbrown RGB: 235/190/85" style="background-color: rgb(235, 190, 85);" onclick="copyToClipboard('lightbrown', '235/190/85', notification)"></div>
             <div class="color-box" title="Name: brown RGB: 165/42/42" style="background-color: rgb(165, 42, 42);" onclick="copyToClipboard('brown', '165/42/42', notification)"></div>
             <div class="color-box" title="Name: darkbrown RGB: 120/60/30" style="background-color: rgb(120, 60, 30);" onclick="copyToClipboard('darkbrown', '120/60/30', notification)"></div>
@@ -166,6 +174,8 @@ GMT Color Picker
             <div class="color-box" title="Name: mediumvioletred RGB: 199/21/133" style="background-color: rgb(199, 21, 133);" onclick="copyToClipboard('mediumvioletred', '199/21/133', notification)"></div>
             <div class="color-box" title="Name: violetred RGB: 208/32/144" style="background-color: rgb(208, 32, 144);" onclick="copyToClipboard('violetred', '208/32/144', notification)"></div>
             <div class="color-box" title="Name: darkmagenta RGB: 139/0/139" style="background-color: rgb(139, 0, 139);" onclick="copyToClipboard('darkmagenta', '139/0/139', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: magenta RGB: 255/0/255" style="background-color: rgb(255, 0, 255);" onclick="copyToClipboard('magenta', '255/0/255', notification)"></div>
             <div class="color-box" title="Name: lightmagenta RGB: 255/128/255" style="background-color: rgb(255, 128, 255);" onclick="copyToClipboard('lightmagenta', '255/128/255', notification)"></div>
             <div class="color-box" title="Name: violet RGB: 238/130/238" style="background-color: rgb(238, 130, 238);" onclick="copyToClipboard('violet', '238/130/238', notification)"></div>
@@ -191,6 +201,8 @@ GMT Color Picker
             <div class="color-box" title="Name: white RGB: 255/255/255" style="background-color: rgb(255, 255, 255);" onclick="copyToClipboard('white', '255/255/255', notification)"></div>
             <div class="color-box" title="Name: snow1 RGB: 255/250/250" style="background-color: rgb(255, 250, 250);" onclick="copyToClipboard('snow1', '255/250/250', notification)"></div>
             <div class="color-box" title="Name: snow2 RGB: 238/233/233" style="background-color: rgb(238, 233, 233);" onclick="copyToClipboard('snow2', '238/233/233', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: snow3 RGB: 205/201/201" style="background-color: rgb(205, 201, 201);" onclick="copyToClipboard('snow3', '205/201/201', notification)"></div>
             <div class="color-box" title="Name: snow4 RGB: 139/137/137" style="background-color: rgb(139, 137, 137);" onclick="copyToClipboard('snow4', '139/137/137', notification)"></div>
             <div class="color-box" title="Name: seashell1 RGB: 255/245/238" style="background-color: rgb(255, 245, 238);" onclick="copyToClipboard('seashell1', '255/245/238', notification)"></div>
@@ -216,6 +228,8 @@ GMT Color Picker
             <div class="color-box" title="Name: lemonchiffon1 RGB: 255/250/205" style="background-color: rgb(255, 250, 205);" onclick="copyToClipboard('lemonchiffon1', '255/250/205', notification)"></div>
             <div class="color-box" title="Name: lemonchiffon2 RGB: 238/233/191" style="background-color: rgb(238, 233, 191);" onclick="copyToClipboard('lemonchiffon2', '238/233/191', notification)"></div>
             <div class="color-box" title="Name: lemonchiffon3 RGB: 205/201/165" style="background-color: rgb(205, 201, 165);" onclick="copyToClipboard('lemonchiffon3', '205/201/165', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: lemonchiffon4 RGB: 139/137/112" style="background-color: rgb(139, 137, 112);" onclick="copyToClipboard('lemonchiffon4', '139/137/112', notification)"></div>
             <div class="color-box" title="Name: cornsilk1 RGB: 255/248/220" style="background-color: rgb(255, 248, 220);" onclick="copyToClipboard('cornsilk1', '255/248/220', notification)"></div>
             <div class="color-box" title="Name: cornsilk2 RGB: 238/232/205" style="background-color: rgb(238, 232, 205);" onclick="copyToClipboard('cornsilk2', '238/232/205', notification)"></div>
@@ -241,6 +255,8 @@ GMT Color Picker
             <div class="color-box" title="Name: azure2 RGB: 224/238/238" style="background-color: rgb(224, 238, 238);" onclick="copyToClipboard('azure2', '224/238/238', notification)"></div>
             <div class="color-box" title="Name: azure3 RGB: 193/205/205" style="background-color: rgb(193, 205, 205);" onclick="copyToClipboard('azure3', '193/205/205', notification)"></div>
             <div class="color-box" title="Name: azure4 RGB: 131/139/139" style="background-color: rgb(131, 139, 139);" onclick="copyToClipboard('azure4', '131/139/139', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: slateblue1 RGB: 131/111/255" style="background-color: rgb(131, 111, 255);" onclick="copyToClipboard('slateblue1', '131/111/255', notification)"></div>
             <div class="color-box" title="Name: slateblue2 RGB: 122/103/238" style="background-color: rgb(122, 103, 238);" onclick="copyToClipboard('slateblue2', '122/103/238', notification)"></div>
             <div class="color-box" title="Name: slateblue3 RGB: 105/89/205" style="background-color: rgb(105, 89, 205);" onclick="copyToClipboard('slateblue3', '105/89/205', notification)"></div>
@@ -266,6 +282,8 @@ GMT Color Picker
             <div class="color-box" title="Name: deepskyblue3 RGB: 0/154/205" style="background-color: rgb(0, 154, 205);" onclick="copyToClipboard('deepskyblue3', '0/154/205', notification)"></div>
             <div class="color-box" title="Name: deepskyblue4 RGB: 0/104/139" style="background-color: rgb(0, 104, 139);" onclick="copyToClipboard('deepskyblue4', '0/104/139', notification)"></div>
             <div class="color-box" title="Name: skyblue1 RGB: 135/206/255" style="background-color: rgb(135, 206, 255);" onclick="copyToClipboard('skyblue1', '135/206/255', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: skyblue2 RGB: 126/192/238" style="background-color: rgb(126, 192, 238);" onclick="copyToClipboard('skyblue2', '126/192/238', notification)"></div>
             <div class="color-box" title="Name: skyblue3 RGB: 108/166/205" style="background-color: rgb(108, 166, 205);" onclick="copyToClipboard('skyblue3', '108/166/205', notification)"></div>
             <div class="color-box" title="Name: skyblue4 RGB: 74/112/139" style="background-color: rgb(74, 112, 139);" onclick="copyToClipboard('skyblue4', '74/112/139', notification)"></div>
@@ -291,6 +309,8 @@ GMT Color Picker
             <div class="color-box" title="Name: lightcyan4 RGB: 122/139/139" style="background-color: rgb(122, 139, 139);" onclick="copyToClipboard('lightcyan4', '122/139/139', notification)"></div>
             <div class="color-box" title="Name: paleturquoise1 RGB: 187/255/255" style="background-color: rgb(187, 255, 255);" onclick="copyToClipboard('paleturquoise1', '187/255/255', notification)"></div>
             <div class="color-box" title="Name: paleturquoise2 RGB: 174/238/238" style="background-color: rgb(174, 238, 238);" onclick="copyToClipboard('paleturquoise2', '174/238/238', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: paleturquoise3 RGB: 150/205/205" style="background-color: rgb(150, 205, 205);" onclick="copyToClipboard('paleturquoise3', '150/205/205', notification)"></div>
             <div class="color-box" title="Name: paleturquoise4 RGB: 102/139/139" style="background-color: rgb(102, 139, 139);" onclick="copyToClipboard('paleturquoise4', '102/139/139', notification)"></div>
             <div class="color-box" title="Name: cadetblue1 RGB: 152/245/255" style="background-color: rgb(152, 245, 255);" onclick="copyToClipboard('cadetblue1', '152/245/255', notification)"></div>
@@ -316,6 +336,8 @@ GMT Color Picker
             <div class="color-box" title="Name: darkseagreen1 RGB: 193/255/193" style="background-color: rgb(193, 255, 193);" onclick="copyToClipboard('darkseagreen1', '193/255/193', notification)"></div>
             <div class="color-box" title="Name: darkseagreen2 RGB: 180/238/180" style="background-color: rgb(180, 238, 180);" onclick="copyToClipboard('darkseagreen2', '180/238/180', notification)"></div>
             <div class="color-box" title="Name: darkseagreen3 RGB: 155/205/155" style="background-color: rgb(155, 205, 155);" onclick="copyToClipboard('darkseagreen3', '155/205/155', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: darkseagreen4 RGB: 105/139/105" style="background-color: rgb(105, 139, 105);" onclick="copyToClipboard('darkseagreen4', '105/139/105', notification)"></div>
             <div class="color-box" title="Name: seagreen1 RGB: 84/255/159" style="background-color: rgb(84, 255, 159);" onclick="copyToClipboard('seagreen1', '84/255/159', notification)"></div>
             <div class="color-box" title="Name: seagreen2 RGB: 78/238/148" style="background-color: rgb(78, 238, 148);" onclick="copyToClipboard('seagreen2', '78/238/148', notification)"></div>
@@ -341,6 +363,8 @@ GMT Color Picker
             <div class="color-box" title="Name: olivedrab2 RGB: 179/238/58" style="background-color: rgb(179, 238, 58);" onclick="copyToClipboard('olivedrab2', '179/238/58', notification)"></div>
             <div class="color-box" title="Name: olivedrab3 RGB: 154/205/50" style="background-color: rgb(154, 205, 50);" onclick="copyToClipboard('olivedrab3', '154/205/50', notification)"></div>
             <div class="color-box" title="Name: olivedrab4 RGB: 105/139/34" style="background-color: rgb(105, 139, 34);" onclick="copyToClipboard('olivedrab4', '105/139/34', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: darkolivegreen1 RGB: 202/255/112" style="background-color: rgb(202, 255, 112);" onclick="copyToClipboard('darkolivegreen1', '202/255/112', notification)"></div>
             <div class="color-box" title="Name: darkolivegreen2 RGB: 188/238/104" style="background-color: rgb(188, 238, 104);" onclick="copyToClipboard('darkolivegreen2', '188/238/104', notification)"></div>
             <div class="color-box" title="Name: darkolivegreen3 RGB: 162/205/90" style="background-color: rgb(162, 205, 90);" onclick="copyToClipboard('darkolivegreen3', '162/205/90', notification)"></div>
@@ -366,6 +390,8 @@ GMT Color Picker
             <div class="color-box" title="Name: gold3 RGB: 205/173/0" style="background-color: rgb(205, 173, 0);" onclick="copyToClipboard('gold3', '205/173/0', notification)"></div>
             <div class="color-box" title="Name: gold4 RGB: 139/117/0" style="background-color: rgb(139, 117, 0);" onclick="copyToClipboard('gold4', '139/117/0', notification)"></div>
             <div class="color-box" title="Name: goldenrod1 RGB: 255/193/37" style="background-color: rgb(255, 193, 37);" onclick="copyToClipboard('goldenrod1', '255/193/37', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: goldenrod2 RGB: 238/180/34" style="background-color: rgb(238, 180, 34);" onclick="copyToClipboard('goldenrod2', '238/180/34', notification)"></div>
             <div class="color-box" title="Name: goldenrod3 RGB: 205/155/29" style="background-color: rgb(205, 155, 29);" onclick="copyToClipboard('goldenrod3', '205/155/29', notification)"></div>
             <div class="color-box" title="Name: goldenrod4 RGB: 139/105/20" style="background-color: rgb(139, 105, 20);" onclick="copyToClipboard('goldenrod4', '139/105/20', notification)"></div>
@@ -391,6 +417,8 @@ GMT Color Picker
             <div class="color-box" title="Name: burlywood4 RGB: 139/115/85" style="background-color: rgb(139, 115, 85);" onclick="copyToClipboard('burlywood4', '139/115/85', notification)"></div>
             <div class="color-box" title="Name: wheat1 RGB: 255/231/186" style="background-color: rgb(255, 231, 186);" onclick="copyToClipboard('wheat1', '255/231/186', notification)"></div>
             <div class="color-box" title="Name: wheat2 RGB: 238/216/174" style="background-color: rgb(238, 216, 174);" onclick="copyToClipboard('wheat2', '238/216/174', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: wheat3 RGB: 205/186/150" style="background-color: rgb(205, 186, 150);" onclick="copyToClipboard('wheat3', '205/186/150', notification)"></div>
             <div class="color-box" title="Name: wheat4 RGB: 139/126/102" style="background-color: rgb(139, 126, 102);" onclick="copyToClipboard('wheat4', '139/126/102', notification)"></div>
             <div class="color-box" title="Name: tan1 RGB: 255/165/79" style="background-color: rgb(255, 165, 79);" onclick="copyToClipboard('tan1', '255/165/79', notification)"></div>
@@ -416,6 +444,8 @@ GMT Color Picker
             <div class="color-box" title="Name: lightsalmon1 RGB: 255/160/122" style="background-color: rgb(255, 160, 122);" onclick="copyToClipboard('lightsalmon1', '255/160/122', notification)"></div>
             <div class="color-box" title="Name: lightsalmon2 RGB: 238/149/114" style="background-color: rgb(238, 149, 114);" onclick="copyToClipboard('lightsalmon2', '238/149/114', notification)"></div>
             <div class="color-box" title="Name: lightsalmon3 RGB: 205/129/98" style="background-color: rgb(205, 129, 98);" onclick="copyToClipboard('lightsalmon3', '205/129/98', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: lightsalmon4 RGB: 139/87/66" style="background-color: rgb(139, 87, 66);" onclick="copyToClipboard('lightsalmon4', '139/87/66', notification)"></div>
             <div class="color-box" title="Name: orange1 RGB: 255/165/0" style="background-color: rgb(255, 165, 0);" onclick="copyToClipboard('orange1', '255/165/0', notification)"></div>
             <div class="color-box" title="Name: orange2 RGB: 238/154/0" style="background-color: rgb(238, 154, 0);" onclick="copyToClipboard('orange2', '238/154/0', notification)"></div>
@@ -441,6 +471,8 @@ GMT Color Picker
             <div class="color-box" title="Name: red2 RGB: 238/0/0" style="background-color: rgb(238, 0, 0);" onclick="copyToClipboard('red2', '238/0/0', notification)"></div>
             <div class="color-box" title="Name: red3 RGB: 205/0/0" style="background-color: rgb(205, 0, 0);" onclick="copyToClipboard('red3', '205/0/0', notification)"></div>
             <div class="color-box" title="Name: red4 RGB: 139/0/0" style="background-color: rgb(139, 0, 0);" onclick="copyToClipboard('red4', '139/0/0', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: deeppink1 RGB: 255/20/147" style="background-color: rgb(255, 20, 147);" onclick="copyToClipboard('deeppink1', '255/20/147', notification)"></div>
             <div class="color-box" title="Name: deeppink2 RGB: 238/18/137" style="background-color: rgb(238, 18, 137);" onclick="copyToClipboard('deeppink2', '238/18/137', notification)"></div>
             <div class="color-box" title="Name: deeppink3 RGB: 205/16/118" style="background-color: rgb(205, 16, 118);" onclick="copyToClipboard('deeppink3', '205/16/118', notification)"></div>
@@ -466,6 +498,8 @@ GMT Color Picker
             <div class="color-box" title="Name: maroon3 RGB: 205/41/144" style="background-color: rgb(205, 41, 144);" onclick="copyToClipboard('maroon3', '205/41/144', notification)"></div>
             <div class="color-box" title="Name: maroon4 RGB: 139/28/98" style="background-color: rgb(139, 28, 98);" onclick="copyToClipboard('maroon4', '139/28/98', notification)"></div>
             <div class="color-box" title="Name: violetred1 RGB: 255/62/150" style="background-color: rgb(255, 62, 150);" onclick="copyToClipboard('violetred1', '255/62/150', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: violetred2 RGB: 238/58/140" style="background-color: rgb(238, 58, 140);" onclick="copyToClipboard('violetred2', '238/58/140', notification)"></div>
             <div class="color-box" title="Name: violetred3 RGB: 205/50/120" style="background-color: rgb(205, 50, 120);" onclick="copyToClipboard('violetred3', '205/50/120', notification)"></div>
             <div class="color-box" title="Name: violetred4 RGB: 139/34/82" style="background-color: rgb(139, 34, 82);" onclick="copyToClipboard('violetred4', '139/34/82', notification)"></div>
@@ -491,6 +525,8 @@ GMT Color Picker
             <div class="color-box" title="Name: darkorchid4 RGB: 104/34/139" style="background-color: rgb(104, 34, 139);" onclick="copyToClipboard('darkorchid4', '104/34/139', notification)"></div>
             <div class="color-box" title="Name: purple1 RGB: 155/48/255" style="background-color: rgb(155, 48, 255);" onclick="copyToClipboard('purple1', '155/48/255', notification)"></div>
             <div class="color-box" title="Name: purple2 RGB: 145/44/238" style="background-color: rgb(145, 44, 238);" onclick="copyToClipboard('purple2', '145/44/238', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: purple3 RGB: 125/38/205" style="background-color: rgb(125, 38, 205);" onclick="copyToClipboard('purple3', '125/38/205', notification)"></div>
             <div class="color-box" title="Name: purple4 RGB: 85/26/139" style="background-color: rgb(85, 26, 139);" onclick="copyToClipboard('purple4', '85/26/139', notification)"></div>
             <div class="color-box" title="Name: mediumpurple1 RGB: 171/130/255" style="background-color: rgb(171, 130, 255);" onclick="copyToClipboard('mediumpurple1', '171/130/255', notification)"></div>
@@ -516,6 +552,8 @@ GMT Color Picker
             <div class="color-box" title="Name: gray12 RGB: 31/31/31" style="background-color: rgb(31, 31, 31);" onclick="copyToClipboard('gray12', '31/31/31', notification)"></div>
             <div class="color-box" title="Name: gray13 RGB: 33/33/33" style="background-color: rgb(33, 33, 33);" onclick="copyToClipboard('gray13', '33/33/33', notification)"></div>
             <div class="color-box" title="Name: gray14 RGB: 36/36/36" style="background-color: rgb(36, 36, 36);" onclick="copyToClipboard('gray14', '36/36/36', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: gray15 RGB: 38/38/38" style="background-color: rgb(38, 38, 38);" onclick="copyToClipboard('gray15', '38/38/38', notification)"></div>
             <div class="color-box" title="Name: gray16 RGB: 41/41/41" style="background-color: rgb(41, 41, 41);" onclick="copyToClipboard('gray16', '41/41/41', notification)"></div>
             <div class="color-box" title="Name: gray17 RGB: 43/43/43" style="background-color: rgb(43, 43, 43);" onclick="copyToClipboard('gray17', '43/43/43', notification)"></div>
@@ -541,6 +579,8 @@ GMT Color Picker
             <div class="color-box" title="Name: gray37 RGB: 94/94/94" style="background-color: rgb(94, 94, 94);" onclick="copyToClipboard('gray37', '94/94/94', notification)"></div>
             <div class="color-box" title="Name: gray38 RGB: 97/97/97" style="background-color: rgb(97, 97, 97);" onclick="copyToClipboard('gray38', '97/97/97', notification)"></div>
             <div class="color-box" title="Name: gray39 RGB: 99/99/99" style="background-color: rgb(99, 99, 99);" onclick="copyToClipboard('gray39', '99/99/99', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: gray40 RGB: 102/102/102" style="background-color: rgb(102, 102, 102);" onclick="copyToClipboard('gray40', '102/102/102', notification)"></div>
             <div class="color-box" title="Name: gray41 RGB: 105/105/105" style="background-color: rgb(105, 105, 105);" onclick="copyToClipboard('gray41', '105/105/105', notification)"></div>
             <div class="color-box" title="Name: gray42 RGB: 107/107/107" style="background-color: rgb(107, 107, 107);" onclick="copyToClipboard('gray42', '107/107/107', notification)"></div>
@@ -566,6 +606,8 @@ GMT Color Picker
             <div class="color-box" title="Name: gray62 RGB: 158/158/158" style="background-color: rgb(158, 158, 158);" onclick="copyToClipboard('gray62', '158/158/158', notification)"></div>
             <div class="color-box" title="Name: gray63 RGB: 161/161/161" style="background-color: rgb(161, 161, 161);" onclick="copyToClipboard('gray63', '161/161/161', notification)"></div>
             <div class="color-box" title="Name: gray64 RGB: 163/163/163" style="background-color: rgb(163, 163, 163);" onclick="copyToClipboard('gray64', '163/163/163', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: gray65 RGB: 166/166/166" style="background-color: rgb(166, 166, 166);" onclick="copyToClipboard('gray65', '166/166/166', notification)"></div>
             <div class="color-box" title="Name: gray66 RGB: 168/168/168" style="background-color: rgb(168, 168, 168);" onclick="copyToClipboard('gray66', '168/168/168', notification)"></div>
             <div class="color-box" title="Name: gray67 RGB: 171/171/171" style="background-color: rgb(171, 171, 171);" onclick="copyToClipboard('gray67', '171/171/171', notification)"></div>
@@ -591,6 +633,8 @@ GMT Color Picker
             <div class="color-box" title="Name: gray87 RGB: 222/222/222" style="background-color: rgb(222, 222, 222);" onclick="copyToClipboard('gray87', '222/222/222', notification)"></div>
             <div class="color-box" title="Name: gray88 RGB: 224/224/224" style="background-color: rgb(224, 224, 224);" onclick="copyToClipboard('gray88', '224/224/224', notification)"></div>
             <div class="color-box" title="Name: gray89 RGB: 227/227/227" style="background-color: rgb(227, 227, 227);" onclick="copyToClipboard('gray89', '227/227/227', notification)"></div>
+        </div>
+        <div class="color-row">
             <div class="color-box" title="Name: gray90 RGB: 229/229/229" style="background-color: rgb(229, 229, 229);" onclick="copyToClipboard('gray90', '229/229/229', notification)"></div>
             <div class="color-box" title="Name: gray91 RGB: 232/232/232" style="background-color: rgb(232, 232, 232);" onclick="copyToClipboard('gray91', '232/232/232', notification)"></div>
             <div class="color-box" title="Name: gray92 RGB: 235/235/235" style="background-color: rgb(235, 235, 235);" onclick="copyToClipboard('gray92', '235/235/235', notification)"></div>
