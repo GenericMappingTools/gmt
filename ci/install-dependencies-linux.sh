@@ -46,7 +46,7 @@ conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
 
 # Remove pcre-config from the CONDA's PATH to avoid conflicts
-rm -f ${CONDA}/bin/pcre-config
+rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
 
 # Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then
