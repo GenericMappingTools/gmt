@@ -20,7 +20,6 @@ Synopsis
 [ |-F|\ [**i**\|\ **d**\|\ **t**] ]
 [ |-I|\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**\ *incs*] ]
 [ |-L| ]
-[ |-S|\ [**x**][**y**] ]
 [ |-T|\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -143,17 +142,6 @@ Optional Arguments
     Determines common limits across tables (|-A|\ **t**) or segments (|-A|\ **s**).
     If used with |-I| it will round inwards so that the resulting bounds
     lie within the actual data domain.
-
-.. _-S:
-
-**-S**\ [**x**][**y**]
-    Add extra space for error bars. Useful together with |-I| option
-    and when later plotting with :doc:`plot` **-E**. |-S|\ **x** leaves space
-    for horizontal error bars using the values in third
-    (2) column. |-S|\ **y** leaves space for vertical error
-    bars using the values in fourth (3) column. |-S|
-    or |-S|\ **xy** leaves space for both error bars using the values in
-    third and fourth (2 and 3) columns.
 
 .. _-T:
 

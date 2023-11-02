@@ -39,7 +39,6 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "b,e,f,p,s",         "box,exact,fft,override,surface",
 	          "e,r,R",             "extend_box,adjust,extend_region" },
 	{ 0, 'L', "common_limits",     "", "", "", "" },
-	{ 0, 'S', "errorbar_space|forerrorbars", "", "", "", "" },
 	{ 0, 'T', "nearest_multiple",
 	          "",                  "",
 	          "c",                 "column" },

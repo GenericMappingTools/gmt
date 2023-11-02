@@ -88,7 +88,7 @@ struct GMTINFO_CTRL {	/* All control options for this program (except common arg
 	struct GMTINFO_L {	/* -L */
 		bool active;
 	} L;
-	struct GMTINFO_S {	/* -S[x|y] */
+	struct GMTINFO_S {	/* -S[x|y] [Deprecated in 6.5] */
 		bool active;
 		bool xbar, ybar;
 	} S;
@@ -128,7 +128,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]]] [-EL|l|H|h[<col>]] "
-		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]] [-L] [-S[x][y]] [-T<dz>[%s][+c<col>]] "
+		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]] [-L] [-T<dz>[%s][+c<col>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]",
 		name, GMT_TIME_FIX_UNITS_DISPLAY, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -169,11 +169,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
 	GMT_Usage (API, 1, "\n-L Determine limiting region. With -I it rounds inward so bounds are within data range. "
 		"Use -A to find the limiting common bounds of all segments or tables.");
-	GMT_Usage (API, 1, "\n-S[x][y]");
-	GMT_Usage (API, -2, "Add extra space for error bars. Useful together with -I.");
-	GMT_Usage (API, 3, "-Sx: Leaves space for horizontal error bar using value in third (2) column.");
-	GMT_Usage (API, 3, "-Sy: Leaves space for vertical error bar using value in third (2) column.");
-	GMT_Usage (API, 3, "-S or -Sxy: Leaves space for both error bars using values in third&fourth (2&3) columns.");
 	GMT_Usage (API, 1, "\n-T<dz>[%s][+c<col>]", GMT_TIME_FIX_UNITS_DISPLAY);
 	GMT_Usage (API, -2, "Return textstring -Tzmin/zmax/dz to nearest multiple of the given <dz>.");
 	GMT_Usage (API, -2, "Note: Calculations are based on the first (0) column; append +c<col> to use another column. "
@@ -325,7 +320,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-			case 'S':	/* Error bar output */
+			case 'S':	/* Error bar output [deprecated in 6.5] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				j = 0;
 				while (opt->arg[j]) {
