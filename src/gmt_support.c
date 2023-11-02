@@ -396,13 +396,13 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	double fb_rgb[4];
 
 	fill->dpi = irint (PSL_DOTS_PER_INCH_PATTERN);
-	if ((c = strchr (line, '+'))) {	/* Got modifiers */
+	if ((c = strchr (line, '+'))) {	/* Got pattern modifiers */
 		unsigned int pos = 0, uerr = 0;
 		char p[GMT_BUFSIZ] = {""};
-		while (gmt_getmodopt (GMT, 0, c, "bfr", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +f, +r */
+		while (gmt_getmodopt (GMT, 0, c, "bfr", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +f, and +r */
 			switch (p[0]) {
 				case 'b':	/* Background color. Giving no argument means transparent [also checking for obsolete -] */
-					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
+					if (p[1] == '\0' || p[1] == '-') {	/* Transparent background */
 						fill->b_rgb[0] = fill->b_rgb[1] = fill->b_rgb[2] = -1,	fill->b_rgb[3] = 0;
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to transparent!\n");
 					}
@@ -413,9 +413,10 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 						}
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to colors %s\n", gmt_putrgb (GMT, fill->b_rgb));
 					}
+					fill->set_b_rgb = true;
 					break;
 				case 'f':	/* Foreground color. Giving no argument means transparent [also checking for obsolete -] */
-					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
+					if (p[1] == '\0' || p[1] == '-') {	/* Transparent foreground */
 						fill->f_rgb[0] = fill->f_rgb[1] = fill->f_rgb[2] = -1,	fill->f_rgb[3] = 0;
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to transparent!\n");
 					}
@@ -426,6 +427,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 						}
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to colors %s\n", gmt_putrgb (GMT, fill->f_rgb));
 					}
+					fill->set_f_rgb = true;
 					break;
 				case 'r':	/* Dots-per-inch resolution */
 					if (p[1] == '-') {
@@ -437,6 +439,10 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 					break;
 				default: break;
 			}
+		}
+		if (fill->set_b_rgb && fill->set_f_rgb && fill->b_rgb[0] < 0.0 && fill->f_rgb[0] < 0.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pattern fore- and back-ground pixels cannot both be transparent!\n");
+			return (GMT_PARSE_ERROR);
 		}
 		if (uerr) return (GMT_PARSE_ERROR);
 	}
@@ -500,6 +506,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 		gmt_M_rgb_copy (fb_rgb, fill->f_rgb);
 		gmt_M_rgb_copy (fill->f_rgb, fill->b_rgb);
 		gmt_M_rgb_copy (fill->b_rgb, fb_rgb);
+		gmt_M_bool_swap (fill->set_b_rgb, fill->set_f_rgb);
 	}
 	if (c) c[0] = '+';	/* Undo previous damage */
 	return (0);

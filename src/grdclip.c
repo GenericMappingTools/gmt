@@ -33,11 +33,11 @@
 
 #define THIS_MODULE_CLASSIC_NAME	"grdclip"
 #define THIS_MODULE_MODERN_NAME		"grdclip"
-#define THIS_MODULE_LIB			"core"
-#define THIS_MODULE_PURPOSE		"Clip the range of grid values"
-#define THIS_MODULE_KEYS		"<G{,GG}"
-#define THIS_MODULE_NEEDS		""
-#define THIS_MODULE_OPTIONS 		"-RV"
+#define THIS_MODULE_LIB		"core"
+#define THIS_MODULE_PURPOSE	"Clip the range of grid values"
+#define THIS_MODULE_KEYS	"<G{,GG}"
+#define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_OPTIONS 	"-RV"
 
 enum Grdclip_cases {
 	GRDCLIP_BELOW	= 1,
@@ -350,7 +350,7 @@ EXTERN_MSC int GMT_grdclip (void *V_API, int mode, void *args) {
 			Out->data[ij] = Ctrl->S.above;
 			n_above++;
 		}
-		if (Ctrl->S.mode & GRDCLIP_ABOVE_OR_EQUAL && G->data[ij] >= Ctrl->S.high) {
+		else if (Ctrl->S.mode & GRDCLIP_ABOVE_OR_EQUAL && G->data[ij] >= Ctrl->S.high) {
 			Out->data[ij] = Ctrl->S.above;
 			n_above++;
 		}

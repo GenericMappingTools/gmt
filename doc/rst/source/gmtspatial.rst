@@ -199,8 +199,8 @@ Optional Arguments
     the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline. **Note1**: Only **-Sb**, **-Sh** and **-Ss** have been implemented.
-    **Note2**: **-Sb** is a purely Cartesian operation so *width* must be in data units.
+    were split by the Dateline. **Notes**: (1) Only **-Sb**, **-Sh** and **-Ss** have been implemented.
+    (2) **-Sb** is a purely Cartesian operation so *width* must be in data units.
     That is, for geographical coordinates *width* must be provided in degrees or, preferably, project data into
     an equal-area projection, compute the buffer and then convert back to geographical.
 
