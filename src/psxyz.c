@@ -1363,12 +1363,13 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (psxyz_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
 				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
-				if (!outline_active)	/* No pen width given, compute from symbol size */
+				if (!Ctrl->W.active && !outline_active)	/* No pen width given, compute from symbol size */
 					current_pen.width = (gmt_M_is_zero (GMT->current.setting.map_symbol_pen_scale)) ? GMT->current.setting.map_default_pen.width : GMT->current.setting.map_symbol_pen_scale * S.size_x * PSL_POINTS_PER_INCH;
 				if (current_fill.rgb[0] > -0.5) {	/* Color given, use it for the stroke */
 					save_pen = current_pen;
 					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
 				}
+				outline_active = true;
 			}
 
 			if (Ctrl->W.cpt_effect) {
