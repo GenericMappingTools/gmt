@@ -1258,7 +1258,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							last_spiderpen = current_pen;
 					}
 				}
-				else if (S.symbol == PSL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */
+				else if (S.symbol == PSL_DOT && !fill_active) {	/* Must switch on default black fill */
 					current_fill = black;
 				}
 			}
@@ -1729,7 +1729,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 			if (!geovector) {
 				gmt_setfill (GMT, &data[i].f, data[i].outline);
-				gmt_setpen (GMT, &data[i].p);
+				if (data[i].outline) gmt_setpen (GMT, &data[i].p);
 			}
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
