@@ -1,5 +1,6 @@
 outs:
-- md5: 34cbcc424bd5ec8c24e637bb6b7c4525.dir
-  size: 241450
-  nfiles: 2
+- md5: 59f039fd8f4375bbdb65d34bbd09d9cc.dir
+  size: 31145
+  nfiles: 1
   path: grdmix
+  hash: md5
