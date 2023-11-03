@@ -1,0 +1,5 @@
+outs:
+- md5: e282da8c22c2cb0f39393ad0e76f4c8d
+  size: 86450
+  hash: md5
+  path: GMT_sinusoidal.ps
