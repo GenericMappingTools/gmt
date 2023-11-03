@@ -1,0 +1,5 @@
+outs:
+- md5: d4827f7c0c43ea34f94e539f1bfa7e55
+  size: 72664
+  hash: md5
+  path: ex03.ps

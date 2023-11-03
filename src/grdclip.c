@@ -350,7 +350,7 @@ EXTERN_MSC int GMT_grdclip (void *V_API, int mode, void *args) {
 			Out->data[ij] = Ctrl->S.above;
 			n_above++;
 		}
-		if (Ctrl->S.mode & GRDCLIP_ABOVE_OR_EQUAL && G->data[ij] >= Ctrl->S.high) {
+		else if (Ctrl->S.mode & GRDCLIP_ABOVE_OR_EQUAL && G->data[ij] >= Ctrl->S.high) {
 			Out->data[ij] = Ctrl->S.above;
 			n_above++;
 		}

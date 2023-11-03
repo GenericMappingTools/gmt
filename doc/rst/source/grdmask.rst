@@ -18,7 +18,7 @@ Synopsis
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |-C|\ **f**\|\ **l**\|\ **o**\|\ **u** ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
-[ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
+[ |-S|\ *radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -123,9 +123,9 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search\_radius*\|\ *xlim*\ /*ylim*
+**-S**\ *radius*\|\ *xlim*\ /*ylim*
     Set nodes to inside, on edge, or outside depending on their distance
-    to the nearest data point. Nodes within *radius* [0] from the
+    to the nearest data point. Nodes within the searsch *radius* [0] from the
     nearest data point are considered inside; append a distance unit
     (see `Units`_). If *radius* is given as **z** then we instead read
     individual radii from the 3rd input column.  Unless Cartesian data,
