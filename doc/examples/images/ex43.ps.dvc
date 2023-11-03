@@ -1,0 +1,5 @@
+outs:
+- md5: 3a12689ef3eb2bc30c042fb89c686204
+  size: 45539
+  hash: md5
+  path: ex43.ps

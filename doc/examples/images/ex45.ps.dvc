@@ -1,0 +1,5 @@
+outs:
+- md5: e8af47e5460dd98121129eee9015bc0c
+  size: 90000
+  hash: md5
+  path: ex45.ps

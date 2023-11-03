@@ -180,6 +180,15 @@ Optional Arguments
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
 
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+
+        Use the |-F| option to create various networks between input point.  Dashed lines
+        indicate input ordering for the two tables, while solid lines are the resulting
+        network connections. Top left is original input, while the next five reflect the results
+        of directives **ra**, **rf**, **rs**, **r**\ 10/35 and **na**.
+
 .. _-G:
 
 **-G**\ *fill*\|\ **+z** :ref:`(more ...) <-Gfill_attrib>`
