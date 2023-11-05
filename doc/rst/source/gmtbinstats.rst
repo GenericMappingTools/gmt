@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtbinstats** [ *table* ] |-G|\ *outgrid*
+**gmt binstats** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |-C|\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
 |SYN_OPT-R|
-|-S|\ *search_radius*
+|-S|\ *radius*
 [ |-E|\ *empty* ]
 [ |-N| ]
 [ |-T|\ [**h**\|\ **r**] ]
@@ -41,7 +41,7 @@ Synopsis
 Description
 -----------
 
-**gmtbinstats** reads arbitrarily located (x,y[,z][,w]) points
+**binstats** reads arbitrarily located (x,y[,z][,w]) points
 (2-4 columns) from standard input [or *table*] and for each
 node in the specified grid layout determines which points are
 within the given radius.  These points are then used in the
@@ -57,7 +57,7 @@ Required Arguments
     A 2-4 column ASCII file(s) [or binary, see
     **-bi**] holding (x,y[,z][,w]) data values. You must use |-W|
     to indicate that you have weights.  Only |-C|\ **n** will accept 2 columns only.
-    If no file is specified, **gmtbinstats** will read from standard input.
+    If no file is specified, **binstats** will read from standard input.
 
 .. _-C:
 
@@ -104,8 +104,8 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search_radius*
-    Sets the *search_radius* that determines which data points are
+**-S**\ *radius*
+    Sets the search *radius* that determines which data points are
     considered close to a node. Append the distance unit (see `Units`_).
     Not compatible with |-T|.
 
@@ -120,6 +120,16 @@ Optional Arguments
     the *x*-increment given the geometry. Because the horizontal spacing between hexagon centers in
     *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in |-R| to
     fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.
+
+.. figure:: /_images/GMT_hexbinning.*
+   :width: 500 px
+   :align: center
+
+   a) Hexagonal polygons (light blue and light red) used for binning. The red are all inside the
+   gridding region while the blue are outside along the border. Yellow squares are test data,
+   black nodes are grid nodes supported by a hexagon center, and while squares are nodes that fall 
+   between. b) Grid showing result of hexagonal binning which yields a constant value inside each
+   polygon.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -181,14 +191,14 @@ To examine the population inside a circle of 1000 km radius for all nodes in a 5
 using the remote file @capitals.gmt, and plot the resulting grid using default projection and colors, try::
 
     gmt begin map
-      gmt gmtbinstats @capitals.gmt -a2=population -Rg -I5 -Cz -Gpop.nc -S1000k
+      gmt binstats @capitals.gmt -a2=population -Rg -I5 -Cz -Gpop.nc -S1000k
       gmt grdimage pop.nc -B
     gmt end show
 
 To do hexagonal binning of the data in the file mydata.txt and counting the number of points inside
 each hexagon, try::
 
-    gmt gmtbinstats mydata.txt -R0/5/0/3 -I1 -Th -Cn > counts.txt
+    gmt binstats mydata.txt -R0/5/0/3 -I1 -Th -Cn > counts.txt
 
 See Also
 --------
