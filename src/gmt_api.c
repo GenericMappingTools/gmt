@@ -13010,6 +13010,7 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 		}
 		else
 			strcpy (argument, inarg);
+		if (!argument[0]) *takes_mod = 2;   /* Flag that option is missing the arg and needs it later */
 	}
 	else
 		strcpy (argument, inarg);
