@@ -30,7 +30,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'C', "endclip",    "", "", "", "" },
 	{ 0, 'N', "invert",     "", "", "", "" },
 	{ 0, 'T', "clipregion", "", "", "", "" },
-	{ 0, 'W', "pen",        "", "", "", "" },
+	GMT_W_PEN_KW,
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
 };
 #endif  /* !PSCLIP_INC_H */

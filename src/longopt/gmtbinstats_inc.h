@@ -29,10 +29,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	                               "mean,mad,full,interquartile,min,minpos,median,number,lms,mode,quantile,rms,stddev,max,maxneg,sum",
 	          "",                  "" },
 	{ 0, 'E', "empty",             "", "", "", "" },
-	{ 0, 'G', "outgrid",
-	          "",                  "",
-	          "d,n,o,s,c",         "divide,nan,offset,scale,gdal" },
-    GMT_INCREMENT_KW,   /* Defined in gmt_constant.h since not a true GMT common option (but almost) */
+	GMT_G_OUTGRID_KW,
+	GMT_I_INCREMENT_KW,
 	{ 0, 'N', "normalize",         "", "", "", "" },
 	{ 0, 'S', "search_radius|radius",     "", "", "", "" },
 	{ 0, 'T', "tiling",
