@@ -58,6 +58,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3.6.0
 
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}
+
       - name: Setup vcpkg (Windows)
         uses: dawidd6/action-download-artifact@v2.28.0
         with:
@@ -98,6 +103,7 @@ jobs:
 
       - name: Compile GMT (Linux/macOS)
         run: |
+          export CMAKE_C_COMPILER_LAUNCHER=ccache
           mkdir build
           cd build
           cmake -G Ninja ..
