@@ -114,6 +114,7 @@ for apiprog in \
     testapi_matrix_pad \
     testapi_matrix_plot \
     testapi_mixmatrix \
+    testapi_modern \
     testapi_userdataset \
     testapi_usergrid \
     testapi_uservectors \

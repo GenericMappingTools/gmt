@@ -1,0 +1,5 @@
+outs:
+- md5: eb3efa623d7ef02a873d7fbf60b51b7d
+  size: 29032
+  hash: md5
+  path: project_setup.ps

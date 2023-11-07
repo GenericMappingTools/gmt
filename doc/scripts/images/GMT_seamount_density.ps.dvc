@@ -1,0 +1,5 @@
+outs:
+- md5: d2371c6a09d3f9c30218c8915323295f
+  size: 265957
+  hash: md5
+  path: GMT_seamount_density.ps

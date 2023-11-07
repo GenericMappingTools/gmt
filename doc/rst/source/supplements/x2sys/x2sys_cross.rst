@@ -16,7 +16,7 @@ Synopsis
 [ |-C|\ [*runtimes*] ]
 [ |-D|\ [**S**\|\ **N**] ]
 [ |-E|\ *limit* ]
-[ |-I|\ **l**\|\ **a**\|\ **c** ]
+[ |-I|\ **a**\|\ **c**\|\ **l**\|\ **n** ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **l**\|\ **u**\|\ **h**\ *speed* ]
@@ -88,14 +88,16 @@ Optional Arguments
 
 .. _-I:
 
-**-Il**\|\ **a**\|\ **c**
+**-I**\ **a**\|\ **c**\|\ **l**\|\ **n**
     Sets the interpolation mode for estimating values at the crossover. Choose among:
-
-    **l** Linear interpolation [Default].
 
     **a** Akima spline interpolation.
 
     **c** Cubic spline interpolation.
+
+    **l** Linear interpolation [Default].
+
+    **n** Nearest neighbor interpolation.
 
 .. _-Q:
 

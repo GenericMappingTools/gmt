@@ -1,0 +1,5 @@
+outs:
+- md5: e33f7b92a61f52c06f78d4409a4c8313
+  size: 25154
+  hash: md5
+  path: GMT_seamount_flux.ps

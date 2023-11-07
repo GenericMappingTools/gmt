@@ -24,7 +24,6 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	/* separator, short_option, long_option,
 	          short_directives,        long_directives,
 	          short_modifiers,         long_modifiers */
-	{ 0, 'G', "outgrid",               "", "", "", "" },
 	{ 0, 'D', "meta",
 	          "",                      "",
 	          "x,y,z,c,d,s,o,n,t,r,v", "xname,yname,zname,cpt,dname,scale,offset,invalid,title,remark,varname" },
@@ -34,6 +33,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'F', "interptype",
 	          "l,a,c,n",               "linear,akima,cubic,none",
 	          "d",                     "derivative" },
+	GMT_G_OUTGRID_KW,
 	{ 0, 'S', "pointseries",
 	          "",                      "",
 	          "h",                     "header" },

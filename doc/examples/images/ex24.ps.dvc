@@ -1,0 +1,5 @@
+outs:
+- md5: 74b01d6d1c0735575af2a0155ebc527e
+  size: 300863
+  hash: md5
+  path: ex24.ps

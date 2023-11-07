@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtsplit** [ *table* ]
+**gmt split** [ *table* ]
 [ |-A|\ *azimuth*/*tolerance* ]
 [ |-C|\ *course_change*]
 [ |-D|\ *minimum_distance* ]
@@ -38,13 +38,13 @@ Synopsis
 Description
 -----------
 
-**gmtsplit** reads a series of (*x,y[,z]*) records [or optionally
+**split** reads a series of (*x,y[,z]*) records [or optionally
 (*x,y[,z],d,h*); see |-S| option] from standard input [or *xy[z][dh]file*]
 and splits this into separate lists of (*x,y[,z]*) series, such that each
 series has a nearly constant azimuth through the *x,y* plane. There are
 options to choose only those series which have a certain orientation, to
 set a minimum length for series, and to high- or low-pass filter the *z*
-values and/or the *x,y* values. **gmtsplit** is a useful filter between
+values and/or the *x,y* values. **split** is a useful filter between
 data extraction and :doc:`wiggle` plotting, and can also be used to
 divide a large *x,y[,z]* dataset into segments.
 
@@ -56,7 +56,7 @@ Required Arguments
     files with 2, 3, or 5 columns holding (*x,y*,[*z*\ [,\ *d,h*\ ]])
     data values. To use (*x,y,z,d,h*) input, sorted so that *d* is
     non-decreasing, specify the |-S| option; default expects (*x,y,z*)
-    only. If no files are specified, **gmtsplit** will read from
+    only. If no files are specified, **split** will read from
     standard input.
 
 Optional Arguments
@@ -202,7 +202,7 @@ anomalies. Try this:
 
 MGD-77 users: For this application we recommend that you extract dist,azim
 from :doc:`mgd77list <supplements/mgd77/mgd77list>` rather than have
-**gmtsplit** compute them separately.
+**split** compute them separately.
 
 Suppose you have been given a binary, double-precision file containing
 lat, lon, gravity values from a survey, and you want to split it into

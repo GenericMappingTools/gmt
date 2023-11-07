@@ -32,8 +32,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all th
     { 0, 'E', "extend",
                   "r,s",       "record,source",
                   "l,h",       "lower,higher" },
-    { 0, 'G', "outgrid",   "", "", "", "" },
-    GMT_INCREMENT_KW,   /* Defined in gmt_constant.h since not a true GMT common option (but almost) */
+    GMT_G_OUTGRID_KW,
+    GMT_I_INCREMENT_KW,
     { 0, 'Q', "quick",     "", "", "", "" },
     { 0, 'W', "weights",
                   "i,o",       "in,out",

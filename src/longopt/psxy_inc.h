@@ -27,7 +27,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'A', "straightlines",
 	          "m,p,x,y,r,t",             "mpfollow,pmfollow,xyalong,yxalong,rtalong,tralong",
 	          "",                        "" },
-	{ 0, 'C', "cpt|cmap",                "", "", "", "" },
+	GMT_C_CPT_KW,
 	{ 0, 'D', "offset",                  "", "", "", "" },
 	{ 0, 'E', "errorbars",
 	          "x,y,X,Y",                 "xbar,ybar,boxwhisker,stemleaf",

@@ -140,6 +140,12 @@ Optional Arguments
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
 
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+    
+        Various ways to connect input points from one or more files using |-F|.
+
 .. _-I:
 
 **-I**\ [**tsr**]

@@ -58,7 +58,7 @@ double quotes.
        - **+o** - Offset data values by the given *offset* [Default is 0].
        - **+s** - Scale data values by the given *scale* [Default is 1].
 
-    Note: Any offset is added after any scaling.
+    **Note**: Any offset is added after any scaling.
 
 .. ingrid-syntax-ends
 .. outgrid-syntax-begins

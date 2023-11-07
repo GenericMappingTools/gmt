@@ -1,0 +1,5 @@
+outs:
+- md5: 0bcb4735c0669a92f1f89bb60d4f186b
+  size: 32022
+  hash: md5
+  path: psevents_action.ps

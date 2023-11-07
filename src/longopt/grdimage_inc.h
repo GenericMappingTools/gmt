@@ -25,9 +25,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
 /* ?? -A not possible because of = usage, e.g., -Aout_img=driver ? */
-	{ 0, 'C', "cpt|cmap",
-                  "",                  "",
-                  "h,i,u,U",           "hinge,zinc,fromunit,tounit" },
+	GMT_C_CPT_KW,
 	{ 0, 'D', "inimage",
                   "r",                 "region",
                   "",                  "" },

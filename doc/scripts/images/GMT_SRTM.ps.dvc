@@ -1,0 +1,5 @@
+outs:
+- md5: 2d985db548d6cb7db59a985164d7632d
+  size: 90606
+  hash: md5
+  path: GMT_SRTM.ps

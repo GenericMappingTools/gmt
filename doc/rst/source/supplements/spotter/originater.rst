@@ -16,7 +16,7 @@ Synopsis
 |-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
 |-F|\ *hs_file*\ [**+d**]
 [ |-D|\ *d_km* ]
-[ |-L|\ [*flag*] ]
+[ |-L|\ [**l**\|\ **t**\|\ **w**\| **L**\|\ **T**\|\ **W**] ]
 [ |-N|\ *upper_age* ]
 [ |-Q|\ *r/t* ]
 [ |-S|\ [*n_hs*] ]
@@ -101,7 +101,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*flag*]
+**-L**\ [**l**\|\ **t**\|\ **w**\| **L**\|\ **T**\|\ **W**]
     Output closest approach for nearest hotspot only (ignores |-S|).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
     (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).

@@ -22,7 +22,7 @@ Synopsis
 [ |-H|\ *H*/*rho_l*/*rho_h*\ [**+b**\ *boost*][**+d**\ *densify*][**+p**\ *power*] ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *base* ]
-[ |-M|\ [**h**]\ [**z**] ]
+[ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *shapegrid* ]
@@ -163,9 +163,9 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**h**]\ [**z**]
+**-M**\ [**h**]\ [**v**]
     Sets distance units used.  Append **h** to indicate that both horizontal distances are in km [m],
-    and append **z** to indicate vertical distances are in km [m].  If selected, we will internally
+    and append **v** to indicate vertical distances are in km [m].  If selected, we will internally
     convert any affected distance provided by data input or command line options to meters. **Note**:
     Any output will retain the original units.
 

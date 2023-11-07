@@ -370,7 +370,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>[+c]] [-E<dx>[/<dy>]] [-Ff|n[<lat>]|v] "
-		"[-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+b<boost>][+d<densify>][+p<power>]] [%s] [-L<base>] [-M[hz]] [-N<trktable>] [%s] "
+		"[-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+b<boost>][+d<densify>][+p<power>]] [%s] [-L<base>] [-M[h][v]] [-N<trktable>] [%s] "
 		"[-S<shapegrd>] [-T<top>] [%s] [-W<avedens>] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
@@ -412,10 +412,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-L<base>");
 	GMT_Usage (API, -2, "Set the lower (base) surface grid or constant of a layer to create prisms for; requires -C and -T [0]");
-	GMT_Usage (API, 1, "\n-M[hz]");
+	GMT_Usage (API, 1, "\n-M[h][v]");
 	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
-	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
-	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
+	GMT_Usage (API, 3, "h: All horizontal distances are given in km [meters].");
+	GMT_Usage (API, 3, "v: All vertical distances are given in km [meters].");
 	GMT_Usage (API, -2, "Note: All horizontal and/or vertical quantities will be affected by a factor of 1000");
 	GMT_Usage (API, 1, "\n-N<trktable>");
 	GMT_Usage (API, -2, "File with output locations (x,y) where a calculation is requested.  Optionally, z may be read as well if -Z not set. No grid "

@@ -1733,7 +1733,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							last_spiderpen = current_pen;
 					}
 				}
-				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
+				else if (S.symbol == PSL_DOT && !fill_active)	/* No -G, must switch on default black fill */
 					current_fill = black;
 				if (Ctrl->E.active) {	/* Must update decision on where error bars go since symbol has changed */
 					E_bar_above = (S.symbol == GMT_SYMBOL_BARX || S.symbol == GMT_SYMBOL_BARY);
@@ -1794,12 +1794,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (psxy_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
 				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
-				if (!outline_active)	/* No pen width given, compute from symbol size unless conversion factor is 0 */
+				if (!Ctrl->W.active && !outline_active)	/* No pen width given, compute from symbol size unless conversion factor is 0 */
 					current_pen.width = (gmt_M_is_zero (GMT->current.setting.map_symbol_pen_scale)) ? GMT->current.setting.map_default_pen.width : GMT->current.setting.map_symbol_pen_scale * S.size_x * PSL_POINTS_PER_INCH;
 				if (current_fill.rgb[0] > -0.5) {	/* Color given, use it for the stroke */
 					save_pen = current_pen;
 					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
 				}
+				outline_setting = 1;
 			}
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
@@ -1888,7 +1889,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 			else if (!may_intrude_inside) {
 				gmt_setfill (GMT, &current_fill, outline_setting);
-				gmt_setpen (GMT, &current_pen);
+				if (outline_setting) gmt_setpen (GMT, &current_pen);
 			}
 
 			if (S.base_set & GMT_BASE_READ) {
