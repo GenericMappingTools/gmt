@@ -104,7 +104,7 @@ Optional Arguments
 **-L**\ [**l**\|\ **t**\|\ **w**\| **L**\|\ **T**\|\ **W**]
     Output closest approach for nearest hotspot only (ignores |-S|).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
-    (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).
+    (*omega*, *dist*, *z*), and **-Ll** for (*lon, lat, time, dist, z*).
     Normally, *dist* is in km; use upper case modifiers **TWL** to get
     *dist* in spherical degrees.
 

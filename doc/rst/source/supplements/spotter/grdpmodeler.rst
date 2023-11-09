@@ -63,7 +63,7 @@ Optional Arguments
 ------------------
 
 *ingrid*
-    Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+    Name of a grid file in geographical (*lon, lat*) coordinates with ages in Myr.
     If no grid is provided then you may define the domain via |-R|, |-I|, and optionally **-r**.
 
 .. _-F:

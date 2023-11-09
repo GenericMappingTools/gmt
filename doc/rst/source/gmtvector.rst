@@ -39,10 +39,10 @@ Synopsis
 Description
 -----------
 
-**vector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
-[or (lat,lon); see **-:**] coordinates from the first 2-3 columns on
+**vector** reads either (x, y), (x, y, z), (r, theta) or (*lon, lat*)
+[or (*lat, lon*); see **-:**] coordinates from the first 2-3 columns on
 standard input [or one or more tables]. If **-fg** is selected and only two items
-are read (i.e., lon, lat) then these coordinates are converted to
+are read (i.e., *lon, lat*) then these coordinates are converted to
 Cartesian three-vectors on the unit sphere. Otherwise we expect (r,
 theta) unless **-Ci** is in effect. If no file is found we expect a
 single vector to be given as argument to **-A**; this argument will also
@@ -51,16 +51,16 @@ vectors (or the one provided via |-A|) are denoted the prime
 vector(s). Several standard vector operations (angle between vectors,
 cross products, vector sums, and vector rotations) can be selected; most
 require a single second vector, provided via |-S|. The output vectors
-will be converted back to (lon, lat) or (r, theta) unless **-Co** is set
-which requests (x, y[, z]) Cartesian coordinates.
+will be converted back to (*lon, lat*) or (*r, theta*) unless **-Co** is set
+which requests (*x, y*\ [*, z*]) Cartesian coordinates.
 
 Required Arguments
 ------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    file containing lon,lat [lat,lon if **-:**] values in the first 2
-    columns (if **-fg** is given) or (r, theta), or perhaps (x, y[, z])
+    file containing *lon,lat* [*lat,lon* if **-:**] values in the first 2
+    columns (if **-fg** is given) or (*r, theta*), or perhaps (*x, y*\ [*, z*])
     if **-Ci** is given). If no file is specified, **vector**, will
     read from standard input.
 
@@ -179,7 +179,7 @@ as well as the 95% confidence ellipse around that point, try::
 
     gmt vector @ship_15.txt -Am -fg
 
-Suppose you have a file with lon, lat called points.txt. You want to
+Suppose you have a file with *lon, lat* called points.txt. You want to
 compute the spherical angle between each of these points and the
 location 133/34. Try::
 

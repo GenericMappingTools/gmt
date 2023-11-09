@@ -152,7 +152,7 @@ Optional Arguments
    :align: center
 
    Use |-E| to select elliptical rather than circular shapes in map view.  Both shapes require
-   lon, lat. Circular shapes only require the radius :math:`r_0`, while elliptical ones require the
+   *lon, lat*. Circular shapes only require the radius :math:`r_0`, while elliptical ones require the
    azimuth :math:`\alpha` of the major axis as well as the major and minor semi-axes .
 
 .. _-F:

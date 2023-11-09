@@ -42,8 +42,8 @@ Synopsis
 Description
 -----------
 
-**backtracker** reads (longitude, latitude, age) positions from
-*infiles* [or standard input] and computes rotated (x,y,t) coordinates
+**backtracker** reads (*longitude, latitude, age*) positions from
+*infiles* [or standard input] and computes rotated (*x, y, t*) coordinates
 using the specified rotation parameters. It can either calculate final
 positions [Default] or create a sampled track (flowline or hotspot track)
 between the initial and final positions [*Wessel*, 1999]. The former mode allows
@@ -84,7 +84,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *driftfile*
-    Supply a file with (lon, lat, age) records that describe the history
+    Supply a file with (*lon, lat, age*) records that describe the history
     of hotspot motion for the current hotspot. The reconstructions will
     use the 3rd data input column (i.e., the age) to obtain the
     location of the hotspot at that time, via an interpolation of the
@@ -120,7 +120,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ *fixed_age*
-    Assign a fixed age to all positions. Only lon, lat input is expected
+    Assign a fixed age to all positions. Only *lon, lat* input is expected
     [Default expects longitude, latitude, age]. Useful when the input
     are points defining isochrons.
 
@@ -145,12 +145,12 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**a**\|\ **t**]
-    Rotates the given input (lon,lat,t) and calculates the confidence
+    Rotates the given input (*lon,lat,time*) and calculates the confidence
     ellipse for the projected point. The input point *must* have a time
     coordinate that exactly matches a particular total reconstruction
     rotation time, otherwise the point will be skipped. Append **t** or
     **a** to output time or angle, respectively, after the projected
-    lon, lat. After these 2-3 items, we write azimuth, major, minor (in
+    *lon, lat*. After these 2-3 items, we write azimuth, major, minor (in
     km) for the 95% confidence ellipse. See |-D| for the direction of
     rotation.
 

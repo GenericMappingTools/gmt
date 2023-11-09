@@ -306,14 +306,14 @@ first make the CPT and then create the KML file thus::
     gmt makecpt -Ccategorical > categories.cpt
     gmt 2kml @kml_pointsets.txt -Ccategories.cpt > points.kml
 
-To convert a file with point locations (lon, lat) into a KML file with
+To convert a file with point locations (*lon, lat*) into a KML file with
 red circle symbols, try
 
 ::
 
   gmt 2kml mypoints.txt -Gred+f -Fs > mypoints.kml
 
-To convert a multisegment file with lines (lon, lat) separated by
+To convert a multisegment file with lines (*lon, lat*) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick white pen, and title the document, try
 
@@ -321,7 +321,7 @@ name, selecting a thick white pen, and title the document, try
 
   gmt 2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
-To convert a multisegment file with polygons (lon, lat) separated by
+To convert a multisegment file with polygons (*lon, lat*) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick black pen and semi-transparent yellow fill,
 giving a title to the document, and prescribing a particular region
@@ -331,7 +331,7 @@ limit, try
 
   gmt 2kml mypolygons.txt -Gyellow@50+f -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
-To convert a file with point locations (lon, lat, time) into a KML file
+To convert a file with point locations (*lon, lat, time*) into a KML file
 with green circle symbols that will go active at the specified time and
 stay active going forward, try
 

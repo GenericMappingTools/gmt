@@ -224,7 +224,7 @@ interpolation, but output the first derivative instead (the slope), try::
 
     gmt sample1d points.txt -T0/6/0.01 -Fc+d1 > slopes.txt
 
-To resample the file track.txt which contains lon, lat, depth every 2
+To resample the file track.txt which contains *lon, lat, depth* every 2
 nautical miles, use::
 
     gmt sample1d track.txt -T2n -AR > new_track.txt

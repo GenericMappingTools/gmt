@@ -421,7 +421,7 @@ a circle at the start location and an arrow head at the end::
     EOF
 
 To plot vectors (red vector heads, solid stem) from the file data.txt that contains
-record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
+record of the form *lon, lat, dx, dy*, where *dx, dy* are the Cartesian
 vector components given in user units, and these user units should be converted
 to cm given the scale 3.60::
 

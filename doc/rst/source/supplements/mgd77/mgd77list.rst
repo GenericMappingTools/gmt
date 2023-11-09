@@ -527,7 +527,7 @@ records whose bitflag for faa indicates BAD values, we try
 
   gmt mgd77list $(cat cruises.lis) -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
 
-To output lon, lat, mag, and faa from all the cruises listed in the file
+To output *lon, lat, mag*, and *faa* from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
 reference fields, try:
 

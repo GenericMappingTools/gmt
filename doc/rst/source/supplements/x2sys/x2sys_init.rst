@@ -287,8 +287,8 @@ to find it.
     and enhanced netCDF-based MGD77+ files) and the old \*.gmt files
     manipulated by the mgg supplements; for these data sets the **-j**
     and |-N| will default to great circle distance calculation in km
-    and speed in m/s. There are also format definition files for plain x,y[,z]
-    and lon,lat[,z] tracks. To initiate new track databases to be used
+    and speed in m/s. There are also format definition files for plain *x,y*\ [*,z*]
+    and *lon,lat*\ [*,z*] tracks. To initiate new track databases to be used
     with MGD77 data from NCEI, try
 
       ::

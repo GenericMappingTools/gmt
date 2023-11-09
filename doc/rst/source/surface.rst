@@ -308,7 +308,7 @@ project your data using a stereographic projection and grid the projected Cartes
 Gridding Geographic Data: Setting Increments
 --------------------------------------------
 
-Specifying grid increments in distance units (meters, km, etc.) for geographic (lon, lat)
+Specifying grid increments in distance units (meters, km, etc.) for geographic (*lon, lat*)
 grids triggers a conversion from the given increment to the equivalent increment in degrees.
 This is done differently for longitude and latitude and also depends on chosen ellipsoid,
 but ultimately is a great-circle approximation. For latitude we divide your *y*-increment

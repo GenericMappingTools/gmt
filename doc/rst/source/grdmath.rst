@@ -352,8 +352,8 @@ Operator        Args   Returns                                                  
 **SADDLE**      1 1    Saddle point (±), with (local) minimum (-1) or maximum (+1) in x-direction, 0 elsewhere         Calculus
 **SDIST**       2 1    Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|    Special Operators
 **SDIST2**      2 1    As SDIST but only to nodes that are != 0                                                        Special Operators
-**SAZ**         2 1    Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)                                Special Operators
-**SBAZ**        2 1    Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)                           Special Operators
+**SAZ**         2 1    Spherical azimuth from grid nodes to stack *lon, lat* (i.e., A, B)                              Special Operators
+**SBAZ**        2 1    Spherical back-azimuth from grid nodes to stack *lon, lat* (i.e., A, B)                         Special Operators
 **SEC**         1 1    Inverse of secant (result in radians)                                                           Calculus
 **SECD**        1 1    Inverse of secant (result in degrees)                                                           Calculus
 **SIGN**        1 1    Sign (+1 or -1) of A                                                                            Logic
@@ -465,8 +465,8 @@ Notes On Operators
    is weighted by the geographic area represented by that node.
 
 #. The operator **SDIST** calculates spherical distances in km between the
-   (lon, lat) point on the stack and all node positions in the grid. The
-   grid domain and the (lon, lat) point are expected to be in degrees.
+   (*lon, lat*) point on the stack and all node positions in the grid. The
+   grid domain and the (*lon, lat*) point are expected to be in degrees.
    Similarly, the **SAZ** and **SBAZ** operators calculate spherical
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is

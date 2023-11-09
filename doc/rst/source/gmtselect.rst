@@ -111,7 +111,7 @@ Optional Arguments
 **-F**\ *polygonfile*
     Pass all records whose location is within one of the closed polygons
     in the multiple-segment file *polygonfile*. For spherical polygons
-    (lon, lat), make sure no consecutive points are separated by 180
+    (*lon, lat*), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
     ASCII regardless of whether **-bi** is used.
 
@@ -263,7 +263,7 @@ Note On Distances
 
 If options |-C| or |-L| are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
-geographical (lon, lat) coordinates. Alternatively, specify |-R| and
+geographical (*lon, lat*) coordinates. Alternatively, specify |-R| and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
 or points, as determined by :term:`PROJ_LENGTH_UNIT`).
 

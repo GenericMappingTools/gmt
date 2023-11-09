@@ -119,7 +119,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [*datum*]
-    Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
+    Convert from geodetic (*lon, lat, height*) to Earth Centered Earth Fixed (ECEF) (*x, y, z*) coordinates
     (add |-I| for the inverse conversion). Append datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
     ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
@@ -349,7 +349,7 @@ those points that would fall outside the map area, run::
 
   gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
-To convert the geodetic coordinates (lon, lat, height) in the file
+To convert the geodetic coordinates (*lon, lat, height*) in the file
 old.txt from the NAD27 CONUS datum (Datum ID 131 which uses the
 Clarke-1866 ellipsoid) to WGS 84, run::
 

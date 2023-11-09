@@ -1411,7 +1411,7 @@ grdraster
     found in the sph supplement.
 
 :doc:`sphtriangulate`
-    Delaunay or Voronoi construction of spherical lon,lat data.  Previously
+    Delaunay or Voronoi construction of spherical *lon,lat* data.  Previously
     found in the sph supplement.
 
 We have also added a new supplement called potential that contains these five modules:

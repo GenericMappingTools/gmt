@@ -267,7 +267,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To project the remote data sets ship_03.txt (lon,lat,depth) onto a great circle specified by
+To project the remote data sets ship_03.txt (*lon,lat,depth*) onto a great circle specified by
 the center (330,-18) and rotation pole (53,21) and sort the records on the projected distances along
 that circle and only output the distance and the depths, try::
 

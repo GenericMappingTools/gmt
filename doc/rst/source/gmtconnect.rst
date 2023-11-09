@@ -170,7 +170,7 @@ the end points' digitization error could be up to 0.1 mm, run::
     gmt connect segment_*.txt -T0.1 > new_segments.txt
 
 To combine the digitized segments in the multisegment file my_lines.txt
-(whose coordinates are in lon,lat) into as few complete lines as
+(whose coordinates are in *lon,lat*) into as few complete lines as
 possible, assuming the end points digitization error could be up to 150 m, and write
 the complete segments to individual files called Map_segment_0001.txt,
 Map_segment_0002.txt, etc., run::
