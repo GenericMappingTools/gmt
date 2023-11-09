@@ -52,26 +52,26 @@ Required Arguments
 .. _-D:
 
 **-D**\ *flag*
-    Distance *flag* tells how grid (x,y) relates to filter *width* as
+    Distance *flag* tells how grid (*x, y*) relates to filter *width* as
     follows:
 
     - *flag* = p: grid (px,py) with *width* an odd number of pixels;
       Cartesian distances.
-    - *flag* = 0: grid (x,y) same units as *width*, Cartesian distances.
-    - *flag* = 1: grid (x,y) in degrees, *width* in km, Cartesian
+    - *flag* = 0: grid (*x, y*) same units as *width*, Cartesian distances.
+    - *flag* = 1: grid (*x, y*) in degrees, *width* in km, Cartesian
       distances.
-    - *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
+    - *flag* = 2: grid (*x, y*) in degrees, *width* in km, dx scaled by
       cos(middle y), Cartesian distances.
 
     The above options are fastest because they allow weight matrix to be
     computed only once. The next three options are slower because they
     recompute weights for each latitude.
 
-    - *flag* = 3: grid (x,y) in degrees, *width* in km, dx scaled by
+    - *flag* = 3: grid (*x, y*) in degrees, *width* in km, dx scaled by
       cosine(y), Cartesian distance calculation.
-    - *flag* = 4: grid (x,y) in degrees, *width* in km, Spherical distance
+    - *flag* = 4: grid (*x, y*) in degrees, *width* in km, Spherical distance
       calculation.
-    - *flag* = 5: grid (x,y) in Mercator **-Jm**\ 1 img units, *width* in
+    - *flag* = 5: grid (*x, y*) in Mercator **-Jm**\ 1 img units, *width* in
       km, Spherical distance calculation.
 
 .. _-F:

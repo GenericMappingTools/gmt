@@ -133,7 +133,7 @@ Optional Arguments
 **-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
     Draw error bars. Append **x** and/or **y** to indicate which bars you
     want to draw [Default is both x and y]. The x and/or y errors must be
-    stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
+    stored in the columns after the (*x, y*) pair [or (*x, y, z*) triplet]. If
     **+a** is appended then we will draw asymmetrical error bars [Default
     is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.
@@ -421,7 +421,7 @@ a circle at the start location and an arrow head at the end::
     EOF
 
 To plot vectors (red vector heads, solid stem) from the file data.txt that contains
-record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
+record of the form *lon, lat, dx, dy*, where *dx, dy* are the Cartesian
 vector components given in user units, and these user units should be converted
 to cm given the scale 3.60::
 
