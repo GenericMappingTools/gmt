@@ -1,4 +1,4 @@
-    Dump the (x,y,z) coordinates of each contour to one or more output files
+    Dump the (*x,y,z*) coordinates of each contour to one or more output files
     (or standard output if *template* is not given). No plotting will take place.
     If *template* contains one or more of the C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_
     format specifiers %d, %f, %c

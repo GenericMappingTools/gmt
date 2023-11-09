@@ -95,7 +95,7 @@ Optional Arguments
     contours give them as a comma-separated string; if only a single contour please add
     a trailing comma so it is seen as a list and not a contour interval. The optional
     *labelinfo* controls the specifics of the label formatting and consists
-    of a concatenated string made up of any of the following control arguments:
+    of a concatenated string made up of any of the following modifiers:
 
 .. include:: explain_clabelinfo.rst_
 
@@ -107,7 +107,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *contours*
-    The contours to be drawn may be specified in one of four possible ways:
+    The contours to be drawn may be specified in one of five possible ways:
 
     (1) If *contours* is a string with suffix ".cpt" and can be opened as a
         file, it is assumed to be a CPT. The color
@@ -157,7 +157,7 @@ Optional Arguments
     triplets of node numbers for a triangle [Default computes these
     using Delaunay triangulation (see :doc:`triangulate`)]. If the
     *indexfile* is binary and can be read the same way as the binary
-    input *table* then you can append **+b** to spead up the reading
+    input *table* then you can append **+b** to sped up the reading
     [Default reads nodes as ASCII].
 
 .. _-G:
@@ -175,7 +175,7 @@ Optional Arguments
 
 **-L**\ *pen* :ref:`(more ...) <set-pens>`
     Draw the underlying triangular mesh using the specified pen
-    attributes [Default is no mesh].
+    attributes [Default draws no mesh].
 
 .. _-N:
 
@@ -191,12 +191,12 @@ Optional Arguments
     (see `Units`_ for available units and how distances are computed),
     including **c** (Cartesian distances using user coordinates) or **C** for plot
     length units in current plot units after projecting the coordinates.
-    Optionally, append **z** to exclude the zero contour.
+    Optionally, append **+z** to exclude the zero contour.
 
 .. _-S:
 
 **-S**\ [**p**\|\ **t**]
-    Skip all input *xyz* points that fall outside the region [Default
+    Skip all input *x, y, z* points that fall outside the region [Default
     uses all the data in the triangulation].  Alternatively, use **-St**
     to skip triangles whose three vertices are all outside the region.
     |-S| with no modifier is interpreted as **-Sp**.
@@ -204,20 +204,8 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]]
-    Will draw tick marks pointing in the downward direction every *gap*
-    along the innermost closed contours only; append **+a** to tick all closed
-    contours. Append **+d**\ *gap* and optionally tick
-    mark *length* (append units as **c**, **i**, or **p**) or use defaults
-    [15\ **p**/3\ **p**]. User may choose to tick only local highs or local
-    lows by specifying **-Th** or **-Tl**, respectively. Append
-    **+l**\ *labels* to annotate the centers of closed innermost contours
-    (i.e., the local lows and highs). If no *labels* is appended we use -
-    and + as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
-    will plot the two characters (here, L and H) as labels. For more elaborate
-    labels, separate the low and high label strings with a comma (e.g.,
-    **+l**\ *lo*,\ *hi*). If a file is given by |-C| and |-T| is set,
-    then only contours marked with upper case C or A will have tick marks
-    [and annotations].
+
+.. include:: explain_contticks.rst_
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
@@ -237,16 +225,16 @@ Optional Arguments
     particular line. Default pen for annotated contours: 0.75p,black.
     Regular contours use pen 0.25p,black. Normally, all contours are drawn
     with a fixed color determined by the pen setting. If the modifier **+cl** is appended
-    then the color of the contour lines are taken from the CPT (see
-    |-C|). If instead modifier **+cf** is appended then the color from the cpt
-    file is applied to the contour annotations.  Select **+c** for both effects.
+    then the colors of the contour lines are taken from the CPT (see
+    |-C|). If instead modifier **+cf** is appended then the colors from the cpt
+    file are applied to the contour annotations.  Select **+c** for both effects.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (|-E|).
+.. |Add_-bi| replace:: [Default is 3 input columns]. To use binary 4-byte integer triplets for node ids append **+b** to |-E|.
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is 3 output columns].
@@ -266,7 +254,7 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. |Add_-l| replace:: Normally, the annotated contour is selected for the legend. You can select the regular contour instead, or both of them, by considering the *label* to be of the format [*annotcontlabel*][/*contlabel*].  If either label contains a slash (/) character then use | as the separator for the two labels instead.
+.. |Add_-l| replace:: Normally, the annotated contour is selected for the legend. You can select the plain contour instead, or both of them, by considering the *label* to be of the format [*annotcontlabel*][/*contlabel*].  If either label contains a slash (/) character then use | instead as the separator for the two labels.
 .. include:: explain_-l.rst_
 
 .. include:: explain_-qi.rst_
