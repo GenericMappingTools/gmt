@@ -415,7 +415,7 @@ a crude example:
 
 <!--This level of folder is inserted only when using -O, -K>
 
-<Folder><name>file1.dat</name>
+<Folder><name>file1.txt</name>
 
 <!--One folder for each input file (not when standard input)>
 
@@ -423,11 +423,11 @@ a crude example:
 
 <!--One folder per line segment>
 
-<!--Points from the first line segment in file file1.dat go here>
+<!--Points from the first line segment in file file1.txt go here>
 
 <Folder><name>Point Set 1</name>
 
-<!--Points from the second line segment in file file1.dat go here>
+<!--Points from the second line segment in file file1.txt go here>
 
 </Folder>
 
@@ -435,7 +435,7 @@ a crude example:
 
 <Folder><name>Line Features</name>
 
-<Folder><name>file1.dat</name>
+<Folder><name>file1.txt</name>
 
 <!--One folder for each input file (not when standard input)>
 
