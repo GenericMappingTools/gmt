@@ -68,7 +68,8 @@ where the implicit loop over time is used to call **events** over a time-sequenc
 thus plot symbols as the events unfold.
 
 ..  youtube:: iWt0yZICKlM
-    :width: 100%
+    :width: 80%
+    :align: center
 
 Animation of two events over the time window -0.5 to 1.5. The events are only active during times
 0 to 1. One symbol (blue) is plotted normally only while active (size follows the light-blue time-curve,

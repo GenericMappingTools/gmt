@@ -52,6 +52,10 @@ assembled into an animation (this last step requires external tools that must be
 your path; see Technical Details below). The user can add title sequences, fading, labels, and
 progress indicators as desired. 
 
+..  youtube:: LTxlR5LuJ8g
+    :width: 80%
+    :align: center
+
 Required Arguments
 ------------------
 
