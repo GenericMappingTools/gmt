@@ -157,7 +157,7 @@ Optional Arguments
     triplets of node numbers for a triangle [Default computes these
     using Delaunay triangulation (see :doc:`triangulate`)]. If the
     *indexfile* is binary and can be read the same way as the binary
-    input *table* then you can append **+b** to sped up the reading
+    input *table* then you can append **+b** to speed up the reading
     [Default reads nodes as ASCII].
 
 .. _-G:
