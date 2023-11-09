@@ -1099,7 +1099,7 @@ GMT_LOCAL void gravfft_load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVF
 	   with a size of "nk" like that variable is computed here.	*/
 
 	unsigned int k, nk;
-	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2, t3;
+	double	earth_curvature, alfa, delta_k, freq, D, t1, t2, t3;
 	gmt_M_unused(GMT);
 
 	if (K->delta_kx < K->delta_ky)
@@ -1107,22 +1107,21 @@ GMT_LOCAL void gravfft_load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVF
 	else
 		{delta_k = K->delta_ky;	 nk = K->ny2/2;}
 
-	twopi = 2. * M_PI;
-	delta_k /= twopi;	/* Use frequency, not wavenumber  */
+	delta_k /= TWO_PI;	/* Use frequency, not wavenumber  */
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow (twopi, 4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow (TWO_PI, 4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
 
 	for (k = 0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
 		earth_curvature = (sphericity) ? (2 * earth_rad * freq) / (4 * M_PI * earth_rad * freq + 1) : 1.;
-		t1 = earth_curvature * (twopi * NEWTON_G);
+		t1 = earth_curvature * (TWO_PI * NEWTON_G);
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
-			t1 /= (NORMAL_GRAVITY * freq * twopi);
-		t2 = Ctrl->T.rho_cw * exp(-twopi * freq * Ctrl->misc.z_level) +
-			Ctrl->T.rho_mc * exp(-twopi * freq * Ctrl->Z.zm);
-		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(freq,4.) * alfa) * exp(-twopi * freq * Ctrl->Z.zl);
+			t1 /= (NORMAL_GRAVITY * freq * TWO_PI);
+		t2 = Ctrl->T.rho_cw * exp(-TWO_PI * freq * Ctrl->misc.z_level) +
+			Ctrl->T.rho_mc * exp(-TWO_PI * freq * Ctrl->Z.zm);
+		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(freq,4.) * alfa) * exp(-TWO_PI * freq * Ctrl->Z.zl);
 		z_from_below[k] = t1 * (t2 + t3);
 	}
 }
@@ -1136,7 +1135,7 @@ GMT_LOCAL void gravfft_load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFF
 	   with a size of "nk" like that variable is computed here.	*/
 
 	unsigned int k, nk;
-	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2;
+	double	earth_curvature, alfa, delta_k, freq, D, t1, t2;
 	gmt_M_unused(GMT);
 
 	if (K->delta_kx < K->delta_ky)
@@ -1144,20 +1143,19 @@ GMT_LOCAL void gravfft_load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFF
 	else
 		{delta_k = K->delta_ky;	 nk = K->ny2/2;}
 
-	twopi = 2. * M_PI;
-	delta_k /= twopi;	/* Use frequency, not wavenumber  */
+	delta_k /= TWO_PI;	/* Use frequency, not wavenumber  */
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow (twopi,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow (TWO_PI,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
 
 	for (k = 0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
 		earth_curvature = (sphericity) ? (2 * earth_rad * freq) / (4 * M_PI * earth_rad * freq + 1) : 1.;
-		t1 = earth_curvature * (twopi * NEWTON_G);
+		t1 = earth_curvature * (TWO_PI * NEWTON_G);
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
-			t1 /= (NORMAL_GRAVITY * freq * twopi);
-		t2 = exp(-twopi * freq * Ctrl->misc.z_level) - exp(-twopi * freq * Ctrl->Z.zm) / (1 + alfa*pow(freq,4.));
+			t1 /= (NORMAL_GRAVITY * freq * TWO_PI);
+		t2 = exp(-TWO_PI * freq * Ctrl->misc.z_level) - exp(-TWO_PI * freq * Ctrl->Z.zm) / (1 + alfa*pow(freq,4.));
 		z_from_top[k] = t1 * Ctrl->T.rho_cw * t2;
 	}
 }
@@ -1169,7 +1167,7 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 
 	unsigned int i;
 	uint64_t k;
-	double	earth_curvature, alfa, D, twopi, t1, t2, f, p, t, mk;
+	double	earth_curvature, alfa, D, t1, t2, f, p, t, mk;
 	gmt_grdfloat *datac = Grid->data;
 	gmt_M_unused(GMT);
 
@@ -1178,13 +1176,12 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 		f *= i;	/* n! */
 	p = n - 1.0;
 
-	twopi = 2 * M_PI;
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow(twopi,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow(TWO_PI,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
 	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = gmt_fft_get_wave (k, K) / twopi;
+		mk = gmt_fft_get_wave (k, K) / TWO_PI;
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)
@@ -1192,14 +1189,45 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 		else
 			t = pow (mk, p);
 		earth_curvature = (sphericity) ? (2 * earth_rad * mk) / (4 * M_PI * earth_rad * mk + 1) : 1.;
-		t1 = earth_curvature * (twopi * NEWTON_G);
-		if (Ctrl->F.mode == GRAVFFT_FAA)
-			t1 *= 1.0e5;     /* to have it in mGals */
-		else                 /* Must be the GEOID case */
-			t1 /= (NORMAL_GRAVITY * mk * twopi);
-		t2 = exp(-twopi * mk * Ctrl->misc.z_level) - exp(-twopi * mk * Ctrl->Z.zm) / (1 + alfa*pow(mk,4.));
-		datac[k] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
-		datac[k+1] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
+		t1 = earth_curvature * (TWO_PI * NEWTON_G);
+		t2 = exp(-TWO_PI * mk * Ctrl->misc.z_level) - exp(-TWO_PI * mk * Ctrl->Z.zm) / (1 + alfa*pow(mk,4.));
+
+		/* The switch below is probably only correct for FAA and possibly GEOID.
+		 * THose where the only two cases covered by JL's code */
+
+		switch (Ctrl->F.mode) {
+			case GRAVFFT_FAA:
+				t1 *= 1.0e5;     /* To have it in mGals */
+				datac[k]   += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
+				datac[k+1] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
+				break;
+			case GRAVFFT_GEOID:
+				if (mk > 0.0) t1 /= (NORMAL_GRAVITY * mk * TWO_PI);
+				datac[k]   += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
+				datac[k+1] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
+				break;
+			case GRAVFFT_VGG:
+			 	t1 *= 1.0e4 * mk;	/* Scale mGal/m to 0.1 mGal/km = 1 Eotvos */
+				datac[k]   += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
+				datac[k+1] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
+				break;
+			case GRAVFFT_DEFL_EAST:
+				if (mk > 0.0) {	/* Scale tan (xslope) ~ slope to microradians */
+					double kx = gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
+					t1 *= 1.e6 * (-kx / (MGAL_AT_45 * mk));
+				}
+				datac[k]   += (gmt_grdfloat) (-(Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
+				datac[k+1] += (gmt_grdfloat)  ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
+				break;
+			case GRAVFFT_DEFL_NORTH:
+				if (mk > 0.0) {	/* Scale tan (yslope) ~ slope to microradians */
+					double ky = gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
+					t1 *= 1.e6 * (-ky / (MGAL_AT_45 * mk));
+				}
+				datac[k]   += (gmt_grdfloat)  ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
+				datac[k+1] += (gmt_grdfloat) (-(Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
+				break;
+		}
 	}
 }
 
@@ -1210,7 +1238,7 @@ GMT_LOCAL void gravfft_load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GR
 
 	unsigned int i;
 	uint64_t k;
-	double	earth_curvature, alfa, D, twopi, t1, t2, t3, f, p, t, mk;
+	double	earth_curvature, alfa, D, t1, t2, t3, f, p, t, mk;
 	gmt_grdfloat *datac = Grid->data;
 	gmt_M_unused(GMT);
 
@@ -1219,13 +1247,12 @@ GMT_LOCAL void gravfft_load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GR
 		f *= i;	/* n! */
 	p = n - 1.0;
 
-	twopi = 2. * M_PI;
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow(twopi,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow(TWO_PI,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
 	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = gmt_fft_get_wave (k, K) / twopi;
+		mk = gmt_fft_get_wave (k, K) / TWO_PI;
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)
@@ -1233,14 +1260,14 @@ GMT_LOCAL void gravfft_load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GR
 		else
 			t = pow (mk, p);
 		earth_curvature = (sphericity) ? (2 * earth_rad * mk) / (4 * M_PI * earth_rad * mk + 1) : 1.;
-		t1 = earth_curvature * (twopi * NEWTON_G);
+		t1 = earth_curvature * (TWO_PI * NEWTON_G);
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
-			t1 /= (NORMAL_GRAVITY * mk * twopi);
-		t2 = Ctrl->T.rho_cw * exp(-twopi * mk * Ctrl->misc.z_level) +
-			 Ctrl->T.rho_mc * exp(-twopi * mk * Ctrl->Z.zm);
-		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(mk,4.) * alfa) * exp(-twopi * mk * Ctrl->Z.zl);
+			t1 /= (NORMAL_GRAVITY * mk * TWO_PI);
+		t2 = Ctrl->T.rho_cw * exp(-TWO_PI * mk * Ctrl->misc.z_level) +
+			 Ctrl->T.rho_mc * exp(-TWO_PI * mk * Ctrl->Z.zm);
+		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(mk,4.) * alfa) * exp(-TWO_PI * mk * Ctrl->Z.zl);
 		datac[k] += (gmt_grdfloat) ((t1 * (t2 + t3)) * t / f * raised[k]);
 		datac[k+1] += (gmt_grdfloat) ((t1 * (t2 + t3)) * t / f * raised[k+1]);
 	}

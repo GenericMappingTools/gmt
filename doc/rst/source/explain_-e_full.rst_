@@ -15,4 +15,5 @@ The test can also be inverted to only pass data records that *do not* match the 
 character with a backslash [Default accepts all data records]. For matching data records against extended `regular
 expressions <https://en.wikipedia.org/wiki/Regular_expression>`_, please enclose the expression in slashes. Append
 **i** for case-insensitive matching. To supply a list of such patterns, give **+f**\ *file* with one pattern per line.
-To give a single pattern starting with **+f**, escape it with a backslash.
+To give a single pattern starting with **+f**, escape it with a backslash. **Note**: Option **-e** is not allowed if
+**-b** selects binary input.

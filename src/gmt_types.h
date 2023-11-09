@@ -78,6 +78,7 @@ struct GMT_KEYWORD_DICTIONARY {	/* Used for keyword-value lookup */
 	char long_directives[GMT_LEN256];	/* Long name directives, comma-separated */
 	char short_modifiers[GMT_LEN32];	/* Single character modifiers, comma-separated */
 	char long_modifiers[GMT_LEN256];	/* Long name modifiers, comma-separated */
+	unsigned int multi_directive;		/* Multi-directive support type */
 };
 
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */

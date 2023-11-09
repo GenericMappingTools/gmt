@@ -10,6 +10,7 @@ rm -f $a $b ; touch $b
 
 cat << EOF > $a
 --l2stranstest -Azslhw
+--l2stranstest -Ahs
 --l2stranstest -C
 --l2stranstest -E+p -E+P
 --l2stranstest -G/some/file.grd
@@ -18,7 +19,8 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --fields=zslhw >> $b
+gmt $m $l2s --fields=mean,stddev,low,high,weight >> $b
+gmt $m $l2s --fields=high,aliastest >> $b
 gmt $m $l2s --center >> $b
 gmt $m $l2s --extend+weighted --extend+simple >> $b
 gmt $m $l2s --outgrid=/some/file.grd >> $b

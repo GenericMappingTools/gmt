@@ -1164,5 +1164,11 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 				break;
 		}
 	}
+	/* Ensure that -e is not used with binary input */
+	if (API->GMT->common.e.active && API->GMT->common.b.active[GMT_IN]) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -e: Cannot be used if binary input is selected.\n");
+		return_error (API, GMT_PARSE_ERROR);
+	}
+
 	return (GMT_OK);
 }
