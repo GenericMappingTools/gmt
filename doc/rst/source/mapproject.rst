@@ -50,16 +50,16 @@ Description
 -----------
 
 **mapproject** reads (longitude, latitude) positions from *tables* [or
-standard input] and computes (x,y) coordinates using the specified map
-projection and scales. Optionally, it can read (x,y) positions and
+standard input] and computes (*x, y*) coordinates using the specified map
+projection and scales. Optionally, it can read (*x, y*) positions and
 compute (longitude, latitude) values doing the inverse transformation.
-This can be used to transform linear (x,y) points obtained by digitizing
+This can be used to transform linear (*x, y*) points obtained by digitizing
 a map of known projection to geographical coordinates. May also
 calculate distances along track, to a fixed point, or closest approach
 to a line.
 Alternatively, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which
-must have (longitude,latitude) or (x,y). See option **-:** on how to
+must have (longitude,latitude) or (*x, y*). See option **-:** on how to
 read (latitude,longitude) files.
 Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
@@ -157,7 +157,7 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.
+    Do the Inverse transformation, i.e., get (longitude,latitude) from (*x, y*) data.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -331,7 +331,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To transform a remote file with (latitude,longitude) into (x,y) positions in cm
+To transform a remote file with (latitude,longitude) into (*x, y*) positions in cm
 on a Mercator grid for a given scale of 0.5 cm per degree and selected region, run::
 
   gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
@@ -343,7 +343,7 @@ a file utm.txt and knowing the UTM zone (and zone or hemisphere), try::
 
 
 To transform several 2-column, binary, double precision files with
-(latitude,longitude) into (x,y) positions in inch on a Transverse
+(latitude,longitude) into (*x, y*) positions in inch on a Transverse
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
 those points that would fall outside the map area, run::
 
@@ -406,10 +406,10 @@ The rectangular input region set with |-R| will in general be mapped
 into a non-rectangular grid. Unless |-C| is set, the leftmost point on
 this grid has xvalue = 0.0, and the lowermost point will have yvalue =
 0.0. Thus, before you digitize a map, run the extreme map coordinates
-through **mapproject** using the appropriate scale and see what (x,y)
+through **mapproject** using the appropriate scale and see what (*x, y*)
 values they are mapped onto. Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly,
-or alternatively, use **gmt math** to scale and shift the (x,y) values
+or alternatively, use **gmt math** to scale and shift the (*x, y*) values
 before transforming.
 
 .. include:: explain_ellipsoidal.rst_

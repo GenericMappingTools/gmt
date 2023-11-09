@@ -190,7 +190,7 @@ Examples
 --------
 
 To create a polespotting image from the abyssal hill and fracture zone fabric
-(*lon,lat*) data in the files hills.txt and fractures.txt, on a 1x1 degree grid
+(*lon, lat*) data in the files hills.txt and fractures.txt, on a 1x1 degree grid
 for the northern hemisphere, sampling the great circles every 10 km, and also
 dump the great circles to standard output, try
 

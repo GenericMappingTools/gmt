@@ -53,7 +53,7 @@ selected based on whether or not they are 1) inside a rectangular region (|-R| [
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
 be reversed for each of these 7 criteria by using the |-I| option. See option **-:** on how to read
-(y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
+(*y, x*) or (*lat, lon*) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
 Required Arguments

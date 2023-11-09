@@ -133,7 +133,7 @@ Optional Arguments
 **-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
     Draw error bars. Append **x** and/or **y** to indicate which bars you
     want to draw [Default is both x and y]. The x and/or y errors must be
-    stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
+    stored in the columns after the (*x, y*) pair [or (*x, y, z*) triplet]. If
     **+a** is appended then we will draw asymmetrical error bars [Default
     is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.

@@ -170,7 +170,7 @@ To save the coordinates of the crust's formation to separate grids, try
   gmt grdpmodeler pac_age.nc -EPac_APM.txt -V -Fpac_clip_path.txt \
                   -Gpac_origin_%s.nc -SXY
 
-To repeat the same exercise but save output *lon,lat,age,xorigin,yorigin* to a table, use
+To repeat the same exercise but save output *lon, lat, age, xorigin, yorigin* to a table, use
 
 ::
 

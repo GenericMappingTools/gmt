@@ -145,7 +145,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**a**\|\ **t**]
-    Rotates the given input (*lon,lat,time*) and calculates the confidence
+    Rotates the given input (*lon, lat, time*) and calculates the confidence
     ellipse for the projected point. The input point *must* have a time
     coordinate that exactly matches a particular total reconstruction
     rotation time, otherwise the point will be skipped. Append **t** or
@@ -184,14 +184,14 @@ Optional Arguments
 Examples
 --------
 
-To backtrack the (x,y,t) points in the file seamounts.txt to their origin
+To backtrack the (*x, y, t*) points in the file seamounts.txt to their origin
 (presumably the hotspot), using the DC85.txt Euler poles, run
 
 ::
 
   gmt backtracker seamounts.txt -Db -EDC85.txt > newpos.txt
 
-To project flowlines forward from the (x,y,t) points stored in several
+To project flowlines forward from the (*x, y, t*) points stored in several
 3-column, binary, double precision files, run
 
 ::

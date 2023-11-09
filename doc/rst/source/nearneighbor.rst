@@ -39,7 +39,7 @@ Synopsis
 Description
 -----------
 
-**nearneighbor** reads arbitrarily located (*x,y,z*\ [,\ *w*]) triplets
+**nearneighbor** reads arbitrarily located (*x, y, z*\ [, *w*]) triplets
 [quadruplets] from standard input [or *table*] and uses a nearest
 neighbor algorithm to assign a weighted average value to each node that
 has one or more data points within a search radius (*R*, see |-S|) centered on the
@@ -71,7 +71,7 @@ Required Arguments
 
 *table*
     3 [or 4, see |-W|] column ASCII file(s) [or binary, see
-    **-bi**] holding (*x,y,z*\ [,\ *w*]) data values. If
+    **-bi**] holding (*x, y, z*\ [, *w*]) data values. If
     no file is specified, **nearneighbor** will read from standard input.
 
 .. _-G:

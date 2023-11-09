@@ -206,9 +206,9 @@ Operator        Args   Returns                                                  
 **BITTEST**     2 1    1 if bit B of A is set, else 0 (bitwise TEST operator)                                          Logic
 **BITXOR**      2 1    A ^ B (bitwise XOR operator)                                                                    Logic
 **BLEND**       3 1    Blend A and B using weights in C (0-1 range) as A*C + B*(1-C)                                   Special Operators
-**CAZ**         2 1    Cartesian azimuth from grid nodes to stack x,y (i.e., A, B)                                     Special Operators
-**CBAZ**        2 1    Cartesian back-azimuth from grid nodes to stack x,y (i.e., A, B)                                Special Operators
-**CDIST**       2 1    Cartesian distance between grid nodes and stack x,y (i.e., A, B)                                Special Operators
+**CAZ**         2 1    Cartesian azimuth from grid nodes to stack *x, y* (i.e., A, B)                                  Special Operators
+**CBAZ**        2 1    Cartesian back-azimuth from grid nodes to stack *x, y* (i.e., A, B)                             Special Operators
+**CDIST**       2 1    Cartesian distance between grid nodes and stack *x, y* (i.e., A, B)                             Special Operators
 **CDIST2**      2 1    As CDIST but only to nodes that are != 0                                                        Special Operators
 **CEIL**        1 1    ceil (A) (smallest integer >= A)                                                                Logic
 **CHICRIT**     2 1    Chi-squared distribution critical value for alpha = A and nu = B                                Probability
@@ -282,9 +282,9 @@ Operator        Args   Returns                                                  
 **KM2DEG**      1 1    Converts kilometers to spherical degrees                                                        Special Operators
 **KN**          2 1    Modified Bessel function of A (2nd kind, order B)                                               Special Functions
 **KURT**        1 1    Kurtosis of A                                                                                   Probability
-**LAB2HSV**     3 3    Convert l,a,b triplets to h,s,v triplets                                                        Special Operators
-**LAB2RGB**     3 3    Convert l,a,b triplets to r,g,b triplets                                                        Special Operators
-**LAB2XYZ**     3 3    Convert l,a,b triplets to x,y,z triplets                                                        Special Operators
+**LAB2HSV**     3 3    Convert *l,a,b* triplets to *h,s,v* triplets                                                    Special Operators
+**LAB2RGB**     3 3    Convert *l,a,b* triplets to *r,g,b* triplets                                                    Special Operators
+**LAB2XYZ**     3 3    Convert *l,a,b* triplets to *x,y,z* triplets                                                    Special Operators
 **LCDF**        1 1    Laplace cumulative distribution function for z = A                                              Probability
 **LCRIT**       1 1    Laplace distribution critical value for alpha = A                                               Probability
 **LDIST**       1 1    Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A                Special Operators
@@ -339,9 +339,9 @@ Operator        Args   Returns                                                  
 **RAND**        2 1    Laplace random noise with mean A and std. deviation B                                           Probability
 **RCDF**        1 1    Rayleigh cumulative distribution function for z = A                                             Probability
 **RCRIT**       1 1    Rayleigh distribution critical value for alpha = A                                              Probability
-**RGB2HSV**     3 3    Convert r,g,b triplets to h,s,v triplets, with r = A, g = B, and b = C (in 0-255 range)         Special Operators
-**RGB2LAB**     3 3    Convert r,g,b triplets to l,a,b triplets, with r = A, g = B, and b = C (in 0-255 range)         Special Operators
-**RGB2XYZ**     3 3    Convert r,g,b triplets to x,y,x triplets, with r = A, g = B, and b = C (in 0-255 range)         Special Operators
+**RGB2HSV**     3 3    Convert *r,g,b* triplets to *h,s,v* triplets, with r = A, g = B, and b = C (in 0-255 range)     Special Operators
+**RGB2LAB**     3 3    Convert *r,g,b* triplets to *l,a,b* triplets, with r = A, g = B, and b = C (in 0-255 range)     Special Operators
+**RGB2XYZ**     3 3    Convert *r,g,b* triplets to *x,y,z* triplets, with r = A, g = B, and b = C (in 0-255 range)      Special Operators
 **RINT**        1 1    rint (A) (round to integral value nearest to A)                                                 Arithmetic
 **RMS**         1 1    Root-mean-square of A                                                                           Arithmetic
 **RMSW**        1 1    Weighted root-mean-square of A for weights in B                                                 Arithmetic
@@ -389,9 +389,9 @@ Operator        Args   Returns                                                  
 **WPDF**        3 1    Weibull density distribution P(x,scale,shape), with x = A, scale = B, and shape = C             Probability
 **WRAP**        1 1    wrap A in radians onto [-pi,pi]                                                                 Special Operators
 **XOR**         2 1    A ^ B (bitwise XOR operator)                                                                    Logic
-**XYZ2HSV**     3 3    Convert x,y,z triplets to h,s,v triplets                                                        Special Operators
-**XYZ2LAB**     3 3    Convert x,y,z triplets to l,a,b triplets                                                        Special Operators
-**XYZ2RGB**     3 3    Convert x,y,z triplets to r,g,b triplets                                                        Special Operators
+**XYZ2HSV**     3 3    Convert *x,y,z* triplets to *h,s,v* triplets                                                    Special Operators
+**XYZ2LAB**     3 3    Convert *x,y,z* triplets to *l,a,b* triplets                                                    Special Operators
+**XYZ2RGB**     3 3    Convert *x,y,z* triplets to *r,g,b* triplets                                                    Special Operators
 **Y0**          1 1    Bessel function of A (2nd kind, order 0)                                                        Special Functions
 **Y1**          1 1    Bessel function of A (2nd kind, order 1)                                                        Special Functions
 **YLM**         2 2    Real and Imaginary orthonormalized spherical harmonics degree A order B                         Special Functions

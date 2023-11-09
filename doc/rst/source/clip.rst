@@ -42,7 +42,7 @@ Synopsis
 Description
 -----------
 
-Reads (x,y) file(s) [or standard input] and draws polygons
+Reads (*x, y*) file(s) [or standard input] and draws polygons
 that are activated as clipping paths. Several files may be read to
 create complex paths consisting of several non-connecting segments. Only
 marks that are subsequently drawn inside the clipping path will be

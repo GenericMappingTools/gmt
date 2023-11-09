@@ -191,7 +191,7 @@ Optional Arguments
     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
     Helvetica-Bold font and expects to read the justification and angle
     from the file, in that order, after *x* *y* and before *text*.
-    In addition, the **+c**\ *justification* lets us use *x,y* coordinates extracted from the
+    In addition, the **+c**\ *justification* lets us use *x, y* coordinates extracted from the
     |-R| string instead of providing them in the input file. For example **-F+c**\ TL
     gets the *x_min*, *y_max* from the |-R| string and plots the text
     at the Upper Left corner of the map.  Normally, the text to be plotted

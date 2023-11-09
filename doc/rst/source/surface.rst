@@ -46,8 +46,8 @@ Synopsis
 Description
 -----------
 
-**surface** reads randomly-spaced (x,y,z) triplets from standard input
-[or *table*] and produces a binary file of gridded values z(x,y) by
+**surface** reads randomly-spaced (*x, y, z*) triplets from standard input
+[or *table*] and produces a binary file of gridded values *z*(*x, y*) by
 solving the differential equation (away from data points)
 
 .. math::
@@ -187,7 +187,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *search_radius*\ [**m**\|\ **s**]
-    Search radius. Enter *search\_radius* in same units as x,y data;
+    Search radius. Enter *search\_radius* in same units as *x, y* data;
     append **m** to indicate arc minutes or **s** for arc seconds. This
     is used to initialize the grid before the first iteration; it is not
     worth the time unless the grid lattice is prime and cannot have

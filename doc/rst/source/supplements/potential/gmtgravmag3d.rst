@@ -104,7 +104,7 @@ Required Arguments (not all)
     assumed constant (controlled by |-C| or |-H|). Following cases are: 4 columns -> 4rth col magnetization intensity;
     5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
     When n columns > 3 the third argument of the |-H| option is ignored. A *raw* format (selected by the **-Tr** option)
-    is a file with N rows (one per triangle) and 9 columns corresponding to the x,y,x coordinates of each of the three
+    is a file with N rows (one per triangle) and 9 columns corresponding to the *x, y, z* coordinates of each of the three
     vertex of each triangle. Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL
     (Stereo Lithographic) format. These two type of files are used to provide a closed surface.
 

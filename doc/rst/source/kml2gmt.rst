@@ -99,7 +99,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To extract the *lon,lat* values from the KML file google.kml, try
+To extract the *lon, lat* values from the KML file google.kml, try
 
 ::
 

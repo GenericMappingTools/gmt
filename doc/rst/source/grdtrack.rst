@@ -49,7 +49,7 @@ Description
 
 **grdtrack** reads one or more grid files (or a Sandwell/Smith IMG
 files) and a table (from file or standard input; but see |-E| for
-exception) with (*x,y*) [or (*lon,lat*)] positions in the first two columns
+exception) with (*x, y*) [or (*lon, lat*)] positions in the first two columns
 (more columns may be present). It interpolates the grid(s) at the
 positions in the table and writes out the table with the interpolated
 values added as (one or more) new columns. Alternatively (|-C|), the
@@ -66,7 +66,7 @@ Required Arguments
 
 *table*
     This is an ASCII (or binary, see **-bi**) file where the first 2 columns
-    hold the (x,y) positions where the user wants to sample the 2-D data set.
+    hold the (*x, y*) positions where the user wants to sample the 2-D data set.
     If no tables are given then we read from standard input. If |-E| is set
     then no input table is read since we will create one from the given
     |-E| parameters.
@@ -74,7 +74,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *gridfile*
-    *gridfile* is a 2-D binary grid file with the function f(x,y). If the
+    *gridfile* is a 2-D binary grid file with the function *f*\ (*x, y*). If the
     specified grid is in Sandwell/Smith Mercator format you must append
     a comma-separated list of arguments that includes a scale to
     multiply the data (usually 1 or 0.1), the mode which stand for the
@@ -349,7 +349,7 @@ gravity, preceded by one header record)::
 
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
 predicted bathymetry on a Mercator grid) and the Muller et al age grid
-age.3.2.nc along the *lon,lat* coordinates given in the file
+age.3.2.nc along the *lon, lat* coordinates given in the file
 cruise_track.xy, try::
 
     gmt grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.txt

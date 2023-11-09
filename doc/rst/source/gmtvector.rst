@@ -59,7 +59,7 @@ Required Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    file containing *lon,lat* [*lat,lon* if **-:**] values in the first 2
+    file containing *lon, lat* [*lat, lon* if **-:**] values in the first 2
     columns (if **-fg** is given) or (*r, theta*), or perhaps (*x, y*\ [*, z*])
     if **-Ci** is given). If no file is specified, **vector**, will
     read from standard input.
