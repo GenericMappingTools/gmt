@@ -317,7 +317,8 @@ are all completed we determine the standard deviation in the result.  To replica
     
 Of course, the syntax of how variables are used vary according to the scripting language. Here, we actually
 build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to escape any variables (since they
-start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
+start with a dollar sign that we need to be written verbatim). By putting EOF in quotes, the redirect will not
+replace the variables but leave them as verbatim text. At the end of the execution we find 20 grids
 (e.g., such as filter_07.grd), as well as the filter_std.grd file obtained by stacking all the individual
 scripts and computing a standard deviation. The information needed to do all of this is hidden from the user;
 the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch**
