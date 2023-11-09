@@ -49,7 +49,7 @@ Required Arguments
 *mainscript*
     Name of a stand-alone GMT modern mode processing script that makes the parameter-dependent calculations.  The
     script may access job variables, such as job number and others defined below, and may be
-    written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
+    written using the Bourne shell (.sh), the Bourne again shell (.bash), the C shell (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
     and we build hidden batch scripts using the same language.  Parameters that can be accessed
     are discussed below.
@@ -301,15 +301,15 @@ are all completed we determine the standard deviation in the result.  To replica
         gmt grdcut -R-10/20/-10/20 @earth_relief_02m -Gdata.grd
     gmt end
     EOF
-    cat << EOF > main.sh
+    cat << 'EOF' > main.sh
     gmt begin
-        gmt grdfilter data.grd -Fg\${BATCH_COL0}+h -G\${BATCH_NAME}.grd -D2
+        gmt grdfilter data.grd -Fg${BATCH_COL0}+h -G${BATCH_NAME}.grd -D2
     gmt end
     EOF
-    cat << EOF > post.sh
-    gmt begin \${BATCH_PREFIX} pdf
-        gmt grdmath \${BATCH_PREFIX}_*.grd -S STD = \${BATCH_PREFIX}_std.grd
-        gmt grdimage \${BATCH_PREFIX}_std.grd -B -B+t"STD of Gaussians residuals" -Chot
+    cat << 'EOF' > post.sh
+    gmt begin ${BATCH_PREFIX} pdf
+        gmt grdmath ${BATCH_PREFIX}_*.grd -S STD = ${BATCH_PREFIX}_std.grd
+        gmt grdimage ${BATCH_PREFIX}_std.grd -B -B+t"STD of Gaussians residuals" -Chot
         gmt coast -Wthin,white
     gmt end show
     EOF
@@ -328,7 +328,7 @@ As another example, we get a list of all European countries and make a simple co
 placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
 we combine all the individual PDFs into a single PDF file and delete the individual files.  Here, we place the EOF tag in quotes which prevent the un-escaped variables from being interpreted::
 
-    cat << 'EOF' > pre.sh
+    cat << EOF > pre.sh
     gmt begin
         gmt coast -E=EU+l > countries.txt
     gmt end
