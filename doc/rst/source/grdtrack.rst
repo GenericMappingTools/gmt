@@ -349,7 +349,7 @@ gravity, preceded by one header record)::
 
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
 predicted bathymetry on a Mercator grid) and the Muller et al age grid
-age.3.2.nc along the *lon, lat* coordinates given in the file
+age.3.2.nc along the (*lon, lat*) coordinates given in the file
 cruise_track.xy, try::
 
     gmt grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.txt

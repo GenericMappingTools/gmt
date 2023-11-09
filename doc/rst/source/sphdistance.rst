@@ -40,7 +40,7 @@ Description
 -----------
 
 **sphdistance** reads one or more ASCII [or binary] files (or standard
-input) containing *lon, lat* and performs the construction of Voronoi
+input) containing (*lon, lat*) and performs the construction of Voronoi
 polygons. These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.
 The Voronoi algorithm used is STRIPACK [*Renka*\ , 1997]. As an option,
@@ -110,7 +110,7 @@ Optional Arguments
 
 **-N**\ *nodetable*
     Read the information pertaining to each Voronoi
-    polygon (the unique node *lon, lat* and polygon area) from a separate
+    polygon (the unique node (*lon, lat*) and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
     headers of the output file]. Required if binary input via |-Q| is used.
 

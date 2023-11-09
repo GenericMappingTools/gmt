@@ -59,7 +59,7 @@ Required Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    file containing *lon, lat* [*lat, lon* if **-:**] values in the first 2
+    file containing (*lon, lat*) [or (*lat, lon*) if **-:**] values in the first 2
     columns (if **-fg** is given) or (*r, theta*), or perhaps (*x, y*\ [*, z*])
     if **-Ci** is given). If no file is specified, **vector**, will
     read from standard input.
@@ -179,7 +179,7 @@ as well as the 95% confidence ellipse around that point, try::
 
     gmt vector @ship_15.txt -Am -fg
 
-Suppose you have a file with *lon, lat* called points.txt. You want to
+Suppose you have a file with (*lon, lat*) called points.txt. You want to
 compute the spherical angle between each of these points and the
 location 133/34. Try::
 

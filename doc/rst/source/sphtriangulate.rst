@@ -40,7 +40,7 @@ Description
 -----------
 
 **sphtriangulate** reads one or more ASCII [or binary] files (or
-standard input) containing *lon, lat* and performs a spherical Delaunay
+standard input) containing (*lon, lat*) and performs a spherical Delaunay
 triangulation, i.e., it determines how the points should be connected to give
 the most equilateral triangulation possible on the sphere. Optionally,
 you may choose **-Qv** which will do further processing to obtain the
@@ -96,7 +96,7 @@ Optional Arguments
 **-N**\ *file*
     Write the information pertaining to each polygon. For Delaunay: the
     three node number and the triangle area (if |-A| was set); for
-    Voronoi the unique node *lon, lat* and polygon area (if |-A| was
+    Voronoi the unique node (*lon, lat*) and polygon area (if |-A| was
     set)) to a separate file. This information is also encoded in the
     segment headers of ASCII output files. Required if binary output is needed.
 

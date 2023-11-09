@@ -224,10 +224,10 @@ ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
 It is recommended to use the above method of projecting and unprojecting
 the data in such an application, because then there is only one
 interpolation step (in :doc:`grdtrack </grdtrack>`). If one first tries to convert the
-grid file to *lon, lat* and then sample it, there are two interpolation
+grid file to (*lon, lat*) and then sample it, there are two interpolation
 steps (in conversion and in sampling).
 
-To make a *lon, lat* grid from the above grid we can use
+To make a (*lon, lat*) grid from the above grid we can use
 
 ::
 
@@ -249,7 +249,7 @@ file is projected with **-Jm**\ 1i it is 80 inches wide. We can make a
 map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
 this grid (e.g., :doc:`grdcontour </grdcontour>`,
 :doc:`grdimage </grdimage>`, :doc:`grdview </grdview>`), and then
-for overlays which work in *lon, lat* (e.g., :doc:`plot </plot>`, :doc:`coast </coast>`) we can
+for overlays which work in (*lon, lat*) (e.g., :doc:`plot </plot>`, :doc:`coast </coast>`) we can
 use the above adjusted |-R| and **-Jm**\ 0.1 to get the two systems to
 match up.
 

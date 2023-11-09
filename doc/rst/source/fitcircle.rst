@@ -32,7 +32,7 @@ Synopsis
 Description
 -----------
 
-**fitcircle** reads *lon, lat* [or *lat, lon*] values from the first two
+**fitcircle** reads (*lon, lat*) [or (*lat, lon*)] values from the first two
 columns on standard input [or *table*]. These are converted to
 Cartesian three-vectors on the unit sphere. Then two locations are
 found: the mean of the input positions, and the pole to the great circle
@@ -64,7 +64,7 @@ Required Arguments
 ------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**] files containing *lon, lat* [or *lat, lon*; see
+    One or more ASCII [or binary, see **-bi**] files containing (*lon, lat*) [or (*lat, lon*); see
     **-:**\ [**i**\|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 

@@ -120,7 +120,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ *fixed_age*
-    Assign a fixed age to all positions. Only *lon, lat* input is expected
+    Assign a fixed age to all positions. Only (*lon, lat*) input is expected
     [Default expects longitude, latitude, age]. Useful when the input
     are points defining isochrons.
 
@@ -150,7 +150,7 @@ Optional Arguments
     coordinate that exactly matches a particular total reconstruction
     rotation time, otherwise the point will be skipped. Append **t** or
     **a** to output time or angle, respectively, after the projected
-    *lon, lat*. After these 2-3 items, we write azimuth, major, minor (in
+    (*lon, lat*). After these 2-3 items, we write azimuth, major, minor (in
     km) for the 95% confidence ellipse. See |-D| for the direction of
     rotation.
 

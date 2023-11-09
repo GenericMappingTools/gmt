@@ -49,10 +49,10 @@ Synopsis
 Description
 -----------
 
-**mapproject** reads (longitude, latitude) positions from *tables* [or
+**mapproject** reads (*lon*, *lat*) positions from *tables* [or
 standard input] and computes (*x, y*) coordinates using the specified map
 projection and scales. Optionally, it can read (*x, y*) positions and
-compute (longitude, latitude) values doing the inverse transformation.
+compute (*lon, lat*) values doing the inverse transformation.
 This can be used to transform linear (*x, y*) points obtained by digitizing
 a map of known projection to geographical coordinates. May also
 calculate distances along track, to a fixed point, or closest approach

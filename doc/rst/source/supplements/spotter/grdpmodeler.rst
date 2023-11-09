@@ -79,7 +79,7 @@ Optional Arguments
     given the specified rotations. **Note**: If you specified more than one
     model prediction in |-S| then the filename *must* be a template
     that contains the format %s; this will be replaced with the corresponding
-    tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
+    tags *az, dist, stage, vel, omega, dlon, dlat, lon, lat*.
     If the |-G| option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
 .. include:: /explain_grd_inout.rst_

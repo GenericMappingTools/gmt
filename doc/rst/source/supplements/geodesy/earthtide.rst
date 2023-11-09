@@ -29,7 +29,7 @@ Synopsis
 Description
 -----------
 
-Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in *lon, lat*.
+Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in (*lon, lat*).
 The output can be either in the form of a grid or as a table printed to standard output. The format of the table data is:
 *time north east vertical* in units of meters.
 
