@@ -41,7 +41,7 @@ Synopsis
 Description
 -----------
 
-**binstats** reads arbitrarily located (x,y[,z][,w]) points
+**binstats** reads arbitrarily located (*x, y*\ [, *z*][, *w*]) points
 (2-4 columns) from standard input [or *table*] and for each
 node in the specified grid layout determines which points are
 within the given radius.  These points are then used in the
@@ -55,7 +55,7 @@ Required Arguments
 
 *table*
     A 2-4 column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y[,z][,w]) data values. You must use |-W|
+    **-bi**] holding (*x, y*\ [, *z*][, *w*]) data values. You must use |-W|
     to indicate that you have weights.  Only |-C|\ **n** will accept 2 columns only.
     If no file is specified, **binstats** will read from standard input.
 

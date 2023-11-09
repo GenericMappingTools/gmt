@@ -53,7 +53,7 @@ selected based on whether or not they are 1) inside a rectangular region (|-R| [
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
 be reversed for each of these 7 criteria by using the |-I| option. See option **-:** on how to read
-(y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
+(*y, x*) or (*lat, lon*) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
 Required Arguments
@@ -111,7 +111,7 @@ Optional Arguments
 **-F**\ *polygonfile*
     Pass all records whose location is within one of the closed polygons
     in the multiple-segment file *polygonfile*. For spherical polygons
-    (lon, lat), make sure no consecutive points are separated by 180
+    (*lon, lat*), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
     ASCII regardless of whether **-bi** is used.
 
@@ -263,7 +263,7 @@ Note On Distances
 
 If options |-C| or |-L| are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
-geographical (lon, lat) coordinates. Alternatively, specify |-R| and
+geographical (*lon, lat*) coordinates. Alternatively, specify |-R| and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
 or points, as determined by :term:`PROJ_LENGTH_UNIT`).
 

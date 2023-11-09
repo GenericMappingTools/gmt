@@ -478,7 +478,7 @@ To prevent this, you can sort your file into ascending order via the :doc:`gmtco
 Drawing trajectories
 --------------------
 
-If **-Ar** is used to draw trajectories (lines with *x,y,t* coordinates) then, as stated, we will
+If **-Ar** is used to draw trajectories (lines with *x, y, t* coordinates) then, as stated, we will
 use a linear interpolation to find intermediate terminal points.  For geographic data, and especially
 if your original point spacing is large, you may wish to first interpolate such trajectories along
 great circles via :doc:`sample1d` rather than subject large gaps to linear interpolation.
