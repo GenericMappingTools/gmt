@@ -12565,8 +12565,30 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL unsigned int gmtsupport_NaN_corners (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool set[]) {	/* Set to NaNs those corner nodes that could not be set via BCs */
+	unsigned int mx = G->header->mx, my = G->header->my, n = 0;
+	if (set[XLO] || set[YLO]) {
+		G->data[0] = G->data[1] =G->data[mx] = GMT->session.f_NaN;
+		n += 3;
+	}
+	if (set[XLO] || set[YHI]) {
+		G->data[mx*(my-1)] = G->data[mx*(my-1)+1] = G->data[mx*(my-2)] = GMT->session.f_NaN;
+		n += 3;
+	}
+	if (set[XHI] || set[YLO]) {
+		G->data[mx*my-1] = G->data[mx*my-2] = G->data[mx*(my-1)-1] = GMT->session.f_NaN;
+		n += 3;
+	}
+	if (set[XHI] || set[YHI]) {
+		G->data[mx-1] = G->data[mx-2] = G->data[2*mx-1] = GMT->session.f_NaN;
+		n += 3;
+	}
+	return (n);
+}
+
 /*! . */
 int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction) {
+
 	/* Set two rows of padding (pad[] can be larger) around data according
 	   to desired boundary condition info in that header.
 	   Returns -1 on problem, 0 on success.
@@ -12831,6 +12853,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			for (i = 0; i < 4; i++) if (set[i]) {
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
 			}
+			gmtsupport_NaN_corners (GMT, G, set);	/* Set to NaNs those corner nodes that could not be set via BCs */
 			return (GMT_NOERROR);
 		}
 		/* DONE with all X not periodic cases  */
