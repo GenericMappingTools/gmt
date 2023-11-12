@@ -1089,10 +1089,20 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 		}
 
 		/* Here we found a matching long-format option name, returned as the kw[k] struct element. */
-		/* We now do the long to short option substitution */
 
-		multidir = kw[k].multi_directive;
-		if (kw[k].separator) multidir = GMT_MULTIDIR_DISABLE; /* Disallow multi-directive support for multi-section options */
+		/* Set variables to control particular aspects of the translation as dictated
+		   by the bitflags of kw[k].transproc_mask. Note that multi-directive support
+		   is disallowed for multi-section options. */
+		if ((kw[k].transproc_mask & GMT_TP_MULTIDIR) && !kw[k].separator) {
+			if (kw[k].transproc_mask & GMT_TP_MDCOMMA)
+				multidir = GMT_MULTIDIR_COMMA;
+			else
+				multidir = GMT_MULTIDIR_NOCOMMA;
+		}
+		else
+			multidir = GMT_MULTIDIR_DISABLE;
+
+		/* We now do the long to short option substitution */
 
 		rstchar = '=';	/* When we remove the '=' we will restore it, but in multi-sections we will instead restore the separator character after the first section */
 		n_sections = ((kw[k].separator) ? gmt_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;	/* How many sections? */

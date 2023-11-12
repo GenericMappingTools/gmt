@@ -25,23 +25,23 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
     { 0, 'A', "fields",
                   "z,s,l,h,w", "mean,aliastest|stddev,low,high,weight",
                   "",          "",
-                  GMT_MULTIDIR_NOCOMMA },
-    { 0, 'C', "center",    "", "", "", "", GMT_MULTIDIR_DISABLE },
+                  GMT_TP_MULTIDIR },
+    { 0, 'C', "center",    "", "", "", "", GMT_TP_STANDARD },
     { 0, 'E', "extend",
                   "",          "",
                   "p,P",       "weighted,simple",
-                  GMT_MULTIDIR_DISABLE },
+                  GMT_TP_STANDARD },
     GMT_G_OUTGRID_KW,
     GMT_I_INCREMENT_KW,
     { 0, 'S', "statistic",
                   "m,n,s,w",   "mean,count,sum,weight",
                   "",          "",
-                  GMT_MULTIDIR_DISABLE },
+                  GMT_TP_STANDARD },
     { 0, 'W', "weights",
                   "i,o",       "in,out",
                   "s",         "sigma",
-                  GMT_MULTIDIR_DISABLE },
-    { 0, '\0', "", "", "", "", "", GMT_MULTIDIR_DISABLE }  /* End of list marked with empty option and strings */
+                  GMT_TP_STANDARD },
+    { 0, '\0', "", "", "", "", "", GMT_TP_STANDARD }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !BLOCKMEAN_INC_H */
