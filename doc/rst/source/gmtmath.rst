@@ -201,7 +201,7 @@ Choose among the following operators. Here, "args" are the number of input
 and output arguments.
 
 =============== ======= ============================================================================================= ===================== 
- Operator        args    Returns                                                                                     Type of Function   
+ Operator        args    Returns                                                                                       Type of Function   
 =============== ======= ============================================================================================= ===================== 
   **ABS**         1 1     Absolute value of A                                                                           Arithmetic         
   **ACOS**        1 1     Inverse cosine (result in radians)                                                            Calculus           
