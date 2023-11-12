@@ -275,9 +275,9 @@ and output arguments.
   **FPDF**        3 1     F probability density function for F = A, nu1 = B, and nu2 = C                                Probability        
   **GE**          2 1     1 if A >= (greater or equal than) B, else 0                                                   Logic              
   **GT**          2 1     1 if A > (greater than) B, else 0                                                             Logic              
-  **HSV2LAB**     3 3     Convert h,s,v triplets to l,a,b triplets, with h = A (0-360), s = B and v = C (0-1)           Special Operators  
-  **HSV2RGB**     3 3     Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)           Special Operators  
-  **HSV2XYZ**     3 3     Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)           Special Operators  
+  **HSV2LAB**     3 3     Convert *h,s,v* triplets to *l,a,b* triplets, with h = A (0-360), s = B and v = C (0-1)       Special Operators  
+  **HSV2RGB**     3 3     Convert *h,s,v* triplets to *r,g,b* triplets, with h = A (0-360), s = B and v = C (0-1)       Special Operators  
+  **HSV2XYZ**     3 3     Convert *h,s,v* triplets to *x,t,z* triplets, with h = A (0-360), s = B and v = C (0-1)       Special Operators  
   **HYPOT**       2 1     Hypotenuse of a right triangle of sides A and B (= sqrt (A\ :sup:`2` + B\ :sup:`2`))          Calculus           
   **I0**          1 1     Modified Bessel function of A (1st kind, order 0)                                             Special Functions  
   **I1**          1 1     Modified Bessel function of A (1st kind, order 1)                                             Special Functions  
