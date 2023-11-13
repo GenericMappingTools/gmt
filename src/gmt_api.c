@@ -309,6 +309,11 @@ enum GMTAPI_enum_status {
 	GMTAPI_GOT_SEGHEADER 	= -1,	/* Read a segment header */
 	GMTAPI_GOT_SEGGAP 	= -2};	/* Detected a gap and insertion of new segment header */
 
+enum GMTAPI_enum_takes_mod {
+	GMTAPI_MOD_NOTSET	= 0,	/* Not assigned */
+	GMTAPI_MOD_SPECIAL	= 1,	/* Found = and possibly modifiers */
+	GMTAPI_MOD_NORMAL	= 2};	/* No arg found after stripping modifiers (if any) */
+
 /*==================================================================================================
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
  *==================================================================================================
@@ -12958,7 +12963,7 @@ GMT_LOCAL const char *gmtapi_retrieve_module_keys (void *V_API, char *module) {
 	return_null (V_API, GMT_NOT_A_VALID_MODULE);
 }
 
-GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key, int k, bool colon, char colon_opt, int *n_pre, unsigned int *takes_mod) {
+GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key, int k, bool colon, char colon_opt, int *n_pre, enum GMTAPI_enum_takes_mod *takes_mod) {
 	/* A few separate actions:
 	 * 1) If key ends with "=" then we pull out the option argument after stripping off +<stuff>.
 	 * 2) If key ends with "=q" then we see if +q is given and return pos to this modifiers argument.
@@ -12974,7 +12979,7 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 	unsigned int pos = 0;
 	size_t L;
 	*n_pre = 0;
-	*takes_mod = 0;
+	*takes_mod = GMTAPI_MOD_NOTSET;
 
 	L = (k >= 0) ? strlen (key[k]) : 0;
 	if (colon_opt) {    /* Either -S (from psxy[z]) or -G (from grdcontour or pscontour) */
@@ -12989,20 +12994,20 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 	}
 
 	if (k >= 0 && key[k][K_EQUAL] == '=') {	/* Special handling */
-		*takes_mod = 1;	/* Flag that KEY was special */
+		*takes_mod = GMTAPI_MOD_SPECIAL;	/* Flag that KEY was special */
 		*n_pre = (L > K_MODIFIER && key[k][K_MODIFIER] && isdigit (key[k][K_MODIFIER])) ? (int)(key[k][K_MODIFIER]-'0') : 0;
 		if ((*n_pre || key[k][K_MODIFIER] == 0) && (c = strchr (inarg, '+'))) {	/* Strip off trailing +<modifiers> */
 			c[0] = 0;
 			strcpy (argument, inarg);
 			c[0] = '+';
-			if (!argument[0]) *takes_mod = 2;	/* Flag that option is missing the arg and needs it later */
+			if (!argument[0]) *takes_mod = GMTAPI_MOD_NORMAL;	/* Flag that option is missing the arg and needs it later */
 		}
 		else if (L > K_MODIFIER && key[k][K_MODIFIER]) {	/* Look for a specific +<mod> in the option */
 			char code[3] = {"+?"};
 			code[1] = key[k][K_MODIFIER];
 			if ((c = strstr (inarg, code))) {	/* Found +<modifier> */
 				strcpy (argument, inarg);
-				if (!c[2] || c[2] == '+') *takes_mod = 2;	/* Flag that option had no argument that KEY was looking for */
+				if (!c[2] || c[2] == '+') *takes_mod = GMTAPI_MOD_NORMAL;	/* Flag that option had no argument that KEY was looking for */
 				pos = (unsigned int) (c - inarg + 2);	/* Position of this modifier's argument. E.g., -E+f<file> will have pos = 2 as start of <file> */
 			}
 			else	/* No modifier involved */
@@ -13010,6 +13015,7 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 		}
 		else
 			strcpy (argument, inarg);
+		if (!argument[0]) *takes_mod = GMTAPI_MOD_NORMAL;   /* Flag that option is missing the arg and needs it later */
 	}
 	else
 		strcpy (argument, inarg);
@@ -13183,7 +13189,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 */
 
 	unsigned int n_keys, direction = 0, kind, pos = 0, n_items = 0, ku, n_out = 0, nn[2][2];
-	unsigned int output_pos = 0, input_pos = 0, mod_pos, takes_mod;
+	unsigned int output_pos = 0, input_pos = 0, mod_pos;
+	enum GMTAPI_enum_takes_mod takes_mod;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int sdir, k = 0, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
@@ -13538,7 +13545,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
         else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && key[k][K_DIR] != '-') {	/* Got some option like -G or -Lu with further args */
 			bool implicit = true;
-			if (takes_mod == 1)	/* Got some option like -E[+f] but no +f was given so no implicit file needed */
+			if (takes_mod == GMTAPI_MOD_SPECIAL)	/* Got some option like -E[+f] but no +f was given so no implicit file needed */
 				implicit = false;
 			else if ((len = strlen (argument)) == (size_t)n_pre_arg)	/* Got some option like -G or -Lu with no further args */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg [offset = %d]\n", opt->option, n_pre_arg);

@@ -17,7 +17,7 @@ basemap                  Create an empty basemap frame with optional scale
 coast                    Plot coastlines, filled continents, rivers, and political borders
 legend                   Create legend overlay
 **POINTS AND LINES**
-wiggle                   Draw spatial time-series along their (*x,y*)-tracks
+wiggle                   Draw spatial time-series along their (*x, y*)-tracks
 plot                     Plot symbols, polygons, and lines in 2-D
 plot3d                   Plot symbols, polygons, and lines in 3-D
 **HISTOGRAMS**
@@ -25,7 +25,7 @@ histogram                Plot a rectangular histogram
 rose                     Plot a polar histogram(sector/rose diagram)
 **CONTOURS**
 grdcontour               Contouring of grids
-contour                  Direct contouring/imaging of (*x,y,z*) data by optimal triangulation
+contour                  Direct contouring/imaging of (*x, y, z*) data by optimal triangulation
 **SURFACES**
 grdimage                 Project and plot grids or images
 grdvector                Plot vector fields from grids

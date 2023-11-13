@@ -195,6 +195,27 @@ enum GMT_time_period {
 	GMT_CYCLE_ANNUAL,
 	GMT_CYCLE_CUSTOM};
 
+/* The following long-option-related definitions specify the meanings
+   of individual bit flags within the GMT_KEYWORD_DICTIONARY type's
+   transproc_mask field.
+
+   Note these definitions are required for the immdiately following block
+   of definitions (e.g., GMT_I_INCREMENT_KW, etc.) and must therefore
+   appear in this file prior to that block.
+ */
+#define GMT_TP_STANDARD		0	/* Standard translation processing */
+#define GMT_TP_MULTIDIR		0x1	/* Multi-directive support enabled */
+#define GMT_TP_MDCOMMA		0x2	/* Use commas in short-option multi-directives */
+
+/* The following long-option-related definitions allow for specification
+   of whether or how a long-option translation should support
+   multi-directive translations, e.g., from --fields=low,high,weight
+   to -Alhw.
+ */
+#define GMT_MULTIDIR_DISABLE	0	/* Multi-directives not supported */
+#define GMT_MULTIDIR_NOCOMMA	1	/* Use no commas in short-option multi-directives, e.g., -Alhw */
+#define GMT_MULTIDIR_COMMA	2	/* Use commas in short-option multi-directives, e.g., -Al,h,w */
+
 /* The following long-option-related definitions are for quasi-global command
  * line short-options which are common to many but not all modules, i.e.,
  * (i) many modules will use exactly the same particular long-to-short-option
@@ -223,12 +244,10 @@ enum GMT_time_period {
  * supported module documentation (e.g., manual pages) rather than these
  * non-user-facing translation entries.
  */
-/* next line is temporary, remove after all conversions to GMT_I_INCREMENT_KW are complete */
-#define GMT_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
-#define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number" }
-#define GMT_C_CPT_KW	{ '/', 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit" }
-#define GMT_G_OUTGRID_KW { '/', 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list" }
-#define GMT_W_PEN_KW	{ '/', 'W', "pen", "", "", "c", "color" }
+#define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number", GMT_TP_STANDARD }
+#define GMT_C_CPT_KW	{ 0, 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit", GMT_TP_STANDARD }
+#define GMT_G_OUTGRID_KW { 0, 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list", GMT_TP_STANDARD }
+#define GMT_W_PEN_KW	{ 0, 'W', "pen", "", "", "c", "color", GMT_TP_STANDARD }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */

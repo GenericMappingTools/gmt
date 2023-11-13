@@ -6,9 +6,9 @@
 In this example we will show how to use the GMT programs
 :doc:`fitcircle </fitcircle>`, :doc:`project </project>`,
 :doc:`sample1d </sample1d>`, :doc:`spectrum1d </spectrum1d>`,
-and :doc:`plot </plot>`. Suppose you have (lon, lat,
-gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
-gravity) along a ship track in a file called ``ship.xyg``. You want to make a
+and :doc:`plot </plot>`. Suppose you have (*lon, lat,
+gravity*) along a satellite track in a file called ``sat.xyg``, and (*lon, lat,
+gravity*) along a ship track in a file called ``ship.xyg``. You want to make a
 cross-spectral analysis of these data. First, you will have to get the
 two data sets into equidistantly sampled time-series form. To do this,
 it will be convenient to project these along the great circle that best

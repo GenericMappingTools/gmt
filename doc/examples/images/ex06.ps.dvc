@@ -1,0 +1,5 @@
+outs:
+- md5: 9813f7fb167eaec7b963aa3d8d65531a
+  size: 28408
+  hash: md5
+  path: ex06.ps

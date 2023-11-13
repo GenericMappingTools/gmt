@@ -1,0 +1,5 @@
+outs:
+- md5: 299cbc1cc17c17cc1a3dda1bbdb249bb
+  size: 411124
+  hash: md5
+  path: ex19.ps

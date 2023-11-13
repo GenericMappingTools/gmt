@@ -21,21 +21,27 @@
 /* Translation table from long to short module options, directives and modifiers */
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-    /* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
-    { 0, 'A', "fields",    "", "", "", "" },
-    { 0, 'C', "center",    "", "", "", "" },
+    /* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers, multi_directive */
+    { 0, 'A', "fields",
+                  "z,s,l,h,w", "mean,aliastest|stddev,low,high,weight",
+                  "",          "",
+                  GMT_TP_MULTIDIR },
+    { 0, 'C', "center",    "", "", "", "", GMT_TP_STANDARD },
     { 0, 'E', "extend",
                   "",          "",
-                  "p,P",       "weighted,simple" },
-    { 0, 'G', "outgrid",   "", "", "", "" },
-    GMT_INCREMENT_KW,   /* Defined in gmt_constant.h since not a true GMT common option (but almost) */
+                  "p,P",       "weighted,simple",
+                  GMT_TP_STANDARD },
+    GMT_G_OUTGRID_KW,
+    GMT_I_INCREMENT_KW,
     { 0, 'S', "statistic",
                   "m,n,s,w",   "mean,count,sum,weight",
-                  "",          "" },
+                  "",          "",
+                  GMT_TP_STANDARD },
     { 0, 'W', "weights",
                   "i,o",       "in,out",
-                  "s",         "sigma" },
-    { 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+                  "s",         "sigma",
+                  GMT_TP_STANDARD },
+    { 0, '\0', "", "", "", "", "", GMT_TP_STANDARD }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !BLOCKMEAN_INC_H */

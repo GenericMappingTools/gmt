@@ -257,7 +257,7 @@ Grid Distance Units
 
 If a Cartesian grid does not have meter as the horizontal unit, append **+u**\ *unit*
 to the input file name to convert from the specified unit to meter.  E.g., appending
-**+uk** to the load file name will scale the grid x,y coordinates from km to meter.  If your
+**+uk** to the load file name will scale the grid *x, y* coordinates from km to meter.  If your
 grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 netCDF COARDS geographic grids will automatically be recognized as geographic.
 

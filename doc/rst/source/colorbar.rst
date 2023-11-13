@@ -59,7 +59,7 @@ see the Technical Reference section on :ref:`Color palette tables <CPT_section>`
    :width: 500 px
    :align: center
 
-   Example of a horizontal colorbar placed below a geographic map.
+   Example of a horizontal color bar placed below a geographic map.
 
 Required Arguments
 ------------------
@@ -72,7 +72,7 @@ Optional Arguments
 .. _-B:
 
 **-B**\ [**p**\|\ **s**]\ *parameters*
-    Set annotation, tick, and gridline interval for the colorbar. The
+    Set annotation, tick, and gridline interval for the bar. The
     x-axis label will plot beneath a horizontal bar (or vertically to
     the right of a vertical bar), except when using the **+m** modifier of the |-D| option. As an
     option, use the y-axis label to plot the data unit to the right of a
@@ -114,39 +114,35 @@ Optional Arguments
     pre-calculate all further settings.  Specifically, the *length* is set to 80% of the map side,
     horizontal or vertical depends on the side, the offset is :term:`MAP_LABEL_OFFSET` for **Dj** with an
     extra offset :term:`MAP_FRAME_WIDTH` for **DJ**, and annotations are placed on the side of the scale facing
-    away from the map frame.
+    away from the map frame.  If not given, the default argument is JBC (Place color bar centered beneath current plot).
     However, you can override any of these with these modifiers:
-    Append **+w** followed by the *length* and *width* of the color bar.  If *width* is not
+
+  - **+w** followed by the *length* and *width* of the color bar sets bar dimensions.  If *width* is not
     specified then it is set to 4% of the given *length*. If *length* is not given then it defaults
     to 80% of the corresponding map side dimension.  If either *length* or *width* end with % then
     those percentages are used instead to set the dimensions, where *width* is defined as a
-    percentage of the colorbar *length*.
-    Give a negative *length* to reverse the scale bar, or append **+r**. Append **+h** to get a
-    horizontal scale [Default is vertical (**+v**)].
-    By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
+    percentage of the bar *length*.
+  - **+e** adds sidebar triangles for back- and/or foreground colors. Append **f** (foreground) or **b** 
+    background) for only one sidebar triangle [Default gives both]. Optionally, append triangle height [Default is half the barwidth].
+  - **+h** selects a horizontal scale [Default is vertical (**+v**)].
+  - **+j** sets the anchor point. By default, the anchor point on the scale is assumed to be the bottom left corner (BL),
+    but this can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
-    Add sidebar triangles for back- and/or foreground
-    colors with **+e**. Append **f** (foreground) or **b** (background) for only one sidebar triangle [Default
-    gives both]. Optionally, append triangle height [Default is half the barwidth].
-    Move text to opposite side with **+m**\ [**a**\|\ **c**\|\ **l**\|\ **u**].
+  - **+m** will move text to opposite side as per arguments [**a**\|\ **c**\|\ **l**\|\ **u**].
     Horizontal scale bars: Move annotations and labels above the scale bar [Default is below];
-    the unit remains on the left.
-    Vertical scale bars: Move annotations and labels to the left of the scale bar [Default is to the right];
-    the unit remains below.
-    Append one or more of **a**, **l** or **u** to control which of the annotations, label, and
+    the unit remains on the left. Vertical scale bars: Move annotations and labels to the left of the scale bar [Default is to the right];
+    the unit remains below. Append one or more of **a**, **l** or **u** to control which of the annotations, label, and
     unit that will be moved to the opposite side. Append **c** if you want to print a
     vertical label as a column of characters (does not work with special characters).
-    Append **+n** to plot a rectangle with the NaN color at
-    the start of the bar, append *text* to change label from NaN.
-    If not given, the default argument is JBC (Place color bar centered beneath current plot).
+  - **+n** plots a rectangle with the NaN color at the start of the bar, append *text* to change label from NaN.
+  - **+r** will reverse the positive direction of the bar.
 
 .. _-F:
 
 **-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
-    Without further options, draws a rectangular border around the colorbar using :term:`MAP_FRAME_PEN`. The following
+    Without further options, draws a rectangular border around the bar using :term:`MAP_FRAME_PEN`. The following
     modifiers can be appended to |-F|, with additional explanation and examples provided in the :ref:`Background-panel`
     cookbook section:
 
@@ -252,7 +248,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *widthfile*
-    File with colorbar-width per color entry. By default, width of entry
+    File with bar-width per color entry. By default, width of entry
     is scaled to color range, i.e., z = 0-100 gives twice the width as z
     = 100-150 (Also see |-L|). **Note**: The widths may be in plot distance
     units or given as relative fractions and will be automatically scaled

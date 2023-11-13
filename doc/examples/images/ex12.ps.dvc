@@ -1,0 +1,5 @@
+outs:
+- md5: c9049724b426016caa290c2168d12664
+  size: 78589
+  hash: md5
+  path: ex12.ps
