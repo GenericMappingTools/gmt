@@ -35,7 +35,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'N', "norm",
 	          "1,2,r,w",           "mean_absolute,mean_squared,lms|LMS,rms|RMS",
 	          "",                  "" },
-	{ 0, 'S', "skip_outliners|restrict_outliers|restrict",
+	{ 0, 'S', "skip_outliers|restrict_outliners",
 	          "r",                 "reverse",
 	          "",                  "" },
 	{ 0, 'T', "range|series",
