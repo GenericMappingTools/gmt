@@ -7723,7 +7723,11 @@ int gmt_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	}
 
 	/* Get the specified length */
-	if ((sscanf (&copy[start], "%lf", dist)) != 1) {
+	if (strlen (&copy[start]) == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No distance argument given, only unit.\n");
+		return (-2);
+	}
+	else if ((sscanf (&copy[start], "%lf", dist)) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to decode %s as a floating point number.\n", &copy[start]);
 		return (-2);
 	}
@@ -17978,6 +17982,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		else
 			T->distmode = gmt_get_distance (GMT, txt[ns], &(T->inc), &(T->unit));
+		if (T->distmode < 0)
+			return GMT_PARSE_ERROR;
 		if (gmt_init_distaz (GMT, T->unit, T->distmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
 			return GMT_PARSE_ERROR;
 		T->spatial = (T->unit == 'X') ? 1 : 2;

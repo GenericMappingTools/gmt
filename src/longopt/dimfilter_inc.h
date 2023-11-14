@@ -28,10 +28,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'F', "filter",
 	          "b,c,g,m,p",    "boxcar,cosarch,gaussian,median,maxprob",
 	          "l,u",          "lower,upper" },
-	{ 0, 'G', "outgrid",
-	          "",             "",
-	          "d,n,o,s",      "divide,nan,offset,scale" },
-	GMT_INCREMENT_KW,         /* quasi-common -I option from gmt_constants.h */
+	GMT_G_OUTGRID_KW,
+	GMT_I_INCREMENT_KW,
 	{ 0, 'L', "script", "", "", "", "" },
 	{ 0, 'N', "sector_filter|secfilter",
 	          "l,u,a,m,p",    "min,max,average,median,mode",

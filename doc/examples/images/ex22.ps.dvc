@@ -1,0 +1,5 @@
+outs:
+- md5: 89e71bd726ef040cd85eccbc6b0f0a4f
+  size: 182130
+  hash: md5
+  path: ex22.ps

@@ -1411,7 +1411,7 @@ grdraster
     found in the sph supplement.
 
 :doc:`sphtriangulate`
-    Delaunay or Voronoi construction of spherical lon,lat data.  Previously
+    Delaunay or Voronoi construction of spherical (*lon, lat*) data.  Previously
     found in the sph supplement.
 
 We have also added a new supplement called potential that contains these five modules:
@@ -1583,7 +1583,7 @@ ways, such as
 
 *  While we support the scaling of z-values in grids via the filename convention
    name[=\ *ID*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *nan*] mechanism, there are times
-   when we wish to scale the x,y domain as well. Users can now
+   when we wish to scale the *x, y* domain as well. Users can now
    append **+u**\ *unit* to their gridfile names, where *unit* is one of non-arc units listed
    in Table :ref:`distunits <tbl-distunits>`.  This will convert your Cartesian
    x and y coordinates *from* the given unit *to* meters.  We also support the inverse
@@ -1660,7 +1660,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 *  :doc:`grd2cpt` takes **-F** to specify output color model and **-G** to
    truncate incoming CPT to be limited to a given range.
 
-*  :doc:`grd2xyz` takes **-C** to write row, col instead of x,y.  Append **f**
+*  :doc:`grd2xyz` takes **-C** to write row, col instead of *x, y*.  Append **f**
    to start at 1, else start at 0.  Alternatively, use **-Ci** to write just
    the two columns *index* and *z*, where *index*
    is the 1-D indexing that GMT uses when referring to grid nodes.

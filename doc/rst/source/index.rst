@@ -17,6 +17,7 @@ it can do.
             - :ref:`Projections Specifications <proj-codes>`
             - :doc:`Default Settings (gmt.conf) <gmt.conf>`
             - :doc:`Colors <gmtcolors>`
+            - :doc:`Color Picker <color-picker>`
             - :doc:`35 Postscript Fonts </reference/postscript-fonts>`
             - :doc:`Using LaTeX in text </reference/gmt-latex>`
             - :doc:`Built-in CPTs </reference/cpts>`
@@ -35,6 +36,7 @@ it can do.
    std-opts
    gmt.conf
    gmtcolors
+   color-picker
    theme-settings
 
 .. grid:: 1 2 2 2

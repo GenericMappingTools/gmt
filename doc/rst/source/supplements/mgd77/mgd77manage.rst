@@ -118,7 +118,7 @@ Optional Arguments
     E77 file has not been verified. Use **-AE** to ignore the
     verification status.
 
-    **g** Sample a GMT geographic (lon, lat) grid along the track given
+    **g** Sample a GMT geographic (*lon, lat*) grid along the track given
     by the MGD77+ file using bicubic interpolation (however, see
     **-n**). Append name of a GMT grid file.
 

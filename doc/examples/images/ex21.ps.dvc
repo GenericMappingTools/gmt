@@ -1,0 +1,5 @@
+outs:
+- md5: 988740319be5b76a3dee2f1ec6bd9943
+  size: 102970
+  hash: md5
+  path: ex21.ps

@@ -47,6 +47,15 @@ All *raster?*, *alpha*, *intensity* and *weights* files must have the same
 dimensions. The optional *alpha*, *intensity* and *weights* files may be
 replaced by constant values instead.
 
+.. figure:: /_images/GMT_mixing.*
+    :width: 600 px
+    :align: center
+
+    Breaking the NASA blue marble image into its red, green, and blue
+    components, taking the gradient of the topography at the same
+    spatial resolution (gray), and combining them to obtained a blue
+    marble image with slope shading.
+
 Required Arguments
 ------------------
 
