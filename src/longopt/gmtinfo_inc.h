@@ -27,7 +27,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'A', "report",
 	          "a,t,s",             "all,per_table,per_segment",
 	          "",                  "" },
-	{ 0, 'C', "columns",        "", "", "", "" },
+	{ 0, 'C', "columns|numeric",   "", "", "", "" },
 	{ 0, 'D', "center",            "", "", "", "" },
 	{ 0, 'E', "get_record",
 	          "l,L,h,H",           "min,minabs,max,maxabs",
