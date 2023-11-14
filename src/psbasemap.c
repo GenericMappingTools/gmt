@@ -144,9 +144,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *kind[3] = {"Specify a rectangular panel for the map inset", "Specify a rectangular panel behind the map scale", "Specify a rectangular panel behind the map rose"};
+	char *needed_F_options = NULL;
 	bool get_panel[3] = {false, false, false}, classic;
 
 	classic = (GMT->current.setting.run_mode == GMT_CLASSIC);
+	needed_F_options = (classic) ? "-D, -L and -T" : "-L and -T";
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -238,7 +240,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Must specify at least one of -A, -B, -D, -L, -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Cannot use -B, -D, -L, -T with -A\n");
 	//n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_cartesian (GMT, GMT_IN), "-L applies to geographical data only\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Option -F is only allowed with -L and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Option -F is only allowed with %s\n", needed_F_options);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

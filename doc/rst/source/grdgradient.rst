@@ -56,14 +56,14 @@ Optional Arguments
 
 **-A**\ *azim*\ [/*azim2*]
     Azimuthal direction for a directional derivative; *azim* is the
-    angle in the x,y plane measured in degrees positive clockwise from
+    angle in the *x-y* plane measured in degrees positive clockwise from
     north (the +y direction) toward east (the +x direction). The
     negative of the directional derivative,
     :math:`-(\frac{dz}{dx}\sin(a) + \frac{dz}{dy}\cos(a))`
     , is found where :math:`a` is the *azimuth*; negation yields positive values
     when the slope of :math:`z(x,y)` is downhill in the :math:`a` direction, the
     correct sense for shading the illumination of an image (see
-    :doc:`grdimage` and :doc:`grdview`) by a light source above the x,y plane
+    :doc:`grdimage` and :doc:`grdview`) by a light source above the *x-y* plane
     shining from the :math:`a` direction. Optionally, supply two azimuths,
     **-A**\ *azim*/*azim2*, in which case the gradients in each of these
     directions are calculated and the one larger in magnitude is

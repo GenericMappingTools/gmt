@@ -120,7 +120,7 @@ Optional Arguments
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     The form **-T**\ *list* means a online list of *time* coordinates like for example: **-T**\ *13,15,16,22.5*.
     For details on array creation, see `Generate 1-D Array`_. **Note**: For resampling of spatial
-    (*x,y* or *lon,lat*) series you must give an increment with a valid distance unit;
+    (*x, y*) or (*lon, lat*) series you must give an increment with a valid distance unit;
     see `Units`_ for map units or use **c** if plain Cartesian coordinates. The first two
     columns must contain the spatial coordinates. From these we calculate distances in the
     chosen units and interpolate using this parametric series.
@@ -224,7 +224,7 @@ interpolation, but output the first derivative instead (the slope), try::
 
     gmt sample1d points.txt -T0/6/0.01 -Fc+d1 > slopes.txt
 
-To resample the file track.txt which contains lon, lat, depth every 2
+To resample the file track.txt which contains *lon, lat, depth* every 2
 nautical miles, use::
 
     gmt sample1d track.txt -T2n -AR > new_track.txt

@@ -194,8 +194,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    Controls whether we read (*x,y*) or (*x,y,z*) data and if *z* should be
-    output when |-M| or |-S| (without **+z**) are used [Read (*x,y*) only].
+    Controls whether we read (*x, y*) or (*x, y, z*) data and if *z* should be
+    output when |-M| or |-S| (without **+z**) are used [Read (*x, y*) only].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_

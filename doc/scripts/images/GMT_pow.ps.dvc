@@ -1,0 +1,5 @@
+outs:
+- md5: 1c86eceefcd78fed883531f9fe52cc24
+  size: 24695
+  hash: md5
+  path: GMT_pow.ps

@@ -28,7 +28,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'A', "polylines",
 	          "r,s",             "trajectories,segments",
 	          "v",               "value" },
-	{ 0, 'C', "cpt",             "", "", "", "" },
+	GMT_C_CPT_KW,
 	{ 0, 'D', "offset",
 	          "j,J",             "justify,shortdiag",
 	          "v",               "line" },
@@ -50,7 +50,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          "",                "" },
 	{ 0, 'Q', "save",            "", "", "", "" },
 	{ 0, 'S', "eventsymbol",     "", "", "", "" },
-	{ 0, 'W', "pen",             "", "", "", "" },
+	GMT_W_PEN_KW,
 	{ 0, 'Z', "symbolcommand",   "", "", "", "" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
 };

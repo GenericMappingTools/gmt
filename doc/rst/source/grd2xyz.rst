@@ -39,7 +39,7 @@ precision of the ASCII output format by editing the
 :term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
 **--FORMAT_FLOAT_OUT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates (see |-Z| below) or you can
+output z-values without the (*x, y*) coordinates (see |-Z| below) or you can
 save the grid in the STL format for 3-D printers.
 
 Required Arguments
@@ -104,8 +104,8 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**a**\ [**+u**\ *unit*]\|\ *weight*]
-    Write out *x,y,z,w*\ , where *w* is the supplied *weight* (or 1 if not
-    supplied) [Default writes *x,y,z* only].  Choose **-Wa** to compute
+    Write out *x, y, z, w*\ , where *w* is the supplied *weight* (or 1 if not
+    supplied) [Default writes *x, y, z* only].  Choose **-Wa** to compute
     weights equal to the area each node represents.  For Cartesian grids this
     is simply the product of the *x* and *y* increments (except for
     gridline-registered grids at all sides [half] and corners [quarter]).
@@ -214,7 +214,7 @@ To edit individual values in the 2' by 2' remote AFR.nc file, dump the .nc to AS
 
   gmt grd2xyz @AFR.nc > AFR.xyz
 
-To write a single precision binary file without the x,y positions from
+To write a single precision binary file without the *x, y* positions from
 the remote file @AFR.nc file, using scanline orientation, run:
 
 ::

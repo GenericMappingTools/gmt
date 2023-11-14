@@ -1,0 +1,5 @@
+outs:
+- md5: dfb5e6e03e79c499759c3a04ceb32e82
+  size: 90365
+  hash: md5
+  path: GMT_mollweide.ps
