@@ -24,7 +24,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "full_range|all_slopes",
+	{ 0, 'A', "angles|slopes",
 	          "",                  "",
 	          "f",                 "force" },
 	{ 0, 'C', "confidence|confidence_level", "", "", "", "" },
@@ -35,7 +35,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'N', "norm",
 	          "1,2,r,w",           "mean_absolute,mean_squared,lms|LMS,rms|RMS",
 	          "",                  "" },
-	{ 0, 'S', "restrict_outliers|restrict",
+	{ 0, 'S', "skip_outliners|restrict_outliers|restrict",
 	          "r",                 "reverse",
 	          "",                  "" },
 	{ 0, 'T', "range|series",
