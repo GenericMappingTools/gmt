@@ -3376,18 +3376,29 @@ GMT_LOCAL unsigned int gmtio_get_coltype_name_index (struct GMT_CTRL *GMT, unsig
 }
 
 bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
-	size_t k;
-	unsigned int n_dash, n_slash;
-	int start = -1;
+	/* Return true for absolute time string, which can be
+	 * yyyy[-mm[-dd]][T][hh[:mm[:ss.xxx...]]]
+	 */
+	size_t k, L = strlen (txt);
+	unsigned int n_dash = 0, n_slash = 0;
+	int64_t start = -1;
+	char *c = NULL;
 	gmt_M_unused (GMT);
-	if (strchr (txt, 'T')) return true;	/* Might be [<date>]T[<clock>], else it is likely text */
-	if (strchr (txt, 'e') || strchr (txt, 'E')) return false;	/* Check for exponentials since -0.5e-2 would trigger on two dashes */
-	/* Here there is no T, but perhaps somebody forgot to add T to 2004-10-19 or 1999/04/05 ? */
-	n_dash = n_slash = 0;
-	for (k = 0; k < strlen (txt); k++) {	/* Count slashes and dashes */
+
+	if (L > 24U) return false;	/* Too long to be an absolute time, e.g. 31-SEP-2000T13:45:31.333 is 24 char long */
+	for (k = 0; k < L; k++) {	/* Count slashes and dashes */
 		if (txt[k] == '-') { n_dash++; if (start == -1) start = k; }
-		else if (txt[k] == '/') { n_slash++;; if (start == -1) start = k; }
+		else if (txt[k] == '/') { n_slash++; if (start == -1) start = k; }
 	}
+	if ((c = strchr (txt, 'T'))) {	/* Maybe the T between date and clock */
+		size_t first = (size_t) (c - txt);	/* Position of that T must be either 0, 4, or between 9 and 12  */
+		if (first == 0 || first == 4 || (first > 8 && first < 13)) return true;	/* Absolute date detected (most likely) */
+	}
+	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected (most likely) */
+		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
+
+	if (strchr (txt, 'e') || strchr (txt, 'E')) return false;	/* Check for exponentials (or East) since -0.5e-2 would trigger on two dashes */
+	/* Here there is no T, but perhaps somebody forgot to add T to 2004-10-19 or 1999/04/05 ? */
 	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected */
 		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
 	/* Last ditch check for Julian days */
@@ -3408,7 +3419,7 @@ GMT_LOCAL enum gmt_col_enum gmtio_physical_coltype (struct GMT_CTRL *GMT, unsign
 			if (GMT->current.io.col[GMT_IN][k].col == col)	/* Found one of the physical columns that will be column = order */
 				return gmt_M_type (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order);
 		}
-		/* Here we come when a physical column was not selected to be part of the logical column, so no -f is avialble.  We pass GMT_IS_UNKNOWN */
+		/* Here we come when a physical column was not selected to be part of the logical column, so no -f is available.  We pass GMT_IS_UNKNOWN */
 		return GMT_IS_UNKNOWN;
 	}
 	return gmt_M_type (GMT, GMT_IN, col);	/* Physical == logical */
@@ -3460,7 +3471,7 @@ GMT_LOCAL void gmtio_check_abstime_format_is_suitable (struct GMT_CTRL *GMT, cha
 
 	/* Here, format_date_in is the ISO default yyyy-mm-dd and we will see if token suggests another format */
 
-	strcpy (copy, token);	/* Only mess with a copy */
+	strncpy (copy, token, GMT_LEN32-1);	/* Only mess with a copy */
 	if ((c = strchr (copy, 'T'))) c[0] = '\0';	/* Is an abs time token but here we worry about the date format only */
 	for (delim = 0; delim < 3; delim++) {	/* Figure out what delimiters there are in template and token (should be the same) */
 		for (k = 0; k < strlen (copy); k++)
