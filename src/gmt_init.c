@@ -2817,8 +2817,6 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 
 	if (!GMT->common.J.active) {
 		gmt_set_missing_options (GMT, "J");	/* If mode is modern and -J exist in the history, and if an overlay we may add these from history automatically */
-		if (!GMT->common.J.active)
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The -p option works best in consort with -J (and -R or a grid)\n");
 	}
 	switch (item[0]) {
 		case 'x': GMT->current.proj.z_project.view_plane = GMT_X + GMT_ZW; l++; break;
@@ -2874,6 +2872,8 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 	else
 		GMT->common.p.z_rotation = az;
 
+	if (!GMT->common.J.active && el < 90.0)
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "The -p option works best in consort with -J (and -R or a grid)\n");
 	return (error);
 }
 
