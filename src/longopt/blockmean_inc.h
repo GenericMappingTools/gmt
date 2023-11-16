@@ -21,7 +21,10 @@
 /* Translation table from long to short module options, directives and modifiers */
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-    /* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers, multi_directive */
+    /* separator, short_option, long_option,
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
     { 0, 'A', "fields",
                   "z,s,l,h,w", "mean,aliastest|stddev,low,high,weight",
                   "",          "",
@@ -41,7 +44,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
                   "i,o",       "in,out",
                   "s",         "sigma",
                   GMT_TP_STANDARD },
-    { 0, '\0', "", "", "", "", "", GMT_TP_STANDARD }  /* End of list marked with empty option and strings */
+    { 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !BLOCKMEAN_INC_H */

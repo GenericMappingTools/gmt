@@ -23,25 +23,31 @@
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
+	          short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'A', "report",
 	          "a,t,s",             "all,per_table,per_segment",
-	          "",                  "" },
-	{ 0, 'C', "columns|numeric",   "", "", "", "" },
-	{ 0, 'D', "center",            "", "", "", "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
+	{ 0, 'C', "columns|numeric",   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "center",            "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'E', "get_record",
 	          "l,L,h,H",           "min,minabs,max,maxabs",
-	          "",                  "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'F', "counts",
 	          "i,d,t",             "totals,segments,segments_reset",
-	          "",                  "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'I', "inc|increment|spacing",
 	          "b,e,f,p,s",         "box,exact,fft,override,surface",
-	          "e,r,R",             "extend_box,adjust,extend_region" },
-	{ 0, 'L', "common_limits",     "", "", "", "" },
+	          "e,r,R",             "extend_box,adjust,extend_region",
+		  GMT_TP_STANDARD },
+	{ 0, 'L', "common_limits",     "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'T', "nearest_multiple",
 	          "",                  "",
-	          "c",                 "column" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "c",                 "column",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTINFO_INC_H */

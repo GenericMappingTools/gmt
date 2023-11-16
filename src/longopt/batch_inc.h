@@ -23,23 +23,27 @@
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "noautomove",    "", "", "", "" },
-	{ 0, 'F', "templatenames", "", "", "", "" },
-	{ 0, 'I', "include",       "", "", "", "" },
-	{ 0, 'M', "onemaster",     "", "", "", "" },
-	{ 0, 'N', "prefix",        "", "", "", "" },
+	          short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'D', "noautomove",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "templatenames", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "include",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'M', "onemaster",     "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "prefix",        "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'Q', "debug",
 	          "s",                 "noexec",
-	          "",                  "" },
+	          "",                  "",
+	          GMT_TP_STANDARD },
 	{ 0, 'S', "optscript",
 	          "b,f",               "preflight,postflight",
-	          "",                  "" },
+	          "",                  "",
+	          GMT_TP_STANDARD },
 	{ 0, 'T', "njobs|minmax|timefile",
 	          "",                  "",
-	          "n,p,s,w,W",         "njobs,tagwidth,multisys,words,tabwords" },
-	{ 0, 'W', "tmpdir",        "", "", "", "" },
-	{ 0, 'Z', "erasescripts",  "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "n,p,s,w,W",         "njobs,tagwidth,multisys,words,tabwords",
+	          GMT_TP_STANDARD },
+	{ 0, 'W', "tmpdir",        "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Z', "erasescripts",  "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !BATCH_INC_H */

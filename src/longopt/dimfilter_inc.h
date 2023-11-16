@@ -22,20 +22,23 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "distance",     "", "", "", "" },
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'D', "distance",     "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'F', "filter",
 	          "b,c,g,m,p",    "boxcar,cosarch,gaussian,median,maxprob",
-	          "l,u",          "lower,upper" },
+	          "l,u",          "lower,upper",
+		  GMT_TP_STANDARD },
 	GMT_G_OUTGRID_KW,
 	GMT_I_INCREMENT_KW,
-	{ 0, 'L', "script", "", "", "", "" },
+	{ 0, 'L', "script", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'N', "sector_filter|secfilter",
 	          "l,u,a,m,p",    "min,max,average,median,mode",
-	          "l,u",          "lower,upper" },
-	{ 0, 'Q', "depth",        "", "", "", "" },
-	{ 0, 'T', "toggle_registration|toggle",    "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "l,u",          "lower,upper",
+		  GMT_TP_STANDARD },
+	{ 0, 'Q', "depth",        "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "toggle_registration|toggle",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !DIMFILTER_INC_H */
