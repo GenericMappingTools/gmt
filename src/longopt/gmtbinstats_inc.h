@@ -22,23 +22,27 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'C', "statistic",
 	          "a,d,g,i,l,L,m,n,o,p,q,r,s,u,U,z",
 	                               "mean,mad,full,interquartile,min,minpos,median,number,lms,mode,quantile,rms,stddev,max,maxneg,sum",
-	          "",                  "" },
-	{ 0, 'E', "empty",             "", "", "", "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
+	{ 0, 'E', "empty",             "", "", "", "", GMT_TP_STANDARD },
 	GMT_G_OUTGRID_KW,
 	GMT_I_INCREMENT_KW,
-	{ 0, 'N', "normalize",         "", "", "", "" },
-	{ 0, 'S', "search_radius|radius",     "", "", "", "" },
+	{ 0, 'N', "normalize",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "search_radius|radius",     "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'T', "tiling",
 	          "h,r",               "hexagonal,rectangular",
-	          "",                  "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'W', "weight",
 	          "",                  "",
-	          "s",                 "sigma|uncertainty" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "s",                 "sigma|uncertainty",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTBINSTATS_INC_H */
