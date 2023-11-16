@@ -3377,23 +3377,33 @@ GMT_LOCAL unsigned int gmtio_get_coltype_name_index (struct GMT_CTRL *GMT, unsig
 
 bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 	/* Return true for absolute time string, which can be
-	 * yyyy[-mm[-dd]][T][hh[:mm[:ss.xxx...]]]
+	 * yyyy[-mm[-dd]][T][hh[:mm[:ss.xxx...]]]. If mm is actually a
+	 * 3-char text string (e.g., OCT), then the length of the
+	 * txt variable can be 21 + the # of .xxxx + 1 (period).
+	 * So at 0.1 milli-second precision we have a max of 24 chars.
+	 *
 	 */
 	size_t k, L = strlen (txt);
-	unsigned int n_dash = 0, n_slash = 0;
+	unsigned int n_dash = 0, n_slash = 0, n_colon = 0;
 	int64_t start = -1;
 	char *c = NULL;
 	gmt_M_unused (GMT);
 
-	if (L > 24U) return false;	/* Too long to be an absolute time, e.g. 31-SEP-2000T13:45:31.333 is 24 char long */
+	if (L > 24U) return false;	/* Most likely too long to be an absolute time, e.g. 31-SEP-2000T13:45:31.3333 is 24 char long */
 	for (k = 0; k < L; k++) {	/* Count slashes and dashes */
 		if (txt[k] == '-') { n_dash++; if (start == -1) start = k; }
 		else if (txt[k] == '/') { n_slash++; if (start == -1) start = k; }
+		else if (txt[k] == ':') { n_colon++; if (start == -1) start = k; }
 	}
 	if ((c = strchr (txt, 'T'))) {	/* Maybe the T between date and clock */
 		size_t first = (size_t) (c - txt);	/* Position of that T must be either 0, 4, or between 9 and 12  */
 		if (first == 0 || first == 4 || (first > 8 && first < 13)) return true;	/* Absolute date detected (most likely) */
 	}
+	else if (n_colon && n_slash == 0 && n_dash == 0)	/* No 'T', got xxx..:yy...[:ss...] probably */
+		return false;
+	else if (txt[0] == '-' || txt[0] == '+')	/* No 'T' and start with a sign is likely non-time related */
+		return false;	/* datestring most likely do not start with a sign. */
+	/* Maybe user forgot the 'T' flag? */
 	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected (most likely) */
 		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
 
@@ -3536,7 +3546,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		else {	/* Auto-guess from examining the token */
 			phys_col_type = gmtio_physical_coltype (GMT, col);
 			if (phys_col_type == GMT_IS_ABSTIME || gmtlib_maybe_abstime (GMT, token)) {	/* Is or might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
-                gmtio_check_abstime_format_is_suitable (GMT, token);   /* Ensure token is ccompatible with selected FORMAT_DATE_IN */
+                gmtio_check_abstime_format_is_suitable (GMT, token);   /* Ensure token is compatible with selected FORMAT_DATE_IN */
 				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
 			}
 			else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
