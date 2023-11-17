@@ -3398,11 +3398,16 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 	}
 	if ((c = strchr (txt, 'T'))) {	/* Maybe the T between date and clock */
 		size_t first = (size_t) (c - txt);	/* Position of that T must be either 0, 4, or between 9 and 12  */
-		if (first == 0 || first == 4 || (first > 8 && first < 13)) return true;	/* Absolute date detected (most likely) */
+		if (first == 0 || first == 4 || (first > 8 && first < 13)) {
+			if (txt[first+1] == '\0' || isdigit (txt[first+1]))	/* Absolute date detected (most likely), e.g. 2001T, T14:45 */
+				return true;
+			else
+				return false;
+		}
 	}
-	else if (n_colon && n_slash == 0 && n_dash == 0)	/* No 'T', got xxx..:yy...[:ss...] probably */
+	else if (n_colon && n_slash == 0 && n_dash <= 1)	/* No 'T', got [-]xxx..:yy...[:ss...] probably */
 		return false;
-	else if (txt[0] == '-' || txt[0] == '+')	/* No 'T' and start with a sign is likely non-time related */
+	else if (txt[0] == '-' || txt[0] == '+')	/* No 'T' and starts with a sign is likely non-time related */
 		return false;	/* datestring most likely do not start with a sign. */
 	/* Maybe user forgot the 'T' flag? */
 	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected (most likely) */
