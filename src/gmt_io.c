@@ -3390,6 +3390,7 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 	gmt_M_unused (GMT);
 
 	if (L > 24U) return false;	/* Most likely too long to be an absolute time, e.g. 31-SEP-2000T13:45:31.3333 is 24 char long */
+	if (L < 4U) return false;	/* Most likely too short to be an absolute time, e.g. 2001T is 5 char long */
 	for (k = 0; k < L; k++) {	/* Count slashes and dashes */
 		if (txt[k] == '-') { n_dash++; if (start == -1) start = k; }
 		else if (txt[k] == '/') { n_slash++; if (start == -1) start = k; }
@@ -3397,11 +3398,16 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 	}
 	if ((c = strchr (txt, 'T'))) {	/* Maybe the T between date and clock */
 		size_t first = (size_t) (c - txt);	/* Position of that T must be either 0, 4, or between 9 and 12  */
-		if (first == 0 || first == 4 || (first > 8 && first < 13)) return true;	/* Absolute date detected (most likely) */
+		if (first == 0 || first == 4 || (first > 8 && first < 13)) {
+			if (txt[first+1] == '\0' || isdigit (txt[first+1]))	/* Absolute date detected (most likely), e.g. 2001T, T14:45 */
+				return true;
+			else
+				return false;
+		}
 	}
-	else if (n_colon && n_slash == 0 && n_dash == 0)	/* No 'T', got xxx..:yy...[:ss...] probably */
+	else if (n_colon && n_slash == 0 && n_dash <= 1)	/* No 'T', got [-]xxx..:yy...[:ss...] probably */
 		return false;
-	else if (txt[0] == '-' || txt[0] == '+')	/* No 'T' and start with a sign is likely non-time related */
+	else if (txt[0] == '-' || txt[0] == '+')	/* No 'T' and starts with a sign is likely non-time related */
 		return false;	/* datestring most likely do not start with a sign. */
 	/* Maybe user forgot the 'T' flag? */
 	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected (most likely) */
@@ -3529,6 +3535,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
 	 */
 	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL;
+	unsigned int n_numeric_cols = (GMT->parent->n_numerical_columns == GMT_NOTSET) ? UINT_MAX : GMT->parent->n_numerical_columns;
 	int got;
 	enum gmt_col_enum phys_col_type;
 	bool found_text = false;
@@ -3542,6 +3549,10 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		if ((phys_col_type = gmt_get_column_type (GMT, GMT_IN, col)) == GMT_IS_STRING) {	/* Explicit start of trailing text via -f<col>s */
 			found_text = true;	/* We stop right here, return flag as nan and hence n_columns will be col. */
 			got = GMT_IS_NAN;
+		}
+		else if (n_numeric_cols && col >= n_numeric_cols) {	/* No point trying to determine what text, font, justification it is */
+			got = GMT_IS_NAN;
+			col++;			
 		}
 		else {	/* Auto-guess from examining the token */
 			phys_col_type = gmtio_physical_coltype (GMT, col);

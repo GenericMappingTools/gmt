@@ -8408,6 +8408,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
 	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we save some CPU */
+    API->n_numerical_columns = GMT_NOTSET;
 	if (session) {	/* Pick up a tag for this session */
 		char *tmptag = strdup (session);
 		API->session_tag = strdup (basename (tmptag));	/* Only used in reporting and error messages */
