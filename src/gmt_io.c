@@ -3529,7 +3529,8 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	 * (which is what we are handling here) a huge variety of datetime strings are possible via
 	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
 	 */
-	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL, n_numeric_cols = GMT->parent->n_numerical_columns;
+	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL;
+	unsigned int n_numeric_cols = (GMT->parent->n_numerical_columns == GMT_NOTSET) ? UINT_MAX : GMT->parent->n_numerical_columns;
 	int got;
 	enum gmt_col_enum phys_col_type;
 	bool found_text = false;
