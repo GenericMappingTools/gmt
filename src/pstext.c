@@ -77,7 +77,7 @@ struct PSTEXT_CTRL {
 		bool no_input;		/* True if we give a single static text and place it via +c */
 		struct GMT_FONT font;
 		double angle;
-		int justify, R_justify, nread, first, w_col;
+		int justify, R_justify, nread, nread_numerics, first, w_col;
 		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format z using text (+z) */
 		char read[4];		/* Contains a|A, c, f, and/or j in order required to be read from input */
 		char *text;
@@ -489,6 +489,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 							if (p[1] == '+' || p[1] == '\0') {	/* Must read angle from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
 								Ctrl->F.nread++;
+								Ctrl->F.nread_numerics++;
 							}
 							else	/* Gave a fixed angle here */
 								Ctrl->F.angle = atof (&p[1]);
@@ -862,6 +863,11 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 	tcol_f = 2 + Ctrl->Z.active;	tcol_s = tcol_f + 1;
+	/* Since pstext input is complicated we need to help gmtio_examine_current_record by determining how many leading numerical columns to expect */
+	API->n_numerical_columns = 2;
+	if (Ctrl->F.get_text == GET_CMD_FORMAT) API->n_numerical_columns++;	/* Expect a 3rd column value for formatting */ 
+	if (Ctrl->Z.active) API->n_numerical_columns++;	/* Expect a 3-D z coordinate */
+	if (Ctrl->F.nread_numerics) API->n_numerical_columns++;	/* Will read angle from input file */
 
 	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.n_transparencies;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
@@ -1503,6 +1509,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = old_is_world;
 	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
+	API->n_numerical_columns = 0;
 
 	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);

@@ -3390,6 +3390,7 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 	gmt_M_unused (GMT);
 
 	if (L > 24U) return false;	/* Most likely too long to be an absolute time, e.g. 31-SEP-2000T13:45:31.3333 is 24 char long */
+	if (L < 4U) return false;	/* Most likely too short to be an absolute time, e.g. 2001T is 5 char long */
 	for (k = 0; k < L; k++) {	/* Count slashes and dashes */
 		if (txt[k] == '-') { n_dash++; if (start == -1) start = k; }
 		else if (txt[k] == '/') { n_slash++; if (start == -1) start = k; }
@@ -3528,23 +3529,22 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	 * (which is what we are handling here) a huge variety of datetime strings are possible via
 	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
 	 */
-	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, n_cols_to_check = 0, k, *type = NULL;
+	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL, n_numeric_cols = GMT->parent->n_numerical_columns;
 	int got;
 	enum gmt_col_enum phys_col_type;
-	bool found_text = false, text = (strncmp (GMT->init.module_name, "pstext", 6U) == 0);
+	bool found_text = false;
 	char token[GMT_BUFSIZ], message[GMT_BUFSIZ] = {""};
 	double value;
 	static char *flavor[4] = {"", "Numerical only", "Text only", "Numerical with trailing text"};
 
 	type = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, unsigned int);
 	*tpos = pos;
-	if (text) n_cols_to_check = 2;	/* Only check the first two columns for pstext */
 	while (!found_text && (gmt_strtok (record, GMT->current.io.scan_separators, &pos, token))) {
 		if ((phys_col_type = gmt_get_column_type (GMT, GMT_IN, col)) == GMT_IS_STRING) {	/* Explicit start of trailing text via -f<col>s */
 			found_text = true;	/* We stop right here, return flag as nan and hence n_columns will be col. */
 			got = GMT_IS_NAN;
 		}
-		else if (text && col >= n_cols_to_check) {
+		else if (n_numeric_cols && col >= n_numeric_cols) {	/* No point trying to determine what text, font, justification it is */
 			got = GMT_IS_NAN;
 			col++;			
 		}
