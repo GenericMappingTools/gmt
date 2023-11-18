@@ -28,11 +28,11 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'A', "horizontal|hcat",   "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'C', "n_records",
 	          "",                  "",
-	          "l,u,i",             "minrecs,maxrecs,invert"
+	          "l,u,i",             "minrecs,maxrecs,invert",
             GMT_TP_STANDARD },
 	{ 0, 'D', "dump",
 	          "",                  "",
-	          "o",                 "orig"
+	          "o",                 "orig",
             GMT_TP_STANDARD },
 	{ 0, 'E', "first_last|extract",
 	          "f,l,m,M",           "first,last,stride,stride_last",
