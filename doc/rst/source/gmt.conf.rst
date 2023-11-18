@@ -568,11 +568,11 @@ I/O Parameters
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
-        contain (latitude,longitude) or (y,x) rather than the expected
-        (longitude,latitude) or (x,y). false means we have (x,y) both on
-        input and output. **true** means both input and output should be (y,x).
-        **IN** means only input has (y,x), while **OUT** means only output should
-        be (y,x) [default is **false**].
+        contain (*latitude,longitude*) or (**y, x**) rather than the expected
+        (longitude,latitude) or (*x, y*). false means we have (*x, y*) both on
+        input and output. **true** means both input and output should be (**y, x**).
+        **IN** means only input has (**y, x**), while **OUT** means only output should
+        be (**y, x**) [default is **false**].
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [default is **0**].

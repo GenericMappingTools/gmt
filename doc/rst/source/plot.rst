@@ -133,7 +133,7 @@ Optional Arguments
 **-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
     Draw error bars. Append **x** and/or **y** to indicate which bars you
     want to draw [Default is both x and y]. The x and/or y errors must be
-    stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
+    stored in the columns after the (*x, y*) pair [or (*x, y, z*) triplet]. If
     **+a** is appended then we will draw asymmetrical error bars [Default
     is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.
@@ -179,6 +179,15 @@ Optional Arguments
     Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
+
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+
+        Use the |-F| option to create various networks between input point.  Dashed lines
+        indicate input ordering for the two tables, while solid lines are the resulting
+        network connections. Top left is original input, while the next five reflect the results
+        of directives **ra**, **rf**, **rs**, **r**\ 10/35 and **na**.
 
 .. _-G:
 
@@ -412,7 +421,7 @@ a circle at the start location and an arrow head at the end::
     EOF
 
 To plot vectors (red vector heads, solid stem) from the file data.txt that contains
-record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
+record of the form *lon, lat, dx, dy*, where *dx, dy* are the Cartesian
 vector components given in user units, and these user units should be converted
 to cm given the scale 3.60::
 

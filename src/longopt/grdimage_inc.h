@@ -22,30 +22,34 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 /* ?? -A not possible because of = usage, e.g., -Aout_img=driver ? */
-	{ 0, 'C', "cpt|cmap",
-                  "",                  "",
-                  "h,i,u,U",           "hinge,zinc,fromunit,tounit" },
+	GMT_C_CPT_KW,
 	{ 0, 'D', "inimage",
                   "r",                 "region",
-                  "",                  "" },
+                  "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'E', "dpi",
                   "i",                 "psdeviceres",
-                  "",                  "" },
+                  "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'G', "bitcolor",
                   "",                  "",
-                  "b,f",               "background,foreground" },
+                  "b,f",               "background,foreground",
+		  GMT_TP_STANDARD },
 	{ 0, 'I', "intensity",
                   "",                  "",
-                  "a,d,m,n",           "azimuth,default,ambient,intensity" },
-	{ 0, 'M', "monochrome",        "", "", "", "" },
-	{ 0, 'N', "noclip",            "", "", "", "" },
+                  "a,d,m,n",           "azimuth,default,ambient,intensity",
+		  GMT_TP_STANDARD },
+	{ 0, 'M', "monochrome",        "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "noclip",            "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'Q', "alphacolor|alpha_color|nan_alpha",
                   "",                  "",
-                  "z",                 "gridvalue" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+                  "z",                 "gridvalue",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !GRDIMAGE_INC_H */

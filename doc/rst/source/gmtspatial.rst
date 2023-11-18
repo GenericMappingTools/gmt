@@ -20,7 +20,7 @@ Synopsis
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
 [ |-L|\ *dist*\ /*noise*\ /*offset* ]
-[ |-N|\ *pfile*\ [**+a**][**+i**][**+p**\ *start*][**+r**][**+z**] ]
+[ |-N|\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**] ]
 [ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
@@ -143,13 +143,13 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *pfile*\ [**+a**][**+i**][**+p**\ *start*][**+r**][**+z**]
+**-N**\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**]
     Lines and polygons: Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
     taken from the aspatial value assigned to Z, the segment header
     (first |-Z|, then |-L| are scanned), or it is assigned the
-    running number that is initialized to *start* [0]. By default the
+    running number that is initialized via **+p** to *start* [0]. By default the
     input segments that are found to be inside a polygon are written to
     standard output with the polygon ID encoded in the segment header as
     **-Z**\ *ID*. Alternatively, append **+r** to just report which
@@ -199,8 +199,8 @@ Optional Arguments
     the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline. **Note1**: Only **-Sb**, **-Sh** and **-Ss** have been implemented.
-    **Note2**: **-Sb** is a purely Cartesian operation so *width* must be in data units.
+    were split by the Dateline. **Notes**: (1) Only **-Sb**, **-Sh** and **-Ss** have been implemented.
+    (2) **-Sb** is a purely Cartesian operation so *width* must be in data units.
     That is, for geographical coordinates *width* must be provided in degrees or, preferably, project data into
     an equal-area projection, compute the buffer and then convert back to geographical.
 

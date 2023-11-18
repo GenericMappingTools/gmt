@@ -22,28 +22,35 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
-	          short_directives,        long_directives,
-	          short_modifiers,         long_modifiers */
-	{ 0, 'G', "outgrid",               "", "", "", "" },
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'D', "meta",
 	          "",                      "",
-	          "x,y,z,c,d,s,o,n,t,r,v", "xname,yname,zname,cpt,dname,scale,offset,invalid,title,remark,varname" },
+	          "x,y,z,c,d,s,o,n,t,r,v", "xname,yname,zname,cpt,dname,scale,offset,invalid,title,remark,varname",
+		  GMT_TP_STANDARD },
 	{ 0, 'E', "profile|crosssection",
 	          "",                      "",
-	          "a,g,i,l,n,o,p,r,x",     "azimuth,degrees,increment,length,npoints,origin,parallel,radius,rhumb" },
+	          "a,g,i,l,n,o,p,r,x",     "azimuth,degrees,increment,length,npoints,origin,parallel,radius,rhumb",
+		  GMT_TP_STANDARD },
 	{ 0, 'F', "interptype",
 	          "l,a,c,n",               "linear,akima,cubic,none",
-	          "d",                     "derivative" },
+	          "d",                     "derivative",
+		  GMT_TP_STANDARD },
+	GMT_G_OUTGRID_KW,
 	{ 0, 'S', "pointseries",
 	          "",                      "",
-	          "h",                     "header" },
+	          "h",                     "header",
+		  GMT_TP_STANDARD },
 	{ 0, 'T', "inc|range",
 	          "",                      "",
-	          "i,n",                   "inverse,numcoords" },
+	          "i,n",                   "inverse,numcoords",
+		  GMT_TP_STANDARD },
 	{ 0, 'Z', "levels",
 	          "",                      "",
-	          "i,n",                   "inverse,numcoords" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "i,n",                   "inverse,numcoords",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !GRDINTERPOLATE_INC_H */

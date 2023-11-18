@@ -140,6 +140,12 @@ Optional Arguments
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
 
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+    
+        Various ways to connect input points from one or more files using |-F|.
+
 .. _-I:
 
 **-I**\ [**tsr**]
@@ -285,7 +291,7 @@ Examples
 
 To convert the binary file test.b (single precision) with 4 columns to ASCII::
 
-    gmt convert test.b -bi4f > test.dat
+    gmt convert test.b -bi4f > test.txt
 
 To convert the multiple segment ASCII table test.txt to a double precision binary file::
 
@@ -344,11 +350,11 @@ file like this::
 
 do::
 
-    gmt convert file.gmt -a2=ELEVATION > xyz.dat
+    gmt convert file.gmt -a2=ELEVATION > xyz.txt
 
 or just::
 
-    gmt convert file.gmt -aELEVATION > xyz.dat
+    gmt convert file.gmt -aELEVATION > xyz.txt
 
 To connect all points in the file sensors.txt with the specified origin
 at 23.5/19, try::

@@ -53,7 +53,7 @@ Synopsis
 Description
 -----------
 
-Reads (x,y,z) triplets from *files* [or standard input] and
+Reads (*x, y, z*) triplets from *files* [or standard input] and
 will plot lines, polygons, or symbols
 at those locations in 3-D. If a symbol is selected and no symbol size
 given, then we will interpret the fourth column of the input data

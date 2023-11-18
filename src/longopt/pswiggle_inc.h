@@ -22,24 +22,28 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "azimuth",           "", "", "", "" },
-	{ 0, 'C', "center",            "", "", "", "" },
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "azimuth",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "center",            "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'D', "scalebar",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "w,j,a,o,l",         "length,janchor,side,anchoroffset,label" },
+	          "w,j,a,o,l",         "length,janchor,side,anchoroffset,label",
+		  GMT_TP_STANDARD },
 	{ 0, 'F', "panel",
 	          "",                  "",
-	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
+	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade",
+		  GMT_TP_STANDARD },
 	{ 0, 'G', "fill",
                   "",                  "",
-                  "n,p",               "negative,positive" },
-	{ 0, 'I', "fixedazim",         "", "", "", "" },
-	{ 0, 'T', "trackpen|track",    "", "", "", "" },
-	{ 0, 'W', "outlinepen|pen",    "", "", "", "" },
-	{ 0, 'Z', "ampscale",          "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+                  "n,p",               "negative,positive",
+		  GMT_TP_STANDARD },
+	{ 0, 'I', "fixedazim",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "trackpen|track",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "outlinepen|pen",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Z', "ampscale",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !PSWIGGLE_INC_H */

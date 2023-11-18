@@ -22,14 +22,16 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,     long_directives,
-	          short_modifiers,      long_modifiers */
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'F', "coordinates|coords",
-                                        "", "", "", "" },
+                                        "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'L', "solution|norm",
 	          "1,2,3",              "absolutes,squares,both",
-	          "",                   "" },
-	{ 0, 'S', "small|small_circle", "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "",                   "",
+		  GMT_TP_STANDARD },
+	{ 0, 'S', "small|small_circle", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !FITCIRCLE_INC_H */

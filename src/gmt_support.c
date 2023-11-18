@@ -7723,7 +7723,11 @@ int gmt_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	}
 
 	/* Get the specified length */
-	if ((sscanf (&copy[start], "%lf", dist)) != 1) {
+	if (strlen (&copy[start]) == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No distance argument given, only unit.\n");
+		return (-2);
+	}
+	else if ((sscanf (&copy[start], "%lf", dist)) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to decode %s as a floating point number.\n", &copy[start]);
 		return (-2);
 	}
@@ -17978,6 +17982,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		else
 			T->distmode = gmt_get_distance (GMT, txt[ns], &(T->inc), &(T->unit));
+		if (T->distmode < 0)
+			return GMT_PARSE_ERROR;
 		if (gmt_init_distaz (GMT, T->unit, T->distmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
 			return GMT_PARSE_ERROR;
 		T->spatial = (T->unit == 'X') ? 1 : 2;
@@ -18266,7 +18272,7 @@ bool gmt_no_pstext_input (struct GMTAPI_CTRL *API, char *arg) {
 	/* Determine if -F is such that there is nothing to read */
 	if (strstr (arg, "+c") == NULL) return false;	/* Without +c there will be input */
 	if (strstr (arg, "+t") == NULL) return false;	/* Without +t there will be input */
-	if ((c = strstr (arg, "+A")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +a and no arg there must be input */
+	if ((c = strstr (arg, "+A")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +A and no arg there must be input */
 	if ((c = strstr (arg, "+a")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +a and no arg there must be input */
 	if ((c = strstr (arg, "+j")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +j and no arg there must be input */
 	if ((c = strstr (arg, "+f")) && (c[2] == '+' || c[2] == '\0')) return false;	/* With +f and no arg there must be input */

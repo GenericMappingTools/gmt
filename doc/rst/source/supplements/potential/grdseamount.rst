@@ -140,7 +140,7 @@ Optional Arguments
 
 **-E**
     Set :ref:`elliptical <SMT_map>` data file format. We expect input records to contain
-    *lon, lat, azimuth, semi-major, semi-minor, height* (with  the latter in meter)
+    (*lon, lat, azimuth, semi-major, semi-minor, height*) (with  the latter in meter)
     for each seamount [Default is Circular data format, expecting *lon, lat, radius, height*].
     To mix circular and elliptical seamounts you must use |-E| and provide the circular
     parameters as elliptical ones via *azimuth = 0* and *semi-major = semi-minor = radius*.
@@ -152,7 +152,7 @@ Optional Arguments
    :align: center
 
    Use |-E| to select elliptical rather than circular shapes in map view.  Both shapes require
-   lon, lat. Circular shapes only require the radius :math:`r_0`, while elliptical ones require the
+   (*lon, lat*). Circular shapes only require the radius :math:`r_0`, while elliptical ones require the
    azimuth :math:`\alpha` of the major axis as well as the major and minor semi-axes .
 
 .. _-F:

@@ -33,7 +33,7 @@ jobs:
       uses: iterative/setup-cml@v2.0.1
 
     - name: Setup Micromamba
-      uses: mamba-org/setup-micromamba@v1.5.0
+      uses: mamba-org/setup-micromamba@v1.6.0
       with:
         environment-name: gmt
         condarc: |
@@ -44,12 +44,6 @@ jobs:
         cache-environment: true
         create-args: >-
           gmt
-
-    # workaround from https://github.com/iterative/cml/issues/1377
-    - name: Setup NodeJS
-      uses: actions/setup-node@v3.8.1
-      with:
-        node-version: '16'
 
     # Produce the markdown diff report, which should look like:
     # ## Summary of changed images
