@@ -38,7 +38,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "f,l,m,M",           "first,last,stride,stride_last",
 	          "",                  "",
             GMT_TP_STANDARD },
- 	{ 0, 'F', "conn_method",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "conn_method",       "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'I', "invert|reverse",    "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'L', "segment_headers|list_only", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'N', "sort",
