@@ -34,7 +34,10 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "x,y,o,r",           "x_on_y,y_on_x,ortho|orthogonal,reduced"
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'F', "columns|column_combination", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "columns|column_combination",
+	          "x,y,m,r,c,z,w",     "x,y,model,residual,symmetrical,standardized,weight",
+	          "", "",
+	          GMT_TP_MULTIDIR },
 	{ 0, 'N', "norm",
 	          "1,2,r,w",           "mean_absolute,mean_squared,lms|LMS,rms|RMS",
 	          "",                  "",
@@ -47,7 +50,10 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 	          "i,n",               "inverse,number",
 		  GMT_TP_STANDARD },
-	{ 0, 'W', "weighted",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "weighted",
+	          "w,x,y,r",           "precomputed,x,y,correlations",
+	          "", "",
+	          GMT_TP_MULTIDIR },
 	{ 0, 'Z', "limit",             "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };

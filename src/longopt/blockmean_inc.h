@@ -26,7 +26,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
     { 0, 'A', "fields",
-                  "z,s,l,h,w", "mean,aliastest|stddev,low,high,weight",
+                  "z,s,l,h,w", "mean,stddev,low,high,weight",
                   "",          "",
                   GMT_TP_MULTIDIR },
     { 0, 'C', "center",    "", "", "", "", GMT_TP_STANDARD },

@@ -26,7 +26,9 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
 	{ 0, 'F', "coordinates|coords",
-                                        "", "", "", "", GMT_TP_STANDARD },
+                  "f,m,n,s,c",          "flat_mean,mean,north,south,small",
+                  "",                   "",
+                  GMT_TP_MULTIDIR },
 	{ 0, 'L', "solution|norm",
 	          "1,2,3",              "absolutes,squares,both",
 	          "",                   "",
