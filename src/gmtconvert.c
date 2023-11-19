@@ -45,6 +45,8 @@
 #define EXCLUDE_HEADERS		0
 #define EXCLUDE_DUPLICATES	1
 
+#define NOT_REALLY_AN_ERROR -999
+
 /* Control structure for gmtconvert */
 
 struct GMTCONVERT_CTRL {
@@ -110,6 +112,9 @@ struct GMTCONVERT_CTRL {
 		bool transpose;	/* -Z with no arguments means transpose dataset */
 		int64_t first, last;
 	} Z;
+	struct GMTCONVERT_DEBUG {	/* -/ For testing string detection. Must be first option */
+		bool active;
+	} debug;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -229,17 +234,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	void gmtio_testscanner (struct GMT_CTRL *GMT, char *file);
+	EXTERN_MSC void gmtlib_string_parser (struct GMT_CTRL *GMT, char *file);	/* For debug only */
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
-#if 1
-				gmtio_testscanner (API->GMT, opt->arg);
-				exit (0);
-#endif
+				/* Hidden test of string parsing for developers */
+				if (Ctrl->debug.active) {
+					gmtlib_string_parser (API->GMT, opt->arg);
+					return (NOT_REALLY_AN_ERROR);
+				}
 				break;
 			case '>':	/* Got named output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
@@ -414,6 +420,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 				}
 				break;
 
+			case '/':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->debug.active);
+				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
 				break;
@@ -541,7 +550,10 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
+	if ((error = parse (GMT, Ctrl, options)) != 0) {
+		if (error == NOT_REALLY_AN_ERROR) Return (GMT_NOERROR);
+		Return (error);
+	}
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
