@@ -9904,14 +9904,14 @@ GMT_LOCAL bool gmtio_is_integer (char *string) {
 	return (true);
 }
 
-GMT_LOCAL unsigned int gmtio_text_count (char *string) {
+GMT_LOCAL unsigned int gmtio_count_text (char *string) {
 	unsigned int n_text = 0;
 	for (unsigned int k = 0; k < strlen (string); k++)
 		if (isalpha (string[k])) n_text++;
 	return (n_text);
 }
 
-GMT_LOCAL unsigned int gmtio_digit_count (char *string) {
+GMT_LOCAL unsigned int gmtio_count_digits (char *string) {
 	unsigned int n_digits = 0;
 	for (unsigned int k = 0; k < strlen (string); k++)
 		if (isdigit (string[k])) n_digits++;
@@ -9927,7 +9927,8 @@ GMT_LOCAL bool gmtio_is_valid_integer (char *string, int max) {
 	return ((i > max) ? false : true);
 }
 
-GMT_LOCAL bool gmtio_not_float (char c) {
+GMT_LOCAL bool gmtio_bad_char_in_float (char c) {
+	/* Restricted to use with candidate floats that have no exponent */
 	if (strchr ("0123456789+-.", c) == NULL)	/* Cannot be a floating point number */
 		return true;
 	return (false);
@@ -9951,7 +9952,7 @@ GMT_LOCAL bool gmtio_is_float (struct GMT_CTRL *GMT, char *string, bool allow_ex
 		}
 		else if (string[k] == '-' || string[k] == '/' || string[k] == ':')
 			n_sep++;
-		else if (gmtio_not_float (string[k]))	/* Cannot be part of a floating point number */
+		else if (gmtio_bad_char_in_float (string[k]))	/* Cannot be part of a floating point number */
 			return (false);
 	}
 	if (n_exp > 1) return (false);	/* Cannot have both e and d or more than one */
@@ -9979,7 +9980,7 @@ GMT_LOCAL unsigned int gmtio_is_dimension (struct GMT_CTRL *GMT, char *text) {
 	strncpy (string, text, GMT_LEN128-1);	/* A copy we can mess with */
 	if (string[start] == '-' || string[start] == '+') start++;	/* Skip any leading signs */
 	unit = string[last];	/* Candidate unit */
-	n_text = gmtio_text_count (string);	/* Total letters */
+	n_text = gmtio_count_text (string);	/* Total letters */
 	string[last] = '\0';	/* Temporarily hide the unit */
 	p = &string[start];	/* Start of candidate degree float after any leading sign */
 
@@ -10149,7 +10150,7 @@ GMT_LOCAL unsigned int gmtio_is_time (struct GMT_CTRL *GMT, char *text) {
 		return (GMT_IS_UNKNOWN);
 }
 
-GMT_LOCAL unsigned int gmtio_is_special (struct GMT_CTRL *GMT, char *string) {
+GMT_LOCAL unsigned int gmtio_count_special (struct GMT_CTRL *GMT, char *string) {
 	/* Count special characters that are not part of coordinates */
 	char *p = NULL;
 	int code;
@@ -10181,11 +10182,11 @@ GMT_LOCAL unsigned int gmtio_is_string (struct GMT_CTRL *GMT, char *string) {
 	if (string[start] == '-' || string[start] == '+') start++;	/* Skip any leading signs */
 	p = &string[start];	/* Start of arg after skipping potential signs */
 
-	n_text = gmtio_text_count (p);
-	n_digits = gmtio_digit_count (p);
+	n_text = gmtio_count_text (p);
+	n_digits = gmtio_count_digits (p);
 	if (n_digits == 0) return (GMT_IS_STRING);		/* Cannot be coordinates */
 	if (n_text > 4) return (GMT_IS_STRING);			/* Max letters in abs.time is 4, e.g. 2022-NOV-13T */
-	n_specials = gmtio_is_special (GMT, p);			/* Non-printables, hashtags, semi-columns, parentheses, etc. */
+	n_specials = gmtio_count_special (GMT, p);			/* Non-printables, hashtags, semi-columns, parentheses, etc. */
 	if (n_specials) return (GMT_IS_STRING);			/* Cannot be coordinates */
 	n_periods = gmt_count_char (GMT, p, '.');		/* How many periods. No valid coordinate has more than one */
 	if (n_periods > 1) return (GMT_IS_STRING);		/* Cannot be coordinates */
