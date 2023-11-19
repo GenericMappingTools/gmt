@@ -1,30 +1,35 @@
-# Test for the STRING detector:
+# Tests of the STRING detector:
+# Input-string		|EXPECTED
+#--------------------------------
 Myfiles			|STRING
 HO88&3#			|STRING
 565.565.7654		|STRING
 <myvariable>$$		|STRING
 http://A44B44		|STRING
-# Test for the DIMENSION detector:
+Monday,10/10/2010	|STRING
+# Tests of the DIMENSION detector:
 3.55p			|DIMENSION
 -13.55c			|DIMENSION
 443.55i			|DIMENSION
 55.c			|DIMENSION
 55.cip			|STRING
-# Test for the GEODIMENSION detector:
+# Tests of the GEODIMENSION detector:
 3.55k			|GEODIMENSION
 -13.55u			|GEODIMENSION
 443.55n			|GEODIMENSION
 55.M			|GEODIMENSION
 55.d			|GEODIMENSION
 55.dms			|STRING
-# Test for the ABSTIME detector:
+# Tests of the ABSTIME detector:
 2000-12-04T		|ABSTIME
 2000-12-04T21:09:15.5	|ABSTIME
 1998-09-03		|ABSTIME
 1998-OCT-01T12		|ABSTIME
+OCT-01-2000T12.8	|ABSTIME
 12/16/2022T		|ABSTIME
 7654/11/31T22:23:24.07	|ABSTIME
-# Test for the LONGITUDE detector:
+10/30/2020T22:23	|ABSTIME
+# Tests of the LONGITUDE detector:
 -33.56			|FLOAT
 -0.8e+04		|FLOAT
 -e+05			|FLOAT
@@ -39,7 +44,7 @@ Testtring		|STRING
 098sdf098r		|STRING
 nbnidf			|STRING
 44:55:61		|STRING
-# Test for the LATITUDE detector:
+# Tests of the LATITUDE detector:
 -33.56			|FLOAT
 -0.8e+04		|STRING
 -e+05			|FLOAT
