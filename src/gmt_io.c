@@ -9904,6 +9904,20 @@ GMT_LOCAL bool gmtio_is_integer (char *string) {
 	return (true);
 }
 
+GMT_LOCAL unsigned int gmtio_text_count (char *string) {
+	unsigned int n_text = 0;
+	for (unsigned int k = 0; k < strlen (string); k++)
+		if (isalpha (string[k])) n_text++;
+	return (n_text);
+}
+
+GMT_LOCAL unsigned int gmtio_digit_count (char *string) {
+	unsigned int n_digits = 0;
+	for (unsigned int k = 0; k < strlen (string); k++)
+		if (isdigit (string[k])) n_digits++;
+	return (n_digits);
+}
+
 GMT_LOCAL bool gmtio_is_valid_integer (char *string, int max) {
 	/* Returns true if argument is an integer and it is <= max. string has no leading sign */
 	int i;
@@ -9924,7 +9938,7 @@ GMT_LOCAL bool gmtio_is_float (struct GMT_CTRL *GMT, char *string, bool allow_ex
 	 * If allow_exp is false then we only allow [±]<f.xxx>. If max > 0 then float must be <= max.
 	 * Note: string has no leading sign. */
 
-	unsigned int L = strlen (string), k = 0, n_exp = 0;
+	unsigned int L = strlen (string), k = 0, n_exp = 0, n_sep = 0;
 	for (k = 0; k < L; k++) {
 		if (string[k] == 'e' || string[k] == 'd') {	/* Allow junk FORTRAN output using d for double precision exponential format */
 			if (!allow_exp) return (false);
@@ -9935,10 +9949,13 @@ GMT_LOCAL bool gmtio_is_float (struct GMT_CTRL *GMT, char *string, bool allow_ex
 			else	/* Got e|d with nothing after, must be text */
 				return (false);
 		}
+		else if (string[k] == '-' || string[k] == '/' || string[k] == ':')
+			n_sep++;
 		else if (gmtio_not_float (string[k]))	/* Cannot be part of a floating point number */
 			return (false);
 	}
 	if (n_exp > 1) return (false);	/* Cannot have both e and d or more than one */
+	if (n_sep > 1 && n_exp == 0) return (false);	/* Must be something like yyyy/mm/dd or yyyy-mm-dd or part of a clock or geographic coordinate */
 	if (max > 0.0) {	/* Check if inside range */
 		double d = atof (string);
 		return ((d > max) ? false : true);
@@ -9952,19 +9969,29 @@ GMT_LOCAL unsigned int gmtio_is_dimension (struct GMT_CTRL *GMT, char *text) {
 	 *   1) [±]f.xxx[c|i|p]	Plot dimension with or without units
 	 *   2) [±]f.xxx[d|m|s|e|f|k|M|n|u]	Map dimension
 	 *   3) [±]interval[y|o|w|d|h|m|s]	Time duration/interval
+	 * Note: max letters is 2, e.g.,  3.4e|d+02<unit>
 	 */
-	char string[GMT_LEN128] = {""};
+	char string[GMT_LEN128] = {""}, unit, *p = NULL;
 	int code = GMT_IS_UNKNOWN;
-	int last = strlen (text) - 1;
+	unsigned int last = strlen (text) - 1, start = 0, n_text;
 
-	if (strchr (GMT_DIM_UNITS, string[last])) {	/* Might be a dimension */
-		code = GMT_IS_DIMENSION;
-	}
-	else if (strchr (GMT_LEN_UNITS, string[last])) {	/* Might be a geo-dimension */
-		code = GMT_IS_GEODIMENSION;
-	}
-	else if (strchr (GMT_TIME_UNITS, string[last])) {	/* Might be a time interval/duration */
-		code = GMT_IS_DURATION;
+	if (!isalpha (text[last])) return GMT_IS_UNKNOWN;	/* Dimensions do need a unit of some sort */
+	strncpy (string, text, GMT_LEN128-1);	/* A copy we can mess with */
+	if (string[start] == '-' || string[start] == '+') start++;	/* Skip any leading signs */
+	unit = string[last];	/* Candidate unit */
+	n_text = gmtio_text_count (string);	/* Total letters */
+	string[last] = '\0';	/* Temporarily hide the unit */
+	p = &string[start];	/* Start of candidate degree float after any leading sign */
+
+	if (gmtio_is_float (GMT, p, true, 0.0)) {	/* Stuff before the unit is a valid float */
+		if (strchr (GMT_DIM_UNITS, unit))	/* A dimension */
+			code = GMT_IS_DIMENSION;
+		else if (strchr (GMT_LEN_UNITS, unit))	/* A a geo-dimension */
+			code = GMT_IS_GEODIMENSION;
+		else if (strchr (GMT_TIME_UNITS, unit))	/* A time interval/duration */
+			code = GMT_IS_DURATION;
+		else if (n_text > 2)	/* Cannot be a dimension */
+			code = GMT_IS_STRING;
 	}
 	return (code);
 }
@@ -10040,36 +10067,15 @@ GMT_LOCAL unsigned int gmtio_is_dimension (struct GMT_CTRL *GMT, char *text) {
 		else if (!gmtio_is_float (GMT, p, false, 60.0))	/* Cannot be a floating point number of minutes */
 			return (GMT_IS_STRING);
 		if (d > 90) return (GMT_IS_LON);	/* Valid and exceeds 90 so a longitude */
-		if (explicit == GMT_X) return (GMT_IS_LON);	/* trailing W or E means longitude */
-		if (explicit == GMT_Y) return (GMT_IS_LAT);	/* trailing S or N means latitude */
-		return (GMT_IS_GEO);
+		if (explicit == GMT_IS_LON) return (GMT_IS_LON);	/* trailing W or E means longitude */
+		if (explicit == GMT_IS_LAT) return (GMT_IS_LAT);	/* trailing S or N means latitude */
+		return (GMT_IS_GEO);	/* Cannot tell lon and lat apart */
 	}
 	else if (gmtio_is_float (GMT, p, true, d_limit))	/* Rely on explicit if set */
 		return (GMT_IS_FLOAT);
 	else if (!gmtio_is_float (GMT, p, true, d_limit))	/* Cannot be a floating point number */
 		return (GMT_IS_STRING);
 	return (GMT_IS_FLOAT);	/* Floating point number so could be a longitude but cannot know that just from text */
-}
-
-
-GMT_LOCAL char *gmtio_type_name (unsigned int kind) {
-	char *t = NULL;
-	switch (kind) {
-		case GMT_IS_NAN: 		t = "NAN"; break;
-		case GMT_IS_FLOAT: 		t = "FLOAT"; break;
-		case GMT_IS_LAT: 		t = "LATITUDE"; break;
-		case GMT_IS_LON: 		t = "LONGITUDE"; break;
-		case GMT_IS_GEO: 		t = "GEOGRAPHIC"; break;
-		case GMT_IS_RELTIME: 		t = "RELTIME"; break;
-		case GMT_IS_ABSTIME: 		t = "ABSTIME"; break;
-		case GMT_IS_RATIME: 		t = "RATIME"; break;
-		case GMT_IS_DURATION: 		t = "DURATION"; break;
-		case GMT_IS_DIMENSION:		t = "DIMENSION"; break;
-		case GMT_IS_GEODIMENSION:	t = "GEODIMENSION"; break;
-		case GMT_IS_STRING:		t = "STRING"; break;
-		case GMT_IS_UNKNOWN:		t = "UNKNOWN"; break;
-	}
-	return (t);
 }
 
 GMT_LOCAL unsigned int gmtio_is_time (struct GMT_CTRL *GMT, char *text) {
@@ -10135,8 +10141,12 @@ GMT_LOCAL unsigned int gmtio_is_time (struct GMT_CTRL *GMT, char *text) {
 				if (!(strlen (C[k]) == 3 && isalpha (C[k][0])))	return (GMT_IS_STRING);	/* Allow 3-char months to pass */
 			}
 		}
+		return (GMT_IS_ABSTIME);
 	}
-	return (GMT_IS_ABSTIME);
+	else if (gmtio_is_float (GMT, p, true, 0.0))
+		return (GMT_IS_FLOAT);
+	else
+		return (GMT_IS_UNKNOWN);
 }
 
 GMT_LOCAL unsigned int gmtio_is_special (struct GMT_CTRL *GMT, char *string) {
@@ -10149,6 +10159,7 @@ GMT_LOCAL unsigned int gmtio_is_special (struct GMT_CTRL *GMT, char *string) {
 	p = &string[start];	/* Start of arg after skipping potential signs */
 
 	for (k = start; k < L; k++) {
+		if (p[k] == '-' || p[k] == '+') continue;	/* Signs or dashes are counted elsewhere */
 		code = (int)p[k];
 		if (code < '.') n_special++;
 		else if (code > ';' && code < 'A') n_special++;
@@ -10170,10 +10181,8 @@ GMT_LOCAL unsigned int gmtio_is_string (struct GMT_CTRL *GMT, char *string) {
 	if (string[start] == '-' || string[start] == '+') start++;	/* Skip any leading signs */
 	p = &string[start];	/* Start of arg after skipping potential signs */
 
-	for (k = start; k < L; k++) {
-		if (isalpha (string[k])) n_text++;
-		if (isdigit (string[k])) n_digits++;
-	}
+	n_text = gmtio_text_count (p);
+	n_digits = gmtio_digit_count (p);
 	if (n_digits == 0) return (GMT_IS_STRING);		/* Cannot be coordinates */
 	if (n_text > 4) return (GMT_IS_STRING);			/* Max letters in abs.time is 4, e.g. 2022-NOV-13T */
 	n_specials = gmtio_is_special (GMT, p);			/* Non-printables, hashtags, semi-columns, parentheses, etc. */
@@ -10196,15 +10205,36 @@ GMT_LOCAL unsigned int gmtio_determine_datatype (struct GMT_CTRL *GMT, char *tex
 	if (code == GMT_IS_STRING) return (code);	/* Detect junk first */
 	if (gmtio_is_float (GMT, text, true, 0.0))	/* Found a plain float */
 		return (GMT_IS_FLOAT);
-	code = gmtio_is_time (GMT, text);		/* Check for absolute time */
-	if (code == GMT_IS_ABSTIME) return (code);	/* Found absolute time */
 	code = gmtio_is_dimension (GMT, text);		/* Check for dimensions and intervals */
 	if (code != GMT_IS_UNKNOWN) return (code);	/* Found dimension or time interval */
 	code = gmtio_is_coordinate (GMT, GMT_Y, text);	/* Other coordinates (geographic, x, y) */
-	if (code == GMT_IS_LAT) return (code);		/* Found a latitude */
+	if (code & GMT_IS_LAT) return (code);		/* Found a latitude */
 	code = gmtio_is_coordinate (GMT, GMT_X, text);	/* Other coordinates (geographic, x, y) */
-	if (code == GMT_IS_LON) return (code);		/* Found a longitude */
-	return (GMT_IS_UNKNOWN);			/* Mystery, WTF? */
+	if (code & GMT_IS_LON) return (code);		/* Found a longitude */
+	code = gmtio_is_time (GMT, text);		/* Check for absolute time */
+	if (code == GMT_IS_ABSTIME) return (code);	/* Found absolute time */
+	return (GMT_IS_STRING);				/* Mystery, WTF? */
+}
+
+
+GMT_LOCAL char *gmtio_type_name (unsigned int kind) {
+	char *t = NULL;
+	switch (kind) {
+		case GMT_IS_NAN: 		t = "NAN"; break;
+		case GMT_IS_FLOAT: 		t = "FLOAT"; break;
+		case GMT_IS_LAT: 		t = "LATITUDE"; break;
+		case GMT_IS_LON: 		t = "LONGITUDE"; break;
+		case GMT_IS_GEO: 		t = "GEOGRAPHIC"; break;
+		case GMT_IS_RELTIME: 		t = "RELTIME"; break;
+		case GMT_IS_ABSTIME: 		t = "ABSTIME"; break;
+		case GMT_IS_RATIME: 		t = "RATIME"; break;
+		case GMT_IS_DURATION: 		t = "DURATION"; break;
+		case GMT_IS_DIMENSION:		t = "DIMENSION"; break;
+		case GMT_IS_GEODIMENSION:	t = "GEODIMENSION"; break;
+		case GMT_IS_STRING:		t = "STRING"; break;
+		case GMT_IS_UNKNOWN:		t = "UNKNOWN"; break;
+	}
+	return (t);
 }
 
 void gmtlib_string_parser (struct GMT_CTRL *GMT, char *file)
