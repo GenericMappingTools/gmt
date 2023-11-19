@@ -229,12 +229,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+	void gmtio_testscanner (struct GMT_CTRL *GMT, char *file);
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
+#if 1
+				gmtio_testscanner (API->GMT, opt->arg);
+				exit (0);
+#endif
 				break;
 			case '>':	/* Got named output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);

@@ -9888,3 +9888,5 @@ void gmt_quit_bad_record (struct GMTAPI_CTRL *API, struct GMT_RECORD *In) {
 	if (In->text) GMT_Report (API, GMT_MSG_ERROR, "Data file only has trailing text. GMT expects numerical columns followed by optional trailing text\n");
 	API->error = GMT_DIM_TOO_SMALL;
 }
+
+#include "newcode.c"
