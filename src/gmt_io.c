@@ -10121,8 +10121,8 @@ unsigned int gmtlib_is_coordinate (struct GMT_CTRL *GMT, unsigned int type, char
 
 unsigned int gmtlib_is_time (struct GMT_CTRL *GMT, char *text) {
 	/* Detect if we are given an absolute datetime string */
-	bool is_float;
-	unsigned int start = 0, n_colon, n_dash, n_slash, n_items, k, i_limit = 0, Li, L = strlen (text) - 1;
+	bool is_float = false, date_only = false, clock_only = false;
+	unsigned int start = 0, n_colon = 0, n_dash = 0, n_slash = 0, n_items = 0, k, i_limit = 0, Li, L = strlen (text) - 1;
 	char string[GMT_LEN128] = {""}, *c = NULL, *p = NULL, C[6][GMT_LEN64] = {""};
 	double d_limit = 0.0;
 	strncpy (string, text, GMT_LEN128-1);	/* A copy we can mess with */
@@ -10156,30 +10156,69 @@ unsigned int gmtlib_is_time (struct GMT_CTRL *GMT, char *text) {
 	 		gmt_M_str_free (q);
 			p = &string[start];	/* Start of arg after skipping sign */
 	 	}
-	 	if ((c = strchr (p, 'T'))) c[0] = ' ';	/* Remove the possible date/time separator (not so if jun) */
+	 	if ((c = strchr (p, 'T'))) {	/* Remove the possible date/time separator (not so if jun) */
+	 		if (p[0] == 'T') clock_only = true;	/* E.g., T14:30:10.2 */
+	 		c[0] = ' ';
+	 		if (c[1] && !isdigit (c[1])) return (GMT_IS_STRING);
+	 	}
 	 	/* Get the first 3 items */
 		n_items = sscanf (p, "%s %s %s %s %s %s", C[0], C[1], C[2], C[3], C[4], C[5]);	/* Hope to get year month day hh oo ss.xx */
-		/* n_items = 6: yyyy oo dd hh mm ss.xxx
-		 * n_items = 5: yyyy oo dd hh mm.xxx or yyyy oo hh mm ss.xxx or yyyy jj hh mm ss.xxx
+		/*  n_items = 6: yyyy oo dd hh mm ss.xxx
+		 *  n_items = 5: yyyy oo dd hh mm.xxx or yyyy oo hh mm ss.xxx or yyyy jj hh mm ss.xxx
 		 *  n_items = 4: yyyy oo dd hh.xxx or yyyy oo hh mm.xxx or yyyy jj hh mm.xxx
 		 *  n_items = 3: yyyy oo dd or yyyy oo hh.xxx or yyyy jj hh.xxx
 		 *  n_items = 2: yyyy oo or yyyy jj
 		 *  n_items = 1: yyyy
 		 */
-		for (k = 0; k < n_items; k++) {
-			Li = strlen (C[k]);	i_limit = 0;	d_limit = 0.0;
-			is_float = (strchr (C[k], '.') != NULL);
-			switch (Li) {
-				case 0: case 4:	break;
-				case 1: case 2:	i_limit = 60;	break;
-				case 3:	i_limit = 366;	break;
-				default: d_limit = (is_float) ? 60.0 : 0.0;	break;
+	 	date_only = (n_items <= 3 && n_colon == 0 && (n_dash || n_slash));
+	 	if (clock_only) {
+			for (k = 0; k < n_items; k++) {
+				i_limit = 0;	d_limit = 0.0;
+				is_float = (strchr (C[k], '.') != NULL);
+				switch (k) {
+					case 0:  i_limit = 24;	d_limit = 24.0;	break;
+					default: i_limit = 60;	d_limit = 60.0;	break;
+				}
+				if (is_float) {
+					if (!gmtio_is_float (GMT, C[k], false, d_limit)) return (GMT_IS_STRING);
+				}
+				else if (!gmtio_is_valid_integer (C[k], i_limit))	/* Not a valid integer */
+					return (GMT_IS_STRING);
 			}
-			if (is_float) {
-				if (!gmtio_is_float (GMT, C[k], false, d_limit)) return (GMT_IS_STRING);
+	 	}
+	 	else if (date_only) {	/* Date only in yyyy-mm|MON-dd or yyyy-jjj */
+			for (k = 0; k < n_items; k++) {
+				Li = strlen (C[k]);
+				is_float = (strchr (C[k], '.') != NULL);
+				switch (k) {
+					case 0:	i_limit = (Li == 4) ? 0 : 12;	break;	/* No limit on yyyy but if not year then mm/dd/yyyy US stuff */
+					case 1: i_limit = (n_items == 2) ? 366 : ((i_limit == 12) ? 31 : 12);	break;	/* Limits on months or Julian day, or day if US stuff  */
+					case 2:	i_limit = (Li == 4) ? 0 : 31;	break;	/* Days in the month unless yyyy */
+				}
+				if (is_float) {
+					if (!gmtio_is_float (GMT, C[k], false, (double)i_limit)) return (GMT_IS_STRING);
+				}
+				else if (!gmtio_is_valid_integer (C[k], i_limit)) {	/* Not an integer */
+					if (!(Li == 3 && isalpha (C[k][0]))) return (GMT_IS_STRING);	/* Allow 3-char months to pass */
+				}
 			}
-			else if (!gmtio_is_valid_integer (C[k], i_limit)) {	/* Not an integer */
-				if (!(strlen (C[k]) == 3 && isalpha (C[k][0])))	return (GMT_IS_STRING);	/* Allow 3-char months to pass */
+		}
+	 	else {	/* Date and possibly clock */
+			for (k = 0; k < n_items; k++) {
+				Li = strlen (C[k]);	i_limit = 0;	d_limit = 0.0;
+				is_float = (strchr (C[k], '.') != NULL);
+				switch (Li) {
+					case 0: case 4:	break;	/* No limit on yyyy */
+					case 1: case 2:	i_limit = (k == 1) ? 12 : 60;	break;
+					case 3:	if (gmtio_is_valid_integer (C[k], 0)) i_limit = 366;	break;	/* Julian days or MMM */
+					default: d_limit = (is_float) ? 60.0 : 0.0;	break;
+				}
+				if (is_float) {
+					if (!gmtio_is_float (GMT, C[k], false, d_limit)) return (GMT_IS_STRING);
+				}
+				else if (!gmtio_is_valid_integer (C[k], i_limit)) {	/* Not an integer */
+					if (!(Li == 3 && isalpha (C[k][0]))) return (GMT_IS_STRING);	/* Allow 3-char months to pass */
+				}
 			}
 		}
 		return (GMT_IS_ABSTIME);
