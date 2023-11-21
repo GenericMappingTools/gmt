@@ -3381,46 +3381,9 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 	 * 3-char text string (e.g., OCT), then the length of the
 	 * txt variable can be 21 + the # of .xxxx + 1 (period).
 	 * So at 0.1 milli-second precision we have a max of 24 chars.
-	 *
 	 */
-	size_t k, L = strlen (txt);
-	unsigned int n_dash = 0, n_slash = 0, n_colon = 0;
-	int64_t start = -1;
-	char *c = NULL;
-	gmt_M_unused (GMT);
-
-	if (L > 24U) return false;	/* Most likely too long to be an absolute time, e.g. 31-SEP-2000T13:45:31.3333 is 24 char long */
-	if (L < 4U) return false;	/* Most likely too short to be an absolute time, e.g. 2001T is 5 char long */
-	for (k = 0; k < L; k++) {	/* Count slashes and dashes */
-		if (txt[k] == '-') { n_dash++; if (start == -1) start = k; }
-		else if (txt[k] == '/') { n_slash++; if (start == -1) start = k; }
-		else if (txt[k] == ':') { n_colon++; if (start == -1) start = k; }
-	}
-	if ((c = strchr (txt, 'T'))) {	/* Maybe the T between date and clock */
-		size_t first = (size_t) (c - txt);	/* Position of that T must be either 0, 4, or between 9 and 12  */
-		if (first == 0 || first == 4 || (first > 8 && first < 13)) {
-			if (txt[first+1] == '\0' || isdigit (txt[first+1]))	/* Absolute date detected (most likely), e.g. 2001T, T14:45 */
-				return true;
-			else
-				return false;
-		}
-	}
-	else if (n_colon && n_slash == 0 && n_dash <= 1)	/* No 'T', got [-]xxx..:yy...[:ss...] probably */
-		return false;
-	else if (txt[0] == '-' || txt[0] == '+')	/* No 'T' and starts with a sign is likely non-time related */
-		return false;	/* datestring most likely do not start with a sign. */
-	/* Maybe user forgot the 'T' flag? */
-	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected (most likely) */
-		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
-
-	if (strchr (txt, 'e') || strchr (txt, 'E')) return false;	/* Check for exponentials (or East) since -0.5e-2 would trigger on two dashes */
-	/* Here there is no T, but perhaps somebody forgot to add T to 2004-10-19 or 1999/04/05 ? */
-	if (start > 0 && ((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))	/* Absolute date detected */
-		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
-	/* Last ditch check for Julian days */
-	if (start > 0 && (n_dash + n_slash) == 1)
-		return true;	/* Might be yyyy/jjj or yyyy-jjj with missing trailing T */
-	return false;
+	if (gmtlib_determine_datatype (GMT, txt) == GMT_IS_ABSTIME) return (true);
+	return (false);	/* SOrry, not an absolute time string */
 }
 
 GMT_LOCAL enum gmt_col_enum gmtio_physical_coltype (struct GMT_CTRL *GMT, unsigned int col) {
