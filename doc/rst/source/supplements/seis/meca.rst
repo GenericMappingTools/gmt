@@ -182,14 +182,14 @@ Optional Arguments
     Plots the nodal planes and outlines the bubble which is transparent.
     If *nplane* is
 
-    *0*: both nodal planes are plotted;
+    *0*: both nodal planes are plotted [Default];
 
     *1*: only the first nodal plane is plotted;
 
     *2*: only the second nodal plane is plotted.
 
     Append **/**\ *pen* to set the pen attributes for this feature.
-    Default pen is as set by |-W|. [Default: 0].
+    Default pen is as set by |-W|.
 
     For double couple mechanisms, the |-T| option renders the beach ball transparent
     by drawing only the nodal planes and the circumference.
