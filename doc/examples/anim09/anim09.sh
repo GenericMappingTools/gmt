@@ -22,7 +22,8 @@ cat << 'EOF' > pre.sh
 #!/usr/bin/env bash
 # Pre-script: Runs once to produce files needed for all frames
 gmt begin
-	gmt grdgradient @earth_relief_30s -A90 -Nt2.5 -Gearth_relief_30s+2.5_int.nc
+	gmt grdcut -Rd @earth_relief_30s -Gearth_relief_30s.nc
+	gmt grdgradient earth_relief_30s.nc -A90 -Nt2.5 -Gearth_relief_30s+2.5_int.nc
 	gmt makecpt -Cgeo -H > MOR_topo.cpt
 gmt end
 EOF
@@ -39,7 +40,7 @@ cat << 'EOF' > main.sh
 # and the other view parameters from the include file.
 gmt begin
 	gmt grdimage -Rg -JG${MOVIE_COL0}/${MOVIE_COL1}/${MOVIE_WIDTH}+z${ALTITUDE}+a${MOVIE_COL2}+t${TILT}+w${MOVIE_COL3}+v${WIDTH}/${HEIGHT} \
-	  -Y0 -X0 @earth_relief_30s -Iearth_relief_30s+2.5_int.nc -CMOR_topo.cpt
+	  -Y0 -X0 earth_relief_30s.nc -Iearth_relief_30s+2.5_int.nc -CMOR_topo.cpt
 	gmt events MOR_names.txt -L100 -Et+r6+f6 -T${MOVIE_FRAME} -F+f12p,Helvetica-Bold,yellow
 gmt end
 EOF
