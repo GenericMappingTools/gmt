@@ -584,7 +584,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C<zlevel>");
 	GMT_Usage (API, -2, "Continue field upward (+) or downward (-) to <zlevel> (meters). ");
 	GMT_Usage (API, 1, "\n-D[<scale>|g]");
-	GMT_Usage (API, -2, "Differentiate, i.e., multiply by kr [ and optionally by <scale>].  Use -Dg to get mGal from m].");
+	GMT_Usage (API, -2, "Differentiate, i.e., multiply by kr [ and optionally by <scale>].  Use -Dg to get mGal from m] (repeatable).");
 	GMT_Usage (API, 1, "\n-E[r|x|y][+w[k]][+n]");
 	GMT_Usage (API, -2, "Estimate spEctrum in the radial r [Default], x, or y-direction. "
 		"Given one grid X, write f, Xpower[f] to output file (see -G) or standard output. "
@@ -608,7 +608,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Filename for output grid file OR 1-D data table (see -E). "
 		"Note: Optional for -E (spectrum written to standard output); required otherwise.");
 	GMT_Usage (API, 1, "\n-I[<scale>|g]");
-	GMT_Usage (API, -2, "Integrate, i.e., divide by kr [ and optionally by scale].  Use -Ig to get m from mGal].");
+	GMT_Usage (API, -2, "Integrate, i.e., divide by kr [ and optionally by scale].  Use -Ig to get m from mGal] (repeatable).");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Usage (API, 1, "\n-Q Perform no operations, just do forward FFF and write output if selected in -N.");
 	GMT_Usage (API, 1, "\n-S<scale>|d");
@@ -695,8 +695,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 						"Option -C: Cannot read zlevel\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_UP_DOWN_CONTINUE, 1, par);
 				break;
-			case 'D':	/* d/dz */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+			case 'D':	/* d/dz [repeatable] */
+				Ctrl->D.active = true;
 				par[0] = (opt->arg[0]) ? ((opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg)) : 1.0;
 				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -D: scale must be nonzero\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
@@ -748,8 +748,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
-			case 'I':	/* Integrate */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+			case 'I':	/* Integrate  [repeatable]*/
+				Ctrl->I.active = true;
 				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -I: scale must be nonzero\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_INTEGRATE, 1, par);
