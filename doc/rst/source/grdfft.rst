@@ -77,7 +77,7 @@ Optional Arguments
     to multiplying by :math:`k_r` in the frequency domain (:math:`k_r` is radial wave
     number). Append a scale to multiply by :math:`k_r \cdot`\ *scale*) instead.
     Alternatively, append **g** to indicate that your data are geoid
-    heights in meters and output should be gravity anomalies in mGal.
+    heights in meters and output should be gravity anomalies in mGal. Repeatable.
     [Default is no scale].
 
 .. _-E:
@@ -155,7 +155,7 @@ Optional Arguments
     radial wave number). Append a scale to divide by :math:`k_r \cdot`\ *scale*
     instead. Alternatively, append **g** to indicate that your data set
     is gravity anomalies in mGal and output should be geoid heights in
-    meters. [Default is no scale].
+    meters.  Repeatable. [Default is no scale].
 
 .. _-N:
 
