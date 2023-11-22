@@ -257,7 +257,7 @@ Optional Arguments
 
     *2*: only the second nodal plane is plotted.
 
-    Append **++p**\ *pen* to set alternative pen attributes for this feature 
+    Append **+p**\ *pen* to set alternative pen attributes for this feature 
     [Default pen is as set by |-W|].
 
     For double couple mechanisms, the |-T| option renders the beach ball transparent

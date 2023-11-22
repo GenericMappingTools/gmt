@@ -519,11 +519,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				if (opt->arg[0] == '\0') continue;	/* Default plane and pen implied; move on */
-				if ((c = strstr (opt->arg, "+p")) && gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {	/* Modern modifier for pen but failed parsing the pen */
+				if ((p = strstr (opt->arg, "+p")) && gmt_getpen (GMT, &p[2], &Ctrl->T.pen)) {	/* Modern modifier for pen but failed parsing the pen */
 					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
 				}
-				else if ((c = strchr (opt->arg, '/')) && gmt_getpen (GMT, &c[1], &Ctrl->T.pen)) {
+				else if ((p = strchr (opt->arg, '/')) && gmt_getpen (GMT, &p[1], &Ctrl->T.pen)) {
 					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
 				}
