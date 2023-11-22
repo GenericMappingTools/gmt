@@ -171,7 +171,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] [-A%s] [%s] "
 		"[-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] "
 		"[-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] "
-		"[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-N] %s%s[-T[<nplane>[/<pen>]]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, SEIS_LINE_SYNTAX, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT,
 		GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -243,12 +243,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Sets pen attribute for outline other than the default set by -W.");
 	GMT_Usage (API, 1, "\n-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-T<plane>[/<pen>]");
+	GMT_Usage (API, 1, "\n-T[<plane>[/<pen>]]");
 	GMT_Usage (API, -2, "Draw specified nodal <plane>(s) and circumference only to provide a transparent beach ball "
 		"using the current pen (see -W; or append alternative pen):");
 	GMT_Usage (API, 3, "1: Only the first nodal plane is plotted.");
 	GMT_Usage (API, 3, "2: Only the second nodal plane is plotted.");
-	GMT_Usage (API, 3, "0: Both nodal planes are plotted.");
+	GMT_Usage (API, 3, "0: Both nodal planes are plotted [Default].");
 	GMT_Usage (API, -2, "Note: If moment tensor is required, nodal planes overlay moment tensor.");
 	GMT_Option (API, "U,V");
 	GMT_Usage (API, 1, "\n-W<pen>");
@@ -518,7 +518,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
+				if (opt->arg[0]) sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && gmt_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
