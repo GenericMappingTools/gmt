@@ -30,7 +30,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'D', "min_distance|min_dist", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'F', "filter",            "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'N', "multifile|multi",   "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'Q', "outputs|xyzdh",
+	{ 0, 'Q', "outputs|fields",
 	          "x,y,z,d,h",         "x,y,z,distance|dist,heading|hdg",
 	          "",                  "",
 		  GMT_TP_MULTIDIR },
