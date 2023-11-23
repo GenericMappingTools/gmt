@@ -15,7 +15,7 @@ Synopsis
 **gmt spatial** [ *table* ]
 [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
-[ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*] ]
+[ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *factor*] ]
 [ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
@@ -85,7 +85,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*]
+**-D**\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *factor*]
     Check for duplicates among the input lines or polygons, or, if
     *file* is given via **+f**, check if the input features already
     exist among the features in *file*. We consider the cases of exact
@@ -100,10 +100,10 @@ Optional Arguments
     single letter Y (exact match) or ~ (approximate match). If the two
     matching segments differ in length by more than a factor of 2 then
     we consider the duplicate to be either a subset (-) or a superset
-    (+). Finally, we also note if two lines are the result of splitting
-    a continuous line across the Dateline (|).
-    For polygons we also consider the fractional difference in
-    areas; duplicates must differ by less than *amax* [0.01]. By
+    (+). Use **+s** to set another *factor* than 2. Finally, we also
+    note if two lines are the result of splitting a continuous line across
+    the Dateline (|). For polygons we also consider the fractional difference
+    in areas; duplicates must differ by less than *amax* [0.01]. By
     default, we compute the mean line separation. Use **+C**\ *cmin* to
     instead compute the median line separation and therefore a robust
     closeness value. Also by default we consider all distances between

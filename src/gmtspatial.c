@@ -766,7 +766,7 @@ GMT_LOCAL struct NN_INFO *gmtspatial_NNA_update_info (struct GMT_CTRL *GMT, stru
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]] [-E+n|p] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<factor>]] [-E+n|p] "
 		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+i][+p[<ID>]][+r][+z]] [-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
 		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [-W<dist>[<unit>][+f|l]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -783,7 +783,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Considers 3rd column as z (if present) and 4th as w, if present [weight = 1].");
 	GMT_Usage (API, 1, "\n-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons. "
 		"For truncation instead (possibly yielding open polygons, i.e., lines), see -T.");
-	GMT_Usage (API, 1, "\n-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]");
+	GMT_Usage (API, 1, "\n-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<factor>]");
 	GMT_Usage (API, -2, "Look for (near-)duplicate lines or polygons. Duplicate lines have a minimum point separation less than <dmax> and a closeness "
 		"ratio (mean separation/length) less than <cmax>.  "
 		"If near-duplicates have lengths that differ by <sfact> or more then they are subsets or supersets. "
@@ -795,7 +795,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+d Set minimum mean point separation [0].");
 	GMT_Usage (API, 3, "+f Compare <table> against <file> instead of itself.");
 	GMT_Usage (API, 3, "+p limit comparison to points that project perpendicularly on to the other line [all points].");
-	GMT_Usage (API, 3, "+s Set length ratio difference threshold [2].");
+	GMT_Usage (API, 3, "+s Set length ratio difference threshold factor [2].");
 	GMT_Usage (API, 1, "\n-E+n|p");
 	GMT_Usage (API, -2, "Orient all polygons to have the same handedness:");
 	GMT_Usage (API, 3, "+n Impose clockwise (negative) handedness.");
