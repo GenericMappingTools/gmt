@@ -25,18 +25,12 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'C', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'D', "",
-	          "",                  "",
+	{ 0, 'C', "convert",	       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "defaults|units",
+	          "u,s",               "us|US,si|SI",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
+	{ 0, 'G', "gmtconf|defaultsfile", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTSET_INC_H */
