@@ -20,7 +20,7 @@ Synopsis
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
 [ |-L|\ *dist*\ /*noise*\ /*offset* ]
-[ |-N|\ *pfile*\ [**+a**][**+i**][**+p**\ *start*][**+r**][**+z**] ]
+[ |-N|\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**] ]
 [ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
@@ -143,13 +143,13 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *pfile*\ [**+a**][**+i**][**+p**\ *start*][**+r**][**+z**]
+**-N**\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**]
     Lines and polygons: Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
     taken from the aspatial value assigned to Z, the segment header
     (first |-Z|, then |-L| are scanned), or it is assigned the
-    running number that is initialized to *start* [0]. By default the
+    running number that is initialized via **+p** to *start* [0]. By default the
     input segments that are found to be inside a polygon are written to
     standard output with the polygon ID encoded in the segment header as
     **-Z**\ *ID*. Alternatively, append **+r** to just report which

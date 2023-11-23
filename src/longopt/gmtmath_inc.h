@@ -23,23 +23,28 @@
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
+	          short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'A', "init|matrix",
 	          "",                  "",
-	          "e,r,s,w",           "evaluate,no_left,sigma,weights" },
-	{ 0, 'C', "columns",           "", "", "", "" },
-	{ 0, 'E', "eigen",             "", "", "", "" },
-	{ 0, 'I', "invert|reverse",    "", "", "", "" },
-	{ 0, 'N', "ncolumns",          "", "", "", "" },
+	          "e,r,s,w",           "evaluate,no_left,sigma,weights",
+		  GMT_TP_STANDARD },
+	{ 0, 'C', "columns",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'E', "eigen",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "invert|reverse",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "ncolumns",          "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'Q', "quick",
 	          "c,i,p,n",           "cm|centimeter,inch,point,none",
-	          "",                  "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'S', "output",
 	          "f,l",               "first,last",
-	          "",                  "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'T', "range|series",
 	          "",                  "",
-	          "b,l,i,n",           "log2,log10,inverse,number" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "b,l,i,n",           "log2,log10,inverse,number",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTMATH_INC_H */

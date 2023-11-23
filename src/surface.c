@@ -831,6 +831,7 @@ GMT_LOCAL int surface_read_data (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 	if (C->npoints == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No datapoints inside region, aborting\n");
+		gmt_M_free (GMT, C->data);
 		return (GMT_RUNTIME_ERROR);
 	}
 

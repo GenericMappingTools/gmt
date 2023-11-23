@@ -22,31 +22,38 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
-	          short_directives,          long_directives,
-	          short_modifiers,           long_modifiers */
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'A', "resample",
 	          "f,p,m,r,R",               "keeporig,pmfollow,mpfollow,equidistant,exactfit",
-	          "l",                       "rhumb" },
+	          "l",                       "rhumb",
+		  GMT_TP_STANDARD },
 	{ 0, 'C', "crossprofile",
 	          "",                        "",
-	          "a,v,d,f,l,r",             "alternate,wesn,deviant,fixed,left,right" },
-	{ 0, 'D', "linefile|dfile",          "", "", "", "" },
+	          "a,v,d,f,l,r",             "alternate,wesn,deviant,fixed,left,right",
+		  GMT_TP_STANDARD },
+	{ 0, 'D', "linefile|dfile",          "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'E', "profile",
 	          "",                        "",
-	          "a,c,d,g,i,l,n,o,r",       "azimuth,connect,distance,degrees,incr,length,npoints,origin,radius" },
+	          "a,c,d,g,i,l,n,o,r",       "azimuth,connect,distance,degrees,incr,length,npoints,origin,radius",
+		  GMT_TP_STANDARD },
 	{ 0, 'F', "critical",
 	          "",                        "",
-	          "b,n,r,z",                 "balance,negative,rms,zvalue" },
+	          "b,n,r,z",                 "balance,negative,rms,zvalue",
+		  GMT_TP_STANDARD },
 	GMT_G_OUTGRID_KW,
-	{ 0, 'N', "noskip",                  "", "", "", "" },
+	{ 0, 'N', "noskip",                  "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'S', "stack",
 	          "a,m,p,l,L,u,U",           "average,median,mode,lower,lowerpos,upper,upperneg",
-	          "a,d,r,s,c",               "values,deviations,residuals,save,envelope" },
+	          "a,d,r,s,c",               "values,deviations,residuals,save,envelope",
+		  GMT_TP_STANDARD },
 	{ 0, 'T', "radius",
 	          "",                        "",
-	          "e,p",                     "report,replace" },
-	{ 0, 'Z', "zonly",                   "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "e,p",                     "report,replace",
+		  GMT_TP_STANDARD },
+	{ 0, 'Z', "zonly",                   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !GRDTRACK_INC_H */
