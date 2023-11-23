@@ -51,7 +51,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "i,n",               "inverse,number",
 		  GMT_TP_STANDARD },
 	{ 0, 'W', "weighted",
-	          "w,x,y,r",           "precomputed,x,y,correlations",
+	          "w,x,y,r",           "weights,sigmax,sigmay,correlations",
 	          "", "",
 	          GMT_TP_MULTIDIR },
 	{ 0, 'Z', "limit",             "", "", "", "", GMT_TP_STANDARD },
