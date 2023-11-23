@@ -34,7 +34,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "x,y,z,d,h",         "x,y,z,distance|dist,heading|hdg",
 	          "",                  "",
 		  GMT_TP_MULTIDIR },
-	{ 0, 'S', "full_input|dist_head", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "extended", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTSPLIT_INC_H */
