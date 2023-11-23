@@ -16,7 +16,7 @@
 # P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.
 # The finished movie is available in our YouTube channel as well (without fading):
 # https://youtu.be/LTxlR5LuJ8g
-# The movie took ~6 hours to render on a 24-core MacPro 2013.
+# The movie took ~2 hours to render on a 10-core M1 MacBook Pro 2021.
 
 cat << 'EOF' > pre.sh
 #!/usr/bin/env bash
