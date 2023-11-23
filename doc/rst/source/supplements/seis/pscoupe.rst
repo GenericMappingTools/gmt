@@ -31,7 +31,7 @@ Synopsis
 [ |-N| ]
 [ |-O| ]
 [ |-Q| ]
-[ |-T|\ *nplane*\ [/*pen*] ]
+[ |-T|\ [*plane*]\ [**+p**\ *pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
