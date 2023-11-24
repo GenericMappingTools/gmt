@@ -1218,7 +1218,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 				cont[c].type = 'A';
 			else
 				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = (char)Ctrl->T.active;
 			c++;
 		}
@@ -1229,7 +1229,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont[c].type = 'A';
 		else
 			cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
-		cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+		cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		cont[c].do_tick = (char)Ctrl->T.active;
 		n_contours = c + 1;
 	}
@@ -1251,13 +1251,13 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont[c].type = 'C';
 			cont[c].val = zc[c];
 			cont[c].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		}
 		for (c = 0; c < (int)na; c++) {
 			cont[c+nc].type = 'A';
 			cont[c+nc].val = za[c];
 			cont[c+nc].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c+nc].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c+nc].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		}
 		if (za) gmt_M_free (GMT, za);
 		if (zc) gmt_M_free (GMT, zc);
@@ -1276,7 +1276,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont[n_contours].type = 'A';
 			cont[n_contours].val = Ctrl->A.info.single_cont;
 			cont[n_contours].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[n_contours].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[n_contours].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			n_contours++;
 		}
 	}
@@ -1302,7 +1302,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 				cont[n_contours].type = 'C';
 			else
 				cont[n_contours].type = (fabs (cont[n_contours].val - aval) < noise) ? 'A' : 'C';
-			cont[n_contours].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[n_contours].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[n_contours].do_tick = (char)Ctrl->T.active;
 		}
 	}
