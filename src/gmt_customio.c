@@ -1177,7 +1177,7 @@ void gmtlib_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, gmt_grdfloat z
 			((int *)vptr)[k] = (int)lrintf (z);
 			break;
 		case 'f':
-			((float *)vptr)[k] = (float)z;
+			((gmt_grdfloat *)vptr)[k] = z;
 			break;
 		case 'd':
 			((double *)vptr)[k] = (double)z;
