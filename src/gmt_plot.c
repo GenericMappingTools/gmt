@@ -10829,7 +10829,7 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	return (P);
 }
 
-void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity) {
+void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
 	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
 	 * so it can also be used in grdimage.
 	 * G is the data grid
@@ -10874,8 +10874,19 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
 			gmt_illuminate (GMT, *intensity, fill.rgb);
 		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, G->x[col] - inc2[GMT_X], G->x[col] + inc2[GMT_X], G->y[row] - inc2[GMT_Y], G->y[row] + inc2[GMT_Y]);
 		gmt_setfill (GMT, &fill, outline);
-		S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
-		gmt_geo_polygons (GMT, S);
+		if (GMT->current.proj.three_D && grdview) {	/* Deal with grdview */
+			uint64_t k;
+			double xp, yp;
+			for (k = 0; k < n; k++) {
+				gmt_geoz_to_xy (GMT, xx[k], yy[k], G->data[ij], &xp, &yp);
+				xx[k] = xp;	yy[k] = yp;
+			}
+			PSL_plotpolygon (GMT->PSL, xx, yy, n);
+		}
+		else {	/* 2-D, most likely grdimage w/wo -p */
+			S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
+			gmt_geo_polygons (GMT, S);
+		}
 		gmt_M_free (GMT, xx);
 		gmt_M_free (GMT, yy);
 	}
