@@ -56,7 +56,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "c,h,l,p,s",         "range|limits,header,lines,close,sort",
 		  GMT_TP_STANDARD },
 	{ 0, 'S', "spatial",
-	          "b,h,i,j,s,u",       "buffer,hole,intersection,join,split,union",
+	          "b,h,i,j,s,u",       "buffer,hole|holes,intersection,join,dateline,union",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	{ 0, 'T', "truncate",          "", "", "", "", GMT_TP_STANDARD },
