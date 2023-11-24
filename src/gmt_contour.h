@@ -37,6 +37,13 @@ enum GMT_enum_contline {
 	GMT_CONTOUR_XLINE,	/* Contour labels where crossing straight lines (via key points) */
 	GMT_CONTOUR_XCURVE};	/* Contour labels where crossing arbitrary lines (via file) */
 
+/*! Various settings for angles related to contours and decorated lines */
+enum GMT_enum_contangle {
+	GMT_ANGLE_LINE_PARALLEL = 0,	/* Angles follows the line locally */
+	GMT_ANGLE_LINE_NORMAL,	/* Angles is normal to the line locally */
+	GMT_ANGLE_LINE_FIXED};	/* Angle is fixed regardless of line direction */
+
+
 /*! Various settings for quoted line/contour label types */
 enum GMT_enum_label {
 	GMT_LABEL_IS_NONE = 0,	/* No contour/line crossing  */
