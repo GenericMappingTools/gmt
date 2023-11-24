@@ -194,12 +194,16 @@ Optional Arguments
 .. _-S:
 
 **-S**\ **b**\ *width*\|\ **h**\|\ **i**\|\ **j**\|\ **s**\|\ **u**
-    Spatial processing of polygons. Choose from **-Sb**\ *width* which computes a buffer polygon around lines,
-    **-Sh** which identifies perimeter and hole polygons (and flags/reverses them), **-Si** which returns
-    the intersection of polygons (closed), **-Su** which returns the
-    union of polygons (closed), **-Ss** which will split polygons that
-    straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline. **Notes**: (1) Only **-Sb**, **-Sh** and **-Ss** have been implemented.
+    Spatial processing of polygons. Choose among several directives:
+
+    - **b** computes a buffer polygon around lines but at a distance *width* further out.
+    - **h** identifies polygons that are holes of other polygons (and flags/reverses them).
+    - **i** returns the intersection of polygons, yielding a closed polygon.
+    - **j** joins polygons that were split by the Dateline.
+    - **s** splits polygons that straddle the Dateline into two separate polygons.
+    - **u** returns the union of polygons, yielding a closed polygon.
+
+    **Notes**: (1) Only **-Sb**, **-Sh** and **-Ss** have been implemented.
     (2) **-Sb** is a purely Cartesian operation so *width* must be in data units.
     That is, for geographical coordinates *width* must be provided in degrees or, preferably, project data into
     an equal-area projection, compute the buffer and then convert back to geographical.
