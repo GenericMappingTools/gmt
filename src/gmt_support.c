@@ -2124,7 +2124,7 @@ GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], dou
 		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
 			angle_type = GMT_ANGLE_LINE_PARALLEL;
 		else
-			L->angle += cangle;
+			L->angle = cangle;
 	}
 	if (angle_type != GMT_ANGLE_LINE_FIXED) {	/* Must base label angle on the contour angle */
 		L->angle = L->line_angle + angle_type * 90.0;	/* May add 90 to get normal */
@@ -3254,6 +3254,7 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 			SH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
 		}
 		if ((S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *)) == NULL) return;
+		SH->alloc_mode_text = GMT_ALLOC_INTERNALLY;
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
