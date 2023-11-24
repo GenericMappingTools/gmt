@@ -842,11 +842,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "b: Compute buffer polygon around line/polygon. Append <width> of buffer zone. "
 		"Note: this is a purely Cartesian operation so <width> must be in data units.");
 #endif
-	GMT_Usage (API, 3, "h: Detect holes and reverse them relative to perimeters.");
-	GMT_Usage (API, 3, "i: Find intersection [Not implemented yet].");
+	GMT_Usage (API, 3, "h: Detect holes and reverse their handedness relative to perimeters.");
+	GMT_Usage (API, 3, "i: Find intersection of polygons [Not implemented yet].");
 	GMT_Usage (API, 3, "j: Join polygons that were split by the Dateline [Not implemented yet].");
 	GMT_Usage (API, 3, "s: Split polygons that straddle the Dateline.");
-	GMT_Usage (API, 3, "u: Find union [Not implemented yet].");
+	GMT_Usage (API, 3, "u: Find union of polygons [Not implemented yet].");
 	GMT_Usage (API, 1, "\n-T[<cpol>]");
 	GMT_Usage (API, -2, "Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R "
 		"and clip against a polygon derived from the region border.");

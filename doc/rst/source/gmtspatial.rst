@@ -197,7 +197,8 @@ Optional Arguments
     Spatial processing of polygons. Choose among several directives:
 
     - **b** computes a buffer polygon around lines but at a distance *width* further out.
-    - **h** identifies polygons that are holes of other polygons (and flags/reverses them).
+    - **h** identifies polygons that are holes of other polygons (and flags and reverses
+      their handedness to be the opposite of that of the outer polygon).
     - **i** returns the intersection of polygons, yielding a closed polygon.
     - **j** joins polygons that were split by the Dateline.
     - **s** splits polygons that straddle the Dateline into two separate polygons.
