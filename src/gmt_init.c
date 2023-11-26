@@ -8871,7 +8871,7 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 			"or the mirror opposite of <refpoint> (with -J), or %s (otherwise).", type[kind], just[kind]);
 		GMT_Usage (API, 3+shift, "+o Offset %s from <refpoint> by <dx>[/<dy>] in direction implied by <justify> [0/0].", type[kind]);
 	}
-	else
+	else if ((part & 5) == 0)
 		GMT_Usage (API, -(2+shift), "All systems except x require the -R and -J options to be set. ");
 }
 
