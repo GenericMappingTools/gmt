@@ -70,9 +70,9 @@ Optional Arguments
     - **+o**: Offset the GMT logo by *dx*/*dy* away from the *refpoint* point in
       the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
    
-   **Note**: (1) If **-Dj** is used then *justify* defaults to the same as *refpoint*, while
-   if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-   (2) Since the aspect ratio is fixed, only one of **+h** and **+w** can be specified.
+    **Note**: (1) If **-Dj** is used then *justify* defaults to the same as *refpoint*, while
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
+    (2) Since the aspect ratio is fixed, only one of **+h** and **+w** can be specified.
  
 .. _-F:
 
