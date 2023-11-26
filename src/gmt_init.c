@@ -9062,14 +9062,14 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	GMT_Usage (API, -2, "Alter the way points are connected and the data are segmented. "
 		"Append one of %s line connection schemes: ", count[mode]);
 	GMT_Usage (API, 3, "c: %s continuous line segments for each group [Default].", verb[mode]);
-	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
 	GMT_Usage (API, 3, "n: %s networks of line segments between all points in each group.", verb[mode]);
+	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
 	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
 	GMT_Usage (API, 2, "Optionally, append one of five ways to define a \"group\":");
 	GMT_Usage (API, 3, "a: Data set is considered a single group; reference point is first point in the group.");
-	GMT_Usage (API, 3, "f: Each file is a separate group; reference point is reset to first point in the group.");
-	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
 	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group.");
+	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
+	GMT_Usage (API, 3, "t: Each table is a separate group; reference point is reset to first point in the group.");
 	GMT_Usage (API, 3, "Alternatively, append a fixed external reference point instead.");
 }
 
@@ -10170,7 +10170,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S) {
 	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|t|s|r] or -Fp<origin>
+	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|r|s|t] or -Fp<origin>
 	 * where <scheme> is c = continuous [Default], n = network, r = reference point, and v = vectors.
 	 * and impact is a = all tables, t = per table, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
@@ -10191,8 +10191,8 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
 	 *   file, or the first point in each segment to update the actual reference point.
 	 * 4) -Fv: Vectorize.  Here, consecutive points are turned into vector segments such as used
-	 *   by psxy -Sv+s or external applications.  Again, appending a|t|s controls if we should
-	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|t|s is allowed.
+	 *   by psxy -Sv+s or external applications.  Again, appending a|s|t controls if we should
+	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|t|s is allowed in psxy.
 	 */
 
 	unsigned int k, errors = 0;
