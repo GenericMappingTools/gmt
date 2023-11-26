@@ -250,7 +250,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s Give no argument to indicate no labels.", GMT_LINE_BULLET);
 	GMT_Usage (API, 1, "\n-O Append the KML code to an existing document [OFF].");
 	GMT_Usage (API, 1, "\n-Qa|i|s<arg>" );
-	GMT_Usage (API, -2, "Set properties in support of wiggle plots (-Fw). Both -Qa|i and -Qs are required:");
+	GMT_Usage (API, -2, "Set properties in support of wiggle plots (-Fw). Repeatable as both -Qa|i and -Qs are required:");
 	GMT_Usage (API, 3, "a: Append preferred <azimuth> +|-90 for wiggle direction [0].");
 	GMT_Usage (API, 3, "i: Instead, append fixed <azimuth> for wiggle direction [variable].");
 	GMT_Usage (API, 3, "s: Append wiggle <scale> in z-data units per map unit; append a unit in %s [e].", GMT_LEN_UNITS_DISPLAY);
@@ -469,7 +469,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 					Ctrl->N.mode = NO_LABEL;
 				}
 				break;
-			case 'Q':	/* Wiggle azimuth and scale settings in data units for map distance  */
+			case 'Q':	/* Wiggle azimuth and scale settings in data units for map distance [repeatable] */
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'i': Ctrl->Q.mode = 1; Ctrl->Q.value[1] = atof (&opt->arg[1]); break;
