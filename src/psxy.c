@@ -65,7 +65,7 @@ struct PSXY_CTRL {
 		double cap;		/* Width of error bar cap or whisker [7p] */
 		struct GMT_PEN pen;
 	} E;
-	struct PSXY_F {	/* -F<mode> */
+	struct PSXY_F {	/* -F[c|n|p][a|r|s|t|<refpoint>] */
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;
@@ -934,7 +934,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				n_errors += gmt_parse_segmentize (GMT, opt->option, opt->arg, 0, &(Ctrl->F.S));
+				n_errors += gmt_parse_segmentize (GMT, opt->option, opt->arg, 1, &(Ctrl->F.S));
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
