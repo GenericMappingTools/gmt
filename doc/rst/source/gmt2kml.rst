@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ *descriptfile* ]
 [ |-E|\ [**+e**][**+s**] ]
-[ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
+[ |-F|\ **e**\|\ **l**\|\ **p**\|\ **s**\|\ **t**\|\ **w** ]
 [ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
 [ |-I|\ *icon* ]
 [ |-K| ]
@@ -118,22 +118,27 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w**
-    Sets the feature type. Choose from points (**e**\ vent,
-    **s**\ ymbol, or **t**\ imespan), **l**\ ine, **p**\ olygon, or
-    **w**\ iggle [symbol]. The first two columns of the input file should contain
-    (*lon*, *lat*). When altitude or value is required (i.e., no
+**-F**\ **e**\|\ **l**\|\ **p**\|\ **s**\|\ **t**\|\ **w**
+    Sets the feature type. The first two columns of the input file should
+    contain (*lon*, *lat*). When altitude or value is required (i.e., no
     *altitude* value was given with |-A|, or |-C| is set), the third
-    column needs to contain the *altitude* (in m) or *value*. The event
-    (**-Fe**) is a symbol that should only be active at a particular
-    *time*, given in the next column. Timespan (**-Ft**) is a symbol
-    that should only be active during a particular time period indicated
-    by the next two columns (*timestart*, *timestop*). Use NaN to
-    indicate unbounded time limits. If used, times should be in ISO
-    format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format
-    (see **-f**).  For wiggles, the data anomaly is required to be
-    in the 3rd input column.  If you also need to plot the track itself
-    then do that separately with **-Fl**.
+    column needs to contain the *altitude* (in m) or *value*. Choose from
+    the following directives:
+
+    - **e**\ vent: A symbol that should only be active at a particular
+      *time*, given in the next column.
+    - **s**\ ymbol: A regular symbol that is always visible [Default].
+    - **t**\ imespan: A symbol that should only be active during a particular
+      time period indicated by the next two columns (containing *timestart*,
+      *timestop*). Use NaN to indicate unbounded time limits. 
+    - **l**\ ine: Draws a line using attributes set by |-W|.
+    - **p**\ olygon: Draws a polygon using attributes set by |-G|and |-W|.
+    - **w**\ iggle: The data anomaly is required to be in the 3rd input column.
+      If you also need to plot the track itself then do that separately with **-Fl**.
+
+    **Note**: If used, times should be in ISO format yyyy-mm-ddThh:mm:ss[.xxx]
+    or in GMT relative time format (see **-f**). For the directives **e**\|\ **s**\|\ **t**,
+    set the symbol used via |-I|.
 
 .. _-G:
 
@@ -203,13 +208,13 @@ Optional Arguments
 .. _-Q:
 
 **-Qa**\|\ **i**\|\ **s**\ *arg*
-    Option in support of wiggle plots (requires **-Fw**). You may
+    Repeatable option in support of wiggle plots (requires **-Fw**). You may
     control which directions the positive wiggles will tend to point
     to with **-Qa**.  The appended *azimuth* defines a half-circle
     centered on the selected azimuth [0] where positive anomalies
     will plot.  If outside then switch by 180 degrees.  Alternatively,
     use **-Qi** to set a fixed *azimuth* with no further variation.
-    Scaling is also required via **-Qs**\ *scale*.
+    Scaling is also required via a separate **-Qs**\ *scale* option.
     Set a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
     is then inverted to yield degrees per user z-unit and used to
