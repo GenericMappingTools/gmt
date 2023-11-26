@@ -112,29 +112,36 @@ Optional Arguments
 **-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**\ *incs*]
     Compute the *min*\ /*max* values of the first *n* columns to the nearest multiple
     of the provided increments (separate the *n* increments by slashes) [default is 2 columns].
-    By default, output results in the form |-R|\ *w/e/s/n*, unless |-C| is
-    set in which case we output each *min* and *max* value in separate output columns.
-    If only one increment is given we also use it for the second
-    column (for backwards compatibility). To override this behavior, use
-    |-I|\ **p**\ *dx*. If the input *x*- and *y*-coordinates all have the
+    By default, output results in the string |-R|\ *w/e/s/n* or |-R|\ *xmin/xmax/ymin/ymax*,
+    unless |-C| is set in which case we output each *min* and *max* value in separate
+    output columns. If only one increment is given we also use it for the second
+    column. Several directives are available:
+
+    - **b**: Write the bounding box of the data table or segments (see |-A|)
+      as a closed polygon segment. 
+    - **e**: The exact *min*\ /*max* of the input is given in the **-R** string.
+      If you only want either the *x-* or *y-*\ range to be exact and the other
+      range rounded, give one of the increments as zero.
+    - **f**: Append *dx*\ [/*dy*] to report an extended region optimized
+      to give grid dimensions for fastest results in programs using FFTs.
+    - **p**: Append *dx*. This directive overrides use of a single *dx* for two columns.
+    - **s**: Append *dx*\ [/*dy*] to report an extended region optimized to
+      give grid dimensions for fastest results in programs like :doc:`surface`.
+
+    A few modifiers can adjust the determined region further:
+
+    - **+e**: Similar to **+r**, but ensures that the bounding box extends by at
+      least 0.25 times the increment(s) [no extension].
+    - **+r**: Modify the *min*\ /*max* of the first *n* columns further:
+      Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
+      region to be a multiple of these steps [no adjustment].
+    - **+R**: Extend the region outward by adding and subtracting these increments instead.
+
+    **Note**: If the input *x*- and *y*-coordinates all have the
     same phase shift relative to the *dx* and *dy* increments then we
     use those phase shifts in determining the region, and you may use
     |SYN_OPT-r| to switch from gridline-registration to pixel-registration.
     For irregular data both phase shifts are set to 0 and the |SYN_OPT-r| is ignored.
-    Use |-I|\ **f**\ *dx*\ [/*dy*] to report an extended region optimized
-    to give grid dimensions for fastest results in programs using FFTs.
-    Use |-I|\ **s**\ *dx*\ [/*dy*] to report an extended region optimized to
-    give grid dimensions for fastest results in programs like surface.
-    Use |-I|\ **b** to write the bounding box of the data table or segments (see |-A|)
-    as a closed polygon segment. **Note**: For oblique projections you should
-    use the **-Ap** option in :doc:`plot` to draw the box properly.
-    If |-I|\ **e** is given then the exact min/max of the input is given in the **-R** string.
-    If you only want either the *x-* or *y-* range to be exact and the other range rounded, give one of the increments as zero.
-    Append **+r** to modify the min/max of the first *n* columns further:
-    Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
-    region to be a multiple of these steps [no adjustment]. Alternatively, use **+R** to extend the region
-    outward by adding these increments instead, or **+e** which is like **+r** but
-    it ensures that the bounding box extends by at least 0.25 times the increment [no extension].
 
 .. _-L:
 

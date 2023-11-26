@@ -153,20 +153,23 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.");
 	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
 	GMT_Usage (API, 1, "\n-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]");
-	GMT_Usage (API, -2, "Return textstring -Rw/e/s/n to nearest multiple of <dx>/<dy> (assumes at least two columns). "
-		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). Give -I<dx>/0 or -I0/<dy> for mixed exact and rounded result. "
-		"If -C is set then no -R string is issued.  Instead, the number of increments "
-		"given determines how many columns are rounded off to the nearest multiple. "
-		"If only one increment is given we also use it for the second column (for backwards compatibility). "
-		"To override this behavior, use -Ip<dx>. "
-		"If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift] "
-		"and allow -r to change from gridline-registration to pixel-registration. "
-		"Use -Ib to report the bounding box polygon for the data files (or segments; see -A). "
-		"Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs. "
-		"Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface. "
-		"Append +r to modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
-		"to round region to these multiples; use +R to extend region by those increments instead, "
-		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
+	GMT_Usage (API, -2, "Return textstring -Rw/e/s/n to nearest multiple of <dx>/<dy> (assumes input has at least two columns). "
+		"Several directives affect the result: ");
+	GMT_Usage (API, 3, "%s b: Report the bounding box polygon for the data files (or segments; see -A).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s e: Report the exact min/max extent in the -Rw/e/s/n string (no multiples). Give -I<dx>/0 or -I0/<dy> for mixed exact and rounded result.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s f: Append <dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s p: If only one increment is given we also use it for the second column (for backwards compatibility). "
+		"To override this behavior, use -Ip<dx>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s s: Append <dx>[/<dy>] to report an extended region optimized for fastest results in surface.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Three modifiers can adjust the determined region further:");
+	GMT_Usage (API, 3, "+r: Modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
+		"to round region to these multiples.");
+	GMT_Usage (API, 3, "+e: Like +r, but makes sure the region extends at least by %g x <inc>.", GMT_REGION_INCFACTOR);
+	GMT_Usage (API, 3, "+R: Like +r but adds and subtracts the given increments to extend the region outwards.");
+	GMT_Usage (API, -2, "Notes: (1) If -C is set then no -R string is issued.  Instead, the number of increments "
+		"given determines how many columns are rounded off to the nearest multiple.");
+	GMT_Usage (API, -2, "Notes: (2) If input data are regularly distributed we use observed phase shifts in determining "
+		"-R [no phase shift] and allow -r to change from gridline-registration to pixel-registration.");
 	GMT_Usage (API, 1, "\n-L Determine limiting region. With -I it rounds inward so bounds are within data range. "
 		"Use -A to find the limiting common bounds of all segments or tables.");
 	GMT_Usage (API, 1, "\n-T<dz>[%s][+c<col>]", GMT_TIME_FIX_UNITS_DISPLAY);
