@@ -215,14 +215,16 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+r**][**+s**][**+x**\ *label*][**+y**\ *unit*]
-    Control various aspects of color bar appearance when |-B| is *not* used.
-    Append **+a** to place annotations at the given *angle* [default is no slanting].
-    Append **+c** to use custom labels if given in the CPT as annotations.
-    Append **+n** to use numerical labels [Default].
-    Append **+r** to only annotate lower and upper limits in the CPT [Default follows CPT boundaries].
-    Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
-    If |-L| is used then |-B| cannot be used, hence you may optionally set a bar label via **+x**\ *label*
-    and any unit (i.e., y-label) via **+y**\ *unit*.
+    Control various aspects of color bar appearance when |-B| is *not* used (**Note**: If |-L|
+    is used then |-B| cannot be used). The following modifiers are available:
+
+    - **+a** Place annotations at the given *angle* [default is no slanting].
+    - **+c** Use custom labels if given in the CPT as annotations.
+    - **+n** Use numerical labels instead [Default]. Only one of **+c** and **+n** can be set.
+    - **+r** Only annotate lower and upper limits in the CPT [Default follows CPT boundaries].
+    - **+s** Skip drawing gridlines separating different color intervals [Default draws gridlines].
+    - **+x** Place a bar label via **+x**\ *label*.
+    - **+y** Place a bar unit via **+y**\ *unit*.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_

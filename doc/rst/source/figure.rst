@@ -49,7 +49,7 @@ Optional Arguments
 
 *formats*
     Give one or more comma-separated graphics extensions from the list of allowable graphics
-    :ref:`formats <tbl-formats>` (default is configurable via setting GMT_GRAPHICS_FORMAT [pdf]).
+    :ref:`formats <tbl-formats>` (default is configurable via setting :term:`GMT_GRAPHICS_FORMAT` [pdf]).
     Optionally, append **+m** for monochrome image (BMP, JPEG, PNG, and TIFF only)
     and **+q**\ *quality* in 0-100 range to change JPEG quality [90].
 
@@ -60,7 +60,7 @@ Optional Arguments
     can be passed to :doc:`psconvert` when preparing this figure [**A**].
     The valid subset of options are
     **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **I**\ *args*,\ **M**\ *args*,\ **N**\ *args*,\ **Q**\ *args*,\ **S**.
-    Note that the leading hyphens should not be given. See the :doc:`psconvert` documentation for details on these options.
+    Note that the leading hyphens ordinarily used in **psconvert** should not be given. See the :doc:`psconvert` documentation for details on these options.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
