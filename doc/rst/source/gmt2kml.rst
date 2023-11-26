@@ -125,20 +125,21 @@ Optional Arguments
     column needs to contain the *altitude* (in m) or *value*. Choose from
     the following directives:
 
-    - **e**\ vent: A symbol that should only be active at a particular
+    - **e**\ vent: A symbol that should only be visible at a particular
       *time*, given in the next column.
-    - **s**\ ymbol: A regular symbol that is always visible [Default].
+    - **l**\ ine: Draws a line using attributes set by |-W|.
+    - **p**\ olygon: Draws a polygon using attributes set by |-G| and |-W|.
+    - **s**\ ymbol: A regular symbol that is always visible.
     - **t**\ imespan: A symbol that should only be active during a particular
       time period indicated by the next two columns (containing *timestart*,
       *timestop*). Use NaN to indicate unbounded time limits. 
-    - **l**\ ine: Draws a line using attributes set by |-W|.
-    - **p**\ olygon: Draws a polygon using attributes set by |-G|and |-W|.
     - **w**\ iggle: The data anomaly is required to be in the 3rd input column.
       If you also need to plot the track itself then do that separately with **-Fl**.
+      See |-Q| for additional parameters needed.
 
     **Note**: If used, times should be in ISO format yyyy-mm-ddThh:mm:ss[.xxx]
     or in GMT relative time format (see **-f**). For the directives **e**\|\ **s**\|\ **t**,
-    set the symbol used via |-I|.
+    set the symbol to be used via |-I|.
 
 .. _-G:
 
