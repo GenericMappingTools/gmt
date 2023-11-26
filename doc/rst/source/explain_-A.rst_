@@ -6,10 +6,10 @@
     we normally include as lakes. Several modifiers provide further control:
 
     - **+a** Control special aspects of the Antarctica coastline.  Append one
-      of **i**\|\ **g**\|\ **s**\|\ **S**:
+      of **g**\|\ **s**\|\ **s**\|\ **S**:
 
-      - **i** selects the ice shelf boundary as the coastline for Antarctica [Default].
       - **g** selects the Antarctica ice grounding line as the coastline.
+      - **i** selects the ice shelf boundary as the coastline for Antarctica [Default].
       - **s** Skip all GSHHG features below 60S (For users who wish to utilize their
         own Antarctica (with islands) coastline). 
       - **S** Like **s** but skip instead all features *north* of 60S.
