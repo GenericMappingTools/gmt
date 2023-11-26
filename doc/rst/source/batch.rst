@@ -62,23 +62,26 @@ Required Arguments
 .. _-T:
 
 **-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
-    Either specify how many jobs to make, create a one-column data set width values from
-    *min* to *max* every *inc* (append **+n** if *inc* is number of jobs instead), or supply a file with
-    a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
-    *mainscript* as named variables **BATCH_COL0**, **BATCH_COL1**, etc., while any trailing text
-    can be accessed via the variable **BATCH_TEXT**.  Append **+w** to split the trailing
-    string into individual *words* that can be accessed via variables **BATCH_WORD0**, **BATCH_WORD1**,
-    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
-    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
-    The number of records equals the number of jobs. Note that the *preflight* script is allowed to
-    create *timefile*, hence we check for its existence both before *and* after the *preflight* script has
-    completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
-    job number via **+s**\ *first*.  **Note**: All jobs are still included; this modifier only affects
-    the numbering of the given jobs.  Finally, **+p** can be used to set the tag *width* of the format
-    used in naming jobs.  For instance, name_000010.grd has a tag width of 6.  By default, this is
-    automatically set but if you are splitting large jobs across several computers (via **+s**) then you
-    must use the same tag width for all names. **Note**: If just *njobs* is given then only **BATCH_JOB**
-    is available as no data file is available.
+    Either specify how many jobs to make, create a one-column data set width values from *min*
+    to *max* every *inc* , or supply a file with a set of parameters, one record (i.e., row) per job.
+    The values in the columns will be available to the *mainscript* as named variables **BATCH_COL0**,
+    **BATCH_COL1**, etc., while any trailing text can be accessed via the variable **BATCH_TEXT**. The
+    number of records equals the number of jobs. Note that the *preflight* script is allowed to create
+    *timefile*, hence we check for its existence both before *and* after the *preflight* script has completed.
+    **Note**: If just *njobs* is given then only **BATCH_JOB** is available as no data file is available.
+    For details on array creation, see `Generate 1-D Array`_.  Several modifiers are also available:
+
+    - **+n** indicates that *inc* is the desired *number* of jobs from *min* to *max* instead of an increment.
+    - **+p** can be used to set the tag *width* of the job number format used in naming the jobs.  For
+      instance, name_000010.grd has a tag width of 6.  By default, this width is automatically set, but
+      if you are splitting large jobs across several computers (via **+s**) then you must ensure the same
+      tag width for all frame names.
+    - **+s** starts the output job numbering at *first* instead of 0. **Note**: All jobs are still included;
+      this modifier only affects the *numbering* of the specific jobs on output.  
+    - **+w** will split the trailing text string into individual words that can be accessed via variables
+      **BATCH_WORD0**, **BATCH_WORD1**, etc. By default we look for either tabs or spaces to separate the
+      words.  Append *str* to select other character(s) as the valid separator(s) instead. To just use TAB
+      as the *only* valid separator, use modifier **+W** instead.
 
 
 Optional Arguments
