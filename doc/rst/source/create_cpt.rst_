@@ -1,4 +1,4 @@
-**-C**\ [[*section*/]\ *master\_cpt*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*]\|\ *local\_cpt*\|\ *color1,color2*\ [,\ *color3*\ ,...]]
+**-C**\ [[*section*/]\ *master\_cpt*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*]\|\ *local\_cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]]
     Name of an input CPT file or a comma-separated list of colors from which to build a CPT.
     Generally, the input can be many things:
 
@@ -6,11 +6,11 @@
        (see :ref:`Of Colors and Color Legends`) and can be either addressed
        by *master\_cpt* or *section*/*master\_cpt* (without the **.cpt** extension).
     #. File name of already custom-made *local.cpt* file.
-    #. Build a linear continuous CPT from *color1,color2*\ [*,color3*\ ,...] automatically,
-       where *z* starts at 0 and is incremented by one for each color. In this case,
+    #. Build a linear continuous CPT from *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]
+       automatically, where *z* starts at 0 and is incremented by one for each color. In this case,
        *color*\ :math:`_i` can be a r/g/b (e.g., 255/100/75), or h-s-v triplet (e.g., 180-0.8-1),
        a c/m/y/k quadruple (e.g., 80/50/40/30), an HTML hexadecimal color (e.g. #aabbcc),
-       or a :ref:`color name <RGBchart>`.
+       or a :ref:`color name <RGBchart>`. No spaces between commas are allowed.
 
     A few modifiers pertains to hinges and units:
 
@@ -21,4 +21,4 @@
       another distance *unit* to meter.
     - **+U**: Likewise, you may convert their *z*-values from meter to another *unit*.
 
-    **Note**: For **+u**\|\ **U**, the *unit* must be taken from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
+    **Note**: For **+u**\|\ **U**, a *unit* must be selected from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
