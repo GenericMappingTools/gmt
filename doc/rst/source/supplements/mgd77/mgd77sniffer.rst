@@ -484,23 +484,23 @@ Examples
 
 To scan for excessive values or gradients, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001
+  gmt mgd77sniffer 08010001
 
 To dump cruise gradients, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001 -Ds
+  gmt mgd77sniffer 08010001 -Ds
 
 To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
-                 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+  gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
+               -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 See Also
 --------
@@ -516,4 +516,4 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

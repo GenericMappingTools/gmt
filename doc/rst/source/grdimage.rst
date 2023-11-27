@@ -25,6 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
+[ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -45,7 +46,7 @@ Description
 colored) map by building a rectangular image and assigning pixels
 a gray-shade (or color) based on the z-value and the CPT file.
 Optionally, illumination may be added by providing a file with
-intensities in the (-1,+1) range or instructions to derive intensities
+intensities in the ±1 range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
@@ -67,7 +68,9 @@ pixel, their average will dominate in the calculation of the pixel
 value. Interpolation and aliasing is controlled with the **-n** option.
 
 The |-R| option can be used to select a map region larger or smaller
-than that implied by the extent of the grid.
+than that implied by the extent of the grid. Finally, |-A| allows the
+creation of a direct output to a raster file instead of plotting via
+PostScript.
 
 Required Arguments
 ------------------
@@ -88,14 +91,15 @@ Optional Arguments
 
 **-A**\ *out_img*\ [**=**\ *driver*]
     Save an image in a raster format instead of PostScript. Append *out_img* to select
-    the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
+    the image file name and extension. If the extension is one of .bmp, .gif, .jp[e]g, .png, or .tif
     then no driver information is required. For other output formats you must append the required
     GDAL driver. The *driver* is the driver code name used by GDAL; see your GDAL installation's
     documentation for available drivers. Append a **+c**\ *options* string where *options* is a list of
     one or more concatenated number of GDAL **-co** options. For example, to write a GeoPDF with the
     TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
     then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
-    otherwise a plain tiff file is produced. (2) Any vector elements will be lost.
+    otherwise a plain tiff file is produced. (2) Any vector elements will be lost. **Note**: The **-B**
+    option is not compatible with |-A| since no PostScript output is allowed.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -139,7 +143,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the (-1,+1) range,
+    Gives the name of a grid file with intensities in the ±1 range,
     or a constant intensity to apply everywhere (affects the ambient light).
     Alternatively, derive an intensity grid from the input data grid *grid*
     via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,
@@ -149,7 +153,7 @@ Optional Arguments
     specific intensity scenario then run :doc:`grdgradient` separately first.
     If we should derive intensities from another file than *grid*, specify the
     file with suitable modifiers [Default is no illumination].  **Note**: If
-    the input data is an *image* then an *intensfile* or constant *intensity*
+    the input data represent an *image* then an *intensfile* or constant *intensity*
     must be provided.
 
 .. _-M:
@@ -166,12 +170,12 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*color*][**+z**\ *value*]
+**-Q**\ [**+z**\ *value*][*color*]
     Make grid nodes with NaN values transparent, using the color-masking
     feature in PostScript Level 3 (the PS device must support PS Level 3).
-    Use **+z** to select another grid value than NaN.
-    If input is instead an image then black pixels are set to be transparent;
-    append an alternate color to select another pixel value to be transparent.
+    If the input is a grid, use **+z** to select another grid value than NaN.
+    If input is instead an image, append an alternate color to select another
+    pixel value to be transparent [Default is black].
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -183,6 +187,17 @@ Optional Arguments
     smaller region than specified in the grid file will result in a
     subset of the grid [Default is the region given by the grid file].
 .. include:: explain_-Rz.rst_
+
+.. _-t:
+
+**-T**\ [**+o**\ [*pen*]][**+s**]
+    Plot a data grid without any interpolation. This involves converting each
+    node-centered bin into a polygon which is then painted separately.
+    Append **+s** to skip nodes with z = NaN. This option is suitable for
+    categorical data where interpolating between values is meaningless
+    and a categorical CPT has been provided via |-C|.
+    Optionally, append **+o** to draw the tile outlines, and specify a
+    custom pen if the default pen is not to your liking.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
@@ -226,7 +241,7 @@ place with most map projections. Because **grdimage** uses the
 PostScript colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
-linear projection, or (b) use :doc:`grdview` **-Ts** instead.
+linear projection, or (b) use **-T+s** instead to plot graticule polygons.
 
 .. include:: explain_grdresample.rst_
 
@@ -240,8 +255,16 @@ requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
 if the CPT provided via |-C| is categorical we will override any **-n** setting you
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
-gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` |-T|
+gridding and turns *off* anti-aliasing.  Alternatively, use |-T|
 instead to plot individual polygons centered on each node.
+
+Imaging Categorical Images
+--------------------------
+
+If a 1-byte single layer image is given and the file has no color map then we will
+interpret the byte values as categories and a categorical CPT is required via |-C|.
+If no |-C| is given then we assume the image is a grayscale image with values in the
+0-255 range.
 
 Image formats recognized
 ------------------------
@@ -281,12 +304,6 @@ color levels in the file colors.cpt, with linear scaling at 10
 inch/x-unit, tickmarks every 5 units::
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -pdf image
-
-To create an false color plot from the three grid files
-red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
-tickmarks every 5 units::
-
-    gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
 
 To create a sinusoidal projection of a remotely located Jessica Rabbit::
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 /*
  * Spherical gridding in tension.  We read input data and want to create
  * a grid using various interpolants on a sphere.  This program relies
- * on two Fortran F77 libraries by Renka:
+ * on two FORTRAN F77 libraries by Renka:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
  *     and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *     Software, 23 (3), 416-434.
@@ -33,6 +33,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/sphinterpolate_inc.h"
 #include "gmt_sph.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sphinterpolate"
@@ -260,7 +261,7 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	gmt_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
@@ -417,7 +418,7 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		goto free_up;
 	}
 
-	/* Convert the doubles to gmt_grdfloat and unto the Fortran transpose order */
+	/* Convert the doubles to gmt_grdfloat and unto the FORTRAN transpose order */
 
 	sf = (w_max - w_min);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
@@ -425,7 +426,7 @@ EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		goto free_up;
 	}
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {
-		ij_f = (uint64_t)col * (uint64_t)Grid->header->n_rows + (uint64_t)row;	/* Fortran index */
+		ij_f = (uint64_t)col * (uint64_t)Grid->header->n_rows + (uint64_t)row;	/* FORTRAN index */
 		Grid->data[ij] = (gmt_grdfloat)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (gmt_grdfloat)sf;
 	}

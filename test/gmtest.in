@@ -108,11 +108,13 @@ function psldemo()
 for apiprog in \
 	testapi_columns \
     testapi_cube \
+    testapi_gmtgrid \
     testapi_makecpt \
     testapi_matrix \
     testapi_matrix_pad \
     testapi_matrix_plot \
     testapi_mixmatrix \
+    testapi_modern \
     testapi_userdataset \
     testapi_usergrid \
     testapi_uservectors \
@@ -285,12 +287,14 @@ export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
 export GS_FONTPATH="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 # Disable gmt end show from displaying plots
 export GMT_END_SHOW=off
+# Set the GMT data server if not already set in the environment
+[[ -z "${GMT_DATA_SERVER}" ]] && export GMT_DATA_SERVER=@GMT_DATA_SERVER@
 # Start with proper GMT defaults
 # Use different settings for three groups of tests
 if [[ $script_name == doc/examples/* ]]; then
 	gmt set -Ds GMT_GRAPHICS_FORMAT ps
 elif [[ $script_name == doc/scripts/* ]]; then
-  gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
+	gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
 else
 	gmt set -Du GMT_GRAPHICS_FORMAT ps
 fi

@@ -115,7 +115,17 @@ Optional Arguments
     considered when clobber mode is active. Optionally, append **+p** or **+n**.
     Then, we always initialize output to equal the first grid but then
     for subsequent grids we only consider them in the decision if the
-    values are >= 0 or <= 0, respectively.
+    values are :math:`z \ge 0` (**+p**) or :math:`z \le 0` (**+n**), respectively.
+
+
+.. figure:: /_images/GMT_blendtype.*
+   :width: 500 px
+   :align: center
+
+   Blending is just one option what happens in areas of overlap. The dashed
+   lines indicates the "inner" regions where the relative weights are 1 and
+   between the dashed lines and the grid borders the relative weights are
+   cosine-tapered down to 0.
 
 .. _-Q:
 

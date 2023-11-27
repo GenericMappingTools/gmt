@@ -42,8 +42,8 @@ Synopsis
 Description
 -----------
 
-**blockmode** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
-optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
+**blockmode** reads arbitrarily located (*x*,\ *y*,\ *z*) triplets [or
+optionally weighted quadruplets (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output mode estimates of
 position and value for every non-empty block in a grid region defined by
 the |-R| and |-I| arguments. See |-G| for writing gridded output directly.
@@ -96,35 +96,41 @@ Optional Arguments
 
 **-D**\ [*width*]\ [**+c**][**+a**\|\ **+l**\|\ **+h**]
     Perform unweighted mode calculation via histogram binning, using the
-    specified histogram *width*. Append **+c** to center bins so that
-    their mid point is a multiple of *width* [uncentered].
-    If multiple modes are found for a block we return the average mode [**+a**].
-    Append **+l** or **+h** to return the low of high mode instead, respectively.
-    If *width* is not given it will default to 1 provided your data set only
-    contains integers. Also, for integer data and integer bin *width* we
-    enforce bin centering (**+c**) and select the lowest mode (**+l**) if
-    there are multiples. [Default mode is normally the Least Median of Squares (LMS) statistic].
+    specified histogram *width*. A few modifiers are available to affect the output:
+
+    - **+c** Center bins so that their mid point is a multiple of *width* [uncentered].
+    - **+a** If multiple modes are found for a block we return the average mode [Default].
+    - **+l** If multiple modes are found for a block we return the lowest mode.
+    - **+h** If multiple modes are found for a block we return the highest mode.
+   
+    Only one of **+a**\|\ **+l**\|\ **+h** may be selected.  If *width* is not
+    given it will default to 1 provided your data set only contains integers.
+    Also, for integer data and integer bin *width* we enforce bin centering (**+c**)
+    and select the lowest mode (**+l**) if there are multiples. [Default mode is
+    normally the Least Median of Squares (LMS) statistic].
 
 .. _-E:
 
-**-E**
-    Provide Extended report which includes **s** (the L1 scale of the
-    mode), **l**, the lowest value, and **h**, the high value for each
-    block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
-    *x*,\ *y*,\ *z*\ [,\ *w*]. See |-W| for *w* output.
+**-E**\ [**r**\|\ **s**\ [**+l**\|\ **h**]]
+    Provide Extended reporting beyond the default *x*,\ *y*,\ *z*\ [,\ *w*].
+    One of several directives affects what the extended output record contains.
+    In all cases, see |-W| for appending weights *w* to the output record:
 
-**-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
-    Provide source id **s** or record number **r** output, i.e., append
-    the source id or record number associated with the modal value. If
-    tied then report the record number of the higher of the two values (i.e., **+h** is the default);
-    append **+l** to instead report the record number of the lower value.
-    Note that |-E| may be repeated so that both both |-E| and
-    **-E**\ **r**\ [**+l**\|\ **h**] may be specified.
-    For **-E**\ **s** we expect input records of the form
-    *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
-    source id.
+    - **r**: Append the record number associated with the modal value. If tied then
+      report the record number of the higher of the two values (i.e., **+h** is the default).
+      Append **+l** to instead report the record number of the lower modal value.
+    - **s**: Append the source id associated with the modal value.  We expect input
+      records of the form *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned
+      integer source id. If tied then report the source id of the higher of the two
+      modal values (i.e., **+h** is the default). Append **+l** to instead report
+      the source id of the lower modal value.
 
+    If no directive is given then we compute *s*, the L1 scale of the mode, i.e.,
+    1.4826 \* mode absolute deviation [MAD]), *l*, the lowest value, and *h*, the highest
+    value for each block. Output order becomes *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*].
+    **Note**: |-E| may be repeated so that both **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
+    and plain **-E** can be specified.
+     
 .. _-G:
 
 **-G**\ *grdfile*

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,8 +58,8 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
 	GMTAPI_NDIM,		/* ipar[1] = dimensionality of data (1, 2, or 3) (GMT grids = 2 yet stored internally as 1D) */
 	GMTAPI_NROW,		/* ipar[2] = number_of_rows (or length of 1-D array) */
 	GMTAPI_NCOL,		/* ipar[3] = number_of_columns (1 for 1-D array) */
-	GMTAPI_KIND,		/* ipar[4] = arrangement of rows/col (0 = rows (C), 1 = columns (Fortran)) */
-	GMTAPI_DIML,		/* ipar[5] = length of dimension for row (C) or column (Fortran) */
+	GMTAPI_KIND,		/* ipar[4] = arrangement of rows/col (0 = rows (C), 1 = columns (FORTRAN)) */
+	GMTAPI_DIML,		/* ipar[5] = length of dimension for row (C) or column (FORTRAN) */
 	GMTAPI_FREE,		/* ipar[6] = 1 to free array after use (IN) or before filling with output (OUT), 0 to leave alone */
 	GMTAPI_NODE};		/* ipar[7] = 1 for pixel registration, 0 for node */
 #endif
@@ -120,11 +120,25 @@ struct GMTAPI_DATA_OBJECT {
 #endif
 };
 
+struct API_META {	/* Items related to passing or not passing certain meta data from one grid to the next */
+	bool ignore_remote_cpt;			/* true if we should not store the remote CPT associated with the origin of this grid */
+};
+
+struct GMT_JULIA_POCKET {
+	/* Hold some variables stored in the API struct that may be needed to be known in GMT.jl
+	   Ideally one would wrap the GMTAPI_CTRL struct but this gal is huge and there is no contract
+	   that it wont change in response to future needs.
+	*/
+	char *gwf_dir;			/* In API->gwf_dir. GMT WorkFlow dir (NULL if not running in modern mode). 4GMT.jl */
+	int col_type[2][64];	/* Type of column on input and output: Time, geographic, etc. 4GMT.jl */
+};
+
 struct GMTAPI_CTRL {
 	/* Master controller which holds all GMT API related information at run-time for a single session.
 	 * Users can run several GMT sessions concurrently; each session requires its own structure.
 	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
 
+	struct GMT_JULIA_POCKET jl_pocket;	/* For access from Julia. MUST be first member to ensure it can safely be wrapped. */
 	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
 	unsigned int n_objects;			/* Number of currently active input and output data objects */
 	unsigned int unique_ID;			/* Used to create unique IDs for duration of session */
@@ -132,14 +146,15 @@ struct GMTAPI_CTRL {
 	unsigned int unique_var_ID;		/* Used to create unique object IDs (grid,dataset, etc) for duration of session */
 	int current_item[2];			/* Array number of current dataset being processed (in and out)*/
 	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */
-	unsigned int external;			/* 1 if called via external API (MATLAB, Python) [0] */
+	unsigned int external;			/* 1 if called via external API (MATLAB, Julia, Python) [0] */
 	unsigned int runmode;			/* nonzero for GMT modern runmode [0 = classic] */
-	enum GMT_enum_fmt shape;		/* GMT_IS_COL_FORMAT (2) if column-major (MATLAB, Fortran), GMT_IS_ROW_FORMAT (1) if row-major (Python, C/C++) [1] */
+	enum GMT_enum_fmt shape;		/* GMT_IS_COL_FORMAT (2) if column-major (MATLAB, FORTRAN), GMT_IS_ROW_FORMAT (1) if row-major (Python, C/C++) [1] */
 	unsigned int leave_grid_scaled;		/* 1 if we don't want to unpack a grid after we packed it for writing [0] */
 	unsigned int n_cores;			/* Number of available cores on this system */
 	unsigned int verbose;			/* Used until GMT is set up */
 	unsigned int n_tmp_headers;		/* Number of temporarily held table headers */
 	unsigned int terminal_width;	/* Width of the terminal */
+	unsigned int n_numerical_columns;	/* 0 except for pstext where there will be 2-4 numerical leading columns before text */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
@@ -150,6 +165,9 @@ struct GMTAPI_CTRL {
 	bool no_history;					/* true if we want to disable the gmt.history mechanism */
 	bool got_remote_wesn;				/* true if we obtained w/e/sn via a remote grid/image with no resolution given */
 	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
+	bool use_gridline_registration_warn;	/* true if we should warn about the above */
+	bool ignore_BC;       	   /* temporarily set true for, say, weight grids in grdfilter which do not need a BC wrap-around check */
+	bool paths_initialized;		/* True when we set default USERDIR and CACHEDIR */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
@@ -172,6 +190,7 @@ struct GMTAPI_CTRL {
 	char error_msg[4096];			/* The cached last error message */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */
+	bool parker_fft_default;	/* Used to alter the default in -N FFT settings */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
 	unsigned int do_not_exit;		/* 0 by default, meaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
 	struct GMT_LIBINFO *lib;		/* List of shared libs to consider */
@@ -216,6 +235,7 @@ struct GMTAPI_CTRL {
 	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */
 	bool inset_shrink;	/* True if gmt inset gets a -R -J that forces us to shrink the scale to fit the inset size */
 	double inset_shrink_scale;	/* The amount of shrinking.  Reset to false and 1 in gmt inset end */
+	struct API_META meta;	/* For controlling meta data */
 };
 
 /* Macro to test if filename is a special name indicating memory location */

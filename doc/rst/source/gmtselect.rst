@@ -25,7 +25,7 @@ Synopsis
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
+[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+h**\ [**k**\|\ **s**]]\ [**+i**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -53,7 +53,7 @@ selected based on whether or not they are 1) inside a rectangular region (|-R| [
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
 be reversed for each of these 7 criteria by using the |-I| option. See option **-:** on how to read
-(y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
+(*y, x*) or (*lat, lon*) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
 Required Arguments
@@ -76,7 +76,7 @@ Optional Arguments
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
     column of *pointfile* must have each point's individual radius of
-    influence. . If you only have a single point then you can specify
+    influence. If you only have a single point then you can specify
     *lon*/*lat* instead of *pointfile*.  Distances are Cartesian and in
     user units; specify **-fg** to indicate spherical distances and
     append a distance unit, even if the distance specified is 0.
@@ -111,7 +111,7 @@ Optional Arguments
 **-F**\ *polygonfile*
     Pass all records whose location is within one of the closed polygons
     in the multiple-segment file *polygonfile*. For spherical polygons
-    (lon, lat), make sure no consecutive points are separated by 180
+    (*lon, lat*), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
     ASCII regardless of whether **-bi** is used.
 
@@ -126,14 +126,14 @@ Optional Arguments
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
 
-    - **c** - select records NOT inside any point's circle of influence.
-    - **f** - select records NOT inside any of the polygons.
+    - **c** - select records **not** inside any point's circle of influence.
+    - **f** - select records **not** inside any of the polygons.
     - **g** - pass records inside the cells with z equal zero of the grid mask in |-G|.
-    - **l** - select records NOT within the specified distance of any line.
-    - **r** - select records NOT inside the specified rectangular region.
-    - **s** - select records NOT considered inside as specified by |-N|
+    - **l** - select records **not** within the specified distance of any line.
+    - **r** - select records **not** inside the specified rectangular region.
+    - **s** - select records **not** considered inside as specified by |-N|
       (and |-A|, |-D|).
-    - **z** - select records NOT within the range specified by |-Z|.
+    - **z** - select records **not** within the range specified by |-Z|.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -154,8 +154,8 @@ Optional Arguments
     points, as determined by :term:`PROJ_LENGTH_UNIT`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
     whose orthogonal projections onto the nearest line-segment fall
-    within the segments endpoints [Default considers points "beyond" the
-    line's endpoints.
+    within the segment's endpoints [Default considers points "beyond" the
+    line's endpoints].
 
 .. _-N:
 
@@ -182,22 +182,27 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**]
-    Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range
-    or is NaN (use **-s** to skip NaN records).
-    If *max* is omitted then we test if *z* equals *min* instead.  This means
-    equality within 5 ULPs (unit of least precision; http://en.wikipedia.org/wiki/Unit_in_the_last_place).
-    Input file must have at least three columns. To indicate no limit on
-    min or max, specify a hyphen (-). If your 3rd column is absolute
-    time then remember to supply **-f**\ 2T. To specify another column, append
-    **+c**\ *col*, and to specify several tests just repeat the **Z** option as
-    many times as you have columns to test. **Note**: When more than one **Z** option
-    is given then the **-Iz** option cannot be used.  In the case of multiple tests
-    you may use these modifiers as well: **+a** passes any record that passes at least
-    one of your *z* tests [Default is all tests must pass], and **+i** reverses the
-    tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
-    not used then it is automatically incremented for each new |-Z| option, starting
-    with 2.
+**-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+h**\ [**k**\|\ **s**]]\ [**+i**]
+    Control passing or skipping records (or entire segments) given the selections set via
+    the arguments. Pass all records whose 3rd column (*z*; *col* = 2) lies within the given
+    range or is NaN (use **-s** to skip NaN records). If *max* is omitted then we test if
+    *z* equals *min* instead.  This means equality within 5 ULPs (unit of least precision;
+    http://en.wikipedia.org/wiki/Unit_in_the_last_place). To indicate no limit on *min* or
+    *max*, specify a hyphen (-). **Notes**: (1) If your 3rd column is absolute time then remember
+    to supply **-f**\ 2T. (2) To specify several tests just repeat the **Z** option as many times
+    as you have columns to test. (3) To use **-Z**, the input file must have at least three columns.
+    (4) When more than one **Z** option is given then the **-Iz** option cannot be used.
+    Several modifiers are available:
+
+    - **+a** - In the case of multiple tests, output any record that passes at least
+      one of your *z* tests [Default is all tests must pass].
+    - **+c** - To specify another *z*-column, append **+c**\ *col*. If **+c** is not used
+      then it is automatically incremented for each new |-Z| option, starting from 2.
+    - **+h** - Instead of obtaining *z* from the data column(s), extract *z* from the segment
+      header |-Z|\ *z* string.  If no such entry is found we skip [Default, or **+hs**] the
+      entire segment (or we keep the entire segment if **+hk** was given), otherwise it is
+      subject to the test(s) using the constant *z* for each segment.
+    - **+i** - Reverses the tests to pass record with a *z* value **not** in the given range.
 
 .. include:: explain_-aspatial.rst_
 
@@ -258,7 +263,7 @@ Note On Distances
 
 If options |-C| or |-L| are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
-geographical (lon, lat) coordinates. Alternatively, specify |-R| and
+geographical (*lon, lat*) coordinates. Alternatively, specify |-R| and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
 or points, as determined by :term:`PROJ_LENGTH_UNIT`).
 
@@ -296,9 +301,9 @@ To return all the points *except* those inside that square, use::
 To extract the subset of data set that is within 300 km of any of the
 points in pts.txt but more than 100 km away from the lines in lines.txt, run
 
-   ::
+::
 
-    gmt select lonlatfile -fg -Cpts.txt+d300k -Llines.txt+d100k -Il > subset.txt
+  gmt select lonlatfile -fg -Cpts.txt+d300k -Llines.txt+d100k -Il > subset.txt
 
 Here, you must specify **-fg** so the program knows you are processing
 geographical data.
@@ -306,37 +311,37 @@ geographical data.
 To keep all points in data.txt within the specified region, except the
 points on land (as determined by the high-resolution coastlines), use
 
-   ::
+::
 
-    gmt select data.txt -R120/121/22/24 -Dh -Nk/s > subset.txt
+  gmt select data.txt -R120/121/22/24 -Dh -Nk/s > subset.txt
 
 To return all points in quakes.txt that are inside or on the spherical
 polygon lonlatpath.txt, try
 
-   ::
+::
 
-    gmt select quakes.txt -Flonlatpath.txt -fg > subset1.txt
+  gmt select quakes.txt -Flonlatpath.txt -fg > subset1.txt
 
 To return all points in stations.txt that are within 5 cm of the point in
 origin.txt for a certain projection, try
 
-   ::
+::
 
-    gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2.txt
+  gmt select stations.txt -Corigin.txt+d5 -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2.txt
 
 To return all points in quakes.txt that are inside the grid topo.nc
 where the values are nonzero, try
 
-   ::
+::
 
-    gmt select quakes.txt -Gtopo.nc > subset2.txt
+  gmt select quakes.txt -Gtopo.nc > subset2.txt
 
 The pass all records whose 3rd column values fall in the range 10-50
 and 5th column values are all negative, try
 
-   ::
+::
 
-    gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3.txt
+  gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3.txt
 
 
 .. include:: explain_gshhg.rst_

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdvector** *compx.nc* *compy.nc* |-J|\ *parameters*
+**gmt grdvector** *grid1* *grid2* |-J|\ *parameters*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
@@ -24,7 +24,7 @@ Synopsis
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *pen* ]
+[ |-W|\ *pen*\ [**+c**] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z| ]
@@ -40,21 +40,26 @@ Description
 -----------
 
 **grdvector** reads two 2-D grid files which represents the *x*\ - and
-*y*\ -components of a vector field and produces a vector field plot by
+*y*\ -components, :math:`(x,y)`, of a vector field and produces a vector field plot by
 drawing vectors with orientation and length according to the information
-in the files. Alternatively, polar coordinate *r*, *theta* grids may be given
-instead.
+in the files. Alternatively, polar coordinate grids, :math:`(r,\theta)`, may be given
+instead (see |-A| and |-Z|).
 
 Required Arguments
 ------------------
 
-*compx.nc*
-    Contains the x-components of the vector field. (See :ref:`Grid File Formats
+*grid1*
+    Contains the *x*\ -components of the vector field. (See :ref:`Grid File Formats
     <grd_inout_full>`).
-    
-*compy.nc*
-    Contains the y-components of the vector field. (See :ref:`Grid File Formats
+
+*grid2*
+    Contains the *y*\ -components of the vector field. (See :ref:`Grid File Formats
     <grd_inout_full>`).
+
+Order is important.
+For :math:`(x,y)`, *grid1* is expected to be the *x*\ -component, and *grid2* to be the *y*\ -component.
+For :math:`(r,\theta)`, *grid1* is expected to be the magnitude (:math:`r`),
+and *grid2* (:math:`\theta`), to be the azimuth (|-Z|) or direction (|-A|).
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -67,8 +72,9 @@ Optional Arguments
 .. _-A:
 
 **-A**
-    The grid files contain polar (r, theta) components instead of
-    Cartesian (x, y) [Default is Cartesian components].
+    The grid files contain polar :math:`(r,\theta)` components (magnitude and direction)
+    instead of Cartesian :math:`(x,y)` [Default is Cartesian components].
+    If :math:`\theta` contains azimuth, see |-Z|.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -96,7 +102,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip vectors at map boundaries [Default will clip].
+    Do **not** clip vectors at map boundaries [Default will clip].
 
 .. _-Q:
 
@@ -128,7 +134,7 @@ Optional Arguments
     per data unit.  Alternatively, use **-Sl**\ *length* to set a fixed plot length for all
     vectors. To report the minimum, maximum, and mean data and plot vector lengths
     of all vectors plotted, use |-V|. If an automatic legend entry is desired via **-l**,
-    or or two modifiers will be required:
+    one or two modifiers will be required:
 
     - **+c**\ [[*slon*/]\ *slat*] controls where on a geographic map a geovector's *refsize*
       length applies. The modifier is neither needed nor available when plotting Cartesian vectors.
@@ -160,9 +166,11 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *pen*
+**-W**\ *pen*\ [**+c**\]
     Change the pen attributes used for vector outlines [Default: width =
     default, color = black, style = solid].
+    If the modifier **+c** is appended then the color of the vector head
+    and stem are taken from the CPT (see |-C|).
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
@@ -172,7 +180,9 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The theta grid provided contains azimuths rather than directions (implies |-A|).
+    The :math:`\theta` grid provided contains azimuth (in degrees east of north)
+    rather than direction (in degrees counter-clockwise from horizontal).
+    Implies |-A|.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -205,16 +215,16 @@ linear plot with scale 5 cm per data unit, using vector rather than
 stick plot, scale vector magnitudes so that 10 units equal 1 inch, and
 center vectors on the node locations, run
 
-   ::
+::
 
-    gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i -pdf gradient
+  gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i -pdf gradient
 
 To plot a geographic data sets given the files comp_x.nc and comp_y.nc,
 using a length scale of 200 km per data unit and only plot every 3rd node in either direction, try
 
-   ::
+::
 
-    gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200k -pdf globe
+  gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200k -pdf globe
 
 .. module_note_begins
 
@@ -225,7 +235,7 @@ The scale given via |-S| may require some consideration. As explained in |-S|,
 it is specified in data-units per plot or distance unit. The plot or distance unit
 chosen will affect the type of vector you select. In all cases, we first compute
 the magnitude *r* of the user's data vectors at each selected node from the *x* and *y*
-components (unless you are passing *r*, *theta* grids directly with |-A|).  These
+components (unless you are passing :math:`(r,\theta)` grids directly with |-A| or |-Z|).  These
 magnitudes are given in whatever data units they come with.  Let us pretend our data
 grids record secular changes in the Earth's magnetic horizontal vector field in units
 of nTesla/year, and that at a particular node the magnitude is 28 nTesla/year (in some

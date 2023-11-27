@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdcontour_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdcontour"
 #define THIS_MODULE_MODERN_NAME	"grdcontour"
@@ -1052,7 +1053,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	/* NOT -N, so parse the command-line arguments as a normal module would */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1217,7 +1218,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 				cont[c].type = 'A';
 			else
 				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = (char)Ctrl->T.active;
 			c++;
 		}
@@ -1228,7 +1229,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont[c].type = 'A';
 		else
 			cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
-		cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+		cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		cont[c].do_tick = (char)Ctrl->T.active;
 		n_contours = c + 1;
 	}
@@ -1250,13 +1251,13 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont[c].type = 'C';
 			cont[c].val = zc[c];
 			cont[c].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		}
 		for (c = 0; c < (int)na; c++) {
 			cont[c+nc].type = 'A';
 			cont[c+nc].val = za[c];
 			cont[c+nc].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c+nc].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c+nc].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		}
 		if (za) gmt_M_free (GMT, za);
 		if (zc) gmt_M_free (GMT, zc);
@@ -1275,7 +1276,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			cont[n_contours].type = 'A';
 			cont[n_contours].val = Ctrl->A.info.single_cont;
 			cont[n_contours].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[n_contours].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[n_contours].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			n_contours++;
 		}
 	}
@@ -1301,7 +1302,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 				cont[n_contours].type = 'C';
 			else
 				cont[n_contours].type = (fabs (cont[n_contours].val - aval) < noise) ? 'A' : 'C';
-			cont[n_contours].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[n_contours].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[n_contours].do_tick = (char)Ctrl->T.active;
 		}
 	}
@@ -1425,22 +1426,22 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 			if (strchr ("|/", GMT->common.l.item.label[0])) {	/* Gave single label for contour pen since starting with | or / */
 				gmt_M_memcpy (&copy, &(GMT->common.l.item), 1, struct GMT_LEGEND_ITEM);	/* Make an identical copy */
 				gmt_strlshift (copy.label, 1U);	/* Remove the leading divider */
-				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &copy);
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &copy, NULL);
 			}
 			else if ((p = strchr (GMT->common.l.item.label, '|')) || (p = strchr (GMT->common.l.item.label, '/'))) {	/* Got two titles */
 				char q = p[0];	/* Get the divider character */
 				gmt_M_memcpy (&copy, &(GMT->common.l.item), 1, struct GMT_LEGEND_ITEM);	/* Make an identical copy */
 				p[0] = '\0';	/* Truncate the second contour label */
-				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_ANNOT]), &(GMT->common.l.item));	/* Place the first annotated contour entry */
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_ANNOT]), &(GMT->common.l.item), NULL);	/* Place the first annotated contour entry */
 				p[0] = q;	/* Restore the label in the original -l setting */
 				if (copy.draw & GMT_LEGEND_DRAW_D) copy.draw -= GMT_LEGEND_DRAW_D;	/* Only want to draw one horizontal line (if set), so remove for the 2nd entry */
 				gmt_strlshift (copy.label, (size_t)(p - GMT->common.l.item.label)+1);	/* Remove the leading annotated contour label first */
-				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &copy);	/* Place the second regular contour entry */
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &copy, NULL);	/* Place the second regular contour entry */
 			}
 			else if (Ctrl->A.active)	/* Got a single entry for annotated contours */
-				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_ANNOT]), &(GMT->common.l.item));
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_ANNOT]), &(GMT->common.l.item), NULL);
 			else	/* Got a single entry for plain contours */
-				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &(GMT->common.l.item));
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &(GMT->common.l.item), NULL);
 		}
 	}
 

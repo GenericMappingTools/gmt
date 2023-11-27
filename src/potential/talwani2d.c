@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,6 +41,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/talwani2d_inc.h"
 #include "newton.h"
 #include "talwani.h"
 
@@ -170,7 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 						case 'h':
 							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_HOR]);
 							break;
-						case 'z':
+						case 'v':	case 'z':	/* Deprecated z */
 							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_VER]);
 							break;
 						default:
@@ -217,8 +218,8 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <modelfile> [-A] [-D<density>] [-Ff|n[<lat>]|v] [-M[hz]] "
-		"[-N<trktable>] [-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>] [%s] [-Z[<level>][/<ymin/<ymax>]] "
+	GMT_Usage (API, 0, "usage: %s <modelfile> [-A] [-D<density>] [-Ff|n[<lat>]|v] [-M[h][v]] "
+		"[-N<trktable>] [-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>] [%s] [-Z[<level>][/<ymin>/<ymax>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
 		GMT_x_OPT, GMT_PAR_OPT);
@@ -239,10 +240,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
 	GMT_Usage (API, 3, "n: Geoid anomalies (meter).  Optionally append latitude for evaluation of normal gravity [45].");
 	GMT_Usage (API, 3, "v: Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).");
-	GMT_Usage (API, 1, "\n-M[hz]");
+	GMT_Usage (API, 1, "\n-M[h][v]");
 	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
 	GMT_Usage (API, 3, "h: All x-distances are given in km [meters].");
-	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
+	GMT_Usage (API, 3, "v: All z-distances are given in km [meters].");
 	GMT_Usage (API, 1, "\n-N<trktable>");
 	GMT_Usage (API, -2, "File with output locations x[,z].  If there are "
 		"z-coordinates then these are used as observation levels. "
@@ -253,9 +254,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce instead.");
 	GMT_Usage (API, -2, "Alternatively, give a <file> with output positions in the first column, or a comma-separated <list>.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin/<ymax>]");
+	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin>/<ymax>]");
 	GMT_Usage (API, -2, "-Z Set observation level for output locations [0]. "
-		"For FAA only: Optionally append /<ymin/ymax> to get a 2.5-D solution.");
+		"For FAA only: Optionally append /<ymin>/<ymax> to get a 2.5-D solution.");
 	GMT_Option (API, "bi,bo,d,e,h,i,o,x,.");
 	return (GMT_MODULE_USAGE);
 }
@@ -563,7 +564,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

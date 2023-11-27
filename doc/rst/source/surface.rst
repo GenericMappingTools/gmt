@@ -46,8 +46,8 @@ Synopsis
 Description
 -----------
 
-**surface** reads randomly-spaced (x,y,z) triples from standard input
-[or *table*] and produces a binary file of gridded values z(x,y) by
+**surface** reads randomly-spaced (*x, y, z*) triplets from standard input
+[or *table*] and produces a binary file of gridded values *z*(*x, y*) by
 solving the differential equation (away from data points)
 
 .. math::
@@ -55,9 +55,9 @@ solving the differential equation (away from data points)
     (1 - t) \nabla ^2(z) + t \nabla (z) = 0,
 
 where *t* is a tension factor between 0 and 1, and :math:`\nabla` indicates the
-Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution.
+2-D Cartesian Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution.
 Minimum curvature can cause undesired oscillations and false local maxima or minima
-(See Smith and Wessel, 1990), and you may wish to use *t* > 0 to suppress these
+[See *Smith and Wessel*\ , 1990], and you may wish to use *t* > 0 to suppress these
 effects. Experience suggests *t* ~ 0.25 usually looks good for potential
 field data and *t* should be larger (*t* ~ 0.35) for steep topography data.
 *t* = 1 gives a harmonic surface (no maxima or minima are possible except
@@ -120,7 +120,7 @@ Optional Arguments
 
 .. |Add_-J| replace::
     Select the data map projection. This projection is only used to add a referencing info
-    to the grid formats that support it. E.g., netCDF, GeoTIFF, and others supported by GDAL.
+    to the grid formats that support it. E.g., netCDF, GeoTIFF, and others supported by `GDAL <https://gdal.org/>`__.
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
     :end-before: **Description**
@@ -179,7 +179,7 @@ Optional Arguments
     |-I|. You can recover the |-R| and |-I| you want later by
     using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
     Alternatively, append **r** to have **surface** use the specified
-    **-R** setting exactly as given in the calculations [Default automatically
+    |-R| setting exactly as given in the calculations [Default automatically
     seeks a slightly larger region if that allows for more intermediate
     steps to ensure the best possible convergence; the region is then trimmed
     back to what was requested in |-R| upon output].
@@ -187,7 +187,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *search_radius*\ [**m**\|\ **s**]
-    Search radius. Enter *search\_radius* in same units as x,y data;
+    Search radius. Enter *search\_radius* in same units as *x, y* data;
     append **m** to indicate arc minutes or **s** for arc seconds. This
     is used to initialize the grid before the first iteration; it is not
     worth the time unless the grid lattice is prime and cannot have
@@ -228,7 +228,7 @@ Optional Arguments
     Larger values overestimate the incremental changes during
     convergence, and will reach a solution more rapidly but may become
     unstable. If you use a large value for this factor, it is a good
-    idea to monitor each iteration with the **-Vi** option. [Default =
+    idea to monitor each iteration with the |-V|\ **i** option. [Default =
     1.4 converges quickly and is almost always stable.]
 
 .. include:: explain_-aspatial.rst_
@@ -276,14 +276,14 @@ hawaii_5x5.xyg, using a *tension_factor* = 0.25, a
 *convergence_limit* = 0.1 mGal, writing the result to a file called
 hawaii_grd.nc, and monitoring each iteration, try:
 
-   ::
+::
 
-    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
+  gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
 
 Notes
 -----
 
-While the region specified by **-R** determines your final output grid, internally
+While the region specified by |-R| determines your final output grid, internally
 we may use a slightly larger region that will allow for more intermediate grids
 (i.e., more common factors between *n_columns - 1* and *n_rows - 1*). This
 should allow for better convergence in the final solution.
@@ -308,7 +308,7 @@ project your data using a stereographic projection and grid the projected Cartes
 Gridding Geographic Data: Setting Increments
 --------------------------------------------
 
-Specifying grid increments in distance units (meters, km, etc.) for geographic (lon, lat)
+Specifying grid increments in distance units (meters, km, etc.) for geographic (*lon, lat*)
 grids triggers a conversion from the given increment to the equivalent increment in degrees.
 This is done differently for longitude and latitude and also depends on chosen ellipsoid,
 but ultimately is a great-circle approximation. For latitude we divide your *y*-increment

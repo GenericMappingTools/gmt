@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *force* ]
 [ |-L| ]
-[ |-M|\ [**x**][**z**] ]
+[ |-M|\ [**h**][**v**] ]
 [ |-S| ]
 [ |-T|\ *wfile*]
 [ |SYN_OPT-V| ]
@@ -43,7 +43,7 @@ Description
 of user-selectable options, such as boundary conditions, pre-existing
 deformations, variable rigidity and restoring force, and more.  The solutions
 are obtained using finite difference approximations to the differential
-equations.
+equations [*Bodine*,\ 1980].
 
 Required Arguments
 ------------------
@@ -73,7 +73,7 @@ Required Arguments
     simply driven by the boundary conditions set via |-A|.  If no rigidity or
     elastic thickness file is given via |-E| then you must also append arguments
     to create the locations used for the calculations; for details on array creation,
-    see `Generate 1D Array`_.
+    see `Generate 1-D Array`_.
     **-Qq**\ [*loadfile*] is a file (or standard input if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
     (or standard input if not given) with (x,load in m or km, positive up); see |-M| for
@@ -98,7 +98,7 @@ Optional Arguments
 
 **-C**\ **p**\|\ **y**\ *value*
     Append **p** or **y** to change the current value of Poisson's ratio [0.25]
-    or Young's modulus [7.0e10 N/m^2], respectively.
+    or Young's modulus [7.0e10 N/m\ :sup:`2`], respectively.
 
 .. _-F:
 
@@ -112,10 +112,10 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**x**][**z**]
-    Optionally append one or both of **x** and **z**: Use **x** to indicated that all
-    x-distances are in km [meters] and **z** to
-    indicate that all z-deflections are in km [meters].
+**-M**\ [**h**][**v**]
+    Optionally append one or both of **h** and **v**: Use **h** to indicated that all
+    horizontal distances are in km [meters] and **v** to
+    indicate that all vertical deflections are in km [meters].
 
 .. _-S:
 
@@ -191,14 +191,14 @@ Examples
 To compute elastic plate flexure from the topography load in *topo.txt*,
 for a 10 km thick plate with typical densities, try
 
-   ::
+::
 
-    gmt flexure -Qttopo.txt -E10k -D2700/3300/1035 > flex.txt
+  gmt flexure -Qttopo.txt -E10k -D2700/3300/1035 > flex.txt
 
 References
 ----------
 
-Bodine, J. H., 1980, *Numerical computation of plate flexure in marine geophysics*, 
+Bodine, J. H., 1980, *Numerical computation of plate flexure in marine geophysics*,
 Tech. Rep. CU-1-80, Columbia University.
 
 See Also

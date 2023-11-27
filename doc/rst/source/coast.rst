@@ -120,14 +120,14 @@ Optional Arguments
       `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
       (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
       state of a country (if available), e.g., US.TX for Texas.
-    - Append =\ *continent* to specify a continent, using either the full names or the abbreviations AF (Africa),
+    - Append =\ *continent* to specify a continent, using the abbreviations AF (Africa),
       AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
-    - To specify a collection or named region, give either the code of the full name.
+    - To specify a :ref:`DCW collection <dcw-collections>` or named region, give either the code or the full name.
 
     The following modifiers are supported:
 
     - **+l** to just list the countries and their codes (no data extraction or plotting takes place).
-    - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
+    - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.
     - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries in that continent or country;
       repeat if more than one continent or country is requested.
     - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
@@ -176,7 +176,7 @@ Optional Arguments
 
 **-I**\ *river*\ [/*pen*]
     Draw rivers. Specify the type of rivers and [optionally] append pen
-    attributes [Default pen: width = default, color = black, style =
+    attributes [Default pen: width = 0.25p, color = black, style =
     solid].
 
     Choose from the list of river types below; repeat option |-I| as
@@ -223,7 +223,7 @@ Optional Arguments
 
 **-N**\ *border*\ [/*pen*]
     Draw political boundaries. Specify the type of boundary and
-    [optionally] append pen attributes [Default pen: width = default,
+    [optionally] append pen attributes [Default pen: width = 0.25p,
     color = black, style = solid].
 
     Choose from the list of boundaries below. Repeat option |-N| as
@@ -263,7 +263,7 @@ Optional Arguments
 
 **-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
-    [Defaults: width = default, color = black, style = solid] which
+    [Defaults: width = 0.25p, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
     prepend *level*/, where *level* is 1-4 and represent coastline,
     lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
@@ -290,16 +290,17 @@ Optional Arguments
 
 .. module_common_ends
 
+.. _dcw-collections:
+
 DCW Collections
 ---------------
-
-.. _dcw-collections:
 
 The |-E| and |-R| options can be expanded to take the user's own custom collections
 and named regions.  Users can create a dcw.conf file and place it in their
 GMT user directory (typically ~/.gmt).  The format of the file is the same
-as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
+as the `dcw-collections.txt <https://github.com/GenericMappingTools/dcw-gmt/blob/master/dcw-collections.txt>`_ file distributed with DCW 2.1.0 or later::
 
+    # ~/.gmt/dcw.conf
     # Arbitrary comments and blank lines anywhere
 
     # The France-Italian union (2042-45) of gallery example 34.
@@ -309,11 +310,14 @@ as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
     tag: SARG Sargasso Sea
     region: 70W/40W/20N/35N
 
-Each *tag:* record must be immediately followed by either a *list:* or *region:* record.
-All tags should be at least 3 characters long. Either the *tag* or the *name* (if available)
-can be used to make selections in |-R| or |-E|. The **-E+n** option wil list the contents
-of the collection distributed with DCW as well as any contents in ~/.gmt/dcw.conf. The latter
-file is consulted first and can be used to override same-name tag selections in the system DCW file.
+* Each *tag:* record must be immediately followed by either a *list:* (e.g. *list: FR,IT*, no space between codes)
+  or *region:* (e.g. *region: 70W/40W/20N/35N*) record.
+* All tags should be at least 3 characters long.
+  Either the *tag* or the *name* (if available) can be used to make selections in |-R| or |-E|.
+  Use quotes if *name* consists of more than one word (e.g. *"Franco-Italian Union"*).
+* The **-E+n** option wil list the contents of the collection distributed with DCW as well
+  as any contents in ~/.gmt/dcw.conf. The latter file is consulted first and can be used to
+  override same-name tag selections in the system DCW file.
 
 Examples
 --------
@@ -409,6 +413,10 @@ Antarctic Research. This data base contains various kinds of limiting
 lines for Antarctica and is available on CD-ROM. It is published by the
 Scientific Committee on Antarctic Research, Scott Polar Research
 Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
+
+**Note**: While the data sets used have copyrights that control their
+distribution, maps made with them are yours.  You do not need permission
+from us to use such figures in journals, for instance.
 
 .. module_note_ends
 

@@ -29,7 +29,7 @@ How to use the symbols?
 -----------------------
 
 Before to start, think in the type of map you want to obtain and prepare your data.
-If you want to create a 2D map (most common situation) you need :doc:`plot </plot>`, if you want a 3D
+If you want to create a 2D map (most common situation) you need :doc:`plot </plot>`, if you want a 3-D
 map you should use :doc:`plot3d </plot3d>` instead. Think also in how many different symbols you want to
 show in each individual map. You should have at least a different .xy file for each
 species that you want to show. You could want also to show separately males and females

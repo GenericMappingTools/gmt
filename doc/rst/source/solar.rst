@@ -124,7 +124,7 @@ Optional Arguments
 
 **-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid].
+    width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_

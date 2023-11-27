@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,6 +66,8 @@ struct GMT_PEN {
 struct GMT_FILL {
 	double rgb[4];			/* Chosen color if no pattern + Transparency 0-1 [0 = opaque] */
 	double f_rgb[4], b_rgb[4];	/* Colors applied to unset and set bits in 1-bit image */
+	bool set_f_rgb;			/* True if we used +f */
+	bool set_b_rgb;			/* True if we used +f */
 	bool use_pattern;		/* true if pattern rather than rgb is set */
 	int pattern_no;			/* Number of a predefined pattern, or -1 if not set */
 	unsigned int dpi;		/* Desired dpi of image building-block if use_pattern is true */

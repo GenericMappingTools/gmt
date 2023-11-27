@@ -38,7 +38,7 @@ One of the following modifiers can be appended:
 - **+p** - specify that the current value minus the previous value must exceed *gap* for a break to be imposed.
 
 Default imposes breaks based on the absolute value of the difference between the current and previous value.
-**Note**: For **x**\|\ **y**\|\ **z** with time data the unit is instead controlled by :term:`TIME_UNIT`. **Note**: GMT
+**Notes**: (1) For **x**\|\ **y**\|\ **z** with time data the unit is instead controlled by :term:`TIME_UNIT`. (2) GMT
 has other mechanisms that can determine line segmentation, including segments defined by multiple segment header
-records (see the cookbook chapter :doc:`/cookbook/file-formats`) or segments defined by NaN values when
+records (see the cookbook chapter :doc:`/reference/file-formats`) or segments defined by NaN values when
 :term:`IO_NAN_RECORDS` is set to *pass* [default skips NaN values].

@@ -23,7 +23,7 @@ Synopsis
 [ |-M|\ *size*\ [*u*][/*alpha*] ]
 [ |-Q| ]
 [ |-S|\ [**i**]\ *scale* ]
-[ |-T|\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*] ]
+[ |-T|\ [**+r**\ *reduce_vel*][**+s**\ *shift*]\ [**+t**\ *n*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -172,15 +172,15 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*]
+**-T**\ [**+r**\ *reduce_vel*][**+s**\ *shift*]\ [**+t**\ *n*]
     Time alignment and shift.
-
-        **+t**\ *tmark*: align all trace along time mark. *tmark* are -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).
 
         **+r**\ *reduce_vel*: reduce velocity in km/s.
 
         **+s**\ *shift*: shift all traces by *shift* seconds.
 
+        **+t**\ *tmark*: align all trace along time mark. *tmark* are -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).
+ 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
     :start-after: **Syntax**
@@ -195,7 +195,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes for all traces unless overruled by *pen* specified in *saclist*.
-    [Defaults: width = default, color = black, style = solid].
+    [Defaults: width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_

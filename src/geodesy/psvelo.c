@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psvelo_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psvelo"
 #define THIS_MODULE_MODERN_NAME	"velo"
@@ -990,7 +991,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
-	double z_val, e_val, value, scale, size, i_value, nominal_size;
+	double z_val, e_val, value, scale, size, i_value;
 
 	char *station_name = NULL;
 
@@ -1013,7 +1014,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1067,7 +1068,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_IN, scol, GMT_IS_DIMENSION);
 	}
 	else	/* Fixed symbol scale */
-		nominal_size = scale = Ctrl->S.scale;
+		scale = Ctrl->S.scale;
 	/* 3. Add scaling from file, if requested */
 	if (Ctrl->H.active && Ctrl->H.mode == PSVELO_READ_SCALE) {
 		xcol = Ctrl->S.n_cols;
@@ -1209,7 +1210,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->D.active) spinsig = spinsig * Ctrl->D.scale;
 		}
-		if (Ctrl->S.read) nominal_size = scale = in[scol];
+		if (Ctrl->S.read) scale = in[scol];
 
 		if (!Ctrl->N.active) {
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);

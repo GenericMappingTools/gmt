@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdproject_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdproject"
 #define THIS_MODULE_MODERN_NAME	"grdproject"
@@ -33,7 +34,7 @@
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformation of grids"
 #define THIS_MODULE_KEYS	"<G{,GG}"
 #define THIS_MODULE_NEEDS	"J"
-#define THIS_MODULE_OPTIONS "-JRVnr" GMT_OPT("S")
+#define THIS_MODULE_OPTIONS "-JRVjnr" GMT_OPT("S")
 
 struct GRDPROJECT_CTRL {
 	struct GRDPROJECT_In {	/* Input grid */
@@ -92,9 +93,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-C[<dx>/<dy>]] [-D%s] "
-		"[-E<dpi>] [-F[%s|%s]] [-I] [-M%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-E<dpi>] [-F[%s|%s]] [-I] [-M%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_J_OPT, GMT_inc_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY,
-		GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -118,7 +119,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point). "
 		"Cannot be used if -F is set.");
 	GMT_Option (API, "R");
-	GMT_Option (API, "V,n,r,.");
+	GMT_Option (API, "V,j,n,r,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -215,6 +216,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 	                                   "Can specify only one of -F and -M\n");
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + Ctrl->E.active) > 1,
 	                                   "Must specify only one of -D or -E\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.J.width_given && !GMT->common.R.active[RSET] , "Option -J: If map width is given you must also specify a region with -R\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
 	                                   GMT->common.R.inc[GMT_Y] < 0.0),
 	                                   "Option -D: Must specify positive increment(s)\n");
@@ -254,7 +256,7 @@ EXTERN_MSC int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

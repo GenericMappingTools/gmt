@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *  Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *  Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *  See LICENSE.TXT file for copying and redistribution conditions.
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 
 #define GMT_PACKAGE_VERSION "@GMT_PACKAGE_VERSION@"
 #define GMT_PACKAGE_VERSION_WITH_GIT_REVISION "@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@"
+#define GMT_BUILD_DATE "@GMT_BUILD_DATE@"
 
 /* URL to the docs on the GMT web server */
 #define GMT_DOC_URL "@GMT_DOC_URL@"

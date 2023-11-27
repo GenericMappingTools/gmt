@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt defaults** [ |-D|\ [**u**\|\ **s**] ]
+**gmt defaults** [ |-D|\ [**s**\|\ **u**] ]
 
 |No-spaces|
 
@@ -23,7 +23,7 @@ Description
 There are three ways to change some of the settings: (1) use the command
 :doc:`gmtset`, (2) use any text editor to edit the file :doc:`gmt.conf` in your
 home, ~/.gmt or current directory (if you do not have this file, run
-:doc:`gmtdefaults` |-D| > gmt.conf to get one with the system default
+:doc:`gmtdefaults` |-D| > gmt.conf to get one with the system SI default
 settings), or (3) override any parameter by specifying one or more
 **-**\ **-PARAMETER**\ =\ *VALUE* statements on the command line of any GMT
 command (**PARAMETER** and *VALUE* are any combination in :doc:`gmt.conf`). In
@@ -46,10 +46,10 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**u**\|\ **s**]
+**-D**\ [**s**\|\ **u**]
     Print the system GMT defaults settings to standard output. Append **u**
     for US defaults or **s** for SI defaults. [|-D| alone gives the
-    version selected at compile time; If |-D| is omitted, the user's
+    SI defaults; If |-D| is omitted, the user's
     currently active defaults are printed.]
 
 .. include:: explain_help.rst_
@@ -70,7 +70,7 @@ are user-definable in GMT.
 Examples
 --------
 
-To get a copy of the GMT parameter defaults in your home directory, run::
+To get a copy of the GMT parameter SI defaults in your home directory, run::
 
     gmt defaults -D > ~/gmt.conf
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psbasemap_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psbasemap"
 #define THIS_MODULE_MODERN_NAME	"basemap"
@@ -143,9 +144,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *kind[3] = {"Specify a rectangular panel for the map inset", "Specify a rectangular panel behind the map scale", "Specify a rectangular panel behind the map rose"};
+	char *needed_F_options = NULL;
 	bool get_panel[3] = {false, false, false}, classic;
 
 	classic = (GMT->current.setting.run_mode == GMT_CLASSIC);
+	needed_F_options = (classic) ? "-D, -L and -T" : "-L and -T";
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -237,7 +240,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Must specify at least one of -A, -B, -D, -L, -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Cannot use -B, -D, -L, -T with -A\n");
 	//n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_cartesian (GMT, GMT_IN), "-L applies to geographical data only\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Option -F is only allowed with -L and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Option -F is only allowed with %s\n", needed_F_options);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -265,7 +268,7 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

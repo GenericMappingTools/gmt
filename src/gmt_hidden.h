@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,8 @@ struct GMT_DATASEGMENT_HIDDEN {    /* Supporting information hidden from the API
 	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */
 	struct GMT_OGR_SEG *ogr;	/* NULL unless OGR/GMT metadata exist for this segment */
 	struct GMT_DATASEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
-	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per column [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per data column [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode for trailing text column [GMT_ALLOC_INTERNALLY] */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 };
 

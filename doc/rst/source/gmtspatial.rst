@@ -19,8 +19,8 @@ Synopsis
 [ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
-[ -L|\ *dist*\ /*noise*\ /*offset* ]
-[ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
+[ |-L|\ *dist*\ /*noise*\ /*offset* ]
+[ |-N|\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**] ]
 [ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
@@ -143,20 +143,22 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**]
-    Determine if one (or all, with **+a**) points of each feature in the
+**-N**\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**]
+    Lines and polygons: Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
     taken from the aspatial value assigned to Z, the segment header
     (first |-Z|, then |-L| are scanned), or it is assigned the
-    running number that is initialized to *start* [0]. By default the
-    input segment that are found to be inside a polygon are written to
+    running number that is initialized via **+p** to *start* [0]. By default the
+    input segments that are found to be inside a polygon are written to
     standard output with the polygon ID encoded in the segment header as
     **-Z**\ *ID*. Alternatively, append **+r** to just report which
     polygon contains a feature or **+z** to have the IDs added as an
     extra data column on output. Segments that fail to be inside a
     polygon are not written out. If more than one polygon contains the
-    same segment we skip the second (and further) scenario.
+    same segment we skip the second (and further) scenarios. Point clouds:
+    Use modifier **+i** and we will determine the polygon ID for
+    every **i**\ ndividual input point and add it as the last column.
 
 .. _-Q:
 
@@ -197,15 +199,15 @@ Optional Arguments
     the intersection of polygons (closed), **-Su** which returns the
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline. **Note1**: Only **-Sb**, **-Sh** and **-Ss** have been implemented.
-    **Note2**: **-Sb** is a purely Cartesian operation so *width* must be in data units.
+    were split by the Dateline. **Notes**: (1) Only **-Sb**, **-Sh** and **-Ss** have been implemented.
+    (2) **-Sb** is a purely Cartesian operation so *width* must be in data units.
     That is, for geographical coordinates *width* must be provided in degrees or, preferably, project data into
     an equal-area projection, compute the buffer and then convert back to geographical.
 
 .. _-T:
 
 **-T**\ [*clippolygon*]
-    Truncate polygons against the specified polygon given, possibly
+    Truncate polygons and lines against the specified polygon given, possibly
     resulting in open polygons. If no argument is given to |-T| we
     create a clipping polygon from |-R| which then is required. Note
     that when the |-R| clipping is in effect we will also look for
@@ -216,13 +218,13 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. --W:
+.. _-W:
 
 **-W**\ *dist*\[*unit*][**+f**\|\ **l**]
     Extend all segments with a new first and last point such that these points are *dist* away
     from their neighbor point in the direction implied by the two points at each end of the
     segment.  For geographic data you may append a *unit* (see `Units`_). To give separate
-    distances for the two ends, give distf*\[*unit*]/distl*\[*unit*] instead.  Optionally,
+    distances for the two ends, give *distf*\[*unit*]/*distl*\[*unit*] instead.  Optionally,
     append either **+f** or **+l** to only extend the first or last point this way [both].
     The mode of geographical calculations depends on **-j**.
 
@@ -281,6 +283,11 @@ To turn all lines in the multisegment file lines.txt into closed polygons,
 run::
 
     gmt spatial lines.txt -F > polygons.txt
+
+To append the polygon ID of every individual point in cloud.txt that is inside the
+polygons in the file poly.txt and write that ID as the last column per output row, run::
+
+    gmt spatial cloud.txt -Npoly.txt+i  > cloud_IDs.txt
 
 To compute the area of all geographic polygons in the multisegment file
 polygons.txt, run::

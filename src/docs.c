@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<module-name>");
 	GMT_Usage (API, -2, "One of the core or supplemental modules, or one of "
-		"api, colors, cookbook, data, gallery, gmt, home, settings, and tutorial. "
+		"api, colors, data, gallery, gmt, home, reference, settings, and tutorial. "
 		"Also acceptable are forum (GMT Discourse Forum) and web[site] (GMT Main Website).");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
@@ -76,7 +76,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 	const char *group = NULL, *docname = NULL;
 	char *ps_viewer = NULL;
 	static const char *known_group[2] = {"core", "other"};
-	static const char *known_doc[9] = {"gmtcolors", "cookbook", "api", "tutorial", "gallery", GMT_SETTINGS_FILE, "gmt", "datasets", "index"};
+	static const char *known_doc[9] = {"gmtcolors", "reference", "api", "tutorial", "gallery", GMT_SETTINGS_FILE, "gmt", "datasets", "index"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -196,7 +196,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 			if (!strcmp (t, "colors")) {
 				docname = known_doc[0];	group   = known_group[0];	/* Pretend it is in the core */
 			}
-			else if (!strcmp (t, "cookbook")) {
+			else if (!strcmp (t, "reference") || !strcmp (t, "cookbook")) {	/* Backwards compatibility with cookbook */
 				docname = known_doc[1];	group   = known_group[0];	/* Pretend it is in the core */
 			}
 			else if (!strcmp (t, "api")) {

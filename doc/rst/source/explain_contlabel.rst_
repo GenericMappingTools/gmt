@@ -12,8 +12,8 @@
         option, you can append /*fraction* which is used to place the
         very first label for each contour when the cumulative
         along-contour distance equals *fraction \* dist* [0.25].
-    **f**\ *ffile.d*
-        Reads the ASCII file *ffile.d* and places labels at locations in
+    **f**\ *ffile*
+        Reads the ASCII file *ffile* and places labels at locations in
         the file that matches locations along the quoted lines. Inexact
         matches and points outside the region are skipped.
     **l\|L**\ *line1*\ [,\ *line2*,...]
@@ -23,8 +23,8 @@
         *line* specification is *start/stop*, where *start* and *stop*
         are either a specified point *lon/lat* or a 2-character **XY**
         key that uses the justification format employed in :doc:`text` to
-        indicate a point on the map, given as [LCR][BMT].
-        In addition, you can use Z-, Z+ to mean the global minimum and
+        indicate a point on the map, given as [**LCR**][**BMT**].
+        In addition, you can use **Z-**, **Z+** to mean the global minimum and
         maximum locations in the grid. **L** will interpret the point pairs
         as defining great circles [Default is straight line].
     **n**\ *n\_label*
@@ -36,10 +36,10 @@
         /*min\_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
         minimum distance separation between successive labels is
         enforced.
-    **x\|X**\ *xfile.d*
-        Reads the multisegment file *xfile.d* and places labels at the
+    **x\|X**\ *xfile*
+        Reads the multisegment file *xfile* and places labels at the
         intersections between the quoted lines and the lines in
-        *xfile.d*. **X** will resample the lines first along
+        *xfile*. **X** will resample the lines first along
         great-circle arcs.
 
     In addition, you may optionally append

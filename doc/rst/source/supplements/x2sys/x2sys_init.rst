@@ -232,9 +232,9 @@ we want to keep track of the data distribution at a 1 x 1 degree
 resolution, with distances in km calculated along geodesics and with
 speeds given in knots, we may run
 
-   ::
+::
 
-    gmt x2sys_init LINE -V -G -Dline -Rg -je -Ndk -Nsn -I1/1 -Etrk
+  gmt x2sys_init LINE -V -G -Dline -Rg -je -Ndk -Nsn -I1/1 -Etrk
 
 where we have selected LINE to be our x2sys tag. When x2sys tools try to
 read your line data files they will first look in the current directory
@@ -287,8 +287,8 @@ to find it.
     and enhanced netCDF-based MGD77+ files) and the old \*.gmt files
     manipulated by the mgg supplements; for these data sets the **-j**
     and |-N| will default to great circle distance calculation in km
-    and speed in m/s. There are also format definition files for plain x,y[,z]
-    and lon,lat[,z] tracks. To initiate new track databases to be used
+    and speed in m/s. There are also format definition files for plain (*x, y*\ [*, z*])
+    and (*lon, lat*\ [*, z*]) tracks. To initiate new track databases to be used
     with MGD77 data from NCEI, try
 
       ::

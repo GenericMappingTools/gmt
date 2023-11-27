@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtgravmag3d_inc.h"
 #include "okbfuns.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtgravmag3d"
@@ -34,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe"
 #define THIS_MODULE_KEYS	"<D{,TD(,FD(,MD(,GG},>D)"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVf"
+#define THIS_MODULE_OPTIONS "-:RVfhior" GMT_ADD_xg_OPT
 
 struct GMTGRAVMAG3D_CTRL {
 	struct GMTGRAVMAG3D_C {	/* -C */
@@ -99,7 +100,7 @@ struct GMTGRAVMAG3D_CTRL {
 	} box;
 	int  n_triang, n_vert, n_raw_triang;
 	int  npts_circ;		/* Number of points in which a circle is descretized. */
-	int  n_slices;		/* Spheres and Ellipsoides are made by 2*n_slices. Bells are made by n_slices. */
+	int  n_slices;		/* Spheres and Ellipsoids are made by 2*n_slices. Bells are made by n_slices. */
 	int  n_sigmas;		/* Number of sigmas which will determine the bell's base width */
 	struct GMTGRAVMAG3D_XYZ *triang;
 	struct GMTGRAVMAG3D_XYZ *t_center;
@@ -177,15 +178,15 @@ GMT_LOCAL int check_triang_cw (struct GMTGRAVMAG3D_CTRL *Ctrl, unsigned int n, u
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<xyz_file>] -Tv<vert_file> | -Tr|s<raw_file> | -M+s<body>/<pars> [-C<density>] [-E<thickness>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -Tv<vert_file> | -Tr|s<raw_file> | -M+s<body>/<pars> [-C<density>] [-E<thickness>] "
 		"[-F<xy_file>] [-G%s] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [%s] [-L<z_observation>] [%s] "
-		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s]\n",
-		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s] [%s] [%s]%s[%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_xg_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<xyz_file>");
+	GMT_Usage (API, 1, "\n<table>");
 	GMT_Usage (API, -2, "One or more data files (in ASCII, binary, netCDF) with data; see -T for format. If no files are given, standard input is read");
 	GMT_Usage (API, 1, "\n-Tv<vert_file> | -Tr|s<raw_file>");
 	GMT_Usage (API, -2, "Give names of xyz and vertex (-Tv<fname>) files defining a closed surface. "
@@ -240,7 +241,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set z level of reference plane [Default = 0].");
 	GMT_Option (API, "bi");
 	GMT_Usage (API, 1, "\n-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.");
-	GMT_Option (API, "r,:,.");
+	GMT_Option (API, "h,i,o,r");
+#ifdef HAVE_GLIB_GTHREAD
+	GMT_Option (API, "x");
+#else
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with GLIB multi-threading support.");
+#endif
+	GMT_Option (API, ":,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -254,7 +261,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
+	unsigned int pos = 0, n_errors = 0, n_files = 0;
 	int n_par, err_npar = 0, nBELL = 0, nCIL = 0, nPRI = 0, nCONE = 0, nELL = 0, nPIR = 0, nSPHERE = 0;
 	char p[GMT_LEN256] = {""}, p2[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -276,7 +283,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Can't dechiper values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Can't decipher values\n");
 					n_errors++;
 				}
 				Ctrl->C.active = false;
@@ -392,7 +399,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						return GMT_PARSE_ERROR;
 					}
 					if (err_npar) {
-						GMT_Report (API, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Model prism option, wrong number of parameters.\n");
 						return GMT_PARSE_ERROR;
 					}
 				}
@@ -458,8 +465,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Must specify -I option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
-	                                  "Must specify either -Cdensity or -H<stuff>\n");
-	j = gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
+	                                  "Must specify either -C<density> or -H<stuff>\n");
+	(void)gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (gmt_M_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;
 
@@ -667,7 +674,7 @@ GMT_LOCAL int read_raw(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
 	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->T.raw_file, NULL)) == NULL)
 		return GMT->parent->error;
 	if (In->n_columns < 9) {	/* Trouble */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ts: %s does not have 9 columns with 3 triang vertices\n", Ctrl->T.raw_file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ts: %s does not have 9 columns with 3 triangle vertices\n", Ctrl->T.raw_file);
 		return -1;
 	}
 
@@ -784,7 +791,7 @@ EXTERN_MSC int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

@@ -58,7 +58,10 @@ Required Arguments
     .. include:: explain_refpoint.rst_
 
     Append **+w**\ *width*\ [/*height*] to set the width (and height) of the legend box
-    in plot coordinates (inches, cm, etc.). **Note**: If **+w** is not given then we compute
+    in plot coordinates (inches, cm, etc.). If unit is % (percentage) then *width* as
+    computed as that fraction of the map width. If *height* is given as percentage then
+    then *height* is recomputed as that fraction of the legend *width* (not map height).
+    **Note**: If **+w** is not given then we compute
     the width within the *Postscript* code.  Currently, this is only possible if just
     legend codes **D**, **H**, **L**, **S**, or **V** are used and that the number of symbol
     columns (**N**) is 1. If *height* is zero or not given then we estimate *height* based
@@ -113,7 +116,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [*items*]
-    Modern mode only and pertains the the situation where there are **h**\ idden, auto-generated legend
+    Modern mode only and pertains the situation where there are **h**\ idden, auto-generated legend
     information created by prior plotting-modules' **-l** option and **e**\ xplicitly given information
     from input file(s) given on the command line (or via standard input).  Use |-M| to set which of
     these should be used and in what order via directives **h** and **e** [Default is **he**, meaning

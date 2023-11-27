@@ -1,0 +1,8 @@
+#
+# matlab/cool : Linear change from blue to magenta [C=RGB]
+# Simulates the COOL colormap in MATLAB
+#------------------------------------------------
+# COLOR_MODEL = RGB
+#------------------------------------------------
+0	cyan	1	magenta
+#------------------------------------------------

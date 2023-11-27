@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,9 @@ extern "C" {
 #       define vImage_CVUtilities_h
 #   endif
 #endif
-
+#if WIN32
+#   define QSORT_R_THUNK_FIRST
+#endif
 /* Avoid some annoying warnings from MS Visual Studio */
 #ifdef _MSC_VER
 #	pragma warning( disable : 4091 )	/* 'static ': ignored on left of 'XXX' when no variable is declared */
@@ -181,9 +183,23 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
-/* If GLIBC compatible qsort_r is not available */
-#ifndef HAVE_QSORT_R_GLIBC
-#	include "compat/qsort.h"
+/* qsort_r is a mess: https://stackoverflow.com/questions/39560773/different-declarations-of-qsort-r-on-mac-and-linux */
+
+#if defined (__APPLE__)
+    /* Do thunk first via qsort_r */
+	#define QSORT_R_THUNK_FIRST
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, thunk, compar);
+#elif defined (WIN32)
+    /* Do thunk last via qsort_s */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_s(base, nel, width, compar, thunk);
+#elif defined (HAVE_QSORT_R_GLIBC)
+    /* Use thunk last GNU order with qsort_r */
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
+#else
+    /* Use thunk last via Florian's code */
+	#include "compat/qsort.h"
+	#define GMT_USE_COMPAT_QSORT
+	#define QSORT_R(base, nel, width, compar, thunk) qsort_r(base, nel, width, compar, thunk);
 #endif
 
 #ifdef __cplusplus

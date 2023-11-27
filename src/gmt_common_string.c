@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,29 +21,32 @@
  * Date:    3-MAR-2012
  * Version: 5
  *
- * Modules in this file:
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
+ *  basename                Extract the base portion of a pathname
  *  gmt_chop                Chops off any CR or LF at end of string
  *  gmt_chop_ext            Chops off the trailing .xxx (file extension)
+ *  gmt_dos_path_fix        Turn /c/dir/... paths into c:/dir/...
  *  gmt_get_ext             Returns a pointer to the tailing .xxx (file extension)
+ *	gmt_get_modifier        Returns 1/0 and if modifier returns its argument
  *  gmt_get_word            Return the specified word entry from a list
  *  gmt_strdup_noquote		Duplicates a string but removes any surrounding single or double quotes
- *  gmt_strstrip            Strip leading and trailing whitespace from string
- *  gmt_strlshift           Left shift a string by n characters
- *  gmt_strrepc             Replaces all occurrences of a char in the string
- *  gmt_strrep              Replaces all occurrences of a string s2 in the string s1 by s3
  *  gmt_strlcmp             Compares strings (ignoring case) until first reaches null character
+ *  gmt_strlshift           Left shift a string by n characters
+ *  gmt_strrep              Replaces all occurrences of a string s2 in the string s1 by s3
+ *  gmt_strrepc             Replaces all occurrences of a char in the string
+ *  gmt_strrstr				A strstr but for last occurrence
+ *  gmt_strstrip            Strip leading and trailing whitespace from string
  *  gmt_strtok              Reiterant replacement of strtok
  *  gmt_strtok_m            A Matlab style strtok
- *  gmt_strrstr				A strstr but for last occurrence
- *  gmt_dos_path_fix        Turn /c/dir/... paths into c:/dir/...
+ *	chrcat                  Append a char to a string
  *  str(n)casecmp           Case-insensitive string comparison functions
- *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
  *  strsep                  Reentrant string tokenizer that handles empty fields
  *  strsepz                 Like strsep but ignores empty fields
+ *  strsepzp                Like strsepz but also returns position in original string
  *  stresep                 Like strsep but takes an additional argument esc in order
+ *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
  *                          to ignore escaped chars (from NetBSD)
- *  basename                Extract the base portion of a pathname
  */
 
 /* CMake definitions: This must be first! */

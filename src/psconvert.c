@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psconvert_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psconvert"
 #define THIS_MODULE_MODERN_NAME	"psconvert"
@@ -145,15 +146,16 @@ struct PSCONVERT_CTRL {
 		bool active;
 		char *file;
 	} M[2];
-	struct PSCONVERT_N {             /* -N[+f<fade>][+g<fill>][+i][+p<pen>] */
+	struct PSCONVERT_N {             /* -N[+f<fade>][+g<backfill>][+k<fadefill>][+p<pen>] with deprecated [+i] */
 		bool active;
 		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
-		bool paint;        /* Paint box behind plot with selected fill (+g) */
-		bool fade;         /* If true we must fade out the plot to black */
+		bool BB_paint;        /* Paint box behind plot with selected fill (+g) */
+		bool fade;         /* If true we must fade out the plot to black [or what +kfill says] */
 		bool use_ICC_profiles;
 		double fade_level;      /* Fade to black at this level of transparency */
 		struct GMT_PEN pen;
-		struct GMT_FILL fill;
+		struct GMT_FILL back_fill;	/* Initialized to black */
+		struct GMT_FILL fade_fill;	/* Initialized to black */
 	} N;
 	struct PSCONVERT_P {	/* -P */
 		bool active;
@@ -345,14 +347,14 @@ GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, s
 }
 
 GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
-	/* Syntax: -N[+f<fade>][+g<fill>][+i][+p<pen>] */
+	/* Syntax: -N[+f<fade>][+g<backfill>][+k<fadefill>][+p<pen>]  with deprecated [+i] */
 
 	unsigned int pos = 0, error = 0;
 	char p[GMT_LEN128] = {""};
 
-	if (gmt_validate_modifiers (GMT, arg, 'N', "fgip", GMT_MSG_ERROR)) return (1);	/* Bail right away */
+	if (gmt_validate_modifiers (GMT, arg, 'N', "fgikp", GMT_MSG_ERROR)) return (1);	/* Bail right away */
 
-	while (gmt_getmodopt (GMT, 'N', arg, "fgip", &pos, p, &error) && error == 0) {
+	while (gmt_getmodopt (GMT, 'N', arg, "fgikp", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
 			case 'f':	/* Fade out */
 				if (!p[1]) {
@@ -367,13 +369,13 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 				Ctrl->N.fade = true;
 				break;
 			case 'g':	/* Fill background */
-				Ctrl->N.paint = true;
+				Ctrl->N.BB_paint = true;
 				if (!p[1]) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N+g: Append the background fill\n");
 					error++;
 				}
-				else if (gmt_getfill (GMT, &p[1], &Ctrl->N.fill)) {
-					gmt_pen_syntax (GMT, 'N', NULL, "sets background fill attributes", NULL, 0);
+				else if (gmt_getfill (GMT, &p[1], &Ctrl->N.back_fill)) {
+					gmt_rgb_syntax (GMT, 'N', "Modifier +g sets background fill attributes");
 					error++;
 				}
 				break;
@@ -383,7 +385,17 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 				   and that is what psconvert does by default, unless option -I is set.
 				   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied
 				   to all but PDF format. We have no solution to offer other than ... upgrade GS. */
-				Ctrl->N.use_ICC_profiles = true;
+				Ctrl->N.use_ICC_profiles = true;	/* Deprecated in docs but still honored under hood */
+				break;
+			case 'k':	/* Fill for fading */
+				if (!p[1]) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N+k: Append the fade fill [black]\n");
+					error++;
+				}
+				else if (gmt_getfill (GMT, &p[1], &Ctrl->N.fade_fill)) {
+					gmt_rgb_syntax (GMT, 'N', "Modifier +k sets background fill attributes");
+					error++;
+				}
 				break;
 			case 'p':	/* Draw outline */
 				Ctrl->N.outline = true;
@@ -398,7 +410,7 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 				break;
 		}
 	}
-	if (Ctrl->N.fade) Ctrl->N.paint = false;	/* With fading, the paint color is the terminal color */
+	//if (Ctrl->N.fade) Ctrl->N.BB_paint = false;	/* With fading, the paint color is the terminal color */
 
 	return (error);
 }
@@ -457,6 +469,10 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 	}
 	if (gmt_get_modifier (arg, 'g', string)) {
 		strcat (N_option, "+g");
+		strcat (N_option, string);
+	}
+	if (gmt_get_modifier (arg, 'k', string)) {
+		strcat (N_option, "+k");
 		strcat (N_option, string);
 	}
 	if (gmt_get_modifier (arg, 'p', string)) {
@@ -572,12 +588,44 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSCONVERT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-#ifdef WIN32
-	if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
-		C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+#ifdef JULIA_GHOST_JLL
+	/* In Julia when using the precompiled Artifacts, the Ghost is also shipped with but when gmt_init makes
+	   calls to psconvert it doesn't set -G with the path to the Ghostscript_jll executable and those processes
+	   fail (mostly modern mode stuff). The solution is to try to read the gs path from ~/.gmt/ghost_jll_path.txt
+	   This code should only be executed by binaries created Julia's BinaryBuilder.
+	 */
+	bool found_gs = false;
+	char line[GMT_LEN512] = {""}, file[GMT_LEN256] = {""};
+	FILE *fp = NULL;
+	sprintf(file, "%s/ghost_jll_path.txt", GMT->session.USERDIR);
+	if ((fp = fopen (file, "r")) != NULL) {
+		while (fgets (line, GMT_LEN512, fp) && line[0] == '#') {}
+		fclose(fp);
+		gmt_chop(line);		/* Chop of the newline */
+		if (!access (line, F_OK)) {		/* GS binary found */
+			C->G.file = strdup (line);
+			found_gs = true;
+		}
+		else
+			perror("Error Description while accessing the GS executable:");
+	}
+	if (!found_gs) {	/* Shit. But try still the generic non-Julian paths */
+		#ifdef WIN32
+			if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
+				C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+		#else
+			C->G.file = strdup (GMT_GS_EXECUTABLE);
+		#endif
+	}
 #else
-	C->G.file = strdup (GMT_GS_EXECUTABLE);
+	#ifdef WIN32
+		if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
+			C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+	#else
+		C->G.file = strdup (GMT_GS_EXECUTABLE);
+	#endif
 #endif
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Ghostscript executable full name: \n", C->G.file);
 	C->D.dir = strdup (".");
 	C->T.quality = GMT_JPEG_DEF_QUALITY;	/* Default JPG quality */
 
@@ -618,8 +666,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
-		"[-N[+f<fade>][+g<fill>][+i][+p[<pen>]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
-		"[-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
+		"[-N[+f<fade>][+g<backfill>][+k<fadefill>][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
+		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -682,12 +730,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Sandwich current psfile between background and foreground plots:");
 	GMT_Usage (API, 3, "b: Append the name of a background PostScript plot [none].");
 	GMT_Usage (API, 3, "f: Append name of foreground PostScript plot [none].");
-	GMT_Usage (API, 1, "\n-N[+f<fade>][+g<fill>][+i][+p[<pen>]]");
+	GMT_Usage (API, 1, "\n-N[+f<fade>][+g<backfill>][+k<fadefill>][+p[<pen>]]");
 	GMT_Usage (API, -2, "Specify painting, fading, or outline of the BoundingBox via optional modifiers:");
-	GMT_Usage (API, 3, "+f Append <fade> (0-100) to fade entire plot to black (100%% fade)[no fading]. "
-		"Use +g to change the fade color [black].");
-	GMT_Usage (API, 3, "+g Append <fill> to paint the BoundingBox [no fill].");
-	GMT_Usage (API, 3, "+i Change gray-shades by using ICC profiles [Default sets -dUseFastColor=true].");
+	GMT_Usage (API, 3, "+f Append <fade> (0-100) to fade entire plot to black (100%% fade)[no fading].");
+	GMT_Usage (API, 3, "+g Append <backfill> to paint the BoundingBox first [no fill].");
+	GMT_Usage (API, 3, "+k Append <fadefill> to indicate color at full fade [black].");
 	GMT_Usage (API, 3, "+p Outline the BoundingBox, optionally append <pen> [%s].",
 		gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-P Force Portrait mode. All Landscape mode plots will be rotated back "
@@ -712,7 +759,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "G: Select PNG (transparent where nothing is plotted).");
 	GMT_Usage (API, 3, "j: Select JPEG.");
 	GMT_Usage (API, 3, "m: Select PPM.");
-	GMT_Usage (API, 3, "s: Select SVG [if supported by your Ghostscript version].");
 	GMT_Usage (API, 3, "t: Select TIF.");
 	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
 	GMT_Usage (API, 3, "+m For b, g, j, and t, make a monochrome (grayscale) image [color].");
@@ -722,7 +768,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
 		"to create a geoTIFF file.");
-	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
+	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
 	GMT_Usage (API, -2, "Write an ESRI type world file suitable to make .tif files "
 		"recognized as geotiff by software that know how to do it. Be aware, "
 		"however, that different results are obtained depending on the image "
@@ -736,7 +782,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"a 'w' in the file extension. So, if the output is tif (-Tt) the world "
 		"file is a .tfw, for jpeg a .jgw, and so on.  A few modifiers are available:");
 	GMT_Usage (API, 3, "+g Do a system call to gdal_translate and produce a true "
-		"eoTIFF image right away. The output file will have the extension "
+		"GeoTIFF image right away. The output file will have the extension "
 		".tiff. See the man page for other 'gotchas'. Automatically sets -A -P.");
 	GMT_Usage (API, 3, "+k Create a minimalist KML file that allows loading the "
 		"image in Google Earth. Note that for this option the image must be "
@@ -1101,10 +1147,10 @@ GMT_LOCAL void psconvert_possibly_fill_or_outline_BB (struct GMT_CTRL *GMT, stru
 	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
 	char *ptr = NULL;
 	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
-	if (N->paint) {	/* Paint the background of the page */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->fill.rgb));
-		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->fill.rgb));
-		ptr = PSL_makecolor (GMT->PSL, N->fill.rgb);
+	if (N->BB_paint) {	/* Paint the background of the page */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->back_fill.rgb));
+		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->back_fill.rgb));
+		ptr = PSL_makecolor (GMT->PSL, N->back_fill.rgb);
 		fprintf (fp, "gsave clippath %s F N U\n", ptr);
 	}
 	if (N->outline) {	/* Draw the outline of the page */
@@ -1417,10 +1463,12 @@ GMT_LOCAL int psconvert_pipe_ghost (struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	}
 	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
 		junk_n = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes\n", junk_n);
 	}
 	else {	/* For MEX, probably */
 		for (row = 0; row < nRows; row++) {
 			junk_n = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes row %d\n", junk_n, row);
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
@@ -1563,6 +1611,14 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool psconvert_gs_is_good (int major, int minor) {
+	/* Return true if the gs version works with transparency */
+	if (major > 9) return true;	/* 10 should work as of 10.0.0 unless there are future regressions */
+	if (major < 9) return false;	/* Before 9 we think transparency was questionable */
+	if (minor == 51 || minor == 52) return false;	/* These two minor versions had gs transparency bugs */
+	if (minor >= 21) return true;	/* Trouble before minor version 21 */
+	return false;	/* Not implemented (?) */
+}
 
 EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
@@ -1641,7 +1697,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1712,9 +1768,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Initial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_rasnew : gs_params_rasold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_rasnew : gs_params_rasold;
 
 	gs_BB = "-q -dNOSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox -DPSL_no_pagefill"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
@@ -2161,7 +2217,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		has_transparency = transparency = add_grestore = false;
-		set_background = (Ctrl->N.paint || Ctrl->N.outline);
+		set_background = (Ctrl->N.BB_paint || Ctrl->N.outline);
 		trans_line = 0;
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
@@ -2385,8 +2441,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->N.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->N.fade_level > 0.0) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
-				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->N.fill.rgb);
-				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fill.rgb), irint (100.0*Ctrl->N.fade_level));
+				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->N.fade_fill.rgb);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fade_fill.rgb), irint (100.0*Ctrl->N.fade_level));
 				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
 				transparency = true;
 			}
@@ -2468,7 +2524,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
 				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
-				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+				gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 
 		/* Build the converting Ghostscript command and execute it */
 
@@ -2644,7 +2700,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (Ctrl->W.active && found_proj && !Ctrl->W.kml) {	/* Write a world file */
+		if (Ctrl->W.active && found_proj && !Ctrl->W.kml) {	/* Write a world file unless KML [and Geotiff if -W+g] */
 			double x_inc, y_inc;
 			char world_file[PATH_MAX] = "", *wext = NULL, *s = NULL;
 
@@ -2698,12 +2754,12 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (proj4_cmd)
 					GMT_Report (API, GMT_MSG_INFORMATION, "Proj4 definition: %s\n", proj4_cmd);
 			}
-
 			gmt_M_str_free (wext);
 
 			if (Ctrl->W.warp && proj4_cmd && proj4_cmd[1] == 'p') {	/* We got a usable Proj4 string. Run it (if gdal is around) */
 				/* The true geotiff file will have the same base name plus a .tiff extension.
 				   We will reuse the world_file variable because all it is need is to replace the extension */
+				char *delete_world_file = strdup (world_file);
 				pos_ext = get_extension_period (world_file);	/* Get beginning of file extension */
 				world_file[pos_ext] = '\0';
 				strcat (world_file, ".tiff");
@@ -2725,6 +2781,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				if (!Ctrl->T.active)	/* Get rid of the intermediate JPG file if -T was not set */
 					gmt_remove_file (GMT, out_file);
+				if (delete_world_file) gmt_remove_file (GMT, delete_world_file);	/* No longer needed now we have a Geotiff file */
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
 				GMT_Report (API, GMT_MSG_ERROR, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
@@ -2851,7 +2908,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 
 	HKEY hkey;              /* Handle to registry key */
 	char data[GMT_LEN256] = {""}, ver[GMT_LEN16] = {""}, *ptr;
-	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
+	char key[40] = "SOFTWARE\\GPL Ghostscript\\";
 	unsigned long datalen = GMT_LEN256, verlen = GMT_LEN16;
 	unsigned long datatype;
 	long RegO, rc = 0;

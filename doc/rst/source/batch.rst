@@ -15,6 +15,8 @@ Synopsis
 **gmt batch** *mainscript*
 |-N|\ *prefix*
 |-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-D| ]
+[ |-F|\ *template* ]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -47,7 +49,7 @@ Required Arguments
 *mainscript*
     Name of a stand-alone GMT modern mode processing script that makes the parameter-dependent calculations.  The
     script may access job variables, such as job number and others defined below, and may be
-    written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
+    written using the Bourne shell (.sh), the Bourne again shell (.bash), the C shell (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
     and we build hidden batch scripts using the same language.  Parameters that can be accessed
     are discussed below.
@@ -61,27 +63,54 @@ Required Arguments
 .. _-T:
 
 **-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
-    Either specify how many jobs to make, create a one-column data set width values from
-    *min* to *max* every *inc* (append **+n** if *inc* is number of jobs instead), or supply a file with
-    a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
-    *mainscript* as named variables **BATCH_COL0**, **BATCH_COL1**, etc., while any trailing text
-    can be accessed via the variable **BATCH_TEXT**.  Append **+w** to split the trailing
-    string into individual *words* that can be accessed via variables **BATCH_WORD0**, **BATCH_WORD1**,
-    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
-    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
-    The number of records equals the number of jobs. Note that the *preflight* script is allowed to
-    create *timefile*, hence we check for its existence both before *and* after the *preflight* script has
-    completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
-    job number via **+s**\ *first*.  **Note**: All jobs are still included; this modifier only affects
-    the numbering of the given jobs.  Finally, **+p** can be used to set the tag *width* of the format
-    used in naming jobs.  For instance, name_000010.grd has a tag width of 6.  By default, this is
-    automatically set but if you are splitting large jobs across several computers (via **+s**) then you
-    must use the same tag width for all names. **Note**: If just *njobs* is given then only **BATCH_JOB**
-    is available as no data file is available.
+    Either specify how many jobs to make, create a one-column data set width values from *min*
+    to *max* every *inc* , or supply a file with a set of parameters, one record (i.e., row) per job.
+    The values in the columns will be available to the *mainscript* as named variables **BATCH_COL0**,
+    **BATCH_COL1**, etc., while any trailing text can be accessed via the variable **BATCH_TEXT**. The
+    number of records equals the number of jobs. Note that the *preflight* script is allowed to create
+    *timefile*, hence we check for its existence both before *and* after the *preflight* script has completed.
+    **Note**: If just *njobs* is given then only **BATCH_JOB** is available as no data file is available.
+    For details on array creation, see `Generate 1-D Array`_.  Several modifiers are also available:
+
+    - **+n** indicates that *inc* is the desired *number* of jobs from *min* to *max* instead of an increment.
+    - **+p** can be used to set the tag *width* of the job number format used in naming the jobs.  For
+      instance, name_000010.grd has a tag width of 6.  By default, this width is automatically set, but
+      if you are splitting large jobs across several computers (via **+s**) then you must ensure the same
+      tag width for all frame names.
+    - **+s** starts the output job numbering at *first* instead of 0. **Note**: All jobs are still included;
+      this modifier only affects the *numbering* of the specific jobs on output.  
+    - **+w** will split the trailing text string into individual words that can be accessed via variables
+      **BATCH_WORD0**, **BATCH_WORD1**, etc. By default we look for either tabs or spaces to separate the
+      words.  Append *str* to select other character(s) as the valid separator(s) instead. To just use TAB
+      as the *only* valid separator, use modifier **+W** instead.
 
 
 Optional Arguments
 ------------------
+
+.. _-D:
+
+**-D**
+    Select this option if (1) the main script does not produce products named using the prefix **BATCH_NAME**,
+    so we should not attempt to move such files to the top directory, or (2) the main script will handle the
+    placement of any such product files directly.
+
+.. _-F:
+
+**-F**\ *template*
+    Rather than build product file names from the **BATCH_NAME** prefix based on a single running number,
+    use this `C-format <https://en.wikipedia.org/wiki/Printf_format_string>`_ *template* instead and create
+    unique names by formatting the data columns given by *timefile*.  Some limitations apply: (1) If *timefile*
+    has trailing text then it may be used with a single %s code as the *last* format statement in *template*.
+    If no %s is found then any trailing text present will not be used.  (2) The previous *N* format statements
+    will be used to convert the first *N* data columns in *timefile*; there is no option to skip a column or
+    to specify a specific order of columns in the template (but see |SYN_OPT-i| to rearrange the input order).
+    (3) Up to five numerical statements may be used (provided the *timefile* has enough columns),
+    including none.  E.g., **-F**\ my_data_%05.2lf_%07.0lf_%s will use the first two numerical columns in *timefile*
+    as well as the trailing text to create a unique product prefix. **Note**: Since a GMT data set internally
+    is using double precision variables you must use floating point format statements even if some or all
+    of your data columns are integers. Finally, if your choice of format statement and trailing text yield
+    tabs or spaces in the final prefix we will automatically replace those with underscores.
 
 .. _-I:
 
@@ -157,6 +186,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_array.rst_
+
 Parameters
 ----------
 
@@ -174,7 +205,8 @@ column in *timefile*.  If *timefile* has trailing text then that text can be acc
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to |-T| then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
-will be automatically moved up to the starting directory upon completion.
+will be automatically moved up to the starting directory upon completion (unless |-D| is in effect). However,
+note that |-F| can be used to select more diverse product names based on the input parameters given via |-T|.
 
 Data Files
 ----------
@@ -275,15 +307,15 @@ are all completed we determine the standard deviation in the results.  To replic
         gmt grdcut -R-10/20/-10/20 @earth_relief_02m -Gdata.grd
     gmt end
     EOF
-    cat << EOF > main.sh
+    cat << 'EOF' > main.sh
     gmt begin
-        gmt grdfilter data.grd -Fg\${BATCH_COL0}+h -G\${BATCH_NAME}.grd -D2
+        gmt grdfilter data.grd -Fg${BATCH_COL0}+h -G${BATCH_NAME}.grd -D2
     gmt end
     EOF
-    cat << EOF > post.sh
-    gmt begin \${BATCH_PREFIX} pdf
-        gmt grdmath \${BATCH_PREFIX}_*.grd -S STD = \${BATCH_PREFIX}.grd
-        gmt grdimage \${BATCH_PREFIX}.grd -B -B+t"STD of Gaussian residuals" -Chot
+    cat << 'EOF' > post.sh
+    gmt begin ${BATCH_PREFIX} pdf
+        gmt grdmath ${BATCH_PREFIX}_*.grd -S STD = ${BATCH_PREFIX}_std.grd
+        gmt grdimage ${BATCH_PREFIX}_std.grd -B -B+t"STD of Gaussians residuals" -Chot
         gmt coast -Wthin,white
     gmt end show
     EOF
@@ -291,37 +323,38 @@ are all completed we determine the standard deviation in the results.  To replic
     
 Of course, the syntax of how variables are used vary according to the scripting language. Here, we actually
 build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to escape any variables (since they
-start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
-in the *filter* subdirectory (e.g., such as filter_07.grd), while a filter.grd file obtained by stacking all the individual
-scripts and computing a standard deviation is placed in the starting directory with a plot of that grid.
-The information needed to do all of this is hidden from the user;
+start with a dollar sign that we need to be written verbatim). By putting EOF in quotes, the redirect will not
+replace the variables but leave them as verbatim text. At the end of the execution we find 20 grids
+(e.g., such as filter_07.grd), as well as the filter_std.grd file obtained by stacking all the individual
+scripts and computing a standard deviation. The information needed to do all of this is hidden from the user;
 the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch**
 supplies the extra machinery. The **batch** module automatically manages the parallel execution loop over all
 jobs using all available cores and launches new jobs as others complete.
 
 As another example, we get a list of all European countries and make a simple coast plot of each of them,
-placing their name in the title and the 2-character ISO code in the upper left corner, then in the post-flight
-processing we combine all the individual PDFs into a single PDF file and delete the individual files::
+placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
+we combine all the individual PDFs into a single PDF file and delete the individual files.  Here, we place
+the EOF tag in quotes which prevent the un-escaped variables from being interpreted::
 
     cat << EOF > pre.sh
     gmt begin
         gmt coast -E=EU+l > countries.txt
     gmt end
     EOF
-    cat << EOF > main.sh
-    gmt begin \${BATCH_NAME} pdf
-        gmt coast -R\${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"\${BATCH_WORD1}" -E\${BATCH_WORD0}+gred+p0.5p
-        echo \${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
+    cat << 'EOF' > main.sh
+    gmt begin ${BATCH_NAME} pdf
+        gmt coast -R${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t"${BATCH_WORD1}" -E${BATCH_WORD0}+gred+p0.5p
+        echo ${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p
     gmt end
     EOF
-    cat << EOF > post.sh
-    gs -dQUIET -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=\${BATCH_PREFIX}.pdf -dBATCH \${BATCH_PREFIX}_*.pdf
-    rm -f \${BATCH_PREFIX}_*.pdf
+    cat << 'EOF' > post.sh
+    gmt psconvert -TF -F${BATCH_PREFIX} ${BATCH_PREFIX}_*.pdf
+    rm -f ${BATCH_PREFIX}_*.pdf
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Z
 
-Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
-Because the main product plot is moved to the starting directory, the working directory (countries) is empty and thus removed.
+<Here, the postflight script may not even be a GMT script. In our case we simply run psconvert (which just calls gs
+(Ghostscript)) and deletes what we don't want to keep.
 
 macOS Issues
 ------------

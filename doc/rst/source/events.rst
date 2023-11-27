@@ -21,7 +21,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
-[ |-E|\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
+[ |-E|\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+p**\ *dt*][**+d**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+f**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+l**\ *dt*] ]
 [ |-F|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]] ]
 [ |-G|\ *color* ]
 [ |-H|\ *labelbox* ]
@@ -76,7 +76,7 @@ while the other (red) is highlighted when it first arrives by adding a rise, pla
 interval, and finally then let to fade to a persistent but smaller, darker and partly transparent
 symbol after it is no longer active; its size follows the red time-curve. In contrast, the
 blue symbol just turns on and off.  We also delay the red symbol's label by 0.25 time units.
-Red event was plotted using -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while the blue event used the
+Red event was plotted using -Es+rq0.25+p0.25+dq0.25+fl0.25 -Et+o0.25 while the blue event used the
 default settings (i.e., the light-blue time curve). **Note**: The time curves are plotted here just
 to illustrate what is happening under the hood. The movie we make is really about the two events only.
 
@@ -115,7 +115,7 @@ Optional Arguments
     When no |-S| is given we expect to read lines or polygons.  Two different forms for input are
     supported and specified via the chosen |-A| directives:
 
-    - Choose **-Ar** if your input data are *trajectories* (for more details, see `Trajectories`_), the data
+    - Choose **-Ar** if your input data are *trajectories* (for more details, see `Drawing trajectories`_), the data
       format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
       time (*now*), event duration (via |-L|) and rise/fade periods (via **-Es**). If current time falls between
       two points on the trajectory then we linearly interpolate to find the current end point.
@@ -165,8 +165,9 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
-    Set the relative time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_) via
+**-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+p**\ *dt*][**+d**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+f**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+l**\ *dt*] ]
+    Set the relative time knots for the **s**\ ymbol or **t**\ ext time-functions and note that
+    :math:`0 \le \Delta t_x, x = r, p, d, f` (see `The four time-functions`_). Set increments via
     these modifiers:
 
     - **+o** will shift both the event start and end times by a constant offset (basically delaying
@@ -174,14 +175,17 @@ Optional Arguments
     - **+O** is similar to **+o** but will only shift the start time, effectively shortening
       the duration of the event).
     - **+l** specifies an alternative duration (visibility) of the text (**-Et** only) [same duration as symbol].
-    - **+r** sets the duration of the rise phase.
-    - **+p** sets the duration of the plateau phase.
-    - **+d** sets the duration of the decay phase.
-    - **+f** sets the duration of the fade phase.
+    - **+r** sets the duration of the rise phase, hence :math:`t_r = t_b - \Delta t_r`.
+      Prepend optional raise curve shape via directive **c**\ osine, **l**\ inear or **q**\ uadratic [Quadratic].
+    - **+p** sets the duration of the plateau phase, hence :math:`t_p = t_b + \Delta t_p`.
+    - **+d** sets the duration of the decay phase, hence :math:`t_d = t_p + \Delta t_d`.
+      Prepend optional decay curve shape via directive **c**\ osine, **l**\ inear or **q**\ uadratic [Quadratic].
+    - **+f** sets the duration of the fade phase, hence :math:`t_f = t_e + \Delta t_f`.
+      Prepend optional fade curve shape via directive **c**\ osine, **l**\ inear or **q**\ uadratic [Linear].
 
     These are all optional [and default to zero], and can be set separately for symbols and texts.
     If neither the **s** or **t** directive is given then we set the time knots for both features.
-    **Note 1**: The **+p** and **+d** periods do not apply to text labels, lines or polygons.
+    **Note 1**: The **+p** and **+d** increments do not apply to text labels, lines or polygons.
     **Note 2**: The **-Et** option is required if you wish to plot labels [Default plots symbols only].
     **Note 3**: None of the modifiers are allowed for lines.
 
@@ -262,7 +266,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
-    Do NOT clip symbols that fall outside map border [Default plots points
+    Do **not** clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
     boundary. The |-N| will turn off clipping and not plot repeating symbols.
@@ -471,12 +475,10 @@ the order of plotting is simply given by the order of records in the file.  Thus
 file is *not* sorted into ascending time then later events might plot *beneath* earlier events.
 To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` |-N| option.
 
-.. _Trajectories:
-
 Drawing trajectories
 --------------------
 
-If **-Ar** is used to draw trajectories (lines with *x,y,t* coordinates) then, as stated, we will
+If **-Ar** is used to draw trajectories (lines with *x, y, t* coordinates) then, as stated, we will
 use a linear interpolation to find intermediate terminal points.  For geographic data, and especially
 if your original point spacing is large, you may wish to first interpolate such trajectories along
 great circles via :doc:`sample1d` rather than subject large gaps to linear interpolation.
