@@ -173,13 +173,13 @@ static int clear_data (struct GMTAPI_CTRL *API, char *planet, int report_only) {
 				printf ("%s\n", current_d1);
 			else if (gmt_remove_dir (API, current_d1, false)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d1);
-				gmtlib_free_dir_list (GMT, &dir1);
+				gmt_free_dir_list (GMT, &dir1);
 				return GMT_NOERROR;
 			}
 		}
 		d1++;
 	}
-	gmtlib_free_dir_list (GMT, &dir1);
+	gmt_free_dir_list (GMT, &dir1);
 	if (c) {	/* Restore name of planet's dataset and free name */
 		c[0] = '_';
 		gmt_M_str_free (del_dir);
