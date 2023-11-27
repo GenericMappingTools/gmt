@@ -110,7 +110,7 @@ Optional Arguments
 .. _-T:
 
 **-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
-    Specify the vector transformation of interest:
+    Specify the vector transformation of interest via these directives:
 
     - **a**: Compute the vector average.
     - **b**: Determines the pole of the two points bisector.
@@ -120,11 +120,11 @@ Optional Arguments
     - **s**: Evaluate the vector sum.
     - **r**: Perform vector rotation (here, *par* is a single
       angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation pole and angle)
-    - **R** Similar to **r** but will instead rotate the fixed secondary vector
+    - **R**: Similar to **r** but will instead rotate the fixed secondary vector
       by the rotations implied by the input records.
     - **t**: Translate the input point by a *distance* in the *azimuth* direction
       (append *azimuth*/*distance*\ [*unit*] for the same translation for all input points,
-      or just append*unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
+      or just append *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
       from the third and fourth data column in the file.
     - **x**: Compute the vectors or cross-product.
 
