@@ -51,7 +51,7 @@ vectors (or the one provided via |-A|) are denoted the prime
 vector(s). Several standard vector operations (angle between vectors,
 cross products, vector sums, and vector rotations) can be selected; most
 require a single second vector, provided via |-S|. The output vectors
-will be converted back to (*lon, lat*) or (*r, theta*) unless **-Co** is set
+will be converted back to (*lon, lat*) or (*r, theta*) unless **-Co** is set,
 which requests (*x, y*\ [*, z*]) Cartesian coordinates.
 
 Required Arguments
@@ -129,9 +129,9 @@ Optional Arguments
     - **x**: Compute the vectors or cross-product.
 
     If |-T| is not given then no transformation takes place; the
-    output is determined by other options, such as |-A|, |-C|,
-    |-E|, and |-N|. **Notes**: (1) For **-Tt** and geographic coordinates we will
-    perform a great circle calculation unless **-je** or **-jf** is selected;
+    output is determined by other options, such as |-A|, |-C|, |-E|, and |-N|.
+    **Notes** for directive **t** : (1) If geographic coordinates we will perform
+    a great circle calculation unless **-je** or **-jf** is selected;
     (2) if a distance is negative then we remove the sign and add 180 degrees to the azimuth.
 
 .. |Add_-V| replace:: |Add_-V_links|
