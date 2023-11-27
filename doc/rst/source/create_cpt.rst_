@@ -1,11 +1,11 @@
-**-C**\ [[*section*/]\ *master\_cpt*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*]\|\ *local.cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]]
+**-C**\ [[*section*/]\ *master_cpt*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*]\|\ *local.cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]]
     Name of an input CPT file or a comma-separated list of colors from which to build a CPT.
     If no argument is given then under modern mode we select the current CPT.
     Generally, the input can be many things:
 
-    #. A standard GMT *master\_cpt* file, e.g., *earth* 
+    #. A standard GMT *master_cpt* file, e.g., *earth* 
        (see :ref:`Of Colors and Color Legends`) and can be either addressed
-       by *master\_cpt* or *section*/*master\_cpt* (without the **.cpt** extension).
+       by *master\_cpt* or *section*/*master_cpt* (without the **.cpt** extension).
     #. File name of already custom-made *local.cpt* file.
     #. Build a linear continuous CPT from *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]
        automatically, where *z* starts at 0 and is incremented by one for each color. In this case,
