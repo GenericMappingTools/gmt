@@ -1,4 +1,4 @@
-**-C**\ [[*section*/]\ *master\_cpt*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*]\|\ *local\_cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]]
+**-C**\ [[*section*/]\ *master\_cpt*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*]\|\ *local.cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]]
     Name of an input CPT file or a comma-separated list of colors from which to build a CPT.
     Generally, the input can be many things:
 
