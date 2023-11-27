@@ -81,17 +81,24 @@ Optional Arguments
 **-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**]
     Requires |-N| and will partially initialize a table with values
     from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
-    placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
-    (see |-N|).  Append **+r** to only place *f(t)* and leave the left
-    hand side of the matrix equation alone.  If used with operators **LSQFIT** and **SVDFIT** you can
-    optionally append the modifier **+e** which will instead evaluate
-    the solution and write a data set with four columns: *t*, *f(t)*, the
-    model solution at *t*, and the residuals at *t*, respectively
-    [Default writes one column with model coefficients].  Append **+w**
-    if *t_f(t* has a third column with weights, or append **+s** if
-    *t_f(t)* has a third column with 1-sigma uncertainties.  In those two cases we
-    find the weighted solution.  The weights (or sigmas) will be output
-    as the last column when **+e** is in effect.
+    placed in column *t_col* while *f(t)* goes into column *n_col - 1*
+    (see |-N|) and is called **b**.  The stack table is then the :math:`m \times (n+1)`
+    augmented matrix [ **A** \| **b** ] and you want to solve for the least squares solution
+    **x** to the matrix equation **Ax** = **b**. Usually, you will need
+    to fill in the remaining columns in **A** using the various functions
+    that defines the linear model you are trying to fit. If used with operators
+    **LSQFIT** and **SVDFIT** you can optionally append some modifiers:
+
+    - **+e**: Evaluate the solution and write a data set with four columns:
+      *t*, *f(t)*, the model solution and residuals at *t*, respectively
+      [Default writes one column with model coefficients **x**].
+    - **+r**: Only place f(t) (i.e., **b**) and leave the **A** part of the
+      augmented matrix equation alone.
+    - **+s** Your *t_f(t)* has a third column with 1-sigma uncertainties, or
+    - **+w** Your *t_f(t* table has a third column with weights.
+
+    **Note**: If either **+s** or **+w** are used we find the weighted solution. The weights
+    (or sigmas) will be output as the last column if **+e** is in effect.
 
 .. _-C:
 
@@ -313,7 +320,7 @@ and output arguments.
   **LOWER**       1 1     The lowest (minimum) value of A                                                               Arithmetic         
   **LPDF**        1 1     Laplace probability density function for z = A                                                Probability        
   **LRAND**       2 1     Laplace random noise with mean A and std. deviation B                                         Probability        
-  **LSQFIT**      1 0     Let current table be [A | b] return least squares solution x = A \ b                          Special Operators  
+  **LSQFIT**      1 0     Stack is [**A** | **b**]; return least squares solution **x** = **A** \\ **b**                Special Operators  
   **LT**          2 1     1 if A < (smaller than) B, else 0                                                             Logic              
   **MAD**         1 1     Median Absolute Deviation (L1 STD) of A                                                       Probability        
   **MADW**        2 1     Weighted Median Absolute Deviation (L1 STD) of A for weights in B                             Probability        
@@ -377,6 +384,7 @@ and output arguments.
   **STEPT**       1 1     Heaviside step function H(t-A)                                                                Special Functions  
   **SUB**         2 1     A - B (subtraction)                                                                           Arithmetic         
   **SUM**         1 1     Cumulative sum of A                                                                           Arithmetic         
+  **SVDFIT**      1 0     Stack is [**A** | **b**]; return **x** = **A** \\ **b** via SVD decomposition (see |-E)|      Special Operators  
   **TAN**         1 1     Tangent of A (A in radians)                                                                   Calculus           
   **TAND**        1 1     Tangent of A (A in degrees)                                                                   Calculus           
   **TANH**        1 1     Hyperbolic tangent of A                                                                       Calculus           
@@ -403,7 +411,7 @@ and output arguments.
   **ZCRIT**       1 1     Normal distribution critical value for alpha = A                                              Probability        
   **ZPDF**        1 1     Normal probability density function for z = A                                                 Probability        
 =============== ======= ============================================================================================= =====================
- 
+
 Symbols
 -------
 
