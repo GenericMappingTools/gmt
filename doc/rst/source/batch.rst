@@ -57,7 +57,8 @@ Required Arguments
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the prefix of the batch file products and the final sub-directory with all job products.
+    Determines the prefix of the batch file products and the final sub-directory where intermediate
+    job products can be find after execution.
 
 .. _-T:
 
@@ -122,32 +123,32 @@ Optional Arguments
 
 **-M**\ [*job*]
     Instead of making and launching the full processing sequence, select a single master job [0] for testing.
-    The master job will be run and its product(s) are placed in the top directory. While any *preflight* script
+    The master job will be run and its product(s) are placed in the *workdir*. While any *preflight* script
     will be run prior to the master job, the *postflight* script will not be executed (but it will be created).
 
 .. _-Q:
 
 **-Q**\ [**s**]
     Debugging: Leave all files and directories we create behind for inspection.  Alternatively, append **s** to
-    only build the batch scripts but *not* perform any executions.  One exception involves the optional
-    *preflight* script derived from **-Sb** which is always executed since it may produce data needed when
+    only *build* the batch scripts but *not* perform any executions.  One exception involves the optional
+    *preflight* script set via **-Sb** which is always executed since it may produce data needed when
     building the main batch (or master) scripts.
 
 .. _-Sb:
 
 **-Sb**\ *preflight*
-    The optional GMT modern mode *preflight* (written in the same scripting language as *mainscript*) can be
+    The optional GMT modern mode *preflight* script (written in the same scripting language as *mainscript*) can be
     used to download or copy data files or create files (such as *timefile*) that will be needed by *mainscript*.
     It is always run **b**\ efore the main sequence of batch scripts.
 
 .. _-Sf:
 
 **-Sf**\ *postflight*
-    The optional *postflight* (written in the same scripting language as *mainscript*) can be
+    The optional *postflight* script (written in the same scripting language as *mainscript*) can be
     used to perform final processing steps **f**\ ollowing the completion of all the individual jobs, such as
-    assembling all the products into a single larger file.  The script may also make one or more illustrations
-    using the products or stacked data after the main processing is completed. It does not have to be a GMT
-    script.
+    assembling all the products into a single larger file, report overall statistics, etc.  The script
+    may also make one or more illustrations using the products or stacked data after the main processing
+    is completed. **Note**: The *postflight* script does *not* have to be a GMT script.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -176,9 +177,9 @@ Optional Arguments
 .. _-cores:
 
 **-x**\ [[-]\ *n*]
-    Limit the number of cores to use when loading up the cores.
+    Limit the number of cores to use when distributing the jobs.
     By default we try to use all available cores.  Append *n* to only use *n* cores
-    (if too large it will be truncated to the maximum cores available).  Finally,
+    (if *n* is too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
     The parallel processing does not depend on OpenMP; new jobs are launched when the previous ones
     complete. **Note**: One core is reserved by **batch** so in effect *n-1* are used for the jobs.
@@ -279,7 +280,7 @@ Hints for Batch Makers
 ----------------------
 
 Composing batch jobs is relatively simple, but you have to think in terms of *variables*. Examine the examples
-we describe.  Then, start by making a single script (i.e., your *mainscript*) and identify which
+we describe.  Then, start by making a single script (i.e., your *mainscript*) and identify what
 things should change with time (i.e., with the job number).  Create variables for these values. If they
 are among the listed parameters that **batch** creates automatically then use those names.  Unless you only
 require the job number you will need to make a file that you can pass via |-T|.  This file should
@@ -298,7 +299,7 @@ Examples
 
 We extract a subset of bathymetry for the Gulf of Guinea from the 2x2 arc minute resolution Earth DEM and compute
 Gaussian filtered high-pass grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids
-are all completed we determine the standard deviation in the result.  To replicate our setup, try::
+are all completed we determine the standard deviation in the results.  To replicate our setup, try::
 
     cat << EOF > pre.sh
     gmt begin
@@ -328,11 +329,12 @@ replace the variables but leave them as verbatim text. At the end of the executi
 scripts and computing a standard deviation. The information needed to do all of this is hidden from the user;
 the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch**
 supplies the extra machinery. The **batch** module automatically manages the parallel execution loop over all
-jobs using all available cores and launches new jobs as old ones complete.
+jobs using all available cores and launches new jobs as others complete.
 
 As another example, we get a list of all European countries and make a simple coast plot of each of them,
 placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
-we combine all the individual PDFs into a single PDF file and delete the individual files.  Here, we place the EOF tag in quotes which prevent the un-escaped variables from being interpreted::
+we combine all the individual PDFs into a single PDF file and delete the individual files.  Here, we place
+the EOF tag in quotes which prevent the un-escaped variables from being interpreted::
 
     cat << EOF > pre.sh
     gmt begin
@@ -349,9 +351,10 @@ we combine all the individual PDFs into a single PDF file and delete the individ
     gmt psconvert -TF -F${BATCH_PREFIX} ${BATCH_PREFIX}_*.pdf
     rm -f ${BATCH_PREFIX}_*.pdf
     EOF
-    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
+    gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Z
 
-Here, the postflight script may not even be a GMT script. In our case we simply run psconvert (which just calls gs (Ghostscript)) and deletes what we don't want to keep.
+<Here, the postflight script may not even be a GMT script. In our case we simply run psconvert (which just calls gs
+(Ghostscript)) and deletes what we don't want to keep.
 
 macOS Issues
 ------------

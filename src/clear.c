@@ -147,39 +147,39 @@ static int clear_data (struct GMTAPI_CTRL *API, char *planet, int report_only) {
 							printf ("%s\n", current_d3);
 						else if (gmt_remove_dir (API, current_d3, false)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d3);
-							gmtlib_free_dir_list (GMT, &dir1);
-							gmtlib_free_dir_list (GMT, &dir2);
-							gmtlib_free_dir_list (GMT, &dir3);
+							gmt_free_dir_list (GMT, &dir1);
+							gmt_free_dir_list (GMT, &dir2);
+							gmt_free_dir_list (GMT, &dir3);
 							return GMT_NOERROR;
 						}
 						d3++;
 					}
-					gmtlib_free_dir_list (GMT, &dir3);
+					gmt_free_dir_list (GMT, &dir3);
 				}
 				if (report_only)
 					printf ("%s\n", current_d2);
 				else if (gmt_remove_dir (API, current_d2, false)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d2);
-					gmtlib_free_dir_list (GMT, &dir1);
-					gmtlib_free_dir_list (GMT, &dir2);
+					gmt_free_dir_list (GMT, &dir1);
+					gmt_free_dir_list (GMT, &dir2);
 					return GMT_NOERROR;
 				}
 				d2++;
 			}
-			gmtlib_free_dir_list (GMT, &dir2);
+			gmt_free_dir_list (GMT, &dir2);
 		}
 		if (!del_dir || (planet_sets_removed == n_planet_sets)) {
 			if (report_only)
 				printf ("%s\n", current_d1);
 			else if (gmt_remove_dir (API, current_d1, false)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_d1);
-				gmtlib_free_dir_list (GMT, &dir1);
+				gmt_free_dir_list (GMT, &dir1);
 				return GMT_NOERROR;
 			}
 		}
 		d1++;
 	}
-	gmtlib_free_dir_list (GMT, &dir1);
+	gmt_free_dir_list (GMT, &dir1);
 	if (c) {	/* Restore name of planet's dataset and free name */
 		c[0] = '_';
 		gmt_M_str_free (del_dir);
@@ -256,12 +256,12 @@ static int clear_geography (struct GMTAPI_CTRL *API, char *data, int report_only
 			printf ("%s\n", current_dir);
 		else if (gmt_remove_dir (API, current_dir, false)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove directory %s [permissions?]\n", current_dir);
-			gmtlib_free_dir_list (GMT, &dir);
+			gmt_free_dir_list (GMT, &dir);
 			return GMT_NOERROR;
 		}
 		d++;
 	}
-	gmtlib_free_dir_list (GMT, &dir);
+	gmt_free_dir_list (GMT, &dir);
 
 	if (data == NULL) {
 		if (report_only)
