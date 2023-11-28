@@ -240,7 +240,7 @@ set (GMT_ENABLE_OPENMP TRUE)
 #if (NEW_ACCELERATE_LAPACK GREATER 0)
 	# Recent macOS with Aarwin kernal > 22.4 needs this compiler flag:
 	add_definitions(-DACCELERATE_NEW_LAPACK)
-	message("-- Must add compiler flag -DACCELERATE_NEW_LAPACK definition for this macOS version")
+	message("-- Must add compiler flag -DACCELERATE_NEW_LAPACK definition for macOS kernel version ${CMAKE_HOST_SYSTEM_VERSION}")
 #endif (NEW_ACCELERATE_LAPACK GREATER 0)
 
 # Uncomment these two statements if you are a developer debugging GMT:
