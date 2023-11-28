@@ -3970,7 +3970,7 @@ struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *
 	 * or y-coordinate and that defines the vertical plan to be at that constant
 	 * coordinate and parallel to the z-axis and the other axis (y or x).
 	 */
-	uint64_t row, col, xrow, xcol, layer, ijg, ijc;
+	uint64_t col, xrow, xcol, layer, ijg, ijc;
 	double pos = 0.0;
 	struct GMT_GRID *G = NULL;
 	struct GMT_GRID_HIDDEN *GH = NULL;

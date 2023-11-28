@@ -147,7 +147,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBARB_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
-	size_t len;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -237,12 +236,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBARB_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdbarb (void *V_API, int mode, void *args) {
-	unsigned int justify, row, col, col_0, row_0, d_col, d_row, k, n_warn[1] = {0}, warn;
+	unsigned int justify, row, col, col_0, row_0, d_col, d_row, k, n_warn[1] = {0};
 	int error = 0;
 	
 	uint64_t ij;
 
-	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
+	double tmp, x, y, plot_x, plot_y, x_off, y_off;
 	double x2, y2, wesn[4], value, vec_length, vec_azim, c, s;
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
