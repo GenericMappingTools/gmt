@@ -10968,7 +10968,9 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	uint64_t k, k0, k1, kk, row, nx, n, n_add, np, first[2] = {0, 0}, last[2] = {0, 0}, start[2] = {0, 0}, stop[2] = {0, 0}, n_alloc;
 	int64_t r;
 	double min_S0, min_S1, max_S0, max_S1, *xp = NULL, *yp = NULL;
+#ifdef FILL_DEBUG
 	char *debug_code = "GCX";
+#endif
 	struct GMT_CURVES_CROSS *X = NULL;
 	struct GMT_XOVER XC;
 	struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;

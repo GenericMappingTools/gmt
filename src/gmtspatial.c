@@ -1990,7 +1990,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
 		bool check_next;
-		uint64_t tbl, row, col, n, p, np, seg, seg2, n_inside;
+		uint64_t tbl, row, col, n, p, seg, seg2, n_inside;
 		int64_t kk;
 		unsigned int *count = NULL, nmode;
 		int ID = -1;
