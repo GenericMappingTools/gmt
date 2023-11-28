@@ -204,14 +204,6 @@ else (GSHHG_PATH)
 	set (GMT_CONFIG_GSHHG_MESSAGE "${GSHHG_PATH} (GMT will download on demand)")
 endif (GSHHG_PATH)
 
-# Need to know if macOS and kernel is >= 22.4.0 for newLapack syntax
-if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-	execute_process (COMMAND bash "-c" "echo ${CMAKE_HOST_SYSTEM_VERSION} | awk -F. '{if ($1 > 22 || ($1 == 22 && $2 > 3)) {print 1} else {print 0}}'" 
-		OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE ACCELERATE_NEW_LAPACK)
-else (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-	set (ACCELERATE_NEW_LAPACK 0)
-endif (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-
 # Configuration done
 message(
 	"*\n"
