@@ -5571,11 +5571,11 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 					found = (!access (path, F_OK));
 					s++;
 				}
-				gmtlib_free_dir_list (GMT, &subsubdir);
+				gmt_free_dir_list (GMT, &subsubdir);
 			}
 			d++;
 		}
-		gmtlib_free_dir_list (GMT, &subdir);
+		gmt_free_dir_list (GMT, &subdir);
 	}
 	if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
 		if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
@@ -9605,7 +9605,7 @@ char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path) {
 }
 
 /*! . */
-char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
+char ** gmt_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	/* Return an array of filenames found in the given directory, or NULL if path cannot be opened.
 	 * If ext is not NULL we only return filenames that end in <ext> */
 	size_t n = 0, n_alloc = GMT_TINY_CHUNK;
@@ -9679,7 +9679,7 @@ char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 }
 
 /*! . */
-void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
+void gmt_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 	/* Free allocated array with directory content */
 	unsigned int k = 0;
 	char **list;

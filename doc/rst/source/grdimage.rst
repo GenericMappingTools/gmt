@@ -20,7 +20,7 @@ Synopsis
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
-[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
+[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
 [ |-Q|\ [*color*][**+z**\ *value*] ]
@@ -142,19 +142,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the ±1 range,
-    or a constant intensity to apply everywhere (affects the ambient light).
-    Alternatively, derive an intensity grid from the input data grid *grid*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,
-    and **+m**\ *ambient* to specify azimuth, intensity, and ambient arguments
-    for that module, or just give **+d** to select the
-    default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
-    specific intensity scenario then run :doc:`grdgradient` separately first.
-    If we should derive intensities from another file than *grid*, specify the
-    file with suitable modifiers [Default is no illumination].  **Note**: If
-    the input data represent an *image* then an *intensfile* or constant *intensity*
-    must be provided.
+.. include:: explain_intense.rst_
 
 .. _-M:
 
