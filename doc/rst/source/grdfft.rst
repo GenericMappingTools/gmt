@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\|\ **g**] ]
-[ |-E|\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**] ]
+[ |-E|\ [**r**\|\ **x**\|\ **y**][**+n**][**+w**\ [**k**]] ]
 [ |-F|\ [**r**\|\ **x**\|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
@@ -82,21 +82,28 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**]
-    Estimate power spectrum in the radial direction [**r**]. Place
-    **x** or **y** immediately after |-E| to compute the spectrum in
-    the x or y direction instead. No grid file is created. If one grid
-    is given then f (i.e., frequency or wave number), power[f],
-    and 1 standard deviation in power[f] are written to the file set by
-    |-G| [standard output]. If two grids are given we write f and 8 quantities:
-    Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
-    admittance[f], gain[f], coherency[f].  Each quantity is followed by
+**-E**\ [**r**\|\ **x**\|\ **y**][**+n**][**+w**\ [**k**]]
+    Estimate power spectrum in the radial or a horizontal direction. No grid file is created. If one grid
+    is given then *f* (i.e., frequency or wave number), power[*f*],
+    and 1 standard deviation in power[*f*] are written to the file set by
+    |-G| [standard output]. If two grids are given we write *f* and 8 quantities:
+    Xpower[*f*], Ypower[*f*], coherent power[*f*], noise power[*f*], phase[*f*],
+    admittance[*f*], gain[*f*], coherency[*f*].  Each quantity is followed by
     its own 1-std dev error estimate, hence the output is 17 columns wide.
-    Give **+w** to write wavelength instead of frequency, and if your grid
-    is geographic you may further append **k** to scale wavelengths from
-    meter [Default] to km.  Finally, the spectrum is obtained by summing
-    over several frequencies.  Append **+n** to normalize so that the
-    mean spectral values per frequency are reported instead.
+    Select your spectrum by choosing one of these directives:
+
+    - **r**: Choose a radial spectrum [Default].
+    - **x**: Compute the spectrum in the *x*-direction instead. 
+    - **y**: Compute the spectrum in the *y*-direction instead. 
+    
+    Two modifiers are available the adjust the output further:
+
+    - **+w**: Write wavelength *w* instead of frequency *f*, and if your grid
+      is geographic you may further append **k** to scale wavelengths from
+      meter [Default] to km.
+    - **+n**: Normalize spectrum so that the mean spectral values per
+      frequency are reported [By default the spectrum is obtained by summing
+      over several frequencies.
 
 .. _-F:
 
