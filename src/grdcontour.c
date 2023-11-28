@@ -172,7 +172,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s [-A[n|[+]<int>|<list>][<labelinfo>]] [%s] [-C<contours>] "
-		"[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p] [-N[<cpt>]] %s%s[-Q[<n>][+z]] [%s] "
+		"[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p] [-N[<cpt>]] %s%s[-Q[<n>|<length>[unit]][+z]] [%s] "
 		"[-S<smooth>] [%s] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s] [-Z[+o<shift>][+p][+s<fact>]] "
 		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_J_OPT, GMT_B_OPT, GMT_CONTG, API->K_OPT, API->O_OPT,
 		API->P_OPT, GMT_Rgeoz_OPT, GMT_CONTT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT, API->c_OPT,
@@ -233,9 +233,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Fill area between contour with the colors in a discrete CPT. If <cpt> is given the "
 		"we use that <cpt> for the fill, else -C<cpt> must be given and used instead [no fill].");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-Q[<n>][+z]");
+	GMT_Usage (API, 1, "\n-Q[<n>|<length>[unit]][+z]");
 	GMT_Usage (API, -2, "Do not draw closed contours with less than <n> points [Draw all contours]. "
-		"Alternatively, give a minimum contour length and append a unit (%s, or c for Cartesian). "
+		"Alternatively, give a minimum contour <length> and append a unit (%s, or c for Cartesian). "
 		"Unit C means Cartesian distances after first projecting the input coordinates. "
 		"Optionally, append +z to skip tracing the zero-contour.", GMT_LEN_UNITS_DISPLAY);
 	GMT_Option (API, "R");

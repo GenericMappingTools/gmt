@@ -31,7 +31,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  GMT_TP_STANDARD },
 	{ 0, 'C', "confidence|confidence_level", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'E', "regression|regression_type",
-	          "x,y,o,r",           "x_on_y,y_on_x,ortho|orthogonal,reduced"
+	          "x,y,o,r",           "x_on_y,y_on_x,ortho|orthogonal,reduced",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "columns|column_combination", "", "", "", "", GMT_TP_STANDARD },

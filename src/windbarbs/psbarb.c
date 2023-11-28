@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBARB_CTRL *Ctrl, struct GMT_
 
 	unsigned int n_errors = 0;
 	int n;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -293,28 +293,26 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psbarb task */
 	bool penset_OK = true, old_is_world;
 	bool get_rgb, clip_set = false, fill_active;
-	bool default_outline, outline_active, save_u = false;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, set_type;
-	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
-	unsigned int bcol, ex1, ex2, ex3, change, n_needed, read_mode;
+	bool default_outline, outline_active;
+	unsigned int k, j, geometry, pos2x, pos2y, set_type;
+	unsigned int n_cols_start = 3, justify;
+	unsigned int ex1, ex2, ex3, n_needed, read_mode;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;
 	size_t n_alloc = 0;
 
-	char *text_rec = NULL, s_args[GMT_BUFSIZ] = {""};
+	char s_args[GMT_BUFSIZ] = {""};
 
 	void *record = NULL;	/* Opaque pointer to either a text or double record */
 
-	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
-	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
-	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, length;
+	double DX = 0, DY = 0, *in = NULL;
+	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_2, y_2, dx, dy, s, c;
 
 	struct GMT_PEN default_pen, current_pen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_DATASEGMENT *L = NULL;
 	struct PSBARB_DATA *data = NULL;
 	struct PSBARB_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -446,8 +444,7 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 
 	{	/* symbol part */
 		bool periodic = false;
-		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
-		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
+		unsigned int item, n_times;
 		double xpos[2], width, d;
 		double z;	/* PSBARB */
 		
