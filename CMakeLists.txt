@@ -207,15 +207,16 @@ endif (GSHHG_PATH)
 # Need to know if macOS and kernel is >= 22.4.0 for newLapack syntax
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
 	execute_process (COMMAND bash "-c" "echo ${CMAKE_HOST_SYSTEM_VERSION} | awk -F. '{if ($1 > 22 || ($1 == 22 && $2 > 3)) {print 1} else {print 0}}'" 
-		OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NEW_ACCELERATE_LAPACK)
+		OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE ACCELERATE_NEW_LAPACK)
 else (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-	set (NEW_ACCELERATE_LAPACK 0)
+	set (ACCELERATE_NEW_LAPACK 0)
 endif (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
 
 # Configuration done
 message(
 	"*\n"
 	"*  GMT Version:               : ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}\n"
+ 	"*  System:                    : ${CMAKE_HOST_SYSTEM_NAME} (${CMAKE_HOST_SYSTEM_VERSION})\n"
 	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GMT_CONFIG_GSHHG_MESSAGE}\n"
