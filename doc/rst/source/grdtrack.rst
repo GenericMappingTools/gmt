@@ -150,35 +150,9 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+g**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*]
-    Instead of reading input track coordinates, specify profiles via
-    coordinates and modifiers. The format of each *line* is
-    *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
-    Cartesian data) or a 2-character XY key that uses the :doc:`text`-style
-    justification format to specify a point on the map as
-    [LCR][BMT]. Each line will be a separate segment unless **+c** is used
-    which will connect segments with shared joints into a single segment.
-    In addition to line coordinates, you can use Z-, Z+ to mean the global
-    minimum and maximum locations in the grid (only available if a
-    single grid is given via |-G|). You may append
-    **+i**\ *inc* to set the sampling interval; if not given then
-    we default to half the minimum grid interval.  For a *line* along parallels
-    or meridians you can add **+g** to report degrees of longitude or latitude
-    instead of great circle distances starting at zero.  Instead of two coordinates
-    you can specify an origin and one of **+a**, **+o**, or **+r**.
-    The **+a** sets the azimuth of a profile of given
-    length starting at the given origin, while **+o** centers the profile
-    on the origin; both require **+l**. For circular sampling specify
-    **+r** to define a circle of given radius centered on the origin;
-    this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
-    the desired number of points, while **+l**\ *length* gives the
-    total length of the profile. Append **+d** to output the along-track
-    distances after the coordinates.  **Notes**: (1) No track file will be read.
-    Also note that only one distance unit can be chosen.  Giving different units
-    will result in an error.  If no units are specified we default to
-    great circle distances in km (if geographic).  If working with geographic
-    data you can use **-j** to control distance calculation mode [Great Circle].
-    (2) If |-C| is set and *spacing* is given the that sampling scheme
+.. include:: explain_lines.rst_
+
+    (3) If |-C| is set and *spacing* is given then that sampling scheme
     overrules any modifier set in |-E|.
 
 .. _-F:
