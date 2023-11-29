@@ -146,7 +146,7 @@ Optional Arguments
     In concert with |-C| we can save the (possibly resampled) original
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
-    (sampled value for each grid)
+    (sampled value for each grid).
 
 .. _-E:
 
