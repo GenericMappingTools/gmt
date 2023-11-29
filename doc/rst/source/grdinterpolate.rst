@@ -15,8 +15,8 @@ Synopsis
 **gmt grdinterpolate** *cube* | *grd1 grd2 ...*
 |-G|\ *outfile*
 [ |SYN_OPT-D3| ]
-[ |-E|\ *table*\|\ *line* ]
-[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+d**\ 1\|\ 2] ]
+[ |-E|\ *line* ]
+[ |-F|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *x/y*\|\ *pointfile*\ [**+h**\ *header*] ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
@@ -78,40 +78,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *table*\|\ *line*\ [,\ *line*,...][**+a**\ *az*][**+g**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+p**][**+r**\ *radius*][**+x**]
-    Specify a crossectinonal profile via a *file* or from specified *line* coordinates and modifiers.
-    If a *file*, it must be contain a single segment with either *lon lat* or *lon lat dist* records.
-    These must be equidistant.  Alternatively, the format of each *line* is
-    *start*/*stop*, where *start* or *stop* are *lon*/*lat* (*x*/*y* for
-    Cartesian data). You may append **+i**\ *inc* to set the sampling interval;
-    if not given then we default to half the minimum grid interval.  If your *line* starts and
-    ends at the same latitude you can force sampling along the parallel with **+p** [great circle].
-    For a *line* along parallels or meridians you can add **+g** to report degrees of longitude or latitude
-    instead of great circle distances starting at zero.  Append **+x** to compute distances
-    along a loxodrome (rhumbline) instead of great circle. Instead of two coordinates
-    you can specify an origin and one of **+a**, **+o**, or **+r**.
-    The **+a** sets the azimuth of a profile of given
-    length starting at the given origin, while **+o** centers the profile
-    on the origin; both require **+l**. For circular sampling specify
-    **+r** to define a circle of given radius centered on the origin;
-    this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
-    the desired number of points, while **+l**\ *length* gives the
-    total length of the profile.
-    Also note that only one distance unit can be chosen.  Giving different units
-    will result in an error.  If no units are specified we default to
-    great circle distances in km (if geographic).  If working with geographic
-    data you can use **-j** to control distance calculation mode [Great Circle].
+.. include:: explain_lines.rst_
+
     Use |-G| to set the output grid file name.
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+d**\ 1\|\ 2]
-    Choose from **l** (Linear), **a** (Akima spline), **c** (natural
-    cubic spline), and **n** (no interpolation: nearest point) [Default
-    is **-Fa**]. You may change the default interpolant; see
-    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
-    You may optionally evaluate the first or second derivative of the spline
-    by appending **+d** and specify 1 or 2, respectively.
+.. include:: explain_interpolant.rst_
 
 .. |Add_-R| replace:: Using the |-R| option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|

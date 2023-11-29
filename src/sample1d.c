@@ -54,7 +54,7 @@ struct SAMPLE1D_CTRL {
 	struct SAMPLE1D_E {	/* -E */
 		bool active;
 	} E;
-	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+d1|2] */
+	struct SAMPLE1D_F {	/* -Fl|a|c|e|n|s<p>[+d1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
@@ -98,13 +98,11 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deall
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	char type[3] = {'l', 'a', 'c'};
-
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-E] [-Fa|c|e||l|n|s<p>[+d1|2]] [-N<time_col>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-E] [-F%s "
 		"[-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]] [%s] [-W<w_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
+		name, GMT_INTERPOLANT_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -125,17 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+l Compute distances along rhumblines (loxodromes) [no].");
 	GMT_Usage (API, -2, "Note: +l uses spherical calculations - cannot be combined with -je.");
 	GMT_Usage (API, 1, "\n-E Add input data trailing text to output records when possible [Ignore trailing text].");
-	GMT_Usage (API, 1, "\n-Fa|c|e||l|n|s<p>[+d1|2]");
-	GMT_Usage (API, -2, "Set the interpolation mode.  Choose from:");
-	GMT_Usage (API, 3, "a: Akima spline interpolation.");
-	GMT_Usage (API, 3, "c: Cubic spline interpolation.");
-	GMT_Usage (API, 3, "e: Step-up interpolation (to next value).");
-	GMT_Usage (API, 3, "l: Linear interpolation.");
-	GMT_Usage (API, 3, "n: No interpolation (nearest point).");
-	GMT_Usage (API, 3, "s: Smooth spline interpolation (append fit parameter <p>).");
-	GMT_Usage (API, -2, "Optionally, request a spline derivative via a modifier:");
-	GMT_Usage (API, 3, "+d Append 1 for 1st derivative or 2 for 2nd derivative.");
-	GMT_Usage (API, -2, "[Default is -F%c].", type[API->GMT->current.setting.interpolant]);
+	gmt_explain_interpolate_mode (API);
 	GMT_Usage (API, 1, "\n-N<time_col>");
 	GMT_Usage (API, -2, "Give column number of the independent variable (time) [Default is 0 (first)].");
 	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]");
@@ -227,40 +215,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				switch (opt->arg[0]) {
-					case 'l':
-						Ctrl->F.mode = GMT_SPLINE_LINEAR;
-						break;
-					case 'a':
-						Ctrl->F.mode = GMT_SPLINE_AKIMA;
-						break;
-					case 'c':
-						Ctrl->F.mode = GMT_SPLINE_CUBIC;
-						break;
-					case 'n':
-						Ctrl->F.mode = GMT_SPLINE_NN;
-						break;
-					case 'e':
-						Ctrl->F.mode = GMT_SPLINE_STEP;
-						break;
-					case 's':
-						Ctrl->F.mode = GMT_SPLINE_SMOOTH;
-						if (opt->arg[1])
-							Ctrl->F.fit = atof (&opt->arg[1]);
-						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Fs: No fit parameter given\n");
-							n_errors++;
-						}
-						break;
-					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad spline selector %c\n", opt->arg[0]);
-						n_errors++;
-						break;
-				}
-				if (strstr (&opt->arg[1], "+d1")) Ctrl->F.type = 1;	/* Want first derivative */
-				else if (strstr (&opt->arg[1], "+d2")) Ctrl->F.type = 2;	/* Want second derivative */
-				else if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative (backwards compatibility) */
-				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative (backwards compatibility) */
+				n_errors += gmt_parse_interpolant (API, opt->arg, &(Ctrl->F.mode), &(Ctrl->F.type), &(Ctrl->F.fit));
 				break;
 			case 'I':	/* Deprecated, but keep pointer to the arguments so we can build -T argument */
 				i_arg = opt->arg;
