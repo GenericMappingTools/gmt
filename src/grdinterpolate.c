@@ -138,21 +138,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"-G for embedding the level in the file name.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_cube_info_syntax (API->GMT, 'D');
-	GMT_Usage (API, 1, "\n-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]");
-	GMT_Usage (API, -2, "Set up a single cross-section based on <file> or on the given <line1>[,<line2>,...]. Give "
-		"start and stop coordinates for each line segment.  The format of each <line> is <start>/<stop>, where "
-		"<start> or <stop> are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>. Append +i<inc> to set the "
-		"sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)] Instead of <start/stop>, give <origin> "
-		"and append +a|o|l|n|r as required:");
-	GMT_Usage (API, -3, "+a Define a profiles from <origin> in <az> direction. Add +l<length>.");
-	GMT_Usage (API, -3, "+g Use gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].");
-	GMT_Usage (API, -3, "+o Define a profile centered on <origin> in <az> direction. Add +l<length>.");
-	GMT_Usage (API, -3, "+p Sample along the parallel if <line> has constant latitude.");
-	GMT_Usage (API, -3, "+r Define a circle about <origin> with given <radius>. Add +i<inc> or +n<np>.");
-	GMT_Usage (API, -3, "+n Set the number of output points as <np> and computes <inc> from <length>.");
-	GMT_Usage (API, -3, "+x Follow a loxodrome (rhumbline) [great circle].");
-	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, so "
-		"mixing of units is not allowed [Default unit is km, if grid is geographic].");
+	gmt_explain_lines (API, 1);
 	gmt_explain_interpolate_mode (API);
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<x>/<y>|<table>[+h<header>]");

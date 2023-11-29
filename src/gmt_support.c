@@ -1622,6 +1622,7 @@ unsigned gmt_parse_interpolant (struct GMTAPI_CTRL *API, char *arg, unsigned int
 	else if (strstr (&arg[1], "+2")) *type = 2;	/* Want second derivative (backwards compatibility) */
 	return (n_errors);
 }
+
 void gmt_explain_interpolate_mode (struct GMTAPI_CTRL *API) {
 	/* Display usage synopsis for -F interpolant option */
 	char type[3] = {'l', 'a', 'c'};
@@ -11159,6 +11160,32 @@ unsigned int gmt_get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, u
 	return (error);
 }
 
+void gmt_explain_lines (struct GMTAPI_CTRL *API, unsigned mode) {
+	/* mode is 0 for gratrack and 1for grdinterpolate */
+	static char *item[2] = {"grid", "top layer in the cube"};
+	GMT_Usage (API, 1, "\n-E<table|<origin>|<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]");
+	GMT_Usage (API, -2, "Read profiles from <table> or create them on the fly. Choose on of these choices:");
+	GMT_Usage (API, 3, "%s Read one or more profiles from <table>", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Create quick paths based on <line1>[,<line2>,...]. Each <line> is given by <start>/<stop>, where <start> or <stop> "
+		"are <lon/lat> or a 2-character key that uses the \"pstext\"-style justification format "
+		"to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean "
+		"the global minimum and maximum locations in the %s.", GMT_LINE_BULLET, item[mode]);
+	GMT_Usage (API, 3, "%s Set an origin, provide azimuth and length and more via modifiers and create a profile.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Several modifiers are available to create the profiles:");
+	GMT_Usage (API, 3, "+a Define a profile from <origin> in the <az> direction; requires +l.");
+	GMT_Usage (API, 3, "+c Create a continuous segment if two end points are identical [separate segments].");
+	GMT_Usage (API, 3, "+d Insert an extra output column with distances following the coordinates.");
+	GMT_Usage (API, 3, "+g Use gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].");
+	GMT_Usage (API, 3, "+i Set the sampling increment <step> [Default is 0.5 x min of (x_inc, y_inc)].");
+	GMT_Usage (API, 3, "+l Set the length of the profile.");
+	GMT_Usage (API, 3, "+o Like +a but centers profile on <origin>; requires +l.");
+	GMT_Usage (API, 3, "+p Sample along the parallel if <line> has constant latitude.");
+	GMT_Usage (API, 3, "+n Set <np>, the number of output points and compute <inc> from <length>, so +l is required.");
+	GMT_Usage (API, 3, "+r Set <radius> of circle about <origin>; requires +i or +n.");
+	GMT_Usage (API, 3, "+x Follow a loxodrome (rhumbline) [great circle].");
+	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, "
+		"so mixing of units is not allowed [Default unit is km, if geographic].", GMT_LEN_UNITS2_DISPLAY);
+}
 
 /*! . */
 struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3], unsigned int *dtype) {
