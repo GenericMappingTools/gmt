@@ -147,10 +147,10 @@ Optional Arguments
     output. Append one of three directives:
 
     - **i**: Ignore all NaNs in the calculation of filtered value [Default].
-    - **r**: Similar to **i** except if the input node was NaN then the output
-      node will be set to NaN (only applies if both grids are co-registered).
     - **p**: Force the filtered value to be NaN if any grid-nodes with NaN-values
       are found inside the filter circle.
+    - **r**: Similar to **i** except if the input node was NaN then the output
+      node will be set to NaN (only applies if both grids are co-registered).
 
 .. _-R:
 
