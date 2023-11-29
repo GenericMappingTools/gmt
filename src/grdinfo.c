@@ -53,7 +53,7 @@ enum Opt_C_modes {
 enum Opt_L_modes {
 	GRDINFO_RANGE	= 0,
 	GRDINFO_MEAN	= 1,
-	GRDINFO_MEDIA	= 2,
+	GRDINFO_MEDIAN	= 2,
 	GRDINFO_MODE	= 4};
 
 enum Opt_M_modes {
