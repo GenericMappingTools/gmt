@@ -3,14 +3,20 @@
     hierarchical level that is lower than *min\_level* or higher than
     *max\_level* will not be plotted [Default is 0/0/4 (all features)].
     Level 2 (lakes) contains regular lakes and wide river bodies which
-    we normally include as lakes; append **+r** to just get river-lakes
-    or **+l** to just get regular lakes.  Append **+p**\ *percent* to
-    exclude polygons whose percentage area of the corresponding full-resolution
-    feature is less than *percent*.  Use **+a** to control special
-    aspects of the Antarctica coastline: By default (or add **i**) we
-    select the ice shelf boundary as the coastline for Antarctica; alternatively,
-    add **g** to select the ice grounding line instead.  For expert
-    users who wish to utilize their own Antarctica (with islands) coastline
-    you can add **s** to skip all GSHHG features below 60S. In contrast, you
-    can add **S** to instead skip all features *north* of 60S. See
-    :ref:`GSHHG Information <gshhg-information>` below for more details. |Add_-A|
+    we normally include as lakes. Several modifiers provide further control:
+
+    - **+a** Control special aspects of the Antarctica coastline.  Append one
+      of **g**\|\ **s**\|\ **s**\|\ **S**:
+
+      - **g** selects the Antarctica ice grounding line as the coastline.
+      - **i** selects the ice shelf boundary as the coastline for Antarctica [Default].
+      - **s** Skip all GSHHG features below 60S (For users who wish to utilize their
+        own Antarctica (with islands) coastline). 
+      - **S** Like **s** but skip instead all features *north* of 60S.
+
+    - **+l** Only regular lakes and exclude river-lakes.
+    - **+p** Append *percent* to exclude polygons whose percentage area of the
+      corresponding full-resolution feature is less than *percent*.
+    - **+r** Only select river-lakes and exclude regular lakes.
+
+    See :ref:`GSHHG Information <gshhg-information>` below for more details. |Add_-A|

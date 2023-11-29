@@ -8871,7 +8871,7 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 			"or the mirror opposite of <refpoint> (with -J), or %s (otherwise).", type[kind], just[kind]);
 		GMT_Usage (API, 3+shift, "+o Offset %s from <refpoint> by <dx>[/<dy>] in direction implied by <justify> [0/0].", type[kind]);
 	}
-	else
+	else if ((part & 5) == 0)
 		GMT_Usage (API, -(2+shift), "All systems except x require the -R and -J options to be set. ");
 }
 
@@ -9058,18 +9058,19 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
 	char *syntax = (mode) ? GMT_SEGMENTIZE3 : GMT_SEGMENTIZE4;
+	char *module = (GMT->current.setting.run_mode == GMT_MODERN) ? "plot" : "psxy";
 	GMT_Usage (API, 1, "\n-%c%s", option, syntax);
 	GMT_Usage (API, -2, "Alter the way points are connected and the data are segmented. "
 		"Append one of %s line connection schemes: ", count[mode]);
 	GMT_Usage (API, 3, "c: %s continuous line segments for each group [Default].", verb[mode]);
-	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
 	GMT_Usage (API, 3, "n: %s networks of line segments between all points in each group.", verb[mode]);
-	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
+	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
+	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for the %s -Sv|=<size>+s option", module);
 	GMT_Usage (API, 2, "Optionally, append one of five ways to define a \"group\":");
 	GMT_Usage (API, 3, "a: Data set is considered a single group; reference point is first point in the group.");
-	GMT_Usage (API, 3, "f: Each file is a separate group; reference point is reset to first point in the group.");
-	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
 	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group.");
+	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
+	GMT_Usage (API, 3, "t: Each table is a separate group; reference point is reset to first point in the group.");
 	GMT_Usage (API, 3, "Alternatively, append a fixed external reference point instead.");
 }
 
@@ -10170,7 +10171,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S) {
 	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|t|s|r] or -Fp<origin>
+	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|r|s|t] or -Fp<origin>
 	 * where <scheme> is c = continuous [Default], n = network, r = reference point, and v = vectors.
 	 * and impact is a = all tables, t = per table, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
@@ -10191,8 +10192,8 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
 	 *   file, or the first point in each segment to update the actual reference point.
 	 * 4) -Fv: Vectorize.  Here, consecutive points are turned into vector segments such as used
-	 *   by psxy -Sv+s or external applications.  Again, appending a|t|s controls if we should
-	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|t|s is allowed.
+	 *   by gmt plot -Sv+s or external applications.  Again, appending a|s|t controls if we should
+	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|t|s is allowed in plot.
 	 */
 
 	unsigned int k, errors = 0;
@@ -10228,8 +10229,10 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Only -Fp may accept refpoint = r\n", option);
 		errors++;
 	}
-	if (mode == 1 && S->method == SEGM_VECTOR)	/* Only available for gmtconvert */
+	if (mode == 1 && S->method == SEGM_VECTOR) {	/* Only available for gmtconvert */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Method v is only available in gmt select\n", option);
 		errors++;
+	}
 	return (errors);
 }
 
@@ -14327,7 +14330,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	gmtlib_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
+	gmtlib_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
 	gmtinit_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);

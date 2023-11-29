@@ -26,7 +26,7 @@ Synopsis
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *pen* ]
 [ |-N| ]
-[ |-Q|\ [*n*][**+z**] ]
+[ |-Q|\ [*n*\|\ *length*\ [*unit*]][**+z**] ]
 [ |-S|\ [*p*\|\ *t*] ]
 [ |-T|\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
@@ -185,9 +185,9 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*n*][**+z**]
+**-Q**\ [*n*\|\ *length*\ [*unit*]][**+z**]
     Do not draw contours with less than *n* number of points [Draw all contours].
-    Alternatively, give instead a minimum contour length in distance units
+    Alternatively, give instead a minimum contour *length* in distance units
     (see `Units`_ for available units and how distances are computed),
     including **c** (Cartesian distances using user coordinates) or **C** for plot
     length units in current plot units after projecting the coordinates.

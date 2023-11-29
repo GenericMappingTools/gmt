@@ -1330,7 +1330,13 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
  * Then, if LAPACK is true then gmt_matrix_matrix_mult should call dgemm_ instead of plain code.
  */
 
+#ifndef ACCELERATE_NEW_LAPACK
+/* This BLAS function is updated on macos 22.4 and higher but still included in the Accelerate Framework header.
+ * Otherwise we declare it as an extern function here.  dsyev_ is not in BLAS so remains the same so far. */
+
 extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
+
+#endif
 
 void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c) {
 	uint64_t row, col, ij;
@@ -1361,7 +1367,18 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 		ne = nf = (int)n_rowsB;
 	}
 #endif
+
+#ifdef ACCELERATE_NEW_LAPACK
+	/* Must cast the arguemnts to avoid a tantrum from Apple */
+	dgemm_ ((const char * _Nonnull)"t", (const char * _Nonnull)tr,
+            (const __LAPACK_int * _Nonnull)&na, (const __LAPACK_int * _Nonnull)&nb, (const __LAPACK_int * _Nonnull)&nc,
+            (const double * _Nonnull)&one, (const double * _Nullable) A, (const __LAPACK_int * _Nonnull)&nd,
+            (const double * _Nullable) B, (const __LAPACK_int * _Nonnull)&ne,
+            (const double * _Nonnull)&zero, (double * _Nullable)C, (const __LAPACK_int * _Nonnull)&nf);
+#else
 	dgemm_ ("t", tr, &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
+#endif
+	
 #else
 	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;

@@ -1247,7 +1247,7 @@ GMT_LOCAL void gmtproj_tm (struct GMT_CTRL *P, double lon, double lat, double *x
 
 GMT_LOCAL void gmtproj_itm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert TM x/y to lon/lat */
-	double M, mu, s, c, s2, c2, s4, s6, s8, phi1, C1, C12, T1, T12, tmp, tmp2, N1, R_1, D, D2, D3, D4, D5, D6, tan_phi1, cp2;
+	double M, mu, s, c, s2, c2, s4, s6, s8, phi1, C1, C12, T1, T12, tmp, tmp2, N1, R_1, D, D2, D3, D4, D5, D6, tan_phi1;
 
 	M = y / GMT->current.setting.proj_scale_factor + GMT->current.proj.t_M0;
 	mu = M * GMT->current.proj.t_i1;
