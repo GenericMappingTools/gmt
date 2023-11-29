@@ -490,7 +490,9 @@ EXTERN_MSC struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTR
 EXTERN_MSC int gmt_signum (double x);
 EXTERN_MSC void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
 EXTERN_MSC int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *name, char *path, unsigned int *pos);
+EXTERN_MSC unsigned gmt_parse_interpolant (struct GMTAPI_CTRL *API, char *arg, unsigned int *mode, unsigned int *type, double *fit);
 EXTERN_MSC unsigned int gmt_set_interpolate_mode (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type);
+EXTERN_MSC void gmt_explain_interpolate_mode (struct GMTAPI_CTRL *API);
 EXTERN_MSC unsigned int gmt_get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode);
 EXTERN_MSC unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *file, bool *interpolate, bool *force_continuous);
 EXTERN_MSC void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, double inc[]);

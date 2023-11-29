@@ -16,7 +16,7 @@ Synopsis
 |-G|\ *outfile*
 [ |SYN_OPT-D3| ]
 [ |-E|\ *table*\|\ *line* ]
-[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+d**\ 1\|\ 2] ]
+[ |-F|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *x/y*\|\ *pointfile*\ [**+h**\ *header*] ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
@@ -105,13 +105,7 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+d**\ 1\|\ 2]
-    Choose from **l** (Linear), **a** (Akima spline), **c** (natural
-    cubic spline), and **n** (no interpolation: nearest point) [Default
-    is **-Fa**]. You may change the default interpolant; see
-    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
-    You may optionally evaluate the first or second derivative of the spline
-    by appending **+d** and specify 1 or 2, respectively.
+.. include:: explain_interpolant.rst_
 
 .. |Add_-R| replace:: Using the |-R| option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|

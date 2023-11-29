@@ -137,7 +137,8 @@ Optional Arguments
     *deviation* [0]. Looking in the direction of the line, a positive *deviation*
     will rotate the crosslines clockwise and a negative one will rotate them
     counter-clockwise.  Finally, you can use **+f** to set a fixed azimuth
-    for all profiles.
+    for all profiles. **Note**: If |-C| is set and *spacing* is given then
+    that sampling scheme overrules any modifier set in |-E|.
 
 .. _-D:
 

@@ -1581,6 +1581,64 @@ bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg
 	return ret;
 }
 
+unsigned gmt_parse_interpolant (struct GMTAPI_CTRL *API, char *arg, unsigned int *mode, unsigned int *type, double *fit) {
+	/* Do the parsing of the -F interpolant option using in sample1d and grdinterpolate */
+	unsigned int n_errors = 0;
+
+	*type = *mode = 0;	*fit = 0.0;
+	switch (arg[0]) {
+		case 'l':
+			*mode = GMT_SPLINE_LINEAR;
+			break;
+		case 'a':
+			*mode = GMT_SPLINE_AKIMA;
+			break;
+		case 'c':
+			*mode = GMT_SPLINE_CUBIC;
+			break;
+		case 'n':
+			*mode = GMT_SPLINE_NN;
+			break;
+		case 'e':
+			*mode = GMT_SPLINE_STEP;
+			break;
+		case 's':
+			*mode = GMT_SPLINE_SMOOTH;
+			if (arg[1])
+				*fit = atof (&arg[1]);
+			else {
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Fs: No fit parameter given\n");
+				n_errors++;
+			}
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad interpolant selector %c\n", arg[0]);
+			n_errors++;
+			break;
+	}
+	if (strstr (&arg[1], "+d1")) *type = 1;	/* Want first derivative */
+	else if (strstr (&arg[1], "+d2")) *type = 2;	/* Want second derivative */
+	else if (strstr (&arg[1], "+1")) *type = 1;	/* Want first derivative (backwards compatibility) */
+	else if (strstr (&arg[1], "+2")) *type = 2;	/* Want second derivative (backwards compatibility) */
+	return (n_errors);
+}
+void gmt_explain_interpolate_mode (struct GMTAPI_CTRL *API) {
+	/* Display usage synopsis for -F interpolant option */
+	char type[3] = {'l', 'a', 'c'};
+
+	GMT_Usage (API, 1, "\n-F%s", GMT_INTERPOLANT_OPT);
+	GMT_Usage (API, -2, "Set the 1-D interpolation mode.  Choose from:");
+	GMT_Usage (API, 3, "a: Akima spline interpolation.");
+	GMT_Usage (API, 3, "c: Cubic spline interpolation.");
+	GMT_Usage (API, 3, "e: Step-up interpolation (to next value).");
+	GMT_Usage (API, 3, "l: Linear interpolation.");
+	GMT_Usage (API, 3, "n: No interpolation (nearest point).");
+	GMT_Usage (API, 3, "s: Smooth spline interpolation (append fit parameter <p>).");
+	GMT_Usage (API, -2, "Optionally, request a spline derivative via a modifier:");
+	GMT_Usage (API, 3, "+d Append 1 for 1st derivative or 2 for 2nd derivative.");
+	GMT_Usage (API, -2, "[Default is -F%c].", type[API->GMT->current.setting.interpolant]);
+}
+
 unsigned int gmt_set_interpolate_mode (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type) {
 	/* Convenience function that hides away the embedding of mode and type via the GMT_SPLINE_SLOPE factor */
 	gmt_M_unused (GMT);
