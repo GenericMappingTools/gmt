@@ -4,7 +4,7 @@
 # Middle panel: Polar CPT with activated soft-hinge at 2000, so z = 2000 is white
 # Top panel:    Polar CPT with deactivated soft-hinge, so z_mid = --1368.5 is white
 
-gmt begin cpt_hinge png
+gmt begin cpt_hinge ps
 	# Pass CPT and activate soft hinge at 0
 	gmt grdimage @earth_relief_06m -RPT -Cpolar+h -B
 	gmt coast -W0.25p
