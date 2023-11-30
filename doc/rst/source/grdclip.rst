@@ -27,8 +27,8 @@ Description
 -----------
 
 **grdclip** will set values < *low* to *below* and/or values > *high* to
-*above*. Via modifiers, you can select <= *low* or >= *high. You can
-also specify one or more intervals where all values should be
+*above*. Via modifiers, you can select ≤ *low* or ≥ *high*.
+You can also specify one or more intervals where all values should be
 set to *between*, or replace individual values.  Such operations are useful
 when you want all of a continent or an ocean to fall
 into one color or gray shade in image processing, when clipping of the
@@ -64,11 +64,11 @@ Optional Arguments
 .. _-S:
 
 **-Sa**\ *high/above*\ [**+e**]
-    Set all data[i] > *high* to *above*. Modifier **+e** includes the equality, i.e., data[i] >= *high*.
+    Set all data[i] > *high* to *above*. Modifier **+e** includes the equality, i.e., data[i] ≥ *high*.
 **-Sb**\ *low/below*\ [**+e**]
-    Set all data[i] < *low* to *below*. Modifier **+e** includes the equality, i.e., data[i] <= *low*.
+    Set all data[i] < *low* to *below*. Modifier **+e** includes the equality, i.e., data[i] ≤ *low*.
 **-Si**\ *low/high/between*
-    Set all data[i] >= *low* and <= *high* to *between*.
+    Set all data[i] ≥ *low* and ≤ *high* to *between*.
     Repeat the option for as many intervals as are needed.
 **-Sr**\ *old/new*
     Set all data[i] == *old* to *new*. This is mostly useful when
@@ -93,7 +93,7 @@ To set all values > 0 to NaN and all values < 0 to 0 in the remote file AFR.nc:
 
   gmt grdclip @AFR.nc -Gnew_AFR.nc -Sa0/NaN -Sb0/0 -V
 
-To set all values <= 0 to NaN in the file errors.nc:
+To set all values ≤ 0 to NaN in the file errors.nc:
 
 ::
 

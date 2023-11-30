@@ -73,7 +73,7 @@ struct GMTCONVERT_CTRL {
 		bool end;
 		int mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
-	struct GMTCONVERT_F {	/* -F<mode> */
+	struct GMTCONVERT_F {	/* -F[c|n|p|v][a|r|s|t|<refpoint>] */
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;

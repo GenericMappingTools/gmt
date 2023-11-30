@@ -1,0 +1,14 @@
+**-Fl**\|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
+    Choose the desired 1-D spline interpolant from one of these directives:
+
+    - **a**: Akima spline [Default].
+    - **e**: Step curve.
+    - **c**: Natural cubic spline.
+    - **l**: Linear interpolant.
+    - **n**: No interpolation, just select nearest point.
+    - **s**: Smoothing cubic spline; append fit parameter *p* for an approximate fit.
+
+    You may change the GMT default interpolant; see :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
+    You may optionally evaluate the first or second derivative of the spline
+    by appending **+d1** or **+d2**, respectively. **Note**: If you use derivatives
+    with directives **e** or **n** then the result is always zero.

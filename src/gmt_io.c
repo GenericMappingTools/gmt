@@ -5571,11 +5571,11 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 					found = (!access (path, F_OK));
 					s++;
 				}
-				gmtlib_free_dir_list (GMT, &subsubdir);
+				gmt_free_dir_list (GMT, &subsubdir);
 			}
 			d++;
 		}
-		gmtlib_free_dir_list (GMT, &subdir);
+		gmt_free_dir_list (GMT, &subdir);
 	}
 	if (found && gmtio_file_is_readable (GMT, path)) {	/* Yes, can read it */
 		if (mode == R_OK) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found readable file %s\n", path);
@@ -9605,7 +9605,7 @@ char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path) {
 }
 
 /*! . */
-char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
+char ** gmt_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	/* Return an array of filenames found in the given directory, or NULL if path cannot be opened.
 	 * If ext is not NULL we only return filenames that end in <ext> */
 	size_t n = 0, n_alloc = GMT_TINY_CHUNK;
@@ -9679,7 +9679,7 @@ char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 }
 
 /*! . */
-void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
+void gmt_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 	/* Free allocated array with directory content */
 	unsigned int k = 0;
 	char **list;
@@ -10104,7 +10104,7 @@ unsigned int gmtlib_is_time (struct GMT_CTRL *GMT, char *text) {
 		gmt_strrepc (string, p[k], ' ');	/* Replace date separators with space */
 	if (n_colon)
 		gmt_strrepc (string, ':', ' ');	/* Replace time separators with space */
-	if ((n_dash >= 1 && n_slash == 0) || n_dash == 0 && n_slash >= 1) {
+	if ((n_dash >= 1 && n_slash == 0) || (n_dash == 0 && n_slash >= 1)) {
 		/* Apart from random junk SHIT 5 6 7:X:Hello!, Possibilities are:
 		 *	1.  yyyy mm dd[T][hh.xxx|:mm.xx|:ss.xx]  Full date and possibly time
 		 *	2.  yyyy jjj[T][hh.xxx|:mm.xx|:ss.xx]  Julian day and possibly time
@@ -10197,8 +10197,7 @@ unsigned int gmtlib_is_time (struct GMT_CTRL *GMT, char *text) {
 unsigned int gmtlib_is_string (struct GMT_CTRL *GMT, char *string) {
 	/* Apply basic checking for stuff that cannot be coordinates */
 	char *p = NULL;
-	int code;
-	unsigned int L = strlen (string), start = 0, k;
+	unsigned int L = strlen (string), start = 0;
 	unsigned int n_text = 0, n_colons = 0, n_digits = 0, n_dashes = 0, n_slashes = 0, n_specials = 0, n_periods = 0;
 
 	if (L > 24U) return (GMT_IS_STRING);	/* Too long to be an absolute time string */
@@ -10248,7 +10247,6 @@ void gmtlib_string_parser (struct GMT_CTRL *GMT, char *file)
 	unsigned int kind;
 	FILE *fp = fopen (file, "r");
 	char line[GMT_LEN256] = {""};
-	unsigned int type = GMT_X;
 	if (fp == NULL) {	/* Not good, wrong filename? */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -/: File %s not found\n", file);
 		return;

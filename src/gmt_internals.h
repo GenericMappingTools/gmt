@@ -70,7 +70,6 @@ EXTERN_MSC void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bo
 EXTERN_MSC bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API);
 EXTERN_MSC struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode);
-EXTERN_MSC void gmt_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
 EXTERN_MSC unsigned int gmtlib_free_cube_ptr (struct GMT_CTRL *GMT, struct GMT_CUBE *U, bool free_cube);
 EXTERN_MSC void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
 EXTERN_MSC bool gmtlib_var_inc (double *x, uint64_t n);
@@ -266,8 +265,6 @@ EXTERN_MSC void gmtlib_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M,
 EXTERN_MSC int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
 EXTERN_MSC void gmtlib_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_columns);
 EXTERN_MSC char ** gmtlib_get_dirs (struct GMT_CTRL *GMT, char *path);
-EXTERN_MSC char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext);
-EXTERN_MSC void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***list);
 EXTERN_MSC void gmtlib_assign_segment (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns);
 EXTERN_MSC double * gmtlib_assign_vector (struct GMT_CTRL *GMT, uint64_t n_rows, uint64_t col);
 EXTERN_MSC void gmtlib_free_tmp_arrays (struct GMT_CTRL *GMT);

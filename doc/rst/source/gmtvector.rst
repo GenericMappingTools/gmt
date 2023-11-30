@@ -51,7 +51,7 @@ vectors (or the one provided via |-A|) are denoted the prime
 vector(s). Several standard vector operations (angle between vectors,
 cross products, vector sums, and vector rotations) can be selected; most
 require a single second vector, provided via |-S|. The output vectors
-will be converted back to (*lon, lat*) or (*r, theta*) unless **-Co** is set
+will be converted back to (*lon, lat*) or (*r, theta*) unless **-Co** is set,
 which requests (*x, y*\ [*, z*]) Cartesian coordinates.
 
 Required Arguments
@@ -110,24 +110,29 @@ Optional Arguments
 .. _-T:
 
 **-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
-    Specify the vector transformation of interest. Append **a** for
-    average, **b** for the pole of the two points bisector, **d** for
-    dot product (use **D** to get angle in degrees between the two
-    vectors), **p**\ *azim* for the pole to the great circle specified by
-    input vector and the circle's *azim* (no second vector used), **s** for vector sum,
-    **r**\ *par* for vector rotation (here, *par* is a single
-    angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
-    pole and angle), **R** will instead rotate the fixed secondary vector
-    by the rotations implied by the input records, **t** to translate
-    the input point by a *distance* in the *azimuth* direction (append *azimuth*/*distance*\ [*unit*]
-    for the same translation for all input points, or just append
-    *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
-    from the third and fourth data column in the file, and **x** for cross-product.
+    Specify the vector transformation of interest via these directives:
+
+    - **a**: Compute the vector average.
+    - **b**: Determines the pole of the two points bisector.
+    - **d**: Compute dot product  of the two vectors.
+    - **D**: Same as **+d** but returns the angle in degrees between the two vectors.
+    - **p**: The pole to the great circle specified by input vector and the circle's *azim* (no second vector used).
+    - **s**: Evaluate the vector sum.
+    - **r**: Perform vector rotation (here, *par* is a single
+      angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation pole and angle)
+    - **R**: Similar to **r** but will instead rotate the fixed secondary vector
+      by the rotations implied by the input records.
+    - **t**: Translate the input point by a *distance* in the *azimuth* direction
+      (append *azimuth*/*distance*\ [*unit*] for the same translation for all input points,
+      or just append *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
+      from the third and fourth data column in the file.
+    - **x**: Compute the vectors or cross-product.
+
     If |-T| is not given then no transformation takes place; the
-    output is determined by other options such as |-A|, |-C|,
-    |-E|, and |-N|. **Notes**: (1) For **-Tt** and geographic coordinates we will
-    perform a great circle calculation unless **-je** or **-jf** is selected; (2) if a distance
-    is negative then we remove the sign and add 180 degrees to the azimuth.
+    output is determined by other options, such as |-A|, |-C|, |-E|, and |-N|.
+    **Notes** for directive **t** : (1) If geographic coordinates we will perform
+    a great circle calculation unless **-je** or **-jf** is selected;
+    (2) if a distance is negative then we remove the sign and add 180 degrees to the azimuth.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

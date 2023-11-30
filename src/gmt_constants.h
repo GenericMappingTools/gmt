@@ -367,6 +367,9 @@ enum GMT_time_period {
 /* Modifiers for contour -A option */
 #define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
 
+/* Directives and modifiers for -F interpolant option */
+#define GMT_INTERPOLANT_OPT "a|c|e|l|n|s<p>[+d1|2]"
+
 /* Valid modifiers for various input files */
 
 /* Valid modifiers for -Tmin/max/inc array creator */

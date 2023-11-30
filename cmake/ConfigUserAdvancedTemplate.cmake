@@ -236,6 +236,7 @@ set (GMT_ENABLE_OPENMP TRUE)
 #	add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
 #	message("Add Xcode definition for GMT")
 #endif()
+
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking; see gmt_memory .c on MEMDEBUG for information

@@ -1177,7 +1177,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading GMT plugins from: %s\n", plugindir);
 		for (e = 0; e < n_extensions; e++) {	/* Handle case of more than one allowed shared library extension */
-			if ((list = gmtlib_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these files to the libs */
+			if ((list = gmt_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these files to the libs */
 				for (k = 0; list[k] && strncmp (list[k], GMT_SUPPL_LIB_NAME, strlen(GMT_SUPPL_LIB_NAME)); k++);	/* Look for official supplements */
 				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put official supplements first if not first already */
 				k = 0;
@@ -1197,7 +1197,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 					}
 					++k;
 				}
-				gmtlib_free_dir_list (GMT, &list);
+				gmt_free_dir_list (GMT, &list);
 			}
 		}
 	}
@@ -1212,7 +1212,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			plugindir[k] = '\0';	/* Chop off trailing slash */
 			GMT_Report (API, GMT_MSG_DEBUG, "Loading custom GMT plugins from: %s\n", plugindir);
 			for (e = 0; e < n_extensions; e++) {
-				if ((list = gmtlib_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these to the libs */
+				if ((list = gmt_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these to the libs */
 					k = 0;
 					while (list[k]) {
 						snprintf (path, PATH_MAX, "%s/%s", plugindir, list[k]);
@@ -1233,7 +1233,7 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 							GMT_Report (API, GMT_MSG_ERROR, "Shared Library %s has no extension! Ignored\n", list[k]);
 						++k;
 					}
-					gmtlib_free_dir_list (GMT, &list);
+					gmt_free_dir_list (GMT, &list);
 				}
 			}
 		}

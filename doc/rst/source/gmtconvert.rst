@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
@@ -120,25 +120,30 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
-    **c**\ : Form continuous line segments for each group [Default].
-    **p**\ : Form line segments from a reference point reset for each group.
-    **n**\ : Form networks of line segments between all points in each group.
-    **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
+
+    - **c**\ : Form continuous line segments for each group [Default].
+    - **n**\ : Form networks of line segments between all points in each group.
+    - **p**\ : Form line segments from a reference point reset for each group.
+    - **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
+    
     Optionally, append the one of four segmentation methods to define the group:
-    **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
-    and set group reference point to the very first point of the first file.
-    **t**\ : Consider all data in each table to be a single separate group and
-    reset the group reference point to the first point of each group.
-    **s**\ : Segment headers are honored so each segment is a group; the group
-    reference point is reset to the first point of each incoming segment [Default].
-    **r**\ : Same as **s**, but the group reference point is reset after
-    each record to the previous point (this method is only available with the **-Fp** scheme).
-    Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
-    the coordinates of a *refpoint* which will serve as a fixed external
-    reference point for all groups.
+
+    - **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
+      and set group reference point to the very first point of the first file.
+    - **r**\ : Segment headers are honored so each segment is a group; the group
+      reference point is reset after each record to the previous point (this method
+      is only available with the **-Fp** scheme).
+    - **s**\ : Same as **r**, but the group reference point is reset to the first
+      point of each incoming segment [Default].
+    - **t**\ : Consider all data in each table to be a single separate group and
+      reset the group reference point to the first point of each group.
+
+    Instead of the codes **a**\|\ **r**\|\ **s**\|\ **t** you may append the
+    *lon/lat* (or *x/y*) coordinates of a *refpoint*, which will serve as a fixed
+    external reference point for all groups.
 
     .. figure:: /_images/GMT_segmentize.*
         :width: 600 px

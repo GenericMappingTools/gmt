@@ -571,7 +571,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s [<ingrid2>] [-A<azimuth>] [-C<zlevel>] [-D[<scale>|g]] "
-		"[-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-G<outgrid>|<table>] [-I[<scale>|g]] [-N%s] [-Q] "
+		"[-E[r|x|y][+n][+w[k]]] [-F[r|x|y]<parameters>] [-G<outgrid>|<table>] [-I[<scale>|g]] [-N%s] [-Q] "
 		"[-S<scale>|d] [%s] [-fg] [%s] [%s]\n", name, GMT_INGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -585,15 +585,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Continue field upward (+) or downward (-) to <zlevel> (meters). ");
 	GMT_Usage (API, 1, "\n-D[<scale>|g]");
 	GMT_Usage (API, -2, "Differentiate, i.e., multiply by kr [ and optionally by <scale>].  Use -Dg to get mGal from m] (repeatable).");
-	GMT_Usage (API, 1, "\n-E[r|x|y][+w[k]][+n]");
+	GMT_Usage (API, 1, "\n-E[r|x|y][+n][+w[k]]");
 	GMT_Usage (API, -2, "Estimate spEctrum in the radial r [Default], x, or y-direction. "
 		"Given one grid X, write f, Xpower[f] to output file (see -G) or standard output. "
 		"Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f], "
 		"noise power[f], phase[f], admittance[f], gain[f], coherency[f]. "
 		"Each quantity is followed by a column of 1 std dev. error estimates.");
+	GMT_Usage (API, 3, "+n Yield mean power instead of total power per frequency.");
 	GMT_Usage (API, 3, "+w Write wavelength instead of frequency; append k to report "
 		"wavelength in km (geographic grids only) [m].");
-	GMT_Usage (API, 3, "+n Yield mean power instead of total power per frequency.");
 	GMT_Usage (API, 1, "\n-F[r|x|y]<parameters>");
 	GMT_Usage (API, -2, "Filter r [x] [y] frequencies according to one of three kinds of filter specifications:");
 	GMT_Usage (API, 3, "%s Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>. "

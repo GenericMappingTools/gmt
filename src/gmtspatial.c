@@ -768,7 +768,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<factor>]] [-E+n|p] "
 		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+i][+p[<ID>]][+r][+z]] [-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
-		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [-W<dist>[<unit>][+f|l]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT,
+		"[-Sb<width>|h|s] [-T[<cpol>]] [-W<dist>[<unit>][+f|l]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -842,11 +842,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "b: Compute buffer polygon around line/polygon. Append <width> of buffer zone. "
 		"Note: this is a purely Cartesian operation so <width> must be in data units.");
 #endif
-	GMT_Usage (API, 3, "h: Detect holes and reverse their handedness relative to perimeters.");
-	GMT_Usage (API, 3, "i: Find intersection of polygons [Not implemented yet].");
-	GMT_Usage (API, 3, "j: Join polygons that were split by the Dateline [Not implemented yet].");
+	GMT_Usage (API, 3, "h: Detect holes and reverse them relative to perimeters.");
+	//GMT_Usage (API, 3, "i: Find intersection [Not implemented yet].");
+	//GMT_Usage (API, 3, "j: Join polygons that were split by the Dateline [Not implemented yet].");
 	GMT_Usage (API, 3, "s: Split polygons that straddle the Dateline.");
-	GMT_Usage (API, 3, "u: Find union of polygons [Not implemented yet].");
+	//GMT_Usage (API, 3, "u: Find union [Not implemented yet].");
 	GMT_Usage (API, 1, "\n-T[<cpol>]");
 	GMT_Usage (API, -2, "Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R "
 		"and clip against a polygon derived from the region border.");
@@ -1990,7 +1990,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
 		bool check_next;
-		uint64_t tbl, row, col, n, p, np, seg, seg2, n_inside;
+		uint64_t tbl, row, col, n, p, seg, seg2, n_inside;
 		int64_t kk;
 		unsigned int *count = NULL, nmode;
 		int ID = -1;
