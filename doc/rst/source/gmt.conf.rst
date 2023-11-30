@@ -273,7 +273,7 @@ FORMAT Parameters
         Formatting template that indicates how an output geographical
         coordinate is to be formatted. This template is then used to guide
         the writing of geographical coordinates in data fields. The template
-        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
+        is in general of the form **[±]D[DD]** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
@@ -524,9 +524,12 @@ I/O Parameters
 .. glossary::
 
     **IO_COL_SEPARATOR**
-        This setting determines what character will separate ASCII output
-        data columns written by GMT. Choose from **tab**, **space**, **comma**, and
-        **none** [default is **tab**].
+        This setting determines what character will separate ASCII *output*
+        data columns written by GMT. Choose from **tab**, **space**, **comma**,
+        **semicolon** and **none** [default is **tab**]. You may also just give
+        any character or string (e.g., "--|--"). **Note**: When reading input
+        data GMT automatically skips white-space, commas, and semi-colons; you
+        cannot select an individual input column separator.
 
     **IO_FIRST_HEADER**
         This setting determines if the first segment header is written when
@@ -565,11 +568,11 @@ I/O Parameters
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
-        contain (latitude,longitude) or (y,x) rather than the expected
-        (longitude,latitude) or (x,y). false means we have (x,y) both on
-        input and output. **true** means both input and output should be (y,x).
-        **IN** means only input has (y,x), while **OUT** means only output should
-        be (y,x) [default is **false**].
+        contain (*latitude,longitude*) or (**y, x**) rather than the expected
+        (longitude,latitude) or (*x, y*). false means we have (*x, y*) both on
+        input and output. **true** means both input and output should be (**y, x**).
+        **IN** means only input has (**y, x**), while **OUT** means only output should
+        be (**y, x**) [default is **false**].
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [default is **0**].
@@ -868,16 +871,16 @@ MAP Parameters
         cap is reversed, i.e., *85/90* will draw a r = 5 radius circle at the
         center of the map with less frequent radial lines there.
 
-    **MAP_STROKE_WIDTH**
+    **MAP_SCALE_HEIGHT**
+        Sets the height (> 0) on the map of the map scale bars drawn by
+        various programs [default is **5p**].
+
+    **MAP_SYMBOL_PEN_SCALE**
         Used to convert non-fillable (**x**, **y**, **+** and **-**) symbol sizes
         to the width of the pen used to stroke these symbols. Give a factor in the
         0-1 range (e.g., 0.18) or specify a percentage (e.g., 10%) [15%]. **Note**:
         If set to 0 then no such conversion takes place and pen settings must rely on
         **-W** or module defaults.
-
-    **MAP_SCALE_HEIGHT**
-        Sets the height (> 0) on the map of the map scale bars drawn by
-        various programs [default is **5p**].
 
     **MAP_TICK_LENGTH**
         Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY`

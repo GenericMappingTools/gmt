@@ -59,7 +59,7 @@ jobs:
         uses: actions/checkout@v3.6.0
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.27.0
+        uses: dawidd6/action-download-artifact@v2.28.0
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -115,7 +115,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.27.0
+        uses: dawidd6/action-download-artifact@v2.28.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache
@@ -140,6 +140,9 @@ jobs:
           # if html.log isn't empty (i.e., sphinx raise warnings), return 1
           ! [ -s doc/rst/html.log ]
           cmake --build . --target docs_man
+          # Show warnings saved in html.log and man.log but filter out "duplicate label" warnings.
+          # See https://github.com/GenericMappingTools/gmt/issues/7253
+          grep -v 'WARNING: duplicate label -' doc/rst/html.log
 
       - name: Install GMT
         run: |

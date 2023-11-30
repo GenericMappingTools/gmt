@@ -1836,6 +1836,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (n == 0) {	/* Empty input file */
+		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
+		gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
+		GMT_Report (API, GMT_MSG_ERROR, "No data records found - aborting!\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+
 	X = gmt_M_memory (GMT, X, n, double *);
 	obs = gmt_M_memory (GMT, obs, n, double);
 	nm = n;
@@ -2697,8 +2704,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						double dev, rms = 0.0, chi2_sum = 0.0;
 						for (j = 0; j < nm; j++) {	/* For each data constraint */
 							for (p = 0, wp = 0.0; p < nm; p++) {	/* Add contribution for each data constraint */
+								r = greenspline_get_radius (GMT, X[j], X[p], 2U);
 								if (!gmt_M_is_zero (r)) {	/* For all pairs except self-pairs */
-									r = greenspline_get_radius (GMT, X[j], X[p], 2U);
 									part = G (GMT, r, par, Lz);
 									wp += alpha[p] * part;	/* Just add this scaled Green's function */
 								}

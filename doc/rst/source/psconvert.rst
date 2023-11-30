@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*] ]
 [ |-L|\ *list* ]
 [ |-M|\ **b**\|\ **f**\ *pslayer* ]
-[ |-N|\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]] ]
+[ |-N|\ [**+f**\ *fade*][**+g**\ *background*][**+k**\ *fadecolor*][**+p**\ [*pen*]] ]
 [ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
 [ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**][**+q**\ *quality*] ]
@@ -157,20 +157,13 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]]
-    Set optional BoundingBox fill color, fading, or draw the outline of the BoundingBox.
-    Append **+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
-    Append **+g**\ *paint* to paint the BoundingBox behind the illustration and
-    append **+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
-    the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
-    then we use *paint* as the fade color instead of black.
-    Append **+i**  to enforce gray-shades by using ICC profiles.  Ghostscript versions
-    >= 9.00 change gray-shades by using ICC profiles.  Ghostscript 9.05
-    and above provide the '-dUseFastColor=true' option to prevent that
-    and that is what **psconvert** does by default, unless modifier **+i** is
-    set.  Note that for Ghostscript >= 9.00 and < 9.05 the gray-shade
-    shifting is applied to all but PDF format.  We have no solution to
-    offer other than suggesting you upgrade Ghostscript.
+**-N**\ [**+f**\ *fade*][**+g**\ *background*][**+k**\ *fadecolor*][**+p**\ [*pen*]]
+    Set optional BoundingBox background fill color, fading, or draw the outline of the BoundingBox.
+    Append **+f**\ *fade* to fade the entire plot towards *fadecolor* [black] (100%) [no fading, 0].
+    Append **+g**\ *background* to paint the BoundingBox behind the illustration.
+    Append **+k**\ *fadecolor* to set the fade color if **+f** is set [black]/
+    Append **+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
+    the default pen of 0.25p,black).
 
 .. _-Q:
 
@@ -426,6 +419,7 @@ use it.
 Deprecations
 ------------
 
+- 6.5.0: Modifier +i of the |-N| option is deprecated (but honored). `#7972 <https://github.com/GenericMappingTools/gmt/pull/7972>`_
 - 6.3.0: Modifiers +m, +g et al of |-A| option are moved to |-I|, |-N|, or |-W| option. `#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_
 
 See Also

@@ -19,14 +19,14 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
 [ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**][**a**\|\ **s**\|\ **t**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
+[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -133,7 +133,7 @@ Optional Arguments
 **-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
     Draw error bars. Append **x** and/or **y** to indicate which bars you
     want to draw [Default is both x and y]. The x and/or y errors must be
-    stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
+    stored in the columns after the (*x, y*) pair [or (*x, y, z*) triplet]. If
     **+a** is appended then we will draw asymmetrical error bars [Default
     is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.
@@ -161,24 +161,38 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **p**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of three line connection schemes:
-    **c**\ : Draw continuous line segments for each group [Default].
-    **p**\ : Draw line segments from a reference point reset for each group.
-    **n**\ : Draw networks of line segments between all points in each group.
+
+    - **c**\ : Form continuous line segments for each group [Default].
+    - **n**\ : Form networks of line segments between all points in each group.
+    - **p**\ : Form line segments from a reference point reset for each group.
+
     Optionally, append the one of four segmentation methods to define the group:
-    **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
-    and set group reference point to the very first point of the first file.
-    **f**\ : Consider all data in each file to be a single separate group and
-    reset the group reference point to the first point of each group.
-    **s**\ : Segment headers are honored so each segment is a group; the group
-    reference point is reset to the first point of each incoming segment [Default].
-    **r**\ : Same as **s**, but the group reference point is reset after
-    each record to the previous point (this method is only available with the **-Fp** scheme).
-    Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
-    the coordinates of a *refpoint* which will serve as a fixed external
-    reference point for all groups.
+
+    - **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
+      and set group reference point to the very first point of the first file.
+    - **r**\ : Segment headers are honored so each segment is a group; the group
+      reference point is reset after each record to the previous point (this method
+      is only available with the **-Fp** scheme).
+    - **s**\ : Same as **r**, but the group reference point is reset to the first
+      point of each incoming segment [Default].
+    - **t**\ : Consider all data in each table to be a single separate group and
+      reset the group reference point to the first point of each group.
+
+    Instead of the codes **a**\|\ **r**\|\ **s**\|\ **t** you may append the
+    *lon/lat* (or *x/y*) coordinates of a *refpoint*, which will serve as a fixed
+    external reference point for all groups.
+
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+
+        Use the |-F| option to create various networks between input point.  Dashed lines
+        indicate input ordering for the two tables, while solid lines are the resulting
+        network connections. Top left is original input, while the next five reflect the results
+        of directives **ra**, **rt**, **rs**, **r**\ 10/35 and **na**.
 
 .. _-G:
 
@@ -221,6 +235,37 @@ Optional Arguments
     **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
     your segments are interpreted as polygons, else they are seen as lines.
 
+.. _-M:
+
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
+    Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
+    given via one or more pairs of separate tables, each pair of tables having the same
+    number of segments (which can vary from pair to pair). Thus, the order of the even
+    number of tables given on the command line is important. If you instead simply want to
+    compare your data with a horizontal constant line then set the level via **+y** and the
+    :math:`y_1(x)` curve is generated for you and all input files will be compared with it.
+    Alternatively, use **-Mc** to indicate that :math:`y_1(x)` is co-registered with
+    :math:`y_0(x)` and is given as column 2 (i.e., third) in any number of files having
+    three columns. Each file may contain any number of segments per file.
+    We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds :math:`y_1(x)`
+    and the *fill* set via **+g** for the opposite case.  Finally, you can draw the two curves
+    using |-W| for :math:`y_0(x)` and **+p** for :math:`y_1(x)`. To add a legend entry for the
+    primary :math:`y_0(x)` or the fill, see |SYN_OPT-l|. To add a legend entry for the
+    secondary curve or the fill, use modifier **+l** to give a secondary label.  Normally, we show
+    one (|-G|) or two (**+g**) filled rectangles in the legend if fill was selected for the
+    alternating areas between the two curves. Use **+r** to instead specify a pen to simply
+    draw a line instead in the legend, but replace the color information from the fill settings
+    (i.e., only the *pen* width is used as specified, the color is not used).  **Note**: You
+    must at least specify either one fill or one pen, depending on your desired result.
+
+    .. figure:: /_images/GMT_fill_curves.*
+        :width: 600 px
+        :align: center
+
+        Use the |-M| option to paint the area between curves.  intersections and NaN-gaps are
+        found and the color depends on which curve is on top. Legends can be set as filled
+        rectangles or lines with colors from the fill selections via **+r**..
+
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
@@ -236,12 +281,6 @@ Optional Arguments
 .. _-S:
 
 .. include:: explain_symbols.rst_
-
-.. _-T:
-
-**-T**
-    Ignore all input files.  If |-B| is not used then **-R -J** are not required.
-    Typically used to move plot origin via |-X| and |-Y|.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
@@ -387,7 +426,7 @@ a circle at the start location and an arrow head at the end::
     EOF
 
 To plot vectors (red vector heads, solid stem) from the file data.txt that contains
-record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
+record of the form *lon, lat, dx, dy*, where *dx, dy* are the Cartesian
 vector components given in user units, and these user units should be converted
 to cm given the scale 3.60::
 

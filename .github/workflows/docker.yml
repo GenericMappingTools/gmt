@@ -9,6 +9,9 @@ on:
     branches:
       - master
       - 6.[0-9]+
+    paths-ignore:
+      - 'doc/**'
+      - '!doc/**/CMakeLists.txt'
 
 defaults:
   run:
@@ -41,16 +44,19 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - ubuntu:14.04  # CMake 2.8.12 + GNU 4.8.4;  EOL: 2024-04-25
-          - ubuntu:16.04  # CMake 3.5.1  + GNU 5.4.0;  EOL: 2026-04-23
-          - ubuntu:18.04  # CMake 3.10.2 + GNU 7.4.0;  EOL: 2028-04-26
-          - ubuntu:20.04  # CMake 3.16.3 + GNU 9.3.0;  EOL: 2030-04-23
-          - ubuntu:22.04  # CMake 3.22.1 + GNU 11.2.0; EOL: 2032-04-21
-          - ubuntu:23.04  # CMake 3.24.1 + GNU 12.2.0; EOL: 2024-01-20
-          - debian:10     # CMake 3.13.4 + GNU 8.3.0;  EOL: 2024-06-01
-          - debian:11     # CMake 3.18.4 + GNU 10.2.1; EOL: 2026-06-01
-          - debian:12     # CMake 3.25.1 + GNU 12.2.0; EOL: 2028-06-01
-          - debian:sid    # rolling release with latest versions
+          # Ubuntu: https://en.wikipedia.org/wiki/Ubuntu_version_history#Table_of_versions
+          - ubuntu:20.04    # CMake 3.16.3 + GNU 9.3.0;  EOL: 2025-04-23
+          - ubuntu:22.04    # CMake 3.22.1 + GNU 11.2.0; EOL: 2027-04-21
+          - ubuntu:23.04    # CMake 3.25.1 + GNU 12.2.0; EOL: 2024-01-20
+          # Debian: https://en.wikipedia.org/wiki/Debian_version_history#Release_table
+          - debian:10       # CMake 3.13.4 + GNU 8.3.0;  EOL: 2024-06-01
+          - debian:11       # CMake 3.18.4 + GNU 10.2.1; EOL: 2026-06-01
+          - debian:12       # CMake 3.25.1 + GNU 12.2.0; EOL: 2028-06-01
+          - debian:sid      # rolling release with latest versions
+          # Fedora: https://en.wikipedia.org/wiki/Fedora_Linux_release_history
+          - fedora:37       # CMake 3.24.1 + GNU 12.2.1; EOL: 2023-11-14
+          - fedora:38       # CMake 3.26.2 + GNU 13.0.1; EOL: 2024-05-14
+          - fedora:rawhide  # rolling release with latest versions
 
     steps:
       - name: Checkout
@@ -58,13 +64,19 @@ jobs:
 
       - name: Install GMT dependencies
         run: |
-          apt-get update
-          # tzdata is required for Ubuntu>=20.04
-          DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
-          apt-get install -y --no-install-recommends --no-install-suggests \
-               build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
-               ghostscript curl git \
-               libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev
+          os=$(cat /etc/os-release | grep "^ID=" | awk -F= '{print $2}')
+          if [[ "$os" = "ubuntu" || "$os" = "debian" ]]; then
+            apt-get update
+            DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
+            apt-get install -y --no-install-recommends --no-install-suggests \
+                 build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
+                 ghostscript curl git \
+                libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev
+          elif [[ "$os" = "fedora" ]]; then
+            dnf install -y cmake libcurl-devel netcdf-devel gdal-devel \
+              ninja-build gdal pcre-devel fftw3-devel lapack-devel \
+              openblas-devel glib2-devel ghostscript
+          fi
 
       - name: Cache GSHHG and DCW data
         uses: actions/cache@v3
@@ -88,7 +100,7 @@ jobs:
           cmake --build .
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.27.0
+        uses: dawidd6/action-download-artifact@v2.28.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache

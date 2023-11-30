@@ -564,7 +564,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	n = 0;
-	n_in = (GMT->common.i.select && GMT->common.i.n_cols == 1) ? 1 : 2;
+	n_in = (GMT->common.i.col.select && GMT->common.i.col.n_cols == 1) ? 1 : 2;
 
 	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);

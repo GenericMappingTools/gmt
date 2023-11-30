@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
 [ |-H|\ *scale* ]
-[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
+[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-L|\ *tilesize* ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
@@ -67,12 +67,11 @@ Optional Arguments
 
 .. _-A:
 
-
 **-A**\ **a**\|\ **g**\|\ **s**\ [*altitude*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the tile layer: **a** absolute
-    altitude, **g** altitude relative to sea surface or ground, **s**
-    altitude relative to seafloor or ground. To plot the tiles at a
+    altitude, **g** altitude relative to ground, or **s**
+    altitude relative to seafloor. To plot the tiles at a
     fixed altitude, append an altitude *altitude* (in m). Use 0 to clamp the
     features to the chosen reference surface. [By default the tiles are clamped
     to the sea surface or ground].
@@ -109,16 +108,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the ±1 range,
-    or a constant intensity to apply everywhere (affects the ambient light).
-    Alternatively, derive an intensity grid from the input data grid *grid*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth* and **+n**\ *args*
-    to specify azimuth and intensity arguments for that module or just give **+d**
-    to select the default arguments (**+a**\ -45\ **+nt**\ 1). If you want a more
-    specific intensity scenario then run :doc:`grdgradient` separately first.
-    [Default is no illumination].
-
+.. include:: explain_intense.rst_
 
 .. _-L:
 
@@ -129,7 +119,6 @@ Optional Arguments
     *tilesize* of 360 if |-L| is not specified.
 
 .. _-S:
-
 
 **-S**\ [*extra*]
     Add extra layers beyond that necessary to capture the full resolution of the data [none].

@@ -106,16 +106,32 @@ Optional Arguments
 
 **-C**\ **f**\|\ **l**\|\ **o**\|\ **u**\ [**+n**\|\ **p**]
     Clobber mode: Instead of blending, simply pick the value of one of
-    the grids that covers a node. Select from the following modes: **f**
-    for the first grid to visit a node; **o** for the last grid to visit
-    a node; **l** for the grid with the lowest value, and **u** for the
-    grid with the uppermost value. For modes **f** and **o** the
-    ordering of grids in the *blendfile* will dictate which grid
-    contributes to the final result. Weights and cosine tapering are not
-    considered when clobber mode is active. Optionally, append **+p** or **+n**.
-    Then, we always initialize output to equal the first grid but then
-    for subsequent grids we only consider them in the decision if the
-    values are :math:`z \ge 0` (**+p**) or :math:`z \le 0` (**+n**), respectively.
+    the grids that covers a node. Select from the following directives:
+
+    - **f**: Select the first grid to visit a node.
+    - **l**: Select the grid with the lowest value.
+    - **o**: Select the last grid to visit a node.
+    - **u**: Select the grid with the uppermost value.
+
+    For directives **f** and **o** the ordering of grids in the *blendfile*
+    will dictate which grid contributes to the final result. Weights and
+    cosine tapering are not considered when clobber mode is active. Optionally,
+    append one of two modifiers. If given then we always initialize output
+    to equal the first grid but then for subsequent grids we only consider them
+    per node accordingly:
+
+    - **+n**: Only consider a grid where the values are :math:`z \le 0` (i.e., negative).
+    - **+p**: Only consider a grid where the values are :math:`z \ge 0` (i.e., positive).
+
+
+.. figure:: /_images/GMT_blendtype.*
+   :width: 500 px
+   :align: center
+
+   Blending is just one option what happens in areas of overlap. The dashed
+   lines indicates the "inner" regions where the relative weights are 1 and
+   between the dashed lines and the grid borders the relative weights are
+   cosine-tapered down to 0.
 
 .. _-Q:
 

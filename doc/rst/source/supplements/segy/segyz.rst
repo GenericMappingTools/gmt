@@ -20,7 +20,7 @@ Synopsis
 [ |-I| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ]
 [ |-N| ]
-[ |-Q|\ *<mode><value>* ]
+[ |-Q|\ **b**\|\ **i**\|\ **u**\|\ **x**\|\ **y**\ *value* ]
 [ |-S|\ *header_x*/*header_y* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -136,9 +136,9 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *<mode><value>*
-    Can be used to change 5 different settings depending on *mode*:
-       **-Qb**\ *bias* to bias scaled traces (-Qb-0.1 subtracts 0.1 from values).
+**-Q**\ **b**\|\ **i**\|\ **u**\|\ **x**\|\ **y**\ *value*
+    Can be used to change 5 different settings depending on the directive (repeatable):
+       **-Qb**\ *bias* to bias scaled traces (**-Qb**\ -0.1 subtracts 0.1 from values).
 
        **-Qi**\ *dpi* sets the dots-per-inch resolution of the image [300].
 

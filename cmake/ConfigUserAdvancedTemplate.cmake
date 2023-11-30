@@ -204,9 +204,8 @@ set (GMT_ENABLE_OPENMP TRUE)
 #set (DO_SUPPLEMENT_TESTS ON)
 
 # Uncomment the following line if you need to run the full tests suite using
-# the gmtserver "test" distribution instead of the default server.
-# You may wish to rename existing cache and server dirs so you can restore afterwards
-# set (GMT_DATA_SERVER "test")
+# the gmtserver "static" distribution instead of the default server.
+# set (GMT_DATA_SERVER "static")
 
 # List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
 # that link against the full gmt libs. (For building codes that only need the GMT API,
@@ -219,8 +218,8 @@ set (GMT_ENABLE_OPENMP TRUE)
 #set (GMT_RELEASE_PREFIX "release-src-prefix")
 
 # If set to false, image conversion from PS images to PNG and PDF does
-# not depend on the gmt binary target. Note: "make gmt" is then required
-# before docs_depends [TRUE].
+# not depend on the gmt binary target. It assumes that you already have the
+# gmt executable in your PATH [TRUE].
 #set (GMT_DOCS_DEPEND_ON_GMT FALSE)
 
 #
@@ -237,6 +236,7 @@ set (GMT_ENABLE_OPENMP TRUE)
 #	add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
 #	message("Add Xcode definition for GMT")
 #endif()
+
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking; see gmt_memory .c on MEMDEBUG for information

@@ -477,7 +477,7 @@ Using |-A|\ [**+e**], you can include an audio track, such as narrating the anim
 whatever you have on tap. The final movie will have a length matching the longest of the audio or animation,
 so you probably will want to process you audio file to fit your animation.  Since the animation length
 is known to be *n_frames / displayrate* you can preprocess the audio track to have the matching length.
-Alternatively, if the audio track is approximately the same length as the video (withing ±50% of animation
+Alternatively, if the audio track is approximately the same length as the video (within ±50% of animation
 length), append **+e** to scale the audio track to have the exact same length as the animation.
 
 Technical Details

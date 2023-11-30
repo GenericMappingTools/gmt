@@ -641,6 +641,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
 			gmt_M_free (GMT, attrib);
 		}
+		else if (gm_id != GMT_NOTSET && nc_inq_attlen (ncid, gm_id, "crs_wkt", &len) == NC_NOERR) {	/* New stand attrib name */
+			char *attrib = NULL;
+			gmt_M_str_free (header->ProjRefWKT);	/* Make sure we didn't have a previously allocated one */
+			attrib = gmt_M_memory (GMT, NULL, len+1, char);		/* and allocate the needed space */
+			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "crs_wkt", attrib));
+			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			gmt_M_free (GMT, attrib);
+		}
 
 		/* Explanation for the logic below: Not all netCDF grids are proper COARDS grids and hence we sometime must guess
 		 * regarding the settings.  The x and y coordinates may be written as arrays, which reflect the positions of the
@@ -964,7 +972,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
 
 		/* If we have projection information create a container variable named "grid_mapping" with an attribute
-		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
+		   "spatial_ref" or "crs_wkt" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
 			int id[1], dim[1];
 
@@ -997,6 +1005,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					gmt_M_err_trap(nc_def_var(ncid, "grid_mapping", NC_CHAR,  1, dim, &id[0]));
 				}
 				gmt_M_err_trap(nc_put_att_text(ncid, id[0], "spatial_ref", strlen(header->ProjRefWKT), header->ProjRefWKT));
+				gmt_M_err_trap(nc_put_att_text(ncid, id[0], "crs_wkt", strlen(header->ProjRefWKT), header->ProjRefWKT));
 				gmt_M_err_trap(nc_put_att_text(ncid, z_id, "grid_mapping", 12U, "grid_mapping"));	/* Create attrib in z variable */
 			}
 		}

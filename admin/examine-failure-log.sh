@@ -3,6 +3,10 @@
 # Script that can be run after full testing to examining the RMS
 # failures.  We assume this script is run from the top GMT directory
 # and that there is a build or rbuild directory there.
+# Note: To include the scripts marked as KNOWN failures you must 
+# edit cmake/ConfigUserAdvanced.cmake and enable those scripts to be run:
+# set (GMT_ENABLE_KNOWN2FAIL OFF)  # Uncomment and set to ON
+
 BLDDIR=rbuild
 if [ ! -d admin ]; then
 	echo "examine-failure-log.sh: Must be run from top-level gmt directory" >&2

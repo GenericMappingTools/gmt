@@ -90,16 +90,16 @@ synopsis of the valid arguments. All the documentation is available for
 web browsing and may be installed at the user's site.
 
 The processing and display routines within GMT are completely general
-and will handle any (*x,y*) or (*x,y,z*) data as input. For many
-purposes the (*x,y*) coordinates will be (longitude, latitude) but in
+and will handle any (*x, y*) or (*x, y, z*) data as input. For many
+purposes the (*x, y*) coordinates will be (longitude, latitude) but in
 most cases they could equally well be any other variables (e.g.,
 wavelength, power spectral density). Since the GMT plot tools will
-map these (*x,y*) coordinates to positions on a plot or map using a
+map these (*x, y*) coordinates to positions on a plot or map using a
 variety of transformations (linear, log-log, and several map
 projections), they can be used with any data that are given by two or
 three coordinates. In order to simplify and standardize input and
-output, by default GMT uses two file formats only. Arbitrary sequences of (*x,y*)
-or (*x,y,z*) data are read from multi-column ASCII tables, i.e., each
+output, by default GMT uses two file formats only. Arbitrary sequences of (*x, y*)
+or (*x, y, z*) data are read from multi-column ASCII tables, i.e., each
 file consists of several records, in which each coordinate is confined
 to a separate column [5]_. This format is straightforward and allows the
 user to perform almost any simple (or complicated) reformatting or
@@ -112,7 +112,7 @@ from UCAR, the University Corporation of Atmospheric Research [*Treinish
 and Gough*, 1987]). This XDR (External Data Representation) based format
 is architecture independent, which allows the user to transfer the
 binary data files from one computer system to another [6]_.
-GMT contains programs that will read ASCII (*x,y,z*) files and produce
+GMT contains programs that will read ASCII (*x, y, z*) files and produce
 grid files. One such program, :doc:`/surface`,
 includes new modifications to the gridding algorithm developed by *Smith
 and Wessel* [1990] using continuous splines in tension. Optionally, GMT
@@ -123,12 +123,12 @@ Most of the programs will produce some form of output, which falls into
 four categories. Several of the programs may produce more than one of
 these types of output:
 
-*  1-D ASCII Tables — For example, a (*x,y*) series may be
+*  1-D ASCII Tables — For example, a (*x, y*) series may be
    filtered and the filtered values output. ASCII output is written to
    the standard output stream.
 
 *  2-D binary (netCDF or user-defined) grid files – Programs that grid
-   ASCII (*x,y,z*) data or operate on existing grid files produce
+   ASCII (*x, y, z*) data or operate on existing grid files produce
    this type of output.
 
 *  PostScript – The plotting programs all use the PostScript page

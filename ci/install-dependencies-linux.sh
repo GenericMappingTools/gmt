@@ -18,7 +18,7 @@ EXCLUDE_OPTIONAL=${EXCLUDE_OPTIONAL:-false}
 # packages installed via apt-get
 packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev curl git libgdal-dev"
 # packages installed via conda
-conda_packages="ghostscript=9.56.1"
+conda_packages="ghostscript=10.02.0"
 
 # optional packages
 if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
@@ -33,7 +33,7 @@ fi
 
 # packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-	conda_packages+=" pngquant sphinx dvc"
+    conda_packages+=" pngquant sphinx dvc"
 fi
 
 # Install packages via apt-get
@@ -41,8 +41,16 @@ sudo apt-get update
 sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 
 # Install packages via conda
-conda update -n base -c defaults conda
-conda install ${conda_packages} -c conda-forge
+conda update -n base -c conda-forge conda --solver libmamba
+conda install ${conda_packages} -c conda-forge --solver libmamba
 echo "${CONDA}/bin" >> $GITHUB_PATH
+
+# Remove pcre-config from conda's path so cmake won't find the conda's one
+rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
+
+# Install Sphinx extensions
+if [ "$BUILD_DOCS" = "true" ]; then
+    ${CONDA}/bin/python -m pip install --user -r doc/rst/requirements.txt
+fi
 
 set +x +e

@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *force* ]
 [ |-L| ]
-[ |-M|\ [**x**][**z**] ]
+[ |-M|\ [**h**][**v**] ]
 [ |-S| ]
 [ |-T|\ *wfile*]
 [ |SYN_OPT-V| ]
@@ -73,7 +73,7 @@ Required Arguments
     simply driven by the boundary conditions set via |-A|.  If no rigidity or
     elastic thickness file is given via |-E| then you must also append arguments
     to create the locations used for the calculations; for details on array creation,
-    see `Generate 1D Array`_.
+    see `Generate 1-D Array`_.
     **-Qq**\ [*loadfile*] is a file (or standard input if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
     (or standard input if not given) with (x,load in m or km, positive up); see |-M| for
@@ -112,10 +112,10 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**x**][**z**]
-    Optionally append one or both of **x** and **z**: Use **x** to indicated that all
-    x-distances are in km [meters] and **z** to
-    indicate that all z-deflections are in km [meters].
+**-M**\ [**h**][**v**]
+    Optionally append one or both of **h** and **v**: Use **h** to indicated that all
+    horizontal distances are in km [meters] and **v** to
+    indicate that all vertical deflections are in km [meters].
 
 .. _-S:
 

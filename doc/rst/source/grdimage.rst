@@ -20,7 +20,7 @@ Synopsis
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
-[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
+[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
 [ |-Q|\ [*color*][**+z**\ *value*] ]
@@ -68,7 +68,9 @@ pixel, their average will dominate in the calculation of the pixel
 value. Interpolation and aliasing is controlled with the **-n** option.
 
 The |-R| option can be used to select a map region larger or smaller
-than that implied by the extent of the grid.
+than that implied by the extent of the grid. Finally, |-A| allows the
+creation of a direct output to a raster file instead of plotting via
+PostScript.
 
 Required Arguments
 ------------------
@@ -96,7 +98,8 @@ Optional Arguments
     one or more concatenated number of GDAL **-co** options. For example, to write a GeoPDF with the
     TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
     then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
-    otherwise a plain tiff file is produced. (2) Any vector elements will be lost.
+    otherwise a plain tiff file is produced. (2) Any vector elements will be lost. **Note**: The **-B**
+    option is not compatible with |-A| since no PostScript output is allowed.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -139,19 +142,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the ±1 range,
-    or a constant intensity to apply everywhere (affects the ambient light).
-    Alternatively, derive an intensity grid from the input data grid *grid*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,
-    and **+m**\ *ambient* to specify azimuth, intensity, and ambient arguments
-    for that module, or just give **+d** to select the
-    default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
-    specific intensity scenario then run :doc:`grdgradient` separately first.
-    If we should derive intensities from another file than *grid*, specify the
-    file with suitable modifiers [Default is no illumination].  **Note**: If
-    the input data represent an *image* then an *intensfile* or constant *intensity*
-    must be provided.
+.. include:: explain_intense.rst_
 
 .. _-M:
 
@@ -254,6 +245,14 @@ if the CPT provided via |-C| is categorical we will override any **-n** setting 
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
 gridding and turns *off* anti-aliasing.  Alternatively, use |-T|
 instead to plot individual polygons centered on each node.
+
+Imaging Categorical Images
+--------------------------
+
+If a 1-byte single layer image is given and the file has no color map then we will
+interpret the byte values as categories and a categorical CPT is required via |-C|.
+If no |-C| is given then we assume the image is a grayscale image with values in the
+0-255 range.
 
 Image formats recognized
 ------------------------

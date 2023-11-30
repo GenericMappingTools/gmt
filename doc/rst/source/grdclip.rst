@@ -14,8 +14,10 @@ Synopsis
 
 **gmt grdclip** *ingrid* |-G|\ *outgrid*
 [ |SYN_OPT-R| ]
-[ |-S|\ **a**\ *high/above* ]
-[ |-S|\ **b**\ *low/below* ] [ |-S|\ **i**\ *low/high/between* ] [ |-S|\ **r**\ *old/new* ]
+[ |-S|\ **a**\ *high/above*\ [**+e**] ]
+[ |-S|\ **b**\ *low/below*\ [**+e**] ]
+[ |-S|\ **i**\ *low/high/between* ]
+[ |-S|\ **r**\ *old/new* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -25,7 +27,8 @@ Description
 -----------
 
 **grdclip** will set values < *low* to *below* and/or values > *high* to
-*above*. You can also specify one or more intervals where all values should be
+*above*. Via modifiers, you can select ≤ *low* or ≥ *high*.
+You can also specify one or more intervals where all values should be
 set to *between*, or replace individual values.  Such operations are useful
 when you want all of a continent or an ocean to fall
 into one color or gray shade in image processing, when clipping of the
@@ -60,16 +63,16 @@ Optional Arguments
 
 .. _-S:
 
-**-Sa**\ *high/above*
-    Set all data[i] > *high* to *above*.
-**-Sb**\ *low/below*
-    Set all data[i] < *low* to *below*.
+**-Sa**\ *high/above*\ [**+e**]
+    Set all data[i] > *high* to *above*. Modifier **+e** includes the equality, i.e., data[i] ≥ *high*.
+**-Sb**\ *low/below*\ [**+e**]
+    Set all data[i] < *low* to *below*. Modifier **+e** includes the equality, i.e., data[i] ≤ *low*.
 **-Si**\ *low/high/between*
-    Set all data[i] >= *low* and <= *high* to *between*.
+    Set all data[i] ≥ *low* and ≤ *high* to *between*.
     Repeat the option for as many intervals as are needed.
 **-Sr**\ *old/new*
-    Set all data[i] == *old* to *new*.  This is mostly useful when
-    your data are known to be integer values.  Repeat the option
+    Set all data[i] == *old* to *new*. This is mostly useful when
+    your data are known to be integer values. Repeat the option
     for as many replacements as are needed.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -89,6 +92,12 @@ To set all values > 0 to NaN and all values < 0 to 0 in the remote file AFR.nc:
 ::
 
   gmt grdclip @AFR.nc -Gnew_AFR.nc -Sa0/NaN -Sb0/0 -V
+
+To set all values ≤ 0 to NaN in the file errors.nc:
+
+::
+
+  gmt grdclip errors.nc -Gpos_errors.nc -Sb0/NaN+e -V
 
 To reclassify all values in the 25-30 range to 99, those in 35-39 to 55,
 exchange 17 for 11 and all values < 10 to 0 in file classes.nc, try
