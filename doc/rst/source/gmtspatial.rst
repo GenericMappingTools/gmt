@@ -15,7 +15,7 @@ Synopsis
 **gmt spatial** [ *table* ]
 [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
-[ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*] ]
+[ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *factor*] ]
 [ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
