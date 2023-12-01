@@ -63,10 +63,6 @@ struct FZBLENDER_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct I {	/* -I<profile_ID> */
-		bool active;
-		int profile;
-	} I;
 	struct D {	/* -D */
 		bool active;
 		char *file;
@@ -79,6 +75,10 @@ struct FZBLENDER_CTRL {
 		bool active;
 		char *args;	/* Full filter args for filter1d */
 	} F;
+	struct I {	/* -I<profile_ID> */
+		bool active;
+		int profile;
+	} I;
 	struct Q {	/* -Q<min_q>/<max_q> */
 		bool active;
 		double min, max;

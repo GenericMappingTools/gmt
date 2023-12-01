@@ -29,7 +29,8 @@ set (SUPPL_HEADERS CK1995n.h Chron_Normal.h  Chron_Reverse.h  GST2004n.h GST2012
                    CK1995r.h Chron_Normal2.h Chron_Reverse2.h GST2004r.h GST2012r.h Geek2007r.h
                    fz_analysis.h)
 AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H) 
-set (SUPPL_PROGS_SRCS fzanalyzer.c fzblender.c mlconverter.c)
+set (SUPPL_PROGS_SRCS fzanalyzer.c fzblender.c mlconverter.c ${SUPPL_LONG_OPT_H})
+set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS})
 set (SUPPL_EXAMPLE_FILES README.gsfml)
 
 install (PROGRAMS fz_funcs.sh
