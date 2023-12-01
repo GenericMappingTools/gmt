@@ -22,10 +22,10 @@
  * Date:	01-DEC-2023 (Requires GMT >= 6)
  */
 
-#define THIS_MODULE_NAME	"mlconverter"
+#define THIS_MODULE_CLASSIC_NAME	"mlconverter"
+#define THIS_MODULE_MODERN_NAME		"mlconverter"
 #define THIS_MODULE_LIB		"gsfml"
 #define THIS_MODULE_PURPOSE	"Convert chrons to ages using selected magnetic timescale"
-#define THIS_MODULE_LIB_PURPOSE	"GMT supplemental modules for GSFML"
 #define THIS_MODULE_KEYS	"<DI,>DO"
 #define THIS_MODULE_NEEDS       ""
 #define THIS_MODULE_OPTIONS	"-:>RVabfghior"
@@ -156,6 +156,7 @@ static int parse (struct GMTAPI_CTRL *API, struct MLCONVERTER_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); return (code);}
 
 struct ML_CHRON {	/* Holds chron and young/old ages */
@@ -176,7 +177,7 @@ int GMT_mlconverter (void *V_API, int mode, void *args) {
 	double age, *in = NULL;
 	
 	EXTERN_MSC void gmt_str_toupper (char *string);
-	char record[GMT_BUFSIZ], chron[16], c, **Cname[2] = {NULL, NULL}, **Cname2[2] = {NULL, NULL};
+	char record[GMT_BUFSIZ] = {""}, chron[16] = {""}, c, **Cname[2] = {NULL, NULL}, **Cname2[2] = {NULL, NULL};
 	static char *Chron_Normal[] = {
 #include "Chron_Normal.h"
 	};
@@ -231,7 +232,8 @@ int GMT_mlconverter (void *V_API, int mode, void *args) {
 
 	/* Parse the program-specific arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL)
+		bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (API, Ctrl, options))) Return (error);

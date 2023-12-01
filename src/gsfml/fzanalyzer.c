@@ -20,10 +20,10 @@
  * Date:	01-DEC-2023 (Requires GMT >= 6)
  */
 
-#define THIS_MODULE_NAME	"fzanalyzer"
+#define THIS_MODULE_CLASSIC_NAME	"fzanalyzer"
+#define THIS_MODULE_MODERN_NAME	"fzanalyzer"
 #define THIS_MODULE_LIB		"gsfml"
 #define THIS_MODULE_PURPOSE	"Analysis of fracture zones using crossing profiles"
-#define THIS_MODULE_LIB_PURPOSE	"GMT supplemental modules for GSFML"
 #define THIS_MODULE_KEYS	"<DI,>DO"
 #define THIS_MODULE_NEEDS       ""
 #define THIS_MODULE_OPTIONS	"-Vb:hios>"
@@ -690,7 +690,7 @@ EXTERN_MSC int GMT_fzanalyzer (void *V_API, int mode, void *args) {
 	uint64_t n_FZ_widths, n_FZ_asym, n_FZ_comp, np_cross, n_half_cross, ii;
 	uint64_t fz, ku, row, col, xseg;
 
-	char buffer[BUFSIZ], run_cmd[BUFSIZ], add[BUFSIZ], *cmd = NULL, *file = NULL;
+	char buffer[BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, add[BUFSIZ] = {""}, *cmd = NULL, *file = NULL;
 	
 	double fz_inc, corridor_half_width, cross_length, threshold, results[N_RESULTS], best_loc[4];
 	double *FZ_width = NULL, *FZ_asym = NULL, *FZ_comp = NULL, ages[2], *comp[N_SHAPES];
@@ -716,7 +716,8 @@ EXTERN_MSC int GMT_fzanalyzer (void *V_API, int mode, void *args) {
 
 	/* Parse the program-specific arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL)
+		bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (API, Ctrl, options))) Return (error);

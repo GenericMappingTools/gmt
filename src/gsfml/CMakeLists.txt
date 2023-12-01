@@ -26,7 +26,7 @@
 
 set (SUPPL_NAME gsfml)
 set (SUPPL_HEADERS CK1995n.h Chron_Normal.h  Chron_Reverse.h  GST2004n.h GST2012n.h Geek2007n.h
-                   CK1995r.h Chron_Normal2.h Chron_Reverse2.h GST2004r.h GST2012r.h Geek2007r.h)
+                   CK1995r.h Chron_Normal2.h Chron_Reverse2.h GST2004r.h GST2012r.h Geek2007r.h
                    fz_analysis.h)
 AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H) 
 set (SUPPL_PROGS_SRCS fzanalyzer.c fzblender.c mlconverter.c)

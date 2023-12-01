@@ -20,10 +20,10 @@
  * Date:	01-DEC-2023 (Requires GMT >= 6)
  */
 
-#define THIS_MODULE_NAME	"fzblender"
+#define THIS_MODULE_CLASSIC_NAME	"fzblender"
+#define THIS_MODULE_MODERN_NAME	"fzblender"
 #define THIS_MODULE_LIB		"gsfml"
 #define THIS_MODULE_PURPOSE	"Produce a smooth blended FZ trace"
-#define THIS_MODULE_LIB_PURPOSE	"GMT supplemental modules for GSFML"
 #define THIS_MODULE_KEYS	"<DI,>DO"
 #define THIS_MODULE_NEEDS       ""
 #define THIS_MODULE_OPTIONS	"-Vh>"
@@ -376,7 +376,7 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 	};
 	int tcols[N_TCOLS] = {POS_XR, POS_YR, POS_XB0, POS_YB0, POS_SB, POS_WB, POS_XBL, POS_YBL, POS_XBR, POS_YBR};
 	
-	char buffer[BUFSIZ], run_cmd[BUFSIZ], *cmd = NULL;
+	char buffer[BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, *cmd = NULL;
 	char source[GMT_VF_LEN] = {""}, destination[GMT_VF_LEN] = {""};
 	
 	double Q[N_BLENDS], P[N_BLENDS], q_weight[N_BLENDS], sum_P, sum_w, sum_q, i_q_range, q_model;
@@ -400,7 +400,8 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 
 	/* Parse the program-specific arguments */
 
-	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL)
+		bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (API, Ctrl, options))) Return (error);
