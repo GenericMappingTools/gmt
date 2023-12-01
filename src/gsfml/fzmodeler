@@ -1,0 +1,179 @@
+#!/usr/bin/env bash
+#--------------------------------------------------------------------
+# Copyright (c) 2015-2023 by P. Wessel
+# See LICENSE.TXT file for copying and redistribution conditions.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; version 3 or any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# Contact info: http://www.soest.hawaii.edu/PT/GSFML
+#--------------------------------------------------------------------
+# Simulate a FZ based on simple Pac/Atl blend model w/wo compression
+#
+# Author:	Paul Wessel
+# Date:		01-DEC-2023 (Requires GMT >= 6)
+# Mode:		GMT classic mode
+#--------------------------------------------------------------------
+
+function G0 () {	# Gaussian - The Atlantic signal. Expects: x0 x1 dx center width d2km
+	D2KM=$6
+	gmt math -T$1/$2/$3 T $D2KM MUL $4 SUB $5 DIV 2 POW NEG EXP =
+}
+function G1 () {	# d/dx Gaussian - The Pacific signal. Expects: x0 x1 dx center width d2km
+	D2KM=$6
+	i_A=`gmt math -Q 2 SQRT -0.5 EXP MUL INV =`	# Amplitude scaling
+	gmt math -T$1/$2/$3 T $D2KM MUL $4 SUB $5 DIV DUP 2 POW NEG EXP MUL $i_A MUL =
+}
+function G2 () {	# d2/dx2 Gaussian - The Compression signal. Expects: x0 x1 dx center width d2km
+	D2KM=$6
+	i_A=`gmt math -Q E =`	# Amplitude scaling
+	gmt math -T$1/$2/$3 T $D2KM MUL $4 SUB $5 DIV 2 POW DUP NEG EXP MUL $i_A MUL =
+}
+function synthFZ () {	# Combined signal. Expects: x0 x1 dx center width m u A km?
+	if [ $9 -eq 1 ]; then
+		D2KM=1
+	else
+		D2KM=111.1950797
+	fi
+	m=$6
+	u=$7
+	m1=`gmt math -Q 1 $m SUB =`		# (1-m)
+	G0 $1 $2 $3 $4 $5 $D2KM > /tmp/G0
+	G1 $1 $2 $3 $4 $5 $D2KM > /tmp/G1
+	G2 $1 $2 $3 $4 $5 $D2KM > /tmp/G2
+	gmt math /tmp/G2 $u MUL /tmp/G0 SUB $m1 MUL /tmp/G1 $m MUL ADD NORM $8 MUL =
+}
+
+. fz_funcs.sh			# Load in FZ-specific shell functions
+name=fzprof
+if [ $# -eq 0 ]; then
+	version=`fz_get_version`
+cat << EOF >&2
+	fzmodeler $version - Make and optionally plot a synthetic FZ profile
+	
+	Usage: fzmodeler [-A<asym>] [-C<comp>] [-D<xmin>/<xmax>/<xinc>]
+		[-F<name>] [-M] [-N<amp>] [-O] [-S<shift>] [-W<width>] [-P]
+
+		OPTIONS:
+		-A sets FZ asymmetry between "Pacific" (1) and "Atlantic" (0) [0].
+		-C sets FZ compression (0-1) [0].
+		-D sets domain [-5/5/2m or -100/100/2; see -M].
+		-F sets output file name prefix [$name].
+		   Give - to write to stdout.
+		-M means -D is given in degrees/degrees/minutes [km].
+		-N sets max VGG amplitude [100].
+		-O Run as GMT overlay (i.e., pass -O -K) and send to stdout.
+		   No PDF is made and no datafile is saved.
+		-P plot to fzprof.pdf.
+		-S sets FZ shift from origin in km [0].
+		-V Report on progress [quiet].
+		-W sets FZ width in km [25].
+		
+EOF
+	exit
+fi
+
+trap 'fz_cleanup 1' 1 2 3 15	# Set interrup handling
+# Default values
+verbose=0
+plot=0
+asym=0
+comp=0
+X0=0
+amp=100
+width=25
+OL=0
+X=6i/2i
+km=1
+while [ ! x"$1" = x ]; do
+	case $1
+	in
+		-A*)	asym=`fz_get_arg $1`		# asymmetry
+			shift;;
+		-C*)	comp=`fz_get_arg $1`		# compression
+			shift;;
+		-D*)	domain=`fz_get_arg $1`		# min/max/inc domain
+			shift;;
+		-F*)	name=`fz_get_arg $1`		# file name
+			shift;;
+		-M)	km=0;				# Domain given in degrees
+			shift;;
+		-N*)	amp=`fz_get_arg $1`		# amplitude
+			shift;;
+		-O)	OL=1;				# Plot as overlay to stdout
+			plot=1;
+			shift;;
+		-P)	plot=1;				# Plot and make PDF
+			shift;;
+		-S*)	X0=`fz_get_arg $1`;		# FZ offset
+			shift;;
+		-V)	verbose=1;			# Verbose
+			shift;;
+		-W*)	width=`fz_get_arg $1`		# FZ width
+			shift;;
+		-X*)	X=`fz_get_arg $1`		# Reset plot size
+			shift;;
+		*)	echo "$0: Unrecognized option $1" 1>&2;	# Bad option argument
+			exit 1;;
+	esac
+done
+#--------------
+if [ "X$domain" = "X" ]; then	# Default settings
+	if [ $km -eq 0 ]; then
+		domain=-100/100/2
+	else
+		domain=-5/5/2
+	fi
+fi
+if [ "X$name" = "X-" ]; then
+	out=1
+	name=/tmp/$$
+	plot=0
+fi
+w=`echo $domain |cut -d'/' -f1`
+e=`echo $domain |cut -d'/' -f2`
+dm=`echo $domain |cut -d'/' -f3`
+if [ $km -eq 0 ]; then
+	dx=`gmt math -Q $dm 60 DIV =`
+	tick=2f1
+else
+	dx=$dm
+	tick=50f10
+fi
+
+(synthFZ $w $e $dx $X0 $width $asym $comp $amp $km > $name.txt) 2> /dev/null
+if [ $plot -eq 1 ]; then
+	if [ $OL -eq 1 ]; then
+		gmt psxy -R$w/$e/-$amp/$amp -JX$X -Bx${tick}g100 -By50f10g50 -BWSne $name.txt -W2p -O -K
+		rm -f $name.txt
+	else
+		gmt psxy -R$w/$e/-$amp/$amp -JX$X -P -Bx${tick}g100 -By50f10g50 -BWSne $name.txt -W2p > $name.ps
+		gmt psconvert $name.ps -Tf -P -A
+		rm -f $name.ps
+		if [ $os = "Darwin" ]; then
+			open $name.pdf
+		fi
+		if [ $verbose -eq 1 ]; then
+			echo "$0: Synthetic FZ profile plotted in file $name.pdf"
+			echo "$0: Synthetic FZ profile stored in file $name.txt"
+		fi
+	fi
+elif [ $verbose -eq 1 ]; then
+	if [ $out -eq 1 ]; then
+		cat $name.txt
+		echo "$0: Synthetic FZ profile written to stdout"
+		rm -f $name.txt
+	else
+		echo "$0: Synthetic FZ profile stored in file $name.txt"
+	fi
+fi
+if [ $out -eq 1 ]; then
+	cat $name.txt
+	rm -f $name.txt
+fi
