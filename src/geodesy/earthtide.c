@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/earthtide_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"earthtide"
 #define THIS_MODULE_MODERN_NAME	"earthtide"
@@ -117,7 +118,7 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	/*  "Julian Date Converter" */
 	/*  http://aa.usno.navy.mil/data/docs/JulianDate.php */
 	/*  or https://www.aavso.org/jd-calculator */
-	/*  parameter (MJDUPPER=59393)    !*** upper limit, leap second table, 28 June 2021 */
+	/*  parameter (MJDUPPER=60306)    !*** upper limit, leap second table, 28 December 2023 */
 	/* upper limit, leap second table, */
 	/* lower limit, leap second table, */
 	/* leap second table limit flag */
@@ -137,7 +138,7 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	}
 
 	/*  test upper table limit (upper limit set by bulletin C memos) */
-	if (mjd0t > 59393) {
+	if (mjd0t > 60306) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -37;				/* return the upper table value */
 	}
@@ -1109,7 +1110,7 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 	int k, mjd, year, month, day, hour, min;
 	uint32_t row, col, n_columns = 0, n_rows = 0;
 	size_t ij_n = 0, ij_e = 0, ij_u = 0, n_inc = 0, e_inc = 0, u_inc = 0;
-	float *grd_n, *grd_e, *grd_u;
+	gmt_grdfloat *grd_n, *grd_e, *grd_u;
 	double fmjd, xsta[3], rsun[3], etide[3], rmoon[3];
 	double lat, ut, vt, wt, *lons;
 	double west = 0, south = 0, x_inc = 0, y_inc = 0;
@@ -1121,21 +1122,21 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 		e_inc = 1;
 	}
 	else
-		grd_e = (float *)malloc (1 * sizeof (float));
+		grd_e = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	if (Ctrl->G.do_north) {
 		grd_n = Grid[Y_COMP]->data;
 		n_inc = 1;
 	}
 	else
-		grd_n = (float *)malloc (1 * sizeof (float));
+		grd_n = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	if (Ctrl->G.do_up) {
 		grd_u = Grid[Z_COMP]->data;
 		u_inc = 1;
 	}
 	else
-		grd_u = (float *)malloc (1 * sizeof (float));
+		grd_u = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	/* Get header params. Since all three have the same dims we stop when we find the first grid required */
 	for (k = 0; k < N_COMPS; k++) {
@@ -1170,9 +1171,9 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 			earthtide_detide (xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
 			earthtide_rge (lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
-			grd_n[ij_n] = (float)vt;
-			grd_e[ij_e] = (float)ut;
-			grd_u[ij_u] = (float)wt;
+			grd_n[ij_n] = (gmt_grdfloat)vt;
+			grd_e[ij_e] = (gmt_grdfloat)ut;
+			grd_u[ij_u] = (gmt_grdfloat)wt;
 			ij_n += n_inc;
 			ij_e += e_inc;
 			ij_u += u_inc;
@@ -1219,7 +1220,7 @@ GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, d
 		if (T.unit == 'm')
 		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
 		else if (T.unit == 's')
-			tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
+			tdel2 = 1.0 / (24 * 3600);	/* 1 second steps (????) */
 		else if (T.unit == 'h')
 			tdel2 = 1.0 / 24;			/* 1 hour steps */
 		else if (T.unit == 'd')
@@ -1462,7 +1463,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ( (GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ( (GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ( (error = parse (GMT, Ctrl, options)) != 0) Return (error);

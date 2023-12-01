@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -195,9 +195,59 @@ enum GMT_time_period {
 	GMT_CYCLE_ANNUAL,
 	GMT_CYCLE_CUSTOM};
 
-/* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
- * Modules that need it in their module_kw[] array can just add it to their list. */
-#define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
+/* The following long-option-related definitions specify the meanings
+   of individual bit flags within the GMT_KEYWORD_DICTIONARY type's
+   transproc_mask field.
+
+   Note these definitions are required for the immdiately following block
+   of definitions (e.g., GMT_I_INCREMENT_KW, etc.) and must therefore
+   appear in this file prior to that block.
+ */
+#define GMT_TP_STANDARD		0	/* Standard translation processing */
+#define GMT_TP_MULTIDIR		0x1	/* Multi-directive support enabled */
+#define GMT_TP_MDCOMMA		0x2	/* Use commas in short-option multi-directives */
+
+/* The following long-option-related definitions allow for specification
+   of whether or how a long-option translation should support
+   multi-directive translations, e.g., from --fields=low,high,weight
+   to -Alhw.
+ */
+#define GMT_MULTIDIR_DISABLE	0	/* Multi-directives not supported */
+#define GMT_MULTIDIR_NOCOMMA	1	/* Use no commas in short-option multi-directives, e.g., -Alhw */
+#define GMT_MULTIDIR_COMMA	2	/* Use commas in short-option multi-directives, e.g., -Al,h,w */
+
+/* The following long-option-related definitions are for quasi-global command
+ * line short-options which are common to many but not all modules, i.e.,
+ * (i) many modules will use exactly the same particular long-to-short-option
+ * translation (e.g., --increment to -I) as provided here, but (ii) other
+ * modules will use the same short-option for some entirely different purpose
+ * with a different (or even no) long-to-short-option translation and should
+ * thus most definitely NOT use such a quasi-global definition).
+ *
+ * Any particular module can simply incorporate or NOT incorporate any of the
+ * following long-option translation definitions into its module_kw[] array
+ * depending upon whether or not it respectively conforms to or departs from
+ * the particular quasi-global usage as defined here.
+ *
+ * Note that certain quasi-global short-options (e.g., -G), while common to
+ * many modules, differ in the availability of particular modifiers (e.g., +d)
+ * across the set of modules which use that same quasi-global short-option.
+ * We maximize the benefit of using the commonized translation definitions
+ * below by including in these definitions all such non-universal modifiers,
+ * using aliases where necessary in the case of conflicts of meaning for a
+ * particular modifier between modules. These definitions are therefore not
+ * intended as accurate and complete expressions of modifier capabilities
+ * for all modules which employ them; rather, we rely on each module to
+ * properly reject the use of any inappropriate modifier after the
+ * long-to-short-option translation dictated by any of the below definitions
+ * is performed, assuming that users will base their usage on officially
+ * supported module documentation (e.g., manual pages) rather than these
+ * non-user-facing translation entries.
+ */
+#define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number", GMT_TP_STANDARD }
+#define GMT_C_CPT_KW	{ 0, 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit", GMT_TP_STANDARD }
+#define GMT_G_OUTGRID_KW { 0, 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list", GMT_TP_STANDARD }
+#define GMT_W_PEN_KW	{ 0, 'W', "pen", "", "", "c", "color", GMT_TP_STANDARD }
 
 #define GMT_VERBOSE_CODES	"q ewticd"	/* List of valid codes to -V (the blank is for NOTICE which is not user selectable */
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
@@ -257,6 +307,9 @@ enum GMT_time_period {
 #define GMT_TEXT_CLEARANCE	15	/* Clearance around text in textboxes, in percent */
 #define GMT_TEXT_OFFSET		20	/* Offset of text from refpoint, in percent */
 
+/* Conversion from symbol size to pen width for stroke-only symbols x,y,+, - */
+#define GMT_SYMBOL_SIZE_TO_PEN_WIDTH	15	/* 15% */
+
 #define GMT_N_MAX_MODEL	20	/* No more than 20 basis functions in a trend model */
 
 #define GMT_PAIR_COORD		0	/* Tell gmt_get_pair to get both x and y as coordinates */
@@ -313,6 +366,9 @@ enum GMT_time_period {
 
 /* Modifiers for contour -A option */
 #define GMT_CONTSPEC_MODS "acdefghijklLnNoprstuvwxX="
+
+/* Directives and modifiers for -F interpolant option */
+#define GMT_INTERPOLANT_OPT "a|c|e|l|n|s<p>[+d1|2]"
 
 /* Valid modifiers for various input files */
 
@@ -508,6 +564,7 @@ enum GMT_enum_spline {
 	GMT_SPLINE_CUBIC,      /* Cubic spline */
 	GMT_SPLINE_SMOOTH,     /* Smooth cubic spline */
 	GMT_SPLINE_NN,         /* Nearest neighbor */
+	GMT_SPLINE_STEP,       /* Step up to next value */
 	GMT_SPLINE_NONE};      /* No spline set */
 
 /*! Various 1-D interpolation derivatives */
@@ -574,6 +631,9 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 	GMT_ANCHOR_MAPROSE,	/* Anchor for map rose */
 	GMT_ANCHOR_VSCALE,	/* Anchor for vertical scale */
 	GMT_ANCHOR_NTYPES};	/* Number of such types */
+
+enum GMT_enum_fillcurves {	/*! Various mode for accepting two segments for curve-filling */
+	GMT_CURVES_SEPARATE = 0, GMT_CURVES_COREGISTERED = 1};
 
 enum GMT_enum_scales {	/* Various scale issues */
 	GMT_SCALE_MAP = 1,

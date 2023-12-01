@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*][**+c**][**+f**\ *file*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -59,8 +59,7 @@ z-values. These are the background color (B) assigned to values lower
 than the lowest *z*-value, the foreground color (F) assigned to values
 higher than the highest *z*-value, and the NaN color (N) painted
 wherever values are undefined.  For color tables beyond the
-standard GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
-`Scientific Colour-Maps <http://www.fabiocrameri.ch/colourmaps.php>`_.
+current GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
 If the master CPT includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
@@ -122,15 +121,16 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]]
     Force output CPT to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
-    codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
+    codes (**h**), or c/m/y/k codes (**c**), or #rrggbb hex codes (**x**).
+    Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
     If *label* is appended then we create labels for each category to be used
     when the CPT is plotted. The *label* may be a comma-separated list of
     category names (you can skip a category by not giving a name), or give
-    *start*[-], where we automatically build monotonically increasing labels
+    *start*\ [-], where we automatically build monotonically increasing labels
     from *start* (a single letter or an integer). Append - to build ranges
     *start*-*start+1* instead.  **Note**: If **+cM** is given and the number
     of categories is 12, then we automatically create a list of month names.
@@ -192,8 +192,8 @@ Optional Arguments
 
 **-Q**\ [**i**\|\ **o**]
     Selects a logarithmic interpolation scheme [Default is linear].
-    **-Qi** expects input z-values to be log10(z), assigns colors, and
-    writes out z [Default]. **-Qo** takes log10(z) first, assigns
+    **-Qi** expects input z-values to be :math:`\log_{10}`(z), assigns colors, and
+    writes out z [Default]. **-Qo** takes :math:`\log_{10}`(z) first, assigns
     colors, and writes out z.
 
 .. |Add_-R| replace:: |Add_-R_links|
@@ -287,17 +287,17 @@ helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from :doc:`grdinfo`. So you can do this to see some points
 on the CDF(Z) curve (use |-V| option to see more):
 
-   ::
+::
 
-    gmt grd2cpt mydata.nc -V > /dev/null
+  gmt grd2cpt mydata.nc -V > /dev/null
 
 To make a CPT with entries from 0 to 200 in steps of 20, and ignore
 data below zero in computing CDF(Z), and use the built-in master cpt
 file relief, run
 
-   ::
+::
 
-    gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
+  gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
 
 To determine the empirical cumulative density function of a grid and
 create a CPT that would give equal area to each color in the image,

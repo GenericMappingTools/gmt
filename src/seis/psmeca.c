@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2013-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2013-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ PostScript code is written to stdout.
  */
 
 #include "gmt_dev.h"
+#include "longopt/psmeca_inc.h"
 #include "meca.h"
 #include "utilmeca.h"
 
@@ -43,27 +44,9 @@ PostScript code is written to stdout.
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
-#define DEFAULT_FONTSIZE		9.0	/* In points */
-#define DEFAULT_OFFSET			3.0	/* In points */
-#define DEFAULT_SYMBOL_SIZE		6.0 /* In points */
-
-#define READ_CMT	0
-#define READ_AKI	1
-#define READ_PLANES	2
-#define READ_AXIS	4
-#define READ_TENSOR	8
-
-#define PLOT_DC		1
-#define PLOT_AXIS	2
-#define PLOT_TRACE	4
-
 /* Control structure for psmeca */
 struct PSMECA_CTRL {
-	struct PSMECA_A {	/* -A[+p<pen>][+s<size>] */
-		bool active;
-		double size;
-		struct GMT_PEN pen;
-	} A;
+	struct SEIS_OFFSET_LINE A; 	/* -A[+g<fill>][+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
 	struct PSMECA_C {	/* -C<cpt> */
 		bool active;
 		char *file;
@@ -103,7 +86,7 @@ struct PSMECA_CTRL {
 	struct PSMECA_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] */
 #include "meca_symbol.h"
 	} S;
-	struct PSMECA_T {	/* -T<nplane>[/<pen>] */
+	struct PSMECA_T {	/* -T[<plane>][+p<pen>] */
 		bool active;
 		unsigned int n_plane;
 		struct GMT_PEN pen;
@@ -146,10 +129,6 @@ struct PSMECA_CTRL {
 	} Z2;
 };
 
-enum Psmeca_scaletype {
-	PSMECA_READ_SCALE	= 0,
-	PSMECA_CONST_SCALE	= 1};
-
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSMECA_CTRL *C;
 
@@ -168,10 +147,10 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	gmt_init_fill (GMT, &C->R2.fill, 1.0, 1.0, 1.0);
 	C->S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
-	C->S.font.size = DEFAULT_FONTSIZE;
+	C->S.font.size = SEIS_DEFAULT_FONTSIZE;
 	C->S.justify = PSL_TC;
 	C->S.reference = SEIS_MAG_REFERENCE;
-	C->A2.size = DEFAULT_SYMBOL_SIZE * GMT->session.u2u[GMT_PT][GMT_INCH];
+	C->A2.size = SEIS_DEFAULT_SYMBOL_SIZE * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->A2.P_symbol = C->A2.T_symbol = PSL_CIRCLE;
 	return (C);
 }
@@ -189,17 +168,17 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s "
-		"-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] [-A[+p<pen>][+s<size>]] [%s] "
+		"-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] [-A%s] [%s] "
 		"[-C<cpt>] [-D<depmin>/<depmax>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] "
 		"[-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] "
-		"[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT,
+		"[-N] %s%s[-T[<nplane>][+p<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, GMT_Rgeo_OPT, SEIS_LINE_SYNTAX, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT,
 		GMT_Y_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	font = API->GMT->current.setting.font_annot[GMT_PRIMARY];
-	font.size = DEFAULT_FONTSIZE;
+	font.size = SEIS_DEFAULT_FONTSIZE;
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
@@ -236,11 +215,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+s Set reference magnitude [%g] or moment [%ge%d] (if +l) for symbol size.", SEIS_MAG_REFERENCE, SEIS_MOMENT_MANT_REFERENCE, SEIS_MOMENT_EXP_REFERENCE);
 	GMT_Usage (API, -2, "Note: If fontsize < 0 then no label written; offset is from the limit of the beach ball.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	meca_line_usage (API, 'A');
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-A[+p<pen>][+s<size>]");
-	GMT_Usage (API, -2, "Offset focal mechanisms to the alternate positions given in the last two columns of the input file before label. "
-		"A line is drawn between both positions; see -W for pen used or specify it separately via +p [0.25p]. "
-		"Optionally, a small circle is plotted at the original location. Append +s<size> to set its diameter [no circle].");
 	GMT_Usage (API, 1, "\n-C<cpt>");
 	GMT_Usage (API, -2, "Use CPT to assign colors based on depth-value in 3rd column.");
 	GMT_Usage (API, 1, "\n-D<depmin>/<depmax>");
@@ -267,12 +243,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Sets pen attribute for outline other than the default set by -W.");
 	GMT_Usage (API, 1, "\n-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-T<plane>[/<pen>]");
+	GMT_Usage (API, 1, "\n-T[<plane>][+p<pen>]");
 	GMT_Usage (API, -2, "Draw specified nodal <plane>(s) and circumference only to provide a transparent beach ball "
-		"using the current pen (see -W; or append alternative pen):");
+		"using the current pen (see -W; or append an alternative pen via modifier +p):");
+	GMT_Usage (API, 3, "0: Both nodal planes are plotted [Default].");
 	GMT_Usage (API, 3, "1: Only the first nodal plane is plotted.");
 	GMT_Usage (API, 3, "2: Only the second nodal plane is plotted.");
-	GMT_Usage (API, 3, "0: Both nodal planes are plotted.");
 	GMT_Usage (API, -2, "Note: If moment tensor is required, nodal planes overlay moment tensor.");
 	GMT_Option (API, "U,V");
 	GMT_Usage (API, 1, "\n-W<pen>");
@@ -289,62 +265,6 @@ GMT_LOCAL bool psmeca_is_old_C_option (struct GMT_CTRL *GMT, char *arg) {
 	if (arg[0]) return true;	/* Whatever this is, it is for -A to deal with */
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Option -C: Must assume under modern mode that -C here means use current CPT\n");
 	return false;	/* This assumes nobody would use just -C in modern mode but actually mean the old -C */
-}
-
-GMT_LOCAL unsigned int psmeca_A_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, char *arg) {
-	unsigned int n_errors = 0;
-	char txt[GMT_LEN256] = {""}, *c = NULL, *q = NULL;
-	strncpy (txt, arg, GMT_LEN256-1);
-
-	/* Deal with these possible variations of old -C and new -A options:
-	 * 1. -A[+p<pen>][+s<size>]	which is the current syntax
-	 * 2. -C[<pen>][+s<size>]	which was the GMT5-6.1.1 syntax
-	 * 3. -C[<pen>][P<size>]	which was the GMT4 syntax */
-
-	if ((c = gmt_first_modifier (GMT, txt, "ps"))) {	/* Found at least one valid modifier */
-		unsigned int pos = 0;
-		char p[GMT_LEN256] = {""};
-		while (gmt_getmodopt (GMT, 'A', c, "ps", &pos, p, &n_errors) && n_errors == 0) {
-			switch (p[0]) {
-				case 'p':	/* Line and circle pen */
-					if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-						gmt_pen_syntax (GMT, 'A', NULL, " ", NULL, 0);
-						n_errors++;
-					}
-					break;
-				case 's':	/* Circle diameter */
-					if (p[1] == '\0' || (Ctrl->A.size = gmt_M_to_inch (GMT, (p+2))) < 0.0) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Circle diameter cannot be negative or not given!\n");
-						n_errors++;
-					}
-					break;
-				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
-			}
-		}
-		c[0] = '\0';	/* Chop off the modifiers */
-	}
-	/* If the user used modern modifiers only as case 1 above then we might be done here */
-	if (arg[0] == '\0') return n_errors;
-
-	/* Here we got older syntax: -C<pen>[+s<size>] or -C[<pen>][P<size>] (but the +s<size> would have been stripped off
-	 * so here we must either have -C<pen> or -C[<pen>][P<size>] */
-
-	if ((q = strchr (txt, 'P')) != NULL) {	/* Case 3 way of changing the diameter */
-		if (q[1] == '\0' || (Ctrl->A.size = gmt_M_to_inch (GMT, &q[1])) < 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Circle diameter cannot be negative or not given!\n");
-			n_errors++;
-		}
-		q[0] = '\0';	/* Chop off the Psize setting; if txt is not empty we also have an optional pen */
-		if (arg[0] && gmt_getpen (GMT, txt, &Ctrl->A.pen)) {
-			gmt_pen_syntax (GMT, 'A', NULL, " ", NULL, 0);
-			n_errors++;
-		}
-	}
-	else if (gmt_getpen (GMT, txt, &Ctrl->A.pen)) {	/* Here we just have -C<pen> to deal with */
-		gmt_pen_syntax (GMT, 'A', NULL, " ", NULL, 0);
-		n_errors++;
-	}
-	return n_errors;
 }
 
 static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -370,15 +290,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 
 			/* Processes program-specific parameters */
 
-			case 'A':
+			case 'A':	/* Offset symbol from actual location and optionally draw line between these points */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
+				n_errors += meca_line_parse (GMT, &(Ctrl->A), 'A', opt->arg);
 				break;
 			case 'C':	/* Either modern -Ccpt option or a deprecated -C now served by -A */
 				/* Change position [set line attributes] */
 				if (psmeca_is_old_C_option (GMT, opt->arg)) {	/* Need the -A parser for obsolete -C syntax */
 					Ctrl->A.active = true;
-					n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
+					n_errors += meca_line_parse (GMT, &(Ctrl->A), 'A', opt->arg);
 				}
 				else {	/* Here we have the modern -C<cpt> parsing */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
@@ -400,7 +320,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
-						Ctrl->A2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->A2.active);
 						strncpy (txt, &opt->arg[1], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
@@ -417,45 +337,45 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						}
 						break;
 					case 'e':	/* Set color for T axis symbol */
-						Ctrl->E2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E2.active);
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fe", " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
-						Ctrl->G2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G2.active);
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fg", " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
-						Ctrl->P2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->P2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Fp", " ", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
-						Ctrl->R2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->R2.active);
 						if (opt->arg[1] && gmt_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fr", " ");
 							n_errors++;
 						}
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
-						Ctrl->T2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->T2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Ft", " ", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'o':	/* use psvelomeca format (without depth in 3rd column) */
-						Ctrl->O2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->O2.active);
 						break;
 					case 'z':	/* overlay zerotrace moment tensor */
-						Ctrl->Z2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Z2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->Z2.pen)) { /* Set pen attributes */
 							gmt_pen_syntax (GMT, ' ', "Fz", " ", NULL, 0);
 							n_errors++;
@@ -474,7 +394,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
 					Ctrl->H.value = atof (opt->arg);
-					Ctrl->H.mode = PSMECA_CONST_SCALE;
+					Ctrl->H.mode = SEIS_CONST_SCALE;
 				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
@@ -507,35 +427,35 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				switch (opt->arg[0]) {	/* parse format */
 					case 'c':
-						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 11;
+						Ctrl->S.readmode = SEIS_READ_CMT;	Ctrl->S.n_cols = 11;
 						break;
 					case 'a':
-						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 7;
+						Ctrl->S.readmode = SEIS_READ_AKI;	Ctrl->S.n_cols = 7;
 						break;
 					case 'p':
-						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 8;
+						Ctrl->S.readmode = SEIS_READ_PLANES;	Ctrl->S.n_cols = 8;
 						break;
 					case 'x':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
+						Ctrl->S.readmode = SEIS_READ_AXIS;	Ctrl->S.n_cols = 13;
 						break;
 					case 'y':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
-						Ctrl->S.plotmode = PLOT_DC;
+						Ctrl->S.readmode = SEIS_READ_AXIS;	Ctrl->S.n_cols = 13;
+						Ctrl->S.plotmode = SEIS_PLOT_DC;
 						break;
 					case 't':
-						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
-						Ctrl->S.plotmode = PLOT_TRACE;
+						Ctrl->S.readmode = SEIS_READ_AXIS;	Ctrl->S.n_cols = 13;
+						Ctrl->S.plotmode = SEIS_PLOT_TRACE;
 						break;
 					case 'm':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
+						Ctrl->S.readmode = SEIS_READ_TENSOR;	Ctrl->S.n_cols = 10;
 						break;
 					case 'd':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
-						Ctrl->S.plotmode = PLOT_DC;
+						Ctrl->S.readmode = SEIS_READ_TENSOR;	Ctrl->S.n_cols = 10;
+						Ctrl->S.plotmode = SEIS_PLOT_DC;
 						break;
 					case 'z':
-						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
-						Ctrl->S.plotmode = PLOT_TRACE;
+						Ctrl->S.readmode = SEIS_READ_TENSOR;	Ctrl->S.n_cols = 10;
+						Ctrl->S.plotmode = SEIS_PLOT_TRACE;
 						break;
 					default:
 						n_errors++;
@@ -565,9 +485,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
 					} else {	/* Set default offset */
 						if (Ctrl->S.justify%4 != 2) /* Not center aligned */
-							Ctrl->S.offset[0] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+							Ctrl->S.offset[0] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 						if (Ctrl->S.justify/4 != 1) /* Not middle aligned */
-							Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+							Ctrl->S.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					}
 					if (gmt_get_modifier (opt->arg, 'l', word)) {
 						Ctrl->S.linear = true;
@@ -578,7 +498,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					if (gmt_get_modifier (opt->arg, 's', word))
 						Ctrl->S.reference = atof (word);
 				} else {	/* Old syntax: -S<format><scale>[/fontsize[/offset]][+u] */
-					Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
+					Ctrl->S.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
 					if ((p = strstr (opt->arg, "+u"))) {
 						Ctrl->S.justify = PSL_BC;
 						p[0] = '\0';	/* Chop off modifier */
@@ -598,11 +518,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
-				if (strlen (opt->arg) > 2 && gmt_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
+				if (opt->arg[0] == '\0') continue;	/* Default plane and pen implied; move on */
+				if ((p = strstr (opt->arg, "+p")) && gmt_getpen (GMT, &p[2], &Ctrl->T.pen)) {	/* Modern modifier for pen but failed parsing the pen */
 					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
 				}
+				else if ((p = strchr (opt->arg, '/')) && gmt_getpen (GMT, &p[1], &Ctrl->T.pen)) {
+					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
+					n_errors++;
+				}
+				if (strchr ("012", opt->arg[0])) Ctrl->T.n_plane = opt->arg[0] - '0';
 				break;
 			case 'W':	/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -674,9 +599,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	char *no_name = "<unnamed>", *event_name = NULL;
 
 	st_me meca;
-	struct MOMENT moment;
-	struct M_TENSOR mt;
-	struct AXIS T, N, P;
+	struct SEIS_MOMENT moment;
+	struct SEIS_M_TENSOR mt;
+	struct SEIS_AXIS T, N, P;
 
 	struct GMT_PALETTE *CPT = NULL;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment input tables */
@@ -698,7 +623,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -707,9 +632,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (event_title, GMT_BUFSIZ, char);
 	gmt_M_memset (&meca, 1, st_me);
-	gmt_M_memset (&T, 1, struct AXIS);
-	gmt_M_memset (&N, 1, struct AXIS);
-	gmt_M_memset (&P, 1, struct AXIS);
+	gmt_M_memset (&T, 1, struct SEIS_AXIS);
+	gmt_M_memset (&N, 1, struct SEIS_AXIS);
+	gmt_M_memset (&P, 1, struct SEIS_AXIS);
 	gmt_M_memset (in, GMT_LEN16, double);
 
 	if (Ctrl->C.active) {
@@ -741,7 +666,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	}
 	else	/* Fixed scale */
 		scale = Ctrl->S.scale;
-	if (Ctrl->H.active && Ctrl->H.mode == PSMECA_READ_SCALE) {
+	if (Ctrl->H.active && Ctrl->H.mode == SEIS_READ_SCALE) {
 		xcol = Ctrl->S.n_cols;
 		Ctrl->S.n_cols++;	/* Read scaling from data file */
 		gmt_set_column_type (GMT, GMT_IN, xcol, GMT_IS_FLOAT);
@@ -834,10 +759,19 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 				/* Must examine the trailing text for optional columns: newX, newY and title */
 				if (S->text && S->text[row]) {
-					n_scanned = sscanf (S->text[row], "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
+					unsigned int n_comma = gmt_count_char (GMT, S->text[row], ',');
+					char tmp_buffer[GMT_LEN256] = {""};	/* Local buffer in case S->text is read-only */
+					strncpy (tmp_buffer, S->text[row], GMT_LEN256);
+					if (n_comma == 2)	/* CSV file so we must handle that first */
+						gmt_strrepc (tmp_buffer, ',', ' ');
+					n_scanned = sscanf (tmp_buffer, "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
 					if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
 						unsigned int type;
-						if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
+						if (Ctrl->A.mode == SEIS_CART_OFFSET) {	/* Cartesian dx and dy in plot units */
+							Ctrl->A.off[GMT_X] = gmt_M_to_inch (GMT, Xstring);
+							Ctrl->A.off[GMT_Y] = gmt_M_to_inch (GMT, Ystring);
+						}
+						else if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Expect lat lon but watch for junk */
 							if ((type = gmt_scanf_arg (GMT, Ystring, GMT_IS_LON, false, &xynew[GMT_X])) == GMT_IS_NAN) xynew[GMT_X] = GMT->session.d_NaN;
 							if ((type = gmt_scanf_arg (GMT, Xstring, GMT_IS_LAT, false, &xynew[GMT_Y])) == GMT_IS_NAN) xynew[GMT_Y] = GMT->session.d_NaN;
 						}
@@ -854,14 +788,26 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 						else if (n_scanned == 2)	/* Got no title */
 							event_title[0] = '\0';
 					}
-					else if (n_scanned == 1)	/* Only got event title */
+					else if (n_scanned == 1) {	/* Only got event title */
 						strncpy (event_title, S->text[row], GMT_BUFSIZ-1);
+						/* So here's the story. For some historical reason the parser only reads the strict number
+						   of columns needed for each convention and if there are more they are left as text.
+						   When it's asked to plot an offset ball the plotting coords are scanned from the remaining
+						   text (the n_scanned = sscanf(...) above). But from externals all numeric columns were read
+						   and the fishing in text fails resulting in no offset. The following patch solves the
+						   issue but it's only that a dumb patch. Better would be to solve in origin but that's risky.
+						*/
+						if (API->external && Ctrl->A.active && (S->n_columns - GMT->current.io.max_cols_to_read) == 2) {
+							xynew[GMT_X] = S->data[GMT->current.io.max_cols_to_read][row];
+							xynew[GMT_Y] = S->data[GMT->current.io.max_cols_to_read+1][row];
+						}
+					}
 					else	/* Got no title */
 						event_title[0] = '\0';
 				}
 
 				/* Gather and transform the input records, depending on type */
-				if (Ctrl->S.readmode == READ_CMT) {
+				if (Ctrl->S.readmode == SEIS_READ_CMT) {
 					meca.NP1.str = in[2+new_fmt];
 					if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0;
 					else if (meca.NP1.str < -180.0) 	meca.NP1.str += 360.0;	/* Strike must be in -180/+180 range*/
@@ -880,7 +826,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					meca.moment.exponent = irint (in[9+new_fmt]);
 					if (meca.moment.exponent == 0) meca.magms = in[8+new_fmt];
 				}
-				else if (Ctrl->S.readmode == READ_AKI) {
+				else if (Ctrl->S.readmode == SEIS_READ_AKI) {
 					meca.NP1.str = in[2+new_fmt];
 					if (meca.NP1.str > 180.0)			meca.NP1.str -= 360.0;
 					else if (meca.NP1.str < -180.0) 	meca.NP1.str += 360.0;	/* Strike must be in -180/+180 range*/
@@ -893,7 +839,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					meca.moment.exponent = 0;
 					meca_define_second_plane (meca.NP1, &meca.NP2);
 				}
-				else if (Ctrl->S.readmode == READ_PLANES) {
+				else if (Ctrl->S.readmode == SEIS_READ_PLANES) {
 					meca.NP1.str = in[2+new_fmt];
 					if (meca.NP1.str > 180.0)		meca.NP1.str -= 360.0;
 					else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
@@ -918,7 +864,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					else
 						meca.NP1.rake = meca_computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
 				}
-				else if (Ctrl->S.readmode == READ_AXIS) {
+				else if (Ctrl->S.readmode == SEIS_READ_AXIS) {
 					T.val = in[2+new_fmt];
 					T.str = in[3+new_fmt];
 					T.dip = in[4+new_fmt];
@@ -946,9 +892,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					N.val /= meca.moment.mant;
 					P.val /= meca.moment.mant;
 
-					if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+					if (Ctrl->T.active || Ctrl->S.plotmode == SEIS_PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 				}
-				else if (Ctrl->S.readmode == READ_TENSOR) {
+				else if (Ctrl->S.readmode == SEIS_READ_TENSOR) {
 					for (i = 2+new_fmt, n = 0; i < 8+new_fmt; i++, n++) mt.f[n] = in[i];
 					mt.expo = irint (in[i]);
 					/*
@@ -965,7 +911,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 					meca_moment2axe (GMT, mt, &T, &N, &P);
 
-					if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+					if (Ctrl->T.active || Ctrl->S.plotmode == SEIS_PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 				}
 
 				/* Common to all input types ... */
@@ -973,22 +919,35 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
 				/* Keep track of whether we have added delaz to avoid double-correcting */
-				added_delaz=false;
+				added_delaz = false;
 
-				/* If option -C is used, read the new position */
+				/* If option -A is used, use the alternate position */
 
 				if (Ctrl->A.active) {
-					if (fabs (xynew[GMT_X]) > EPSIL || fabs (xynew[GMT_Y]) > EPSIL) {
+					if (Ctrl->A.mode || fabs (xynew[GMT_X]) > SEIS_EPSILON || fabs (xynew[GMT_Y]) > SEIS_EPSILON) {
 						current_pen = Ctrl->A.pen;
 						if (Ctrl->H.active) {
-							double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+							double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 							gmt_scale_pen (GMT, &current_pen, scl);
 						}
 						gmt_setpen (GMT, &current_pen);
-						gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
-						gmt_setfill (GMT, &Ctrl->G.fill, 1);
-						if (Ctrl->A.size > 0.0) PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->A.size), PSL_CIRCLE);
+						if (Ctrl->A.mode) {	/* Got Cartesian dx and dy in plot units */
+							plot_xnew = plot_x + Ctrl->A.off[GMT_X];
+							plot_ynew = plot_y + Ctrl->A.off[GMT_Y];
+						}
+						else	/* Got alternate geographic coordinates */
+							gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
+						if (Ctrl->A.fill_mode == SEIS_EVENT_FILL)
+							gmt_setfill (GMT, &Ctrl->G.fill, 1);
+						else if (Ctrl->A.fill_mode == SEIS_FIXED_FILL)
+							gmt_setfill (GMT, &Ctrl->A.fill, 1);
+						else	/* SEIS_NO_FILL */
+							gmt_setfill (GMT, NULL, 1);
+						if (Ctrl->A.size > 0.0)	/* Plot symbol at actual location */
+							PSL_plotsymbol (PSL, plot_x, plot_y, &(Ctrl->A.size), Ctrl->A.symbol);
+						/* Draw line between original and alternate location */
 						PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
+						/* Since we will plot beach ball at the alternative location, we swap them */
 						plot_x = plot_xnew;
 						plot_y = plot_ynew;
 					}
@@ -1006,7 +965,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				size = (scale / Ctrl->S.reference) * ((Ctrl->S.linear) ? moment.mant * pow (10.0, moment.exponent) : meca_computed_mw (moment, meca.magms));
 
 				if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
-					double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 					size *= scl;
 				}
 
@@ -1023,7 +982,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				meca_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				delaz = atan2d(t12,t11);
 
-				if ((Ctrl->S.readmode == READ_AXIS || Ctrl->S.readmode == READ_TENSOR) && Ctrl->S.plotmode != PLOT_DC) {
+				if ((Ctrl->S.readmode == SEIS_READ_AXIS || Ctrl->S.readmode == SEIS_READ_TENSOR) && Ctrl->S.plotmode != SEIS_PLOT_DC) {
 
 					T.str = meca_zero_360(T.str + delaz);
 					N.str = meca_zero_360(N.str + delaz);
@@ -1031,23 +990,23 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 					current_pen = Ctrl->L.pen;
 					if (Ctrl->H.active) {
-						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
 					gmt_setpen (GMT, &current_pen);
-					if (fabs (N.val) < EPSIL && fabs (T.val + P.val) < EPSIL) {
+					if (fabs (N.val) < SEIS_EPSILON && fabs (T.val + P.val) < SEIS_EPSILON) {
 						meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 						added_delaz = true;
 						meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 					}
 					else
-						meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.plotmode == PLOT_TRACE, n_rec);
+						meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.plotmode == SEIS_PLOT_TRACE, n_rec);
 				}
 
 				if (Ctrl->Z2.active) {
 					current_pen = Ctrl->Z2.pen;
 					if (Ctrl->H.active) {
-						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
 					gmt_setpen (GMT, &current_pen);
@@ -1061,7 +1020,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					}
 					current_pen = Ctrl->T.pen;
 					if (Ctrl->H.active) {
-						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
 					gmt_setpen (GMT, &current_pen);
@@ -1072,14 +1031,14 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 						Ctrl->T.n_plane = n_plane_old;
 					}
 				}
-				else if (Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.plotmode == PLOT_DC) {
+				else if (Ctrl->S.readmode == SEIS_READ_AKI || Ctrl->S.readmode == SEIS_READ_CMT || Ctrl->S.readmode == SEIS_READ_PLANES || Ctrl->S.plotmode == SEIS_PLOT_DC) {
 					if (! added_delaz) {
 						meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
 						meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
 					}
 					current_pen = Ctrl->L.pen;
 					if (Ctrl->H.active) {
-						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
 					gmt_setpen (GMT, &current_pen);
@@ -1109,7 +1068,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 					current_pen = Ctrl->W.pen;
 					if (Ctrl->H.active) {
-						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
 					gmt_setpen (GMT, &current_pen);
@@ -1120,11 +1079,11 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				}
 
 				if (Ctrl->A2.active) {
-					if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
+					if (Ctrl->S.readmode != SEIS_READ_TENSOR && Ctrl->S.readmode != SEIS_READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
 					meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 					current_pen = Ctrl->P2.pen;
 					if (Ctrl->H.active) {
-						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
 					gmt_setpen (GMT, &current_pen);
@@ -1132,7 +1091,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
 					current_pen = Ctrl->T2.pen;
 					if (Ctrl->H.active) {
-						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						double scl = (Ctrl->H.mode == SEIS_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
 					gmt_setpen (GMT, &current_pen);

@@ -1,17 +1,29 @@
 **-D**\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+c**\ [-\|\ *cpt*]][**+d**\ *dname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*][**+v**\ *varname*]
-    Give one or more combinations for values *xname*, *yname*, *zname* (3rd dimension in cube),
-    and *dname* (data value name) and give the names of those variables
-    and in square bracket their units, e.g., "distance [km]"), *cpt* to set a default CPT for
-    this grid [turbo] or give - to remove any default CPT already set, *scale* (to multiply data values after
-    read [normally 1]), *offset* (to add to data after scaling [normally 0]),
-    *invalid* (a value to represent missing data [NaN]), *title* (anything you
-    like), and *remark* (anything you like). Items not listed will remain untouched.
+    Control names and units of netCDF grid and cube meta-data.  For dimensions with units,
+    add the unit in square bracket (e.g., "distance [km]"). Select one or more of these modifiers:
+
+    - **+c**: Append *cpt* to set a default CPT for this grid [turbo] or give - to remove any default CPT already set.
+    - **+d**: Set *dname*, the data value name.
+    - **+n**: Set the *invalid* number used to indicate a NaN or missing value.
+    - **+o**: Set the *offset* to add to data after first scaling the data [0].
+    - **+r**: Set a *remark* used for this grid (any sentence you prefer).
+    - **+s**: Set the *scale* used fto multiply data values after they are read [1].
+    - **+t**: Set a *title* used for this grid (any sentence you prefer).
+    - **+v**: Append *varname*, the variable name of the data set.
+    - **+x**: Append *xname*, the name of the x-coordinate (and optional unit in brackets).
+    - **+y**: Append *yname*, the name of the y-coordinate (and optional unit in brackets).
+    - **+z**: For 3-D cubes; append *zname*, the name of the z-coordinate (and optional unit in brackets).
+  
     Give a blank name to completely reset a particular string.
-    Use quotes to group texts with more than one word.  If any of your text contains plus symbols
-    you need to escape them (place a backslash before each plus-sign) so they are not confused with the
-    option modifiers.  Alternatively, you can place the entire double-quoted string inside single
-    quotes.  If you have shell variables that contain plus symbols you cannot use single quotes but
-    you can escape the plus symbols in a variable using constructs like ${variable/+/\\+}.
-    Note that for geographic grids and cubes (**-fg**) *xname* and *yname* are set automatically.
-    Normally, the data netCDF variable is called "z" (grid) or "cube" (data cube). You can name this
-    netCDF variable via **+v**\ *varname*.
+    Use quotes to group texts with more than one word.  If any
+    of your text contains plus symbols you need to escape them
+    (place a backslash before each plus-sign) so they are not
+    confused with the option modifiers.  Alternatively, you can
+    place the entire double-quoted string inside single quotes.
+    If you have shell variables that contain plus symbols you
+    cannot use single quotes but you can escape the plus symbols
+    in a variable using constructs like ${variable/+/\\+}. Note
+    that for geographic grids and cubes (**-fg**), *xname* and
+    *yname* are set automatically. Normally, the data netCDF
+    variable is called "z" (grid) or "cube" (data cube). You can
+    rename this netCDF variable via **+v**.

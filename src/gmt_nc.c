@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,33 +33,22 @@
  *
  * Added support for chunked I/O, Florian Wobbe, June 2012.
  *
- * Functions include:
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *  gmt_nc_read_grd_info:   Read header from file
- *  gmt_nc_read_grd:        Read data set from file
- *  gmt_nc_update_grd_info: Update header in existing file
- *  gmt_nc_write_grd_info:  Write header to new file
- *  gmt_nc_write_grd:       Write header and data set to new file
- *  gmt_nc_read_cube_info:  Read information from cube file
- *  gmt_nc_write_cube:      rite header and cube to new file(s)
- *  gmtlib_is_nc_grid:	    Determine if we have a nc grid
+ *	gmt_nc_close
+ *	gmt_nc_create
+ *	gmt_nc_is_cube
+ *	gmt_nc_open
+ *	gmt_nc_read_cube_info
+ *	gmt_nc_read_grd
+ *	gmt_nc_read_grd_info
+ *	gmt_nc_update_grd_info
+ *	gmt_nc_write_cube
+ *	gmt_nc_write_grd_info
  *
- * Private functions:
- *  gmtnc_setup_chunk_cache:      Change the default HDF5 chunk cache settings
- *  gmtnc_pad_grid:               Add padding to a grid
- *  gmtnc_unpad_grid:             Remove padding from a grid
- *  gmtnc_padding_copy:           Fill padding by replicating the border cells
- *  gmtnc_padding_zero:           Fill padding with zeros
- *  gmtnc_n_chunked_rows_in_cache Determines how many chunks to read at once
- *  gmtnc_io_nc_grid              Does the actual netcdf I/O
- *  gmtnc_netcdf_libvers          returns the netCDF library version
- *  gmtnc_right_shift_grid
- *  gmtnc_set_optimal_chunksize   Determines the optimal chunksize
- *  gmtnc_get_units
- *  gmtnc_put_units
- *  gmtnc_check_step
- *  gmtnc_grd_info
- *  gmtnc_grid_fix_repeat_col
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_is_nc_grid
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #include "gmt_dev.h"
@@ -652,6 +641,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
 			gmt_M_free (GMT, attrib);
 		}
+		else if (gm_id != GMT_NOTSET && nc_inq_attlen (ncid, gm_id, "crs_wkt", &len) == NC_NOERR) {	/* New stand attrib name */
+			char *attrib = NULL;
+			gmt_M_str_free (header->ProjRefWKT);	/* Make sure we didn't have a previously allocated one */
+			attrib = gmt_M_memory (GMT, NULL, len+1, char);		/* and allocate the needed space */
+			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "crs_wkt", attrib));
+			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			gmt_M_free (GMT, attrib);
+		}
 
 		/* Explanation for the logic below: Not all netCDF grids are proper COARDS grids and hence we sometime must guess
 		 * regarding the settings.  The x and y coordinates may be written as arrays, which reflect the positions of the
@@ -975,7 +972,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
 
 		/* If we have projection information create a container variable named "grid_mapping" with an attribute
-		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
+		   "spatial_ref" or "crs_wkt" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
 			int id[1], dim[1];
 
@@ -1008,6 +1005,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					gmt_M_err_trap(nc_def_var(ncid, "grid_mapping", NC_CHAR,  1, dim, &id[0]));
 				}
 				gmt_M_err_trap(nc_put_att_text(ncid, id[0], "spatial_ref", strlen(header->ProjRefWKT), header->ProjRefWKT));
+				gmt_M_err_trap(nc_put_att_text(ncid, id[0], "crs_wkt", strlen(header->ProjRefWKT), header->ProjRefWKT));
 				gmt_M_err_trap(nc_put_att_text(ncid, z_id, "grid_mapping", 12U, "grid_mapping"));	/* Create attrib in z variable */
 			}
 		}
@@ -1035,7 +1033,7 @@ L100:
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmtnc_put_units (ncid, z_id, header->z_units);
-		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
+		if (!GMT->parent->meta.ignore_remote_cpt && GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
 			HH->cpt = strdup (GMT->parent->remote_info[GMT->parent->remote_id].CPT);
 
 		if (header->z_scale_factor != 1.0) {
@@ -2029,6 +2027,8 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	if (z_unit)	/* Passed pointer to storage for z-unit in cubes */
 		strncpy (z_unit, z_units, GMT_GRID_UNIT_LEN80);
 
+	gmt_M_err_trap (gmt_nc_close (GMT, ncid));
+
 	return GMT_NOERROR;
 }
 
@@ -2087,7 +2087,6 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		bool do_round = true; /* if we need to round to integral */
 		unsigned int width, height;
 		unsigned int dim[3], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
-		int first_col, first_row, last_row;
 		size_t n, nm;
 		size_t width_t, height_t;
 		double level_min, level_max;      /* minmax of level variable */
@@ -2121,8 +2120,6 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 				do_round = false;
 		}
 
-		first_col = first_row = 0;
-		last_row  = header->n_rows - 1;
 		level_min = DBL_MAX;
 		level_max = -DBL_MAX;
 
@@ -2151,10 +2148,6 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		/* The min/max of the cube */
 		header->z_min = level_min;
 		header->z_max = level_max;
-
-		/* Adjust first_row */
-		if (HH->row_order == k_nc_start_south)
-			first_row = header->n_rows - 1 - last_row;
 
 		/* Write grid header without closing file afterwards so more items can be added */
 		gmtnc_setup_chunk_cache();

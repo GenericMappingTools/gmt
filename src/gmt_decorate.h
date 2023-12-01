@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ struct GMT_DECORATE {
 	unsigned int nx;		/* Number of crossovers at any time */
 	unsigned int f_n;		/* Number of such points */
 	unsigned int nudge_flag;	/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
-	unsigned int angle_type;	/* 0 = line-parallel, 1 = line-normal, 2 = fixed angle */
+	unsigned int angle_type;	/* 0 = line-parallel (GMT_ANGLE_LINE_PARALLEL), 1 = line-normal (GMT_ANGLE_LINE_NORMAL), 2 = fixed angle (GMT_ANGLE_LINE_FIXED) */
 	int number_placement;		/* How the n_cont symbols are distributed [-1/0/+1]*/
 	bool isolate;			/* true if we have a limit on how close symbols may appear (see below) */
 	bool segmentize;		/* true if we should segmentize input lines before plotting */
@@ -71,7 +71,7 @@ struct GMT_DECORATE {
 	char fill[GMT_LEN64];		/* The symbol fill */
 	char pen[GMT_LEN64];		/* The symbol outline pen */
 	struct GMT_PEN debug_pen;	/* Pen for drawing the debugging lines */
-	char symbol_code[GMT_LEN64];	/* The symbol code only as a null-terminated string */
+	char symbol_code[GMT_LEN256];	/* The symbol code only as a null-terminated string */
 	char flag;			/* Char for the option key */
 	struct GMT_DATASET *X;		/* Dataset with list of structures with crossing-line coordinates */
 	struct GMT_XSEGMENT *ylist_XP;	/* Sorted y-segments for crossing-lines */

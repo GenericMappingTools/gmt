@@ -14,7 +14,7 @@
 
 ## What is GMT?
 
-GMT is an open source collection of about 90 command-line tools for manipulating
+GMT is an open source collection of about 100 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing high-quality illustrations ranging from simple x-y
 plots via contour maps to artificially illuminated surfaces, 3D perspective
@@ -54,8 +54,8 @@ Note there are three GMT tar archives available (#3 is optional):
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
 
-Refer to the [install instructions](INSTALL.md) to install GMT,
-and [build instructions](BUILDING.md) to build GMT from the sources.
+Refer to the [install instructions](https://docs.generic-mapping-tools.org/latest/install.html)
+to install GMT, and [build instructions](BUILDING.md) to build GMT from the sources.
 
 ## Citation
 
@@ -85,7 +85,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2022 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
+Copyright (c) 1991-2023 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -98,7 +98,7 @@ operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (* means optional):
 
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
-[Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
+[Geospatial Data Abstraction Library (GDAL)](https://gdal.org),
 [Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
@@ -112,7 +112,6 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 
 GMT uses (or can access) raster data derived from these sources:
 
-- [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
 - [Earth 15" IGPP DEM](https://www.essoar.org/doi/10.1002/essoar.10508279.1)
 - [Earth 15" GEBCO DEM](https://www.gebco.net/data_and_products/gridded_bathymetry_data/)
 - [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
@@ -125,3 +124,13 @@ GMT uses (or can access) raster data derived from these sources:
 - [Earth 1' Vertical Gravity Gradients from Altimetry](https://topex.ucsd.edu/marine_grav/mar_grav.html)
 - [Earth 2' EMAG2 Magnetic Anomalies](https://www.ncei.noaa.gov)
 - [Earth 3' WDMAM Magnetic Anomalies](https://wdmam.org)
+
+GMT provides several color maps from these sources:
+
+- [SCM (Scientific Color Maps)](http://www.fabiocrameri.ch/visualisation.php)
+- [cmocean](https://github.com/kthyng/cmocean-gmt)
+- [cpt-city](http://soliton.vm.bytemark.co.uk/pub/cpt-city/views/totp-cpt.html)
+- [google](https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html)
+- [matlab](https://www.mathworks.com/help/matlab/colors-1.html)
+- [matplotlib](https://matplotlib.org/stable/tutorials/colors/colormaps.html)
+- [panoply](https://www.giss.nasa.gov/tools/panoply/)

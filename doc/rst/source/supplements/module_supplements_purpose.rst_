@@ -2,7 +2,7 @@
 
 .. |earthtide_purpose| replace:: Compute grids or time-series of solid Earth tides
 
-.. |gpsgridder_purpose| replace:: Interpolate GPS strains using Green's functions for elastic deformation
+.. |gpsgridder_purpose| replace:: Interpolate GPS velocities using Green's functions for elastic deformation
 
 .. |velo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
@@ -95,6 +95,10 @@
 .. |rotconverter_purpose| replace:: Manipulate total reconstruction and stage rotations
 
 .. |rotsmoother_purpose| replace:: Get mean rotations and covariance matrices from set of finite rotations
+
+.. |shake_purpose| replace:: Compute Peak Ground Acceleration/Velocity and Intensity
+
+.. |vs30_purpose| replace:: Convert topographic slope to Vs30 velocities
 
 .. |x2sys_binlist_purpose| replace:: Create bin index listing from track data files
 

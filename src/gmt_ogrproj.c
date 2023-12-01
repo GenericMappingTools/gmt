@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,14 @@
  *
  * Author:	Joaquim Luis
  * Date:	17-Aug-2017
+ */
+
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_ogrproj_one_pt
+ *	gmt_proj4_fwd
+ *	gmt_proj4_inv
  */
 
 #include <gdal.h>

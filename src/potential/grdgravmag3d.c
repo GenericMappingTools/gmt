@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdgravmag3d_inc.h"
 #include "newton.h"
 #include "okbfuns.h"
 #include "../mgd77/mgd77.h"
@@ -43,7 +44,7 @@
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
 #define THIS_MODULE_KEYS	"<G{+,FD(,CG(,MG(,GG}"
 #define THIS_MODULE_NEEDS	"g"
-#define THIS_MODULE_OPTIONS "-:RVfx"
+#define THIS_MODULE_OPTIONS "-:RVf" GMT_ADD_xg_OPT
 
 typedef void (*PFV) ();		/* pointer to a function returning void */
 typedef double (*PFD) ();		/* pointer to a function returning double */
@@ -198,8 +199,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <grdfile_top> [<grdfile_bot>] [-C<density>] [-D] [-E<thickness>] [-F<xy_file>] "
 		"[-G%s] [-H<params>] [%s] [-L<z_obs>] [-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]] "
-		"[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] %s[%s]\n",
-		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		"[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg]%s[%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_xg_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -254,7 +255,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #ifdef HAVE_GLIB_GTHREAD
 	GMT_Option (API, "x");
 #else
-	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with multi-threading support.");
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with GLIB multi-threading support.");
 #endif
 	GMT_Option (API, ":,.");
 
@@ -507,7 +508,7 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -679,15 +680,8 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return(API->error);
 		}
 
-		if(GridA->header->registration != GridS->header->registration) {
-			GMT_Report(API, GMT_MSG_ERROR, "Up surface and source grids have different registrations!\n");
+		if (!gmt_grd_domains_match (GMT, GridA, GridS, "up surface and source")) {
 			Return (GMT_RUNTIME_ERROR);
-		}
-
-		if (fabs (GridA->header->inc[GMT_X] - GridS->header->inc[GMT_X]) > 1.0e-6 ||
-		          fabs(GridA->header->inc[GMT_Y] - GridS->header->inc[GMT_Y]) > 1.0e-6) {
-			GMT_Report(API, GMT_MSG_ERROR, "Up surface and source grid increments do not match!\n");
-			Return(GMT_RUNTIME_ERROR);
 		}
 
 		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_padded,

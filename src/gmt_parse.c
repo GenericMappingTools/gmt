@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
  *
  * The API presently consists of 52 documented functions.  For a full
  * description of the API, see the GMT_API documentation.
- * These functions have Fortran bindings as well, provided you add
+ * These functions have FORTRAN bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUserAdvanced.cmake].
  *
  * Here lie the 13 public functions used for GMT API command parsing:
@@ -656,8 +656,12 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			first_char = 0, option = GMT_OPT_INFILE;
 		else if (!args[arg][1])	/* Found the special synopsis option "-" */
 			first_char = 1, option = GMT_OPT_SYNOPSIS;
-		else if (!strcmp(args[arg], "--help"))	/* Translate '--help' to '-?' */
+		else if (!strcmp(args[arg], "--help"))	        /* mimic '-?' */
 			first_char = 6, option = GMT_OPT_USAGE;
+		else if (!strcmp(args[arg], "--shorthelp"))	/* mimic '-+' */
+			first_char = 11, option = GMT_OPT_USAGE, G->common.synopsis.extended = true;
+		else if (!strcmp(args[arg], "--synopsis"))	/* mimic '-^' */
+			first_char = 10, option = GMT_OPT_SYNOPSIS;
 		else if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !gmt_not_numeric (API->GMT, args[arg])) /* A negative number, most likely; convert to "file" for now */
 			first_char = 0, option = GMT_OPT_INFILE;
 		else {	/* Most likely found a regular option flag (e.g., -D45.0/3) */
@@ -1160,5 +1164,11 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 				break;
 		}
 	}
+	/* Ensure that -e is not used with binary input */
+	if (API->GMT->common.e.active && API->GMT->common.b.active[GMT_IN]) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -e: Cannot be used if binary input is selected.\n");
+		return_error (API, GMT_PARSE_ERROR);
+	}
+
 	return (GMT_OK);
 }

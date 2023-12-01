@@ -1,11 +1,25 @@
-**-C**\ [*cpt*\|\ *master*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
-    Name of a CPT file. If given a GMT Master soft-hinge CPT (see :ref:`Of Colors and Color Legends`) then
-    you can enable the hinge at data value *hinge* [0] via **+h**, whereas for hard-hinge CPTs you
-    can adjust the location of the hinge [0].  For other CPTs, you may convert their *z*-values
-    from meter to another distance unit (append **+U**\ *unit*) or from another unit to meter (append **+u**\ *unit*),
-    with *unit* taken from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
-    Alternatively, give *color1,color2*\ [*,color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically,
-    where *z* starts at 0 and is incremented by one for each color.
-    In this case *color*\ **n** can be a r/g/b triplet, a color name,
-    or an HTML hexadecimal color (e.g. #aabbcc).
+**-C**\ [[*section*/]\ *master_cpt*\ [**+h**\ [*hinge*]][**+u**\|\ **U**\ *unit*]\|\ *local.cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]]
+    Name of an input CPT file or a comma-separated list of colors from which to build a CPT.
+    If no argument is given then under modern mode we select the current CPT.
+    Generally, the input can be many things:
+
+    #. A standard GMT *master_cpt* file, e.g., *earth* 
+       (see :ref:`Of Colors and Color Legends`) and can be either addressed
+       by *master\_cpt* or *section*/*master_cpt* (without the **.cpt** extension).
+    #. File name of already custom-made *local.cpt* file.
+    #. Build a linear continuous CPT from *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]
+       automatically, where *z* starts at 0 and is incremented by one for each color. In this case,
+       *color*\ :math:`_i` can be a r/g/b (e.g., 255/100/75), or h-s-v triplet (e.g., 180-0.8-1),
+       a c/m/y/k quadruple (e.g., 80/50/40/30), an HTML hexadecimal color (e.g. #aabbcc),
+       or a :ref:`color name <RGBchart>`. No spaces between commas are allowed.
+
+    A few modifiers pertains to hinges and units:
+
+    - **+h**: If given a master CPT with soft hinges then you can enable the hinge at
+      data value *hinge* [0], whereas for hard-hinge CPTs you can adjust the location
+      of the hinge [0] but not disable it.
+    - **+u**: For any other *master\_cpt*, you may convert their *z*-values from 
+      another distance *unit* to meter.
+    - **+U**: Likewise, you may convert their *z*-values from meter to another *unit*.
+
+    **Note**: For **+u**\|\ **U**, a *unit* must be selected from **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.

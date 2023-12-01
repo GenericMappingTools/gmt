@@ -18,21 +18,21 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**][**a**\|\ **s**\|\ **t**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
+[ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *value*\|\ *file*]
+[ |-Z|\ *value*\|\ *file*]\ [**+t**\|\ **T**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -130,11 +130,12 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*]
-    Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
-    want to draw (Default is both x and y). The x and/or y errors must be
-    stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
-    **+a** is appended then we will draw asymmetrical error bars; these requires
+**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
+    Draw error bars. Append **x** and/or **y** to indicate which bars you
+    want to draw [Default is both x and y]. The x and/or y errors must be
+    stored in the columns after the (*x, y*) pair [or (*x, y, z*) triplet]. If
+    **+a** is appended then we will draw asymmetrical error bars [Default
+    is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.
     Use **+A** to read the low and high bounds rather than signed deviations.
     If upper case **X** and/or **Y** are used we will instead draw
@@ -146,9 +147,11 @@ Optional Arguments
     "box-and-whisker" symbol where the notch width reflects the uncertainty
     in the median. This symbol requires a 5th extra data column to contain the
     number of points in the distribution.  The **+w** modifier sets the
-    *cap* width that indicates the length of the end-cap on the error bars
-    [7\ **p**]. Pen attributes for error bars may also be set via **+p**\ *pen*.
-    [Defaults: width = default, color = black, style = solid]. When |-C| is
+    *width* that indicates the length of the end-cap on the error bars
+    [7\ **p**]. For box-and-whisker symbols it sets both the default box width and whisker cap length [7\ **p**].
+    Append both *width*\ /*cap* to set separate width and cap dimensions for such symbols.
+    Pen attributes for error bars may also be set via **+p**\ *pen*.
+    [Defaults: width = 0.25p, color = black, style = solid]. When |-C| is
     used we can control how the look-up color is applied to our symbol.
     Append **+cf** to use it to fill the symbol, while **+cl** will just
     set the error pen color and turn off symbol fill.  Giving **+c** will
@@ -158,24 +161,38 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **p**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of three line connection schemes:
-    **c**\ : Draw continuous line segments for each group [Default].
-    **p**\ : Draw line segments from a reference point reset for each group.
-    **n**\ : Draw networks of line segments between all points in each group.
+
+    - **c**\ : Form continuous line segments for each group [Default].
+    - **n**\ : Form networks of line segments between all points in each group.
+    - **p**\ : Form line segments from a reference point reset for each group.
+
     Optionally, append the one of four segmentation methods to define the group:
-    **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
-    and set group reference point to the very first point of the first file.
-    **f**\ : Consider all data in each file to be a single separate group and
-    reset the group reference point to the first point of each group.
-    **s**\ : Segment headers are honored so each segment is a group; the group
-    reference point is reset to the first point of each incoming segment [Default].
-    **r**\ : Same as **s**, but the group reference point is reset after
-    each record to the previous point (this method is only available with the **-Fp** scheme).
-    Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
-    the coordinates of a *refpoint* which will serve as a fixed external
-    reference point for all groups.
+
+    - **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
+      and set group reference point to the very first point of the first file.
+    - **r**\ : Segment headers are honored so each segment is a group; the group
+      reference point is reset after each record to the previous point (this method
+      is only available with the **-Fp** scheme).
+    - **s**\ : Same as **r**, but the group reference point is reset to the first
+      point of each incoming segment [Default].
+    - **t**\ : Consider all data in each table to be a single separate group and
+      reset the group reference point to the first point of each group.
+
+    Instead of the codes **a**\|\ **r**\|\ **s**\|\ **t** you may append the
+    *lon/lat* (or *x/y*) coordinates of a *refpoint*, which will serve as a fixed
+    external reference point for all groups.
+
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+
+        Use the |-F| option to create various networks between input point.  Dashed lines
+        indicate input ordering for the two tables, while solid lines are the resulting
+        network connections. Top left is original input, while the next five reflect the results
+        of directives **ra**, **rt**, **rs**, **r**\ 10/35 and **na**.
 
 .. _-G:
 
@@ -184,7 +201,8 @@ Optional Arguments
     Note that this module will search for |-G| and |-W| strings in all the
     segment headers and let any values thus found over-ride the command line settings.
     If |-Z| is set, use **-G+z** to assign fill color via **-C**\ *cpt* and the
-    *z*-values obtained. Finally, if *fill* = *auto*\ [*-segment*] or *auto-table* then
+    *z*-values obtained (same if transparency is set via |-Z|). Finally, if
+    *fill* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the fill colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  Any *transparency* setting is unchanged.
 
@@ -199,7 +217,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *intens*
-    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    Use the supplied *intens* value (nominally in the ±1 range) to
     modulate the fill color by simulating illumination [none]. If no intensity
     is provided we will instead read *intens* from the first data column after
     the symbol parameters (if given).
@@ -217,26 +235,52 @@ Optional Arguments
     **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
     your segments are interpreted as polygons, else they are seen as lines.
 
+.. _-M:
+
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
+    Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
+    given via one or more pairs of separate tables, each pair of tables having the same
+    number of segments (which can vary from pair to pair). Thus, the order of the even
+    number of tables given on the command line is important. If you instead simply want to
+    compare your data with a horizontal constant line then set the level via **+y** and the
+    :math:`y_1(x)` curve is generated for you and all input files will be compared with it.
+    Alternatively, use **-Mc** to indicate that :math:`y_1(x)` is co-registered with
+    :math:`y_0(x)` and is given as column 2 (i.e., third) in any number of files having
+    three columns. Each file may contain any number of segments per file.
+    We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds :math:`y_1(x)`
+    and the *fill* set via **+g** for the opposite case.  Finally, you can draw the two curves
+    using |-W| for :math:`y_0(x)` and **+p** for :math:`y_1(x)`. To add a legend entry for the
+    primary :math:`y_0(x)` or the fill, see |SYN_OPT-l|. To add a legend entry for the
+    secondary curve or the fill, use modifier **+l** to give a secondary label.  Normally, we show
+    one (|-G|) or two (**+g**) filled rectangles in the legend if fill was selected for the
+    alternating areas between the two curves. Use **+r** to instead specify a pen to simply
+    draw a line instead in the legend, but replace the color information from the fill settings
+    (i.e., only the *pen* width is used as specified, the color is not used).  **Note**: You
+    must at least specify either one fill or one pen, depending on your desired result.
+
+    .. figure:: /_images/GMT_fill_curves.*
+        :width: 600 px
+        :align: center
+
+        Use the |-M| option to paint the area between curves.  intersections and NaN-gaps are
+        found and the color depends on which curve is on top. Legends can be set as filled
+        rectangles or lines with colors from the fill selections via **+r**..
+
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
-    Do NOT clip symbols that fall outside map border [Default plots points
-    whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
-    which are always clipped to the map region. For periodic (360-longitude)
+    Do **not** clip symbols that fall outside map border [Default plots points
+    whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
     boundary. The |-N| will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
+    **Note**: A plain |-N| may also be used with lines or polygons but note that this deactivates
+    any consideration of periodicity (e.g., longitudes) and may have unintended consequences.
 
 .. _-S:
 
 .. include:: explain_symbols.rst_
-
-.. _-T:
-
-**-T**
-    Ignore all input files.  If |-B| is not used then **-R -J** are not required.
-    Typically used to move plot origin via |-X| and |-Y|.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
@@ -252,7 +296,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. If the modifier **+cl**
+    width = 0.25p, color = black, style = solid]. If the modifier **+cl**
     is appended then the color of the line are taken from the CPT (see
     |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
@@ -268,7 +312,7 @@ Optional Arguments
     at the end of the pen specification.
     See the `Vector Attributes`_ for more information.
     If |-Z| is set, then append **+z** to |-W| to assign pen color via **-C**\ *cpt* and the
-    *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
+    *z*-values obtained (same if transparency is set via |-Z|).  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
 
@@ -279,11 +323,16 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *value*\|\ *file*
-    Instead of specifying a symbol or polygon fill and outline color via |-G| and |-W|,
+**-Z**\ *value*\|\ *file*\ [**+t**\|\ **T**]
+    Instead of specifying a line or polygon fill and outline color via |-G| and |-W|,
     give both a *value* via |-Z| and a color lookup table via |-C|.  Alternatively,
-    give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
-    To apply the color obtained to a fill, use **-G+z**; to apply it to the pen color, append **+z** to |-W|.
+    give the name of a *file* with one z-value (read from the last column) for each polygon
+    or line in the input data. To apply the color obtained to a fill, use **-G+z**; to
+    apply it to the pen color, append **+z** to |-W|.
+    To just modulate the transparency of the polygon or line instead, append **+t** and the
+    *z*-value will be assumed to be transparency in the 0-100 % range.  Finally, append **+T**
+    and supply two columns via *file*: The last column must be the *z*-value while the next
+    to last column must have transparencies (in 0-100 % range).
 
 .. include:: explain_-aspatial.rst_
 
@@ -360,7 +409,7 @@ To plot a circle with color dictated by the *t.cpt* file for the *z*-value 65::
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
 and color based on the third column via the CPT chrome on a
-linear mape::
+linear maps::
 
     gmt plot misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 -pdf map
 
@@ -377,7 +426,7 @@ a circle at the start location and an arrow head at the end::
     EOF
 
 To plot vectors (red vector heads, solid stem) from the file data.txt that contains
-record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
+record of the form *lon, lat, dx, dy*, where *dx, dy* are the Cartesian
 vector components given in user units, and these user units should be converted
 to cm given the scale 3.60::
 

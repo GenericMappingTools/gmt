@@ -10,10 +10,14 @@ on:
   # Uncomment the "push:" line to manually re-cache data artifacts in pushes
   #push:
   # Uncomment the 'pull_request:' line to manually re-cache data artifacts in PRs
-  #pull_request:
+  # pull_request:
   # Schedule runs on 12 noon every Sunday
   schedule:
     - cron: '0 12 * * 0'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   data_cache:
@@ -22,48 +26,61 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Install GMT
         run: brew install gmt
 
       - name: Download remote data
         run: |
           # list of datasets used in tests
-          data="@earth_relief_01d earth_relief_01d_g \
-                @earth_relief_30m \
-                @earth_relief_20m \
-                @earth_relief_15m \
-                @earth_relief_10m @earth_relief_10m_g \
-                @earth_relief_06m \
-                @earth_relief_05m @earth_relief_05m_g \
-                @earth_relief_04m \
-                @earth_relief_02m \
-                @earth_relief_01m \
-                @earth_day_01d \
-                @earth_day_20m \
-                @earth_night_20m \
-                @earth_age_10m \
-                @earth_age_06m \
-                @earth_age_02m \
-                @earth_mask_05m \
+          data="@earth_relief_01d_p \
+                @earth_relief_01d_g \
+                @earth_relief_30m_p \
+                @earth_relief_20m_p \
+                @earth_relief_15m_p \
+                @earth_relief_10m_p \
+                @earth_relief_06m_p \
+                @earth_relief_05m_p \
+                @earth_relief_05m_g \
+                @earth_relief_04m_p \
+                @N30E000.earth_relief_02m_p.nc \
+                @N30W060.earth_relief_02m_p.nc \
+                @N30W120.earth_relief_02m_p.nc \
+                @N30W180.earth_relief_02m_p.nc \
+                @S30E000.earth_relief_02m_p.nc \
+                @S30W060.earth_relief_02m_p.nc \
+                @S30W180.earth_relief_02m_p.nc \
+                @S30W060.earth_relief_02m_g.nc \
+                @N00E000.earth_relief_01m_p.nc \
+                @N00W180.earth_relief_01m_p.nc \
+                @S30W060.earth_relief_01m_p.nc \
+                @S60W120.earth_relief_01m_g.nc \
+                @N30W105.earth_relief_30s_p.nc \
+                @N30W120.earth_relief_30s_p.nc \
+                @N45E000.earth_relief_30s_p.nc \
+                @N40E000.earth_relief_15s_p.nc \
+                @N44E003.earth_relief_03s_g.nc \
+                @N44E004.earth_relief_03s_g.nc \
+                @earth_age_10m_p \
+                @earth_age_06m_p \
+                @S30W180.earth_age_02m_p.nc \
+                @earth_day_20m_p \
+                @earth_day_15m_p \
+                @earth_day_01m_p \
+                @earth_day_01d_p \
+                @earth_night_20m_p \
                 @earth_mask_30s_p"
+          # Use the static server
+          export GMT_DATA_SERVER=static
           # Download remote data multiple times to make sure all are downloaded
           gmt which -Ga $data
           gmt which -Ga $data
           gmt which -Ga $data
-          # Download cache files
+          # Download cache files multiple times to make sure all are downloaded
           gmt get -Dcache
-          # Download extra tiles for tests
-          # test/grdimage/rounding.sh
-          gmt grdcut -R3:57/4:18/44:00/44:15 @earth_relief_03s -G/dev/null
-          # doc/example/anim02
-          gmt grdcut @earth_relief_30s -R-108/-103/35/40 -G/dev/null
-          # doc/example/ex32
-          gmt grdcut @earth_relief_30s_p -R3/9/50/54 -G/dev/null
+          gmt get -Dcache
+          gmt get -Dcache
+          # check files
+          ls -R ~/.gmt
 
       # Upload the downloaded files as artifacts to GitHub
       - name: Upload artifacts to GitHub
@@ -79,13 +96,8 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.6.0
 
       - name: Install vcpkg libraries
         run: bash ci/install-dependencies-windows.sh

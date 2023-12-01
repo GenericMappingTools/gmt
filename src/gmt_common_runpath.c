@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,12 @@
  * Date:    3-MAR-2012
  * Version: 5
  *
- * Modules in this file:
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *  GMT_runtime_bindir           Get the directory that contains the main exe
+ *  gmt_runtime_bindir           Get the directory that contains the main exe
  *                               at run-time, generic *NIX implementation
- *  gmt_runtime_bindir_osx       MacOSX implementation
- *  GMT_runtime_bindir_win32     Windows implementation
+ *  gmt_runtime_bindir_osx       macOS implementation
+ *  gmt_runtime_bindir_win32     Windows implementation
  *  gmt_runtime_libdir           Get the directory that contains the shared libs
  *  gmt_guess_sharedir           Determine GMT_SHAREDIR relative to current runtime location
  */
@@ -72,7 +72,7 @@ static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_b
 /* Functions for determining the directory that contains the main exe at run-time */
 #if defined (__APPLE__)
 
-/* MacOSX implementation of GMT_runtime_bindir */
+/* MacOSX implementation of gmt_runtime_bindir */
 char *gmt_runtime_bindir_osx (char *result) {
 	char *c;
 	char path[PATH_MAX+1];
@@ -97,8 +97,8 @@ char *gmt_runtime_bindir_osx (char *result) {
 
 #elif defined (WIN32) /* defined (__APPLE__) */
 
-/* Windows implementation of GMT_runtime_bindir */
-char *GMT_runtime_bindir_win32 (char *result) {
+/* Windows implementation of gmt_runtime_bindir */
+char *gmt_runtime_bindir_win32 (char *result) {
 	TCHAR path[PATH_MAX+1];
 	char *c;
 
@@ -142,7 +142,7 @@ char *GMT_runtime_bindir_win32 (char *result) {
 #else /* defined (__APPLE__) */
 
 /* Generic *NIX function */
-char *GMT_runtime_bindir (char *result, const char *candidate) {
+char *gmt_runtime_bindir (char *result, const char *candidate) {
 	char *c, *path, *dir, *save_ptr = NULL;
 	char candidate_abs[PATH_MAX+1];
 	ssize_t len;
@@ -327,7 +327,7 @@ static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_b
 #	if defined __APPLE__
 		runtime_bindir = gmt_runtime_bindir_osx (bindir);
 #	elif defined WIN32
-		runtime_bindir = GMT_runtime_bindir_win32 (bindir);
+		runtime_bindir = gmt_runtime_bindir_win32 (bindir);
 #	endif
 	}
 #endif /* defined __APPLE__ || defined WIN32 */

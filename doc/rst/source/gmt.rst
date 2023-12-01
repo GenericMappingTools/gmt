@@ -12,13 +12,13 @@ Introduction
 ------------
 
 GMT is a collection of freely available command-line tools under the GNU LGPL that allows you to
-manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
+manipulate *x, y* and *x, y, z* data sets (filtering, trend fitting, gridding,
 projecting, etc.) and produce illustrations ranging from
 simple x-y plots, via contour maps, to artificially illuminated surfaces
-and 3-D perspective views in black/white or full color. Linear, log10,
+and 3-D perspective views in black/white or full color. Linear, :math:`\log_{10}`,
 and power scaling is supported in addition to over 30 common map
 projections. The processing and display routines within GMT are
-completely general and will handle any (x,y) or (x,y,z) data as input.
+completely general and will handle any (*x, y*) or (*x, y, z*) data as input.
 
 Synopsis
 --------
@@ -62,7 +62,8 @@ Synopsis
 **gmt end** [**show**]
     Terminates a GMT modern mode session and automatically converts the registered
     illustration(s) to their specified formats, then eliminates the temporary work
-    directory.  The figures are placed in the current directory.
+    directory.  The figures are placed in the current directory. Appending the optional
+    directive **show** automatically opens the illustration in the default viewer.
 
 For information on any module, load the module documentation
 in your browser via gmt :doc:`docs`, e.g.::
@@ -100,6 +101,9 @@ If no module is given then several other options are available:
 
 **--show-cores**
     Show number of available cores.
+
+**--show-date**
+    Show GMT binary building date and exit.
 
 **--show-datadir**
     Show data directory/ies and exit.
@@ -150,7 +154,7 @@ The completion rules are either installed in ``/etc/bash_completion.d/gmt``
 or ``<prefix>/share/tools/gmt_completion.bash``.  Depending on the
 distribution, you may still need to source the gmt completion file from
 ``~/.bash_completion`` or ``~/.bashrc``.  For more information see Section
-:ref:`command-line-completion` in the CookBook.
+:ref:`command-line-completion` in the Technical Reference.
 
 GMT Modules
 -----------
@@ -207,12 +211,12 @@ These are all the common GMT options that remain the same for all GMT
 modules. No space between the option flag and the associated arguments.
 
 .. _-B_full:
-.. |Add_-B| replace:: :ref:`(See cookbook information) <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+.. |Add_-B| replace:: :ref:`(See cookbook information) <reference/options:Map frame and axes annotations: The **-B** option>`.
 .. include:: explain_-B.rst_
 
 .. _-J_full:
 .. |Add_-J| replace:: :ref:`(See cookbook summary)
-    <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
+    <reference/options:Coordinate transformations and map projections: The **-J** option>`
     :ref:`(See projections table) <proj-codes>`.
 .. include:: explain_-J.rst_
 
@@ -225,7 +229,7 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Jproj_full.rst_
 
 .. _-R_full:
-.. |Add_-R| replace:: :ref:`(See cookbook information) <cookbook/options:Data domain or map region: The **-R** option>`.
+.. |Add_-R| replace:: :ref:`(See cookbook information) <reference/options:Data domain or map region: The **-R** option>`.
 .. include:: explain_-R.rst_
 
 .. _-Rz_full:
@@ -234,15 +238,15 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Rz_full.rst_
 
 .. _-U_full:
-.. |Add_-U| replace:: :ref:`(See cookbook information) <cookbook/options:Timestamps on plots: The **-U** option>`.
+.. |Add_-U| replace:: :ref:`(See cookbook information) <reference/options:Timestamps on plots: The **-U** option>`.
 .. include:: explain_-U.rst_
 
 .. _-V_full:
-.. |Add_-V| replace:: :ref:`(See cookbook information) <cookbook/options:Verbose feedback: The **-V** option>`.
+.. |Add_-V| replace:: :ref:`(See cookbook information) <reference/options:Verbose feedback: The **-V** option>`.
 .. include:: explain_-V.rst_
 
 .. _-XY_full:
-.. |Add_-XY| replace:: :ref:`(See cookbook information) <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+.. |Add_-XY| replace:: :ref:`(See cookbook information) <reference/options:Plot positioning and layout: The **-X** **-Y** options>`.
 .. include:: explain_-XY.rst_
 
 .. _-aspatial_full:

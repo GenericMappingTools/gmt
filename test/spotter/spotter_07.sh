@@ -23,8 +23,8 @@ gmt psxy -R -J -O -K -St0.175i -Ggreen -Wthin << EOF >> $ps
 204.72  19.38
 EOF
 # Find and plot CVA maximum
-info=`gmt grdinfo -C -M cva_bathy.nc`
-x=`echo $info | cut -f14 -d' '`
-y=`echo $info | cut -f15 -d' '`
+info=$(gmt grdinfo -C -M cva_bathy.nc)
+x=$(echo $info | cut -f14 -d' ')
+y=$(echo $info | cut -f15 -d' ')
 echo $x $y | gmt psxy -R -J -O -K -Sx0.2i -W2p >> $ps
 gmt psscale -Ch.cpt -Dx3i/-0.4i+w4i/0.125i+h+jTC -O -Bxa20f10+u% -By+l"CVA" -I0.5 >> $ps

@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ |SYN_OPT-D2| ]
 [ |-L|\ [*nsamp*] ]
 [ |-M|\ [*ntraces*] ]
-[ |-Q|\ *<mode><value>* ]
+[ |-Q|\ **x**\|\ **y**\ *value* ]
 [ |-S|\ [*header*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -94,12 +94,13 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *<mode><value>*
-    Can be used to change two different settings depending on *mode*:
+**-Q**\ **x**\|\ **y**\ *value*
+    Can be used to change two different settings depending on the directive:
        **-Qx**\ *x-scale* applies scalar *x-scale* to coordinates in trace
        header to match the coordinates specified in |-R|.
 
        **-Qy**\ *s_int* specifies sample interval as *s_int* if incorrect in the SEGY file.
+       Repeatable.
 
 .. _-S:
 

@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdflexure** *input*
-|-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
+|-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*\ [**+r**\ *rr*]
 |-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
@@ -50,11 +50,11 @@ for five different types of rheological foundations, all involving *constant thi
 These conditions will require the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
 *firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
 *viscoelastic* [4; :math:`\Phi_{ve}(\mathbf{k},t)`],
-and *general linear* (viscoelastic) response functions [5; :math:`\Phi_{gl}(\mathbf{k},t)`]
+and *general linear* (viscoelastic) response functions [5; :math:`\Phi_{gl}(\mathbf{k},t)`].
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
 (1,4) or a purely *viscous* response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids for select times and specifying a
-range of model output times.  A wide range of options allow specifying the desired
+range of model output times.  A wide range of options allows for specifying the desired
 rheology and related constants, including in-plate forces.
 
 
@@ -75,18 +75,29 @@ Required Arguments
       as produced by :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
       These load times can be different from the evaluation times given
       via |-T|.  For load time format, see |-T|. **Note**: If *flist* has
-      three trailing words the the second will be interpreted as a load
+      three trailing words the second will be interpreted as a load
       density grid name and used for that layer instead of the fixed *rl*
       setting in |-D|. The last trailing word is a formatted age string.
     - A file list with extension ".lis" does not need the **+l** modifier
       and will be automatically recognized as a file list.
 
+    **Note**: The horizontal dimensions are expected to be in meters.  If you
+    have grids in km then you can append **+uk** to do the required conversion
+    when the grid is read.  All input grids must have the same dimensions. If
+    a grid contains NaNs then they are quietly replaced with zeros; use |-V| to
+    get a report when this happens.
+
 .. _-D:
 
-**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
+**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*\ [**+r**\ *rr*]
     Sets density for mantle, load, infill, and water (or air).  If *ri* differs from
-    *rl* then an approximate solution will be found.  If *ri* is not given
-    then it defaults to *rl*.  Values may be given in km/m^3 or g/cm^3.
+    *rl* then an approximate solution will be found.  If *ri* is not given then it
+    defaults to *rl*.  Values may be given in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3`.
+    **Note**: If a variable load density grid is supplied via |-H| then *rl*
+    must be given as -. Whether the load density is variable or not, you can (via
+    the **+r** modifier) specify a fixed *root* density, i.e., the infill density
+    just beneath the load. This will force the load topography to be rescaled by
+    the ratio *rl/rr* and then *rl* will be reset to *rr* for flexure calculations.
 
 .. _-E:
 
@@ -95,9 +106,9 @@ Required Arguments
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* (by default, *D* is computed from *Te*, Young's
     modulus, and Poisson's ratio; see |-C| to change these values).
-    If just |-E| is given and |-F| is used it means no plate is given
+    If |-E| is given with no arguments and |-F| is given it means no plate is present
     and we will return a purely viscous response with or without an asthenospheric layer.
-    Select a general linear viscoelastic response by supplying both an initial and
+    Select a general linear viscoelastic response instead by supplying both an initial and
     final elastic thickness *Te2*; this response also requires |-M|.
 
 .. _-G:
@@ -123,8 +134,8 @@ Optional Arguments
 .. _-C:
 
 **-C**\ **p**\|\ **y**\ *value*
-    Append **p** or **y** to change the current value of Poisson's ratio [0.25]
-    or Young's modulus [7.0e10 N/m^2], respectively.
+    Append directives **p** or **y** to change the current value of Poisson's ratio [0.25]
+    or Young's modulus [7.0e10 N/m\ :sup:`2`], respectively.
 
 .. _-F:
 
@@ -143,7 +154,8 @@ Optional Arguments
 **-H**\ *rhogrid*
     Supply optional variable load density grid.  It can be a single
     grid or a grid name template (see `Name Template`_ for details). Requires
-    *rho_l* be set to - in |-D|.  **Note**: If *input* is given as
+    *rho_l* be set to - in |-D|.  The density grid may be NaN at nodes where the
+    load grid is NaN (or zero).  **Note**: If *input* is given as
     a list file then the optional density grids must be given as part of
     the list and not via |-H|.
 
@@ -155,10 +167,6 @@ Optional Arguments
     will be time in years, while the last trailing text word is formatted time. 
     The output records thus contain *time flexuregrid timetag*.
 
-.. _-N:
-
-.. include:: ../../explain_fft.rst_
-
 .. _-M:
 
 **-M**\ *tm*
@@ -166,6 +174,10 @@ Optional Arguments
     thickness specified via |-E|.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
     Cannot be used in conjunctions with |-F|.
+
+.. _-N:
+
+.. include:: ../../explain_fft.rst_
 
 .. _-Q:
 
@@ -245,7 +257,7 @@ Grid Distance Units
 
 If a Cartesian grid does not have meter as the horizontal unit, append **+u**\ *unit*
 to the input file name to convert from the specified unit to meter.  E.g., appending
-**+uk** to the load file name will scale the grid x,y coordinates from km to meter.  If your
+**+uk** to the load file name will scale the grid *x, y* coordinates from km to meter.  If your
 grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 netCDF COARDS geographic grids will automatically be recognized as geographic.
 
@@ -255,6 +267,12 @@ Considerations
 The calculations are done using a rectangular Cartesian FFT operation. If your
 geographic region is close to either pole, you should consider using a Cartesian
 setup instead; you can always project it back to geographic using :doc:`grdproject </grdproject>`.
+
+Data Detrending
+---------------
+
+The default detrending mode is to remove a best-fitting linear plane (**+d**).
+Consult and use |-N| to select other modes.
 
 Transfer Functions
 ------------------
@@ -330,6 +348,21 @@ topographic load in the wavenumber domain, *A* is the Airy density ratio, :math:
 on the infill density, and :math:`\Phi(\mathbf{k},t)` is the response function for the selected rheology. The **grdflexure**
 module read one or more loads *h*, transforms them to *H*, evaluates and applies the response function, and
 inversely transform the results back to yield on or more *w* solutions.
+
+Variable load density
+~~~~~~~~~~~~~~~~~~~~~
+
+If the load density is variable (i.e., provided as a grid via |-H|) then we simply adjust the load height to be
+the equivalent height for the average load density. This is accomplished on a node-by-node basis by honoring the
+equality :math:`\rho_l(\mathbf{x})\cdot h(\mathbf{x}) = \bar{\rho_l}\cdot h'(\mathbf{x})`, where the prime height
+is the adjusted amplitude.
+
+Submarine and subaerial loads
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the water depth is specified via |-W| then we check if the (possibly adjusted) load height exceeds the water
+depth for any node.  If so, then we adjust the load height that is above water to what it needs to be if the density
+contrast were against water and not air.  The subaerial height component is thus extended by :math:`\frac{\rho_l}{\rho_l - \rho_w}`.
 
 Variable infill approximation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

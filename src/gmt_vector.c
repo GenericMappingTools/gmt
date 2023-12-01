@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,41 @@
  * Author:	Walter H.F. Smith
  * Date:	1-JAN-2010
  * Version:	5.x
+ */
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_add3v
+ *	gmt_cart_to_geo
+ *	gmt_cart_to_polar
+ *	gmt_chol_dcmp
+ *	gmt_chol_recover
+ *	gmt_chol_solv
+ *	gmt_cross3v
+ *	gmt_dot2v
+ *	gmt_dot3v
+ *	gmt_fix_up_path
+ *	gmt_gauss
+ *	gmt_gaussjordan
+ *	gmt_geo_to_cart
+ *	gmt_jacobi
+ *	gmt_mag3v
+ *	gmt_make_rot_matrix
+ *	gmt_make_rot_matrix2
+ *	gmt_matrix_matrix_add
+ *	gmt_matrix_matrix_mult
+ *	gmt_matrix_vect_mult
+ *	gmt_matrix_vector_mult
+ *	gmt_n_cart_to_geo
+ *	gmt_normalize2v
+ *	gmt_normalize3v
+ *	gmt_polar_to_cart
+ *	gmt_resample_path
+ *	gmt_set_line_resampling
+ *	gmt_solve_svd
+ *	gmt_sort_svd_values
+ *	gmt_sub3v
+ *	gmt_svdcmp
  */
 
 #include "gmt_dev.h"
@@ -1295,7 +1330,13 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
  * Then, if LAPACK is true then gmt_matrix_matrix_mult should call dgemm_ instead of plain code.
  */
 
+#ifndef ACCELERATE_NEW_LAPACK
+/* This BLAS function is updated on macos 22.4 and higher but still included in the Accelerate Framework header.
+ * Otherwise we declare it as an extern function here.  dsyev_ is not in BLAS so remains the same so far. */
+
 extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
+
+#endif
 
 void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c) {
 	uint64_t row, col, ij;
@@ -1326,7 +1367,18 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 		ne = nf = (int)n_rowsB;
 	}
 #endif
+
+#ifdef ACCELERATE_NEW_LAPACK
+	/* Must cast the arguemnts to avoid a tantrum from Apple */
+	dgemm_ ((const char * _Nonnull)"t", (const char * _Nonnull)tr,
+            (const __LAPACK_int * _Nonnull)&na, (const __LAPACK_int * _Nonnull)&nb, (const __LAPACK_int * _Nonnull)&nc,
+            (const double * _Nonnull)&one, (const double * _Nullable) A, (const __LAPACK_int * _Nonnull)&nd,
+            (const double * _Nullable) B, (const __LAPACK_int * _Nonnull)&ne,
+            (const double * _Nonnull)&zero, (double * _Nullable)C, (const __LAPACK_int * _Nonnull)&nf);
+#else
 	dgemm_ ("t", tr, &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
+#endif
+	
 #else
 	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
@@ -1349,8 +1401,8 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 }
 
 void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C) {
-	gmt_M_unused(GMT);
 	uint64_t row, col, ij;
+	gmt_M_unused(GMT);
 	for (row = ij = 0; row < n_rowsA; row++) {
 		for (col = 0; col < n_colsA; col++, ij++) {
 			C[ij] = A[ij] + B[ij];

@@ -118,9 +118,9 @@ more control on aspects such as tension but it also leads to a solution that
 is not likely to have fully converged.  The general approach would be
 something like
 
-   ::
+::
 
-    gmt grd2xyz old.grd | gmt surface -Rold.grd -Inewinc -Gnew.grd [other options]
+  gmt grd2xyz old.grd | gmt surface -Rold.grd -Inewinc -Gnew.grd [other options]
 
 For moderate data set one could also achieve an exact solution with :doc:`greenspline`,
 such as

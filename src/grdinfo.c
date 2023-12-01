@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdinfo_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdinfo"
 #define THIS_MODULE_MODERN_NAME	"grdinfo"
@@ -39,6 +40,7 @@
 enum Opt_I_modes {
 	GRDINFO_GIVE_INCREMENTS = 0,
 	GRDINFO_GIVE_REG_ORIG,
+	GRDINFO_GIVE_REG_OBLIQUE,
 	GRDINFO_GIVE_REG_IMG,
 	GRDINFO_GIVE_REG_ROUNDED,
 	GRDINFO_GIVE_BOUNDBOX};
@@ -47,6 +49,12 @@ enum Opt_C_modes {
 	GRDINFO_TRADITIONAL	= 0,
 	GRDINFO_NUMERICAL	= 1,
 	GRDINFO_TRAILING	= 2};
+
+enum Opt_L_modes {
+	GRDINFO_RANGE	= 0,
+	GRDINFO_MEAN	= 1,
+	GRDINFO_MEDIAN	= 2,
+	GRDINFO_MODE	= 4};
 
 enum Opt_M_modes {
 	GRDINFO_FORCE_REPORT	= 1,
@@ -117,7 +125,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-G] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] "
+	GMT_Usage (API, 0, "usage: %s %s [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-G] [-I[<dx>[/<dy>]|b|i|o|r]] [-L[a|0|1|2|p]] "
 		"[-M[c|f]] [%s] [-T[<dv>][+a[<alpha>]][+s]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -147,12 +155,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+U Same as +u but only consider negative values.");
 	GMT_Usage (API, 1, "\n-F Report domain in world mapping format [Default is generic].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
-	GMT_Usage (API, 1, "\n-I[<dx>[/<dy>]|b|i|r]");
+	GMT_Usage (API, 1, "\n-I[<dx>[/<dy>]|b|i|o|r]");
 	GMT_Usage (API, -2, "Return various results depending on directives:");
 	GMT_Usage (API, 3, "b: Return the grid's bounding box polygon at node resolution.");
 	GMT_Usage (API, 3, "i: The original img2grd -R string is issued, if available. "
 		"If the grid is not an img grid then the regular -R string is issued.");
-	GMT_Usage (API, 3, "r: The grid's -R string is issued.");
+	GMT_Usage (API, 3, "o: The grid's -R string is issued but in oblique format (-RLLX/LLY/URX/URY+r).");
+	GMT_Usage (API, 3, "r: The grid's -R string is issued in regular -Rw/e/s/n format.");
 	GMT_Usage (API, -2, "Otherwise, return textstring -Rw/e/s/n{/b/t} to nearest multiple of dx/dy{/dz}. "
 		"If -C is set then rounding will occur but no -R string is issued. "
 		"If no argument is given then the -I<xinc>/<yinc>{/<zinc>} string is issued.");
@@ -297,6 +306,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 					Ctrl->I.status = GRDINFO_GIVE_REG_IMG;
 				else if ((opt->arg[0] == 'r' || opt->arg[0] == '-') && opt->arg[1] == '\0')	/* -Ir: we want to output the actual -R string */
 					Ctrl->I.status = GRDINFO_GIVE_REG_ORIG;
+				else if (opt->arg[0] == 'o' && opt->arg[1] == '\0')	/* -Io means return -R string in oblique format (+r) */
+					Ctrl->I.status = GRDINFO_GIVE_REG_OBLIQUE;
 				else {	/* Report -R to nearest given multiple increment */
 					Ctrl->I.status = GRDINFO_GIVE_REG_ROUNDED;
 					if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
@@ -309,13 +320,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case '2':
-						Ctrl->L.norm |= 2; break;
+						Ctrl->L.norm |= GRDINFO_MEAN; break;
 					case '1':
-						Ctrl->L.norm |= 1; break;
+						Ctrl->L.norm |= GRDINFO_MEDIAN; break;
 					case 'p':
-						Ctrl->L.norm |= 4; break;
-					case 'a':	/* All three */
-						Ctrl->L.norm |= (1+2+4); break;
+						Ctrl->L.norm |= GRDINFO_MODE; break;
+					case 'a':	/* Select all three */
+						Ctrl->L.norm |= (GRDINFO_MEAN+GRDINFO_MEDIAN+GRDINFO_MODE); break;
 				}
 				break;
 			case 'M':	/* Global extrema and|or update missing header data range */
@@ -603,7 +614,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -640,9 +651,9 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (!Ctrl->I.active) {
 			n_cols += (is_cube) ? 6 : 4;				/* Add dx dy {dz} n_columns n_rows {n_layers} */
 			if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) n_cols += (is_cube) ? 7 : 5;	/* Add x0 y0 {z0} x1 y1 {z1} nnan */
-			if (Ctrl->L.norm & 1) n_cols += 2;	/* Add median scale */
-			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
-			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
+			if (Ctrl->L.norm & GRDINFO_MEDIAN) n_cols += 2;	/* Add median scale */
+			if (Ctrl->L.norm & GRDINFO_MEAN)   n_cols += 3;	/* Add mean stdev rms */
+			if (Ctrl->L.norm & GRDINFO_MODE)   n_cols += 2;	/* Add mode lmsscale */
 			n_cols += 2;		/* Add registration and type */
 		}
 		if (Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
@@ -852,16 +863,16 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_get_cellarea (GMT, W);
 		}
 
-		if (Ctrl->L.norm & 1) {	/* Calculate the median and MAD */
+		if (Ctrl->L.norm & GRDINFO_MEDIAN) {	/* Calculate the median and MAD */
 			z_median = gmt_grd_median (GMT, G, W, false);
 			z_scale = gmt_grd_mad (GMT, G, W, &z_median, false);
 		}
-		if (Ctrl->L.norm & 2) {	/* Calculate the mean, standard deviation, and rms */
+		if (Ctrl->L.norm & GRDINFO_MEAN) {	/* Calculate the mean, standard deviation, and rms */
 			z_mean = gmt_grd_mean (GMT, G, W);	/* Compute the [weighted] mean */
 			z_stdev = gmt_grd_std (GMT, G, W);	/* Compute the [weighted] stdev */
 			z_rms = gmt_grd_rms (GMT, G, W);		/* Compute the [weighted] rms */
 		}
-		if (Ctrl->L.norm & 4) {	/* Calculate the mode and lmsscale */
+		if (Ctrl->L.norm & GRDINFO_MODE) {	/* Calculate the mode and lmsscale */
 			z_mode = gmt_grd_mode (GMT, G, W, false);
 			z_lmsscl = gmt_grd_lmsscl (GMT, G, W, &z_mode, false);
 		}
@@ -906,6 +917,20 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
+		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_REG_OBLIQUE) {
+			sprintf (record, "-R");
+			gmt_ascii_format_col (GMT, text, header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			if (is_cube) {
+				strcat (record, "/");
+				gmt_ascii_format_col (GMT, text, U->z_range[0], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
+				gmt_ascii_format_col (GMT, text, U->z_range[1], GMT_OUT, GMT_Z);	strcat (record, text);
+			}
+			strcat (record, "+r");
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_REG_IMG) {
 			char *c = strrchr (header->remark, 'R');
 			sprintf (record, "-%s", c);
@@ -946,16 +971,16 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					out[col++] = x_min;	out[col++] = y_min;	if (is_cube) out[col++] = z_min;
 					out[col++] = x_max;	out[col++] = y_max;	if (is_cube) out[col++] = z_max;
 				}
-				if (Ctrl->L.norm & 1) {
+				if (Ctrl->L.norm & GRDINFO_MEDIAN) {
 					out[col++] = z_median;	out[col++] = z_scale;
 				}
-				if (Ctrl->L.norm & 2) {
+				if (Ctrl->L.norm & GRDINFO_MEAN) {
 					out[col++] = z_mean;	out[col++] = z_stdev;	out[col++] = z_rms;
 				}
 				if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) {
 					out[col++] = (double)n_nan;
 				}
-				if (Ctrl->L.norm & 4) {
+				if (Ctrl->L.norm & GRDINFO_MODE) {
 					out[col++] = z_mode;	out[col++] = z_lmsscl;
 				}
 				out[col++] = header->registration;
@@ -1012,17 +1037,17 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
 					if (is_cube) { strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text); }
 				}
-				if (Ctrl->L.norm & 1) {
+				if (Ctrl->L.norm & GRDINFO_MEDIAN) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_median, GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text,  z_scale, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
-				if (Ctrl->L.norm & 2) {
+				if (Ctrl->L.norm & GRDINFO_MEAN) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_mean, GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_stdev, GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text,   z_rms, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
 				if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) { sprintf (text, "%s%" PRIu64, sep, n_nan);	strcat (record, text); }
-				if (Ctrl->L.norm & 4) {
+				if (Ctrl->L.norm & GRDINFO_MODE) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_mode,   GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_lmsscl, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
@@ -1193,14 +1218,14 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN", HH->name, n_nan, percent);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
-			if (Ctrl->L.norm & 1) {
+			if (Ctrl->L.norm & GRDINFO_MEDIAN) {
 				sprintf (record, "%s: median: ", HH->name);
 				gmt_ascii_format_col (GMT, text, z_median, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " scale: ");
 				gmt_ascii_format_col (GMT, text, z_scale, GMT_OUT, GMT_Z);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
-			if (Ctrl->L.norm & 2) {
+			if (Ctrl->L.norm & GRDINFO_MEAN) {
 				sprintf (record, "%s: mean: ", HH->name);
 				gmt_ascii_format_col (GMT, text,  z_mean, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " stdev: ");
@@ -1209,7 +1234,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text,   z_rms, GMT_OUT, GMT_Z);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
-			if (Ctrl->L.norm & 4) {
+			if (Ctrl->L.norm & GRDINFO_MODE) {
 				sprintf (record, "%s: mode: ", HH->name);
 				gmt_ascii_format_col (GMT, text,   z_mode, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " lmsscale: ");

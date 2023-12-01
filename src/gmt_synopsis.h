@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,6 @@
 #define GMT_OUTGRID  "<outgrid>[=<ID>][+d<divisor>][+n<invalid>][+o<offset>|a][+s<scale>|a][:<driver>[/<dataType>][+c<options>]]"
 
 #define GMT_inc_OPT	"<xinc>[+e|n][/<yinc>[+e|n]]"
-#define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
 #define GMT_Jx_OPT	"-Jx|X<args>"
 #define GMT_Jz_OPT	"-Jz|Z<args>"
 #define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[+r]"
@@ -88,8 +87,8 @@
 
 /* Argument for segmentation option */
 
-#define GMT_SEGMENTIZE3	"[c|n|p][a|t|s|r|<refpoint>]"
-#define GMT_SEGMENTIZE4	"[c|n|p|v][a|t|s|r|<refpoint>]"
+#define GMT_SEGMENTIZE3	"[c|n|p][a|r|s|t|<refpoint>]"
+#define GMT_SEGMENTIZE4	"[c|n|p|v][a|r|s|t|<refpoint>]"
 
 /* Argument to *contour programs */
 
@@ -114,7 +113,7 @@
 #define GMT_J_OPT	"-J<args>"
 #define GMT_R2_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>][+r]"
 #define GMT_R3_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][+u<unit>][+r]"
-#define GMT_U_OPT	"-U[<label>][+c][+j<just>][+o<dx>[/<dy>]]"
+#define GMT_U_OPT	"-U[<label>][+c][+j<just>][+o<dx>[/<dy>]][+t<text>]"
 #define GMT_V_OPT	"-V[q|e|w|t|i|c|d]"
 #define GMT_X_OPT	"-X[a|c|f|r]<xshift>"
 #define GMT_Y_OPT	"-Y[a|c|f|r]<yshift>"
@@ -134,7 +133,7 @@
 #else
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #endif
-#define GMT_o_OPT	"-o<cols>[,...][,t[<word>]]"
+#define GMT_o_OPT	"-o<cols>[+l][+d<divisor>][+s<scale>|d|k][+o<offset>][,...][,t[<word>]]"
 #define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|t|s]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>]][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"

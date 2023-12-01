@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2016-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2016-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/rotsmoother_inc.h"
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"rotsmoother"
@@ -263,7 +264,7 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	bool stop;
 	uint64_t n_read = 0, rot, p, first = 0, last, n_use = 0, n_out = 0, n_total_use = 0, n_minimum, n_alloc = GMT_CHUNK;
 	int error = 0, n_fields;
-	unsigned int n_in = 3, k, j, t_col, w_col, t, n_cols = 4, matrix_dim = 3, nrots;
+	unsigned int n_in = 3, k, j, a_col, w_col, start_t, t, n_cols = 4, matrix_dim = 3, nrots;
 	double *in = NULL, min_rot_angle, min_rot_age, max_rot_angle, max_rot_age;
 	double sum_rot_angle, sum_rot_angle2, sum_rot_age, sum_rot_age2, sum_weights;
 	double out[20], khat = 1.0, g = 1.0e-5;	/* Common scale factor for all Covariance terms */
@@ -290,7 +291,7 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -304,7 +305,7 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
-	if (!Ctrl->A.active) n_in++;	/* Got time */
+	if (!Ctrl->A.active) n_in++;	/* Got time and angle */
 	if (Ctrl->W.active) n_in++;		/* Got weights */
 	if (Ctrl->C.active) n_cols = 19;	/* Want everything */
 
@@ -319,8 +320,9 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	t_col = (Ctrl->A.active) ? GMT_Z : 3;	/* If no time we use angle as proxy for time */
-	w_col = t_col + 1;
+	/* time (or angle proxy) is always in column 2 */
+	a_col = (Ctrl->A.active) ? GMT_Z : 3;	/* Angle is in column 2 or 3 */
+	w_col = a_col + 1;	/* Optional final column */
 	D = (struct ROTSMOOTHER_AGEROT *) gmt_M_memory (GMT, NULL, n_alloc, struct ROTSMOOTHER_AGEROT);
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
@@ -352,8 +354,8 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		/* Convert to geocentric, load parameters  */
 		D[n_read].wxyasn[K_LON]    = in[GMT_X];
 		D[n_read].wxyasn[K_LAT]    = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);
-		D[n_read].wxyasn[K_ANGLE]  = in[GMT_Z];
-		D[n_read].wxyasn[K_AGE]    = in[t_col];
+		D[n_read].wxyasn[K_ANGLE]  = in[a_col];
+		D[n_read].wxyasn[K_AGE]    = in[GMT_Z];
 		D[n_read].wxyasn[K_WEIGHT] = (Ctrl->W.active) ? in[w_col] : 1.0;	/* Optionally use weights */
 		n_read++;
 		if (n_read == n_alloc) {	/* Need larger arrays */
@@ -429,17 +431,29 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	z_unit_vector[0] = z_unit_vector[1] = 0.0;	z_unit_vector[2] = 1.0;	/* The local z unit vector */
 	n_minimum = (Ctrl->C.active) ? 2 : 1;	/* Need at least two rotations to compute covariance, at least one to report the mean */
 
-	for (t = 1; t < Ctrl->T.n_times; t++) {	/* For each desired output time interval */
-		t_lo = Ctrl->T.value[t-1];	t_hi = Ctrl->T.value[t];	/* The current interval */
-		for (rot = first, stop = false; !stop && rot < n_read; rot++)	/* Determine index of first rotation inside this age window */
-			if (D[rot].wxyasn[K_AGE] >= t_lo) stop = true;
-		first = rot - 1;	/* Index to first rotation inside this time interval */
-		for (stop = false; !stop && rot < n_read; rot++)	/* Determine index of last rotation inside this age window */
-			if (D[rot].wxyasn[K_AGE] > t_hi) stop = true;
-		last = rot - 1;	/* Index to first rotation outside this time interval */
-		n_use = last - first;	/* Number of rotations in the interval */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
-		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
+	start_t = (Ctrl->T.n_times > 1) ? 1 : 0;	/* For a fixed single time there is no interval */
+	for (t = start_t; t < Ctrl->T.n_times; t++) {	/* For each desired output time interval */
+		if (start_t) {	/* We have intervals */
+			t_lo = Ctrl->T.value[t-1];	t_hi = Ctrl->T.value[t];	/* The current interval */
+			for (rot = first, stop = false; !stop && rot < n_read; rot++)	/* Determine index of first rotation inside this age window */
+				if (D[rot].wxyasn[K_AGE] >= t_lo) stop = true;
+			first = rot - 1;	/* Index to first rotation inside this time interval */
+			for (stop = false; !stop && rot < n_read; rot++)	/* Determine index of last rotation inside this age window */
+				if (D[rot].wxyasn[K_AGE] > t_hi) stop = true;
+			last = (stop) ? rot - 1 : n_read;	/* Index to first rotation outside this time interval */
+			n_use = last - first;	/* Number of rotations in the interval */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
+		}
+		else {
+			t_lo = Ctrl->T.value[0];	t_hi = Ctrl->T.value[0];	/* The current time */
+			first = 0;	last = n_read;
+			n_use = n_read;	/* Number of rotations in the interval */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for time = %g\n", n_use, t_lo);
+		}
+		if (n_use < n_minimum) {	/* Need at least 1 or 2 poles to do anything useful */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Not enough rotations to compute anything - skipping this group\n");
+			continue;
+		}
 
 		/* Now estimate the average rotation */
 

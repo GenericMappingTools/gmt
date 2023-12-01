@@ -41,7 +41,7 @@ Description
 -----------
 
 **mgd77track** reads NCEI MGD77 cruises and plots one or more ship tracks
-on a map using the specified projection.
+on a map using the specified projection [*Wessel and Chandler*, 2007].
 
 Required Arguments
 ------------------
@@ -104,7 +104,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ **a\|c\|m\|t** 
+**-I**\ **a\|c\|m\|t**
     Ignore certain data file formats from consideration. Append
     **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain table
     files, respectively. The option may be repeated to ignore more than
@@ -154,7 +154,7 @@ Optional Arguments
 
 **-W**\ [*pen*]
     Append *pen* used for the trackline. [Defaults:
-    width = default, color = black, style = solid].
+    width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
@@ -182,10 +182,10 @@ every 10 degrees, draw gridlines every 5 degrees, and mark the track
 every day and 1000 km, with ticks every 6 hours and 250 km, and create
 a PDF map, enter the following command:
 
-   ::
+::
 
-    gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
-                   -La1da1000kf6hf250k -pdf map
+  gmt mgd77track @01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
+                 -La1da1000kf6hf250k -pdf map
 
 .. module_note_begins
 
@@ -196,7 +196,7 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.
 
 .. module_note_ends
 

@@ -96,7 +96,7 @@ Optional Arguments (begin mode)
 .. _-N:
 
 **-N**
-    Do NOT clip features extruding outside map inset boundaries [Default will clip].
+    Do **not** clip features extruding outside map inset boundaries [Default will clip].
 
 .. |Add_-R| replace:: This is useful when you want the inset **-R -J** to also determine the inset size. |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -136,16 +136,16 @@ Examples
 
 To make a simple basemap plot called inset.pdf that demonstrates the inset module, try
 
-   ::
+::
 
-    gmt begin inset pdf
-      gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
-      gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -C0.25i
-        gmt basemap -Rg -JA20/20/ -Bafg
-        gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
-      gmt inset end
-      gmt text -F+f18p+cBL+tMAP -Dj0.2i
-    gmt end
+  gmt begin inset pdf
+    gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
+    gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -C0.25i
+      gmt basemap -Rg -JA20/20/ -Bafg
+      gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
+    gmt inset end
+    gmt text -F+f18p+cBL+tMAP -Dj0.2i
+  gmt end
 
 See Also
 --------

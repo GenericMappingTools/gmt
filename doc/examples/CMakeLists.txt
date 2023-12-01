@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,13 @@ if (SPHINX_FOUND)
 	# Convert figures to PNG
 	file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
 	set (_examples_png)
+
+	if (GMT_DOCS_DEPEND_ON_GMT)
+		set (_gmt_command ${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt)
+	else (GMT_DOCS_DEPEND_ON_GMT)
+		set (_gmt_command gmt)
+	endif (GMT_DOCS_DEPEND_ON_GMT)
+
 	foreach (_ps ${_examples})
 		get_filename_component (_fig ${_ps} NAME)
 		string (REPLACE ".ps" ".png" _png_fig ${_fig})
@@ -35,7 +42,7 @@ if (SPHINX_FOUND)
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 			COMMAND ${CMAKE_COMMAND} -E env
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+			${_gmt_command} psconvert
 			-A -P -E150 -Tg -Qg4 -Qt4
 			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
 			-D${RST_BINARY_DIR}/_images

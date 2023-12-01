@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Hamilton (nee Chandler)
+ *    Copyright (c) 2004-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Hamilton (nee Chandler)
  *	File:	mgd77sniffer.c
  *
  *	mgd77sniffer scans MGD77 files for errors in three ways: one, point-
@@ -22,6 +22,7 @@
 
 #include "mgd77.h"
 #include "gmt_dev.h"
+#include "longopt/mgd77sniffer_inc.h"
 #include "mgd77sniffer.h"
 #include "gmt_internals.h"
 static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
@@ -626,7 +627,7 @@ EXTERN_MSC int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);

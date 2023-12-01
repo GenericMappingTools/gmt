@@ -15,9 +15,9 @@ Synopsis
 **gmt sample1d** [ *table* ]
 [ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**] ]
 [ |-E| ]
-[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
+[ |-F|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [|-T|\ *file*\|\ *list*]]
 [ |SYN_OPT-V| ]
 [ |-W|\ *col* ]
 [ |SYN_OPT-b| ]
@@ -92,20 +92,13 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
-    Choose from **l** (Linear), **a** (Akima spline), **c** (natural
-    cubic spline), **n** (no interpolation: nearest point), or **s**
-    (smoothing cubic spline; append fit parameter *p*) [Default
-    is **-Fa**]. You may change the default interpolant; see
-    :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
-    You may optionally evaluate the first or second derivative of the spline
-    by appending **+d1** or **+d2**, respectively.
+.. include:: explain_interpolant.rst_
 
 .. figure:: /_images/GMT_splines.*
    :width: 500 px
    :align: center
 
-   The |-F| option lets you choose among several interpolators, including
+   The |-F| option lets you choose among several interpolants, including
    one that is approximate (the smoothing spline).  You can also specify
    that you actually need a derivative of the solution instead of the value.
 
@@ -117,12 +110,13 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**]
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [**-T**\ *file*\|\ *list*]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.  **Note**: For resampling of spatial
-    (*x,y* or *lon,lat*) series you must give an increment with a valid distance unit;
-    see `Units`_ for map units or use **c** if plain Cartesian coordinates.  The first two
-    columns must contain the spatial coordinates.  From these we calculate distances in the
+    The form **-T**\ *list* means a online list of *time* coordinates like for example: **-T**\ *13,15,16,22.5*.
+    For details on array creation, see `Generate 1-D Array`_. **Note**: For resampling of spatial
+    (*x, y*) or (*lon, lat*) series you must give an increment with a valid distance unit;
+    see `Units`_ for map units or use **c** if plain Cartesian coordinates. The first two
+    columns must contain the spatial coordinates. From these we calculate distances in the
     chosen units and interpolate using this parametric series.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -214,7 +208,7 @@ intervals using Akima's spline, use::
 
     gmt sample1d profiles.tdgmb -N1 -Fa -T1 > profiles_equi_d.tdgmb
 
-To resample the file depths.dt at positions listed in the file
+To resample the file depths.txt at positions listed in the file
 grav_pos.dg, using a cubic spline for the interpolation, use::
 
     gmt sample1d depths.txt -Tgrav_pos.dg -Fc > new_depths.txt
@@ -224,7 +218,7 @@ interpolation, but output the first derivative instead (the slope), try::
 
     gmt sample1d points.txt -T0/6/0.01 -Fc+d1 > slopes.txt
 
-To resample the file track.txt which contains lon, lat, depth every 2
+To resample the file track.txt which contains *lon, lat, depth* every 2
 nautical miles, use::
 
     gmt sample1d track.txt -T2n -AR > new_track.txt

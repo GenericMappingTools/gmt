@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pstext_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pstext"
 #define THIS_MODULE_MODERN_NAME	"text"
@@ -74,9 +75,10 @@ struct PSTEXT_CTRL {
 		bool get_xy_from_justify;	/* True if +c was given and we just get it from input */
 		bool word;		/* True if we are to select a single word from the trailing text as the label */
 		bool no_input;		/* True if we give a single static text and place it via +c */
+		bool no_xy_coord;	/* If -F+c given then we dont read/parse two coordinates */
 		struct GMT_FONT font;
 		double angle;
-		int justify, R_justify, nread, first, w_col;
+		int justify, R_justify, nread, nread_numerics, first, w_col;
 		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format z using text (+z) */
 		char read[4];		/* Contains a|A, c, f, and/or j in order required to be read from input */
 		char *text;
@@ -488,6 +490,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 							if (p[1] == '+' || p[1] == '\0') {	/* Must read angle from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
 								Ctrl->F.nread++;
+								Ctrl->F.nread_numerics++;
 							}
 							else	/* Gave a fixed angle here */
 								Ctrl->F.angle = atof (&p[1]);
@@ -524,6 +527,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
 							}
+							Ctrl->F.no_xy_coord = true;	/* Not reading lon,lat or x,y in this case */
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
@@ -627,7 +631,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				}
 				else if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-S<pen> option is deprecated; use font pen setting instead.\n");
-					Ctrl->S_old.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S_old.active);
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->S_old.pen)) {
 						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", NULL, 0);
 						n_errors++;
@@ -850,7 +854,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -861,7 +865,11 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 	tcol_f = 2 + Ctrl->Z.active;	tcol_s = tcol_f + 1;
-
+	/* Since pstext input is complicated we need to help gmtio_examine_current_record by determining how many leading numerical columns to expect */
+	API->n_numerical_columns = (Ctrl->F.no_xy_coord) ? 0 : 2;	/* Normally first 2 columns are x/y coordinates but not if -F+c */
+	if (Ctrl->F.get_text == GET_CMD_FORMAT) API->n_numerical_columns++;	/* Expect a 3rd column value for formatting */ 
+	if (Ctrl->Z.active) API->n_numerical_columns++;	/* Expect a 3-D z coordinate */
+	if (Ctrl->F.nread_numerics) API->n_numerical_columns++;	/* Will read angle from input file */
 	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.n_transparencies;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
 	no_in_txt = (Ctrl->F.get_text > 1);	/* No text in the input record */
@@ -1502,6 +1510,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = old_is_world;
 	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
+    API->n_numerical_columns = GMT_NOTSET;
 
 	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);

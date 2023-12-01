@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,13 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	unsigned int ID;		/* ID to use if label contains C-format for integer */
 };
 
+struct GMT_COL_IO {	/* Common but separate information for -i and -o */
+	bool select, orig, word, end, text;
+	uint64_t n_cols, w_col;
+	uint64_t n_actual_cols;
+	char string[GMT_LEN64];
+};
+
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
 struct GMT_COMMON {
 	struct synopsis {	/* \0 (zero) or ^ */
@@ -88,6 +95,7 @@ struct GMT_COMMON {
 	} B;
 	struct J {	/* -J<params> */
 		bool active, zactive;
+		bool width_given;	/* If true then -R is required too */
 		unsigned int id;
 		char string[GMT_LEN128];
 		char zstring[GMT_LEN128];	/* For -Jz|Z */
@@ -121,6 +129,7 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int just;
 		double x, y;
+		char string[GMT_LEN64];	/* User override for timestamp */
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
 	struct V {	/* -V */
@@ -202,10 +211,8 @@ struct GMT_COMMON {
 		char string[GMT_LEN256];
 	} h;
 	struct i {	/* -i[<col>|<colrange>,...][t[<word>]] */
-		bool active, select, orig, word, end;
-		uint64_t n_cols, w_col;
-		uint64_t n_actual_cols;
-		char string[GMT_LEN64];
+		bool active;
+		struct GMT_COL_IO col;
 	} i;
 	struct j {	/* -je|f|g [g] */
 		bool active;
@@ -230,9 +237,8 @@ struct GMT_COMMON {
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
 	struct o {	/* -o[<col>|<colrange>,...][t[<word>]] */
-		bool active, select, orig, word, end, text;
-		uint64_t n_cols, w_col;
-		char string[GMT_LEN64];
+		bool active;
+		struct GMT_COL_IO col;
 	} o;
 	struct p {	/* -p<az>[/<el>[/<z0>]]+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
 		bool active;

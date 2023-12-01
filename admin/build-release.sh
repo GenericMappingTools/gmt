@@ -16,9 +16,11 @@
 #  Notes:
 #	1. CMAKE_INSTALL_PATH, EXEPLUSLIBS, and EXESHARED in build-macos-external-list.sh may need to be changed for different users.
 #	2. Settings for GS_LIB, PROJ_LIB etc in cmake/dist/startup_macosx.sh.in may need to be updated as new gs,proj.gm releases are issued
-#   4. Setting for CLANG_V may need updating to set compiler version
+#   3. Setting for CLANG_V may need updating to set compiler version
+#	4. Since the latest macports is fucked related to GDAL we must get GDAL and executables
+#	   from homebrew installation instead.
 
-CLANG_V=11	# Current Clang version to use
+CLANG_V=15	# Current Clang version to use [Oct-2023]
 # Temporary ftp site for pre-release files:
 GMT_FTP_URL=ftp.soest.hawaii.edu
 GMT_FTP_DIR=/export/ftp1/ftp/pub/gmtrelease
@@ -51,15 +53,15 @@ elif [ "X${1}" = "X-t" ]; then
 	release=0
 elif [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
-	Usage: build-release.sh [-p|m]
+	Usage: build-release.sh [-p|m|t]
 	
 	build-release.sh must be run from top-level gmt directory.
 	Will create the release compressed tarballs and (under macOS) the bundle.
 	Requires you have set GMT_PACKAGE_VERSION_* and GMT_PUBLIC_RELEASE in cmake/ConfigDefaults.cmake.
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
-	Passing -p means we copy the files to the SOEST ftp directory
-	Passing -m means only copy the macOS bundle to the SOEST ftp directory
-	Passing -t means test the build-release script without requiring GMT_PUBLIC_RELEASE
+		Passing -p means we copy the files to the SOEST ftp directory
+		Passing -m means only copy the macOS bundle to the SOEST ftp directory
+		Passing -t means test the build-release script without requiring GMT_PUBLIC_RELEASE
 	[Default places no files in the SOEST ftp directory]
 	EOF
 	exit 1
@@ -72,8 +74,14 @@ fi
 # macports or homebrew is required
 if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 	DISTRO=MacPorts
+	if [ $(which gdalinfo) = "/opt/homebrew/bin/gdalinfo" ]; then
+		NO_GDAL=Y
+		echo "build-release.sh: Must use GDAL from /opt/homebrew since not present in macports" >&2
+	fi
 elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
-	DISTRO=HomeBrew
+	DISTRO=HomeBrew1
+elif [ $(which cmake) = "/opt/homebrew/bin/cmake" ]; then
+	DISTRO=HomeBrew2
 else	# Requires either MacPorts of HomeBrew
 	echo 'build-release.sh: Error: macports or homebrew installations are not found.' >&2
 	exit 1
@@ -145,7 +153,7 @@ cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
 rm -rf build
 mkdir build
 # 2b. Build list of external programs and shared libraries
-admin/build-macos-external-list.sh ${G_ver} ${DISTRO} > build/add_macOS_cpack.txt
+admin/build-macos-external-list.sh ${G_ver} ${DISTRO} ${NO_GDAL} > build/add_macOS_cpack.txt
 if [ $? -ne 0 ]; then
 	echo 'build-release.sh: Error: Failed to create external list' >&2
 	exit 1

@@ -21,6 +21,7 @@ Synopsis
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ]
+[ |-S|\ [**a**\|\ **l**\|\ **L**\|\ **m**\|\ **p**\|\ **u**\|\ **U**][**+a**][**+c**][**+d**][**+r**][**+s**\ [*file*] ]
 [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ]
 [ |-Z| ]
@@ -48,7 +49,7 @@ Description
 
 **grdtrack** reads one or more grid files (or a Sandwell/Smith IMG
 files) and a table (from file or standard input; but see |-E| for
-exception) with (x,y) [or (lon,lat)] positions in the first two columns
+exception) with (*x, y*) [or (*lon, lat*)] positions in the first two columns
 (more columns may be present). It interpolates the grid(s) at the
 positions in the table and writes out the table with the interpolated
 values added as (one or more) new columns. Alternatively (|-C|), the
@@ -65,13 +66,15 @@ Required Arguments
 
 *table*
     This is an ASCII (or binary, see **-bi**) file where the first 2 columns
-    hold the (x,y) positions where the user wants to sample the 2-D data set.
-    If no tables are given then we read from standard input, unless |-E| is set.
+    hold the (*x, y*) positions where the user wants to sample the 2-D data set.
+    If no tables are given then we read from standard input. If |-E| is set
+    then no input table is read since we will create one from the given
+    |-E| parameters.
 
 .. _-G:
 
 **-G**\ *gridfile*
-    *gridfile* is a 2-D binary grid file with the function f(x,y). If the
+    *gridfile* is a 2-D binary grid file with the function *f*\ (*x, y*). If the
     specified grid is in Sandwell/Smith Mercator format you must append
     a comma-separated list of arguments that includes a scale to
     multiply the data (usually 1 or 0.1), the mode which stand for the
@@ -112,7 +115,7 @@ Optional Arguments
 **-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
-    grid(s) [Default simply samples the grid(s) at the input locations].
+    grid(s).
     Specify two length scales that control how the sampling is done:
     *length* sets the full length of each cross-profile, while *ds* is
     the sampling spacing along each cross-profile. Optionally, append
@@ -121,7 +124,7 @@ Optional Arguments
     for how resampling the input track is controlled. By
     default, all cross-profiles have the same direction (left to right
     as we look in the direction of the input line segment). Append **+a**
-    to alternate the direction of cross-profiles, or **v** to enforce
+    to alternate the direction of cross-profiles, or **+v** to enforce
     either a "west-to-east" or "south-to-north" view. By default the entire
     profiles are output.  Choose to only output the left or right halves
     of the profiles by appending **+l** or **+r**, respectively.  Append suitable units
@@ -134,7 +137,8 @@ Optional Arguments
     *deviation* [0]. Looking in the direction of the line, a positive *deviation*
     will rotate the crosslines clockwise and a negative one will rotate them
     counter-clockwise.  Finally, you can use **+f** to set a fixed azimuth
-    for all profiles.
+    for all profiles. **Note**: If |-C| is set and *spacing* is given then
+    that sampling scheme overrules any modifier set in |-E|.
 
 .. _-D:
 
@@ -142,40 +146,11 @@ Optional Arguments
     In concert with |-C| we can save the (possibly resampled) original
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
-    (sampled value for each grid)
+    (sampled value for each grid).
 
 .. _-E:
 
-**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+c**][**+d**][**+g**][**+i**\ *inc*][**+l**\ *length*][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*]
-    Instead of reading input track coordinates, specify profiles via
-    coordinates and modifiers. The format of each *line* is
-    *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
-    Cartesian data) or a 2-character XY key that uses the :doc:`text`-style
-    justification format to specify a point on the map as
-    [LCR][BMT]. Each line will be a separate segment unless **+c** is used
-    which will connect segments with shared joints into a single segment.
-    In addition to line coordinates, you can use Z-, Z+ to mean the global
-    minimum and maximum locations in the grid (only available if a
-    single grid is given via |-G|). You may append
-    **+i**\ *inc* to set the sampling interval; if not given then
-    we default to half the minimum grid interval.  For a *line* along parallels
-    or meridians you can add **+g** to report degrees of longitude or latitude
-    instead of great circle distances starting at zero.  Instead of two coordinates
-    you can specify an origin and one of **+a**, **+o**, or **+r**.
-    The **+a** sets the azimuth of a profile of given
-    length starting at the given origin, while **+o** centers the profile
-    on the origin; both require **+l**. For circular sampling specify
-    **+r** to define a circle of given radius centered on the origin;
-    this option requires either **+n** or **+i**.  The **+n**\ *np* modifier sets
-    the desired number of points, while **+l**\ *length* gives the
-    total length of the profile. Append **+d** to output the along-track
-    distances after the coordinates.  **Note**: No track file will be read.
-    Also note that only one distance unit can be chosen.  Giving different units
-    will result in an error.  If no units are specified we default to
-    great circle distances in km (if geographic).  If working with geographic
-    data you can use **-j** to control distance calculation mode [Great Circle].
-    **Note**: If |-C| is set and *spacing* is given the that sampling scheme
-    overrules any modifier set in |-E|.
+.. include:: explain_lines.rst_
 
 .. _-F:
 
@@ -190,7 +165,7 @@ Optional Arguments
     of that distance.  When searching for the center peak and the extreme first and last
     values that exceed the threshold we assume the profile is positive up.  If we instead
     are looking for a trough then you must use **+n** to temporarily flip the profile to
-    positive. The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
+    positive (internally). The threshold *z0* value is always given as >= 0; use **+z** to change it [0].
     Alternatively, use **+b** to determine the balance point and standard deviation of the
     profile; this is the weighted mean and weighted standard deviation of the distances,
     with *z* acting as the weight. Finally, use **+r** to obtain the weighted rms about the
@@ -211,9 +186,9 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *method*/*modifiers*
+**-S**\ [**a**\|\ **l**\|\ **L**\|\ **m**\|\ **p**\|\ **u**\|\ **U**][**+a**][**+c**][**+d**][**+r**][**+s**\ [*file*]
     In conjunction with |-C|, compute a single stacked profile from
-    all profiles across each segment. Append how stacking should be
+    all profiles across each segment. Append a method for how stacking should be
     computed: **a** = mean (average), **m** = median, **p** = mode
     (maximum likelihood), **l** = lower, **L** = lower but only consider
     positive values, **u** = upper, **U** = upper but only consider
@@ -223,20 +198,23 @@ Optional Arguments
     all cross-profiles. **+r** : Append data residuals (data - stack) to
     all cross-profiles. **+s**\ [*file*] : Save stacked profile to
     *file* [grdtrack_stacked_profile.txt]. **+c**\ *fact* : Compute
-    envelope on stacked profile as ±\ *fact* \*\ *deviation* [2].
-    Notes: (1) Deviations depend on *method* and are st.dev (**a**), L1
-    scale, i.e., 1.4826 \* median absolute deviation (MAD) (for **m** and **p**), or half-range (upper-lower)/2. (2) The
+    uncertainty envelope on stacked profile as ±\ *fact* \*\ *deviation* [2].
+    **Notes**: (1) Deviations depend on *method* and are standard deviation (**a**), L1
+    scale, i.e., 1.4826 \* median absolute deviation (MAD) (for **m** and **p**),
+    or half-range (upper-lower)/2 (for **l**, **L**, **u** and **U**). (2) The
     stacked profile file contains a leading column plus groups of 4-6 columns, with one
     group for each sampled grid. The leading column holds cross distance,
     while the first four columns in a group hold stacked value, deviation, min
     value, and max value, respectively. If *method* is one of
-    **a**\|\ **m**\|\ **p** then we also write the lower and upper
+    **a**\|\ **m**\|\ **p** then we also write two additional columns: the lower and upper
     confidence bounds (see **+c**). When one or more of **+a**, **+d**,
     and **+r** are used then we also append the stacking results to the end of each
     row, for all cross-profiles. The order is always stacked value
-    (**+a**), followed by deviations (**+d**) and finally residuals (**+r**).
+    (**+a**), followed by deviations (**+d**) and finally residuals (**+r**);
+    actual output depends on which of these modifiers were actually used.
     When more than one grid is sampled this sequence of 1-3 columns is
-    repeated for each grid.
+    repeated for each grid. (3) See Illustration Gallery 33 for an example
+    of grid profile stacking.
 
 .. _-T:
 
@@ -343,19 +321,19 @@ gravity, preceded by one header record)::
 
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
 predicted bathymetry on a Mercator grid) and the Muller et al age grid
-age.3.2.nc along the lon,lat coordinates given in the file
+age.3.2.nc along the (*lon, lat*) coordinates given in the file
 cruise_track.xy, try::
 
-    gmt grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
+    gmt grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.txt
 
 To sample the Sandwell/Smith IMG format file grav.18.1.img (1 minute
 free-air anomalies on a Mercator grid) along 100-km-long cross-profiles
 that are orthogonal to the line segment given in the file track.xy,
 erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
-   ::
+::
 
-    gmt grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
+  gmt grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
 
 The same thing, but now determining the central anomaly location along track,
 with a threshold of 25 mGal, try::

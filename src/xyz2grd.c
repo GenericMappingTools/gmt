@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/xyz2grd_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"xyz2grd"
 #define THIS_MODULE_MODERN_NAME	"xyz2grd"
@@ -203,7 +204,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 			case 'E':
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -E is deprecated; use grdconvert instead.\n");
-					Ctrl->E.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 					if (opt->arg[0]) {
 						Ctrl->E.nodata = atof (opt->arg);
 						Ctrl->E.set = true;
@@ -304,7 +305,7 @@ GMT_LOCAL void xyz2grd_protect_J (struct GMTAPI_CTRL *API, struct GMT_OPTION *op
 EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
-	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1, was;
+	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1, was, n_ave = 0;
 	uint64_t n_empty = 0, n_confused = 0;
 	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
@@ -336,7 +337,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	xyz2grd_protect_J(API, options);	/* If -J is used, add a -f0f,1f option to avoid later parsing errors due to -R & -J conflicts */
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);
@@ -613,6 +614,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.swab) GMT_Report (API, GMT_MSG_INFORMATION, "Binary input data will be byte swapped\n");
 		for (i = 0; i < io.skip; i++)
 			nr += fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
+		GMT_Report (API, GMT_MSG_DEBUG, "Bytes read via -Z: % " PRIuS "\n", nr);
 	}
 
 	do {	/* Keep returning records until we reach EOF */
@@ -794,8 +796,10 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			else {	/* Enough values went to this node */
 				if (Amode == 'n')
 					Grid->data[ij] = (gmt_grdfloat)flag[ij];
-				else if (Amode == 'm')
+				else if (Amode == 'm') {
 					Grid->data[ij] /= (gmt_grdfloat)flag[ij];
+					if (flag[ij] > 1) n_ave++;
+				}
 				else if (Amode == 'r')
 					Grid->data[ij] = (gmt_grdfloat)sqrt (Grid->data[ij] / (gmt_grdfloat)flag[ij]);
 				else if (Amode == 'd')
@@ -808,6 +812,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				n_filled++;
 			}
 		}
+		if (n_ave) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " nodes had multiple entries and were averaged\n", n_ave);
 		gmt_M_free (GMT, flag);
 		gmt_M_free (GMT, data);
 

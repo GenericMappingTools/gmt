@@ -15,15 +15,15 @@ Synopsis
 **gmt spatial** [ *table* ]
 [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
-[ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*] ]
+[ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *factor*] ]
 [ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
-[ -L|\ *dist*\ /*noise*\ /*offset* ]
-[ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
+[ |-L|\ *dist*\ /*noise*\ /*offset* ]
+[ |-N|\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**] ]
 [ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
+[ |-S|\ **b**\ *width*\|\ **h**\|\ **s** ]
 [ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *dist*\[*unit*][**+f**\|\ **l**] ]
@@ -74,7 +74,7 @@ Optional Arguments
    average (the absolute ID value gives the ID of the first original point
    ID to be included in the average.).  **Note**: The input data are assumed to
    contain (*lon, lat*) or (*x, y*), optionally followed by a *z* and a *weight* [1] column.
-   We compute a weighted average of the location and *z* (if present).
+   We compute a weighted average of the location and *z* (if *weight* is present).
 
 .. _-C:
 
@@ -85,31 +85,31 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*]
-    Check for duplicates among the input lines or polygons, or, if
-    *file* is given via **+f**, check if the input features already
-    exist among the features in *file*. We consider the cases of exact
-    (same number and coordinates) and approximate matches (average
-    distance between nearest points of two features is less than a
-    threshold). We also consider that some features may have been
-    reversed. Features are considered approximate matches if their
-    minimum distance is less than *dmax* [0] (see `Units`_) and their
-    closeness (defined as the ratio between the average distance between
-    the features divided by their average length) is less than *cmax*
-    [0.01]. For each duplicate found, the output record begins with the
-    single letter Y (exact match) or ~ (approximate match). If the two
+**-D**\ [**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*]
+    Check for duplicates among the input lines (or polygons).
+    We consider both the cases of exact (same number and coordinates) and
+    approximate matches (average distance between nearest points of two
+    features is less than a threshold). We also consider that some features
+    may have been reversed. By default, we compute the mean line separation.
+
+    - **+c**: Set threshold of a pair's closeness (defined as the average distance
+      between the features divided by their average length) [0.01].
+    - **+C**: Use **+C**\ *cmin* to instead compute the median line separation
+      and therefore a robust closeness value.
+    - **+d**: Features are considered approximate matches if their
+      minimum distance is less than *dmax* [0] (see `Units`_) and their
+      closeness (**+c**) is less than *cmax*.
+    - **+f**: Check if the input features already exist among the features in *file*. 
+    - **+p**: Limit the comparison to points that project perpendicularly to points
+      on the other line (and not its extension) [Default considers all distances
+      between points on one line and another.
+
+    For each duplicate found, the output record begins with the
+    single letter **Y** (exact match) or **~** (approximate match). If the two
     matching segments differ in length by more than a factor of 2 then
-    we consider the duplicate to be either a subset (-) or a superset
-    (+). Finally, we also note if two lines are the result of splitting
-    a continuous line across the Dateline (|).
-    For polygons we also consider the fractional difference in
-    areas; duplicates must differ by less than *amax* [0.01]. By
-    default, we compute the mean line separation. Use **+C**\ *cmin* to
-    instead compute the median line separation and therefore a robust
-    closeness value. Also by default we consider all distances between
-    points on one line and another. Append **+p** to limit the
-    comparison to points that project perpendicularly to points on the
-    other line (and not its extension).
+    we consider the duplicate to be either a subset (**-**) or a superset
+    (**+**) and are flagged accordingly. Finally, we also note if two lines
+    are the result of splitting a continuous line across the Dateline (**|**).
 
 .. _-E:
 
@@ -143,44 +143,53 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**]
-    Determine if one (or all, with **+a**) points of each feature in the
+**-N**\ *pfile*\ [**+a**][**+i**][**+p**\ [*start*]][**+r**][**+z**]
+    Lines and polygons: Determine if one (or all) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
-    inside, then report which polygon it is; the polygon ID is either
-    taken from the aspatial value assigned to Z, the segment header
-    (first |-Z|, then |-L| are scanned), or it is assigned the
-    running number that is initialized to *start* [0]. By default the
-    input segment that are found to be inside a polygon are written to
-    standard output with the polygon ID encoded in the segment header as
-    **-Z**\ *ID*. Alternatively, append **+r** to just report which
-    polygon contains a feature or **+z** to have the IDs added as an
-    extra data column on output. Segments that fail to be inside a
-    polygon are not written out. If more than one polygon contains the
-    same segment we skip the second (and further) scenario.
+    inside, then report which polygon it is. The polygon ID is taken from
+    the aspatial value assigned to Z or the segment header (first |-Z|, then
+    |-L| are scanned). By default the input segments that are found to be
+    inside a polygon are written to standard output with the polygon ID
+    encoded in the segment header as **-Z**\ *ID*. Modifiers can be used
+    to adjust the process:
+
+    - **+a**: All the points of a feature must be inside the polygon.
+    - **+i**: Point clouds, determine the polygon ID for every individual input point
+      and add it as the last output column.
+    - **+p**: Instead of segment headers, assign a running ID number
+      that is initialized to begin from *start* [0].
+    - **+r**: Just report which polygon contains a feature.
+    - **+z**: Add the IDs as an extra data column on output.
+
+    Segments that fail to be inside a polygon are not written out. If
+    more than one polygon contains the same segment we skip the second
+    (and further) scenarios.
 
 .. _-Q:
 
 **-Q**\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]]
-    Measure the area of all polygons or length of line segments. Use
-    **-Q+h** to append the area to each polygons segment header [Default
-    simply writes the area to standard output]. For polygons we also compute the
-    centroid location while for line data we compute the mid-point
-    (half-length) position. For geographical data, optionally append a
-    distance unit to select the unit used (see `Units`_) [k]. Note that
-    the area will depend on the current setting of :term:`PROJ_ELLIPSOID`; this should be a
-    recent ellipsoid to get accurate results. The centroid is computed
-    using the mean of the 3-D Cartesian vectors making up the polygon
-    vertices, while the area is obtained via an equal-area projection.
-    Normally, all input segments
-    will be be reflected on output.  Use **+c** to restrict processing to
-    those whose length (or area for polygons) fall inside the specified
-    range set by *min* and *max*.  If *max* is not set it defaults to infinity.
-    To sort the segments based on their lengths or area, use **+s** and
-    append **a** for ascending and **d** for descending order [ascending].
-    By default, we consider open polygons as lines.
-    Append **+p** to close open polygons and thus consider all input
-    as polygons, or append **+l** to consider all input as lines, even
-    if closed.
+    Measure the area of all polygons or length of all line segments.
+    For polygons we also compute the centroid location while for lines
+    we compute the mid-point (half-length) position. For geographical
+    data, optionally append a distance unit to select the unit used
+    (see `Units`_) [k]. Note that the area will depend on the current
+    setting of :term:`PROJ_ELLIPSOID`; this should be a recent ellipsoid
+    to get accurate results. The centroid is computed using the mean of
+    the 3-D Cartesian vectors making up the polygon vertices, while the
+    area is obtained via a sum of areas for spherical triangles. Normally,
+    all input segments will be be reflected on output. By default, we
+    consider open polygons as lines and closed polygons as polygons.
+    Use modifiers to change the above behavior:
+
+    - **+c**: Restrict processing to those features whose length (or area
+      for polygons) fall inside the specified range set by *min* and *max*.
+      If *max* is not set it defaults to infinity.
+    - **+h**: Append the area to each polygonʻs segment header [Default
+      simply writes the area to standard output]. 
+    - **+l**: Consider all input features as lines, even if closed.
+    - **+p**: Close open polygons and thus consider all input as polygons.
+    - **+s**: Sort the segments based on their lengths or area. Append **a**
+      for ascending [Default] and **d** for descending order.
 
 .. _-R:
 
@@ -190,22 +199,26 @@ Optional Arguments
 .. include:: explain_-Rgeo.rst_
 
 .. _-S:
+    **i**: Returns the intersection of input polygons (closed).
+    **u**: Returns the union of input polygons (closed).
+    **j**: Join polygons that were split by the Dateline.
 
-**-S**\ **b**\ *width*\|\ **h**\|\ **i**\|\ **j**\|\ **s**\|\ **u**
-    Spatial processing of polygons. Choose from **-Sb**\ *width* which computes a buffer polygon around lines,
-    **-Sh** which identifies perimeter and hole polygons (and flags/reverses them), **-Si** which returns
-    the intersection of polygons (closed), **-Su** which returns the
-    union of polygons (closed), **-Ss** which will split polygons that
-    straddle the Dateline, and **-Sj** which will join polygons that
-    were split by the Dateline. **Note1**: Only **-Sb**, **-Sh** and **-Ss** have been implemented.
-    **Note2**: **-Sb** is a purely Cartesian operation so *width* must be in data units.
-    That is, for geographical coordinates *width* must be provided in degrees or, preferably, project data into
-    an equal-area projection, compute the buffer and then convert back to geographical.
+**-S**\ **b**\ *width*\|\ **h**\|\ **s**
+    Spatial processing of polygons. Choose from several directives:
+
+    - **b**: Append *width* which computes a buffer polygon around lines.
+    - **h**: Identifies perimeter and hole polygons (and flags/reverses them).
+    - **s**: Split polygons that straddle the Dateline.
+
+    **Note**: **-Sb** is a purely Cartesian operation so *width* must be in data units.
+    That is, for geographical coordinates *width* must be provided in degrees or,
+    preferably, project data into an equal-area projection with :doc:`mapproject`,
+    compute the buffer and then convert back to geographical.
 
 .. _-T:
 
 **-T**\ [*clippolygon*]
-    Truncate polygons against the specified polygon given, possibly
+    Truncate polygons and lines against the specified polygon given, possibly
     resulting in open polygons. If no argument is given to |-T| we
     create a clipping polygon from |-R| which then is required. Note
     that when the |-R| clipping is in effect we will also look for
@@ -216,13 +229,13 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. --W:
+.. _-W:
 
 **-W**\ *dist*\[*unit*][**+f**\|\ **l**]
     Extend all segments with a new first and last point such that these points are *dist* away
     from their neighbor point in the direction implied by the two points at each end of the
     segment.  For geographic data you may append a *unit* (see `Units`_). To give separate
-    distances for the two ends, give distf*\[*unit*]/distl*\[*unit*] instead.  Optionally,
+    distances for the two ends, give *distf*\[*unit*]/*distl*\[*unit*] instead.  Optionally,
     append either **+f** or **+l** to only extend the first or last point this way [both].
     The mode of geographical calculations depends on **-j**.
 
@@ -282,6 +295,11 @@ run::
 
     gmt spatial lines.txt -F > polygons.txt
 
+To append the polygon ID of every individual point in cloud.txt that is inside the
+polygons in the file poly.txt and write that ID as the last column per output row, run::
+
+    gmt spatial cloud.txt -Npoly.txt+i  > cloud_IDs.txt
+
 To compute the area of all geographic polygons in the multisegment file
 polygons.txt, run::
 
@@ -326,4 +344,5 @@ See Also
 :doc:`gmt`,
 :doc:`gmtconvert`,
 :doc:`gmtselect`,
-:doc:`gmtsimplify`
+:doc:`gmtsimplify`,
+:doc:`mapproject`

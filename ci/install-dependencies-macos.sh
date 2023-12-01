@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Bash script to install GMT dependencies on macOS via Homebrew
+# Bash script to install GMT dependencies on macOS via Homebrew and conda
 #
 # Environmental variables that can control the installation:
 #
@@ -17,18 +17,18 @@ PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
-packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript"
+packages="ninja curl pcre2 netcdf gdal geos fftw libomp"
+conda_packages="ghostscript=10.02.0"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" pngquant"
+    packages+=" dvc pngquant"
+    conda_packages+=" sphinx"
 fi
+
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
-    packages+=" graphicsmagick"
-    pip3 install --user dvc
-    # Add dvc to PATH
-    echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
+    packages+=" dvc graphicsmagick"
 fi
 
 if [ "$PACKAGE" = "true" ]; then
@@ -40,10 +40,17 @@ fi
 #brew update
 brew install ${packages}
 
+# Install packages via conda
+conda update -n base -c conda-forge conda --solver libmamba
+conda install ${conda_packages} -c conda-forge --solver libmamba
+echo "${CONDA}/bin" >> $GITHUB_PATH
+
+# Remove pcre-config from conda's path so cmake won't find the conda's one
+rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
+
+# Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then
-	pip3 install --user sphinx dvc
-    # Add sphinx to PATH
-    echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
+    ${CONDA}/bin/python -m pip install --user -r doc/rst/requirements.txt
 fi
 
 set +x +e

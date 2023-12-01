@@ -1,0 +1,5 @@
+outs:
+- md5: e5f75b9d8c715fd7c1b0f8a263a356f9
+  size: 195305
+  hash: md5
+  path: ex26.ps
