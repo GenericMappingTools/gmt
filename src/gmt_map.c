@@ -285,47 +285,57 @@ GMT_LOCAL bool gmtmap_quickconic (struct GMT_CTRL *GMT) {
 
 	double s, dlon, width;
 
-	if (GMT->current.proj.gave_map_width) {	/* Gave width */
-		dlon = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];
-		width = GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M];	/* Convert to meters */
-		s = (dlon * GMT->current.proj.M_PR_DEG) / width;
-	}
-	else if (GMT->current.proj.units_pr_degree) {	/* Gave scale */
-		/* Convert to meters */
-		s = GMT->current.proj.M_PR_DEG / (GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M]);
-	}
-	else {	/* Got 1:xxx that was changed */
-		s = (1.0 / GMT->current.proj.pars[4]) / GMT->current.proj.unit;
-	}
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GEODESIC) return (false);	/* Used -je for full ellipsoidal terms */
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GREATCIRCLE) return (true);	/* Used -jg for spherical mode */
+	if (GMT->common.R.active[RSET]) {	/* Use longitudinal extent to decide best option */
+		if (GMT->current.proj.gave_map_width) {	/* Gave width */
+			dlon = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];
+			width = GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M];	/* Convert to meters */
+			s = (dlon * GMT->current.proj.M_PR_DEG) / width;
+		}
+		else if (GMT->current.proj.units_pr_degree) {	/* Gave scale */
+			/* Convert to meters */
+			s = GMT->current.proj.M_PR_DEG / (GMT->current.proj.pars[4] * GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_M]);
+		}
+		else {	/* Got 1:xxx that was changed */
+			s = (1.0 / GMT->current.proj.pars[4]) / GMT->current.proj.unit;
+		}
 
-	if (s > 1.0e7) {	/* if s in 1:s exceeds 1e7 we do the quick thing */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with conformal latitudes\n");
-		return (true);
+		if (s > 1.0e7) {	/* if s in 1:s exceeds 1e7 we do the quick thing */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with conformal latitudes\n");
+			return (true);
+		}
+		else /* Use full ellipsoidal terms */
+			return (false);
 	}
-	else /* Use full ellipsoidal terms */
-		return (false);
+	return (true);	/* Do the fast and easy if neighter -je|g nor -R is given */
 }
 
 /*! . */
 GMT_LOCAL bool gmtmap_quicktm (struct GMT_CTRL *GMT, double lon0, double limit) {
 	/* Returns true if the region chosen is too large for the
 	 * ellipsoidal series to be valid; hence use spherical equations
-	 * with authalic latitudes instead.
+	 * with conformal latitudes instead.
 	 * We let +-limit degrees from central meridian be the cutoff.
 	 */
 
 	double d_left, d_right;
 
-	d_left  = lon0 - GMT->common.R.wesn[XLO] - 360.0;
-	d_right = lon0 - GMT->common.R.wesn[XHI] - 360.0;
-	while (d_left  < -180.0) d_left  += 360.0;
-	while (d_right < -180.0) d_right += 360.0;
-	if (fabs (d_left) > limit || fabs (d_right) > limit) {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with authalic latitudes\n");
-		return (true);
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GEODESIC) return (false);	/* Used -je for full ellipsoidal terms */
+	if (GMT->common.j.active && GMT->common.j.mode == GMT_GREATCIRCLE) return (true);	/* Used -jg for spherical mode */
+	if (GMT->common.R.active[RSET]) {	/* Use longitudinal extent to decide best option */
+		d_left  = lon0 - GMT->common.R.wesn[XLO] - 360.0;
+		d_right = lon0 - GMT->common.R.wesn[XHI] - 360.0;
+		while (d_left  < -180.0) d_left  += 360.0;
+		while (d_right < -180.0) d_right += 360.0;
+		if (fabs (d_left) > limit || fabs (d_right) > limit) {
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Using spherical projection with conformal latitudes since area too big for ellipsoidal series\n");
+			return (true);
+		}
+		else /* Use full ellipsoidal terms */
+			return (false);
 	}
-	else /* Use full ellipsoidal terms */
-		return (false);
+	return (true);	/* If neither -je|g nor -R is set we just do spherical */
 }
 
 /*! . */
@@ -3344,6 +3354,19 @@ GMT_LOCAL void gmtmap_translate_point_spherical (struct GMT_CTRL *GMT, double lo
 	*tlat = d_asind (sy * cd + cy * sd * ca);
 	if (back_azimuth)
 		*back_azimuth = gmtmap_az_backaz_sphere (GMT, lon, lat, *tlon, *tlat, true);
+}
+
+GMT_LOCAL void gmtmap_translate_point_flatearth (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
+	/* compute new point dist degrees from input point along azimuth using flat Earth geometry*/
+	double sa, ca, cy;
+	gmt_M_unused (GMT);
+	sincosd (azimuth,  &sa, &ca);
+	cy = cosd (lat);
+	distance /= GMT->current.proj.DIST_M_PR_DEG;
+	*tlon = lon + distance * sa / cy;
+	*tlat = lat + distance * ca;
+	if (back_azimuth)
+		*back_azimuth = gmtmap_az_backaz_flatearth (GMT, lon, lat, *tlon, *tlat, true);
 }
 
 void gmtlib_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
@@ -6540,6 +6563,7 @@ GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsign
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
 			GMT->current.map.dist[type].func = &gmtmap_flatearth_dist_meter;
 			GMT->current.map.azimuth_func  = &gmtmap_az_backaz_flatearth;
+			GMT->current.map.second_point = &gmtmap_translate_point_flatearth;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
@@ -6558,6 +6582,7 @@ GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsign
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			GMT->current.map.dist[type].func = gmtmap_flatearth_dist_degree;
 			GMT->current.map.azimuth_func = &gmtmap_az_backaz_flatearth;
+			GMT->current.map.second_point = &gmtmap_translate_point_flatearth;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
@@ -8364,7 +8389,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			struct GMT_GRID *G = NULL;
 			if ((G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, O->header->wesn, O->header->inc, \
 				O->header->registration, GMT_PAD_DEFAULT, NULL)) == NULL) goto bail_grd_dbg;
-			for (k = 0; k < G->header->size; k++) G->data[k] = (float)nz[k];
+			for (k = 0; k < G->header->size; k++) G->data[k] = (gmt_grdfloat)nz[k];
 			(void) GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "nz_grd_counter.grd", G);
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_grd_counter.grd\n");
 			GMT_Destroy_Data (GMT->parent, &G);
@@ -8593,7 +8618,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 			struct GMT_GRID *G = NULL;
 			if ((G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, O->header->wesn, O->header->inc, \
 				O->header->registration, GMT_PAD_DEFAULT, NULL)) == NULL) goto bail_img_dbg;
-			for (k = 0; k < G->header->size; k++) G->data[k] = (float)nz[k];
+			for (k = 0; k < G->header->size; k++) G->data[k] = (gmt_grdfloat)nz[k];
 			(void) GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "nz_img_counter.grd", G);
 			GMT_Report (GMT->parent, GMT_MSG_NOTICE, "gmt_grd_project: Antialias counter nz written to grid file nz_img_counter.grd\n");
 			GMT_Destroy_Data (GMT->parent, &G);

@@ -57,10 +57,11 @@ struct GRDINTERPOLATE_CTRL {
 		double step;
 		char unit;
 	} E;
-	struct GRDINTERPOLATE_F {	/* -Fl|a|c[+d1|2] */
+	struct GRDINTERPOLATE_F {	/* -Fl|a|c|e|n|s<p>[+d1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
+		double fit;
 		char spline[GMT_LEN8];
 	} F;
 	struct GRDINTERPOLATE_G {	/* -G<output_grdfile>  */
@@ -120,9 +121,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "
 		"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]] "
-		"[-Fl|a|c|n[+d1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
+		"[-F%s [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
 		"[-Z[<levels>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-			name,  GMT_GRDEDIT3D, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
+			name,  GMT_GRDEDIT3D, GMT_INTERPOLANT_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 			GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -137,29 +138,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"-G for embedding the level in the file name.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_cube_info_syntax (API->GMT, 'D');
-	GMT_Usage (API, 1, "\n-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]");
-	GMT_Usage (API, -2, "Set up a single cross-section based on <file> or on the given <line1>[,<line2>,...]. Give "
-		"start and stop coordinates for each line segment.  The format of each <line> is <start>/<stop>, where "
-		"<start> or <stop> are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>. Append +i<inc> to set the "
-		"sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)] Instead of <start/stop>, give <origin> "
-		"and append +a|o|l|n|r as required:");
-	GMT_Usage (API, -3, "+a Define a profiles from <origin> in <az> direction. Add +l<length>.");
-	GMT_Usage (API, -3, "+g Use gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].");
-	GMT_Usage (API, -3, "+o Define a profile centered on <origin> in <az> direction. Add +l<length>.");
-	GMT_Usage (API, -3, "+p Sample along the parallel if <line> has constant latitude.");
-	GMT_Usage (API, -3, "+r Define a circle about <origin> with given <radius>. Add +i<inc> or +n<np>.");
-	GMT_Usage (API, -3, "+n Set the number of output points as <np> and computes <inc> from <length>.");
-	GMT_Usage (API, -3, "+x Follow a loxodrome (rhumbline) [great circle].");
-	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, so "
-		"mixing of units is not allowed [Default unit is km, if grid is geographic].");
-	GMT_Usage (API, 1, "\n-Fl|a|c|n[+d1|2]");
-	GMT_Usage (API, -2, "Set the grid interpolation mode.  Choose from:");
-	GMT_Usage (API, -3, "l: Linear interpolation.");
-	GMT_Usage (API, -3, "a: Akima spline interpolation.");
-	GMT_Usage (API, -3, "c: Cubic spline interpolation.");
-	GMT_Usage (API, -3, "n: No interpolation (nearest point).");
-	GMT_Usage (API, -2, "Optionally, request a spline derivative via a modifier:");
-	GMT_Usage (API, 3, "+d Append 1 for 1st derivative or 2 for 2nd derivative.");
+	gmt_explain_lines (API, 1);
+	gmt_explain_interpolate_mode (API);
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<x>/<y>|<table>[+h<header>]");
 	GMT_Usage (API, -2, "Give a fixed point for across-stack sampling [Default] or interpolation [with -T]. For "
@@ -223,20 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				break;
 			case 'F':	/* Set the spline type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				switch (opt->arg[0]) {
-					case 'l':	Ctrl->F.mode = GMT_SPLINE_LINEAR;	break;
-					case 'a':	Ctrl->F.mode = GMT_SPLINE_AKIMA;	break;
-					case 'c':	Ctrl->F.mode = GMT_SPLINE_CUBIC;	break;
-					case 'n':	Ctrl->F.mode = GMT_SPLINE_NN;		break;
-					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad spline selector %c\n", opt->arg[0]);
-						n_errors++;
-						break;
-				}
-				if (strstr (&opt->arg[1], "+d1")) Ctrl->F.type = 1;	/* Want first derivative */
-				else if (strstr (&opt->arg[1], "+d2")) Ctrl->F.type = 2;	/* Want second derivative */
-				else if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative (backwards compatibility) */
-				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative (backwards compatibility) */
+				n_errors += gmt_parse_interpolant (API, opt->arg, &(Ctrl->F.mode), &(Ctrl->F.type), &(Ctrl->F.fit));
 				strncpy (Ctrl->F.spline, opt->arg, GMT_LEN8-1);	/* Keep track of what was given since it may need to be passed verbatim to other modules */
 				break;
 			case 'G':	/* Output file or name template */
@@ -567,7 +534,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
 			Si->data[GMT_X][0] = Ctrl->S.x;
 			Si->data[GMT_Y][0] = Ctrl->S.y;
-			if (Ctrl->S.header)	/* Set the fixed header here via training text */
+			if (Ctrl->S.header)	/* Set the fixed header here via trailing text */
 				Si->text[0] = strdup (Ctrl->S.header);
 			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
@@ -632,9 +599,9 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
 					if (k == start_k) {	/* Set the segment header just once */
 						if (Si->text && Si->text[row])
-							sprintf (header, "Location %g,%g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
+							sprintf (header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
 						else
-							sprintf (header, "Location %g,%g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
+							sprintf (header, "Location %.12g,%.12g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
 						So->header = strdup (header);
 					}
 					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
@@ -695,6 +662,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		}
 
 		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		if (GMT->common.o.active) gmt_reparse_o_option (GMT, Out->n_columns);
 
 		if (Ctrl->S.active) {	/* Write the table(s) */
 			if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */
@@ -745,7 +713,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				So = Out->table[0]->segment[seg];	/* Short hand to this output segment */
 				for (row = 0; row < So->n_rows; row++) {
 					ij = gmt_M_ijp (Grid->header, So->n_rows-row-1, seg);	/* Must flip order since rows in grid goes down */
-					Grid->data[ij] = (float)So->data[3][row];
+					Grid->data[ij] = (gmt_grdfloat)So->data[3][row];
 				}
 			}
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK) {
@@ -887,7 +855,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				i_value[k] = C[GMT_IN]->data[node+k*C[GMT_IN]->header->size];
 			gmt_intpol (GMT, C[GMT_IN]->z, i_value, NULL, C[GMT_IN]->header->n_bands, n_layers, level, o_value, 0.0, int_mode);	/* Resample at requested output levels */
 			for (k = 0; k < n_layers; k++)	/* For all output levels, place the interpolated values at this (x,y) across all levels */
-				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (float)o_value[k];
+				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (gmt_grdfloat)o_value[k];
 		}
 	}
 	GMT_Destroy_Data (API, &C[GMT_IN]);	/* Done with the input cube */

@@ -10,7 +10,7 @@ The **-a** option
 
 GMT relies on external tools to translate geospatial files such as shapefiles into a format we can read. The tool
 *ogr2ogr* in the GDAL package can do such translations and preserve the aspatial metadata via a new OGR/GMT format
-specification (See the cookbook chapter :doc:`/cookbook/ogrgmt-format`). For this to be useful we need a mechanism to
+specification (See the cookbook chapter :doc:`/reference/ogrgmt-format`). For this to be useful we need a mechanism to
 associate certain metadata values with required input and output columns expected by GMT programs. The **-a** option
 allows you to supply one or more comma-separated associations *col=name*, where *name* is the name of an aspatial
 attribute field in a OGR/GMT file and whose value we wish to as data input for column *col*. The given aspatial field
@@ -21,12 +21,12 @@ OGR/GMT input with **-a** option
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you need to populate GMT data columns with (constant) values specified by aspatial attributes, use **-a** and append
-any number of comma-separated *col=name* associations. For example, **-a**\ *2=depth* will read the spatial *x,y*
+any number of comma-separated *col=name* associations. For example, **-a**\ *2=depth* will read the spatial *x, y*
 columns from the file and add a third (*z*) column based on the value of the aspatial field called *depth*. You can also
 associate aspatial fields with other settings such as labels, fill colors, pens, and values (for looking-up colors) by
 letting the *col* value be one of **D** (for *distance*), **G** (for *fill*), **I** (for *ID*), **L** (for *label*),
 **T** (for *text*), **W** (for *pen*), or **Z** (for *value*). This works analogously to how standard multi-segment files
-can pass such options via its segment headers (See the cookbook chapter :doc:`/cookbook/file-formats`). **Note**: If
+can pass such options via its segment headers (See the cookbook chapter :doc:`/reference/file-formats`). **Note**: If
 the leading *col=* is omitted, the column value is automatically incremented starting at 2.
 
 OGR/GMT output with **-a** option

@@ -143,8 +143,8 @@ Optional Arguments
 **-I**\ [**o**\|\ **O**]
     Inquire about min/max *x* and *y* after binning. The *xmin xmax ymin
     ymax* is output; no plotting is done. Append directive **o** to output an
-    ASCII table of the resulting *x,y* data instead. Upper case directive **O** will
-    output all *x,y* bin data even when *y* == 0. **Note**: You may use **-o**
+    ASCII table of the resulting *x, y* data instead. Upper case directive **O** will
+    output all *x, y* bin data even when *y* == 0. **Note**: You may use **-o**
     to select a subset from this record.
 
 .. _-Jz:
@@ -224,8 +224,8 @@ Optional Arguments
     * 1 = frequency_percent
     * 2 = log (1.0 + count)
     * 3 = log (1.0 + frequency_percent)
-    * 4 = log10 (1.0 + count)
-    * 5 = log10 (1.0 + frequency_percent).
+    * 4 = :math:`\log_{10}` (1.0 + count)
+    * 5 = :math:`\log_{10}` (1.0 + frequency_percent).
 
     To use weights provided as a second data column instead of pure counts,
     append **+w**.

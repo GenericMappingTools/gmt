@@ -118,7 +118,7 @@ Optional Arguments
     E77 file has not been verified. Use **-AE** to ignore the
     verification status.
 
-    **g** Sample a GMT geographic (lon, lat) grid along the track given
+    **g** Sample a GMT geographic (*lon, lat*) grid along the track given
     by the MGD77+ file using bicubic interpolation (however, see
     **-n**). Append name of a GMT grid file.
 
@@ -403,4 +403,4 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 IGRF, see `<http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

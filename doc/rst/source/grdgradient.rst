@@ -12,13 +12,17 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdgradient** *ingrid* |-G|\ *outgrid*
-[ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
+**gmt grdgradient** *ingrid*
+|-G|\ *outgrid*
+[ |-A|\ *azim*\ [/*azim2*] ]
+[ |-D|\ [**a**][**c**][**n**][**o**] ]
 [ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
 [ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
 [ |-Q|\ **c**\|\ **r**\|\ **R**\ [**+f**\ *file*]]
-[ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
-[ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
+[ |SYN_OPT-R| ]
+[ |-S|\ *slopefile* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT--| ]
 
@@ -56,14 +60,14 @@ Optional Arguments
 
 **-A**\ *azim*\ [/*azim2*]
     Azimuthal direction for a directional derivative; *azim* is the
-    angle in the x,y plane measured in degrees positive clockwise from
+    angle in the *x-y* plane measured in degrees positive clockwise from
     north (the +y direction) toward east (the +x direction). The
     negative of the directional derivative,
     :math:`-(\frac{dz}{dx}\sin(a) + \frac{dz}{dy}\cos(a))`
     , is found where :math:`a` is the *azimuth*; negation yields positive values
     when the slope of :math:`z(x,y)` is downhill in the :math:`a` direction, the
     correct sense for shading the illumination of an image (see
-    :doc:`grdimage` and :doc:`grdview`) by a light source above the x,y plane
+    :doc:`grdimage` and :doc:`grdview`) by a light source above the *x-y* plane
     shining from the :math:`a` direction. Optionally, supply two azimuths,
     **-A**\ *azim*/*azim2*, in which case the gradients in each of these
     directions are calculated and the one larger in magnitude is
@@ -76,18 +80,18 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**a**][**c**][**o**][**n**]
+**-D**\ [**a**][**c**][**n**][**o**]
     Instead of finding the gradient in a given direction (|-A|), find the
     direction of the positive (up-slope) gradient of the data. The
-    following modifiers are supported:
+    following directives are supported:
 
-    - **a** - Find the aspect (i.e., the down-slope direction).
-    - **c** - Use the conventional Cartesian angles measured counterclockwise
+    - **a**: Find the aspect (i.e., the down-slope direction).
+    - **c**: Use the conventional Cartesian angles measured counterclockwise
       from the positive x (east direction) [Default measures directions
       clockwise from north, as *azim* in |-A|].
-    - **o** - Report orientations (0-180) rather than directions (0-360).
-    - **n** - Add 90 degrees to all angles (e.g., to give local strikes of the
+    - **n**: Add 90 degrees to all angles (e.g., to give local strikes of the
       surface).
+    - **o**: Report orientations (0-180) rather than directions (0-360).
 
 .. _-E:
 
@@ -144,7 +148,7 @@ Optional Arguments
     **-Qr** to read these values.  Using **-QR** will read then delete the
     statistics file. See :ref:`Tiles <grdgradient:Tiles>` for more information.
     Optionally, append **+f**\ *file* to write/read the statistics to/from the
-    specified *file*.
+    specified *file* [Default is grdgradient.stat in the current TMP directory].
 
 .. |Add_-R| replace:: Using the |-R| option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|

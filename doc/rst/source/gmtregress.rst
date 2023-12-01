@@ -21,7 +21,7 @@ Synopsis
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
-[ |-Z|\ [±]\ *limit* ]
+[ |-Z|\ [**+**\|\ **-**]\ *limit* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -284,6 +284,11 @@ To force an orthogonal LMS to pick the best solution with a positive slope, try
 
   gmt regress points.txt -A+fp -Eo -Nr > best_pos_slope.txt
 
+Note
+----
+
+For regressions involving more general linear models beyond a straight line fit,
+see :doc:`gmtmath` **-A** and the operators **LSQFIT** or **SVDFIT**.
 
 References
 ----------
@@ -305,5 +310,6 @@ See Also
 --------
 
 :doc:`gmt`,
+:doc:`gmtmath`,
 :doc:`trend1d`,
 :doc:`trend2d`

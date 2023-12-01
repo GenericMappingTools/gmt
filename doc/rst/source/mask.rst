@@ -53,7 +53,7 @@ Reads a (*x*,\ *y*,\ *z*) file [or standard input] and uses
 this information to find out which grid cells are reliable. Only grid
 cells which have one or more data points are considered reliable. As an
 option, you may specify a radius of influence. Then, all grid cells that
-are within *radius* of a data point are considered reliable.
+are within the search *radius* of a data point are considered reliable.
 Furthermore, an option is provided to reverse the sense of the test.
 Having found the reliable/not reliable points, the module will either
 paint tiles to mask these nodes (with the |-T| switch), or use
@@ -102,7 +102,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *dumpfile*
-    Dump the (x,y) coordinates of each clipping polygon to one or more
+    Dump the (*x, y*) coordinates of each clipping polygon to one or more
     output files (or standard output if *template* is not given). No plotting
     will take place. If *template* contains the C-format specifier %d
     (including modifications like %05d) then polygons will be written to
@@ -149,7 +149,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *search\_radius*
-    Sets radius of influence. Grid nodes within *radius* of a data point
+    Sets search radius of influence. Grid nodes within *radius* of a data point
     are considered reliable. [Default is 0, which means that only grid
     cells with data in them are reliable]. Append the distance unit (see `Units`_).
 

@@ -168,6 +168,9 @@
 #else
 #	define PRIuS "zu"  /* printf size_t */
 #endif
+#if _WIN32
+#include <fcntl.h>     /* for _O_TEXT and _O_BINARY */
+#endif
 
 /* Define bswap32 */
 #undef bswap32
@@ -6044,7 +6047,7 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	unsigned char *buffer = NULL;
 	FILE *fp = NULL;
 
-	/* Open PostScript file */
+	/* Open PostScript file in binary mode; see below for reverting on Windows for gets reads */
 
 	if ((fp = fopen (file, "rb")) == NULL) {
 		PSL_message (PSL, PSL_MSG_ERROR, "Error: Cannot open image file %s!\n", file);
@@ -6069,6 +6072,14 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	h->magic = (int)value;
 
 	/* Scan for BoundingBox */
+
+#ifdef _WIN32
+	/* Reset I/O to text mode since we are using gets in psl_get_boundingbox */
+	if ( _setmode(_fileno(stdin), _O_TEXT) == -1 ) {
+		PSL_message (PSL, PSL_MSG_WARNING, "Could not set text mode for %s.\n", file);
+		return 0;
+	}
+#endif
 
 	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
 

@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\|\ **g**] ]
-[ |-E|\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**] ]
+[ |-E|\ [**r**\|\ **x**\|\ **y**][**+n**][**+w**\ [**k**]] ]
 [ |-F|\ [**r**\|\ **x**\|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
@@ -77,26 +77,33 @@ Optional Arguments
     to multiplying by :math:`k_r` in the frequency domain (:math:`k_r` is radial wave
     number). Append a scale to multiply by :math:`k_r \cdot`\ *scale*) instead.
     Alternatively, append **g** to indicate that your data are geoid
-    heights in meters and output should be gravity anomalies in mGal.
+    heights in meters and output should be gravity anomalies in mGal. Repeatable.
     [Default is no scale].
 
 .. _-E:
 
-**-E**\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**]
-    Estimate power spectrum in the radial direction [**r**]. Place
-    **x** or **y** immediately after |-E| to compute the spectrum in
-    the x or y direction instead. No grid file is created. If one grid
-    is given then f (i.e., frequency or wave number), power[f],
-    and 1 standard deviation in power[f] are written to the file set by
-    |-G| [standard output]. If two grids are given we write f and 8 quantities:
-    Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
-    admittance[f], gain[f], coherency[f].  Each quantity is followed by
+**-E**\ [**r**\|\ **x**\|\ **y**][**+n**][**+w**\ [**k**]]
+    Estimate power spectrum in the radial or a horizontal direction. No grid file is created. If one grid
+    is given then *f* (i.e., frequency or wave number), power[*f*],
+    and 1 standard deviation in power[*f*] are written to the file set by
+    |-G| [standard output]. If two grids are given we write *f* and 8 quantities:
+    Xpower[*f*], Ypower[*f*], coherent power[*f*], noise power[*f*], phase[*f*],
+    admittance[*f*], gain[*f*], coherency[*f*].  Each quantity is followed by
     its own 1-std dev error estimate, hence the output is 17 columns wide.
-    Give **+w** to write wavelength instead of frequency, and if your grid
-    is geographic you may further append **k** to scale wavelengths from
-    meter [Default] to km.  Finally, the spectrum is obtained by summing
-    over several frequencies.  Append **+n** to normalize so that the
-    mean spectral values per frequency are reported instead.
+    Select your spectrum by choosing one of these directives:
+
+    - **r**: Choose a radial spectrum [Default].
+    - **x**: Compute the spectrum in the *x*-direction instead. 
+    - **y**: Compute the spectrum in the *y*-direction instead. 
+    
+    Two modifiers are available the adjust the output further:
+
+    - **+w**: Write wavelength *w* instead of frequency *f*, and if your grid
+      is geographic you may further append **k** to scale wavelengths from
+      meter [Default] to km.
+    - **+n**: Normalize spectrum so that the mean spectral values per
+      frequency are reported [By default the spectrum is obtained by summing
+      over several frequencies.
 
 .. _-F:
 
@@ -155,7 +162,7 @@ Optional Arguments
     radial wave number). Append a scale to divide by :math:`k_r \cdot`\ *scale*
     instead. Alternatively, append **g** to indicate that your data set
     is gravity anomalies in mGal and output should be geoid heights in
-    meters. [Default is no scale].
+    meters.  Repeatable. [Default is no scale].
 
 .. _-N:
 

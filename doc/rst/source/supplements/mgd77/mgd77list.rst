@@ -516,7 +516,7 @@ cruises.lis, we try
 
 ::
 
-  gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
+  gmt mgd77list $(cat cruises.lis) -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
       shallow_grav.txt
 
 To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
@@ -525,15 +525,15 @@ records whose bitflag for faa indicates BAD values, we try
 
 ::
 
-  gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
+  gmt mgd77list $(cat cruises.lis) -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
 
-To output lon, lat, mag, and faa from all the cruises listed in the file
+To output *lon, lat, mag*, and *faa* from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
 reference fields, try:
 
 ::
 
-  gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.txt
+  gmt mgd77list $(cat cruises.lis) -Flon,lat,mag,faa -Af2,4 -Am2 > data.txt
 
 Recalculated Anomalies
 ----------------------
@@ -635,4 +635,4 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 IGRF, see `<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

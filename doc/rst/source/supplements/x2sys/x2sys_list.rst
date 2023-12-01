@@ -60,7 +60,7 @@ Optional Arguments
     Specifies maximum asymmetry in the distribution of crossovers
     relative to the mid point in time (or distance, if not time is
     available). Asymmetry is computed as (n_right - n_left)/(n_right
-    + n_left), referring the the number of crossovers that falls in the
+    + n_left), referring the number of crossovers that falls in the
     left or right half of the range. Symmetric distributions will have
     values close to zero. If specified, we exclude tracks whose
     asymmetry exceeds the specify cutoff in absolute value [1, i.e.,

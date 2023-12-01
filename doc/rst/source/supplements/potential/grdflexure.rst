@@ -75,7 +75,7 @@ Required Arguments
       as produced by :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
       These load times can be different from the evaluation times given
       via |-T|.  For load time format, see |-T|. **Note**: If *flist* has
-      three trailing words the the second will be interpreted as a load
+      three trailing words the second will be interpreted as a load
       density grid name and used for that layer instead of the fixed *rl*
       setting in |-D|. The last trailing word is a formatted age string.
     - A file list with extension ".lis" does not need the **+l** modifier
@@ -167,10 +167,6 @@ Optional Arguments
     will be time in years, while the last trailing text word is formatted time. 
     The output records thus contain *time flexuregrid timetag*.
 
-.. _-N:
-
-.. include:: ../../explain_fft.rst_
-
 .. _-M:
 
 **-M**\ *tm*
@@ -178,6 +174,10 @@ Optional Arguments
     thickness specified via |-E|.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
     Cannot be used in conjunctions with |-F|.
+
+.. _-N:
+
+.. include:: ../../explain_fft.rst_
 
 .. _-Q:
 
@@ -257,7 +257,7 @@ Grid Distance Units
 
 If a Cartesian grid does not have meter as the horizontal unit, append **+u**\ *unit*
 to the input file name to convert from the specified unit to meter.  E.g., appending
-**+uk** to the load file name will scale the grid x,y coordinates from km to meter.  If your
+**+uk** to the load file name will scale the grid *x, y* coordinates from km to meter.  If your
 grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 netCDF COARDS geographic grids will automatically be recognized as geographic.
 

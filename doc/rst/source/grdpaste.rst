@@ -53,7 +53,7 @@ Optional Arguments
 
 **-S**
     Just prints a code number and a description of the sides at which the grids are pasted.
-	No pasting actually happens. -G is ignored. This option is useful for externals that want to
+    No pasting actually happens. -G is ignored. This option is useful for externals that want to
     reimplement the grdpaste utility since it doesn't work form them (*e.g.* Julia and GMTMEX).
 
 .. |Add_-V| replace:: |Add_-V_links|

@@ -222,6 +222,20 @@ else (LAPACK_FOUND)
 	endif (LAPACK_LIBRARY)
 endif (LAPACK_FOUND)
 
+# Need to know if macOS and kernel is >= 22.4.0 for newLapack syntax
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+	execute_process (COMMAND bash "-c" "echo ${CMAKE_HOST_SYSTEM_VERSION} | awk -F. '{if ($1 > 22 || ($1 == 22 && $2 > 3)) {print 1} else {print 0}}'" 
+		OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE ACCELERATE_NEW_LAPACK)
+else (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+	set (ACCELERATE_NEW_LAPACK 0)
+endif (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+
+if (HAVE_LAPACK AND ACCELERATE_NEW_LAPACK GREATER 0)
+	# Recent macOS with Aarwin kernel > 22.4 needs this compiler flag:
+	add_compile_definitions(ACCELERATE_NEW_LAPACK)
+	message("-- Must add compiler flag -DACCELERATE_NEW_LAPACK definition for macOS kernel version ${CMAKE_HOST_SYSTEM_VERSION}")
+endif (HAVE_LAPACK AND ACCELERATE_NEW_LAPACK GREATER 0)
+
 if (NOT DEFINED GMT_EXCLUDE_BLAS)
 	find_package (BLAS)
 endif (NOT DEFINED GMT_EXCLUDE_BLAS)
@@ -284,17 +298,20 @@ if (GLIB_FOUND AND GMT_USE_THREADS)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARIES})
 	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled (${GLIB_VERSION})"
 		CACHE INTERNAL "GTHREAD config message")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled" CACHE INTERNAL "GLIB config message")
 endif (GLIB_FOUND AND GMT_USE_THREADS)
 if (GLIB_FOUND AND NOT GMT_USE_THREADS)
 	set (HAVE_GLIB_GTHREAD FALSE CACHE INTERNAL "User disabled threads")
 	message (STATUS "User variable GMT_USE_THREADS not set: disabling GThread.")
 	set (GMT_CONFIG_GTHREAD_MESSAGE "disabled"
 		CACHE INTERNAL "GTHREAD config message")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "disabled" CACHE INTERNAL "GLIB config message")
 endif (GLIB_FOUND AND NOT GMT_USE_THREADS)
 if (GMT_USE_THREADS AND NOT GLIB_FOUND)
 	message (FATAL_ERROR "User variable GMT_USE_THREADS set but GLIB component gthread not found.")
 	set (GMT_CONFIG_GTHREAD_MESSAGE "unavailable"
 		CACHE INTERNAL "GTHREAD config message")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "unavailable" CACHE INTERNAL "GLIB config message")
 endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 # FreeBSD uses a separate library for backtracking
@@ -377,6 +394,12 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
 AUX_SOURCE_DIRECTORY (longopt GMT_LONG_OPT_H)
 
+if (BUILD_IMGTEXTURE)
+	set (IMGTEXTURE_SRC imgtexture/terrain_filter.c imgtexture/transpose_inplace.c imgtexture/dct_fftpack.c imgtexture/fftpack.c
+	     imgtexture/compatibility.h imgtexture/dct.h imgtexture/extern_msc.h imgtexture/fftpack.h imgtexture/terrain_filter.h
+	     imgtexture/transpose_inplace.h)
+endif (BUILD_IMGTEXTURE)
+
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	gmt_common_runpath.h gmt_common_sighandler.h gmt_common_string.h clear.c begin.c
@@ -403,7 +426,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h ${GMT_LONG_OPT_H}
-	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${EXTRA_SOURCES})
+	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${IMGTEXTURE_SRC} ${EXTRA_SOURCES})
 
 # source codes for testing API
 if (DO_API_TESTS)
@@ -703,7 +726,7 @@ if (BUILD_SUPPLEMENTS)
 	# supplement directories to be built as supplement libraries
 	# SUPPL_EXTRA_DIRS are directories for custom supplements.
 	# See cmake/ConfigUserAdvancedTemplate.cmake for details.
-	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys ${SUPPL_EXTRA_DIRS})
+	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys windbarbs ${SUPPL_EXTRA_DIRS})
 
 	# process supplement directories and collect information for each supplement libraries
 	set (GMT_SUPPL_LIBRARIES) # empty the library list

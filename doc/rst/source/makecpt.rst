@@ -178,7 +178,7 @@ Optional Arguments
 
 **-Q**
     For logarithmic interpolation scheme with input given as logarithms.
-    Expects input z-values provided via |-T| to be log10(*z*\ ), assigns colors, and
+    Expects input z-values provided via |-T| to be :math:`\log_{10}(z)`, assigns colors, and
     writes out *z*.
 
 .. _-S:
@@ -290,7 +290,7 @@ To use the GEBCO look-alike CPT with its default range for bathymetry, run::
 
 or simply use -Cgebco directly in the application that needs the color table.
 To create a 24-level color table suitable for plotting the depths in
-the remote data table v3206_06.txt (with lon, lat, depths), run
+the remote data table v3206_06.txt (with *lon, lat, depth*), run
 
 ::
 

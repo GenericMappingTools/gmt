@@ -38,7 +38,7 @@
  * If only oceans are filled, then the 'dry' areas remain transparent.  This
  * allows the user to overlay land or ocean without wiping out the plot.
  * For more information about the binned polygon file, see the GMT Technical
- * Reference and Cookbook.
+ * Reference.
  * Optionally, the user may choose to issue clip paths rather than paint the
  * polygons.  That way one may clip subsequent images to be visible only
  * inside or outside the coastline.
@@ -778,7 +778,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) {
-		if (error == NOT_REALLY_AN_ERROR) Return (0);
+		if (error == NOT_REALLY_AN_ERROR) Return (GMT_NOERROR);
 		Return (error);
 	}
 
@@ -1265,7 +1265,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Borders...");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Borders...\n");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
 		/* Must resample borders because some points may be too far apart and look like 'jumps' */

@@ -120,9 +120,9 @@ Optional Arguments
       `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
       (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
       state of a country (if available), e.g., US.TX for Texas.
-    - Append =\ *continent* to specify a continent, using either the full names or the abbreviations AF (Africa),
+    - Append =\ *continent* to specify a continent, using the abbreviations AF (Africa),
       AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
-    - To specify a collection or named region, give either the code or the full name.
+    - To specify a :ref:`DCW collection <dcw-collections>` or named region, give either the code or the full name.
 
     The following modifiers are supported:
 
@@ -413,6 +413,10 @@ Antarctic Research. This data base contains various kinds of limiting
 lines for Antarctica and is available on CD-ROM. It is published by the
 Scientific Committee on Antarctic Research, Scott Polar Research
 Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
+
+**Note**: While the data sets used have copyrights that control their
+distribution, maps made with them are yours.  You do not need permission
+from us to use such figures in journals, for instance.
 
 .. module_note_ends
 

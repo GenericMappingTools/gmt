@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3.5.3
+      uses: actions/checkout@v3.6.0
 
     - name: Setup data version control (DVC)
       uses: iterative/setup-dvc@v1.1.2
@@ -39,7 +39,7 @@ jobs:
         shasum -a 256 baseline-images.zip
 
     - name: Upload baseline image as a release asset
-      uses: shogo82148/actions-upload-release-asset@v1.6.5
+      uses: shogo82148/actions-upload-release-asset@v1.7.2
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: baseline-images.zip

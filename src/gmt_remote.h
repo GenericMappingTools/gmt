@@ -27,7 +27,7 @@
 #define GMT_REMOTE_H
 
 struct GMT_RESOLUTION {	/* Struct to hold information about the various resolutions for a remote data set family */
-	char inc[GMT_LEN8];	/* Grid spacing in text format. E.g., 30m, 03s, etc. */
+	char inc[GMT_LEN32];	/* Grid spacing in text format. E.g., 30m, 03s, etc. */
 	char reg;			/* Grid/Image registration (g or p). E.g., g */
 	double resolution;	/* In number of nodes per degree. E.g, for 01m that is 60 */
 };
@@ -38,7 +38,7 @@ struct GMT_DATA_INFO {
 	char dir[GMT_LEN64];		/* Directory of file.  Here, / (root) means /export/gmtserver/gmt/data */
 	char file[GMT_LEN64];		/* Full file (or tile directory) name. E.g., earth_relief_20m_g.grd or earth_relief_01m_g/ */
 	char ext[GMT_LEN8];			/* Data file extension. E.g., .grd, *tif, etc. */
-	char inc[GMT_LEN8];			/* Grid spacing in text format. E.g., 30m */
+	char inc[GMT_LEN32];		/* Grid spacing in text format. E.g., 30m, 52.0732883317s */
 	char reg;					/* Grid/Image registration (g or p). E.g., g */
 	double d_inc;				/* Grid spacing in floating point degrees (e.g., 0.5) */
 	double scale;				/* Scale to convert integers to data units */

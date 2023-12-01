@@ -222,6 +222,7 @@ endif (GSHHG_PATH)
 message(
 	"*\n"
 	"*  GMT Version:               : ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}\n"
+ 	"*  System:                    : ${CMAKE_HOST_SYSTEM_NAME} (${CMAKE_HOST_SYSTEM_VERSION})\n"
 	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GMT_CONFIG_GSHHG_MESSAGE}\n"

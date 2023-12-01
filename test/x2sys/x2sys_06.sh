@@ -4,7 +4,7 @@
 
 ps=x2sys_06.ps
 
-export X2SYS_HOME=`pwd`
+export X2SYS_HOME=$(pwd)
 gmt x2sys_init LINE -D"${src:-.}"/line -Etxt -G -F
 gmt x2sys_cross -TLINE @c2308.txt -Qi > c2308_faa_x.txt
 gmt grdmath -R199/204/18/25 -I5m -fg c2308_faa_x.txt PDIST = dist_km.grd

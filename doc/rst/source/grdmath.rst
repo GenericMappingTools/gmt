@@ -170,237 +170,238 @@ Choose among the following operators. "Args" are the number of input
 and output arguments.
 
 =============== ====== =============================================================================================== ===================
-Operator        Args   Returns                                                                                         Type of function   
+Operator        Args   Returns                                                                                         Type of function
 =============== ====== =============================================================================================== ===================
-**ABS**         1 1    Absolute value of A                                                                             Arithmetic         
-**ACOS**        1 1    Inverse cosine (result in radians)                                                              Calculus           
-**ACOSD**       1 1    Inverse cosine (result in degrees)                                                              Calculus           
-**ACOSH**       1 1    Inverse hyperbolic cosine                                                                       Calculus           
-**ACOT**        1 1    Inverse of cotangent (result in radians)                                                        Calculus           
-**ACOTD**       1 1    Inverse of cotangent (result in degrees)                                                        Calculus           
-**ACSC**        1 1    Inverse of cosecant (result in radians)                                                         Calculus           
-**ACSCD**       1 1    Inverse of cosecant (result in degrees)                                                         Calculus           
-**ADD**         2 1    A + B (addition)                                                                                Arithmetic         
-**AND**         2 1    B if A equals NaN, else A                                                                       Logic              
-**ARC**         2 1    Return arc (A,B) on [0 pi]                                                                      Arithmetic         
-**AREA**        0 1    Area of each gridnode cell (in km^2 if geographic)                                              Special Operators  
-**ASEC**        1 1    Inverse of secant (result in radians)                                                           Calculus           
-**ASECD**       1 1    Inverse of secant (result in degrees)                                                           Calculus           
-**ASIN**        1 1    Inverse of sine (result in radians)                                                             Calculus           
-**ASIND**       1 1    Inverse of sine (result in degrees)                                                             Calculus           
-**ASINH**       1 1    Inverse of hyperbolic sine                                                                      Calculus           
-**ATAN**        1 1    Inverse of tangent (result in radians)                                                          Calculus           
-**ATAND**       1 1    Inverse of tangent (result in degrees)                                                          Calculus           
-**ATAN2**       2 1    Inverse of tangent of A/B  (result in radians)                                                  Calculus           
-**ATAN2D**      2 1    Inverse of tangent of A/B (result in degrees)                                                   Calculus           
-**ATANH**       1 1    Inverse of hyperbolic tangent                                                                   Calculus           
-**BCDF**        3 1    Binomial cumulative distribution function for p = A, n = B, and x = C                           Probability        
-**BPDF**        3 1    Binomial probability density function for p = A, n = B, and x = C                               Probability        
-**BEI**         1 1    Kelvin function bei (A)                                                                         Special Functions  
-**BER**         1 1    Kelvin function ber (A)                                                                         Special Functions  
-**BITAND**      2 1    A & B (bitwise AND operator)                                                                    Logic              
-**BITLEFT**     2 1    A << B (bitwise left-shift operator)                                                            Arithmetic         
-**BITNOT**      1 1    ~A (bitwise NOT operator, i.e., return two’s complement)                                        Logic              
-**BITOR**       2 1    A | B (bitwise OR operator)                                                                     Logic              
-**BITRIGHT**    2 1    A >> B (bitwise right-shift operator)                                                           Arithmetic         
-**BITTEST**     2 1    1 if bit B of A is set, else 0 (bitwise TEST operator)                                          Logic              
-**BITXOR**      2 1    A ^ B (bitwise XOR operator)                                                                    Logic              
-**BLEND**       3 1    Blend A and B using weights in C (0-1 range) as A*C + B*(1-C)                                   Special Operators  
-**CAZ**         2 1    Cartesian azimuth from grid nodes to stack x,y (i.e., A, B)                                     Special Operators  
-**CBAZ**        2 1    Cartesian back-azimuth from grid nodes to stack x,y (i.e., A, B)                                Special Operators  
-**CDIST**       2 1    Cartesian distance between grid nodes and stack x,y (i.e., A, B)                                Special Operators  
-**CDIST2**      2 1    As CDIST but only to nodes that are != 0                                                        Special Operators  
-**CEIL**        1 1    ceil (A) (smallest integer >= A)                                                                Logic              
-**CHICRIT**     2 1    Chi-squared distribution critical value for alpha = A and nu = B                                Probability        
-**CHICDF**      2 1    Chi-squared cumulative distribution function for chi2 = A and nu = B                            Probability        
-**CHIPDF**      2 1    Chi-squared probability density function for chi2 = A and nu = B                                Probability        
-**COMB**        2 1    Combinations n_C_r, with n = A and r = B                                                        Probability        
-**CORRCOEFF**   2 1    Correlation coefficient r(A, B)                                                                 Probability        
-**COS**         1 1    Inverse cosine (result in radians)                                                              Calculus           
-**COSD**        1 1    Inverse cosine (result in degrees)                                                              Calculus           
-**COSH**        1 1    Inverse hyperbolic cosine                                                                       Calculus           
-**COT**         1 1    Inverse of cotangent (result in radians)                                                        Calculus           
-**COTD**        1 1    Inverse of cotangent (result in degrees)                                                        Calculus           
-**CSC**         1 1    Inverse of cosecant (result in radians)                                                         Calculus           
-**CSCD**        1 1    Inverse of cosecant (result in degrees)                                                         Calculus           
-**CUMSUM**      2 1    Cumulative sum per row (B=±1|3) or column (B=±2|4) in A. Sign of B sets summation direction     Arithmetic         
-**CURV**        1 1    Curvature of A (Laplacian)                                                                      Calculus           
-**D2DX2**       1 1    d^2(A)/dx^2 2nd derivative                                                                      Calculus           
-**D2DY2**       1 1    d^2(A)/dy^2 2nd derivative                                                                      Calculus           
-**D2DXY**       1 1    d^2(A)/dxdy 2nd derivative                                                                      Calculus           
-**D2R**         1 1    Converts degrees to radians                                                                     Special Operators  
-**DDX**         1 1    d(A)/dx Central 1st derivative                                                                  Calculus           
-**DAYNIGHT**    3 1    1 where sun at (A, B) shines and 0 elsewhere, with C transition width                           Special Operators  
-**DDY**         1 1    d(A)/dy Central 1st derivative                                                                  Calculus           
-**DEG2KM**      1 1    Converts spherical degrees to kilometers                                                        Special Operators  
-**DENAN**       2 1    Replace NaNs in A with values from B                                                            Logic              
-**DILOG**       1 1    Dilogarithm (Spence's) function                                                                 Special Functions  
-**DIV**         2 1    A / B (division)                                                                                Arithmetic         
-**DOT**         2 1    2-D (Cartesian) or 3-D (geographic) dot products between nodes and stack (A, B) unit vector(s)  Special Operators  
-**DUP**         1 2    Places duplicate of A on the stack                                                              Special Operators  
-**ECDF**        2 1    Exponential cumulative distribution function for x = A and lambda = B                           Probability        
-**ECRIT**       2 1    Exponential distribution critical value for alpha = A and lambda = B                            Probability        
-**EPDF**        2 1    Exponential probability density function for x = A and lambda = B                               Probability        
-**ERF**         1 1    Error function erf (A)                                                                          Probability        
-**ERFC**        1 1    Complementary Error function erfc (A)                                                           Probability        
-**EQ**          2 1    1 if A equals B, else 0                                                                         Logic              
-**ERFINV**      1 1    Inverse error function of A                                                                     Probability        
-**EXCH**        2 2    Exchanges A and B on the stack                                                                  Special Operators  
-**EXP**         1 1    E raised to a power.                                                                            Arithmetic         
-**FACT**        1 1    A! (A factorial)                                                                                Arithmetic         
-**EXTREMA**     1 1    Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere                   Calculus           
-**FCDF**        3 1    F cumulative distribution function for F = A, nu1 = B, and nu2 = C                              Probability        
-**FCRIT**       3 1    F distribution critical value for alpha = A, nu1 = B, and nu2 = C                               Probability        
-**FISHER**      3 1    Fisher probability density function at nodes for center lon = A, lat = B, with kappa = C        Probability        
-**FLIPLR**      1 1    Reverse order of values in each row                                                             Special Operators  
-**FLIPUD**      1 1    Reverse order of each column                                                                    Special Operators  
-**FLOOR**       1 1    greatest integer less than or equal to A                                                        Logic              
-**FMOD**        2 1    A % B (remainder after truncated division)                                                      Arithmetic         
-**FPDF**        3 1    F probability density function for F = A, nu1 = B, and nu2 = C                                  Probability        
-**GE**          2 1    1 if A >= (greater or equal than) B, else 0                                                     Logic              
-**GT**          2 1    1 if A > (greater than) B, else 0                                                               Logic              
-**HSV2LAB**     3 3    Convert h,s,v triplets to l,a,b triplets, with h = A (0-360), s = B and v = C (0-1)             Special Operators  
-**HSV2RGB**     3 3    Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)             Special Operators  
-**HSV2XYZ**     3 3    Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)             Special Operators  
-**HYPOT**       2 1    Hypotenuse of a right triangle of sides A and B (= sqrt (A^2 + B^2))                            Calculus           
-**I0**          1 1    Modified Bessel function of A (1st kind, order 0)                                               Special Functions  
-**I1**          1 1    Modified Bessel function of A (1st kind, order 1)                                               Special Functions  
-**IFELSE**      3 1    B if A is not equal to 0, else C                                                                Logic              
-**IN**          2 1    Modified Bessel function of A (1st kind, order B)                                               Special Functions  
-**INRANGE**     3 1    1 if B <= A <= C, else 0                                                                        Logic              
-**INSIDE**      1 1    1 when inside or on polygon(s) in A, else 0                                                     Special Operators  
-**INV**         1 1    Inverse error function of A                                                                     Probability        
-**ISFINITE**    1 1    1 if A is finite, else 0                                                                        Logic              
-**ISNAN**       1 1    1 if A equals NaN, else 0                                                                       Logic              
-**J0**          1 1    Bessel function of A (1st kind, order 0)                                                        Special Functions  
-**J1**          1 1    Bessel function of A (1st kind, order 1)                                                        Special Functions  
-**JN**          2 1    Bessel function of A (1st kind, order B)                                                        Special Functions  
-**K0**          1 1    Modified Kelvin function of A (2nd kind, order 0)                                               Special Functions  
-**K1**          1 1    Modified Bessel function of A (2nd kind, order 1)                                               Special Functions  
-**KEI**         1 1    Kelvin function kei (A)                                                                         Special Functions  
-**KER**         1 1    Kelvin function ker (A)                                                                         Special Functions  
-**KM2DEG**      1 1    Converts kilometers to spherical degrees                                                        Special Operators  
-**KN**          2 1    Modified Bessel function of A (2nd kind, order B)                                               Special Functions  
-**KURT**        1 1    Kurtosis of A                                                                                   Probability        
-**LAB2HSV**     3 3    Convert l,a,b triplets to h,s,v triplets                                                        Special Operators  
-**LAB2RGB**     3 3    Convert l,a,b triplets to r,g,b triplets                                                        Special Operators  
-**LAB2XYZ**     3 3    Convert l,a,b triplets to x,y,z triplets                                                        Special Operators  
-**LCDF**        1 1    Laplace cumulative distribution function for z = A                                              Probability        
-**LCRIT**       1 1    Laplace distribution critical value for alpha = A                                               Probability        
-**LDIST**       1 1    Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A                Special Operators  
-**LDIST2**      2 1    As LDIST, from lines in ASCII file B but only to nodes where A != 0                             Special Operators  
-**LDISTG**      0 1    As LDIST, but operates on the GSHHG dataset (see -A, -D for options).                           Special Operators  
-**LE**          2 1    1 if A <= (equal or smaller than) B, else 0                                                     Logic              
-**LOG**         1 1    Dilogarithm (Spence's) function                                                                 Special Functions  
-**LOG10**       1 1    log10 (A) (logarithm base 10)                                                                   Arithmetic         
-**LOG1P**       1 1    log (1+A) (natural logarithm, accurate for small A)                                             Arithmetic         
-**LOG2**        1 1    log2 (A) (logarithm base 2)                                                                     Arithmetic         
-**LMSSCL**      1 1    LMS (Least Median of Squares) scale estimate (LMS STD) of A                                     Probability        
-**LMSSCLW**     2 1    Weighted LMS scale estimate (LMS STD) of A for weights in B                                     Probability        
-**LOWER**       1 1    The lowest (minimum) value of A                                                                 Arithmetic         
-**LPDF**        1 1    Laplace probability density function for z = A                                                  Probability        
-**LRAND**       2 1    Laplace random noise with mean A and std. deviation B                                           Probability        
-**LT**          2 1    1 if A < (smaller than) B, else 0                                                               Logic              
-**MAD**         1 1    Median Absolute Deviation (L1 STD) of A                                                         Probability        
-**MAX**         2 1    Maximum of A and B                                                                              Probability        
-**MEAN**        1 1    Mean value of A                                                                                 Probability        
-**MEANW**       2 1    Weighted mean value of A for weights in B                                                       Probability        
-**MEDIAN**      1 1    Median value of A                                                                               Probability        
-**MEDIANW**     2 1    Weighted median value of A for weights in B                                                     Probability        
-**MIN**         2 1    Minimum of A and B                                                                              Probability        
-**MOD**         2 1    A % B (remainder after truncated division)                                                      Arithmetic         
-**MODE**        1 1    Mode value (Least Median of Squares) of A                                                       Probability        
-**MODEW**       2 1    Weighted mode value (Least Median of Squares) of A for weights in B                             Probability        
-**MUL**         2 1    A x B (multiplication)                                                                          Arithmetic         
-**NAN**         2 1    Replace NaNs in A with values from B                                                            Logic              
-**NEG**         1 1    Negative (-A)                                                                                   Arithmetic         
-**NEQ**         2 1    1 If A  is not equal to B, else 0                                                               Logic              
-**NORM**        1 1    Normalize (A) so min(A) = 0 and max(A) = 1                                                      Probability        
-**NOT**         1 1    ~A (bitwise NOT operator, i.e., return two’s complement)                                        Logic              
-**NRAND**       2 1    Normal, random values with mean A and std. deviation B                                          Probability        
-**OR**          2 1    NaN if B equals NaN, else A                                                                     Logic              
-**PCDF**        2 1    Poisson cumulative distribution function for x = A and lambda = B                               Probability        
-**PDIST**       1 1    Compute minimum distance (in km if -fg) from points in ASCII file A                             Special Operators  
-**PDIST2**      2 1    As PDIST, from points in ASCII file B but only to nodes where A != 0                            Special Operators  
-**PERM**        2 1    Permutations n_P_r, with n = A and r = B                                                        Probability        
-**PLM**         3 1    Associated Legendre polynomial P(A) degree B order C                                            Special Functions  
-**PLMg**        3 1    Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)        Special Functions  
-**POINT**       1 2    Compute mean x and y from ASCII file A and place them on the stack                              Special Operators  
-**POP**         1 0    Delete top element from the stack                                                               Special Operators  
-**POW**         2 1    A to the power of B                                                                             Arithmetic         
-**PPDF**        2 1    Poisson distribution P(x,lambda), with x = A and lambda = B                                     Probability        
-**PQUANT**      2 1    The B’th quantile (0-100%) of A                                                                 Probability        
-**PQUANTW**     3 1    The C’th weighted quantile (0-100%) of A for weights in B                                       Probability        
-**PSI**         1 1    Psi (or Digamma) of A                                                                           Special Functions  
-**PV**          3 1    Legendre function Pv(A) of degree v = real(B) + imag(C)                                         Special Functions  
-**QV**          3 1    Legendre function Qv(A) of degree v = real(B) + imag(C)                                         Special Functions  
-**R2**          2 1    Hypotenuse squared (= A^2 + B^2)                                                                Calculus           
-**R2D**         1 1    Convert radians to degrees                                                                      Special Operators  
-**RAND**        2 1    Laplace random noise with mean A and std. deviation B                                           Probability        
-**RCDF**        1 1    Rayleigh cumulative distribution function for z = A                                             Probability        
-**RCRIT**       1 1    Rayleigh distribution critical value for alpha = A                                              Probability        
-**RGB2HSV**     3 3    Convert r,g,b triplets to h,s,v triplets, with r = A, g = B, and b = C (in 0-255 range)         Special Operators  
-**RGB2LAB**     3 3    Convert r,g,b triplets to l,a,b triplets, with r = A, g = B, and b = C (in 0-255 range)         Special Operators  
-**RGB2XYZ**     3 3    Convert r,g,b triplets to x,y,x triplets, with r = A, g = B, and b = C (in 0-255 range)         Special Operators  
-**RINT**        1 1    rint (A) (round to integral value nearest to A)                                                 Arithmetic         
-**RMS**         1 1    Root-mean-square of A                                                                           Arithmetic         
-**RMSW**        1 1    Weighted root-mean-square of A for weights in B                                                 Arithmetic         
-**RPDF**        1 1    Rayleigh probability density function for z = A                                                 Probability        
-**ROLL**        2 0    Cyclically shifts the top A stack items by an amount B                                          Special Operators  
-**ROTX**        2 1    Rotate A by the (constant) shift B in x-direction                                               Arithmetic         
-**ROTY**        2 1    Rotate A by the (constant) shift B in y-direction                                               Arithmetic         
-**SADDLE**      1 1    Saddle point (±), with (local) minimum (-1) or maximum (+1) in x-direction, 0 elsewhere         Calculus           
-**SDIST**       2 1    Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|    Special Operators  
-**SDIST2**      2 1    As SDIST but only to nodes that are != 0                                                        Special Operators  
-**SAZ**         2 1    Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)                                Special Operators  
-**SBAZ**        2 1    Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)                           Special Operators  
-**SEC**         1 1    Inverse of secant (result in radians)                                                           Calculus           
-**SECD**        1 1    Inverse of secant (result in degrees)                                                           Calculus           
-**SIGN**        1 1    Sign (+1 or -1) of A                                                                            Logic              
-**SIN**         1 1    Inverse of sine (result in radians)                                                             Calculus           
-**SINC**        1 1    Normalized sinc function.                                                                       Special Functions  
-**SIND**        1 1    Inverse of sine (result in degrees)                                                             Calculus           
-**SINH**        1 1    Inverse of hyperbolic sine                                                                      Calculus           
-**SKEW**        1 1    Skewness of A                                                                                   Probability        
-**SQR**         1 1    Square (to the power of 2)                                                                      Arithmetic         
-**SQRT**        1 1    Square root                                                                                     Arithmetic         
-**STD**         1 1    Standard deviation of A                                                                         Probability        
-**STDW**        2 1    Weighted standard deviation of A for weights in B                                               Probability        
-**STEP**        1 1    Heaviside step function H(A)                                                                    Special Functions  
-**STEPX**       1 1    Heaviside step function in x: H(x-A)                                                            Special Functions  
-**STEPY**       1 1    Heaviside step function in y: H(y-A)                                                            Special Functions  
-**SUB**         2 1    A - B (subtraction)                                                                             Arithmetic         
-**SUM**         1 1    Cumulative sum of A                                                                             Arithmetic         
-**TAN**         1 1    Inverse of tangent (result in radians)                                                          Calculus           
-**TAND**        1 1    Inverse of tangent (result in degrees)                                                          Calculus           
-**TANH**        1 1    Inverse of hyperbolic tangent                                                                   Calculus           
-**TAPER**       2 1    Unit weights cosine-tapered to zero within A of end margins                                     Special Operators  
-**TCDF**        2 1    Student’s t cumulative distribution function for t = A, and nu = B                              Probability        
-**TCRIT**       2 1    Student’s t distribution critical value for alpha = A and nu = B                                Probability        
-**TN**          2 1    ~A (bitwise NOT operator, i.e., return two’s complement)                                        Logic              
-**TPDF**        2 1    Student’s t probability density function for t = A, and nu = B                                  Probability        
-**TRIM**        3 1    Alpha-trim C to NaN if values fall in tails A and B (in percentage)                             Special Operators  
-**UPPER**       1 1    The highest (maximum) value of A                                                                Arithmetic         
-**VAR**         1 1    Variance of A                                                                                   Probability        
-**VARW**        2 1    Weighted variance of A for weights in B                                                         Probability        
-**VPDF**        3 1    Von Mises density distribution V(x,mu,kappa), with angles = A, mu = B, and kappa = C            Probability        
-**WCDF**        3 1    Weibull cumulative distribution function for x = A, scale = B, and shape = C                    Probability        
-**WCRIT**       3 1    Weibull distribution critical value for alpha = A, scale = B, and shape = C                     Probability        
-**WPDF**        3 1    Weibull density distribution P(x,scale,shape), with x = A, scale = B, and shape = C             Probability        
-**WRAP**        1 1    wrap A in radians onto [-pi,pi]                                                                 Special Operators  
-**XOR**         2 1    A ^ B (bitwise XOR operator)                                                                    Logic              
-**XYZ2HSV**     3 3    Convert x,y,z triplets to h,s,v triplets                                                        Special Operators  
-**XYZ2LAB**     3 3    Convert x,y,z triplets to l,a,b triplets                                                        Special Operators  
-**XYZ2RGB**     3 3    Convert x,y,z triplets to r,g,b triplets                                                        Special Operators  
-**Y0**          1 1    Bessel function of A (2nd kind, order 0)                                                        Special Functions  
-**Y1**          1 1    Bessel function of A (2nd kind, order 1)                                                        Special Functions  
-**YLM**         2 2    Real and Imaginary orthonormalized spherical harmonics degree A order B                         Special Functions  
-**YLMg**        2 2    Cos and Sin normalized spherical harmonics degree A order B (geophysical convention)            Special Functions  
-**YN**          2 1    Bessel function of A (2nd kind, order B)                                                        Special Functions  
-**ZCDF**        1 1    Normal cumulative distribution function for z = A                                               Probability        
-**ZCRIT**       1 1    Normal distribution critical value for alpha = A                                                Probability        
-**ZPDF**        1 1    Normal probability density function for z = A                                                   Probability        
+**ABS**         1 1    Absolute value of A                                                                             Arithmetic
+**ACOS**        1 1    Inverse cosine (result in radians)                                                              Calculus
+**ACOSD**       1 1    Inverse cosine (result in degrees)                                                              Calculus
+**ACOSH**       1 1    Inverse hyperbolic cosine                                                                       Calculus
+**ACOT**        1 1    Inverse of cotangent (result in radians)                                                        Calculus
+**ACOTD**       1 1    Inverse of cotangent (result in degrees)                                                        Calculus
+**ACSC**        1 1    Inverse of cosecant (result in radians)                                                         Calculus
+**ACSCD**       1 1    Inverse of cosecant (result in degrees)                                                         Calculus
+**ADD**         2 1    A + B (addition)                                                                                Arithmetic
+**AND**         2 1    B if A equals NaN, else A                                                                       Logic
+**ARC**         2 1    Return arc (A,B) on [0 pi]                                                                      Arithmetic
+**AREA**        0 1    Area of each gridnode cell (in km^2 if geographic)                                              Special Operators
+**ASEC**        1 1    Inverse of secant (result in radians)                                                           Calculus
+**ASECD**       1 1    Inverse of secant (result in degrees)                                                           Calculus
+**ASIN**        1 1    Inverse of sine (result in radians)                                                             Calculus
+**ASIND**       1 1    Inverse of sine (result in degrees)                                                             Calculus
+**ASINH**       1 1    Inverse of hyperbolic sine                                                                      Calculus
+**ATAN**        1 1    Inverse of tangent (result in radians)                                                          Calculus
+**ATAND**       1 1    Inverse of tangent (result in degrees)                                                          Calculus
+**ATAN2**       2 1    Inverse of tangent of A/B  (result in radians)                                                  Calculus
+**ATAN2D**      2 1    Inverse of tangent of A/B (result in degrees)                                                   Calculus
+**ATANH**       1 1    Inverse of hyperbolic tangent                                                                   Calculus
+**BCDF**        3 1    Binomial cumulative distribution function for p = A, n = B, and x = C                           Probability
+**BPDF**        3 1    Binomial probability density function for p = A, n = B, and x = C                               Probability
+**BEI**         1 1    Kelvin function bei (A)                                                                         Special Functions
+**BER**         1 1    Kelvin function ber (A)                                                                         Special Functions
+**BITAND**      2 1    A & B (bitwise AND operator)                                                                    Logic
+**BITLEFT**     2 1    A << B (bitwise left-shift operator)                                                            Arithmetic
+**BITNOT**      1 1    ~A (bitwise NOT operator, i.e., return two’s complement)                                        Logic
+**BITOR**       2 1    A | B (bitwise OR operator)                                                                     Logic
+**BITRIGHT**    2 1    A >> B (bitwise right-shift operator)                                                           Arithmetic
+**BITTEST**     2 1    1 if bit B of A is set, else 0 (bitwise TEST operator)                                          Logic
+**BITXOR**      2 1    A ^ B (bitwise XOR operator)                                                                    Logic
+**BLEND**       3 1    Blend A and B using weights in C (0-1 range) as A*C + B*(1-C)                                   Special Operators
+**CAZ**         2 1    Cartesian azimuth from grid nodes to stack *x, y* (i.e., A, B)                                  Special Operators
+**CBAZ**        2 1    Cartesian back-azimuth from grid nodes to stack *x, y* (i.e., A, B)                             Special Operators
+**CDIST**       2 1    Cartesian distance between grid nodes and stack *x, y* (i.e., A, B)                             Special Operators
+**CDIST2**      2 1    As CDIST but only to nodes that are != 0                                                        Special Operators
+**CEIL**        1 1    ceil (A) (smallest integer >= A)                                                                Logic
+**CHICRIT**     2 1    Chi-squared distribution critical value for alpha = A and nu = B                                Probability
+**CHICDF**      2 1    Chi-squared cumulative distribution function for chi2 = A and nu = B                            Probability
+**CHIPDF**      2 1    Chi-squared probability density function for chi2 = A and nu = B                                Probability
+**COMB**        2 1    Combinations n_C_r, with n = A and r = B                                                        Probability
+**CORRCOEFF**   2 1    Correlation coefficient r(A, B)                                                                 Probability
+**COS**         1 1    Cosine of A (A in radians)                                                                      Calculus
+**COSD**        1 1    Cosine of A (A in degrees)                                                                      Calculus
+**COSH**        1 1    Hyperbolic cosine of A                                                                          Calculus
+**COT**         1 1    Cotangent of A (A in radians)                                                                   Calculus
+**COTD**        1 1    Cotangent of A (A in degrees)                                                                   Calculus
+**CSC**         1 1    Cosecant of A (A in radians)                                                                    Calculus
+**CSCD**        1 1    Cosecant of A (A in degrees)                                                                    Calculus
+**CUMSUM**      2 1    Cumulative sum per row (B=±1|3) or column (B=±2|4) in A. Sign of B sets summation direction     Arithmetic
+**CURV**        1 1    Curvature of A (Laplacian)                                                                      Calculus
+**D2DX2**       1 1    d^2(A)/dx^2 2nd derivative                                                                      Calculus
+**D2DY2**       1 1    d^2(A)/dy^2 2nd derivative                                                                      Calculus
+**D2DXY**       1 1    d^2(A)/dxdy 2nd derivative                                                                      Calculus
+**D2R**         1 1    Converts degrees to radians                                                                     Special Operators
+**DDX**         1 1    d(A)/dx Central 1st derivative                                                                  Calculus
+**DAYNIGHT**    3 1    1 where sun at (A, B) shines and 0 elsewhere, with C transition width                           Special Operators
+**DDY**         1 1    d(A)/dy Central 1st derivative                                                                  Calculus
+**DEG2KM**      1 1    Converts spherical degrees to kilometers                                                        Special Operators
+**DENAN**       2 1    Replace NaNs in A with values from B                                                            Logic
+**DILOG**       1 1    Dilogarithm (Spence's) function                                                                 Special Functions
+**DIV**         2 1    A / B (division)                                                                                Arithmetic
+**DOT**         2 1    2-D (Cartesian) or 3-D (geographic) dot products between nodes and stack (A, B) unit vector(s)  Special Operators
+**DUP**         1 2    Places duplicate of A on the stack                                                              Special Operators
+**ECDF**        2 1    Exponential cumulative distribution function for x = A and lambda = B                           Probability
+**ECRIT**       2 1    Exponential distribution critical value for alpha = A and lambda = B                            Probability
+**EPDF**        2 1    Exponential probability density function for x = A and lambda = B                               Probability
+**ERF**         1 1    Error function erf (A)                                                                          Probability
+**ERFC**        1 1    Complementary Error function erfc (A)                                                           Probability
+**EQ**          2 1    1 if A equals B, else 0                                                                         Logic
+**ERFINV**      1 1    Inverse error function of A                                                                     Probability
+**EXCH**        2 2    Exchanges A and B on the stack                                                                  Special Operators
+**EXP**         1 1    E raised to a power.                                                                            Arithmetic
+**FACT**        1 1    A! (A factorial)                                                                                Arithmetic
+**EXTREMA**     1 1    Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere                   Calculus
+**FCDF**        3 1    F cumulative distribution function for F = A, nu1 = B, and nu2 = C                              Probability
+**FCRIT**       3 1    F distribution critical value for alpha = A, nu1 = B, and nu2 = C                               Probability
+**FISHER**      3 1    Fisher probability density function at nodes for center lon = A, lat = B, with kappa = C        Probability
+**FLIPLR**      1 1    Reverse order of values in each row                                                             Special Operators
+**FLIPUD**      1 1    Reverse order of each column                                                                    Special Operators
+**FLOOR**       1 1    greatest integer less than or equal to A                                                        Logic
+**FMOD**        2 1    A % B (remainder after truncated division)                                                      Arithmetic
+**FPDF**        3 1    F probability density function for F = A, nu1 = B, and nu2 = C                                  Probability
+**GE**          2 1    1 if A >= (greater or equal than) B, else 0                                                     Logic
+**GT**          2 1    1 if A > (greater than) B, else 0                                                               Logic
+**HSV2LAB**     3 3    Convert h,s,v triplets to l,a,b triplets, with h = A (0-360), s = B and v = C (0-1)             Special Operators
+**HSV2RGB**     3 3    Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)             Special Operators
+**HSV2XYZ**     3 3    Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)             Special Operators
+**HYPOT**       2 1    Hypotenuse of a right triangle of sides A and B (= sqrt (A^2 + B^2))                            Calculus
+**I0**          1 1    Modified Bessel function of A (1st kind, order 0)                                               Special Functions
+**I1**          1 1    Modified Bessel function of A (1st kind, order 1)                                               Special Functions
+**IFELSE**      3 1    B if A is not equal to 0, else C                                                                Logic
+**IN**          2 1    Modified Bessel function of A (1st kind, order B)                                               Special Functions
+**INRANGE**     3 1    1 if B <= A <= C, else 0                                                                        Logic
+**INSIDE**      1 1    1 when inside or on polygon(s) in A, else 0                                                     Special Operators
+**INV**         1 1    Inverse error function of A                                                                     Probability
+**ISFINITE**    1 1    1 if A is finite, else 0                                                                        Logic
+**ISNAN**       1 1    1 if A equals NaN, else 0                                                                       Logic
+**J0**          1 1    Bessel function of A (1st kind, order 0)                                                        Special Functions
+**J1**          1 1    Bessel function of A (1st kind, order 1)                                                        Special Functions
+**JN**          2 1    Bessel function of A (1st kind, order B)                                                        Special Functions
+**K0**          1 1    Modified Kelvin function of A (2nd kind, order 0)                                               Special Functions
+**K1**          1 1    Modified Bessel function of A (2nd kind, order 1)                                               Special Functions
+**KEI**         1 1    Kelvin function kei (A)                                                                         Special Functions
+**KER**         1 1    Kelvin function ker (A)                                                                         Special Functions
+**KM2DEG**      1 1    Converts kilometers to spherical degrees                                                        Special Operators
+**KN**          2 1    Modified Bessel function of A (2nd kind, order B)                                               Special Functions
+**KURT**        1 1    Kurtosis of A                                                                                   Probability
+**LAB2HSV**     3 3    Convert *l,a,b* triplets to *h,s,v* triplets                                                    Special Operators
+**LAB2RGB**     3 3    Convert *l,a,b* triplets to *r,g,b* triplets                                                    Special Operators
+**LAB2XYZ**     3 3    Convert *l,a,b* triplets to *x,y,z* triplets                                                    Special Operators
+**LCDF**        1 1    Laplace cumulative distribution function for z = A                                              Probability
+**LCRIT**       1 1    Laplace distribution critical value for alpha = A                                               Probability
+**LDIST**       1 1    Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A                Special Operators
+**LDIST2**      2 1    As LDIST, from lines in ASCII file B but only to nodes where A != 0                             Special Operators
+**LDISTG**      0 1    As LDIST, but operates on the GSHHG dataset (see -A, -D for options).                           Special Operators
+**LE**          2 1    1 if A <= (equal or smaller than) B, else 0                                                     Logic
+**LOG**         1 1    Dilogarithm (Spence's) function                                                                 Special Functions
+**LOG10**       1 1    :math:`\log_{10}` (A) (logarithm base 10)                                                       Arithmetic
+**LOG1P**       1 1    log (1+A) (natural logarithm, accurate for small A)                                             Arithmetic
+**LOG2**        1 1    :math:`\log_2` (A) (logarithm base 2)                                                           Arithmetic
+**LMSSCL**      1 1    LMS (Least Median of Squares) scale estimate (LMS STD) of A                                     Probability
+**LMSSCLW**     2 1    Weighted LMS scale estimate (LMS STD) of A for weights in B                                     Probability
+**LOWER**       1 1    The lowest (minimum) value of A                                                                 Arithmetic
+**LPDF**        1 1    Laplace probability density function for z = A                                                  Probability
+**LRAND**       2 1    Laplace random noise with mean A and std. deviation B                                           Probability
+**LT**          2 1    1 if A < (smaller than) B, else 0                                                               Logic
+**MAD**         1 1    Median Absolute Deviation (L1 STD) of A                                                         Probability
+**MAX**         2 1    Maximum of A and B                                                                              Probability
+**MEAN**        1 1    Mean value of A                                                                                 Probability
+**MEANW**       2 1    Weighted mean value of A for weights in B                                                       Probability
+**MEDIAN**      1 1    Median value of A                                                                               Probability
+**MEDIANW**     2 1    Weighted median value of A for weights in B                                                     Probability
+**MIN**         2 1    Minimum of A and B                                                                              Probability
+**MOD**         2 1    A % B (remainder after truncated division)                                                      Arithmetic
+**MODE**        1 1    Mode value (Least Median of Squares) of A                                                       Probability
+**MODEW**       2 1    Weighted mode value (Least Median of Squares) of A for weights in B                             Probability
+**MUL**         2 1    A x B (multiplication)                                                                          Arithmetic
+**NAN**         2 1    NaN if A == B, else A                                                                           Logic
+**NEG**         1 1    Negative (-A)                                                                                   Arithmetic
+**NEQ**         2 1    1 If A  is not equal to B, else 0                                                               Logic
+**NORM**        1 1    Normalize (A) so min(A) = 0 and max(A) = 1                                                      Probability
+**NOT**         1 1    ~A (bitwise NOT operator, i.e., return two’s complement)                                        Logic
+**NRAND**       2 1    Normal, random values with mean A and std. deviation B                                          Probability
+**OR**          2 1    NaN if B equals NaN, else A                                                                     Logic
+**PCDF**        2 1    Poisson cumulative distribution function for x = A and lambda = B                               Probability
+**PDIST**       1 1    Compute minimum distance (in km if -fg) from points in ASCII file A                             Special Operators
+**PDIST2**      2 1    As PDIST, from points in ASCII file B but only to nodes where A != 0                            Special Operators
+**PERM**        2 1    Permutations n_P_r, with n = A and r = B                                                        Probability
+**PLM**         3 1    Associated Legendre polynomial P(A) degree B order C                                            Special Functions
+**PLMg**        3 1    Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)        Special Functions
+**POINT**       1 2    Compute mean x and y from ASCII file A and place them on the stack                              Special Operators
+**POP**         1 0    Delete top element from the stack                                                               Special Operators
+**POW**         2 1    A to the power of B                                                                             Arithmetic
+**PPDF**        2 1    Poisson distribution P(x,lambda), with x = A and lambda = B                                     Probability
+**PQUANT**      2 1    The B’th quantile (0-100%) of A                                                                 Probability
+**PQUANTW**     3 1    The C’th weighted quantile (0-100%) of A for weights in B                                       Probability
+**PSI**         1 1    Psi (or Digamma) of A                                                                           Special Functions
+**PV**          3 1    Legendre function Pv(A) of degree v = real(B) + imag(C)                                         Special Functions
+**QV**          3 1    Legendre function Qv(A) of degree v = real(B) + imag(C)                                         Special Functions
+**R2**          2 1    Hypotenuse squared (= A^2 + B^2)                                                                Calculus
+**R2D**         1 1    Convert radians to degrees                                                                      Special Operators
+**RAND**        2 1    Laplace random noise with mean A and std. deviation B                                           Probability
+**RCDF**        1 1    Rayleigh cumulative distribution function for z = A                                             Probability
+**RCRIT**       1 1    Rayleigh distribution critical value for alpha = A                                              Probability
+**RGB2HSV**     3 3    Convert *r,g,b* triplets to *h,s,v* triplets, with r = A, g = B, and b = C (in 0-255 range)     Special Operators
+**RGB2LAB**     3 3    Convert *r,g,b* triplets to *l,a,b* triplets, with r = A, g = B, and b = C (in 0-255 range)     Special Operators
+**RGB2XYZ**     3 3    Convert *r,g,b* triplets to *x,y,z* triplets, with r = A, g = B, and b = C (in 0-255 range)     Special Operators
+**RINT**        1 1    rint (A) (round to integral value nearest to A)                                                 Arithmetic
+**RMS**         1 1    Root-mean-square of A                                                                           Arithmetic
+**RMSW**        1 1    Weighted root-mean-square of A for weights in B                                                 Arithmetic
+**RPDF**        1 1    Rayleigh probability density function for z = A                                                 Probability
+**ROLL**        2 0    Cyclically shifts the top A stack items by an amount B                                          Special Operators
+**ROTX**        2 1    Rotate A by the (constant) shift B in x-direction                                               Arithmetic
+**ROTY**        2 1    Rotate A by the (constant) shift B in y-direction                                               Arithmetic
+**SADDLE**      1 1    Saddle point (±), with (local) minimum (-1) or maximum (+1) in x-direction, 0 elsewhere         Calculus
+**SDIST**       2 1    Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|    Special Operators
+**SDIST2**      2 1    As SDIST but only to nodes that are != 0                                                        Special Operators
+**SAZ**         2 1    Spherical azimuth from grid nodes to stack (*lon, lat*) (i.e., A, B)                            Special Operators
+**SBAZ**        2 1    Spherical back-azimuth from grid nodes to stack (*lon, lat*) (i.e., A, B)                       Special Operators
+**SEC**         1 1    Inverse of secant (result in radians)                                                           Calculus
+**SECD**        1 1    Inverse of secant (result in degrees)                                                           Calculus
+**SIGN**        1 1    Sign (+1 or -1) of A                                                                            Logic
+**SIN**         1 1    Sine of A (A in radians)                                                                        Calculus
+**SINC**        1 1    Normalized sinc function.                                                                       Special Functions
+**SIND**        1 1    Sine of A (A in degrees)                                                                        Calculus
+**SINH**        1 1    Hiperbolic sine of A                                                                            Calculus
+**SKEW**        1 1    Skewness of A                                                                                   Probability
+**SQR**         1 1    Square (to the power of 2)                                                                      Arithmetic
+**SQRT**        1 1    Square root                                                                                     Arithmetic
+**STD**         1 1    Standard deviation of A                                                                         Probability
+**STDW**        2 1    Weighted standard deviation of A for weights in B                                               Probability
+**STEP**        1 1    Heaviside step function H(A)                                                                    Special Functions
+**STEPX**       1 1    Heaviside step function in x: H(x-A)                                                            Special Functions
+**STEPY**       1 1    Heaviside step function in y: H(y-A)                                                            Special Functions
+**SUB**         2 1    A - B (subtraction)                                                                             Arithmetic
+**SUM**         1 1    Cumulative sum of A                                                                             Arithmetic
+**TAN**         1 1    Tangent of A (A in radians)                                                                     Calculus
+**TAND**        1 1    Tangent of A (A in degrees)                                                                     Calculus
+**TANH**        1 1    Hyperbolic tangent of A                                                                         Calculus
+**TAPER**       2 1    Unit weights cosine-tapered to zero within A of end margins                                     Special Operators
+**TCDF**        2 1    Student’s t cumulative distribution function for t = A, and nu = B                              Probability
+**TCRIT**       2 1    Student’s t distribution critical value for alpha = A and nu = B                                Probability
+**TN**          2 1    ~A (bitwise NOT operator, i.e., return two’s complement)                                        Logic
+**TPDF**        2 1    Student’s t probability density function for t = A, and nu = B                                  Probability
+**TRIM**        3 1    Alpha-trim C to NaN if values fall in tails A and B (in percentage)                             Special Operators
+**UPPER**       1 1    The highest (maximum) value of A                                                                Arithmetic
+**VAR**         1 1    Variance of A                                                                                   Probability
+**VARW**        2 1    Weighted variance of A for weights in B                                                         Probability
+**VPDF**        3 1    Von Mises density distribution V(x,mu,kappa), with angles = A, mu = B, and kappa = C            Probability
+**WCDF**        3 1    Weibull cumulative distribution function for x = A, scale = B, and shape = C                    Probability
+**WCRIT**       3 1    Weibull distribution critical value for alpha = A, scale = B, and shape = C                     Probability
+**WPDF**        3 1    Weibull density distribution P(x,scale,shape), with x = A, scale = B, and shape = C             Probability
+**WRAP**        1 1    wrap A in radians onto [-pi,pi]                                                                 Special Operators
+**XOR**         2 1    A ^ B (bitwise XOR operator)                                                                    Logic
+**XYZ2HSV**     3 3    Convert *x,y,z* triplets to *h,s,v* triplets                                                    Special Operators
+**XYZ2LAB**     3 3    Convert *x,y,z* triplets to *l,a,b* triplets                                                    Special Operators
+**XYZ2RGB**     3 3    Convert *x,y,z* triplets to *r,g,b* triplets                                                    Special Operators
+**Y0**          1 1    Bessel function of A (2nd kind, order 0)                                                        Special Functions
+**Y1**          1 1    Bessel function of A (2nd kind, order 1)                                                        Special Functions
+**YLM**         2 2    Real and Imaginary orthonormalized spherical harmonics degree A order B                         Special Functions
+**YLMg**        2 2    Cos and Sin normalized spherical harmonics degree A order B (geophysical convention)            Special Functions
+**YN**          2 1    Bessel function of A (2nd kind, order B)                                                        Special Functions
+**ZCDF**        1 1    Normal cumulative distribution function for z = A                                               Probability
+**ZCRIT**       1 1    Normal distribution critical value for alpha = A                                                Probability
+**ZPDF**        1 1    Normal probability density function for z = A                                                   Probability
 =============== ====== =============================================================================================== ===================
+
 Symbols
 -------
 
@@ -464,8 +465,8 @@ Notes On Operators
    is weighted by the geographic area represented by that node.
 
 #. The operator **SDIST** calculates spherical distances in km between the
-   (lon, lat) point on the stack and all node positions in the grid. The
-   grid domain and the (lon, lat) point are expected to be in degrees.
+   (*lon, lat*) point on the stack and all node positions in the grid. The
+   grid domain and the (*lon, lat*) point are expected to be in degrees.
    Similarly, the **SAZ** and **SBAZ** operators calculate spherical
    azimuth and back-azimuths in degrees, respectively. The operators
    **LDIST** and **PDIST** compute spherical distances in km if **-fg** is
@@ -584,7 +585,7 @@ One such model is the classic *Parsons and Sclater* [1977] curve.  It may be wri
 
 .. math::
 
-    z(t) = \left \{ \begin{array}{rr} 
+    z(t) = \left \{ \begin{array}{rr}
             2500 + 350 \sqrt{t}, & t \leq 70 \\
             6400 - 3200 \exp{\left (\frac{-t}{62.8}\right)}, & t > 20
         \end{array} \right.
@@ -610,7 +611,7 @@ To compute all distances to north pole, try::
 
      gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc
 
-To take log10 of the average of 2 files, use::
+To take :math:`\log_{10}` of the average of 2 files, use::
 
     gmt grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 

@@ -88,7 +88,7 @@ two characters on top of each other.
 
 To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section :ref:`Char-esc-seq` and
-Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and Cookbook. Note that
+Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference. Note that
 :term:`PS_CHAR_ENCODING` must be set to an extended character set in your
 :doc:`gmt.conf` file in order to use the accented characters.
 
@@ -97,7 +97,7 @@ Using the |-G| or |-W| options, a rectangle underlying the text may be plotted
 characters, except in paragraph mode (|-M|)).
 
 Finally, you may typeset LaTeX expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
-see Chapter :doc:`/cookbook/gmt-latex` for more details.
+see Chapter :doc:`/reference/gmt-latex` for more details.
 
 Required Arguments
 ------------------
@@ -191,7 +191,7 @@ Optional Arguments
     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
     Helvetica-Bold font and expects to read the justification and angle
     from the file, in that order, after *x* *y* and before *text*.
-    In addition, the **+c**\ *justification* lets us use *x,y* coordinates extracted from the
+    In addition, the **+c**\ *justification* lets us use *x, y* coordinates extracted from the
     |-R| string instead of providing them in the input file. For example **-F+c**\ TL
     gets the *x_min*, *y_max* from the |-R| string and plots the text
     at the Upper Left corner of the map.  Normally, the text to be plotted

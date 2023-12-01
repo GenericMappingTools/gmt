@@ -1836,6 +1836,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (n == 0) {	/* Empty input file */
+		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
+		gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
+		GMT_Report (API, GMT_MSG_ERROR, "No data records found - aborting!\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+
 	X = gmt_M_memory (GMT, X, n, double *);
 	obs = gmt_M_memory (GMT, obs, n, double);
 	nm = n;
@@ -2068,13 +2075,15 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
-			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
-			Return (API->error);
+		if (!Ctrl->C.dryrun) {	/* Only read the data if not a dry run */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
+				gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
+				Return (API->error);
+			}
+			(void)gmt_set_outgrid (GMT, Ctrl->T.file, false, 0, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
+			n_ok = Grid->header->nm;
+			gmt_M_grd_loop (GMT, Grid, row, col, ij) if (gmt_M_is_fnan (Grid->data[ij])) n_ok--;
 		}
-		(void)gmt_set_outgrid (GMT, Ctrl->T.file, false, 0, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
-		n_ok = Grid->header->nm;
-		gmt_M_grd_loop (GMT, Grid, row, col, ij) if (gmt_M_is_fnan (Grid->data[ij])) n_ok--;
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -N file */
@@ -2104,7 +2113,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			data = gmt_M_memory (GMT, NULL, Grid->header->n_columns, gmt_grdfloat);
 		}
 		else if (dimension == 2) {	/* Need a full-fledged Grid creation since we are writing it to who knows where */
-			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
+			unsigned int mode = (Ctrl->C.dryrun) ? GMT_CONTAINER_ONLY : GMT_CONTAINER_AND_DATA;	/* Only allocate the data array if not a dry run */
+			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, NULL, Ctrl->R3.range, Ctrl->I.inc, \
 				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			n_ok = Grid->header->nm;
 			header = Grid->header;
@@ -2114,7 +2124,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* 3-D cube needed */
-			if ((Cube = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
+			unsigned int mode = (Ctrl->C.dryrun) ? GMT_CONTAINER_ONLY : GMT_CONTAINER_AND_DATA;	/* Only allocate the data array if not a dry run */
+			if ((Cube = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, mode, NULL, Ctrl->R3.range, Ctrl->I.inc, \
 				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			n_layers = Cube->header->n_bands;
 			n_ok = Cube->header->nm * n_layers;
@@ -2414,7 +2425,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, v);
 				gmt_M_free (GMT, A);
 				gmt_M_free (GMT, obs);
-				if (dimension == 2) gmt_free_grid (GMT, &Grid, true);
+				if (dimension == 1) gmt_free_grid (GMT, &Grid, true);
 				Return (GMT_NOERROR);
 			}
 		}
@@ -2697,8 +2708,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						double dev, rms = 0.0, chi2_sum = 0.0;
 						for (j = 0; j < nm; j++) {	/* For each data constraint */
 							for (p = 0, wp = 0.0; p < nm; p++) {	/* Add contribution for each data constraint */
+								r = greenspline_get_radius (GMT, X[j], X[p], 2U);
 								if (!gmt_M_is_zero (r)) {	/* For all pairs except self-pairs */
-									r = greenspline_get_radius (GMT, X[j], X[p], 2U);
 									part = G (GMT, r, par, Lz);
 									wp += alpha[p] * part;	/* Just add this scaled Green's function */
 								}

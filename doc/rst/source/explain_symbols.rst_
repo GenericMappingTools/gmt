@@ -83,10 +83,15 @@
     **-Sy**\ *size*
         y-dash (\|). *size* is the length of a short vertical (y-dir) line segment.
 
-    **Note**: The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
+    **Notes**: (1) The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
     **S**, **T** are normalized to have the same *area* as a circle with
     diameter *size*, while the *size* of the corresponding lowercase symbols
-    refers to the diameter of a circumscribed circle.
+    refers to the diameter of a circumscribed circle. (2) The stroke-only symbols
+    **x**, **y**, **+** and **-** will derive their pen widths from the symbol size
+    and their pen color from |-G| or |-C|. In that sense they behave as the other
+    symbols (but no outline).  You can override this behavior by specifying |-W|,
+    modify it by adjusting :term:`MAP_SYMBOL_PEN_SCALE` [15%], or set it to zero to
+    rely on pen defaults (and |-W|).
 
     The next collection shows five symbols that require two or more parameters, and
     some have optional modifiers to enhance the symbol appearance.
@@ -216,7 +221,7 @@
         to *base* [Relative to origin]. Normally, the bar requires a single input *y*-value.
         To plot multi-band bars, please append **+v**\|\ **i**\ *ny*, where *ny* indicates the
         total number of bands in the bar (and hence the number of values required to follow
-        the x,y coordinate pair in the input).  Here, **+i** means we must accumulate the
+        the *x, y* coordinate pair in the input).  Here, **+i** means we must accumulate the
         bar values from the increments *dy*, while **+v** means we get the complete
         values relative to *base* in increasing order. Normally, the bands are plotted as sections of a final single bar.
         Use **+s** to instead split the bar into *ny* side-by-side, individual and thinner bars. The
@@ -234,7 +239,7 @@
         to *base* [Relative to origin]. Normally, the bar requires a single input *x*-value.
         To plot multi-band bars, please append **+v**\|\ **i**\ *nx*, where *nx* indicates the
         total number of bands in the bar (and hence the number of values required to follow
-        the x,y coordinate pair in the input).  Here, **+i** means we must accumulate the
+        the *x, y* coordinate pair in the input).  Here, **+i** means we must accumulate the
         bar value from the increments *dx*, while **+v** means we get the complete
         values relative to *base* in increasing order. Normally, the bands are plotted as sections of a final single bar.
         Use **+s** to instead split the bar into *nx* side-by-side, individual and thinner bars. The

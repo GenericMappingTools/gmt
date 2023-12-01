@@ -154,6 +154,7 @@ struct GMTAPI_CTRL {
 	unsigned int verbose;			/* Used until GMT is set up */
 	unsigned int n_tmp_headers;		/* Number of temporarily held table headers */
 	unsigned int terminal_width;	/* Width of the terminal */
+	unsigned int n_numerical_columns;	/* 0 except for pstext where there will be 2-4 numerical leading columns before text */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
@@ -166,6 +167,7 @@ struct GMTAPI_CTRL {
 	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
 	bool use_gridline_registration_warn;	/* true if we should warn about the above */
 	bool ignore_BC;       	   /* temporarily set true for, say, weight grids in grdfilter which do not need a BC wrap-around check */
+	bool paths_initialized;		/* True when we set default USERDIR and CACHEDIR */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */

@@ -56,6 +56,11 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_LINE_REC = 1,
 	PSEVENTS_LINE_SEG = 2,
 	PSEVENTS_LINE_TO_POINTS = 4,
+	PSEVENTS_RAMP_QUAD = 0,
+	PSEVENTS_RAMP_LINEAR = 1,
+	PSEVENTS_RAMP_COSINE = 2,
+	PSEVENTS_RAMP_UP = 0,
+	PSEVENTS_RAMP_DOWN = 1,
 	PSEVENTS_T_RISE = 0,
 	PSEVENTS_T_EVENT = 1,
 	PSEVENTS_T_PLATEAU = 2,
@@ -85,9 +90,10 @@ struct PSEVENTS_CTRL {
 		bool active;
 		char *string;
 	} D;
-	struct PSEVENTS_E {	/* 	-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>] */
+	struct PSEVENTS_E {	/* 	-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>][+c] */
 		bool active[2];
 		bool trim[2];
+		unsigned int ramp[5];	/* Default is t^2 ramp */
 		double dt[2][6];
 	} E;
 	struct PSEVENTS_F {	/*	-F[+f<fontinfo>+a<angle>+j<justification>+r|z] */
@@ -146,12 +152,12 @@ struct PSEVENTS_CTRL {
 	} Z;
 	struct PSEVENTS_DEBUG {	/* -0 undocumented debugging option */
 		bool active;
+		unsigned int mode;
 	} debug;
 };
 
 /* The names of the three external modules.  We skip first 2 letters if in modern mode */
 static char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
-
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSEVENTS_CTRL *C;
@@ -187,7 +193,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+v[<value>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
-		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
+		"[-E[s|t][+o|O<dt>][+r[l|c|q]<dt>][+p<dt>][+d[l|c|q]<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
 		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2>]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -218,15 +224,18 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
 		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). "
 		"Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.");
-	GMT_Usage (API, 1, "\n-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]");
+	GMT_Usage (API, 1, "\n-E[s|t][+o|O<dt>][+r[l|c|q]<dt>][+p<dt>][+d[l|c|q]<dt>][+f[l|c|q]<dt>][+l<dt>]");
 	GMT_Usage (API, -2, "Set offset, rise, plateau, decay, and fade intervals for symbols (-Es [Default]) "
 		"or offset, rise, and fade intervals for text (-Et):");
 	GMT_Usage (API, 3, "+o Offsets event start and end times by <dt> [no offset]. "
 		"Use +O<dt> to only offset event start time and leave end time alone.");
-	GMT_Usage (API, 3, "+r Set the rise-time to <dt> before the event start time [no rise time].");
+	GMT_Usage (API, 3, "+r Set the rise-time to <dt> before the event start time [no rise time]. Optionally "
+		"prepend directive c(osine), l(linear), or q(uadratic) to set rise curve shape [Quadratic].");
 	GMT_Usage (API, 3, "+p set the length <dt> of the plateau after event happens [no plateau].");
-	GMT_Usage (API, 3, "+d set the decay-time <dt> after the plateau [no decay].");
-	GMT_Usage (API, 3, "+f set the fade-time <dt> after the event ends [no fade time].");
+	GMT_Usage (API, 3, "+d set the decay-time <dt> after the plateau [no decay]. Optionally "
+		"prepend directive c(osine), l(linear), or q(uadratic) to set decay curve shape [Quadratic].");
+	GMT_Usage (API, 3, "+f set the fade-time <dt> after the event ends [no fade time]. Optionally "
+		"prepend directive c(osine), l(linear), or q(uadratic) to set fade curve shape [Linear].");
 	GMT_Usage (API, 3, "+l set alternative label duration <dt> [same as symbol duration].");
 	GMT_Usage (API, 1, "\n-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
@@ -279,6 +288,19 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL unsigned int psevents_parse_ramp_type (struct GMT_CTRL *GMT, char *string, unsigned int *start) {
+	/* Detect optional ramp codes c, l, q[Default] and start of parsing text for value */
+	unsigned int type = PSEVENTS_RAMP_QUAD;	/* Default ramp (except for fade which was linear) */
+
+	switch (string[1]) {
+		case 'c':	type = PSEVENTS_RAMP_COSINE;	*start = 2;	break;
+		case 'l':	type = PSEVENTS_RAMP_LINEAR;	*start = 2;	break;
+		case 'q':	type = PSEVENTS_RAMP_QUAD;		*start = 2;	break;
+		default:	*start = 1;	break;	/* No code given so first value starts at position 1 in string */
+	}
+	return (type);
+}
+
 static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psevents and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -286,7 +308,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos, n_col = 3, k = 0, id = 0;
+	unsigned int n_errors = 0, pos, n_col = 3, k = 0, id = 0, start;
 	unsigned int s = (GMT->current.setting.run_mode == GMT_MODERN) ? 2 : 0;
 	char *c = NULL, *t_string = NULL, txt_a[GMT_LEN256] = {""}, *events = "psevents";
 	struct GMT_OPTION *opt = NULL;
@@ -367,10 +389,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				pos = 0;	txt_a[0] = 0;
 				while (gmt_getmodopt (GMT, 'E', c, PSEVENTS_MODS, &pos, txt_a, &n_errors) && n_errors == 0) {
 					switch (txt_a[0]) {
-						case 'd': Ctrl->E.dt[id][PSEVENTS_DECAY]   = atof (&txt_a[1]);	break;	/* Decay duration */
-						case 'f': Ctrl->E.dt[id][PSEVENTS_FADE]    = atof (&txt_a[1]);	break;	/* Fade duration */
+						case 'd':	/* Decay duration and optional ramp directive */
+							Ctrl->E.ramp[PSEVENTS_DECAY] = psevents_parse_ramp_type (GMT, txt_a, &start);
+							Ctrl->E.dt[id][PSEVENTS_DECAY] = atof (&txt_a[start]);
+							break;
+						case 'f':	/* Fade duration  and optional ramp directive */
+							Ctrl->E.ramp[PSEVENTS_FADE] = psevents_parse_ramp_type (GMT, txt_a, &start);
+							if (start == 1) Ctrl->E.ramp[PSEVENTS_FADE] = PSEVENTS_RAMP_LINEAR;	/* Different default here */
+							Ctrl->E.dt[id][PSEVENTS_FADE] = atof (&txt_a[start]);
+							break;
 						case 'p': Ctrl->E.dt[id][PSEVENTS_PLATEAU] = atof (&txt_a[1]);	break;	/* Plateau duration */
-						case 'r': Ctrl->E.dt[id][PSEVENTS_RISE]    = atof (&txt_a[1]);	break;	/* Rise duration */
+						case 'r':	/* Rise duration and optional ramp directive */
+							Ctrl->E.ramp[PSEVENTS_RISE] = psevents_parse_ramp_type (GMT, txt_a, &start);
+							Ctrl->E.dt[id][PSEVENTS_RISE] = atof (&txt_a[start]);
+							break;
 						case 'O': Ctrl->E.trim[id] = true;	/* Intentionally fall through - offset start but not end. Fall through to case 'o' */
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt_a[1]);	break;	/* Event time offset */
 						case 'l':	/* Event length override for text */
@@ -593,8 +625,10 @@ maybe_set_two:
 				}
 				break;
 
-			case '/':	/* Write time-functions */
+			case '/':	/* DEBUG Write time-functions and exit. Note: use /cc. /qq, or /ll (note the repeats) */
 				Ctrl->debug.active = true;
+				Ctrl->debug.mode = psevents_parse_ramp_type (GMT, opt->arg, &start);
+
 				break;
 
 			default:	/* Report bad options */
@@ -754,16 +788,44 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 	return n;
 }
 
+GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, unsigned int kind, unsigned int section, double t[], double t_now) {
+	/* section is either PSEVENTS_RISE, PSEVENTS_DECAY, or PSEVENTS_FADE.
+	 * kind is either PSEVENTS_SYMBOL or PSEVENTS_TEXT.
+	 * direction = PSEVENTS_RAMP_DOWN (1) if we ramp down, not up.
+	 */
+	unsigned int direction = (section == PSEVENTS_RISE) ? PSEVENTS_RAMP_UP : PSEVENTS_RAMP_DOWN;
+	double t_norm = 1.0 + (t_now - t[section])/Ctrl->E.dt[kind][section], ramp = 0.0;
+	if (section == PSEVENTS_FADE) t_norm -= 1.0;
+
+	t_norm = fabs (t_norm);
+	switch (Ctrl->E.ramp[section]) {	/* rise, decay, or fade */
+		case PSEVENTS_RAMP_LINEAR:	/* Linear ramp */
+			ramp = fabs (t_norm);
+			break;
+		case PSEVENTS_RAMP_COSINE:	/* Cosine ramp */
+			ramp = 0.5 *  (1.0 - cos (t_norm * M_PI));	/* Cosine ramp */
+			break;
+		case PSEVENTS_RAMP_QUAD:	/* Quadratic ramp */
+			ramp = pow (t_norm, 2.0);	/* Quadratic function that goes from 0 to 1 */
+			break;
+		default:	/* Nothing here */
+			break;
+	}
+	if (gmt_M_is_dnan (ramp)) ramp = 0.0;	/* Probably division by zero */
+	return (direction == PSEVENTS_RAMP_UP) ? ramp : 1.0 - ramp;
+}
+
 GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, double t_now, double *t, bool finite_duration, bool coda, unsigned int x_col, unsigned int i_col, unsigned int t_col, unsigned int z_col, double *out) {
 	double x;
 	gmt_M_unused (GMT);
+	if (fabs (t_now - 3.5) < GMT_CONV8_LIMIT)
+		x = 0.0;
 	if (t_now < t[PSEVENTS_T_RISE]) {	/* Before the rise phase there is nothing */
 		out[x_col] = out[i_col] = 0.0;
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1];
 	}
 	else if (t_now < t[PSEVENTS_T_EVENT]) {	/* We are within the rise phase */
-		x = pow ((t_now - t[PSEVENTS_T_RISE])/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 0 to 1 */
-		if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
+		x = psevents_ramp (GMT, Ctrl, PSEVENTS_SYMBOL, PSEVENTS_RISE, t, t_now);	/* Ramp function */
 		out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x;	/* Magnification of amplitude */
 		out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;		/* Magnification of intensity */
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);	/* Magnification of opacity */
@@ -776,9 +838,8 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 		if (Ctrl->M.active[PSEVENTS_DZ]) out[z_col] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1];		/* Changing of color via dz */
 	}
 	else if (t_now < t[PSEVENTS_T_DECAY]) {	/* We are within the decay phase */
-		x = pow ((t[PSEVENTS_T_DECAY] - t_now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
-		if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
-		out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x);	/* Reduction of size down to the nominal size */
+		x = psevents_ramp (GMT, Ctrl, PSEVENTS_SYMBOL, PSEVENTS_DECAY, t, t_now);	/* Ramp function */
+		out[x_col] = (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] - 1.0) * x	+ 1.0;	/* Reduction of size down to the nominal size */
 		out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 		out[t_col] = 0.0;
 		if (Ctrl->M.active[PSEVENTS_DZ]) out[z_col] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
@@ -788,9 +849,8 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 		out[i_col] = out[t_col] = 0.0;	/* No intensity or transparency during normal phase */
 	}
 	else if (finite_duration && t_now <= t[PSEVENTS_T_FADE]) {	/* We are within the fade phase */
-		x = pow ((t[PSEVENTS_T_FADE] - t_now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
-		if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
-		out[x_col] = x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Reduction of size down to coda size */
+		x = psevents_ramp (GMT, Ctrl, PSEVENTS_SYMBOL, PSEVENTS_FADE, t, t_now);	/* Ramp function */
+		out[x_col] = x * (1.0 - Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2]) + Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];		/* Reduction of size down to coda size */
 		out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
 		if (Ctrl->M.active[PSEVENTS_DZ]) out[z_col] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2] * (1.0 - x);			/* Changing of color via dz */
@@ -805,18 +865,30 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 
 GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl) {
 	/* debug test function to dump the four time-functions */
+	unsigned int k;
 	double t[PSEVENTS_NT], now = -2.0, out[4];
 	FILE *fp = fopen ("psevents_function.txt", "w");
 	gmt_M_memset (t, PSEVENTS_NT, double);	/* Initialize the t vector */
+	if (!Ctrl->E.active[PSEVENTS_SYMBOL]) {	/* Default dt is 1 */
+		for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_SYMBOL][k] = 1.0;
+		for (k = 0; k < 5; k++) Ctrl->E.dt[PSEVENTS_TEXT][k] = 1.0;
+	}
 	t[PSEVENTS_T_RISE]    = -Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE];
 	t[PSEVENTS_T_EVENT]   = 0.0;
 	t[PSEVENTS_T_PLATEAU] = Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];
 	t[PSEVENTS_T_DECAY]   = t[PSEVENTS_T_PLATEAU] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];
 	t[PSEVENTS_T_END]     = t[PSEVENTS_T_DECAY] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];
 	t[PSEVENTS_T_FADE]    = t[PSEVENTS_T_END] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];
-	Ctrl->M.active[PSEVENTS_DZ] = true;
-	fprintf (fp, "# t_rise = -1.0, t_event = 0.0, t_plateau = 1.0, t_decay = 2.0, t_end = 3.0, t_fade = 4.0, now = -2/5\n");
-	fprintf (fp, "# now\tsize\tintens\transp\tdz\n");
+	for (k = 0; k < 5; k++) Ctrl->E.ramp[k] = Ctrl->debug.mode;
+	if (!Ctrl->M.active[PSEVENTS_SYMBOL]) {
+		Ctrl->M.active[PSEVENTS_DZ] = true;
+		Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] = 2.0;		/* Default size scale for -Ms and dz amplitude for -Mv */
+		Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1]  = 0.5;		/* Default size scale for -Mi */
+		Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2]  = 50;	/* Default size scale for -Mt coda */
+	}
+	fprintf (fp, "# t_rise = %lg, t_event = 0.0, t_plateau = %lg, t_decay = %lg, t_end = %lg, t_fade = %lg, now = -2/5, mode = %d\n",
+			t[PSEVENTS_T_RISE], t[PSEVENTS_T_PLATEAU], t[PSEVENTS_T_DECAY], t[PSEVENTS_T_END], t[PSEVENTS_T_FADE], Ctrl->debug.mode);
+	fprintf (fp, "# now\tsize\tintens\ttransp\tdz\n");
 	while (now <= 5.005) {
 		gmt_M_memset (out, 4, double);	/* Initialize the out vector */
 		psevents_set_outarray (GMT, Ctrl, now, t, true, true, 0, 1, 2, 3, out);
@@ -1294,13 +1366,13 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 					/* Labels have variable transparency during optional rise and fade, and fully opaque during normal section, and skipped otherwise unless coda */
 
 					if (Ctrl->T.now < t[PSEVENTS_T_EVENT]) {	/* We are within the rise phase */
-						x = (gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE])) ? 1.0 : pow ((Ctrl->T.now - t[PSEVENTS_T_RISE])/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 1 to 0 */
-						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);		/* Magnification of opacity */
+						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_DECAY, t, Ctrl->T.now);	/* Ramp function */
+						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0 - x);		/* Magnification of opacity */
 					}
 					else if (finite_duration && Ctrl->T.now < t[PSEVENTS_T_END])	/* We are within the normal phase, keep everything constant */
 						out[GMT_Z] = 0.0;	/* No transparency during this phase */
 					else if (finite_duration && Ctrl->T.now <= t[PSEVENTS_T_FADE]) {	/* We are within the fade phase */
-						x = (gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE])) ? 0.0 : pow ((t[PSEVENTS_T_FADE] - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
+						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_FADE, t, Ctrl->T.now);	/* Ramp function */
 						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to coda transparency */
 					}
 					else if (do_coda)	/* If there is a coda then the label is visible given its coda attributes */

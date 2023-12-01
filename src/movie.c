@@ -601,16 +601,16 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 	}
 	if (gmt_get_modifier (arg, 'r', string))	/* Rounded text box */
 		I->box = 4;
-	if (gmt_get_modifier (arg, 'h', string)) {	/* Shaded text box fill color*/
+	if (gmt_get_modifier (arg, 'h', string)) {	/* Shaded text box fill color +h[<dx>/<dy>/][<shade>] */
 		strcpy (I->sfill, "gray50");	/* Default shade color */
 		I->soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 		I->soff[GMT_Y] = -I->soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
-		I->box++;	/* Rectangular shade = 1 and rounded rectangular shade = 5*/
+		I->box++;	/* Rectangular shade = 1 and rounded rectangular shade = 5 */
 		if (I->fill[0] == '-') {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +h requires +g as well\n", option);
 			n_errors++;
 		}
-		else if (string[0]) {	/* Gave an argument to +b */
+		else if (string[0]) {	/* Gave an argument to +h */
 			char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
 			int n = sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 			if (n == 1)	/* Just got a new fill */
@@ -669,10 +669,12 @@ GMT_LOCAL unsigned int movie_parse_common_item_attributes (struct GMT_CTRL *GMT,
 		}
 		I->kind = toupper ((int)I->kind);	/* Use upper case B-F to indicate that labeling is requested */
 		I->n_labels = (strchr ("EF", I->kind)) ? 2 : 1;
-		if (I->mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (arg, 's', string)) {	/* Gave frame time length-scale */
-		I->scale = atof (string);
+		if (I->mode == MOVIE_LABEL_IS_ELAPSED && (gmt_get_modifier (arg, 's', string) || gmt_get_modifier (arg, 'z', string))) {
+			/* Changed from +z to +s but we do backwards compatibility here */
+			/* Gave frame time length-scale */
+			I->scale = atof (string);
+		}
 	}
-}
 	if (c) c[0] = '+';	/* Restore the modifiers */
 	return (n_errors);
 }
@@ -1992,7 +1994,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			goto out_of_here;
 		}
 		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
-		if (Ctrl->E.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
+		if (Ctrl->E.fill) {strcat (extra, "+k"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
 		if (Ctrl->E.PS) {	/* Need to place a background title first (which will be in parent dir when loop script is run) */
 			strcat (extra, ",Mb../../");
 			strcat (extra, Ctrl->E.file);
@@ -2278,7 +2280,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->K.active) {
 			sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
-			if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
+			if (Ctrl->K.fill) {strcat (extra, "+k"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 		}
 		else
 			sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
@@ -2481,7 +2483,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->K.active) {
 		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
-		if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
+		if (Ctrl->K.fill) {strcat (extra, "+k"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 	}
 	else
 		sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
