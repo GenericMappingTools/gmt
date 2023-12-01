@@ -8,6 +8,12 @@
 
 .. |psvelo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
+.. |fzanalyzer_purpose| replace:: Analysis of fracture zones using crossing profiles
+
+.. |fzblender_purpose| replace:: Produce a smooth blended FZ trace
+
+.. |mlconverter_purpose| replace:: Convert chrons to ages using selected magnetic timescale
+
 .. |gshhg_purpose| replace:: Extract data tables from binary GSHHG or WDBII data files
 
 .. |img2grd_purpose| replace:: Extract a subset from an img file in Mercator or Geographic format

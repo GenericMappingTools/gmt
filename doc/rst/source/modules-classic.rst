@@ -622,21 +622,21 @@ geodesy
 GSFML
 -----
 
-+--------------------------------------+----------------------+
-| :doc:`/supplements/gsfml/fzanalyzer` | |fzanalyzer_purpose| |
-+--------------------------------------+----------------------+
-| :doc:`/supplements/gsfml/fzblende`   | |fzblende|           |
-+--------------------------------------+----------------------+
-| :doc:`/supplements/gsfml/fzinformer` | |fzinformer|         |
-+--------------------------------------+----------------------+
-| :doc:`/supplements/gsfml/fzmapper`   | |fzmapper|           |
-+--------------------------------------+----------------------+
-| :doc:`/supplements/gsfml/fzmodeler`  | |fzmodeler|          |
-+--------------------------------------+----------------------+
-| :doc:`/supplements/gsfml/fzprofiler` | |fzprofiler|         |
-+--------------------------------------+----------------------+
-| :doc:`/supplements/gsfml/mlconverter | |mlconverter|        |
-+--------------------------------------+----------------------+
++--------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzanalyzer` | |fzanalyzer_purpose|  |
++--------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzblende`   | |fzblender_purpose|   |
++--------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzinformer` | |fzinformer_purpose|  |
++--------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmapper`   | |fzmapper_purpose|    |
++--------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmodeler`  | |fzmodeler_purpose|   |
++--------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzprofiler` | |fzprofiler_purpose|  |
++--------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/mlconverter | |mlconverter_purpose| |
++--------------------------------------+-----------------------+
 
 GSHHG
 -----
