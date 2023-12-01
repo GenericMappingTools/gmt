@@ -32,4 +32,23 @@ AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H)
 set (SUPPL_PROGS_SRCS fzanalyzer.c fzblender.c mlconverter.c)
 set (SUPPL_EXAMPLE_FILES README.gsfml)
 
-set (SUPPL_EXAMPLE_PROGS fz_funcs.sh fzinformer fzmapper fzmodeler fzprofiler)
+install (PROGRAMS fz_funcs.sh
+    RENAME fz_funcs${GMT_INSTALL_NAME_SUFFIX}.sh
+    DESTINATION ${GMT_BINDIR}
+    COMPONENT Runtime)
+install (PROGRAMS fzinformer
+    RENAME fz_funcs${GMT_INSTALL_NAME_SUFFIX}
+    DESTINATION ${GMT_BINDIR}
+    COMPONENT Runtime)
+install (PROGRAMS fzmapper
+    RENAME fz_funcs${GMT_INSTALL_NAME_SUFFIX}
+    DESTINATION ${GMT_BINDIR}
+    COMPONENT Runtime)
+install (PROGRAMS fzmodeler
+    RENAME fzmodeler${GMT_INSTALL_NAME_SUFFIX}
+    DESTINATION ${GMT_BINDIR}
+    COMPONENT Runtime)
+install (PROGRAMS fzprofiler
+    RENAME fzprofiler${GMT_INSTALL_NAME_SUFFIX}
+    DESTINATION ${GMT_BINDIR}
+    COMPONENT Runtime)
