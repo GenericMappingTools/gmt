@@ -302,6 +302,13 @@ Supplemental Modules
     - :doc:`/supplements/geodesy/earthtide`
     - :doc:`/supplements/geodesy/gpsgridder`
     - :doc:`/supplements/geodesy/velo`
+    - :doc:`/supplements/gsfml/fzanalyzer`
+    - :doc:`/supplements/gsfml/fzblender`
+    - :doc:`/supplements/gsfml/fzinformer`
+    - :doc:`/supplements/gsfml/fzmapper`
+    - :doc:`/supplements/gsfml/fzmodeler`
+    - :doc:`/supplements/gsfml/fzprofile`
+    - :doc:`/supplements/gsfml/mlconverter`
     - :doc:`/supplements/gshhg/gshhg`
     - :doc:`/supplements/img/img2grd`
     - :doc:`/supplements/mgd77/mgd77convert`
@@ -635,6 +642,25 @@ geodesy
 +--------------------------------------------+----------------------+
 | :doc:`/supplements/geodesy/velo`           | |velo_purpose|       |
 +--------------------------------------------+----------------------+
+
+GSFML
+-----
+
++--------------------------------------+----------------------+
+| :doc:`/supplements/gsfml/fzanalyzer` | |fzanalyzer_purpose| |
++--------------------------------------+----------------------+
+| :doc:`/supplements/gsfml/fzblende`   | |fzblende|           |
++--------------------------------------+----------------------+
+| :doc:`/supplements/gsfml/fzinformer` | |fzinformer|         |
++--------------------------------------+----------------------+
+| :doc:`/supplements/gsfml/fzmapper`   | |fzmapper|           |
++--------------------------------------+----------------------+
+| :doc:`/supplements/gsfml/fzmodeler`  | |fzmodeler|          |
++--------------------------------------+----------------------+
+| :doc:`/supplements/gsfml/fzprofiler` | |fzprofiler|         |
++--------------------------------------+----------------------+
+| :doc:`/supplements/gsfml/mlconverter | |mlconverter|        |
++--------------------------------------+----------------------+
 
 GSHHG
 -----
