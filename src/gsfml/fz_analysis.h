@@ -23,8 +23,6 @@
 #ifndef _FZ_ANALYSIS_H
 #define _FZ_ANALYSIS_H
 
-#include "gsfml_config.h"
-
 #define DEF_D_WIDTH	25.0	/* Default width of central corridor */
 #define DEF_L_MIN	0.0	/* Minimum compression for search */
 #define DEF_L_MAX	1.0	/* Maximum compression for search */
