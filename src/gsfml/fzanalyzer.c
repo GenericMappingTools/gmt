@@ -30,6 +30,7 @@
 
 #include "gmt_dev.h"
 #include "fz_analysis.h"
+#include "longopt/fzanalyzer_inc.h"
 
 #define DEF_FZ_GAP	5.0	/* Half-width of FZ gap centered on d0 where we ignore ages in fitting a + b(d-d0) + c*H(d-d0) */
 
@@ -529,7 +530,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct FZMODELER_CTRL *C) {	/* Deal
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <FZcrossprofiles> -F<FZlines> [-C<min>/<max>/<inc>] "
 		"[-A<min>/<max>/<inc>] [-D<corrwidth>] [-I<FZ>[/<profile>]] "

@@ -32,6 +32,7 @@
 
 #include "gmt_dev.h"
 #include "fz_analysis.h"
+#include "longopt/mlconverter_inc.h"
 
 #define ML_GEEK2007	0
 #define ML_CK1995	1
@@ -79,7 +80,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MLCONVERTER_CTRL *C) {	/* De
 
 static int usage (struct GMTAPI_CTRL *API, int level)
 {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<ML_data>] [-A] [-G[s]] [-S] [-Tc|g|o|s] [%s]\n", name, GMT_V_OPT);
 
