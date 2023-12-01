@@ -138,7 +138,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [-F<primaryfilter>] [-D] [-E<sEcondaryfilter>] [-I<FZid>] "
-		"[-Q<qmin>/<qmax>] [-Sbdetu[<weight>]] [-T<prefix>] [%s] [-Z<amp/var/F/width>]\n\n", GMT_V_OPT);
+		"[-Q<qmin>/<qmax>] [-Sbdetu[<weight>]] [-T<prefix>] [%s] [-Z<amp/var/F/width>]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -396,8 +396,7 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the program-specific arguments */
 

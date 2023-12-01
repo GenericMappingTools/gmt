@@ -535,7 +535,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s <FZcrossprofiles> -F<FZlines> [-C<min>/<max>/<inc>] "
 		"[-A<min>/<max>/<inc>] [-D<corrwidth>] [-I<FZ>[/<profile>]] "
 		"-S[c]] [-T<prefix>] [%s] [-W<min>/<max>/<inc>] "
-		"%s] [%s] [%s]", name, GMT_V_OPT, GMT_colon_OPT, GMT_b_OPT, GMT_i_OPT);
+		"%s] [%s] [%s]\n", name, GMT_V_OPT, GMT_colon_OPT, GMT_b_OPT, GMT_i_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -712,8 +712,7 @@ EXTERN_MSC int GMT_fzanalyzer (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the program-specific arguments */
 

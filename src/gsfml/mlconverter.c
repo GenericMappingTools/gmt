@@ -158,7 +158,7 @@ static int parse (struct GMTAPI_CTRL *API, struct MLCONVERTER_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); return (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); return (code); bailout(code);}
 
 struct ML_CHRON {	/* Holds chron and young/old ages */
 	double young, old;
@@ -228,8 +228,7 @@ int GMT_mlconverter (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);		/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) return (usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) return (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the program-specific arguments */
 
