@@ -80,8 +80,6 @@ Optional Arguments
 
 .. include:: explain_lines.rst_
 
-    Use |-G| to set the output grid file name.
-
 .. _-F:
 
 .. include:: explain_interpolant.rst_

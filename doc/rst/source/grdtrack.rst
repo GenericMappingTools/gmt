@@ -152,9 +152,6 @@ Optional Arguments
 
 .. include:: explain_lines.rst_
 
-    (3) If |-C| is set and *spacing* is given then that sampling scheme
-    overrules any modifier set in |-E|.
-
 .. _-F:
 
 **-F**\ [**+b**][**+n**][**+r**][**+z**\ *z0*]
