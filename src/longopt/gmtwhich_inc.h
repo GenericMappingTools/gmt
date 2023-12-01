@@ -22,20 +22,16 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "readable",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "confirm",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "directories|report_dir", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'G', "download",
+	          "a,c,l,u",           "user,cache,current,data",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTWHICH_INC_H */

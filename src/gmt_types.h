@@ -36,6 +36,13 @@
  * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
 
+/*! Definition of GMT_SCALED_RECT_DIM used to handle embellishments dimensions given by default or percentages of map width */
+struct GMT_SCALED_RECT_DIM {
+	bool fraction[2];	/* True if dimensions in dim are given as fraction of map width and rectangle height */
+	double dim[2];		/* Dimensions in inches, if set; */
+	double scl[2];		/* Scales set to give dim once map width is known (scl[GMT_Y] is relative to rectangle width, not map width) */
+};
+
 /*! Definition of CONTOUR_ARGS used by grdcontour and pscontour */
 struct CONTOUR_ARGS {
 	bool cpt;		/* true of we were given a CPT file */
@@ -71,6 +78,8 @@ struct GMT_KEYWORD_DICTIONARY {	/* Used for keyword-value lookup */
 	char long_directives[GMT_LEN256];	/* Long name directives, comma-separated */
 	char short_modifiers[GMT_LEN32];	/* Single character modifiers, comma-separated */
 	char long_modifiers[GMT_LEN256];	/* Long name modifiers, comma-separated */
+	unsigned int transproc_mask;	/* Translation processing mask indicating special
+                                           behavior, e.g., multi-directive, etc., support */
 };
 
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */
@@ -129,6 +138,7 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool reciprocal;	/* true if we gave the reciprocal increment */
 	bool round;	/* true if we want to adjust increment to ensure min/max range is a multiple of inc */
 	bool exact_inc;	/* true if we want the increment to be exact and to adjust min/max instead */
+	bool has_inc;	/* true if parsing detected an increment */
 	bool var_inc;	/* true if the resulting array has variable spacing */
 	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */

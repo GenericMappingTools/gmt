@@ -420,8 +420,8 @@ GMT_LOCAL double grdflexure_transfer_elastic (double *k, struct GRDFLEXURE_RHEOL
 
 GMT_LOCAL double grdflexure_transfer_Airy (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Airy transfer function (isotropic and independent of k) */
-	gmt_M_unused (k);
 	double grdflexure_transfer_fn = R->scale;
+	gmt_M_unused (k);
 	return (grdflexure_transfer_fn);
 }
 

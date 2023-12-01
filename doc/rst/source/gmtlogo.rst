@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt logo** [ |-D|\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
+**gmt logo** [ |-D|\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+h**\ *height*\|\ **+w**\ *width*\ ][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ |-F|\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]] ]
 [ |-J|\ *parameters* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |SYN_OPT-Rz| ]
@@ -50,21 +50,30 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
-    Sets reference point on the map for the image using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).  All but **-Dx** requires both |-R| and |-J| to be specified.
-    Use **+w**\ *width* to set the width of the GMT logo in plot coordinates
-    (inches, cm, etc.).
-    By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
-    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Add **+o** to offset the GMT logo by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+h**\ *height*\|\ **+w**\ *width*\ ][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
 
+    Sets reference point on the map for the image using one of four coordinate systems:
+
+    - **g**: Set *refpoint* in map (user) coordinates.
+    - **j**: Set *refpoint* via a 2-char justification code that refers to the (invisible) map domain rectangle (see :doc:`text`).
+      The logo is justified to fit on the inside of the map domain rectangle.
+    - **J**: Same as **j**, but instead justifies the logo on the outside of the map domain rectangle.
+    - **n**: Set *refpoint* using normalized (0-1) coordinates.
+    - **x**: Set *refpoint* using plot coordinates (inches, cm, etc.).
+
+    All but **-Dx** requires both |-R| and |-J| to be specified. Modifiers control size and adjustments:
+
+    - **+w**: Append *width* to set the width of the GMT logo in plot coordinates (inches, cm, etc.).
+    - **+h**: Append *height* to instead specify the logo height.
+    - **+j**: By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
+      can be changed by appending the 2-char justification code *justify* (see :doc:`text`).
+    - **+o**: Offset the GMT logo by *dx*/*dy* away from the *refpoint* point in
+      the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
+   
+    **Note**: (1) If **-Dj** is used then *justify* defaults to the same as *refpoint*, while
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
+    (2) Since the aspect ratio is fixed, only one of **+h** and **+w** can be specified.
+ 
 .. _-F:
 
 **-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]]\

@@ -212,23 +212,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<dfile>");
 	GMT_Usage (API, -2, "Save [resampled] input lines to a separate file <dfile>.  Requires -C. "
 		"Output columns are lon, lat, dist, az, z1, z2, ..., zn.");
-	GMT_Usage (API, 1, "\n-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np>][+o<az>][+r<radius>]");
-	GMT_Usage (API, -2, "Create quick paths based on <line1>[,<line2>,...].  Each <line> is given by <start>/<stop>, where <start> or <stop> "
-		"are <lon/lat> or a 2-character key that uses the \"pstext\"-style justification format "
-		"to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean "
-		"the global minimum and maximum locations in the grid.  Note: No input <table> is read.");
-	GMT_Usage (API, 3, "+i Set the sampling increment <step> [Default is 0.5 x min of (x_inc, y_inc)].");
-	GMT_Usage (API, 3, "+d Insert an extra output column with distances following the coordinates.");
-	GMT_Usage (API, -2, "Instead of <start/stop>, give <origin> and append +a|o|, +l|r, and others as required:");
-	GMT_Usage (API, 3, "+a Define a profile from <origin> in the <az> direction; requires +l.");
-	GMT_Usage (API, 3, "+c Create a continuous segment if two end points are identical [separate segments].");
-	GMT_Usage (API, 3, "+g Use gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].");
-	GMT_Usage (API, 3, "+l Set the length of the profile.");
-	GMT_Usage (API, 3, "+o Like +a but centers profile on <origin>; requires +l.");
-	GMT_Usage (API, 3, "+r Set <radius> of circle about <origin>; requires +i or +n.");
-	GMT_Usage (API, 3, "+n Set <np>, the number of output points and compute <inc> from <length>, so +l is required.");
-	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, "
-		"so mixing of units is not allowed [Default unit is km, if geographic].", GMT_LEN_UNITS2_DISPLAY);
+	gmt_explain_lines (API, 0);
 	GMT_Usage (API, 1, "\n-F[+b][+n][+r][+z<z0>]");
 	GMT_Usage (API, -2, "Report center, left, and right point per cross-track; requires -C and a single input grid. ");
 	GMT_Usage (API, 3, "+b Compute the balance point and standard deviation of the profile instead.");
@@ -344,7 +328,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					while (gmt_getmodopt (GMT, 'C', c, "adflrv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'a': Ctrl->C.mode |= GMT_ALTERNATE; break;		/* Select alternating direction of cross-profiles */
-							case 'f': Ctrl->C.mode |= GMT_FIXED_AZIM;	/* Deliberatily fall through to get fixed azimuth */
+							case 'f': Ctrl->C.mode |= GMT_FIXED_AZIM;	/* Deliberately fall through to get fixed azimuth */
 							case 'd': Ctrl->C.deviation = atof (&p[1]); break;		/* Less than orthogonal vy given deviation */
 							case 'l': Ctrl->C.mode |= GMT_LEFT_ONLY; break;		/* cross-profile starts at line and go to left side only */
 							case 'r': Ctrl->C.mode |= GMT_RIGHT_ONLY; break;	/* cross-profile starts at line and go to right side only */
@@ -493,7 +477,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 						GMT_Report (API, GMT_MSG_ERROR, "Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
 						break;
 				}
-				pos = 0;
+				pos = 0;	/* This skips over any useless slash */
 				while (gmt_strtok (&opt->arg[1], "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a': Ctrl->S.selected[STACK_ADD_VAL] = true; break;	/* Gave +a to add stacked value to all output profiles */
@@ -984,7 +968,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				M->n_rows = n_rows;
 				for (k = 0; k < Ctrl->G.n_grids; k++)	/* Allocate arrays for stack */
 					stack[k] = gmt_M_memory (GMT, NULL, T->n_segments, double);
-				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = gmt_M_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Ned temp array for these methods */
+				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = gmt_M_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Need temp array for these methods */
 				for (row = 0; row < n_rows; row++) {	/* For each row to stack across all segments, per data grid */
 					gmt_M_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
 					for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset extremes upon starting new stack */

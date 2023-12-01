@@ -11,11 +11,11 @@ The **-B** option
 **Description**
 
 This is potentially the most complicated option in GMT, but most examples of its usage are actually quite simple. We
-distinguish between two sets of information: :ref:`Frame settings <cookbook/options:Frame settings>` and
-:ref:`Axes settings <cookbook/options:Axes settings>`.  These are set separately by their own **-B** invocations; hence
-multiple **-B** specifications may be specified. The :ref:`Frame settings <cookbook/options:Frame settings>` cover
+distinguish between two sets of information: :ref:`Frame settings <reference/options:Frame settings>` and
+:ref:`Axes settings <reference/options:Axes settings>`.  These are set separately by their own **-B** invocations; hence
+multiple **-B** specifications may be specified. The :ref:`Frame settings <reference/options:Frame settings>` cover
 things such as which axes should be plotted, canvas fill, plot title (and subtitle), and what type of gridlines be
-drawn, whereas the :ref:`Axes settings <cookbook/options:Axes settings>` deal with annotation, tick, and gridline
+drawn, whereas the :ref:`Axes settings <reference/options:Axes settings>` deal with annotation, tick, and gridline
 intervals, axes labels, and annotation units.
 
 Frame settings
@@ -71,9 +71,10 @@ can be appended to **-B** to control the Frame settings:
   **0**].
 
 - **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
-  North pole]. **+o** is ignored if no gridlines are requested.
+  North pole]. **+o** is ignored if no gridlines are requested. **Note**: One cannot specify oblique gridlines for non-geographic projections as well as the
+  oblique Mercator projection.
 
-- **+n** to have no frame and annotations at all [default is contolled by *axes*].
+- **+n** to have no frame and annotations at all [default is controlled by *axes*].
 
 - **+t**\ *title* to place the string given in *title* centered above the plot frame [default is no title].
 
@@ -83,7 +84,7 @@ can be appended to **-B** to control the Frame settings:
 **Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
 markers @^ or <break>.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
 with @[ markers (or alternatively <math> ... </math>) (requires ``latex`` and ``dvips`` to be installed). See the
-:doc:`/cookbook/gmt-latex` chapter for more details.
+:doc:`/reference/gmt-latex` chapter for more details.
 
 Axes settings
 ^^^^^^^^^^^^^
@@ -112,18 +113,18 @@ The following directives and modifiers can be appended to **-B** to control the 
   3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the vertical axis.
 - **+e** to give skip annotations that fall exactly at the ends of the axis.  Append **l** or **u** to only
   skip the lower or upper annotation, respectively.
-- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffices encoding the sign.
+- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffixes encoding the sign.
 - **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
   label orientation; **+L** forces a horizontal label for *y*-axes, which is useful for very short labels.
-- **+s**\|\ **S**\ *seclabel* (for Cartesion plots only) to specify an alternate label for the right or upper axes.
+- **+s**\|\ **S**\ *seclabel* (for Cartesian plots only) to specify an alternate label for the right or upper axes.
   **+s** uses the default label orientation; **+S** forces a horizontal label for *y*-axes, which is useful for very
   short labels.
-- **+p**\ *prefix* (for Cartesion plots only) to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
+- **+p**\ *prefix* (for Cartesian plots only) to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
   money). For geographic maps the addition of degree symbols, etc. is automatic and controlled by
   :term:`FORMAT_GEO_MAP`.
-- **+u**\ *unit* (for Cartesion plots only) to append specific units to the annotations. For geographic maps the
+- **+u**\ *unit* (for Cartesian plots only) to append specific units to the annotations. For geographic maps the
   addition of degree symbols, etc. is automatic and controlled by :term:`FORMAT_GEO_MAP`.
-- **+a**\ *angle* (for Cartesion plots only) to plot slanted annotations, where *angle* is measured with respect to
+- **+a**\ *angle* (for Cartesian plots only) to plot slanted annotations, where *angle* is measured with respect to
   the horizontal and must be in the -90 <= *angle* <= 90 range. **+an** can be used as a shorthand for normal
   (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default for
   x-axis]. These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
@@ -131,7 +132,7 @@ The following directives and modifiers can be appended to **-B** to control the 
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
 **NOTE**: To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively <math>
-... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/cookbook/gmt-latex` chapter for more
+... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/reference/gmt-latex` chapter for more
 details.
 
 **NOTE**: If any labels, prefixes, or units contain spaces or special characters you will need to enclose them in
@@ -140,7 +141,7 @@ quotes.
 **NOTE**: Text items such as *title*, *subtitle*, *label* and *seclabel* are seen by GMT as part of a long string
 containing everything passed to **-B**. Therefore, they cannot contain substrings that look like other modifiers. If
 you need to embed such sequences (e.g., **+t**\ "Solving a+b=c") you need to replace those + symbols with their
-:doc:`octal equivalent </cookbook/octal-codes>` \\053, (e.g., **+t**\ "Solving a\\053b=c").
+:doc:`octal equivalent </reference/octal-codes>` \\053, (e.g., **+t**\ "Solving a\\053b=c").
 
 **NOTE**: For non-geographical projections: Give negative scale (in **-Jx**) or axis length (in **-JX**) to change the
 direction of increasing coordinates (i.e., to make the y-axis positive down).

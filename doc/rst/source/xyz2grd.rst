@@ -84,7 +84,7 @@ Optional Arguments
     ignored if |-Z| is given. Append **f** or **s** to simply keep the
     first or last data point that was assigned to each node. Append
     **l** or **u** or **d** to find the lowest (minimum) or upper (maximum) value
-    or the difference between the maximum and miminum value
+    or the difference between the maximum and minimum values
     at each node, respectively. Append **m** or **r** or **S** to compute mean or
     RMS value or standard deviation at each node, respectively. Append **n** to simply count
     the number of data points that were assigned to each node (this only
@@ -206,41 +206,41 @@ Examples
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
-   ::
+::
 
-    gmt xyz2grd hawaii_grv.xyz -D+xdegree+ydegree+zGal+t"Hawaiian Gravity"+r"GRS-80 Ellipsoid used" \
-                -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
+  gmt xyz2grd hawaii_grv.xyz -D+xdegree+ydegree+zGal+t"Hawaiian Gravity"+r"GRS-80 Ellipsoid used" \
+              -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
 
 To create a grid file from the raw binary (3-column, single-precision
 scanline-oriented data raw.b, use
 
-   ::
+::
 
-    gmt xyz2grd raw.b -D+xm+ym+zm -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
+  gmt xyz2grd raw.b -D+xm+ym+zm -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
 scanline-oriented data topo30.b on the NCEI global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
 reverse the byte-order. On such machines (like Sun), use
 
-   ::
+::
 
-    gmt xyz2grd topo30.b -D+xm+ym+zm -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
+  gmt xyz2grd topo30.b -D+xm+ym+zm -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
 
 Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can
 swap the byte-order with
 
-   ::
+::
 
-    gmt xyz2grd floats.bin -Snew_floats.bin -V -Zf
+  gmt xyz2grd floats.bin -Snew_floats.bin -V -Zf
 
 To make a pixel node registrated tiff of the number of data points
 that is assigned to each node in a cartesian data set, use
 
-   ::
+::
 
-    gmt xyz2grd data.txt -R0/100/0/100 -r -I10 -An -Gnumber_of_points.tif=gd:GTiff
+  gmt xyz2grd data.txt -R0/100/0/100 -r -I10 -An -Gnumber_of_points.tif=gd:GTiff
 
 See Also
 --------

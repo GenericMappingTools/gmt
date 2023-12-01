@@ -31,7 +31,7 @@
  * Author:	Joaquim Luis
  * Date:	26-April-2011
  *
- * Public functions (2):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
  *	gmt_export_image : Write an image to disk stored in an GMT_IMAGE struct
  *	gmt_gdalwrite    : Write a GDAL grid

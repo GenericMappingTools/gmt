@@ -194,7 +194,7 @@ struct GMT_DATE_IO {
 };
 
 struct GMT_GEO_IO {			/* For geographic output and plotting */
-	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
+	double f_sec_to_int;	/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	unsigned int n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
 	unsigned int range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	int wesn;				/* 1 if we want sign encoded with suffix W, E, S, N, 2 if also want space before letter.
@@ -202,9 +202,9 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	int order[3];			/* The relative order of degree, minute, seconds in form (-ve if unused) */
 	bool decimal;			/* true if we want to use the FORMAT_FLOAT_OUT for decimal degrees only */
 	bool no_sign;			/* true if we want absolute values (plot only) */
-	char x_format[GMT_LEN64];	/* Actual C format used to plot/output longitude */
-	char y_format[GMT_LEN64];	/* Actual C format used to plot/output latitude */
-	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
+	bool leading_zeros;		/* True to get leading zeros in degrees */
+	char format[GMT_LEN64];	/* Actual C format used to output coordinate */
+	char delimiter[2][2];	/* Delimiter strings in date, e.g. "-" */
 };
 
 struct GMT_COL_INFO {	/* Used by -i and input parsing */

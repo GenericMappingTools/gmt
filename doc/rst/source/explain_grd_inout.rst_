@@ -18,7 +18,7 @@ automatically recognized from almost all of those formats that GMT and GDAL
 combined offer. If not, the same suffix can be added to input grid file names.
 If reading an image as a grid you can select the band via **+b**.
 See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
-of the GMT Technical Reference and Cookbook for more information regarding GDAL settings.
+of the GMT Technical Reference for more information regarding GDAL settings.
 
 When reading a netCDF file that contains multiple grids, GMT will
 read, by default, the first 2-dimensional grid that it can find in that
@@ -30,7 +30,7 @@ front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
 :doc:`grdconvert </grdconvert>` and Sections :ref:`modifiers-for-CF` and
-:ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more
+:ref:`grid-file-format` of the GMT Technical Reference for more
 information, particularly on how to read slices of 3-, 4-, or 5-dimensional grids.
 
 When writing a netCDF file, the grid is stored by default with the
@@ -58,7 +58,7 @@ double quotes.
        - **+o** - Offset data values by the given *offset* [Default is 0].
        - **+s** - Scale data values by the given *scale* [Default is 1].
 
-    Note: Any offset is added after any scaling.
+    **Note**: Any offset is added after any scaling.
 
 .. ingrid-syntax-ends
 .. outgrid-syntax-begins

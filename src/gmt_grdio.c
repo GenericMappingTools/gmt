@@ -30,57 +30,85 @@
  * with 32-bit ints.  However, 1-D array indices (e.g., ij = row*n_columns + col) are
  * addressed with 64-bit integers.
  *
- * Public functions (42 [+2]):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
- *  gmt_grd_get_format      : Get format id, scale, offset and missing value for grdfile
- *  gmtlib_read_grd_info       : Read header from file
- *  gmtlib_read_grd            : Read data set from file (must be preceded by gmtlib_read_grd_info)
- *  gmt_update_grd_info     : Update header in existing file (must be preceded by gmtlib_read_grd_info)
- *  gmtlib_write_grd_info      : Write header to new file
- *  gmtlib_write_grd           : Write header and data set to new file
- *  gmt_set_R_from_grd
- *  gmt_grd_coord           :
- *  gmtlib_grd_real_interleave :
- *  gmt_grd_mux_demux       :
- *  gmtlib_grd_set_units       :
- *  gmt_grd_pad_status      :
- *  gmt_grd_info_syntax
- *  gmtlib_get_grdtype         :
- *  gmtlib_grd_data_size       :
- *  gmt_grd_set_ij_inc      :
- *  gmt_grd_format_decoder  :
- *  gmt_grd_prep_io         :
- *  gmt_set_grdinc          :
- *  gmt_set_grddim          :
- *  gmt_grd_pad_off         :
- *  gmt_grd_pad_on          :
- *  gmt_grd_pad_zero        :
- *  gmt_create_grid         :
- *  gmt_duplicate_grid      :
- *  gmt_free_grid           :
- *  gmt_set_outgrid         :
- *  gmt_change_grdreg       :
- *  gmt_grd_zminmax         :
- *  gmt_grd_minmax          :
- *  gmt_grd_detrend         :
- *  gmtlib_init_complex        :
- *  gmtlib_found_url_for_gdal      :
- *  gmt_read_img            : Read [subset from] a Sandwell/Smith *.img file
- *  gmt_grd_init            : Initialize grd header structure
- *  gmt_grd_shift           : Rotates grdfiles in x-direction
- *  gmt_grd_setregion       : Determines subset coordinates for grdfiles
- *  gmt_grd_is_global       : Determine whether grid is "global", i.e. longitudes are periodic
- *  gmt_adjust_loose_wesn   : Ensures region, increments, and n_columns/n_rows are compatible
- *  gmt_decode_grd_h_info   : Decodes a -Dstring into header text components
- *  gmt_grd_RI_verify       : Test to see if region and incs are compatible
- *  gmt_scale_and_offset_f  : Routine that scales and offsets the data in a vector
- *  gmt_grd_flip_vertical  : Flips the grid in vertical direction
- *  gmtgrdio_pack_grid         : Packs or unpacks a grid by calling gmt_scale_and_offset_f()
+ *	gmt_adjust_loose_wesn
+ *	gmt_change_grdreg
+ *	gmt_change_grid_history
+ *	gmt_copy_gridheader
+ *	gmt_create_grid
+ *	gmt_cube_info_syntax
+ *	gmt_cube_pad_off
+ *	gmt_cube_vminmax
+ *	gmt_decode_cube_h_info
+ *	gmt_decode_grd_h_info
+ *	gmt_duplicate_grid
+ *	gmt_free_grid
+ *	gmt_free_header
+ *	gmt_get_active_layers
+ *	gmt_get_grd_command
+ *	gmt_get_grd_remark
+ *	gmt_get_grd_title
+ *	gmt_get_grid
+ *	gmt_grd_RI_verify
+ *	gmt_grd_coord
+ *	gmt_grd_detrend
+ *	gmt_grd_domains_match
+ *	gmt_grd_dump
+ *	gmt_grd_flip_vertical
+ *	gmt_grd_format_decoder
+ *	gmt_grd_get_format
+ *	gmt_grd_info_syntax
+ *	gmt_grd_init
+ *	gmt_grd_is_global
+ *	gmt_grd_is_polar
+ *	gmt_grd_layout
+ *	gmt_grd_minmax
+ *	gmt_grd_mux_demux
+ *	gmt_grd_pad_off
+ *	gmt_grd_pad_on
+ *	gmt_grd_pad_status
+ *	gmt_grd_pad_zero
+ *	gmt_grd_prep_io
+ *	gmt_grd_set_cartesian
+ *	gmt_grd_set_datapadding
+ *	gmt_grd_set_ij_inc
+ *	gmt_grd_setregion
+ *	gmt_grd_shift
+ *	gmt_grd_zminmax
+ *	gmt_grdcube_info_syntax
+ *	gmt_grid_perimeter
+ *	gmt_img_sanitycheck
+ *	gmt_raster_type
+ *	gmt_read_img
+ *	gmt_scale_and_offset_f
+ *	gmt_set_R_from_grd
+ *	gmt_set_grddim
+ *	gmt_set_grdinc
+ *	gmt_set_outgrid
+ *	gmt_update_grd_info
  *
- *  Reading images via GDAL:
- *  gmtlib_read_image          : Read [subset of] an image via GDAL
- *  gmtlib_read_image_info     : Get information for an image via GDAL
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
  *
+ *	gmtlib_create_cube
+ *	gmtlib_duplicate_cube
+ *	gmtlib_found_url_for_gdal
+ *	gmtlib_free_cube
+ *	gmtlib_free_cube_ptr
+ *	gmtlib_free_grid_ptr
+ *	gmtlib_get_grdtype
+ *	gmtlib_get_matrixtype
+ *	gmtlib_grd_data_size
+ *	gmtlib_grd_get_units
+ *	gmtlib_grd_real_interleave
+ *	gmtlib_grd_set_units
+ *	gmtlib_init_complex
+ *	gmtlib_read_grd
+ *	gmtlib_read_grd_info
+ *	gmtlib_read_image
+ *	gmtlib_read_image_info
+ *	gmtlib_write_grd
+ *	gmtlib_write_grd_info
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #include "gmt_dev.h"
@@ -754,8 +782,8 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	/* Destination must exist */
 	struct GMT_GRID_HEADER_HIDDEN *Hfrom = gmt_get_H_hidden (from), *Hto = gmt_get_H_hidden (to);
 	gmt_M_unused(GMT);
-	if (to->ProjRefWKT) gmt_M_str_free (to->ProjRefWKT);		/* Since we will duplicate via from */
-	if (to->ProjRefPROJ4) gmt_M_str_free (to->ProjRefPROJ4);	/* Since we will duplicate via from */
+	if (GMT->parent->internal && to->ProjRefWKT) gmt_M_str_free (to->ProjRefWKT);		/* Since we will duplicate via from */
+	if (GMT->parent->internal && to->ProjRefPROJ4) gmt_M_str_free (to->ProjRefPROJ4);	/* Since we will duplicate via from */
 	if (Hto->pocket) gmt_M_str_free (Hto->pocket);			/* Since we will duplicate via from */
 	if (Hto->title) gmt_M_str_free (Hto->title);			/* Since we will duplicate via from */
 	if (Hto->command) gmt_M_str_free (Hto->command);			/* Since we will duplicate via from */
@@ -845,8 +873,11 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 		/* PW: This test was <= 360 but if you have grids from 340-375 and it says longitude then we should not make it Cartesian */
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] < 720.0)) {
-			/* Input data type is longitude */
-			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
+			/* Input data type is longitude ... if */
+			if ((header->wesn[XHI] - header->wesn[XLO]) > 360)
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Grid x units says it is longitude but it spans > 360 so is set to Cartesian\n");
+			else
+				gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
 		}
 		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
 			/* Input data type is latitude */
@@ -863,7 +894,7 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Time units [%s] in grid not recognized, defaulting to %s settings.\n", units, GMT_SETTINGS_FILE);
 
-			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
+			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */	
 			scale = time_system.scale * GMT->current.setting.time_system.i_scale;
 			offset = (time_system.rata_die - GMT->current.setting.time_system.rata_die) + (time_system.epoch_t0 - GMT->current.setting.time_system.epoch_t0);
 			offset *= GMT_DAY2SEC_F * GMT->current.setting.time_system.i_scale;
@@ -1204,6 +1235,10 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	string[1] = header->y_units;
 	string[2] = header->z_units;
 
+	/* Safety valve for geographic grids */
+	if (strstr (string[GMT_X], "longitude")) gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+	if (strstr (string[GMT_Y], "latitude"))  gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+
 	/* Use input data type as backup for output data type */
 	for (i = 0; i < 3; i++)
 		if (gmt_M_type (GMT, GMT_OUT, i) == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];
@@ -1254,7 +1289,7 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 }
 
-bool gmtgrdio_pad_status (struct GMT_CTRL *GMT, unsigned int *pad) {
+GMT_LOCAL bool gmtgrdio_pad_status (struct GMT_CTRL *GMT, unsigned int *pad) {
 	unsigned int side;
 	gmt_M_unused(GMT);
 	for (side = 0; side < 4; side++) if (pad[side]) return (true);	/* Grid has a pad */
@@ -1606,7 +1641,7 @@ size_t gmtlib_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdf
 			return (sizeof (int32_t));
 			break;
 		case 'f':
-			return (sizeof (float));
+			return (sizeof (gmt_grdfloat));
 			break;
 		case 'd':
 			return (sizeof (double));
@@ -2828,7 +2863,7 @@ void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	if (is_complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		gmt_grdfloat *f = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extend grid via copy onto larger memory-aligned grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Extending grid via copying onto larger memory-aligned grid\n");
 		if ((f = gmt_M_memory_aligned (GMT, NULL, size, gmt_grdfloat)) == NULL) return;	/* New, larger grid size */
 		gmt_M_memcpy (f, G->data, G->header->size, gmt_grdfloat);	/* Copy over previous grid values */
 		gmt_M_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */
@@ -3486,6 +3521,8 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
 			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
 				code = GMT_IS_GRID;
+			else if (I->type == GMT_FLOAT)		/* No doubt in this case */
+				code = GMT_IS_GRID;
 			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
 				code = GMT_IS_IMAGE;
 			else if (I->header->n_bands > 1)	/* Whatever it is we must return multiband as an image */
@@ -3705,6 +3742,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		}
 	}
 
+	I->header->nan_value = from_gdalread->nodata;
 	I->color_interp    = from_gdalread->color_interp;     /* Must find out how to release this mem */
 	I->n_indexed_colors = from_gdalread->nIndexedColors;
 	gmt_M_str_free (I->header->ProjRefPROJ4);		/* Make sure we don't leak due to a previous copy */
@@ -3922,4 +3960,75 @@ bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT
 		return (false);
 	}
 	return (true);
+}
+
+struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *C, unsigned int dim, double coord) {
+	/* Special case of slicing a cube vertically and along the cube's node structure.  For
+	 * oblique cuts and resampling and for grids with variable spacing/time in the third
+	 * dimension, see grdinterpolate instead.
+	 * Here, dim is either GMT_X or GMT_Y which informs us whether coord is an x-
+	 * or y-coordinate and that defines the vertical plan to be at that constant
+	 * coordinate and parallel to the z-axis and the other axis (y or x).
+	 */
+	uint64_t col, xrow, xcol, layer, ijg, ijc;
+	double pos = 0.0;
+	struct GMT_GRID *G = NULL;
+	struct GMT_GRID_HIDDEN *GH = NULL;
+
+	if (gmtlib_var_inc (C->z, C->header->n_bands)) {	/* Check if equidistant in z direction */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cube has non-equidistant spacing in the third dimension (consider grdinterpolate instead)\n");
+		GMT->parent->error = GMT_RUNTIME_ERROR;
+		return (NULL);
+	}
+	G = gmt_create_grid (GMT);	/* Create empty grid structure */
+	/* The number of columns in the output grid depends which of the two planes we selected */
+	G->header->n_columns  = (dim == GMT_X) ? C->header->n_rows     : C->header->n_columns;
+	G->header->wesn[XLO]  = (dim == GMT_X) ? C->header->wesn[YLO]  : C->header->wesn[XLO];
+	G->header->wesn[XHI]  = (dim == GMT_X) ? C->header->wesn[YHI]  : C->header->wesn[XHI];
+	G->header->inc[GMT_X] = (dim == GMT_X) ? C->header->inc[GMT_Y] : C->header->inc[GMT_X];
+	/* The number of rows in the output grid is always the third dimension in the cube and independent of dim */
+	G->header->n_rows     = C->header->n_bands;	
+	G->header->wesn[YLO]  = C->z_range[0];
+	G->header->wesn[YHI]  = C->z_range[1];
+	G->header->inc[GMT_Y] = C->z_inc;
+	gmt_set_grddim (GMT, G->header);	/* Determine dimensions, mx, pad etc */
+	if (dim == GMT_X) {	/* Received an x-coordinate, find corresponding column */
+		xcol = gmt_M_grd_x_to_col (GMT, coord, C->header);
+		pos = gmt_M_grd_col_to_x (GMT, xcol, C->header);
+	}
+	else {	/* Received an y-coordinate, find corresponding row */
+		xrow = gmt_M_grd_y_to_row (GMT, coord, C->header);
+		pos = gmt_M_grd_row_to_y (GMT, xrow, C->header);
+	}
+	if (!doubleAlmostEqualZero (coord, pos)) {	/* Not aligned with cube nodes */
+		static char *axis = "xy";
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E%c: Your %c-coordinate is not aligned with the cube %c-nodes (%lg vs %lg).\n", axis[dim], axis[dim], axis[dim], coord, pos);
+		GMT->parent->error = GMT_RUNTIME_ERROR;
+		gmt_free_grid (GMT, &G, true);
+		return (NULL);
+	}
+
+	/* Checks passed, time to do the work */
+
+	G->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);	/* Allocate grid and padding */
+	GH = gmt_get_G_hidden (G);
+	GH->alloc_mode = GMT_ALLOC_INTERNALLY;
+
+	/* Loop over the output grids rows and columns and match to nodes in the cube */
+	for (layer = 0; layer < G->header->n_rows; layer++) {	/* This is the loop over the rows in the output grid */
+		ijg = gmt_M_ijp (G->header, G->header->n_rows-1-layer, 0);	/* TL node in output grid */
+		if (dim == GMT_X) {	/* Must loop over the cube's y-dimension */
+			ijc = gmt_M_ijp (C->header, 0, xcol) + layer * C->header->size;	/* Corresponding point in the cube */
+			/* col loops over the columns in the 2-D grid which are rows in the cube */
+			for (col = 0; col < G->header->n_columns; col++, ijg++, ijc += G->header->mx)
+				G->data[ijg] = C->data[ijc];
+		}
+		else {	/* Must loop over the cube's x-dimension */
+			ijc = gmt_M_ijp (C->header, xrow, 0) + layer * C->header->size;/* Corresponding point in the cube */
+			/* col here is the column in the 2-D grid which are also cols in the cube */
+			for (col = 0; col < C->header->n_columns; col++, ijg++, ijc++)
+				G->data[ijg] = C->data[ijc];
+		}
+	}
+	return (G);	/* Return the fully allocated local grid */
 }

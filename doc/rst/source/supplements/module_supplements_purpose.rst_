@@ -96,6 +96,10 @@
 
 .. |rotsmoother_purpose| replace:: Get mean rotations and covariance matrices from set of finite rotations
 
+.. |shake_purpose| replace:: Compute Peak Ground Acceleration/Velocity and Intensity
+
+.. |vs30_purpose| replace:: Convert topographic slope to Vs30 velocities
+
 .. |x2sys_binlist_purpose| replace:: Create bin index listing from track data files
 
 .. |x2sys_cross_purpose| replace:: Calculate crossovers between track data files

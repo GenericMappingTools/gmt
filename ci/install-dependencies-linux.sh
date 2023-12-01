@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Bash script to install GMT dependencies on Ubuntu.
+# Bash script to install GMT dependencies on Ubuntu via apt-get and conda
 #
 # Environmental variables that can control the installation:
 #
@@ -15,41 +15,42 @@ BUILD_DOCS="${BUILD_DOCS:-false}"
 RUN_TESTS="${RUN_TESTS:-false}"
 EXCLUDE_OPTIONAL=${EXCLUDE_OPTIONAL:-false}
 
-# required packages for compiling GMT
-packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
-          ghostscript curl git libgdal-dev"
+# packages installed via apt-get
+packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev curl git libgdal-dev"
+# packages installed via conda
+conda_packages="ghostscript=10.02.0"
 
 # optional packages
 if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
     packages+=" libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev"
 fi
 
-# packages for building documentation
-if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" python3-pip python3-setuptools python3-wheel"
-fi
-
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
-    packages+=" graphicsmagick gdal-bin"
-    packages+=" texlive-latex-base texlive-binaries texlive-fonts-recommended"
+    packages+=" graphicsmagick gdal-bin texlive-latex-base texlive-binaries texlive-fonts-recommended"
+    conda_packages+=" dvc"
 fi
 
-# Install packages
+# packages for building documentation
+if [ "$BUILD_DOCS" = "true" ]; then
+    conda_packages+=" pngquant sphinx dvc"
+fi
+
+# Install packages via apt-get
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 
-# Install more packages for building documentation
-if [ "$BUILD_DOCS" = "true" ]; then
-    sudo snap install pngquant
-    pip3 install --user sphinx dvc
-    # Add sphinx to PATH
-    echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
-fi
+# Install packages via conda
+conda update -n base -c conda-forge conda --solver libmamba
+conda install ${conda_packages} -c conda-forge --solver libmamba
+echo "${CONDA}/bin" >> $GITHUB_PATH
 
-# Install dvc for running GMT tests
-if [ "$RUN_TESTS" = "true" ]; then
-    pip3 install --user dvc
+# Remove pcre-config from conda's path so cmake won't find the conda's one
+rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
+
+# Install Sphinx extensions
+if [ "$BUILD_DOCS" = "true" ]; then
+    ${CONDA}/bin/python -m pip install --user -r doc/rst/requirements.txt
 fi
 
 set +x +e

@@ -95,8 +95,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-EXTERN_MSC int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item);	/* Because of deprecated -Q */
-
 static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
@@ -158,7 +156,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 			case 'Q':	/* Deprecated option, use -n instead */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -Q is deprecated; -n%s was set instead, use this in the future.\n", opt->arg);
-					n_errors += gmtinit_parse_n_option (GMT, opt->arg);
+					n_errors += gmt_parse_n_option (GMT, opt->arg);
 				}
 				else
 					n_errors += gmt_default_option_error (GMT, opt);
@@ -266,11 +264,15 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 		/* Adjust wesn used to READ subset unless 360 geographic */
 		if (!wrap_360_i) {
 			k = 0;
-			while (wesn_i[YLO] < (wesn_o[YLO] + ince[GMT_Y])) wesn_i[YLO] += Gin->header->inc[GMT_Y], k++;	/* Now on or inside grid boundary */
-			if (wesn_i[YLO] > (Gin->header->wesn[YLO] + ince[GMT_Y]) && k) wesn_i[YLO] -= Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+			while (wesn_i[YLO] < (wesn_o[YLO] + ince[GMT_Y]))
+				wesn_i[YLO] += Gin->header->inc[GMT_Y], k++;	/* Now on or inside grid boundary */
+			if (wesn_i[YLO] > (Gin->header->wesn[YLO] + ince[GMT_Y]) && k)
+				wesn_i[YLO] -= Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
 			k = 0;
-			while (wesn_i[YHI] > (wesn_o[YHI] - ince[GMT_Y])) wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
-			if (wesn_i[YHI] < (Gin->header->wesn[YHI] + ince[GMT_Y]) && k) wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
+			while (wesn_i[YHI] > (wesn_o[YHI] - ince[GMT_Y]))
+				wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
+			if (wesn_i[YHI] < (Gin->header->wesn[YHI] - ince[GMT_Y]) && k)
+				wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
 		}
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between grid and -R */
 			int shift = 0;
@@ -292,12 +294,12 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 					wesn_i[XLO] -= 360.0, wesn_i[XHI] -= 360.0;
 			}
 			k = 0;
-			while (wesn_i[XLO] < (wesn_o[XLO] - ince[GMT_X]))
+			while (wesn_i[XLO] < (wesn_o[XLO] + ince[GMT_X]))
 				wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
 			if (wesn_i[XLO] > (Gin->header->wesn[XLO] + ince[GMT_X]) && k)
 				wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
 			k = 0;
-			while (wesn_i[XHI] > (wesn_o[XHI] + ince[GMT_X]))
+			while (wesn_i[XHI] > (wesn_o[XHI] - ince[GMT_X]))
 				wesn_i[XHI] -= Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
 			if (wesn_i[XHI] < (Gin->header->wesn[XHI] - ince[GMT_X]) && k)
 				wesn_i[XHI] += Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
@@ -329,6 +331,9 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/* Here, wesn_i is compatible with the INPUT grid so we can read the subset from which we will resample.
 	 * Here, wesn_o is the region we wish to use when creating the output grid */
+
+	GMT_Report (API, GMT_MSG_DEBUG, "wesn_i = %lg/%lg/%lg/%lg\n", wesn_i[XLO], wesn_i[XHI], wesn_i[YLO], wesn_i[YHI]);
+	GMT_Report (API, GMT_MSG_DEBUG, "wesn_o = %lg/%lg/%lg/%lg\n", wesn_o[XLO], wesn_o[XHI], wesn_o[YLO], wesn_o[YHI]);
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn_o, inc, \
 		registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);

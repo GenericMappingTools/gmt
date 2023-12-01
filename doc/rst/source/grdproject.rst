@@ -18,6 +18,7 @@ Synopsis
 [ |-E|\ *dpi* ] [ |-F|\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**] ] [ |-I| ] [ |-M|\ **c**\|\ **i**\|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
@@ -142,6 +143,8 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. include:: explain_distcalc.rst_
+
 .. include:: explain_-n.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
@@ -157,15 +160,15 @@ Examples
 To transform a chunk of the geographical remote grid earth_relief_05m onto a pixel Mercator grid at 300 dpi
 given a scale of 0.25 inches per degree, run
 
-   ::
+::
 
-    gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
+  gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
 
 To inversely transform the file topo_tm.nc back onto a geographical grid, use
 
-   ::
+::
 
-    gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
+  gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
 
 This assumes, of course, that the coordinates in topo_tm.nc were
 created with the same projection parameters.
@@ -174,27 +177,29 @@ To inversely transform the file topo_utm.nc (which is in UTM meters)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-   ::
+::
 
-    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
+  gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
 
 To inversely transform the file data.nc (which is in Mercator meters with Greenwich
 as the central longitude and a false easting of -4 and produced on the ellipse WGS-72)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-   ::
+::
 
-    gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
+  gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
 
-Restrictions
-------------
+Output Region Issues
+--------------------
 
 The boundaries of a projected (rectangular) data set will not
 necessarily give rectangular geographical boundaries (Mercator is one
 exception). In those cases some nodes may be unconstrained (set to NaN).
 To get a full grid back, your input grid may have to cover a larger area
 than you are interested in.
+
+.. include:: explain_ellipsoidal.rst_
 
 See Also
 --------

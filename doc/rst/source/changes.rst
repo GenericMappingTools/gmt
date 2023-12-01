@@ -14,7 +14,7 @@ bug fixes! Here are the general updates included in 6.4:
 
 Colormaps:
 
-* Add :doc:`cmocean colour maps </cookbook/cpts>` (`#6446 <https://github.com/GenericMappingTools/gmt/pull/6446>`_)
+* Add :doc:`cmocean colour maps </reference/cpts>` (`#6446 <https://github.com/GenericMappingTools/gmt/pull/6446>`_)
 * Let one-liners with CPTs add colorbar (`#6427 <https://github.com/GenericMappingTools/gmt/pull/6427>`_)
 * Save any default CPT for remote datasets in hidden grid header (`#6178 <https://github.com/GenericMappingTools/gmt/pull/6178>`_)
 * :doc:`grdedit`: Let -D+c allow setting/removing default CPT for grid (`#6223 <https://github.com/GenericMappingTools/gmt/pull/6223>`_)
@@ -180,7 +180,7 @@ GMT 6.2 includes a new module, new common option, general code and documentation
 bug fixes! Here are the general updates included in 6.2:
 
 #. Addition of :doc:`theme-settings` (sets of GMT defaults), with a default modern theme for modern mode, and
-   :ref:`auto scaling options <cookbook/features:Automatic GMT settings>` for many GMT defaults.
+   :ref:`auto scaling options <reference/features:Automatic GMT settings>` for many GMT defaults.
 #. New :doc:`animation 13 <animations/anim13>` of seismic waveforms.
 #. New :doc:`animation 14 <animations/anim14>` of earthquake focal mechanisms.
 #. Support for **+a**\ *angle* for y-axis as well as x-axis with the :ref:`-B axes settings <gmt:Axes settings>`.
@@ -372,7 +372,7 @@ mode; the first two also work in classic mode since they are typically not usefu
 #. :doc:`clear` removes various session files or cached data files.
 #. :doc:`movie` simplifies the construction of animated sequences.
 
-The entire cookbook, tutorial and gallery examples all use modern mode. In modern mode,
+The entire GMT Technical Reference, tutorial and gallery examples all use modern mode. In modern mode,
 the default graphics format is PDF and scripts can open up the plots in the default
 viewer automatically.
 
@@ -851,7 +851,7 @@ as well. For specific enhancements, we have:
 
 *  We have consolidated how map embellishments are specified.  This group
    includes map scales, color bars, legends, map roses, map insets,
-   image overlays, the GMT logo, and a background panel.  A new section in the Cookbook is
+   image overlays, the GMT logo, and a background panel.  A new section in the Technical Reference is
    dedicated to these items and how they are specified.  Common to all is
    the concept of a *reference point* relative to which the item is
    *justified* and *offset*.
@@ -1411,7 +1411,7 @@ grdraster
     found in the sph supplement.
 
 :doc:`sphtriangulate`
-    Delaunay or Voronoi construction of spherical lon,lat data.  Previously
+    Delaunay or Voronoi construction of spherical (*lon, lat*) data.  Previously
     found in the sph supplement.
 
 We have also added a new supplement called potential that contains these five modules:
@@ -1583,7 +1583,7 @@ ways, such as
 
 *  While we support the scaling of z-values in grids via the filename convention
    name[=\ *ID*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *nan*] mechanism, there are times
-   when we wish to scale the x,y domain as well. Users can now
+   when we wish to scale the *x, y* domain as well. Users can now
    append **+u**\ *unit* to their gridfile names, where *unit* is one of non-arc units listed
    in Table :ref:`distunits <tbl-distunits>`.  This will convert your Cartesian
    x and y coordinates *from* the given unit *to* meters.  We also support the inverse
@@ -1660,7 +1660,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 *  :doc:`grd2cpt` takes **-F** to specify output color model and **-G** to
    truncate incoming CPT to be limited to a given range.
 
-*  :doc:`grd2xyz` takes **-C** to write row, col instead of x,y.  Append **f**
+*  :doc:`grd2xyz` takes **-C** to write row, col instead of *x, y*.  Append **f**
    to start at 1, else start at 0.  Alternatively, use **-Ci** to write just
    the two columns *index* and *z*, where *index*
    is the 1-D indexing that GMT uses when referring to grid nodes.

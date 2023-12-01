@@ -39,6 +39,25 @@
 #define LIB_PATH "LD_LIBRARY_PATH"
 #endif
 
+static void gmtmain_dataserver (struct GMTAPI_CTRL *API, int argc, char *argv[]) {
+	/* Problem is that GMT_DATA_SERVER can be set via environmental variable or
+	 * via --GMT_DATA_SERVER=server, which is processed after the session has bee
+	 * created.  This function checks if --GMT_DATA_SERVER=server was set and updates
+	 * the internal GMT->session.DATASERVER and wipes GMT->session.CACHEDIR (which will
+	 * be set later if NULL) */
+	int k;
+	char *server = NULL;
+	for (k = 1; k < argc && server == NULL; k++) {
+		if (strstr (argv[k], "--GMT_DATA_SERVER="))
+			server = strchr (argv[k], '=');
+	}
+	if (server) {	/* Fund --GMT_DATA_SERVER, now must recreate DATASERVER and wipe CACHEDIR */
+		gmt_M_str_free (API->GMT->session.DATASERVER);
+		API->GMT->session.DATASERVER = strdup (&server[1]);
+		gmt_M_str_free (API->GMT->session.CACHEDIR);
+	}
+}
+
 int main (int argc, char *argv[]) {
 	int k, status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
 	bool gmt_main = false;			/* Set to true if no module was specified */
@@ -52,14 +71,14 @@ int main (int argc, char *argv[]) {
 #ifndef NO_SIGHANDLER
 	/* Install a signal handler */
 #ifdef WIN32	/* Only handle Ctrl-C under Windows */
-    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
+    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)gmt_sig_handler_win32, TRUE)) {
         fprintf (stderr, "Unable to install Windows signal handler!\n");
         return EXIT_FAILURE;
     }
 #else	/* Unix/Linux/macOS */
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
-	act.sa_sigaction = sig_handler_unix;
+	act.sa_sigaction = gmt_sig_handler_unix;
 	act.sa_flags = SA_SIGINFO;
 	sigaction (SIGINT,  &act, NULL);	/* Catching Ctrl-C will also wipe a session work directory and destroy GMT session */
 	sigaction (SIGILL,  &act, NULL);	/* The other signals will exit with a full backtrace */
@@ -85,6 +104,9 @@ int main (int argc, char *argv[]) {
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
+
+	/* Check if data server has been set via --GMT_DATA_SERVER */
+	gmtmain_dataserver (api_ctrl, argc,  argv);
 
 	api_ctrl->internal = true;	/* This is a proper GMT commandline session (external programs will default to false) */
 	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
@@ -242,6 +264,12 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Print date and exit */
+			else if (!strncmp (argv[arg_n], "--date", 5U) || !strncmp (argv[arg_n], "--show-date", 10U)) {
+				fprintf (stdout, "%s\n", GMT_BUILD_DATE);
+				status = GMT_NOERROR;
+			}
+
 			/* print new shell template */
 			else if (!strncmp (argv[arg_n], "--new-script", 12U) || !strncmp (argv[arg_n], "--show-new-script", 17U)) {
 				unsigned int type = 0;	/* Default is bash */
@@ -362,6 +390,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-cores        Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir      Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver   Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-date         Show GMT binary building date\n");
 			fprintf (stderr, "  --show-dcw          Show the DCW data version used.\n");
 			fprintf (stderr, "  --show-doi          Show the DOI for the current release.\n");
 			fprintf (stderr, "  --show-gshhg        Show the GSHHG data version used.\n");

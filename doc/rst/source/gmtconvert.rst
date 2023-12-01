@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
@@ -26,6 +26,7 @@ Synopsis
 [ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
+[ |-Z| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -119,25 +120,36 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
-    **c**\ : Form continuous line segments for each group [Default].
-    **p**\ : Form line segments from a reference point reset for each group.
-    **n**\ : Form networks of line segments between all points in each group.
-    **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
+
+    - **c**\ : Form continuous line segments for each group [Default].
+    - **n**\ : Form networks of line segments between all points in each group.
+    - **p**\ : Form line segments from a reference point reset for each group.
+    - **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
+    
     Optionally, append the one of four segmentation methods to define the group:
-    **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
-    and set group reference point to the very first point of the first file.
-    **t**\ : Consider all data in each table to be a single separate group and
-    reset the group reference point to the first point of each group.
-    **s**\ : Segment headers are honored so each segment is a group; the group
-    reference point is reset to the first point of each incoming segment [Default].
-    **r**\ : Same as **s**, but the group reference point is reset after
-    each record to the previous point (this method is only available with the **-Fp** scheme).
-    Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
-    the coordinates of a *refpoint* which will serve as a fixed external
-    reference point for all groups.
+
+    - **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
+      and set group reference point to the very first point of the first file.
+    - **r**\ : Segment headers are honored so each segment is a group; the group
+      reference point is reset after each record to the previous point (this method
+      is only available with the **-Fp** scheme).
+    - **s**\ : Same as **r**, but the group reference point is reset to the first
+      point of each incoming segment [Default].
+    - **t**\ : Consider all data in each table to be a single separate group and
+      reset the group reference point to the first point of each group.
+
+    Instead of the codes **a**\|\ **r**\|\ **s**\|\ **t** you may append the
+    *lon/lat* (or *x/y*) coordinates of a *refpoint*, which will serve as a fixed
+    external reference point for all groups.
+
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+    
+        Various ways to connect input points from one or more files using |-F|.
 
 .. _-I:
 
@@ -229,6 +241,14 @@ Optional Arguments
     exclude the columns with NaNs.  **Note**: These columns are identified based on
     the first input record only.
 
+.. _-Z:
+
+**-Z**
+    Transpose the single segment in a dataset. Any trailing text will be lost.
+    **Note**: If you are using binary tables then add |-V| to have the dimensions
+    of the transposed table reported since you will need to specify **-bi**\ *ncols*
+    when reading the binary transposed table.
+
 .. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
@@ -276,7 +296,7 @@ Examples
 
 To convert the binary file test.b (single precision) with 4 columns to ASCII::
 
-    gmt convert test.b -bi4f > test.dat
+    gmt convert test.b -bi4f > test.txt
 
 To convert the multiple segment ASCII table test.txt to a double precision binary file::
 
@@ -293,7 +313,7 @@ columns 4-6 and write ASCII with the command::
     gmt convert results.b -o8,4-6 -bi9s | gmt plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
-first column of a file right.txt::
+first column of a file right.txt (i.e., 1 of 0,1 and 2 of 2,3)::
 
     gmt convert left.txt right.txt -A -o1,2 | gmt plot ...
 
@@ -335,11 +355,11 @@ file like this::
 
 do::
 
-    gmt convert file.gmt -a2=ELEVATION > xyz.dat
+    gmt convert file.gmt -a2=ELEVATION > xyz.txt
 
 or just::
 
-    gmt convert file.gmt -aELEVATION > xyz.dat
+    gmt convert file.gmt -aELEVATION > xyz.txt
 
 To connect all points in the file sensors.txt with the specified origin
 at 23.5/19, try::
@@ -359,6 +379,11 @@ To only read rows 100-200 and 500-600 from file junk.txt, try::
 To get all rows except those bad ones between rows 1000-2000, try::
 
     gmt convert junk.txt -q~1000-2000 > good.txt
+
+To convert miles into meters, centimeters, feet, yards, inches, and leagues, try::
+
+    gmt convert mi.txt -i0+s1609.344,0+s160934.4,0+s5280,0+s1670,0+s63360,0+d3 > mcfyil.txt
+
 
 See Also
 --------

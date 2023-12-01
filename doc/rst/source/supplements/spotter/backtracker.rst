@@ -42,11 +42,11 @@ Synopsis
 Description
 -----------
 
-**backtracker** reads (longitude, latitude, age) positions from
-*infiles* [or standard input] and computes rotated (x,y,t) coordinates
+**backtracker** reads (*longitude, latitude, age*) positions from
+*infiles* [or standard input] and computes rotated (*x, y, t*) coordinates
 using the specified rotation parameters. It can either calculate final
-positions [Default] or create a sampled track (flowline or hotspot
-track) between the initial and final positions. The former mode allows
+positions [Default] or create a sampled track (flowline or hotspot track)
+between the initial and final positions [*Wessel*, 1999]. The former mode allows
 additional data fields after the first 3 columns which must have
 (longitude,latitude,age). See option **-:** on how to read
 (latitude,longitude,age) files.
@@ -84,7 +84,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *driftfile*
-    Supply a file with (lon, lat, age) records that describe the history
+    Supply a file with (*lon, lat, age*) records that describe the history
     of hotspot motion for the current hotspot. The reconstructions will
     use the 3rd data input column (i.e., the age) to obtain the
     location of the hotspot at that time, via an interpolation of the
@@ -120,7 +120,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ *fixed_age*
-    Assign a fixed age to all positions. Only lon, lat input is expected
+    Assign a fixed age to all positions. Only (*lon, lat*) input is expected
     [Default expects longitude, latitude, age]. Useful when the input
     are points defining isochrons.
 
@@ -145,12 +145,12 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**a**\|\ **t**]
-    Rotates the given input (lon,lat,t) and calculates the confidence
+    Rotates the given input (*lon, lat, time*) and calculates the confidence
     ellipse for the projected point. The input point *must* have a time
     coordinate that exactly matches a particular total reconstruction
     rotation time, otherwise the point will be skipped. Append **t** or
     **a** to output time or angle, respectively, after the projected
-    lon, lat. After these 2-3 items, we write azimuth, major, minor (in
+    (*lon, lat*). After these 2-3 items, we write azimuth, major, minor (in
     km) for the 95% confidence ellipse. See |-D| for the direction of
     rotation.
 
@@ -184,42 +184,42 @@ Optional Arguments
 Examples
 --------
 
-To backtrack the (x,y,t) points in the file seamounts.txt to their origin
+To backtrack the (*x, y, t*) points in the file seamounts.txt to their origin
 (presumably the hotspot), using the DC85.txt Euler poles, run
 
-   ::
+::
 
-    gmt backtracker seamounts.txt -Db -EDC85.txt > newpos.txt
+  gmt backtracker seamounts.txt -Db -EDC85.txt > newpos.txt
 
-To project flowlines forward from the (x,y,t) points stored in several
+To project flowlines forward from the (*x, y, t*) points stored in several
 3-column, binary, double precision files, run
 
-   ::
+::
 
-    gmt backtracker points.* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
+  gmt backtracker points.* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
 
 This file can then be plotted with :doc:`plot </plot>`.
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
 Ma, given a history of hotspot motion file (HIdrift.txt) and a set of
 total reconstruction rotations for the plate (PAC_APM.txt), try
 
-   ::
+::
 
-    echo 204 19 80 | gmt backtracker -Df -EPAC_APM.txt -Lb1 > path.txt
+  echo 204 19 80 | gmt backtracker -Df -EPAC_APM.txt -Lb1 > path.txt
 
 To predict Hawaiian-Emperor seamount trail using the Pacific absolute plate
-and plume motion from Doubrovine et al. (2012), use
+and plume motion from *Doubrovine et al.* [2012], use
 
-   ::
+::
 
-    echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt -FD2012_HI_drift.txt > traildrift.txt
+  echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt -FD2012_HI_drift.txt > traildrift.txt
 
 To predict the Hawaiian-Emperor seamount trail that would have resulted if no plume drift had been in effect,
-using the Pacific absolute plate motion model from Doubrovine et al. (2012), use
+using the Pacific absolute plate motion model from *Doubrovine et al.* [2012], use
 
-   ::
+::
 
-    echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt > trail.txt
+  echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt > trail.txt
 
 Notes
 -----

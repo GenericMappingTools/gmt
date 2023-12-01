@@ -121,6 +121,7 @@
 #define gmt_M_double_swap(x, y) {double double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define gmt_M_doublep_swap(x, y) {double *double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define gmt_M_float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
+#define gmt_M_grdfloat_swap(x, y) {gmt_grdfloat float_tmp; float_tmp = x, x = y, y = float_tmp;}
 
 /*! Macro to ensure proper value and sign of a change in longitude from lon1 to lon2 */
 #define gmt_M_set_delta_lon(lon1,lon2,delta) {delta = fmod ((lon2) - (lon1), 360.0); if (fabs (delta) > 180.0) delta = copysign (360.0 - fabs (delta), -delta);}
@@ -219,7 +220,7 @@
 #define gmt_M_file_is_netcdf_layer(file) (gmt_M_file_is_netcdf(file) && (strchr (file, '(') || strchr (file, '[')))
 
 /*! Determine if file is an image GDAL can read */
-#define gmt_M_file_is_image(file) (file != NULL && ((strstr (file, "@GMTAPI@") && file[13] == 'I') || strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
+#define gmt_M_file_is_image(file) (file != NULL && ((strstr (file, "@GMTAPI@") && file[13] == 'I') || strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".jpeg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
 
 /*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
 #define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)

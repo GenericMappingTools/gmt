@@ -28,11 +28,11 @@
 
 .. |SYN_OPT-c| replace:: **-c**\ :ref:`row,col|index <-c_full>`
 
-.. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`\ [**+c**\ *col*]\ 
+.. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`\ [**+c**\ *col*]\
 
-.. |SYN_OPT-di| replace:: **-di**\ :ref:`nodata <-di_full>`\ [**+c**\ *col*]\ 
+.. |SYN_OPT-di| replace:: **-di**\ :ref:`nodata <-di_full>`\ [**+c**\ *col*]\
 
-.. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`\ [**+c**\ *col*]\ 
+.. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`\ [**+c**\ *col*]\
 
 .. |SYN_OPT-e| replace:: **-e**\ :ref:`regexp <-e_full>`
 
@@ -74,36 +74,36 @@
 
 .. |SYN_OPT-:| replace:: **-:**\ [**i**\|\ **o**]
 
-.. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments.
+.. |No-spaces| replace:: **Note**: No space is allowed between the option flag and the associated arguments.
 
 .. |SYN_OPT--| replace:: **--PAR**\ =\ *value*
 
 .. |SYN_OPT-Area| replace:: |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
 
 .. |Add_-B_links| replace:: :ref:`(See full description) <-B_full>` :ref:`(See cookbook information)
-    <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+    <reference/options:Map frame and axes annotations: The **-B** option>`.
 
 .. |Add_-J_links| replace:: :ref:`(See full description) <-J_full>` :ref:`(See cookbook summary)
-    <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
+    <reference/options:Coordinate transformations and map projections: The **-J** option>`
     :ref:`(See projections table) <proj-codes>`.
 
 .. |Add_-R_auto_table| replace:: **Note**: If using modern mode and |-R| is not provided, the region
    will be set based on previous plotting commands. If this is the first plotting command in the
-   :ref:`modern mode levels <cookbook/features:GMT Modern Mode Hierarchical Levels>` and |-R| is not
+   :ref:`modern mode levels <reference/features:GMT Modern Mode Hierarchical Levels>` and |-R| is not
    provided, the region will be automatically determined based on the data in *table*
    (equivalent to using **-Ra**). |Add_-R_links|
 
 .. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
-    <cookbook/options:Data domain or map region: The **-R** option>`.
+    <reference/options:Data domain or map region: The **-R** option>`.
 
 .. |Add_-XY_links| replace:: :ref:`(See full description) <-XY_full>` :ref:`(See cookbook information)
-    <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+    <reference/options:Plot positioning and layout: The **-X** **-Y** options>`.
 
 .. |Add_-U_links| replace:: :ref:`(See full description) <-U_full>` :ref:`(See cookbook information)
-    <cookbook/options:Timestamps on plots: The **-U** option>`.
+    <reference/options:Timestamps on plots: The **-U** option>`.
 
 .. |Add_-V_links| replace:: :ref:`(See full description) <-V_full>` :ref:`(See cookbook information)
-    <cookbook/options:Verbose feedback: The **-V** option>`.
+    <reference/options:Verbose feedback: The **-V** option>`.
 
 .. |br| raw:: html
 

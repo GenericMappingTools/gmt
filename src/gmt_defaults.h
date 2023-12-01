@@ -154,6 +154,8 @@ struct GMT_DEFAULTS {
 	double map_graph_extension;		/* If map_frame_type is graph, how must longer to make axis length. [7.5%] */
 	double map_graph_origin[2];		/* x- and y-origin of graph axis if graph-origin is in use [data 0/0] */
 	double map_graph_shift;			/* Extra offset for title to avoid overwriting the centered y-axis */
+	double map_symbol_pen_scale;		/* Conversion factor from symbol size to stroke pen width (non-fillable symbols only) */
+	char map_symbol_pen_scale_unit;		/* Either % or not */
 	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [GMT_OBL_ANNOT_ANYWHERE] */
 	unsigned int map_grid_cross_type[2];	/* 0 = normal cross, 1 = symmetric tick, 2 = asymmetric tick */
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */

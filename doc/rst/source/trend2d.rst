@@ -38,7 +38,7 @@ Description
 
 **trend2d** reads *x, y, z* [and *w*] values from the first three [four]
 columns on standard input [or *xyz[w]file*] and fits a regression model
-*z = f(x,y) + e* by [weighted] least squares. The fit may be made robust
+*z = f(x,y) + e* by [weighted] least squares [*Menke*, 1989]. The fit may be made robust
 by iterative reweighting of the data. The user may also search for the
 number of terms in *f(x,y)* which significantly reduce the variance in *z*.
 *n_model* may be in [1,10] to fit a model of the following form (similar
@@ -155,10 +155,10 @@ The domain of *x* and *y* will be shifted and scaled to [-1, 1] and the
 basis functions are built from Chebyshev polynomials. These have a
 numerical advantage in the form of the matrix which must be inverted and
 allow more accurate solutions. In many applications of **trend2d** the
-user has data located approximately along a line in the x,y plane which
+user has data located approximately along a line in the *x-y* plane which
 makes an angle with the *x*-axis (such as data collected along a road or
 ship track). In this case the accuracy could be improved by a rotation
-of the *x,y* axes. **trend2d** does not search for such a rotation;
+of the *x-y* axes. **trend2d** does not search for such a rotation;
 instead, it may find that the matrix problem has deficient rank.
 However, the solution is computed using the generalized inverse and
 should still work out OK. The user should check the results graphically
@@ -183,7 +183,7 @@ If you want to keep iterating as long as Chi-Squared is decreasing, set
 A low confidence limit (such as the default value of 0.51) is needed to
 make the robust method work. This method iteratively reweights the data
 to reduce the influence of outliers. The weight is based on the Median
-Absolute Deviation and a formula from Huber [1964], and is 95% efficient
+Absolute Deviation and a formula from *Huber* [1964], and is 95% efficient
 when the model residuals have an outlier-free normal distribution. This
 means that the influence of outliers is reduced only slightly at each
 iteration; consequently the reduction in Chi-Squared is not very
@@ -200,28 +200,28 @@ Examples
 
 To remove a planar trend from data.xyz by ordinary least squares, use
 
-   ::
+::
 
-    gmt trend2d data.xyz -Fxyr -N3 > detrended_data.xyz
+  gmt trend2d data.xyz -Fxyr -N3 > detrended_data.xyz
 
 To simply report the three coefficients, use
 
-   ::
+::
 
-    gmt trend2d data.xyz -Fp -N3 > parameters.txt
+  gmt trend2d data.xyz -Fp -N3 > parameters.txt
 
 To make the above planar trend robust with respect to outliers, use
 
-   ::
+::
 
-    gmt trend2d data.xzy -Fxyr -N3+r > detrended_data.xyz
+  gmt trend2d data.xzy -Fxyr -N3+r > detrended_data.xyz
 
 To find out how many terms (up to 10 in a robust interpolant are
 significant in fitting data.xyz, use
 
-   ::
+::
 
-    gmt trend2d data.xyz -N10+r -I -V
+  gmt trend2d data.xyz -N10+r -I -V
 
 See Also
 --------

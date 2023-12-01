@@ -38,7 +38,7 @@
  * If only oceans are filled, then the 'dry' areas remain transparent.  This
  * allows the user to overlay land or ocean without wiping out the plot.
  * For more information about the binned polygon file, see the GMT Technical
- * Reference and Cookbook.
+ * Reference.
  * Optionally, the user may choose to issue clip paths rather than paint the
  * polygons.  That way one may clip subsequent images to be visible only
  * inside or outside the coastline.
@@ -734,8 +734,6 @@ GMT_LOCAL int pscoast_check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SH
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx);
-
 EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pscoast task */
 
@@ -780,7 +778,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) {
-		if (error == NOT_REALLY_AN_ERROR) Return (0);
+		if (error == NOT_REALLY_AN_ERROR) Return (GMT_NOERROR);
 		Return (error);
 	}
 
@@ -1149,7 +1147,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 					if (!Ctrl->W.use[p[i].level-1]) continue;
 
-					n_out = map_wesn_clip (GMT, p[i].lon, p[i].lat, p[i].n, &xtmp, &ytmp, &unused);
+					n_out = gmt_map_wesn_clip (GMT, p[i].lon, p[i].lat, p[i].n, &xtmp, &ytmp, &unused);
 					if (!Ctrl->M.single) {
 						sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
 						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
@@ -1267,7 +1265,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Borders...");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Borders...\n");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
 		/* Must resample borders because some points may be too far apart and look like 'jumps' */
@@ -1364,11 +1362,11 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 EXTERN_MSC int GMT_coast (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {	/* See if -E+l|L was given, which is part of usage */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {	/* See if -E+l|L|n was given, which is part of usage */
 		struct GMT_OPTION *opt = NULL, *options = GMT_Create_Options (API, mode, args);
 		bool list_items = false, dump_data = false;
 		if (API->error) return (API->error);	/* Set or get option list */
-		list_items = ((opt = GMT_Find_Option (API, 'E', options)) && (strstr (opt->arg, "+l") || strstr (opt->arg, "+L")));
+		list_items = ((opt = GMT_Find_Option (API, 'E', options)) && (strstr (opt->arg, "+l") || strstr (opt->arg, "+L") || strstr (opt->arg, "+n")));
 		dump_data = (GMT_Find_Option (API, 'M', options) != NULL);
 		gmt_M_free_options (mode);
 		if (!list_items && !dump_data) {

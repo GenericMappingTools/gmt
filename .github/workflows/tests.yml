@@ -23,6 +23,10 @@ defaults:
     # default to use bash shell
     shell: bash
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   test:
     name: ${{ matrix.name }}
@@ -51,14 +55,11 @@ jobs:
             os: windows-latest
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: Checkout
-        uses: actions/checkout@v3.5.0
+        uses: actions/checkout@v3.6.0
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.26.0
+        uses: dawidd6/action-download-artifact@v2.28.0
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -73,6 +74,15 @@ jobs:
           bash ci/install-dependencies-${os}.sh
         env:
           EXCLUDE_OPTIONAL: ${{ matrix.EXCLUDE_OPTIONAL }}
+
+      - name: Add Ghostscript registry so that GraphicsMagick can find it [Windows]
+        shell: pwsh
+        run: |
+          New-Item -Path "HKLM:\Software\GPL Ghostscript"
+          New-Item -Path "HKLM:\Software\GPL Ghostscript\10.02"
+          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02" -Name GS_DLL -PropertyType String -Value "C:\Miniconda\Library\bin\gsdll64.dll"
+          New-ItemProperty -Path "HKLM:\Software\GPL Ghostscript\10.02" -Name GS_LIB -PropertyType String -Value "C:\Miniconda\Library\bin;C:\Miniconda\Library\lib;C\Miniconda\Library\Font;C:\Miniconda\Library\fonts"
+        if: runner.os == 'Windows'
 
       - name: Cache GSHHG and DCW data
         uses: actions/cache@v3
@@ -112,7 +122,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.26.0
+        uses: dawidd6/action-download-artifact@v2.28.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache
@@ -172,3 +182,12 @@ jobs:
           name: BuildDirectory-${{ runner.os }}
           path: build/
         if: failure()
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3.1.4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          fail_ci_if_error: false
+          gcov: true
+        if: always()

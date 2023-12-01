@@ -23,13 +23,23 @@
  *
  */
 
-/* Two functions called elsewhere:
-   gmt_prep_tmp_arrays	: Called wherever temporary column vectors are needed, such
-			  as in data reading and fix_up_path and elsewhere.
-   gmtlib_free_tmp_arrays  : Called when ready to free up stuff
-   gmt_M_malloc              Memory management
-   gmt_M_memory              Memory allocation/reallocation
-   gmt_M_free                Memory deallocation
+/* 
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_free_func
+ *	gmt_malloc_func
+ *	gmt_memory_func
+ *	gmt_memtrack_init
+ *	gmt_memtrack_report
+ *	gmt_prep_tmp_arrays
+ *	gmt_reset_meminc
+ *	gmt_set_meminc
+ *	gmt_strdup
+ *	gmt_this_alloc_level
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_free_tmp_arrays
  */
 
 #include "gmt_dev.h"

@@ -16,7 +16,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ [*cpt*]]
 [ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
-[ |-I|\ [*intensgrid*\|\ *intensity*\|\ *modifiers*] ]
+[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
@@ -86,17 +86,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensgrid*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the (-1,+1) range,
-    or a constant intensity to apply everywhere (affects the ambient light).
-    Alternatively, derive an intensity grid from the input data grid *reliefgrid*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,
-    and **+m**\ *ambient* to specify azimuth, intensity, and ambient arguments
-    for that module, or just give **+d** to select the
-    default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
-    specific intensity scenario then run :doc:`grdgradient` separately first.
-    If we should derive intensities from another file than *reliefgrid*, specify the file
-    [Default is no illumination].
+.. include:: explain_intense.rst_
 
 .. _-Jz:
 
@@ -219,7 +209,7 @@ contours given in the CPT hawaii.cpt on a Lambert map at
 scale 20 mgal/cm, and looking at the surface from SW at 30 degree
 elevation, run::
 
-    gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
+    gmt grdview hawaii_grav.nc -Jl202/21/18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
 
 To create an illuminated color perspective plot of the gridded data set
 image.nc, using the CPT color.cpt, with linear scaling at

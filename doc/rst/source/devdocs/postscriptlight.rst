@@ -182,7 +182,7 @@ initialization:
     This function frees up the memory allocated inside PSL.
     Programmers using C/C++ should now this is a macro and there is no
     need to cast the pointer to *void \** as this will be done by the
-    macro. Fortran programmers should instead call
+    macro. FORTRAN programmers should instead call
     **PSL_freefunction**.
 
 **void PSL_beginaxes** (**struct PSL_CTRL** *\*PSL*, **double** *llx*,
@@ -215,7 +215,7 @@ initialization:
     Controls the initiation (or continuation) of a particular plot
     within the current session. Pass file pointer *fp* where the
     PostScript code will be written; if NULL then the output is
-    written to *stdout*. The Fortran interface always sends to *stdout*.
+    written to *stdout*. The FORTRAN interface always sends to *stdout*.
     If you want to receive the PostScript back in memory then you need
     to add PSL_MEMORY to *orientation* and call **PSL_getplot** to retrieve
     the plot after you finish the plot with **PSL_endplot**.
@@ -626,10 +626,10 @@ Here are functions used to plot various geometric symbols or constructs.
     of vector head, PSL_VEC_BEGIN (4) =
     place vector head at beginning of vector,
     PSL_VEC_END (8) = place vector head at end of vector,
-    PSL_VEC_JUST_B (0) = align vector beginning at (x,y),
-    PSL_VEC_JUST_C (16) = align vector center at (x,y),
-    PSL_VEC_JUST_E (32) = align vector end at (x,y),
-    PSL_VEC_JUST_S (64) = align vector center at (x,y),
+    PSL_VEC_JUST_B (0) = align vector beginning at (*x, y*),
+    PSL_VEC_JUST_C (16) = align vector center at (*x, y*),
+    PSL_VEC_JUST_E (32) = align vector end at (*x, y*),
+    PSL_VEC_JUST_S (64) = align vector center at (*x, y*),
     PSL_VEC_OUTLINE (128) = draw vector head outline using default
     pen, PSL_VEC_FILL (512) = fill vector head using default fill,
     PSL_VEC_MARC90 (2048) = if angles subtend 90, draw straight angle
@@ -868,7 +868,7 @@ and others and issue calculations with **PSL_setcommand**.
     you must pass as *arg1* the *node* array indicating at which
     node in the *xpath, ypath* array the text will be plotted; let
     *arg2* be NULL. For
-    straight baselines you must instead pass another set of x,y
+    straight baselines you must instead pass another set of *x, y*
     coordinates with the locations of the text label placements
     via *arg1, arg2*.
     Each label has its own entry in the

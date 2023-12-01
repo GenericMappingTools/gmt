@@ -15,10 +15,10 @@ jobs:
 
     steps:
     - name: Checkout the repository
-      uses: actions/checkout@v3.5.0
+      uses: actions/checkout@v3.6.0
 
     - name: Link Checker
-      uses: lycheeverse/lychee-action@v1.6.1
+      uses: lycheeverse/lychee-action@v1.8.0
       with:
         # 429: Too many requests
         args: >
@@ -47,7 +47,7 @@ jobs:
 
     - name: Get current date
       id: date
-      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
     - name: Create Issue From File
       uses: peter-evans/create-issue-from-file@v4

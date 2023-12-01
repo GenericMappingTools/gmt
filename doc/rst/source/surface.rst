@@ -46,8 +46,8 @@ Synopsis
 Description
 -----------
 
-**surface** reads randomly-spaced (x,y,z) triplets from standard input
-[or *table*] and produces a binary file of gridded values z(x,y) by
+**surface** reads randomly-spaced (*x, y, z*) triplets from standard input
+[or *table*] and produces a binary file of gridded values *z*(*x, y*) by
 solving the differential equation (away from data points)
 
 .. math::
@@ -55,9 +55,9 @@ solving the differential equation (away from data points)
     (1 - t) \nabla ^2(z) + t \nabla (z) = 0,
 
 where *t* is a tension factor between 0 and 1, and :math:`\nabla` indicates the
-Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution.
+2-D Cartesian Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution.
 Minimum curvature can cause undesired oscillations and false local maxima or minima
-(See Smith and Wessel, 1990), and you may wish to use *t* > 0 to suppress these
+[See *Smith and Wessel*\ , 1990], and you may wish to use *t* > 0 to suppress these
 effects. Experience suggests *t* ~ 0.25 usually looks good for potential
 field data and *t* should be larger (*t* ~ 0.35) for steep topography data.
 *t* = 1 gives a harmonic surface (no maxima or minima are possible except
@@ -187,7 +187,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *search_radius*\ [**m**\|\ **s**]
-    Search radius. Enter *search\_radius* in same units as x,y data;
+    Search radius. Enter *search\_radius* in same units as *x, y* data;
     append **m** to indicate arc minutes or **s** for arc seconds. This
     is used to initialize the grid before the first iteration; it is not
     worth the time unless the grid lattice is prime and cannot have
@@ -276,9 +276,9 @@ hawaii_5x5.xyg, using a *tension_factor* = 0.25, a
 *convergence_limit* = 0.1 mGal, writing the result to a file called
 hawaii_grd.nc, and monitoring each iteration, try:
 
-   ::
+::
 
-    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
+  gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
 
 Notes
 -----
@@ -308,7 +308,7 @@ project your data using a stereographic projection and grid the projected Cartes
 Gridding Geographic Data: Setting Increments
 --------------------------------------------
 
-Specifying grid increments in distance units (meters, km, etc.) for geographic (lon, lat)
+Specifying grid increments in distance units (meters, km, etc.) for geographic (*lon, lat*)
 grids triggers a conversion from the given increment to the equivalent increment in degrees.
 This is done differently for longitude and latitude and also depends on chosen ellipsoid,
 but ultimately is a great-circle approximation. For latitude we divide your *y*-increment

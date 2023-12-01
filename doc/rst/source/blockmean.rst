@@ -97,7 +97,7 @@ Optional Arguments
     for each block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See |-W| for enabling *w* output.
-    If **-E+p**\|\ **P** is used then input data uncertainties are expected and *s*
+    If **-E+p**\|\ **P** is used then input data uncertainties are expected and **s**
     becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
 .. _-G:
@@ -179,22 +179,22 @@ Examples
 
 To find 5 by 5 minute block mean values from the ASCII data in ship_15.txt, run
 
-   ::
+::
 
-    gmt blockmean @ship_15.txt -R245/255/20/30 -I5m > ship_5x5.txt
+  gmt blockmean @ship_15.txt -R245/255/20/30 -I5m > ship_5x5.txt
 
 To determine how many values were found in each 5x5 minute bin, try
 
-   ::
+::
 
-    gmt blockmean @ship_15.txt -R245/255/20/30 -I5m -Sn > ship_5x5_count.txt
+  gmt blockmean @ship_15.txt -R245/255/20/30 -I5m -Sn > ship_5x5_count.txt
 
 To determine the mean and standard deviation per 10 minute bin and save these to two separate grids
 called field_z.nc and field_s.nc, run
 
-   ::
+::
 
-    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
+  gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Azs
 
 See Also
 --------

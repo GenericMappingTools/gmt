@@ -160,6 +160,8 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/seis/meca
    supplements/seis/polar
    supplements/seis/sac
+   supplements/seis/shake
+   supplements/seis/vs30
    supplements/spotter/backtracker
    supplements/spotter/gmtpmodeler
    supplements/spotter/grdpmodeler
@@ -170,6 +172,8 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/spotter/polespotter
    supplements/spotter/rotconverter
    supplements/spotter/rotsmoother
+   supplements/windbarbs/barb
+   supplements/windbarbs/grdbarb
    supplements/x2sys/x2sys_binlist
    supplements/x2sys/x2sys_cross
    supplements/x2sys/x2sys_datalist
@@ -338,6 +342,8 @@ Supplemental Modules
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
+    - :doc:`/supplements/windbarbs/barb`
+    - :doc:`/supplements/windbarbs/grdbarb`
     - :doc:`/supplements/x2sys/x2sys_binlist`
     - :doc:`/supplements/x2sys/x2sys_cross`
     - :doc:`/supplements/x2sys/x2sys_datalist`
@@ -717,6 +723,10 @@ seis
 +--------------------------------+------------------+
 | :doc:`/supplements/seis/sac`   | |sac_purpose|    |
 +--------------------------------+------------------+
+| :doc:`/supplements/seis/shake` | |shake_purpose|  |
++--------------------------------+------------------+
+| :doc:`/supplements/seis/vs30`  | |vs30_purpose|   |
++--------------------------------+------------------+
 
 spotter
 -------
@@ -742,6 +752,15 @@ spotter
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/rotsmoother`  | |rotsmoother_purpose|  |
 +------------------------------------------+------------------------+
+
+windbarbs
+---------
+
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/barb`     | |barb_purpose|    |
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/grdbarb`  | |grdbarb_purpose| |
++----------------------------------------+-------------------+
 
 x2sys
 -----

@@ -58,8 +58,8 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	const char *extra1[2] = {" [-G<grdfile>]", ""}, *extra2[2] = {" (requires -G)", ""};
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A<fields>] [-C] [-D[<width>][+c][+a|l|h]] [-E[r|s[+l|h]]]%s "
 		"[-Q] [-W[i|o][+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, extra1[API->external], GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT,
@@ -162,19 +162,23 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 			case 'D':	/* Histogram mode estimate */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.width = atof (opt->arg);
-				pos = 0;
+				pos = k = 0;
 				if ((c = strchr (opt->arg, '+')) != NULL) {	/* Found modifiers */
 					while ((gmt_strtok (c, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'c': Ctrl->D.center = true; break;	/* Center the histogram */
-							case 'a': Ctrl->D.mode = BLOCKMODE_AVE;  break;	/* Pick average mode */
-							case 'l': Ctrl->D.mode = BLOCKMODE_LOW;  break;	/* Pick low mode */
-							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
+							case 'a': k++;	Ctrl->D.mode = BLOCKMODE_AVE;  break;	/* Pick average mode */
+							case 'l': k++;	Ctrl->D.mode = BLOCKMODE_LOW;  break;	/* Pick low mode */
+							case 'h': k++;	Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
 								GMT_Report (API, GMT_MSG_ERROR, "Unrecognized modifier +%c.\n", p[0]);
 								n_errors++;
 								break;
 						}
+					}
+					if (k > 1) {	/* Only one of +a|l|h can be selected */
+						GMT_Report (API, GMT_MSG_ERROR, "Option -D: Only one of +a, +l, and +h can be selected.\n");
+						n_errors++;
 					}
 				}
 				break;

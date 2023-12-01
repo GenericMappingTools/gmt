@@ -58,8 +58,8 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
 	GMTAPI_NDIM,		/* ipar[1] = dimensionality of data (1, 2, or 3) (GMT grids = 2 yet stored internally as 1D) */
 	GMTAPI_NROW,		/* ipar[2] = number_of_rows (or length of 1-D array) */
 	GMTAPI_NCOL,		/* ipar[3] = number_of_columns (1 for 1-D array) */
-	GMTAPI_KIND,		/* ipar[4] = arrangement of rows/col (0 = rows (C), 1 = columns (Fortran)) */
-	GMTAPI_DIML,		/* ipar[5] = length of dimension for row (C) or column (Fortran) */
+	GMTAPI_KIND,		/* ipar[4] = arrangement of rows/col (0 = rows (C), 1 = columns (FORTRAN)) */
+	GMTAPI_DIML,		/* ipar[5] = length of dimension for row (C) or column (FORTRAN) */
 	GMTAPI_FREE,		/* ipar[6] = 1 to free array after use (IN) or before filling with output (OUT), 0 to leave alone */
 	GMTAPI_NODE};		/* ipar[7] = 1 for pixel registration, 0 for node */
 #endif
@@ -146,14 +146,15 @@ struct GMTAPI_CTRL {
 	unsigned int unique_var_ID;		/* Used to create unique object IDs (grid,dataset, etc) for duration of session */
 	int current_item[2];			/* Array number of current dataset being processed (in and out)*/
 	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */
-	unsigned int external;			/* 1 if called via external API (MATLAB, Python) [0] */
+	unsigned int external;			/* 1 if called via external API (MATLAB, Julia, Python) [0] */
 	unsigned int runmode;			/* nonzero for GMT modern runmode [0 = classic] */
-	enum GMT_enum_fmt shape;		/* GMT_IS_COL_FORMAT (2) if column-major (MATLAB, Fortran), GMT_IS_ROW_FORMAT (1) if row-major (Python, C/C++) [1] */
+	enum GMT_enum_fmt shape;		/* GMT_IS_COL_FORMAT (2) if column-major (MATLAB, FORTRAN), GMT_IS_ROW_FORMAT (1) if row-major (Python, C/C++) [1] */
 	unsigned int leave_grid_scaled;		/* 1 if we don't want to unpack a grid after we packed it for writing [0] */
 	unsigned int n_cores;			/* Number of available cores on this system */
 	unsigned int verbose;			/* Used until GMT is set up */
 	unsigned int n_tmp_headers;		/* Number of temporarily held table headers */
 	unsigned int terminal_width;	/* Width of the terminal */
+	unsigned int n_numerical_columns;	/* 0 except for pstext where there will be 2-4 numerical leading columns before text */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
@@ -166,6 +167,7 @@ struct GMTAPI_CTRL {
 	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
 	bool use_gridline_registration_warn;	/* true if we should warn about the above */
 	bool ignore_BC;       	   /* temporarily set true for, say, weight grids in grdfilter which do not need a BC wrap-around check */
+	bool paths_initialized;		/* True when we set default USERDIR and CACHEDIR */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */

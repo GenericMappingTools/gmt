@@ -41,7 +41,7 @@
 #define THIS_MODULE_MODERN_NAME	"gravprisms"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D vertical prisms"
-#define THIS_MODULE_KEYS	"<D{,CD)=w,KG),LG(,ND(,SG(,TG(,WG(,ZG(,G?},GDN"
+#define THIS_MODULE_KEYS	"<D{,CD)=w,KG),LG(,ND(,SG(,TG(,WG(,ZG(,GG},ND),GDN"
 #define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-VRbdefhior" GMT_ADD_x_OPT
 
@@ -407,10 +407,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-L<base>");
 	GMT_Usage (API, -2, "Set the lower (base) surface grid or constant of a layer to create prisms for; requires -C and -T [0]");
-	GMT_Usage (API, 1, "\n-M[hz]");
+	GMT_Usage (API, 1, "\n-M[h][v]");
 	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
-	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
-	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
+	GMT_Usage (API, 3, "h: All horizontal distances are given in km [meters].");
+	GMT_Usage (API, 3, "v: All vertical distances are given in km [meters].");
 	GMT_Usage (API, -2, "Note: All horizontal and/or vertical quantities will be affected by a factor of 1000");
 	GMT_Usage (API, 1, "\n-N<trktable>");
 	GMT_Usage (API, -2, "File with output locations (x,y) where a calculation is requested.  Optionally, z may be read as well if -Z not set. No grid "

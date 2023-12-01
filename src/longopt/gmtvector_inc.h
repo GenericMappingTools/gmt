@@ -22,26 +22,24 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "primary_vector|primary_vec",
+	          "m",                 "mean",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'C', "cartesian",
+	          "i,o",               "in,out",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'E', "geod2geoc",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "normalize",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "secondary_vector|secondary_vec", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "transform",
+	          "a,b,d,D,p,s,r,R,t,x", "average,bisector,dotproduct,angle,gcircle,sum,rotate,rotate2,translate,crossproduct",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTVECTOR_INC_H */

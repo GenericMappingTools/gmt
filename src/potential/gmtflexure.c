@@ -88,7 +88,7 @@ struct GMTFLEXURE_CTRL {
 	struct GMTFLEXURE_L {	/* Use variable restoring force [constant] */
 		bool active;
 	} L;
-	struct GMTFLEXURE_M {	/* -Mx|z  */
+	struct GMTFLEXURE_M {	/* -Mh|v  */
 		bool active[2];	/* True if km, else m */
 	} M;
 	struct GMTFLEXURE_Q {	/* Load specifier -Qn|q|t[/args] */
@@ -248,8 +248,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 			case 'M':	/* Length units */
 				both = false;	side = 0;
 				switch (opt->arg[0]) {
-					case 'x': side = 0; break;
-					case 'z': side = 1; break;
+					case 'h':	case 'x': side = 0; break;	/* Deprecated x and z */
+					case 'v':	case 'z': side = 1; break;
 					default:  both = true; break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[side]);
@@ -308,7 +308,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<Te>[k]|<D>|<file> -Qn|q|t[<args>] [-A[l|r]<bc>[/<args>]] "
-		"[-Cp|y<value>] [-F<force>] [-L] [-M[x][z]] [-S] [-T<wpre>] [%s] [-W<w0>[k]] [-Z<zm>[k]] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-Cp|y<value>] [-F<force>] [-L] [-M[h][v]] [-S] [-T<wpre>] [%s] [-W<w0>[k]] [-Z<zm>[k]] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -344,10 +344,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-F<force>");
 	GMT_Usage (API, -2, "Specify the uniform, horizontal stress in the plate in Pa m [0].");
 	GMT_Usage (API, 1, "\n-L Use variable restoring force k(x) that depends on w(x).");
-	GMT_Usage (API, 1, "\n-M[x][z]");
+	GMT_Usage (API, 1, "\n-M[h][v]");
 	GMT_Usage (API, -2, "Set units used; append one or both of these directives:");
-	GMT_Usage (API, 3, "x: Indicates all x-distances are in km [meters].");
-	GMT_Usage (API, 3, "z: Indicates all z-deflections are in km [meters].");
+	GMT_Usage (API, 3, "h: Indicates all horizontal distances are in km [meters].");
+	GMT_Usage (API, 3, "v: Indicates all vertical deflections are in km [meters].");
 	GMT_Usage (API, 1, "\n-S Also compute second derivatives (curvatures) on output.");
 	GMT_Usage (API, 1, "\n-T<wpre>");
 	GMT_Usage (API, -2, "Use file <wpre> with pre-existing deflections [none].");

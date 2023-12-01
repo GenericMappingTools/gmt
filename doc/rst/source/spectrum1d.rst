@@ -36,8 +36,8 @@ columns on standard input [or *x[y]file*]. These values are treated as
 timeseries X(t) [Y(t)] sampled at equal intervals spaced *dt* units
 apart. There may be any number of lines of input. **spectrum1d** will
 create file[s] containing auto- [and cross- ] spectral density estimates
-by Welch's method of ensemble averaging of multiple overlapped windows,
-using standard error estimates from Bendat and Piersol.
+by *Welch*\ 's [1967] method of ensemble averaging of multiple overlapped windows,
+using standard error estimates from *Bendat and Piersol* [1986].
 
 The output files have 3 columns: f or w, p, and e. f or w is the
 frequency or wavelength, p is the spectral density estimate, and e is
@@ -229,7 +229,7 @@ Another is to form a parametric model for the auto-correlation structure in x(t)
 the spectrum of that model. This last approach is what is done in what is called the
 "maximum entropy" or "Berg" or "Box-Jenkins" or "ARMA" or "ARIMA" methods.
 
-Welch's method is a tried-and-true method. In his method, you choose a segment length,
+*Welch*\ 's method is a tried-and-true method. In his method, you choose a segment length,
 **-S**\ *N*, so that estimates will be made from segments of length *N*. The frequency samples
 (in cycles per delta_t unit) of your P_useful will then be at *k* /(*N* \* *delta_t*),
 where *k* is an integer, and you will get *N* samples (since the spectrum is an even
@@ -246,7 +246,7 @@ the spectral bandwidth of each estimate, because the estimate at frequency sampl
 is now a little correlated with the estimate at frequency sample k+1. (Of course this
 would also happen if you simply formed P_raw and then smoothed it.)
 
-Finally, Welch's method also uses overlapped processing. Since the Von Hann window is
+Finally, *Welch*\ 's method also uses overlapped processing. Since the Von Hann window is
 large in the middle and tapers to near zero at the ends, only the middle of the segment
 of length *N* contributes much to its estimate. Therefore in taking the next segment
 of data, we move ahead in the x(t) sequence only *N*/2 points. In this way, the next
@@ -254,9 +254,9 @@ segment gets large weight where the segments on either side of it will get littl
 and vice versa. This doubles the smoothing effect and ensures that (if *N* << *M*)
 nearly every point in x(t) contributes with nearly equal weight in the final answer.
 
-Welch's method of spectral estimation has been widely used and widely studied. It is very
+*Welch*\ 's method of spectral estimation has been widely used and widely studied. It is very
 reliable and its statistical properties are well understood. It is highly recommended in
-such textbooks as "Random Data: Analysis and Measurement Procedures" by Bendat and Piersol.
+such textbooks as "Random Data: Analysis and Measurement Procedures" [*Bendat and Piersol*, 1986].
 
 In all problems of estimating parameters from data, there is a classic trade-off between
 resolution and variance. If you want to try to squeeze more resolution out of your data
