@@ -130,3 +130,11 @@
 
 .. |x2sys_solve_purpose| replace:: Determine least-squares systematic correction from crossovers
 
+.. |fzinformer| replace:: Bash script to plot statistical information related to fracture zones
+
+.. |fzmapper| replace:: Bash script to plot fracture zone cross-profiles on a Mercator map
+
+.. |fzmodeler| replace:: Bash script to build fracture zone cross-profile model
+
+.. |fzprofiler| replace:: Bash script to plot fracture zone cross-profiles
+

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt fzmodeler** [ |-A|\ *asymmetry* ]
+**fzmodeler** [ |-A|\ *asymmetry* ]
 [ |-C|\ *compression* ]
 [ |-D|\ *min*/*max*/*inc* ]
 [ |-F|\ *prefix* ]

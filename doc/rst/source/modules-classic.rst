@@ -625,7 +625,7 @@ GSFML
 +--------------------------------------+-----------------------+
 | :doc:`/supplements/gsfml/fzanalyzer` | |fzanalyzer_purpose|  |
 +--------------------------------------+-----------------------+
-| :doc:`/supplements/gsfml/fzblende`   | |fzblender_purpose|   |
+| :doc:`/supplements/gsfml/fzblender`  | |fzblender_purpose|   |
 +--------------------------------------+-----------------------+
 | :doc:`/supplements/gsfml/fzinformer` | |fzinformer_purpose|  |
 +--------------------------------------+-----------------------+

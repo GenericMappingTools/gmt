@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt fzmapper** [ |-A| ]
+**fzmapper** [ |-A| ]
 [ |-F|\ *origfile* ]
 [ |-G|\ *vgg_grid* ]
 [ |-L|\ *labelint* ] 

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt fzprofiler** [ |-H|\ *height*[**c**\|\ **i**\|\ **p**] ]
+**fzprofiler** [ |-H|\ *height*[**c**\|\ **i**\|\ **p**] ]
 [ |-I|\ *profile* ] 
 [ |-L|\ *inc* ]
 [ |-M|\ *ncols* ]

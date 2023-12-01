@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt fzinformer** [ |-D| ]
+**zinformer** [ |-D| ]
 [ |-F|\ *max* ]
 [ |-I|\ *profile* ] 
 [ |-N|\ *max* ] 
