@@ -73,7 +73,7 @@ while [ ! x"$1" = x ]; do
 			shift;;
 		-L*)	N=`fz_get_arg $1`;		# Annotate every N'th profile
 			shift;;
-		-O)	OL=1;				# Plot as overlay to stdout
+		-O)	OL=1;				# Plot as PS overlay to stdout
 			plot=1;
 			shift;;
 		-S)	blend=1				# Overlay blend if possible
@@ -90,23 +90,23 @@ done
 # Make sure we convert to inches
 #-----------------------------------------
 CFILE=${prefix}_resampled.txt				# The resampled tracks from grdtrack -D
-if [ ! -f $CFILE ]; then				# Cannot do it yet anyway
+if [ ! -f ${CFILE} ]; then				# Cannot do it yet anyway
 	anal=0
-	echo "$0: Resampled file $CFILE not found - cannot make plot" >&2
+	echo "$0: Resampled file ${CFILE} not found - cannot make plot" >&2
 	exit
 fi
 XFILE=${prefix}_cross.txt				# Crossprofiles from fzmodeler
-if [ ! -f $XFILE ]; then				# Cannot do it yet anyway
+if [ ! -f ${XFILE} ]; then				# Cannot do it yet anyway
 	anal=0
-	echo "$0: Cross-profile file $XFILE not found - cannot make plot" >&2
+	echo "$0: Cross-profile file ${XFILE} not found - cannot make plot" >&2
 	exit
 fi
 TFILE=${prefix}_analysis.txt				# The results from fzmodeler
-if [ ! -f $TFILE ] && [ $anal -eq 1 ]; then		# Cannot do it yet anyway
+if [ ! -f ${TFILE} ] && [ ${anal} -eq 1 ]; then		# Cannot do it yet anyway
 	anal=0
-	echo "$0: Analysis file $TFILE not found - ignored" >&2
+	echo "$0: Analysis file ${TFILE} not found - ignored" >&2
 fi
-if [ $OL -eq 1 ]; then
+if [ ${OL} -eq 1 ]; then
 	PS=/tmp/map.ps					# PostScript plot file
 	PSargs="-O -K"
 else
@@ -120,23 +120,23 @@ fi
 # Cross-profiles have lon,lat,dist,azimuth,vgg,age,fzdist columns.
 # Assign variables and calculate dimensions (inches used throughout)
 #------------------------------------------------------------------------------------------------------
-ymargin=0.75						# Bottom margin
-xmargin=1						# Left margin
-gmt set PROJ_ELLIPSOID Sphere				# Since we are plotting VGG
-n_cross=`gmt convert -L $XFILE | wc -l`			# Number of cross-profiles
-ndig=`gmt math -Q $n_cross LOG10 FLOOR 1 ADD =`		# Number of digits to use for running numbers
-gmt info $XFILE -C -I2/2/2/5/10/10/10/10/10 -fg > $$.info	# Get clean multiples of min/max for each column
-xmin=`cut -f1 $$.info`					# West boundary
-xmax=`cut -f2 $$.info`					# East boundary
-ymin=`cut -f3 $$.info`					# South boundary
-ymax=`cut -f4 $$.info`					# North boundary
-width2=`gmt math -Q $W 2 $xmargin MUL ADD =`		# Width of entire plot including margins
-R=-R$xmin/$xmax/$ymin/$ymax				# Region -R option
-height=`echo $xmax $ymax | gmt mapproject $R -JM${W}i -Di | cut -f2`	# Map height
-height2=`gmt math -Q $height 2 $ymargin MUL ADD =`	# Plot height including margins
+ymargin=0.75									# Bottom margin
+xmargin=1									# Left margin
+gmt set PROJ_ELLIPSOID Sphere							# Since we are plotting VGG
+n_cross=`gmt convert -L ${XFILE} | wc -l`					# Number of cross-profiles
+ndig=`gmt math -Q ${n_cross} LOG10 FLOOR 1 ADD =`				# Number of digits to use for running numbers
+gmt info $XFILE -C -I2/2/2/5/10/10/10/10/10 -fg > $$.info			# Get clean multiples of min/max for each column
+xmin=`cut -f1 $$.info`								# West boundary
+xmax=`cut -f2 $$.info`								# East boundary
+ymin=`cut -f3 $$.info`								# South boundary
+ymax=`cut -f4 $$.info`								# North boundary
+width2=`gmt math -Q ${W} 2 ${xmargin} MUL ADD =`				# Width of entire plot including margins
+R=-R${xmin}/${xmax}/${ymin}/${ymax}						# Region -R option
+height=`echo ${xmax} ${ymax} | gmt mapproject ${}R -JM${W}i -Di | cut -f2`	# Map height
+height2=`gmt math -Q ${height} 2 $ymargin MUL ADD =`				# Plot height including margins
 #------------------------------------------------------------------------------------------------------
 # Ready for plotting
-if [ $verbose -eq 1 ]; then
+if [ ${verbose} -eq 1 ]; then
 	echo "fzmapper: Papersize is ${width2}i by ${height2}i" >&2
 fi
 #------------------------------------------------------------------------------------------------------
@@ -146,17 +146,17 @@ else
 	PSargs="-P -K -X${xmargin}i -Y${ymargin}i --PS_MEDIA=${width2}ix${height2}i"
 fi
 gmt makecpt -Cgray -T-60/60/5 -Z > $$.cpt		# Make basic -60 to + 60 Eotvos grayscale CPT
-xu=`gmt math -Q -0.75 1 $xmargin SUB ADD =`		# Placement x for -U logo and label
-yu=`gmt math -Q -0.75 1 $ymargin SUB ADD =`		# Placement y for -U logo and label
+xu=`gmt math -Q -0.75 1 ${xmargin} SUB ADD =`		# Placement x for -U logo and label
+yu=`gmt math -Q -0.75 1 ${ymargin} SUB ADD =`		# Placement y for -U logo and label
 # Lay down VGG image
-gmt grdimage ${VGG} -C$$.cpt $R -JX${W}i/${height}i $PSargs >| $PS
+gmt grdimage ${VGG} -C$$.cpt ${R} -JM${W}i ${PSargs} >| $PS
 # Overlay geographic basemap and set -U label
-gmt  psbasemap $R -JM${W}i -O -B5f1g90 -BWSne -K -U/${xu}i/${yu}i/"${prefix}: Map view" >> $PS
+gmt  psbasemap ${R} -JM${W}i -O -B5f1g90 -BWSne -K -U/${xu}i/${yu}i/"${prefix}: Map view" >> $PS
 # Draw resampled FZ tracks as blue solid line
-gmt psxy -R -J -O -K $CFILE -W0.5p,blue >> $PS
+gmt psxy -R -J -O -K ${CFILE} -W0.5p,blue >> $PS
 # Plot original digitized points as dark blue squares
 if [ ! "X${ORIG}" = "X" ]; then
-	gmt psxy -R -J -O -K $ORIG -Ss0.04i -Gdarkblue >> $PS
+	gmt psxy -R -J -O -K ${ORIG} -Ss0.04i -Gdarkblue >> $PS
 fi
 P=0
 # Make color table for quality weights (0-1)
@@ -170,71 +170,71 @@ cat << EOF >> $$.cpt2
 EOF
 
 # Process each crossing profile individually
-while [ $P -lt $n_cross ]; do
-	item=`echo $P $ndig | awk '{printf "%*.*d\n", $2, $2, $1}'`	# Format an integer as profile identifier
-	gmt convert -Q$P $XFILE > $$.raw				# Extract the next profile to plot (includes the segment header)
+while [ ${P} -lt ${n_cross} ]; do
+	item=`echo ${P} ${ndig} | awk '{printf "%*.*d\n", $2, $2, $1}'`	# Format an integer as profile identifier
+	gmt convert -Q$P ${XFILE} > $$.raw				# Extract the next profile to plot (includes the segment header)
 	grep -v '>' $$.raw > $$.tmp					# Get this cross profile without header
 	header=`head -1 $$.raw`						# Get this cross profile's header
-	az=`fz_get_item "$header" az`					# Extract the azimuth of this profile
+	az=`fz_get_item "${header}" az`					# Extract the azimuth of this profile
 	tail -1 $$.raw | cut -f1,2 > $$.tail				# Place the end coordinates of profile in file $$.tail
 	
 	gmt psxy $$.tmp -R -J -O -K -Wfaint,lightblue >> $PS		# Plot cross-profile as faint, lightblue lines
-	go=`gmt math -Q $P $N MOD 0 EQ =`				# Determine when to annotate profiles
-	if [ $go -eq 1 ]; then						# OK, want to place text ID for this cross profile
-		side=`gmt math -Q $az 180 LT =`				# Determine which side to place profile label
-		if [ $side -eq 1 ]; then
-			awk '{ printf "%s %s %s LM %s\n", $1, $2, '"$az"', '"$item"'}' $$.tail | gmt pstext -R -J -A -O -K -Dj0.15i/0.05ivfaint -F+f6p,Helvetica+a+j -C0.015i -To -Gwhite -W0.5p >> $PS
+	go=`gmt math -Q ${P} ${N} MOD 0 EQ =`				# Determine when to annotate profiles
+	if [ ${go} -eq 1 ]; then					# OK, want to place text ID for this cross profile
+		side=`gmt math -Q ${az} 180 LT =`			# Determine which side to place profile label
+		if [ ${side} -eq 1 ]; then
+			awk '{ printf "%s %s %s LM %s\n", $1, $2, '"${az}"', '"${item}"'}' $$.tail | gmt pstext -R -J -A -O -K -Dj0.15i/0.05ivfaint -F+f6p,Helvetica+a+j -C0.015i -To -Gwhite -W0.5p >> $PS
 		else
-			awk '{ printf "%s %s %s RM %s\n", $1, $2, '"$az"', '"$item"'}' $$.tail | gmt pstext -R -J -A -O -K -Dj0.15i/0.05ivfaint -F+f6p,Helvetica+a+j -C0.015i -To -Gwhite -W0.5p >> $PS
+			awk '{ printf "%s %s %s RM %s\n", $1, $2, '"${az}"', '"${item}"'}' $$.tail | gmt pstext -R -J -A -O -K -Dj0.15i/0.05ivfaint -F+f6p,Helvetica+a+j -C0.015i -To -Gwhite -W0.5p >> $PS
 		fi
 	fi
-	P=`expr $P + 1`							# Goto next profile
+	P=`expr ${P} + 1`						# Goto next profile
 done
 # Plot resampled digitized line in magenta
-gmt psxy -R -J -O -K $CFILE -W0.25p,magenta >> $PS
+gmt psxy -R -J -O -K ${CFILE} -W0.25p,magenta >> $PS
 # Plot empirical trough locations in red
 x=`fz_col_id XD0`
 y=`fz_col_id YD0`
-if [ $anal -eq 1 ]; then
-	gmt psxy $TFILE -R -J -O -K -Sc0.02i -Gred -i$x,$y >> $PS
+if [ ${anal} -eq 1 ]; then
+	gmt psxy ${TFILE} -R -J -O -K -Sc0.02i -Gred -i${x},${y} >> $PS
 	# Plot blend trough locations in green
 	x=`fz_col_id XB0`
 	y=`fz_col_id YB0`
-	gmt psxy $TFILE -R -J -O -K -Sc0.02i -Ggreen3 -i$x,$y >> $PS
+	gmt psxy ${TFILE} -R -J -O -K -Sc0.02i -Ggreen3 -i${x},${y} >> $PS
 	# Plot edge blend locations in blue
 	x=`fz_col_id XE0`
 	y=`fz_col_id YE0`
-	gmt psxy $TFILE -R -J -O -K -Sc0.02i -Gblue -i$x,$y >> $PS
+	gmt psxy ${TFILE} -R -J -O -K -Sc0.02i -Gblue -i${x},${y} >> $PS
 fi
-if [ $blend -eq 1 ]; then
+if [ ${blend} -eq 1 ]; then
 	BFILE=${prefix}_blend.txt				# Blended solution from fzblender
-	if [ -f $BFILE ]; then
+	if [ -f ${BFILE} ]; then
 		# Plot best blend model as cyan line with colored circles reflecting quality
-		gmt psxy $BFILE -R -J -O -K -W0.5p,cyan >> $PS
-		gmt psxy $BFILE -R -J -O -K -Sc0.03i -C$$.cpt2 -i0,1,5 >> $PS
+		gmt psxy ${BFILE} -R -J -O -K -W0.5p,cyan >> $PS
+		gmt psxy ${BFILE} -R -J -O -K -Sc0.03i -C$$.cpt2 -i0,1,5 >> $PS
 		# Add error bounds as dashed orange lines
-		gmt psxy $BFILE -R -J -O -K -W0.25p,orange,- -i6,7 >> $PS
-		gmt psxy $BFILE -R -J -O -K -W0.25p,orange,- -i8,9 >> $PS
+		gmt psxy ${BFILE} -R -J -O -K -W0.25p,orange,- -i6,7 >> $PS
+		gmt psxy ${BFILE} -R -J -O -K -W0.25p,orange,- -i8,9 >> $PS
 	else
-		echo "$0: Blend file $BFILE not found - ignored" >&2
+		echo "$0: Blend file ${BFILE} not found - ignored" >&2
 	fi
 fi
-if [ $OL -eq 1 ]; then
-	cat $PS
+if [ ${OL} -eq 1 ]; then
+	cat ${PS}
 else
 	# Finalize plot
-	gmt psxy -R -J -O -T >> $PS
+	gmt psxy -R -J -O -T >> ${PS}
 	# Convert the PS to a PDF file
-	gmt psconvert -Tf $PS
+	gmt psconvert -Tf ${PS}
 	# Delete temporary files and the PS file
 	os=`uname -s`
-	if [ $verbose -eq 1 ]; then
-		echo "fzmapper: Final map is called $PDF" >&2
+	if [ ${verbose} -eq 1 ]; then
+		echo "fzmapper: Final map is called ${PDF}" >&2
 	fi
-	if [ $os = "Darwin" ]; then
-		open $PDF
+	if [ ${os} = "Darwin" ]; then
+		open ${PDF}
 	fi
 fi
 
-rm -f $PS
+rm -f ${PS}
 fz_cleanup 1

@@ -27,7 +27,7 @@ Description
 **mlconverter** is a module developed as part of the Global Seafloor Fabric
 and Magnetic Lineation Project [[see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It reads a magnetic pick data file (or stdin)
-and converts chron textstrings to ages using a selected magnetic time scale.
+and converts chron text-strings to ages using a selected magnetic time scale.
 The input data must be OGR/GMT data files of the form distributed by the
 GSFML project.
 
@@ -68,7 +68,7 @@ Optional Arguments
     that need to be determined empirically.  Here, *a_cut* is the minimum peak-to-trough amplitude
     (in Eotvos) of a model for the crossing profile [25], *v_cut* is the minimum
     variance reduction offered by the model (in %) [50], *f_cu* is
-    the minimum F statistic computed for the model [50], and *w_cut* is a typical
+    the minimum *F* statistic computed for the model [50], and *w_cut* is a typical
     FZ trough width (in km) [15].  Currently, the first three quantities
     are used to arrive at a 5-level quality index (0-1) for fitted models, as follows: (1) Very Good: Requires
     model parameters to exceed all three thresholds; (0.75) Good: Requires amplitude and
@@ -111,8 +111,7 @@ See Also
 :doc:`fzinformer </supplements/gsfml/fzinformer>`,
 :doc:`fzmapper </supplements/gsfml/fzmapper>`,
 :doc:`fzmodeler </supplements/gsfml/fzmodeler>`,
-:doc:`fzprofiler </supplements/gsfml/fzprofiler>`,
-:doc:`grdtrack </grdtrack>`
+:doc:`fzprofiler </supplements/gsfml/fzprofiler>`
 
 References
 ----------

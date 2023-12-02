@@ -47,7 +47,7 @@ EOF
 	exit
 fi
 
-trap 'fz_cleanup 1' 1 2 3 15	# Set interrup handling
+trap 'fz_cleanup 1' 1 2 3 15	# Set interrupt handling
 #default values
 ncols=1
 W=6
@@ -79,191 +79,183 @@ while [ ! x"$1" = x ]; do
 	esac
 done
 
-XFILE=${prefix}_cross.txt				# Cross-profiles file
-# make sure we convert to inches
-PS=${prefix}_cross.ps					# Resulting PostScript file
-PDF=${prefix}_cross.pdf					# Final PDF file for plot
-. ${prefix}_par.txt					# Read and assign parameters for these profiles
+XFILE=${prefix}_cross.txt						# Cross-profiles file
+# Make sure we convert to inches
+. ${prefix}_par.txt							# Read and assign parameters for these profiles
 #------------------------------------------------------------------------------------------------------
 # All dimensions are now in inches, regardless of what the user's units are.
 # Cross-profiles have lon,lat,dist,azimuth,vgg,age,fzdist columns.
 # Assign variables and calculate dimensions (inches used throughout)
 #------------------------------------------------------------------------------------------------------
-space=0.50						# Space between columns of panels
-ymargin=0.75						# Bottom margin
-xmargin=1						# Left margin
-zone=`gmt math -Q $CORR_WIDTH 0.5 MUL =`			# half-width of central corridor
-n_cross=`gmt convert -L $XFILE | wc -l`			# Number of cross-profiles
-ndig=`gmt math -Q $n_cross LOG10 FLOOR 1 ADD =`		# Number of digits to use for running numbers
-dmin=`gmt math -Q $CROSS_LENGTH 0.5 MUL NEG =`		# Only plot the central 50% of the cross profiles
-dmax=`gmt math -Q $CROSS_LENGTH 0.5 MUL =`
-gmt info $XFILE -C -I2/2/2/5/10/10/10/10/10 > $$.info	# Get clean multiples of min/max for each column
-vmin=`cut -f9 $$.info`					# Low VGG bounds
-vmax=`cut -f10 $$.info`					# High VGG bounds
-vinc=`gmt math -Q $vmax $vmin SUB 50 DIV CEIL 10 MUL =`	# VGG scale bar length is ~1/5 the range, in multiples of 10
-vinc2=`gmt math -Q $vinc 2 DIV =`			# +- half vinc
-amin=`cut -f11 $$.info`					# Low age bounds
-amax=`cut -f12 $$.info`					# High age bounds
-range=`gmt math -Q $vmax $vmin SUB =`			# VGG range for this panel
-if [ $amin = "NaN" ]; then
+space=0.50								# Space between columns of panels
+ymargin=0.75								# Bottom margin
+xmargin=1								# Left margin
+zone=`gmt math -Q ${CORR_WIDTH} 0.5 MUL =`				# half-width of central corridor
+n_cross=`gmt convert -L ${XFILE} | wc -l`				# Number of cross-profiles
+ndig=`gmt math -Q ${n_cross} LOG10 FLOOR 1 ADD =`			# Number of digits to use for running numbers
+dmin=`gmt math -Q ${CROSS_LENGTH} 0.5 MUL NEG =`			# Only plot the central 50% of the cross profiles
+dmax=`gmt math -Q ${CROSS_LENGTH} 0.5 MUL =`
+gmt info ${XFILE} -C -I2/2/2/5/10/10/10/10/10 > $$.info			# Get clean multiples of min/max for each column
+vmin=`cut -f9 $$.info`							# Low VGG bounds
+vmax=`cut -f10 $$.info`							# High VGG bounds
+vinc=`gmt math -Q ${vmax} ${vmin} SUB 50 DIV CEIL 10 MUL =`		# VGG scale bar length is ~1/5 the range, in multiples of 10
+vinc2=`gmt math -Q ${vinc} 2 DIV =`					# +- half vinc
+amin=`cut -f11 $$.info`							# Low age bounds
+amax=`cut -f12 $$.info`							# High age bounds
+range=`gmt math -Q ${vmax} ${vmin} SUB =`				# VGG range for this panel
+if [ ${amin} = "NaN" ]; then
 	got_age=0
 else
 	got_age=1
-	arange=`gmt math -Q $amax $amin SUB =`			# Age range for this panel
-	am=`gmt math -Q $amin $arange 0.5 MUL ADD =`		# Mid-age value
-	am1=`gmt math -Q $am 5 SUB =`				# am1/am2 are 1- Myr apart and will serve as age scale bar
-	am2=`gmt math -Q $am 5 ADD =`
-	atxt=" and $arange Myr (dashed orange line)"
+	arange=`gmt math -Q ${amax} ${amin} SUB =`			# Age range for this panel
+	am=`gmt math -Q ${amin} ${arange} 0.5 MUL ADD =`		# Mid-age value
+	am1=`gmt math -Q ${am} 5 SUB =`					# am1/am2 are 1- Myr apart and will serve as age scale bar
+	am2=`gmt math -Q ${am} 5 ADD =`
+	atxt=" and ${arange} Myr (dashed orange line)"
 fi
-if [ $P -ge 0 ]; then					# Selected to plot a single profile
-	nrows=1						# Obviously only a single row
-	single=1					# TRUE for this case
-	txt=" $P"					# Text identifying the profile
+if [ $P -ge 0 ]; then							# Selected to plot a single profile
+	nrows=1								# Obviously only a single row
+	single=1							# TRUE for this case
+	txt=" $P"							# Text identifying the profile
 else
-	P=0						# Do all profiles
-	nrows=`gmt math -Q $n_cross $inc DIV $ncols DIV CEIL =`	# The number of rows depends on how many columns we have and how often we plot
-	single=0					# FALSE for this case
-	txt="s"						# Text identifying all profiles (plural s)
+	P=0								# Do all profiles
+	nrows=`gmt math -Q ${n_cross} ${inc} DIV ${ncols} DIV CEIL =`	# The number of rows depends on how many columns we have and how often we plot
+	single=0							# FALSE for this case
+	txt="s"								# Text identifying all profiles (plural s)
 fi
-height=`gmt math -Q $H $nrows MUL =`			# Height of all panels
-width=`gmt math -Q $W $ncols MUL $ncols 1 SUB $space MUL ADD =`	# Width of all plot columns together
-width2=`gmt math -Q $width 2 $xmargin MUL ADD =`	# PLot width, including margings
-height2=`gmt math -Q $height 2 $ymargin MUL ADD =`	# Plot height, including margins
-xu=`gmt math -Q -0.75 1 $xmargin SUB ADD =`		# Placement x for -U logo and label
-yu=`gmt math -Q -0.75 1 $ymargin SUB ADD =`		# Placement y for -U logo and label
-VB=`gmt math -Q $vmax 0.75 MUL =`			# VGG-value to use for placement of blend width indicator symbol
-VT=`gmt math -Q $vmax 0.50 MUL =`			# VGG-value to use for placement of trough width indicator symbol
-VD=`gmt math -Q $vmax 0.25 MUL =`			# VGG-value to use for placement of data width indicator symbol
-#------------------------------------------------------------------------------------------------------
+height=`gmt math -Q ${H} ${nrows} MUL =`				# Height of all panels
+width=`gmt math -Q ${W} ${ncols} MUL ${ncols} 1 SUB ${space} MUL ADD =`	# Width of all plot columns together
+width2=`gmt math -Q ${width} 2 ${xmargin} MUL ADD =`			# PLot width, including margings
+height2=`gmt math -Q ${height} 2 ${ymargin} MUL ADD =`			# Plot height, including margins
+xu=`gmt math -Q -0.75 1 ${xmargin} SUB ADD =`				# Placement x for -U logo and label
+yu=`gmt math -Q -0.75 1 ${ymargin} SUB ADD =`				# Placement y for -U logo and label
+VB=`gmt math -Q ${vmax} 0.75 MUL =`					# VGG-value to use for placement of blend width indicator symbol
+VT=`gmt math -Q ${vmax} 0.50 MUL =`					# VGG-value to use for placement of trough width indicator symbol
+VD=`gmt math -Q ${vmax} 0.25 MUL =`					# VGG-value to use for placement of data width indicator symbol
+#-------------------------------------------------------		-----------------------------------------------
 # Ready for plotting
 if [ $verbose -eq 1 ]; then
 	echo "fzprofiler: Papersize is ${width2}i by ${height2}i; vertical range per row panel is $range Eotvos${atxt}." >&2
 fi
 #------------------------------------------------------------------------------------------------------
 # Draw the outline of the combined rowsxcols panels; add title and -U label, using a custom paper size tailored to fit the plot
-gmt psbasemap -R0/$width/0/$height -Jx1i -P -Xa${xmargin}i -Ya${ymargin}i -B+gwhite -K -U/${xu}i/${yu}i/"${prefix}: Cross profile${txt}" --PS_MEDIA=${width2}ix${height2}i >| $PS
-let row=9999		# This will be reset to 1 immediately in the loop below
-let col=0		# This will be reset to 1 in the loop. We start from left-most column (1) and work to the right
-while [ $P -lt $n_cross ]; do		# As long as there are profiles left
-	if [ $verbose -eq 1 ]; then
-		echo "fzprofiler: Plotting profile $P" >&2
-	fi
-	let row=row+1			# Go to next row (row = 1 is the first row)
-	if [ $row -gt $nrows ]; then	# Must go to next column 
-		let row=1		# Back to the bottom
-		let col=col+1		# Move to next column
-		let frame=1		# Time to plot a basemap again for the entire column
-		if [ $col -gt 1 ]; then	# Draw the central d = 0 line for the entire column
-			gmt psbasemap -R$dmin/$dmax/0/$height -JX${W}i/${height}i -O -K -Bx0g1000 -By0 -Xa${xpos}i -Ya${ymargin}i >> $PS
+gmt begin ${prefix}_cross pdf
+	gmt basemap -R0/$width/0/$height -Jx1i -Xa${xmargin}i -Ya${ymargin}i -B+gwhite -U/${xu}i/${yu}i/"${prefix}: Cross profile${txt}"
+	let row=9999		# This will be reset to 1 immediately in the loop below
+	let col=0		# This will be reset to 1 in the loop. We start from left-most column (1) and work to the right
+	while [ $P -lt $n_cross ]; do		# As long as there are profiles left
+		if [ $verbose -eq 1 ]; then
+			echo "fzprofiler: Plotting profile ${P}" >&2
 		fi
-			
-	fi
-	xpos=`gmt math -Q $col 1 SUB $W $space ADD MUL $xmargin ADD =`	# Determines the x position of the current panel's LL corner
-	ypos=`gmt math -Q $nrows $row SUB $H MUL $ymargin ADD =`	# Determines the y position of the current panel's LL corner
-	xposL=`gmt math -Q $xpos 0.15 SUB =`				# We will plot a VGG scale bar 0.15 inches to the left of each panel
-	xposR=`gmt math -Q $xpos 0.15 ADD =`				# We will plot an Age scale bar 0.15 inches to the right of each panel
-	if [ $frame -eq 1 ]; then					# Plot the central corridor in light blue color, annotate the distance axis
-		gmt psxy -R$dmin/$dmax/0/$height -JX${W}i/${height}i -O -K -Glightblue -Bx20f5 -By0 -BwSne -Xa${xpos}i -Ya${ymargin}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 <<- EOF >> $PS
-		-${zone}	0
-		${zone}		0
-		${zone}		$height
-		-${zone}	$height
+		let row=row+1			# Go to next row (row = 1 is the first row)
+		if [ ${row} -gt ${nrows} ]; then	# Must go to next column 
+			let row=1		# Back to the bottom
+			let col=col+1		# Move to next column
+			let frame=1		# Time to plot a basemap again for the entire column
+			if [ ${col} -gt 1 ]; then	# Draw the central d = 0 line for the entire column
+				gmt basemap -R${dmin}/${dmax}/0/${height} -JX${W}i/${height}i -Bx0g1000 -By0 -Xa${xpos}i -Ya${ymargin}i
+			fi
+		fi
+		xpos=`gmt math -Q $col 1 SUB $W $space ADD MUL $xmargin ADD =`	# Determines the x position of the current panel's LL corner
+		ypos=`gmt math -Q $nrows $row SUB $H MUL $ymargin ADD =`	# Determines the y position of the current panel's LL corner
+		xposL=`gmt math -Q $xpos 0.15 SUB =`				# We will plot a VGG scale bar 0.15 inches to the left of each panel
+		xposR=`gmt math -Q $xpos 0.15 ADD =`				# We will plot an Age scale bar 0.15 inches to the right of each panel
+		if [ ${frame} -eq 1 ]; then					# Plot the central corridor in light blue color, annotate the distance axis
+			gmt plot -Glightblue -Bx20f5 -By0 -BwSne -Xa${xpos}i -Ya${ymargin}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 <<- EOF
+			-${zone}	0
+			${zone}		0
+			${zone}		$height
+			-${zone}	$height
+			EOF
+			let frame=0
+		fi
+		gmt convert -Q${P} ${XFILE} > $$.raw			# Extract the profile to plot (includes the segment header)
+		header=`head -1 $$.raw`					# Get this cross profile's header
+		# Pull out several parameter values from the segment header, via strings such as WD=25
+		
+		az=`fz_get_item "${header}" az`				# Extract the azimuth of this profile
+		mb=`fz_get_item "${header}" mb`				# Extract the blend parameter for best-fitting model
+		OB=`fz_get_item "${header}" OB`				# Extract the offset parameter for best-fitting blend model
+		WB=`fz_get_item "${header}" WB`				# Extract the width parameter for best-fitting blend model
+		UB=`fz_get_item "${header}" UB`				# Extract the compression parameter for best-fitting blend model
+		OT=`fz_get_item "${header}" OT`				# Extract the offset parameter for best-fitting trough model
+		WT=`fz_get_item "${header}" WT`				# Extract the width parameter for best-fitting trough model
+		UT=`fz_get_item "${header}" UT`				# Extract the compression parameter for best-fitting trough model
+		OD=`fz_get_item "${header}" OD`				# Extract trough location parameter for the data
+		WD=`fz_get_item "${header}" WD`				# Extract the width estimate of the data trough
+		OE=`fz_get_item "${header}" OE`				# Extract the offset parameter for best-fitting edge model
+		WT2=`gmt math -Q $WT 0.5 MUL =`				# Compute half-widths
+		WB2=`gmt math -Q $WB 0.5 MUL =`
+		northsouth=`gmt math -Q $az ABS 45 LE =`		# Determine if profile is mostly E-W or S-N
+		if [ ${northsouth} -eq 1 ]; then			# It is mostly S to N
+			L="S"
+			R="N"
+		else							# It is mostly E to W
+			L="W"
+			R="E"
+		fi
+		# Build a polygon the plot as lightcyan the +- 2 sigma uncertainty on the trough location OT
+		echo ${OT} ${WT} ${vmin} ${vmax} | awk '{printf "%g\t%s\n%g\t%s\n%g\t%s\n%g\t%s\n", $1-0.5*$2/3, $3, $1+0.5*$2/3, $3, $1+0.5*$2/3, $4, $1-0.5*$2/3, $4}' > $$.w
+		y=`gmt math -Q ${P} ${H} MUL 1 ADD =`
+		# Plot the uncertainty area on OT as lightcyan
+		gmt plot -R${dmin}/${dmax}/${vmin}/${vmax} -JX${W}i/${H}i -Bx0 -Byf1000g1000 -Bwe $$.w -Glightcyan -Xa${xpos}i -Ya${ypos}i
+		# Plot the data as red circles connected by a thin dotted red line
+		gmt plot $$.raw -i2,4 -Wthinnest,red,. -Xa${xpos}i -Ya${ypos}i
+		gmt plot $$.raw -i2,4 -Sc0.04i -Gred -Xa${xpos}i -Ya${ypos}i
+		# Plot the trough model as thin solid green3 line
+		gmt plot $$.raw -i2,7 -B0 -Bsn -Wthin,green3 -Xa${xpos}i -Ya${ypos}i --MAP_FRAME_PEN=faint
+		# Plot the blend model as thin blue line
+		gmt plot $$.raw -i2,8 -Wthin,blue -Xa${xpos}i -Ya${ypos}i
+		if [ ${got_age} -eq 1 ]; then
+			# Plot the crustal ages as thin dashed orange line
+			gmt plot $$.raw -i2,5 -R${dmin}/${dmax}/${amin}/${amax} -Wthin,orange,- -Xa${xpos}i -Ya${ypos}i
+		fi
+		# Place width error-bar and trough symbol for the blend model
+		echo ${OB} ${VB} ${WB2} | gmt plot -R${dmin}/${dmax}/${vmin}/${vmax} -Ex+pthin,blue -Gblue -Wthinnest -Si0.075i -Xa${xpos}i -Ya${ypos}i
+		# Place width error-bar and trough symbol for the trough model
+		echo ${OT} ${VT} ${WT2} | gmt plot -Ex+pthin,green3 -Wthinnest -Si0.075i -Ggreen3 -Xa${xpos}i -Ya${ypos}i
+		# Place width error-bar and max-slope (edge) symbol for the blend model
+		echo ${OE} 0.0 | gmt plot -Wthinnest -Sc0.075i -Gblue -Xa${xpos}i -Ya${ypos}i
+		if [ "${WD}" = "NaN" ] || [ "${WD}" = "nan" ]; then		# Cannot do it
+			echo "WD is NaN - skipped" >&2
+		else
+			WD2=`gmt math -Q $WD 0.5 MUL =`	# Compute half-width
+			echo ${OD} ${VD} ${WD2} | gmt plot -Ex+pthin,red -Wthinnest -Si0.075i -Gred -Xa${xpos}i -Ya${ypos}i
+		fi
+		# Place profile ID in upper-left corner of panel
+		echo "${dmin} ${vmax} LT ${P}" | gmt text -Dj0.05i -C0.01i -F+f7p,Helvetica,white+a0+j -Gblack -To -W0.5p -Xa${xpos}i -Ya${ypos}i
+		# Write blend value in upper-right corner of panel
+		echo "${dmax} ${vmax} RT @;green3;u@-t@- = ${UT}@;; @;blue;u@-b@- = $UB m = ${mb}@;;" | gmt text -Dj0.05i -F+f7p,Helvetica+a0+j -Xa${xpos}i -Ya${ypos}i
+		# Write the W-E or S-N labels on left/right side of the top of the panel
+		echo "${dmin} ${vmax} LT ${L}" | gmt text -Dj0.05i/0.2i -F+f12p,Helvetica-Bold+a0+j -Xa${xpos}i -Ya${ypos}i
+		echo "${dmax} ${vmax} RT ${R}" | gmt text -Dj0.05i/0.2i -F+f12p,Helvetica-Bold+a0+j -Xa${xpos}i -Ya${ypos}i
+		# Draw $vinc Eotvos scale bar to the left of the panel
+		gmt plot -W2p,red -Xa${xposL}i -Ya${ypos}i <<- EOF
+		${dmin}	-${vinc2}
+		${dmin}	${vinc2}
 		EOF
-		let frame=0
-	fi
-	gmt convert -Q$P $XFILE > $$.raw			# Extract the profile to plot (includes the segment header)
-	header=`head -1 $$.raw`					# Get this cross profile's header
-	# Pull out several parameter values from the segment header, via strings such as WD=25
-	
-	az=`fz_get_item "$header" az`				# Extract the azimuth of this profile
-	mb=`fz_get_item "$header" mb`				# Extract the blend parameter for best-fitting model
-	OB=`fz_get_item "$header" OB`				# Extract the offset parameter for best-fitting blend model
-	WB=`fz_get_item "$header" WB`				# Extract the width parameter for best-fitting blend model
-	UB=`fz_get_item "$header" UB`				# Extract the compression parameter for best-fitting blend model
-	OT=`fz_get_item "$header" OT`				# Extract the offset parameter for best-fitting trough model
-	WT=`fz_get_item "$header" WT`				# Extract the width parameter for best-fitting trough model
-	UT=`fz_get_item "$header" UT`				# Extract the compression parameter for best-fitting trough model
-	OD=`fz_get_item "$header" OD`				# Extract trough location parameter for the data
-	WD=`fz_get_item "$header" WD`				# Extract the width estimate of the data trough
-	OE=`fz_get_item "$header" OE`				# Extract the offset parameter for best-fitting edge model
-	WT2=`gmt math -Q $WT 0.5 MUL =`				# Compute half-widths
-	WB2=`gmt math -Q $WB 0.5 MUL =`
-	northsouth=`gmt math -Q $az ABS 45 LE =`		# Determine if profile is mostly E-W or S-N
-	if [ $northsouth -eq 1 ]; then				# It is mostly S to N
-		L="S"
-		R="N"
-	else							# It is mostly E to W
-		L="W"
-		R="E"
-	fi
-	# Build a polygon the plot as lightcyan the +- 2 sigma uncertainty on the trough location OT
-	echo $OT $WT $vmin $vmax | awk '{printf "%g\t%s\n%g\t%s\n%g\t%s\n%g\t%s\n", $1-0.5*$2/3, $3, $1+0.5*$2/3, $3, $1+0.5*$2/3, $4, $1-0.5*$2/3, $4}' > $$.w
-	y=`gmt math -Q $P $H MUL 1 ADD =`
-	# Plot the uncertainty area on OT as lightcyan
-	gmt psxy -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -Bx0 -Byf1000g1000 -Bwe -O -K $$.w -Glightcyan -Xa${xpos}i -Ya${ypos}i >> $PS
-	# Plot the data as red circles connected by a thin dotted red line
-	gmt psxy $$.raw -i2,4 -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -O -K -Wthinnest,red,. -Xa${xpos}i -Ya${ypos}i >> $PS
-	gmt psxy $$.raw -i2,4 -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -O -K -Sc0.04i -Gred -Xa${xpos}i -Ya${ypos}i >> $PS
-	# Plot the trough model as thin solid green3 line
-	gmt psxy $$.raw -i2,7 -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -B0 -Bsn -O -K -Wthin,green3 -Xa${xpos}i -Ya${ypos}i --MAP_FRAME_PEN=faint >> $PS
-	# Plot the blend model as thin blue line
-	gmt psxy $$.raw -i2,8 -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -O -K -Wthin,blue -Xa${xpos}i -Ya${ypos}i >> $PS
-	if [ $got_age -eq 1 ]; then
-		# Plot the crustal ages as thin dashed orange line
-		gmt psxy $$.raw -i2,5 -R$dmin/$dmax/$amin/$amax -JX${W}i/${H}i -O -K -Wthin,orange,- -Xa${xpos}i -Ya${ypos}i >> $PS
-	fi
-	# Place width error-bar and trough symbol for the blend model
-	echo $OB $VB $WB2 | gmt psxy -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -O -K -Ex/thin,blue -Gblue -Wthinnest -Si0.075i -Xa${xpos}i -Ya${ypos}i >> $PS
-	# Place width error-bar and trough symbol for the trough model
-	echo $OT $VT $WT2 | gmt psxy -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -O -K -Ex/thin,green3 -Wthinnest -Si0.075i -Ggreen3 -Xa${xpos}i -Ya${ypos}i >> $PS
-	# Place width error-bar and max-slope (edge) symbol for the blend model
-	echo $OE 0.0 | gmt psxy -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -O -K -Wthinnest -Sc0.075i -Gblue -Xa${xpos}i -Ya${ypos}i >> $PS
-	if [ "$WD" = "NaN" ] || [ "$WD" = "nan" ]; then		# Cannot do it
-		echo "WD is NaN - skipped" >&2
-	else
-		WD2=`gmt math -Q $WD 0.5 MUL =`	# Compute half-width
-		echo $OD $VD $WD2 | gmt psxy -R$dmin/$dmax/$vmin/$vmax -JX${W}i/${H}i -O -K -Ex/thin,red -Wthinnest -Si0.075i -Gred -Xa${xpos}i -Ya${ypos}i >> $PS
-	fi
-	# Place profile ID in upper-left corner of panel
-	echo "$dmin $vmax LT $P" | gmt pstext -R$dmin/$dmax/$vmin/$vmax -J -O -K -Dj0.05i/0.05i -C0.01i/0.01i -F+f7p,Helvetica,white+a0+j -Gblack -To -W0.5p -Xa${xpos}i -Ya${ypos}i >> $PS
-	# Write blend value in upper-right corner of panel
-	echo "$dmax $vmax RT @;green3;u@-t@- = ${UT}@;; @;blue;u@-b@- = $UB m = ${mb}@;;" | gmt pstext -R -J -O -K -Dj0.05i/0.05i -F+f7p,Helvetica+a0+j -Xa${xpos}i -Ya${ypos}i >> $PS
-	# Write the W-E or S-N labels on left/right side of the top of the panel
-	echo "$dmin $vmax LT $L" | gmt pstext -R -J -O -K -Dj0.05i/0.2i -F+f12p,Helvetica-Bold+a0+j -Xa${xpos}i -Ya${ypos}i >> $PS
-	echo "$dmax $vmax RT $R" | gmt pstext -R -J -O -K -Dj0.05i/0.2i -F+f12p,Helvetica-Bold+a0+j -Xa${xpos}i -Ya${ypos}i >> $PS
-	# Draw $vinc Eotvos scale bar to the left of the panel
-	gmt psxy -R -J -O -K -W2p,red -Xa${xposL}i -Ya${ypos}i <<- EOF >> $PS
-	$dmin	-${vinc2}
-	$dmin	${vinc2}
-	EOF
-	# Label the VGG scale bar with "$vinc"
-	echo $dmin 0 $vinc | gmt pstext -R -J -O -K -F+f6p,Helvetica+a0+jCM -C0.01i/0.01i -Gwhite -To -W0.5p -N -Xa${xposL}i -Ya${ypos}i >> $PS
-	if [ $got_age -eq 1 ]; then
-		# Draw 10 Myr scale bar to the right of the panel
-		gmt psxy -R$dmin/$dmax/$amin/$amax -J -O -K -W2p,orange -Xa${xposR}i -Ya${ypos}i <<- EOF >> $PS
-		$dmax	$am1
-		$dmax	$am2
-		EOF
-		# Label the age scale bar with "10"
-		echo $dmax $am 10 | gmt pstext -R -J -O -K -F+f6p,Helvetica+a0+jCM -C0.01i/0.01i -Gwhite -To -W0.5p -N -Xa${xposR}i -Ya${ypos}i >> $PS
-	fi
-	if [ $single -eq 1 ]; then	# Set P to last profile so the loop will exit immediately
-		P=$n_cross
-	else				# March on to the next profile
-		let P=P+inc
-	fi
-done
-# Finalize plot by drawing the d = 0 line for the last panel
-gmt psbasemap -R$dmin/$dmax/0/$height -JX${W}i/${height}i -O -Bx0g1000 -By0 -Xa${xpos}i -Ya${ymargin}i >> $PS
-# Convert the PS to a PDF file
-gmt psconvert -Tf $PS
-os=`uname -s`
-if [ $verbose -eq 1 ]; then
-	echo "fzprofiler: Final plot is called $PDF" >&2
-fi
-if [ $os = "Darwin" ]; then
-	open $PDF
+		# Label the VGG scale bar with "$vinc"
+		echo ${dmin} 0 ${vinc} | gmt text -F+f6p,Helvetica+a0+jCM -C0.01i -Gwhite -To -W0.5p -N -Xa${xposL}i -Ya${ypos}i
+		if [ ${got_age} -eq 1 ]; then
+			# Draw 10 Myr scale bar to the right of the panel
+			gmt plot -R${dmin}/${dmax}/${amin}/${amax} -W2p,orange -Xa${xposR}i -Ya${ypos}i <<- EOF
+			${dmax}	${am1}
+			${dmax}	${am2}
+			EOF
+			# Label the age scale bar with "10"
+			echo ${dmax} ${am} 10 | gmt text -F+f6p,Helvetica+a0+jCM -C0.01i -Gwhite -To -W0.5p -N -Xa${xposR}i -Ya${ypos}i
+		fi
+		if [ ${single} -eq 1 ]; then	# Set P to last profile so the loop will exit immediately
+			P=${n_cross}
+		else				# March on to the next profile
+			let P=P+inc
+		fi
+	done
+	# Finalize plot by drawing the d = 0 line for the last panel
+	gmt basemap -R${dmin}/${dmax}/0/${height} -JX${W}i/${height}i -Bx0g1000 -By0 -Xa${xpos}i -Ya${ymargin}i
+gmt end show
+if [ ${verbose} -eq 1 ]; then
+	echo "fzprofiler: Final plot is called ${prefix}_cross.pdf" >&2
 fi
 
-rm -f $PS
 fz_cleanup 1

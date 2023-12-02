@@ -80,107 +80,101 @@ while [ ! x"$1" = x ]; do
 	esac
 done
 
-if [ $filtered -eq 0 ]; then
+if [ ${filtered} -eq 0 ]; then
 	AFILE=${prefix}_analysis.txt
 else
 	AFILE=${prefix}_filtered.txt
 fi
 BFILE=${prefix}_blend.txt
-PS=${prefix}_stat.ps
-PDF=${prefix}_stat.pdf
 #-----------------------------------------
 ymargin=1
 xmargin=1
 spacing=0.175
 W=6.3
 H=1.2
-xu=`gmt math -Q -0.75 1 $xmargin SUB ADD =`
-yu=`gmt math -Q -0.75 1 $ymargin SUB ADD =`
+xu=`gmt math -Q -0.75 1 ${xmargin} SUB ADD =`
+yu=`gmt math -Q -0.75 1 ${ymargin} SUB ADD =`
 # Extract our segment */
-gmt convert -Q$P $AFILE > /tmp/t.txt
+gmt convert -Q${P} ${AFILE} > /tmp/t.txt
 # How many points along segment?
 n_cross=`cat /tmp/t.txt | wc -l | awk '{printf "%d\n", $1-1}'`
-yup=`gmt math -Q $H $spacing ADD =`
-gmt info $AFILE -C -I1/1/2/10/0.01/1/1/5/5/5/1 > $$.info
+yup=`gmt math -Q ${H} ${spacing} ADD =`
+gmt info ${AFILE} -C -I1/1/2/10/0.01/1/1/5/5/5/1 > $$.info
 dmin=`cut -f5 $$.info`
 dmax=`cut -f6 $$.info`
-gmt psbasemap -R$dmin/$dmax/0/1 -JX6i/8.9i -P -U/${xu}i/${yu}i/"$prefix" -K -B+gwhite -X${xmargin}i -Y${ymargin}i > $PS
-# Plot blend and u values
-x=`fz_col_id DR`
-y=`fz_col_id BL`
-gmt psxy $AFILE -i$x,$y -R$dmin/$dmax/-0.05/1.05 -JX${W}i/${H}i -Bxa500f100+l"Distance along FZ"+u"km" -Bya0.2f0.1 -BWSnE -Y0.25i -O -K -W1p --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 --MAP_LABEL_OFFSET=0.05i >> $PS
-y=`fz_col_id UT`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,green >> $PS
-y=`fz_col_id UB`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,blue >> $PS
-echo "$dmax 1.05 C" | gmt pstext -R -J -O -K -Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i/0.05i >> $PS
-echo "$dmin 1.05 A" | gmt pstext -R$dmin/$dmax/-0.05/1.05 -J -O -K -Gwhite -W0.25p  -F+jTL+f9p -Dj0.05i/0.05i >> $PS
-# Plot directions
-y=`fz_col_id OR`
-gmt psxy $AFILE -i$x,$y -R$dmin/$dmax/-1.1/1.1 -JX${W}i/${H}i -Bxa500f100 -Bya1g5 -BWsnE -O -K -W1p -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 --MAP_LABEL_OFFSET=0.05i >> $PS
-echo "$dmax 0 O" | gmt pstext -R -J -O -K -Gwhite -W0.25p  -F+jBR+f9p -Dj0.05i/0.05i >> $PS
-# Plot offsets
-y=`fz_col_id SD`
-gmt psxy $AFILE -i$x,$y -R$dmin/$dmax/-$smax/$smax -JX${W}i/${H}i -Bxa500f100 -Bya5f1g100 -BWsnE -O -K -W1p,red -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 >> $PS
-y=`fz_col_id ST`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,green >> $PS
-y=`fz_col_id SB`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,blue >> $PS
-echo "$dmax $smax @~D@~" | gmt pstext -R -J -O -K -Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i/0.05i >> $PS
-# Plot widths
-y=`fz_col_id WD`
-gmt psxy $AFILE -i$x,$y -R$dmin/$dmax/0/$wmax -JX${W}i/${H}i -Bxa500f100 -Bya10f5 -BWsnE -O -K -W1p,red -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 >> $PS
-y=`fz_col_id WT`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,green >> $PS
-y=`fz_col_id WB`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,blue >> $PS
-echo "$dmax $wmax W" | gmt pstext -R -J -O -K -Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i/0.05i >> $PS
-gmt psxy -R -J -O -K -W0.5p,- << EOF >> $PS
-$dmin	15
-$dmax	15
-EOF
-# Plot amplitudes
-y=`fz_col_id AD`
-gmt psxy $AFILE -i$x,$y -R$dmin/$dmax/0/$amax -JX${W}i/${H}i -Bxa500f100 -Bya50f10g1000 -BWsnE -O -K -W1p,red -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 >> $PS
-y=`fz_col_id AT`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,green >> $PS
-y=`fz_col_id AB`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,blue >> $PS
-echo "$dmax $amax A" | gmt pstext -R -J -O -K -Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i/0.05i >> $PS
-gmt psxy -R -J -O -K -W0.5p,- << EOF >> $PS
-$dmin	25
-$dmax	25
-EOF
-# Plot variance reductions
-y=`fz_col_id VT`
-gmt psxy $AFILE -i$x,$y -R$dmin/$dmax/-5/105 -JX${W}i/${H}i -Bxa500f100 -Bya20f5 -BWsnE -O -K -W1p,green -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 >> $PS
-y=`fz_col_id VB`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,blue >> $PS
-echo "$dmax 105 V" | gmt pstext -R -J -O -K -Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i/0.05i >> $PS
-gmt psxy -R -J -O -K -W0.5p,- << EOF >> $PS
-$dmin	50
-$dmax	50
-EOF
-# Plot F values
-y=`fz_col_id FT`
-gmt psxy $AFILE -i$x,$y -R$dmin/$dmax/1/$fmax -JX${W}i/${H}il -Bxa500f100 -Bya1pf3 -BWsE -O -K -W1p,green -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 >> $PS
-echo "$dmax $fmax F" | gmt pstext -R -J -O -K -Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i/0.05i >> $PS
-y=`fz_col_id FB`
-gmt psxy $AFILE -i$x,$y -R -J -O -K -W1p,blue >> $PS
-gmt psxy -R -J -O -K -W0.5p,- << EOF >> $PS
-$dmin	50
-$dmax	50
-EOF
-#grep -v '^>' $AFILE | cut -f3,11 | gmt psxy -R$dmin/$dmax/0/4 -JX${W}i/${H}i -Bxa500f100 -Bya1f1+l"Q" -BWse -O -K -W1p -Y${yup}i --FONT_ANNOT_PRIMARY=10 >> $PS
-gmt psbasemap -R0/$n_cross/0/100 -JX${W}i/${H}i -Bxa20f1+l"FZ ID $P" -By0 -BN -O -K --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 --MAP_LABEL_OFFSET=0.05i >> $PS
-gmt psxy -R -J -O -T >> $PS
-gmt psconvert -Tf $PS
-if [ $verbose -eq 1 ]; then
-	echo "fzinformer: Final plot is called $PDF" >&2
-fi
-os=`uname -s`
-if [ $os = "Darwin" ]; then
-	open $PDF
-fi
-rm -f $PS
+gmt begin ${prefix}_stat pdf
+	gmt basemap -R${dmin}/${dmax}/0/1 -JX6i/8.9i -U/${xu}i/${yu}i/"${prefix}" -K -B+gwhite -X${xmargin}i -Y${ymargin}i
+	# Plot blend and u values
+	x=`fz_col_id DR`
+	y=`fz_col_id BL`
+	gmt plot ${AFILE} -i${x},${y} -R${dmin}/${dmax}/-0.05/1.05 -JX${W}i/${H}i -Bxa500f100+l"Distance along FZ"+u"km" -Bya0.2f0.1 -BWSnE -Y0.25i -W1p --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 --MAP_LABEL_OFFSET=0.05i
+	y=`fz_col_id UT`
+	gmt plot ${AFILE} -i${x},${y} -W1p,green
+	y=`fz_col_id UB`
+	gmt plot ${AFILE} -i${x},${y} -W1p,blue
+	echo "${dmax} 1.05 C" | gmt text-Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i
+	echo "${dmin} 1.05 A" | gmt text -Gwhite -W0.25p  -F+jTL+f9p -Dj0.05i
+	# Plot directions
+	y=`fz_col_id OR`
+	gmt plot $AFI{LE -i${x},${y} -R${dmin}/${dmax}/-1.1/1.1 -Bxa500f100 -Bya1g5 -BWsnE -W1p -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 --MAP_LABEL_OFFSET=0.05i
+	echo "${dmax} 0 O" | gmt text Gwhite -W0.25p  -F+jBR+f9p -Dj0.05i
+	# Plot offsets
+	y=`fz_col_id SD`
+	gmt plot ${AFILE} -i${x},${y} -R${dmin}/${dmax}/-${smax}/${smax} -Bxa500f100 -Bya5f1g100 -BWsnE -W1p,red -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14
+	y=`fz_col_id ST`
+	gmt plot ${AFILE} -i${x},${y} -W1p,green
+	y=`fz_col_id SB`
+	gmt plot ${AFILE} -i${x},${y} -W1p,blue
+	echo "$dmax $smax @~D@~" | gmt text -Gwhite -W0.25p -F+jTR+f9p -Dj0.05i
+	# Plot widths
+	y=`fz_col_id WD`
+	gmt plot ${AFILE} -i${x},${y} -R${dmin}/${dmax}/0/${wmax} -Bxa500f100 -Bya10f5 -BWsnE -W1p,red -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14
+	y=`fz_col_id WT`
+	gmt plot ${AFILE} -i${x},${y} -W1p,green
+	y=`fz_col_id WB`
+	gmt plot ${AFILE} -i${x},${y} -W1p,blue
+	echo "${dmax} ${wmax} W" | gmt text -Gwhite -W0.25p -F+jTR+f9p -Dj0.05i
+	gmt plot -W0.5p,- << EOF
+	${dmin}	15
+	${dmax}	15
+	EOF
+	# Plot amplitudes
+	y=`fz_col_id AD`
+	gmt plot ${AFILE} -i${x},${y} -R${dmin}/${dmax}/0/${amax} -Bxa500f100 -Bya50f10g1000 -BWsnE -W1p,red -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14
+	y=`fz_col_id AT`
+	gmt plot ${AFILE} -i${x},${y} -W1p,green
+	y=`fz_col_id AB`
+	gmt plot ${AFILE} -i${x},${y}-W1p,blue
+	echo "${dmax} ${amax} A" | gmt text-Gwhite -W0.25p  -F+jTR+f9p -Dj0.05i
+	gmt plot -W0.5p,- << EOF
+	${dmin}	25
+	${dmax}	25
+	EOF
+	# Plot variance reductions
+	y=`fz_col_id VT`
+	gmt plot ${AFILE} -i${x},${y} -R${dmin}/${dmax}/-5/105 -JX${W}i/${H}i -Bxa500f100 -Bya20f5 -BWsnE -W1p,green -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14
+	y=`fz_col_id VB`
+	gmt plot ${AFILE} -i${x},${y} -W1p,blue
+	echo "${dmax} 105 V" | gmt text -Gwhite -W0.25p -F+jTR+f9p -Dj0.05i
+	gmt plot -W0.5p,- << EOF
+	${dmin}	50
+	${dmax}	50
+	EOF
+	# Plot F values
+	y=`fz_col_id FT`
+	gmt plot ${AFILE} -i${x},${y} -R${dmin}/${dmax}/1/${fmax} -JX${W}i/${H}il -Bxa500f100 -Bya1pf3 -BWsE -W1p,green -Y${yup}i --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14
+	echo "${dmax} ${fmax} F" | gmt text -Gwhite -W0.25p -F+jTR+f9p -Dj0.05i
+	y=`fz_col_id FB`
+	gmt plot ${AFILE} -i${x},${y} -W1p,blue
+	gmt plot -W0.5p,- << EOF
+	${dmin}	50
+	${dmax}	50
+	EOF
+	#grep -v '^>' ${AFILE} | cut -f3,11 | gmt plot -R${dmin}/${dmax}/0/4 -Bxa500f100 -Bya1f1+l"Q" -BWse -W1p -Y${yup}i --FONT_ANNOT_PRIMARY=10
+	gmt basemap -R0/${n_cross}/0/100 -Bxa20f1+l"FZ ID ${P}" -By0 -BN --FONT_ANNOT_PRIMARY=10 --FONT_LABEL=14 --MAP_LABEL_OFFSET=0.05i
+	if [ $verbose -eq 1 ]; then
+		echo "fzinformer: Final plot is called ${prefix}_stat.pdf" >&2
+	fi
+gmt end show
+
 fz_cleanup 1

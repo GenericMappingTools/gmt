@@ -15,12 +15,12 @@ Synopsis
 **fzmodeler** [ |-A|\ *asymmetry* ]
 [ |-C|\ *compression* ]
 [ |-D|\ *min*/*max*/*inc* ]
-[ |-F|\ *prefix* ]
 [ |-M| ]
 [ |-N|\ *amplitude* ]
 [ |-O| ]
 [ |-P| ]
 [ |-S|\ *shift* ]
+[ |-T|\ *prefix* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *width* ]
 
@@ -30,7 +30,7 @@ Description
 -----------
 
 **zmodeler** is a script developed as part of the Global Seafloor Fabric
-and Magnetic Lineation Project [see www.soest.hawaii.edu/PT/GSFML for a full
+and Magnetic Lineation Project [see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It builds a synthetic model cross-profile given
 the chosen model parameters and optionally images the profile via a PDF plot.
 
@@ -56,12 +56,6 @@ Optional Arguments
     expected to be in degrees of latitude which *inc* will be decoded as
     arc minutes [-5/5/2 or -100/100/2, depending on |-M|].
 
-.. _-F:
-
-**-F**\ *prefix*
-    Set the output prefix for the model profile [fzprof].  Give |-F|\ **-** to send
-    the model profile to stdout.
-
 .. _-M:
 
 **-M**
@@ -77,7 +71,7 @@ Optional Arguments
 
 **-O**
     Instead of making a stand-alone PDF plot, write a PostScript overlay to stdout,
-    i.e., make the plot using the GMT **-O -K** options.  Requires (or sets) |-P|.
+    i.e., make the plot using the GMT classic code **-O -K** options.  Requires (or sets) |-P|.
 
 .. _-P:
 
@@ -88,6 +82,12 @@ Optional Arguments
 
 **-S**\ *shift*
     Sets the shift of the FZ location from the origin, in km [0].
+
+.. _-T:
+
+**-T**\ *prefix*
+    Set the output prefix for the model profile [fzprof].  Give |-T|\ **-** to send
+    the model profile to stdout.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: ../../explain_-V.rst_
@@ -119,7 +119,6 @@ See Also
 :doc:`fzinformer </supplements/gsfml/fzinformer>`,
 :doc:`fzprofiler </supplements/gsfml/fzprofiler>`,
 :doc:`fzmapper </supplements/gsfml/fzmapper>`,
-:doc:`grdtrack </grdtrack>`
 
 References
 ----------

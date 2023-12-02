@@ -31,7 +31,7 @@ Description
 and Magnetic Lineation Project [see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It make a Mercator map of cross-profiles from the
 processed fracture zone (FZ) traces and cross-profiles as
-produced by :doc:`grdtrack`.  Optionally, overlay analysis and blend results.
+produced by :doc:`grdtrack </grdtrack>`.  Optionally, overlay analysis and blend results.
 
 Optional Arguments
 ------------------
@@ -91,9 +91,9 @@ To look at the cross-profiles and the best-fit models and optimal FZ locations i
 map view, with the prefix used previously as "traces", using a 9 inch wide Mercator,
 and only label every other profile, try::
 
-    fzmapper -Ttraces -W9i -L2 -Fguides.xy -S -V -A
+    fzmapper -Ttraces -W9i -L2 -Fguides.txt -S -V -A
 
-where we use the original digitized FZ locations guides.xy, choosing to annotate every
+where we use the original digitized FZ locations guides.txt, choosing to annotate every
 other profile.  The final map will be named *prefix*\ _map.pdf.  For cross-section
 profiles, see :doc:`fzprofiler`.
 
