@@ -9279,7 +9279,7 @@ void gmt_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[]) {
 		N = GMT->current.proj.datum.from.a / sqrt (1.0 - GMT->current.proj.datum.from.e_squared * sin_lat * sin_lat);
 		out[GMT_Z] = (p / cos_lat) - N;
 	}
-	else {	/* S or N pole, use sign of in_p[GMT_Z] to set latitude */
+	else {	/* S or N pole, use sign of in_p[GMT_Z] to set latitude and height */
 		out[GMT_X] = 0.0;	/* Might as well pick0 since any longitude will work */
 		out[GMT_Y] = (in_p[GMT_Z] > 0.0) ? 90.0 : -90.0;	/* EIther at north or south pole, check via Z coordinate */
 		out[GMT_Z] = in_p[GMT_Z] - copysign (GMT->current.proj.datum.from.b, in_p[GMT_Z]);
