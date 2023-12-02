@@ -13,11 +13,12 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt fzanalyzer** *crossprofiles*
+|-F|\ *fzlines*
 [ |-A|\ *min*/*max*/*inc* ]
 [ |-C|\ *min*/*max*/*inc* ]
 [ |-D|\ *corrwidth* ]
-[ |-I|\ *FZ*[/*profile*] ]
-[ -S[\ **c**]]
+[ |-I|\ *FZ*\ [/*profile*] ]
+[ |-S|\ [**b**\|\ **c**]]
 [ |-T|\ *prefix* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *min*/*max*/*inc* ]
@@ -57,8 +58,10 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ Here, *fzlines* is a file with resampled track lines obtained by running :doc:`grdtrack` **-D**.
-As for *crossprofiles* the file must contain the same 7 data columns *lon, lat, dist, azimuth, vgg, age, fzdist*.
+**-F**\ *fzlines*
+    Here, *fzlines* is a file with resampled track lines obtained by running :doc:`grdtrack` **-D**.
+    As for *crossprofiles* the file must contain the same 7 data columns *lon, lat, dist, azimuth, vgg, age, fzdist*.
+    See INPUT FILES for more details.
 
 Optional Arguments
 ------------------
@@ -88,7 +91,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *FZ*[/*profile*]
+**-I**\ *FZ*\ [/*profile*]
     By default, we will analyze the cross-profiles generated for all FZs.  However,
     you can use |-I| to specify a particular FZ *id* id (first *id* is 0).
     Optionally, you can select that only one *profile* from that FZ be processed [Default is all].
@@ -98,9 +101,9 @@ Optional Arguments
 .. _-S:
 
 
-**-S**
+**-S**\ [**b**\|\ **c**]
     Output the parameters set by the command-line options in a format suitable for inclusion
-    in a Bourne/bash shell script.  Alternatively, append **c* for csh/tcsh syntax.
+    in a Bourne/bash shell script.  Alternatively, append **c** for csh/tcsh syntax.
 
 .. _-T:
 
@@ -108,7 +111,7 @@ Optional Arguments
     Sets the file name prefix used for all output files [*fztrack*].
 
 .. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
+.. include:: ../../explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
@@ -179,19 +182,19 @@ To make NaN grids for ages and/or distances for the Nazca area, use
 Output Files
 ------------
 
-    #. File *prefix*_analysis.txt contains the results of the analysis for each cross
+    #. File *prefix*\ _analysis.txt contains the results of the analysis for each cross
        profile.  There 61 output columns containing the fitted or observed values (see
        DETERMINED PARAMETERS).  This file is used by :doc:`fzblender` to produce a smooth
        and optimal fit to the fracture zone.
-    #. File *prefix*_cross.txt contains both observed and predicted best-fitting models
+    #. File *prefix*\ _cross.txt contains both observed and predicted best-fitting models
        for each cross profile.  It can be used for plotting and visual analysis of the
        results on a profile-by-profile basis.
-    #. The *prefix*_par.[c]sh is either a Bourne (|-S|) or cshell (|-S|\ **c**) script
+    #. The *prefix*\ _par.[c]sh is either a Bourne (|-S|) or cshell (|-S|\ **c**) script
        that contains all parameters specified by the command line as shell variables. You
        can include this script in custom mapping or analysis scripts and use the variables
        as you see fit.
     #. Finally, while not an output file from **fzanalyzer**, you should use the name
-       *prefix*_resampled.txt for the output of :doc:`grdtrack` **-D** as that is what the
+       *prefix*\ _resampled.txt for the output of :doc:`grdtrack` **-D** as that is what the
        scripts for plotting expect.
 
 Examples
@@ -211,12 +214,12 @@ we specify a 20 km central corridor and accept default values for most settings:
     gmt fzanalyzer xprofiles.txt -D20 -Ftraces_resampled.txt -Ttraces -S --FORMAT_GEO_OUT=ddd.xxxx --FORMAT_FLOAT_OUT=%.1f
 
 You can then make plots of these cross-profiles with best-fitting curves and parameters
-indicated by using
+indicated by using::
 
     fzprofiler traces -W6i -H2i -N2
 
 which will plot all cross-profiles in separate 6x2 inch cross-sections stacked in one vertical panel.
-You can show this information in map view via
+You can show this information in map view via::
 
     fzmapper traces -W9i -L1 -Ffz_digitized.txt
 
@@ -301,3 +304,10 @@ See Also
 :doc:`grdmath </grdmath>`,
 :doc:`grdtrack </grdtrack>`,
 :doc:`mlconverter </supplements/gsfml/mlconverter>`
+
+References
+----------
+
+Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+https://doi.org/10.1002/2015GC005853.

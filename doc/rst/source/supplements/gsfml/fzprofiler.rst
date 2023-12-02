@@ -12,13 +12,13 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**fzprofiler** [ |-H|\ *height*[**c**\|\ **i**\|\ **p**] ]
+**fzprofiler** [ |-H|\ *height*\ [**c**\|\ **i**\|\ **p**] ]
 [ |-I|\ *profile* ] 
 [ |-L|\ *inc* ]
 [ |-M|\ *ncols* ]
 [ |-T|\ *prefix* ]
-[ GMT_V_OPT ]
-[ |-W|\ *width*[**c**\|\ **i**\|\ **p**] ]
+[ |SYN_OPT-V| ]
+[ |-W|\ *width*\,[**c**\|\ **i**\|\ **p**] ]
 
 |No-spaces|
 
@@ -59,24 +59,22 @@ Optional Arguments
     then all profiles are stacked vertically in one long panel; if *ncols* = 2
     then we split the profiles evenly between two columns, etc.
 
-.. _-T:
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: ../../explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 **-T**\ *prefix*
     Sets the file name *prefix* used for all input files as produced by
-    :doc:`fzanalyzer`.  The default is fztrack. The files are *prefix*_cross.txt, *prefix*_analysis.txt,
-    *prefix*_par.txt as well as the resampled output from :doc:`grdtrack` which
-    should be called *prefix*_resampled.txt.
+    :doc:`fzanalyzer` [default is fztrack]. The files are *prefix*\ _cross.txt, *prefix*\ _analysis.txt,
+    *prefix*\ _par.txt as well as the resampled output from :doc:`grdtrack` which
+    should be called *prefix*\ _resampled.txt.
 
 .. _-W:
 
 **-W**\ *width*\ [**c**\|\ **i**\|\ **p**]
     Similarly sets the plot width of an individual profile.  For units, see |-H|.
  
-.. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
-
 Plot Features
 -------------
 
@@ -102,7 +100,7 @@ try::
 
     fzprofiler -Ttraces -W6i -H2i -N2 -V
 
-The final plot will be named *prefix*_cross.pdf.  To see the same profiles in map
+The final plot will be named *prefix*\ _cross.pdf.  To see the same profiles in map
 view, use :doc:`fzmapper`.  To plot a synthetic profile, see :doc:`fzmodeler`.
 
 See Also
@@ -110,9 +108,16 @@ See Also
 
 :doc:`gmt </gmt>`
 :doc:`fzanalyzer </supplements/gsfml/fzanalyzer>`,
-:doc:`fzblender </supplements/gsfml/fzblender>`
+:doc:`fzblender </supplements/gsfml/fzblender>`,
 :doc:`mlconverter </supplements/gsfml/mlconverter>`,
 :doc:`fzinformer </supplements/gsfml/fzinformer>`,
 :doc:`fzmodeler </supplements/gsfml/fzmodeler>`,
 :doc:`fzmapper </supplements/gsfml/fzmapper>`,
-:doc:`grdtrack </grdtrack>`,
+:doc:`grdtrack </grdtrack>`
+
+References
+----------
+
+Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+https://doi.org/10.1002/2015GC005853.

@@ -14,9 +14,9 @@ Synopsis
 
 **gmt mlconverter** [ *ML_data* ]
 [ |-A| ]
-[ |-G|\ *s** ]
+[ |-G|\ [**s**] ]
 [ |-I|\ *FZid* ] 
-[ |-T|\ c**\ |\ **g**\ |\ **o**\ |\ **s** ]
+[ |-T|\ **c**\ |\ **g**\ |\ **o**\ |\ **s** ]
 [ GMT_V_OPT ]
 
 |No-spaces|
@@ -52,12 +52,11 @@ Optional Arguments
 .. _-T:
 
 **-Tc**\ |\ **g**\ |\ **o**\ |\ **s**
-    Select the magnetic time scale to use.  Choose from **g** (Gee and Kent, 2007),
-    **o** (Ogg, 2012), **s** (Gradstein, 2004), or **c** (Cande and Kent, 1995) [**g**].
-.TP
+    Select the magnetic time scale to use.  Choose from **c** (Cande and Kent, 1995),
+    **g** (Gee and Kent, 2007), **o** (Ogg, 2012), or **s** (Gradstein, 2004) [**g**].
 
 .. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
+.. include:: ../../explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
@@ -77,7 +76,7 @@ Optional Arguments
     to exceed its threshold; (0.25) Poor: Requires the amplitude only to exceed its threshold;
     and (0) Bad: None of the criteria were met.  We compute separate quality indices for the
     trough and blend models.  For the empirical trough model we only have estimates or peak-to-trough
-    amplitude, IT(A), and trough width, IT(W).  Here, we form the ratio (*A*/*a_cut*) over
+    amplitude, *A*, and trough width, *W*.  Here, we form the ratio (*A*/*a_cut*) over
     (*W*/*w_cut*), take :math:`\tan^{-1}` of this ratio and scale the result to yield the range 0-1 rounded
     to the nearest multiple of 0.25.
 
@@ -108,9 +107,16 @@ See Also
 
 :doc:`gmt </gmt>`
 :doc:`fzanalyzer </supplements/gsfml/fzanalyzer>`,
-:doc:`fzblender </supplements/gsfml/fzblender>`
+:doc:`fzblender </supplements/gsfml/fzblender>`,
 :doc:`fzinformer </supplements/gsfml/fzinformer>`,
 :doc:`fzmapper </supplements/gsfml/fzmapper>`,
 :doc:`fzmodeler </supplements/gsfml/fzmodeler>`,
 :doc:`fzprofiler </supplements/gsfml/fzprofiler>`,
-:doc:`grdtrack </grdtrack>`,
+:doc:`grdtrack </grdtrack>`
+
+References
+----------
+
+Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+https://doi.org/10.1002/2015GC005853.

@@ -12,14 +12,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**zinformer** [ |-D| ]
+**fzinformer** [ |-D| ]
 [ |-F|\ *max* ]
 [ |-I|\ *profile* ] 
 [ |-N|\ *max* ] 
 [ |-S|\ *max* ]
 [ |-T|\ *prefix* ]
 [ |-W|\ *max* ]
-[ GMT_V_OPT ]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
@@ -29,7 +29,7 @@ Description
 **fzinformer** is a script developed as part of the Global Seafloor Fabric
 and Magnetic Lineation Project [see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It make plots of statistical information obtained
-by :doc:1fzanalyzer1 as a function of position along a fracture zone (FZ).
+by :doc:`fzanalyzer` as a function of position along a fracture zone (FZ).
 
 Optional Arguments
 ------------------
@@ -66,8 +66,8 @@ Optional Arguments
 
 **-T**\ *prefix*
     Sets the file name prefix used when running :doc:`fzanalyzer` and :doc:`fzblender`
-    [The default is *fztrack*].  The files used here are *prefix*_analysis.txt
-    (or *prefix*_filtered.txt if |-D| is used) and *prefix*_blend.txt.
+    [The default is fztrack].  The files used here are *prefix*\ _analysis.txt
+    (or *prefix*\ _filtered.txt if |-D| is used) and *prefix*\ _blend.txt.
 
 .. _-W:
 
@@ -75,7 +75,7 @@ Optional Arguments
     Sets the maximum range of FZ widths (in km) [50].
 
 .. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
+.. include:: ../../explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
@@ -86,8 +86,8 @@ Optional Arguments
     believe a model fit to be.  This assignment relies of four threshold values
     that need to be determined empirically.  Here, *a_cut* is the minimum peak-to-trough amplitude
     (in Eotvos) of a model for the crossing profile [25], *v_cut* is the minimum
-    variance reduction offered by the model (in %) [50], *f_cu* is
-    the minimum F statistic computed for the model [50], and *w_cut* is a typical
+    variance reduction offered by the model (in %) [50], *f_cut* is
+    the minimum *F* statistic computed for the model [50], and *w_cut* is a typical
     FZ trough width (in km) [15].  Currently, the first three quantities
     are used to arrive at a 5-level quality index (0-1) for fitted models, as follows: (1) Very Good: Requires
     model parameters to exceed all three thresholds; (0.75) Good: Requires amplitude and
@@ -95,7 +95,7 @@ Optional Arguments
     to exceed its threshold; (0.25) Poor: Requires the amplitude only to exceed its threshold;
     and (0) Bad: None of the criteria were met.  We compute separate quality indices for the
     trough and blend models.  For the empirical trough model we only have estimates or peak-to-trough
-    amplitude, IT(A), and trough width, IT(W).  Here, we form the ratio (*A*/*a_cut*) over
+    amplitude, |-A|, and trough width, |-W|.  Here, we form the ratio (*A*/*a_cut*) over
     (*W*/*w_cut*), take :math:`\tan^{-1}` of this ratio and scale the result to yield the range 0-1 rounded
     to the nearest multiple of 0.25.
 
@@ -128,7 +128,7 @@ Panel 4 shows the width of the FZ signal for all three data.  Panel 5 presents t
 Panel 6 shows which side (left is -1, right = +1) is the young side assuming a Pacific
 edge-anomaly model (it will tend to jump back and forth where the signal is close to
 symmetric and should only be used when we have clearly asymmetric signals). Finally, panel 7 shows
-the compression parameter **C for the blend and trough models, as well as the blend parameter *A*
+the compression parameter *C* for the blend and trough models, as well as the blend parameter *A*
 (black line) for the optimal blend model.
 
 Examples
@@ -140,7 +140,7 @@ try::
 
     fzinformer -Ttraces -N100 -I5
 
-The statistical plot will be named *prefix*_stat.pdf.
+The statistical plot will be named *prefix*\ _stat.pdf.
 
 See Also
 --------
@@ -152,4 +152,11 @@ See Also
 :doc:`fzmapper </supplements/gsfml/fzmapper>`,
 :doc:`fzmodeler </supplements/gsfml/fzmodeler>`,
 :doc:`fzprofiler </supplements/gsfml/fzprofiler>`,
-:doc:`grdtrack </grdtrack>`,
+:doc:`grdtrack </grdtrack>`
+
+References
+----------
+
+Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+https://doi.org/10.1002/2015GC005853.

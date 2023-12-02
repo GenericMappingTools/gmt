@@ -17,9 +17,9 @@ Synopsis
 [ |-F|\ *pfilter* ]
 [ |-I|\ *FZid* ] 
 [ |-Q|\ *q_min*/*q_max* ]
-[ |-S|\ **code**\ [*weight*] ] 
+[ |-S|\ **b**\|\ **d**\|\ **e**\|\ **t**\|\ **u**\ [*weight*] ] 
 [ |-T|\ *prefix* ]
-[ GMT_V_OPT ]
+[ |SYN_OPT-V| ]
 [ |-Z|\ *acut*/*vcut*/*fcut*/*wcut* ]
 
 |No-spaces|
@@ -27,7 +27,7 @@ Synopsis
 Description
 -----------
 
-**fzblender* is a tool developed as part of the Global Seafloor Fabric
+**fzblender** is a tool developed as part of the Global Seafloor Fabric
 and Magnetic Lineation Project [see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It reads an analysis file produced by
 :doc:`fzanalyzer` and optionally filters those results along track.  Then, given the
@@ -37,9 +37,9 @@ of the model traces obtained by :doc:`fzanalyzer`.  The blend is based on
 quality indices determined for the model traces: If the quality index is
 high we favor this track, else we favor the digitized line; in between values
 leads to a weighted blend.  We expect to read the analysis results from the
-file *prefix*_analysis.txt produced by :doc:`fzanalyzer`; the blend results
-will be written to file *prefix*_blend.txt.  Optionally, the intermediate
-filtered analysis file can be written to *prefix*_filtered.txt if |-D| is given.
+file *prefix*\ _analysis.txt produced by :doc:`fzanalyzer`; the blend results
+will be written to file *prefix*\ _blend.txt.  Optionally, the intermediate
+filtered analysis file can be written to *prefix*\ _filtered.txt if |-D| is given.
 
 Optional Arguments
 ------------------
@@ -47,12 +47,12 @@ Optional Arguments
 .. _-D:
 
 **-D**
-    Do not remove filtered output but save them to IT(prefix)_filtered.txt. [By default we delete these intermediate files].
+    Do not remove filtered output but save them to *prefix*\_filtered.txt. [By default we delete these intermediate files].
 
 .. _-E:
 
 **-E**\ *sfilter* 
-    Apply a s\ **E**\ condary filter after the primary required filter has completed.
+    Apply a secondary filter after the primary required filter has completed.
     This is sometimes useful if you apply a robust filter first, which may result in
     short length-scale noise after removing gross outliers.  See |-F| for how to specify the filter.
 
@@ -60,7 +60,7 @@ Optional Arguments
 
 **-F**\ *pfilter*
     Sets the along-track primary filter.  Choose among convolution and non-convolution filters.
-    Append the filter directive followed by the full (6-sigma) IT(width). Available convolution filters are:
+    Append the filter directive followed by the full (6-sigma) *width*. Available convolution filters are:
 
     - **b**: Boxcar: All weights are equal.
     - **c**: Cosine Arch: Weights follow a cosine arch curve.
@@ -70,29 +70,29 @@ Optional Arguments
 
     - **m**: Median: Returns median value.
     - **p**: Maximum likelihood probability (a mode estimator): Return modal value.
-      If more than one mode is found we return their average value.  Append - or + to
-      the filter width if you rather want to return the smallest or largest of the modal
+      If more than one mode is found we return their average value.  Append **+l** or **+u** to
+      the filter width if you rather want to return the lowermost or uppermost of the modal
       values.
     - **l**: Lower: Return the minimum of all values.
     - **L**: Lower: Return minimum of all positive values only.
     - **u**: Upper: Return maximum of all values.
     - **U**: Upper: Return maximum or all negative values only.
 
-In the case of **L**\|\| **U** it is possible that no data passes the initial sign test; in that case
-the filter will return 0.0.
+    In the case of **L**\|\| **U** it is possible that no data passes the initial sign test;
+    in that case the filter will return 0.0.
 
 .. _-I:
 
-**-I**\ *FZ*[/*profile*]
+**-I**\ *FZid*
     By default, we will analyze the cross-profiles generated for all FZs.  However,
-    you can use |-I| to specify a particular FZ *id* id (first *id* is 0).
+    you can use |-I| to specify a particular *FZid* (first *FZid* is 0).
 
 .. _-Q:
 
 **-Q**\ *q_min*/*q_max*
     Sets the range of quality indices that will be used in the blended result.
     The quality index *q(d)* ranges from *q_min*) (0 or bad) to *q_max* (1 or very good) and varies
-    continuously with distance IT(d) along the FZ trace.  The quality weight assigned to
+    continuously with distance *d* along the FZ trace.  The quality weight assigned to
     the modeled FZ trace is *w_q(d)* = (*q(d)* - *q_min*)/(*q_max* - *q_min*)),
     unless *w_q(d)* > *q_max*) (*w_q(d)* = 1) or *w_q(d)* < *q_min*) (*w_q(d)* = 0).  You can use the |-Q|
     option to change this weight assignment.  The quality weight assigned to the digitized FZ trace is
@@ -100,14 +100,14 @@ the filter will return 0.0.
 
 .. _-S:
 
-**-Scode**\ [*weight*]
+**-Sb**\|\ **d**\|\ **e**\|\ **t**\|\ **u**\ [*weight*]
     Specify the model and data traces you wish to blend and the relative custom weights
     of each [Defaults to 1 for all traces].  Repeat this option for each trace to consider.
     If you specify more than one model trace then the models are first averaged according to their quality
     indices and weights before blending with the digitized trace (if specified).  Hence, the quality index assigned
     to the digitized trace is *q_r* = 1 - mean(model quality indices).  The final blend is thus a weighted
     average that takes into account both the quality indices and the custom weights (if specified).
-    Choose among these traces:
+    Choose among these directives:
     
     - **b**: The trough location for the optimal trough/edge model blend model.  This is the best fit obtained to the data using
       a blend of "Atlantic"-, "Pacific"-, and "Compression"-style synthetic shapes.
@@ -122,10 +122,10 @@ the filter will return 0.0.
 .. _-T:
 
 **-T**\ *prefix*
-    Sets the file name prefix used for all output files [*fztrack*].
+    Sets the file name prefix used for all output files [fztrack].
 
 .. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
+.. include:: ../../explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
@@ -145,7 +145,7 @@ the filter will return 0.0.
     to exceed its threshold; (0.25) Poor: Requires the amplitude only to exceed its threshold;
     and (0) Bad: None of the criteria were met.  We compute separate quality indices for the
     trough and blend models.  For the empirical trough model we only have estimates or peak-to-trough
-    amplitude, IT(A), and trough width, IT(W).  Here, we form the ratio (*A*/*a_cut*) over
+    amplitude, *A*, and trough width, *W*.  Here, we form the ratio (*A*/*a_cut*) over
     (*W*/*w_cut*), take :math:`\tan^{-1}` of this ratio and scale the result to yield the range 0-1 rounded
     to the nearest multiple of 0.25.
 
@@ -177,7 +177,7 @@ coordinates for the left/right bounds along the FZ.
 Filtering
 ---------
 
-Filtering always runs of of data near the FZ end points.  We utilize :doc:`filter1d` with its
+Filtering always runs of of data near the FZ end points.  We utilize :doc:`filter1d </filter1d>` with its
 **-E** option to extend the result to the end.  Because we are filtering data columns that may
 contain a strong trend (e.g., longitude versus along-track distance) we first remove such
 linear trends before filtering, then restore the trends before blending.  However, you should
@@ -204,7 +204,7 @@ filter of 70 km width followed by a 50-km Gaussian filter, try::
     gmt fzblender -Su1 -Sd2 -St1 -Fm70 -Eg50 -TPac
 
 To produce a smooth trace of the maximum slope locations along track for the
-same file, we try the same filters with the command
+same file, we try the same filters with the command::
 
     gmt fzblender -Se -Fm70 -Eg50 -TPac
 
@@ -219,3 +219,10 @@ See Also
 :doc:`fzprofiler </supplements/gsfml/fzprofiler>`,
 :doc:`filter1d </filter1d>`,
 :doc:`mlconverter </supplements/gsfml/mlconverter>`
+
+References
+----------
+
+Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+https://doi.org/10.1002/2015GC005853.

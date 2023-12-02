@@ -21,7 +21,7 @@ Synopsis
 [ |-O| ]
 [ |-P| ]
 [ |-S|\ *shift* ]
-[ GMT_V_OPT ]
+[ |SYN_OPT-V| ]
 [ |-W|\ *width* ]
 
 |No-spaces|
@@ -90,7 +90,7 @@ Optional Arguments
     Sets the shift of the FZ location from the origin, in km [0].
 
 .. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
+.. include:: ../../explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
@@ -104,6 +104,7 @@ Examples
 
 To plot a synthetic profile for the Pacific, using otherwise default arguments,
 try::
+
     fzmodeler -C1 -V
 
 The final plot will be named *prefix*.pdf, with the model data in *prefix*.txt.
@@ -119,3 +120,10 @@ See Also
 :doc:`fzprofiler </supplements/gsfml/fzprofiler>`,
 :doc:`fzmapper </supplements/gsfml/fzmapper>`,
 :doc:`grdtrack </grdtrack>`
+
+References
+----------
+
+Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+https://doi.org/10.1002/2015GC005853.

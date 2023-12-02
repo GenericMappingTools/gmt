@@ -66,7 +66,7 @@ struct FZMODELER_CTRL {
 		int64_t fz;
 		int profile;
 	} I;
-	struct S {	/* -S */
+	struct S {	/* -S[b|c] */
 		bool active;
 		int mode;	/* 0 = bash/sh, 1 = csh/tcsh syntax */
 	} S;
@@ -534,7 +534,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <FZcrossprofiles> -F<FZlines> [-C<min>/<max>/<inc>] "
 		"[-A<min>/<max>/<inc>] [-D<corrwidth>] [-I<FZ>[/<profile>]] "
-		"-S[c]] [-T<prefix>] [%s] [-W<min>/<max>/<inc>] "
+		"-S[b|c]] [-T<prefix>] [%s] [-W<min>/<max>/<inc>] "
 		"%s] [%s] [%s]\n", name, GMT_V_OPT, GMT_colon_OPT, GMT_b_OPT, GMT_i_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -566,8 +566,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify a particular <FZ> id (first FZ is 0) to analyze "
 		"[Default analyzes the cross-profiles of all FZs]. "
 		"Optionally, append the id of a particular profile in that FZ.");
-	GMT_Usage (API, 1, "\n-S[c]");
-	GMT_Usage (API, -2, "Write out a parameter file with settings needed for Bourne scripts. "
+	GMT_Usage (API, 1, "\n-S[b|c]");
+	GMT_Usage (API, -2, "Write out a parameter file with settings needed for Bourne scripts [Default, or append b]. "
 		"Append c to use csh/tcsh syntax instead.");
 	GMT_Usage (API, 1, "\n-T<prefix>");
 	GMT_Usage (API, -2, "Set file prefix for all output files [fztrack].");

@@ -19,8 +19,8 @@ Synopsis
 [ |-O| ]
 [ |-S| ]
 [ |-T|\ *prefix* ]
-[ |-W|\ *width*[**c**\|\ **i**\|\ **p**] ]
-[ GMT_V_OPT ]
+[ |SYN_OPT-V| ]
+[ |-W|\ *width*\ [**c**\|\ **i**\|\ **p**] ]
 
 |No-spaces|
 
@@ -46,7 +46,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *profile*
-    This is the original digitized FZ traces that was given as input to:doc:`grdtrack`.
+    This is the original digitized FZ traces that was given as input to:doc:`grdtrack </grdtrack>`.
 
 .. _-G:
 
@@ -68,10 +68,10 @@ Optional Arguments
 
 **-T**\ *prefix*
     Sets the file name prefix used for all input files as produced by
-    :doc:`fzanalyzer`.  The default is *fztrack*.  The files are *prefix*_cross.txt and 
-    *prefix*_par.txt as well as the resampled output from :doc:`grdtrack` which
-    should be called *prefix*_resampled.txt.  When |-S| is set we also look for *prefix*_blend.txt
-    as produced by :doc:`fzblender`, and with |-A| we also look for *prefix*_analysis.txt.
+    :doc:`fzanalyzer` [default is fztrack].  The files are *prefix*\ _cross.txt and 
+    *prefix*\ _par.txt as well as the resampled output from :doc:`grdtrack </grdtrack>` which
+    should be called *prefix*\ _resampled.txt.  When |-S| is set we also look for *prefix*\ _blend.txt
+    as produced by :doc:`fzblender`, and with |-A| we also look for *prefix*\ _analysis.txt.
 
 .. _-W:
 
@@ -80,7 +80,7 @@ Optional Arguments
     unit is assumed to be whatever the GMT default :term:`PROJ_LENGTH_UNIT` is currently set to.
 
 .. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
+.. include:: ../../explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
@@ -94,7 +94,7 @@ and only label every other profile, try::
     fzmapper -Ttraces -W9i -L2 -Fguides.xy -S -V -A
 
 where we use the original digitized FZ locations guides.xy, choosing to annotate every
-other profile.  The final map will be named *prefix*_map.pdf.  For cross-section
+other profile.  The final map will be named *prefix*\ _map.pdf.  For cross-section
 profiles, see :doc:`fzprofiler`.
 
 See Also
@@ -102,9 +102,16 @@ See Also
 
 :doc:`gmt </gmt>`
 :doc:`fzanalyzer </supplements/gsfml/fzanalyzer>`,
-:doc:`fzblender </supplements/gsfml/fzblender>`
+:doc:`fzblender </supplements/gsfml/fzblender>`,
 :doc:`mlconverter </supplements/gsfml/mlconverter>`,
 :doc:`fzinformer </supplements/gsfml/fzinformer>`,
 :doc:`fzmodeler </supplements/gsfml/fzmodeler>`,
 :doc:`fzprofiler </supplements/gsfml/fzprofiler>`,
-:doc:`grdtrack </grdtrack>`,
+:doc:`grdtrack </grdtrack>`
+
+References
+----------
+
+Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+https://doi.org/10.1002/2015GC005853.
