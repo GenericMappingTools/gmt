@@ -9259,12 +9259,12 @@ void gmt_ECEF_forward (struct GMT_CTRL *GMT, double in[], double out[]) {
 /*! . */
 void gmt_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[]) {
 	/* Convert ECEF coordinates to geodetic lon, lat, height given the datum parameters.
-	 * GMT->current.proj.datum.from is always the ellipsoid to use. */
+	 * GMT->current.proj.datum.from is always the ellipsoid to use */
 
 	unsigned int i;
 	double in_p[3], sin_lat, cos_lat, N, p, theta, sin_theta, cos_theta;
 
-	/* First remove the xyz shifts, us in_p to avoid changing in[] */
+	/* First remove the xyz shifts, us in_p to avoid changing in */
 	for (i = 0; i < 3; i++) in_p[i] = in[i] - GMT->current.proj.datum.from.xyz[i];
 
 	p = hypot (in_p[GMT_X], in_p[GMT_Y]);
