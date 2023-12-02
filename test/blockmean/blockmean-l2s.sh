@@ -20,7 +20,7 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --fields=mean,stddev,low,high,weight >> $b
-gmt $m $l2s --fields=high,aliastest >> $b
+gmt $m $l2s --fields=high,stddev >> $b
 gmt $m $l2s --center >> $b
 gmt $m $l2s --extend+weighted --extend+simple >> $b
 gmt $m $l2s --outgrid=/some/file.grd >> $b
