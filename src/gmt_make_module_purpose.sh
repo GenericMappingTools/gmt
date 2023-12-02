@@ -62,13 +62,13 @@ rm -f ${TMPDIR}/gmt_supplements_modules.lst
 # Add purpose for a few GSFML bash scripts (i.e, not .c code)
 
 cat <<- EOF >> ${FILE_SUPPL_MODULE_PURPOSE}
-.. |fzinformer| replace:: Bash script to plot statistical information related to fracture zones
+.. |fzinformer_purpose| replace:: Bash script to plot statistical information related to fracture zones
 
-.. |fzmapper| replace:: Bash script to plot fracture zone cross-profiles on a Mercator map
+.. |fzmapper_purpose| replace:: Bash script to plot fracture zone cross-profiles on a Mercator map
 
-.. |fzmodeler| replace:: Bash script to build fracture zone cross-profile model
+.. |fzmodeler_purpose| replace:: Bash script to build fracture zone cross-profile model
 
-.. |fzprofiler| replace:: Bash script to plot fracture zone cross-profiles
+.. |fzprofiler_purpose| replace:: Bash script to plot fracture zone cross-profiles
 
 EOF
 
