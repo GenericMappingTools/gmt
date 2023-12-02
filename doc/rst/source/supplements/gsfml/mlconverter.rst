@@ -25,7 +25,7 @@ Description
 -----------
 
 **mlconverter** is a module developed as part of the Global Seafloor Fabric
-and Magnetic Lineation Project [[see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
+and Magnetic Lineation Project [see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It reads a magnetic pick data file (or stdin)
 and converts chron text-strings to ages using a selected magnetic time scale.
 The input data must be OGR/GMT data files of the form distributed by the
