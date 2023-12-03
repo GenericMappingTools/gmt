@@ -160,6 +160,8 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/seis/meca
    supplements/seis/polar
    supplements/seis/sac
+   supplements/seis/shake
+   supplements/seis/vs30
    supplements/spotter/backtracker
    supplements/spotter/gmtpmodeler
    supplements/spotter/grdpmodeler
@@ -720,6 +722,10 @@ seis
 | :doc:`/supplements/seis/polar` | |polar_purpose|  |
 +--------------------------------+------------------+
 | :doc:`/supplements/seis/sac`   | |sac_purpose|    |
++--------------------------------+------------------+
+| :doc:`/supplements/seis/shake` | |shake_purpose|  |
++--------------------------------+------------------+
+| :doc:`/supplements/seis/vs30`  | |vs30_purpose|   |
 +--------------------------------+------------------+
 
 spotter
