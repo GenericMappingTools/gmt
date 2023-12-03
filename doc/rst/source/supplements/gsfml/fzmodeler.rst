@@ -39,6 +39,15 @@ model evaluated is :math:`z(x) = A[mG_1 + (1-m)(uG_2 - G_0)]`, where *A* is ampl
 function, while :math:`G_1` and :math:`G_2` are the first two horizontal derivatives.
 **Note**: The blend model subtracts Here :math:`G_0` since for fracture zones we want the negative Gaussian.
 
+.. _GFSML_model:
+
+.. figure:: /_images/GMT_gsfml_components.*
+   :width: 500 px
+   :align: center
+
+   Three components (the Gaussian and its two first derivatives) can be used to create a blended
+   model that matches a FZ-crossing VGG anomaly. Modeling may also require a linear trend.
+
 Optional Arguments
 ------------------
 
