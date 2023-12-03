@@ -9268,13 +9268,22 @@ void gmt_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[]) {
 	for (i = 0; i < 3; i++) in_p[i] = in[i] - GMT->current.proj.datum.from.xyz[i];
 
 	p = hypot (in_p[GMT_X], in_p[GMT_Y]);
-	theta = atan (in_p[GMT_Z] * GMT->current.proj.datum.from.a / (p * GMT->current.proj.datum.from.b));
-	sincos (theta, &sin_theta, &cos_theta);
-	out[GMT_X] = d_atan2d (in_p[GMT_Y], in_p[GMT_X]);
-	out[GMT_Y] = atand ((in_p[GMT_Z] + GMT->current.proj.datum.from.ep_squared * GMT->current.proj.datum.from.b * pow (sin_theta, 3.0)) / (p - GMT->current.proj.datum.from.e_squared * GMT->current.proj.datum.from.a * pow (cos_theta, 3.0)));
-	sincosd (out[GMT_Y], &sin_lat, &cos_lat);
-	N = GMT->current.proj.datum.from.a / sqrt (1.0 - GMT->current.proj.datum.from.e_squared * sin_lat * sin_lat);
-	out[GMT_Z] = (p / cos_lat) - N;
+	if (p > 0.0) {	/* Not the S|N pole so we can invert */
+		theta = atan (in_p[GMT_Z] * GMT->current.proj.datum.from.a / (p * GMT->current.proj.datum.from.b));
+		sincos (theta, &sin_theta, &cos_theta);
+		out[GMT_X] = d_atan2d (in_p[GMT_Y], in_p[GMT_X]);
+		out[GMT_Y] = atand ((in_p[GMT_Z] + GMT->current.proj.datum.from.ep_squared * GMT->current.proj.datum.from.b * pow (sin_theta, 3.0)) / (p - GMT->current.proj.datum.from.e_squared * GMT->current.proj.datum.from.a * pow (cos_theta, 3.0)));
+		if (in_p[GMT_Z] > 0.0 && out[GMT_Y] < 0.0) out[GMT_Y] = -out[GMT_Y];
+		if (in_p[GMT_Z] < 0.0 && out[GMT_Y] > 0.0) out[GMT_Y] = -out[GMT_Y];
+		sincosd (out[GMT_Y], &sin_lat, &cos_lat);
+		N = GMT->current.proj.datum.from.a / sqrt (1.0 - GMT->current.proj.datum.from.e_squared * sin_lat * sin_lat);
+		out[GMT_Z] = (p / cos_lat) - N;
+	}
+	else {	/* S or N pole, use sign of in_p[GMT_Z] to set latitude and height */
+		out[GMT_X] = 0.0;	/* Might as well pick0 since any longitude will work */
+		out[GMT_Y] = (in_p[GMT_Z] > 0.0) ? 90.0 : -90.0;	/* EIther at north or south pole, check via Z coordinate */
+		out[GMT_Z] = in_p[GMT_Z] - copysign (GMT->current.proj.datum.from.b, in_p[GMT_Z]);
+	}
 }
 
 #if 0
