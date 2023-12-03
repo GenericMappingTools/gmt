@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 [ |-A| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [*dx/dy*][**+to**\|\ **O**\|\ **c**\|\ **C**] ]
+[ |-C|\ [*dx*\ [/*dy*]][**+to**\|\ **O**\|\ **c**\|\ **C**] ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]] ]
 [ |-G|\ [*fill*][**+n**] ]
@@ -148,12 +148,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*dx/dy*][**+to**\|\ **O**\|\ **c**\|\ **C**]
+**-C**\ [*dx*\ [/*dy*]][**+to**\|\ **O**\|\ **c**\|\ **C**]
     Adjust the clearance between the text and the surrounding box [15%].
     Only used if |-W| or |-G| are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
     :term:`PROJ_LENGTH_UNIT`) or % for a percentage of the font size.
-    Optionally, use modifier **+t** to set the shape of the textbox when using |-G| and/or |-W|.
+    If *dy* is not specified then it is set equal to *dx*. Optionally,
+    use modifier **+t** to set the shape of the textbox when using |-G| and/or |-W|.
     Append lower case **o** to get a straight rectangle [Default].
     Append upper case **O** to get a rounded rectangle. In paragraph
     mode (|-M|) you can also append lower case **c** to get a concave

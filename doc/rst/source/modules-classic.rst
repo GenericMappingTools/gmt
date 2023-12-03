@@ -127,6 +127,13 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/geodesy/earthtide
     supplements/geodesy/gpsgridder
     supplements/geodesy/psvelo
+    supplements/gsfml/fzanalyzer
+    supplements/gsfml/fzblender
+    supplements/gsfml/fzinformer
+    supplements/gsfml/fzmapper
+    supplements/gsfml/fzmodeler
+    supplements/gsfml/fzprofile
+    supplements/gsfml/mlconverter
     supplements/gshhg/gshhg
     supplements/img/img2grd
     supplements/mgd77/mgd77convert
@@ -290,6 +297,13 @@ Supplemental Modules
     - :doc:`/supplements/geodesy/earthtide`
     - :doc:`/supplements/geodesy/gpsgridder`
     - :doc:`/supplements/geodesy/psvelo`
+    - :doc:`/supplements/gsfml/fzanalyzer`
+    - :doc:`/supplements/gsfml/fzblender`
+    - :doc:`/supplements/gsfml/fzinformer`
+    - :doc:`/supplements/gsfml/fzmapper`
+    - :doc:`/supplements/gsfml/fzmodeler`
+    - :doc:`/supplements/gsfml/fzprofiler`
+    - :doc:`/supplements/gsfml/mlconverter`
     - :doc:`/supplements/gshhg/gshhg`
     - :doc:`/supplements/img/img2grd`
     - :doc:`/supplements/mgd77/mgd77convert`
@@ -604,6 +618,25 @@ geodesy
 +--------------------------------------------+----------------------+
 | :doc:`/supplements/geodesy/psvelo`         | |psvelo_purpose|     |
 +--------------------------------------------+----------------------+
+
+GSFML
+-----
+
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzanalyzer`  | |fzanalyzer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzblender`   | |fzblender_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzinformer`  | |fzinformer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmapper`    | |fzmapper_purpose|    |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmodeler`   | |fzmodeler_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzprofiler`  | |fzprofiler_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/mlconverter` | |mlconverter_purpose| |
++---------------------------------------+-----------------------+
 
 GSHHG
 -----

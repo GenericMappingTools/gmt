@@ -8,6 +8,12 @@
 
 .. |psvelo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
+.. |fzanalyzer_purpose| replace:: Analysis of fracture zones using crossing profiles
+
+.. |fzblender_purpose| replace:: Produce a smooth blended FZ trace
+
+.. |mlconverter_purpose| replace:: Convert chrons to ages using selected magnetic timescale
+
 .. |gshhg_purpose| replace:: Extract data tables from binary GSHHG or WDBII data files
 
 .. |img2grd_purpose| replace:: Extract a subset from an img file in Mercator or Geographic format
@@ -119,4 +125,12 @@
 .. |x2sys_report_purpose| replace:: Report statistics from crossover data base
 
 .. |x2sys_solve_purpose| replace:: Determine least-squares systematic correction from crossovers
+
+.. |fzinformer_purpose| replace:: Bash script to plot statistical information related to fracture zones
+
+.. |fzmapper_purpose| replace:: Bash script to plot fracture zone cross-profiles on a Mercator map
+
+.. |fzmodeler_purpose| replace:: Bash script to build fracture zone cross-profile model
+
+.. |fzprofiler_purpose| replace:: Bash script to plot fracture zone cross-profiles
 
