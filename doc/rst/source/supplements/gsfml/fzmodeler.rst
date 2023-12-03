@@ -15,6 +15,7 @@ Synopsis
 **fzmodeler** [ |-A|\ *asymmetry* ]
 [ |-C|\ *compression* ]
 [ |-D|\ *min*/*max*/*inc* ]
+[ |-G|\ *comp* ]
 [ |-M| ]
 [ |-N|\ *amplitude* ]
 [ |-O| ]
@@ -32,7 +33,9 @@ Description
 **zmodeler** is a script developed as part of the Global Seafloor Fabric
 and Magnetic Lineation Project [see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It builds a synthetic model cross-profile given
-the chosen model parameters and optionally images the profile via a PDF plot.
+the chosen model parameters and optionally images the profile via a PDF plot.  The
+model evaluated is :math:`z(x) = A[mG_1 + (1-m)(uG_2 + G0)]`, where *A* is amplitude (|-N|),
+*m* is assymetry (|-A|), and *u* is compression (|-C|).
 
 Optional Arguments
 ------------------
@@ -55,6 +58,11 @@ Optional Arguments
     the domain is expected to be in km; otherwise *min* and *max* will be
     expected to be in degrees of latitude which *inc* will be decoded as
     arc minutes [-5/5/2 or -100/100/2, depending on |-M|].
+
+.. _-G:
+
+**-G**\ *comp*
+    Only plot component :math:`G_i(x)`, where i = 0, 1, or 2
 
 .. _-M:
 
@@ -108,6 +116,9 @@ try::
     fzmodeler -C1 -V
 
 The final plot will be named *prefix*.pdf, with the model data in *prefix*.txt.
+To just plot normalized component :math:`G_2(x)`, try::
+
+    fzmodeler -D-30/30/1 -C1 -N1 -W10 -G2 -T- | gmt plot -W1p -B -R-30/30/-1/1 -png G2
 
 See Also
 --------
