@@ -104,30 +104,37 @@ static char set_unit_and_mode (char *arg, unsigned int *mode) {
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
-
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -G<outgrid> -L<fault.dat> | -Dx0y0/x1/y1 -M<mag> [-Ca,v,i] [-F<mecatype>] [%s] [%s] [%s]\n",
-	             name, GMT_Rgeoz_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid> -G<outgrid> -L<fault.dat> | -Dx0y0/x1/y1 -M<mag> [-Ca,v,i] [-F<mecatype>] [%s] [%s] [%s]\n", name, GMT_Rgeoz_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> The grid with the Vs30 velocities.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one component is set via -C then <outgrid> must contain %%s to format component code.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D x0/y0/x1/y1 End points of the fault trace.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L <fault.dat> Alternatively provide a name of a file with the coordinates of the fault trace.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M <mag> Select magnitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid (or image) to extract a subset from");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	GMT_Usage (API, -2, "If more than one component is set via -C then <outgrid> must contain %%s to format component code.\n");
+	GMT_Usage (API, 1, "\n-D<x0/y0/x1/y1>");
+	GMT_Usage (API, -2, "End points of the fault trace.");
+	GMT_Usage (API, 1, "\n-L<fault_file>");
+	GMT_Usage (API, -2, "Alternatively provide a name of a file with the coordinates of the fault trace.");
+	GMT_Usage (API, 1, "\n-M<mag>");
+	GMT_Usage (API, -2, "Select the seism magnitude.");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[a|v|i]");
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids. Choose from\n");
+		GMT_Usage (API, -2, "List of comma-separated components to be written as grids. Choose from:");
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids (requires -G). Choose from\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a, v, i. [Default is i(ntensity)].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Select focal mechanism type (e.g. -F1 or -F2 ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1 unknown [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2 strike-slip.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3 normal.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   4 thrust.\n\n");
+		GMT_Usage (API, -2, "List of comma-separated components to be written as grids (requires -G). Choose from:");
+	GMT_Usage (API, 3, "a (acceleration)");
+	GMT_Usage (API, 3, "v (velocity)");
+	GMT_Usage (API, 3, "i (intensity). This is the default.");
+	GMT_Usage (API, 1, "\n-F[1|2|3|4]");
+	GMT_Usage (API, -2, "Select focal mechanism type (e.g. -F1 or -F2 ...).");
+	GMT_Usage (API, 3, "- 1 unknown [Default].");
+	GMT_Usage (API, 3, "- 2 strike-slip.");
+	GMT_Usage (API, 3, "- 3 normal.");
+	GMT_Usage (API, 3, "- 4 thrust.");
 	GMT_Option (API, "R,V");
 	GMT_Option (API, "f,i,:");
 
@@ -143,7 +150,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n, n_errors = 0, n_files = 0, pos = 0;
+	unsigned int n_errors = 0, n_files = 0, pos = 0;
 	char txt_a[GMT_LEN256] = {""}, p[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -165,7 +172,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Requires -G and selects which components should be written as grids */
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->C.n_selected < 3) {
 					switch (p[0]) {
 						case 'a': 		Ctrl->C.selected[0] = Ctrl->G.do_PGA = true;	break;
@@ -186,7 +193,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 				}
 				break;
 			case 'D':	/* x0/y0[x1/y1] */
-				Ctrl->D.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.line = strdup (opt->arg);
 				break;
 			case 'G':	/* Output filename */
@@ -205,13 +212,13 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 				}
 				break;
 			case 'F':
-				Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.imeca = atoi (opt->arg);
 				if (Ctrl->F.imeca < 1 || Ctrl->F.imeca > 4)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-F<type> error. 'type' must be in [1 4]\n");
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>] */
-				Ctrl->L.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.file = gmt_get_filename(API, opt->arg, "u");
 				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-L error. Must provide either an existing file name or line coordinates.\n");
@@ -219,7 +226,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 				}
 				break;
 			case 'M':
-				Ctrl->M.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.rmw = atof(opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -283,7 +290,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);
 	
-	/*---------------------------- This is the grd2xyz main code ----------------------------*/
+	/*---------------------------- This is the grdshake main code ----------------------------*/
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
@@ -291,7 +298,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) 	/* Get header only */
 		Return (API->error);
 
-	if (gmt_M_is_subset (GMT, G->header, wesn))	/* If subset requested make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, G->header, wesn))		/* If subset requested make sure wesn matches header spacing */
 		gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
 
 	/* Read data */
@@ -344,7 +351,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 		gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -L file might have turned it on [should be determined below] */
 	}
 
-	xyline = Lin->table[0];			/* Can only be one table since we read a single file */
+	xyline = Lin->table[0];				/* It can only be one table since we read a single file */
 
 	if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
 		for (seg = 0; seg < xyline->n_segments; seg++) {
@@ -376,10 +383,10 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 		u = ss = rns = 0;	rs = 1;
 	}
 
-	/* - ------------------------------------------------------------
-	! calcula o termo de magnitude scaling para o pga e pgv
-	! nao depende da distancia mas apenas da magnitude
-	! ------------------------------------------------------------- */
+	/* -------------------------------------------------------------
+	  compute the term of magnitude scaling for the pga and pgv.
+	  It doesn't depend on the distance but only on magnitude.
+	------------------------------------------------------------- */
 	rmh_pga = 6.75;
 	rmh_pgv = 8.50;
 	rfm_pga = -0.53804*u - 0.50350*ss - 0.75472*rns - 0.50970*rs;
@@ -405,7 +412,6 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 		for (i = 0; i < G->header->n_columns; i++, k++) {
 			rlon = G->header->wesn[XLO] + i * G->header->inc[GMT_X];
 			ij = gmt_M_ijp(G->header, j, i);
-			//ij = k;
 
 			(void)gmt_near_lines (GMT, rlon, rlat, xyline, Ctrl->L.mode, &dist, &xnear, &ynear);
 
@@ -415,9 +421,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 			rfd_pgv = (-0.87370+0.10060*(Ctrl->M.rmw-4.5))*log(r_pgv/1.0) - 0.00334*(r_pgv-1.0);
 			rfd_pga4nl = (-0.66050+0.11970*(Ctrl->M.rmw-4.5))*log(r_pga/5.0) - 0.01151*(r_pga-5.0);
 
-			/* -------------------------------------------------------------
-			! calcula o efeito de sitio
-			! ------------------------------------------------------------- */
+			/* Compute the site effect  */
 			tmp = log(G->data[ij] / 760);
 			flin_pga = -0.360 * tmp;
 			flin_pgv = -0.600 * tmp;
@@ -442,7 +446,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 				bnl_pga = bnl_pgv = 0.;
 			}
 
-			/* ---- verificar se as condicoes s�o sempre em pga !!!!!!!!!!!!!!!!!!!!! */
+			/* ---- check if the conditions are always in pga  */
 			c_pga = +bnl_pga * k2;		d_pga = -bnl_pga * k3;
 			c_pgv = +bnl_pgv * k2;		d_pgv = -bnl_pgv * k3;
 
@@ -484,7 +488,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
 			Return (API->error);
 
-		if (!API->external) kk = k;	/* On command line we pick item k from an array of 3 items */
+		if (!API->external) kk = k;		/* On command line we pick item k from an array of 3 items */
 		if (strstr (Ctrl->G.file[kk], "%s"))
 			sprintf (file, Ctrl->G.file[kk], code[k]);
 		else
@@ -493,7 +497,7 @@ EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Grid[k]) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		kk++;	/* For the external interface we take them in the order given as there is not an array of 3 */
+		kk++;	/* For the externals interface we take them in the given order */
 	}
 
 	if (Ctrl->L.active)

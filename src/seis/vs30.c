@@ -1,3 +1,21 @@
+/*--------------------------------------------------------------------
+ *
+ *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
+/*
+
 /*
  * grad2vs30: convert topographic slope to Vs30
  *
@@ -25,9 +43,6 @@
  * Additionally, we waive copyright and related rights in the work worldwide through the CC0 1.0
  * Universal public domain dedication.
  *
- * The getpar package (src/getpar.c, src/libget.h, src/getpar.3) is included with the express
- * permission of the author, Robert W. Clayton.
- * 
  * J. Luis
  * re-writen after https://github.com/usgs/earthquake-global_vs30/blob/master/src/grad2vs30.c
  * Version:	6 API
@@ -113,26 +128,29 @@ double craton_table[6][4] =
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
-
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -G<outgrid> [-C<val>|fname[+g]] [-W<water_vel>] [%s] [%s]\n",
-	             name, GMT_Rgeoz_OPT, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid> -G<outgrid> [-C<val>|fname[+g]] [-W<water_vel>] [%s] [%s]\n",
+	           name, GMT_Rgeoz_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> The input grid name of the topography.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G File name for output grid with the Vs30 velocities.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Argument can be one of three:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   - A value between 0 and 1, where 0 means a stable Craton and 1 an Active region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   - The name of a multi-segment file with the 'cratons' polygons. In this case the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     polygons will be feed to grdmask to compute a cratons/active tectonic mask.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   - The name of a grid with the cratons/active tectonic regions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W water_vel sets the Vs30 value used in areas designated as water in the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   landmask [default=600]\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid (or image) to extract a subset from");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	GMT_Usage (API, 1, "\n-C<val|fname>[+g]");
+	GMT_Usage (API, -2, "Argument can be one of three:");
+	GMT_Usage (API, 3, "- A value between 0 and 1, where 0 means a stable Craton and 1 an Active region.");
+	GMT_Usage (API, 3, "- The name of a multi-segment file with the 'cratons' polygons. In this case the "
+	                   "polygons will be feed to grdmask to compute a cratons/active tectonic mask."
+	                   "In this case the +g suffix is mandatory to indicate that we are reading a grid.");
+	GMT_Usage (API, 3, "- The name of a grid with the cratons/active tectonic regions.");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-W<water_vel>");
+	GMT_Usage (API, -2, "'water_vel' sets the Vs30 value used in areas designated as water in the landmask [default=600]");
 	GMT_Option (API, "R,V");
 	GMT_Option (API, "bi,i,r,:");
-	
+
 	return (GMT_MODULE_USAGE);
 }
 
@@ -166,7 +184,7 @@ static int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO 
 			/* Processes program-specific parameters */
 
 			case 'C':		/* Polygon file with the Cratons limits */
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.file = gmt_get_filename (API, opt->arg, "");
 				if ((pch = strstr(opt->arg, "+g")) != NULL)
 					Ctrl->C.is_grid = true;			/* Useless if Ctrl->C.file = NULL is set below */
@@ -181,7 +199,8 @@ static int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO 
 				}
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				if (!gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -230,7 +249,7 @@ static int check_grid_compat (struct GMTAPI_CTRL *API, struct GMT_GRID *A, struc
  * function a #define for speed, but the execution time is utterly dwarfed by the read/write
  * times so there was no point.)
  */
-inline double interpVs30(double *tt, double lg) {
+static inline double interpVs30(double *tt, double lg) {
 	return exp(tt[0] + (tt[1] - tt[0]) * (lg - tt[2]) / (tt[3] - tt[2]));
 }
 
