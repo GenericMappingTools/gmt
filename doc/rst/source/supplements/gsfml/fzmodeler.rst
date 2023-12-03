@@ -34,9 +34,10 @@ Description
 and Magnetic Lineation Project [see `GSFML <https://www.soest.hawaii.edu/PT/GSFML>`_ for a full
 description of the project].  It builds a synthetic model cross-profile given
 the chosen model parameters and optionally images the profile via a PDF plot.  The
-model evaluated is :math:`z(x) = A[mG_1 + (1-m)(uG_2 - G0)]`, where *A* is amplitude (|-N|),
+model evaluated is :math:`z(x) = A[mG_1 + (1-m)(uG_2 - G_0)]`, where *A* is amplitude (|-N|),
 *m* is asymmetry (|-A|), and *u* is compression (|-C|). Here :math:`G_0` is the Gaussian
 function, while :math:`G_1` and :math:`G_2` are the first two horizontal derivatives.
+**Note**: The blend model subtracts Here :math:`G_0` since for fracture zones we want the negative Gaussian.
 
 Optional Arguments
 ------------------
