@@ -25,8 +25,8 @@
 
 #include "gmt_dev.h"
 
-#define THIS_MODULE_CLASSIC_NAME	"shake"
-#define THIS_MODULE_MODERN_NAME	"shake"
+#define THIS_MODULE_CLASSIC_NAME	"grdshake"
+#define THIS_MODULE_MODERN_NAME	"grdshake"
 #define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Compute Peak Ground Acceleration/Velocity and Intensity."
 #define THIS_MODULE_KEYS	"<G{,LD(=,GG}"
@@ -143,7 +143,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 
 static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
-	/* This parses the options provided to shake and sets parameters in Ctrl.
+	/* This parses the options provided to grdshake and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -252,7 +252,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* --------------------------------------------------------------------------------- */
-EXTERN_MSC int GMT_shake (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdshake (void *V_API, int mode, void *args) {
 	uint64_t i, j, ij, k, kk, row, seg;
 	int error = 0, way, proj_type = 0;		/* Geographic */
 	char file[GMT_LEN512] = {""}, *code[3] = {"a", "v", "i"};
