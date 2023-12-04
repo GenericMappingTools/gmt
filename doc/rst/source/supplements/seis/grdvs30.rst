@@ -5,7 +5,7 @@
 grdvs30
 *******
 
-|vs30_purpose|
+|grdvs30_purpose|
 
 Synopsis
 --------
@@ -13,10 +13,10 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdvs30** *ingrid* |-G|\ *outgrid*
-|-C|\ [**-C**\ *val*\|\ *fname*[**+g**]]
+|-C|\ *val*\|\ *fname*\ [**+g**]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**-W**\ *water_vel*] ]
+[ |-W|\ *water_vel* ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
@@ -41,7 +41,7 @@ Required Arguments
 
 .. _-C:
 
-**-C**\ *val*\|\ *fname*[**+g**]
+**-C**\ *val*\|\ *fname*\ [**+g**]
     Argument *val* can be one of these three:
        - A value *val* between 0 and 1, where 0 means a stable Craton and 1 an Active region.
        - The name of a multi-segment file with the *cratons* polygons. In this case the polygons will be

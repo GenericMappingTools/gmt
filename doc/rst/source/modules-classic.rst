@@ -723,9 +723,9 @@ seis
 +-----------------------------------+--------------------+
 | :doc:`/supplements/seis/pssac`    | |pssac_purpose|    |
 +-----------------------------------+--------------------+
-| :doc:`/supplements/seis/grdshake` | |shake_purpose|    |
+| :doc:`/supplements/seis/grdshake` | |grdshake_purpose| |
 +---------------------------------+----------------------+
-| :doc:`/supplements/seis/grdvs30`  | |vs30_purpose|     |
+| :doc:`/supplements/seis/grdvs30`  | |grdvs30_purpose|  |
 +---------------------------------+----------------------+
 
 spotter

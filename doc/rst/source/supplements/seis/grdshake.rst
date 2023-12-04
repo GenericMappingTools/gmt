@@ -5,7 +5,7 @@
 grdshake
 ********
 
-|shake_purpose|
+|grdshake_purpose|
 
 Synopsis
 --------
@@ -13,10 +13,10 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdshake** *ingrid* |-G|\ *outgrid*
-|-L|\ [**-L**\ *fault.dat*]
-|-M|\ [**-M**\ *mag*]
-[ **-C**\ *a,v,i* ]
-[ |-F|\ [**-F**\ *mecatype*] ]
+|-L|\ *fault.dat*
+|-M|\ *mag*
+[ |-C|\ *a,v,i* ]
+[ |-F|\ *mecatype* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-i| ]
