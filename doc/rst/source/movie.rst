@@ -77,7 +77,7 @@ Required Arguments
     .. _tbl-presets:
 
     =================================== ================== ========= ========== 
-    Preset format (alias)                 Pixel dimensions   DPC       DPI       
+    Preset format (alias)               Pixel dimensions   DPC       DPI       
     =================================== ================== ========= ========== 
     *16:9 (24x13.5 cm or 9.6x5.4 inch)*
     4320p (8k and uhd-2)                7680 x 4320        320       800       
