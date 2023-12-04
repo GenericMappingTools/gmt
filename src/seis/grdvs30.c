@@ -47,12 +47,10 @@
  * Version:	6 API
  */
 
-//shake vs30.grd -Glixo.grd -Lline.dat+uk -Ci -Vl -Rvs30.grd
-
 #include "gmt_dev.h"
 
-#define THIS_MODULE_CLASSIC_NAME	"vs30"
-#define THIS_MODULE_MODERN_NAME		"vs30"
+#define THIS_MODULE_CLASSIC_NAME	"grdvs30"
+#define THIS_MODULE_MODERN_NAME		"grdvs30"
 #define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Compute VS30"
 #define THIS_MODULE_KEYS	"<G{,CD(=,GG}"
@@ -227,16 +225,16 @@ static int check_grid_compat (struct GMTAPI_CTRL *API, struct GMT_GRID *A, struc
 	*/
 	if (fabs((A->header->inc[GMT_X] - B->header->inc[GMT_X]) / A->header->inc[GMT_X]) > 0.002 ||
 		fabs((A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) / A->header->inc[GMT_Y]) > 0.002)
-			return 1;
+		return 1;
 
 	if (fabs((A->header->wesn[XLO] - B->header->wesn[XLO]) / A->header->inc[GMT_X]) > 0.2 ||
 	    fabs((A->header->wesn[XHI] - B->header->wesn[XHI]) / A->header->inc[GMT_X]) > 0.2 ||
 		fabs((A->header->wesn[YLO] - B->header->wesn[YLO]) / A->header->inc[GMT_Y]) > 0.2 ||
 	    fabs((A->header->wesn[YHI] - B->header->wesn[YHI]) / A->header->inc[GMT_Y]) > 0.2)
-			return 2;
+		return 2;
 
 	if (A->header->registration != B->header->registration)
-			return 3;
+		return 3;
 
 	return 0;
 }
@@ -256,7 +254,7 @@ static inline double interpVs30(double *tt, double lg) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* --------------------------------------------------------------------------------- */
-EXTERN_MSC int GMT_vs30 (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdvs30 (void *V_API, int mode, void *args) {
 	unsigned int row, col, j, nr, k;
 	uint64_t ij;
 	int error = 0;
@@ -453,9 +451,6 @@ EXTERN_MSC int GMT_vs30 (void *V_API, int mode, void *args) {
 			/* Do a weighted average of craton and active vs30 */
 			Gout->data[ij] = (float)(crat * tvs[0] + (1.0 - crat) * tvs[1]);
 		}
-
-		//if (row % 100 == 0)
-			//GMT_Report (API, GMT_MSG_VERBOSE, "Done with %ld of %ld elements\r", row * Gout->header->n_columns, Gout->header->nm);
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Writing output file...\n");
