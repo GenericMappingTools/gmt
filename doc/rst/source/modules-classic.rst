@@ -714,19 +714,19 @@ SEGY
 seis
 ----
 
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pscoupe` | |pscoupe_purpose|  |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/psmeca`  | |psmeca_purpose|   |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pspolar` | |pspolar_purpose|  |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pssac`   | |pssac_purpose|    |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/shake`   | |shake_purpose|    |
-+--------------------------------+----------------------+
-| :doc:`/supplements/seis/vs30`    | |vs30_purpose|     |
-+--------------------------------+----------------------+
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pscoupe`  | |pscoupe_purpose|  |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/psmeca`   | |psmeca_purpose|   |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pspolar`  | |pspolar_purpose|  |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pssac`    | |pssac_purpose|    |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/grdshake` | |grdshake_purpose| |
++---------------------------------+----------------------+
+| :doc:`/supplements/seis/grdvs30`  | |grdvs30_purpose|  |
++---------------------------------+----------------------+
 
 spotter
 -------
