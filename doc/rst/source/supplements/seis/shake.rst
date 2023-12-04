@@ -1,9 +1,9 @@
-.. index:: ! shake
+.. index:: ! grdshake
 .. include:: ../module_supplements_purpose.rst_
 
-*****
-shake
-*****
+********
+grdshake
+********
 
 |shake_purpose|
 
@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt shake** *ingrid* |-G|\ *outgrid*
+**gmt grdshake** *ingrid* |-G|\ *outgrid*
 |-L|\ [**-L**\ *fault.dat*]
 |-M|\ [**-M**\ *mag*]
 [ **-C**\ *a,v,i* ]
@@ -94,11 +94,11 @@ To compute the intensity grid using the previously computed Vs30 velocities (*vs
 event with magnitude 7 occurred along a fault whose trace is coordinates are provide in the
 *line.dat* file, do::
 
-    gmt vs30.grd -Gshake_intensity.grd -Lline.dat -Ci -M7 -V
+    gmt grdshake vs30.grd -Gshake_intensity.grd -Lline.dat -Ci -M7 -V
 
 
 See Also
 --------
 
-:doc:`vs30`,
+:doc:`grdvs30`,
 :doc:`gmt </gmt>`

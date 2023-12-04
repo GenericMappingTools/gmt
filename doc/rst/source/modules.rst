@@ -160,8 +160,8 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/seis/meca
    supplements/seis/polar
    supplements/seis/sac
-   supplements/seis/shake
-   supplements/seis/vs30
+   supplements/seis/grdshake
+   supplements/seis/grdvs30
    supplements/spotter/backtracker
    supplements/spotter/gmtpmodeler
    supplements/spotter/grdpmodeler
@@ -740,19 +740,19 @@ SEGY
 seis
 ----
 
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/coupe` | |coupe_purpose|  |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/meca`  | |meca_purpose|   |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/polar` | |polar_purpose|  |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/sac`   | |sac_purpose|    |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/shake` | |shake_purpose|  |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/vs30`  | |vs30_purpose|   |
-+--------------------------------+------------------+
++-----------------------------------+------------------+
+| :doc:`/supplements/seis/coupe`    | |coupe_purpose|  |
++-----------------------------------+------------------+
+| :doc:`/supplements/seis/meca`     | |meca_purpose|   |
++-----------------------------------+------------------+
+| :doc:`/supplements/seis/polar`    | |polar_purpose|  |
++-----------------------------------+------------------+
+| :doc:`/supplements/seis/sac`      | |sac_purpose|    |
++-----------------------------------+------------------+
+| :doc:`/supplements/seis/grdshake` | |shake_purpose|  |
++-----------------------------------+------------------+
+| :doc:`/supplements/seis/grdvs30`  | |vs30_purpose|   |
++-----------------------------------+------------------+
 
 spotter
 -------

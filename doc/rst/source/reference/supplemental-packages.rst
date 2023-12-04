@@ -89,8 +89,8 @@ This package contains the programs
 :doc:`meca </supplements/seis/meca>`,
 :doc:`polar </supplements/seis/polar>`,
 :doc:`sac </supplements/seis/sac>`,
-:doc:`sac </supplements/seis/vs30>`, and
-:doc:`sac </supplements/seis/shake>`, which are used by seismologists
+:doc:`sac </supplements/seis/grdvs30>`, and
+:doc:`sac </supplements/seis/grdshake>`, which are used by seismologists
 for plotting focal mechanisms (including cross-sections
 and polarities), compute Vs30 velocities, intensity maps and SAC files.
 The coupe, meca, and polar were developed by Kurt Feigl and Genevieve
