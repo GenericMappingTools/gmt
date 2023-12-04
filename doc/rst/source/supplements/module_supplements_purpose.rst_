@@ -84,10 +84,6 @@
 
 .. |pssac_purpose| replace:: Plot seismograms in SAC format
 
-.. |shake_purpose| replace:: Compute Peak Ground Acceleration/Velocity and Intensity.
-
-.. |vs30_purpose| replace:: Compute VS30
-
 .. |backtracker_purpose| replace:: Generate forward and backward flowlines and hotspot tracks
 
 .. |gmtpmodeler_purpose| replace:: Evaluate a plate motion model at given locations
