@@ -225,4 +225,10 @@
 /*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
 #define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)
 
+/* Detect if we are being called by a specific external wrapper */
+
+#define gmt_M_is_Matlab_wrapper(API) (API->external & GMT_MATLAB_WRAPPER)
+#define gmt_M_is_Julia_wrapper(API)  (API->external & GMT_JULIA_WRAPPER)
+#define gmt_M_is_Python_wrapper(API) (API->external & GMT_PYTHON_WRAPPER)
+
 #endif  /* GMT_MACROS_H */

@@ -54,15 +54,18 @@ typedef float gmt_grdfloat;
 
 /*! Session modes for GMT_Create_Session. Do NOT change first 4 as affects GMT.jl */
 enum GMT_enum_session {
-	GMT_SESSION_NORMAL    = 0,	/* Typical mode to GMT_Create_Session */
-	GMT_SESSION_NOEXIT    = 1,	/* Call return and not exit when error */
-	GMT_SESSION_EXTERNAL  = 2,	/* Called by an external API (e.g., MATLAB, Python). */
-	GMT_SESSION_COLMAJOR  = 4,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
-	GMT_SESSION_LOGERRORS = 8,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
-	GMT_SESSION_RUNMODE   = 16,	/* If set enable GMT's modern runmode. [Classic] */
-	GMT_SESSION_NOHISTORY = 32,	/* Do not use gmt.history at all [Let modules decide] */
-	GMT_SESSION_NOGDALCLOSE = 64	/* Do not call GDALDestroyDriverManager when using GDAL functions */
-};
+	GMT_SESSION_NORMAL         = 0,		/* Typical mode to GMT_Create_Session */
+	GMT_SESSION_NOEXIT         = 1,		/* Call return and not exit when error */
+	GMT_SESSION_EXTERNAL       = 2,		/* Called by any external API (e.g., MATLAB, Python). */
+	GMT_SESSION_MATLAB_WRAPPER = 4,		/* Called by MATLAB wrapper. */
+	GMT_SESSION_JULIA_WRAPPER  = 8,		/* Called by Julia wrapper. */
+	GMT_SESSION_PYTHON_WRAPPER = 16,	/* Called by Python wrapper. */
+	GMT_SESSION_COLMAJOR       = 32,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
+	GMT_SESSION_LOGERRORS      = 64,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
+	GMT_SESSION_RUNMODE        = 128,	/* If set enable GMT's modern runmode. [Classic] */
+	GMT_SESSION_NOHISTORY      = 256,	/* Do not use gmt.history at all [Let modules decide] */
+	GMT_SESSION_NOGDALCLOSE    = 512	/* Do not call GDALDestroyDriverManager when using GDAL functions */
+};	
 
 /*! Logging settings */
 enum GMT_enum_log {
@@ -320,7 +323,7 @@ enum GMT_enum_verbose {
 	GMT_MSG_INFORMATION	= 5,	/* Adds informational messages */
 	GMT_MSG_COMPAT		= 6,	/* Compatibility warnings */
 	GMT_MSG_DEBUG		= 7,	/* Debug messages for developers mostly */
-	GMT_MSG_BITSHIFT	= 16,	/* Left/right shift of MSG codes when packing into mode for GMT_Create_Session. Increase if GMT_MSG_* need more space */
+	GMT_MSG_BITSHIFT	= 10,	/* Left/right shift of MSG codes when packing into mode for GMT_Create_Session. Increase if GMT_MSG_* need more space */
 	/* For API backwards compatibility only */
 	GMT_MSG_NORMAL		= 2,	/* Now GMT_MSG_ERROR */
 	GMT_MSG_VERBOSE		= 5,	/* Now GMT_MSG_WARNING  */

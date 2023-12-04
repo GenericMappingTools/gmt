@@ -4733,7 +4733,8 @@ int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
 
 void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
     /* Cannot close connection to GDAL if calling environment expect it to be open */
-	if (API->external < 2) GDALDestroyDriverManager();
+    if (API->mode & GMT_SESSION_NOGDALCLOSE) return;    /* Do not call this GDAL function */
+    GDALDestroyDriverManager();
 }
 
 /*! . */
@@ -8368,11 +8369,20 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	 * Pad sets the default number or rows/cols used for grid padding.  GMT uses 2; users of
 	 *   the API may wish to use 0 if they have no need for BCs, etc.
 	 * The mode argument is a bitflag that controls a few things [0, or GMT_SESSION_NORMAL]:
-	 *   bit 1 (GMT_SESSION_NOEXIT)   means call return and not exit when returning from an error.
-	 *   bit 2 (GMT_SESSION_EXTERNAL) means we are called by an external API (e.g., MATLAB, Python).
-	 *   bit 3 (GMT_SESSION_COLMAJOR) means the external API uses column-major format (e.g., MATLAB, FORTRAN) [Default is row-major, i.e., C/C++, Python]
-	 *   bit 4 (GMT_SESSION_LOGERRORS) means we redirect stderr to a log file whose name is the session string + log.
-	 *   We reserve the right to add future flags.
+     *
+     * -----  GMT_SESSION_NORMAL            Typical mode to GMT_Create_Session
+     * bit 1  GMT_SESSION_NOEXIT            Call return and not exit when error
+     * bit 2  GMT_SESSION_EXTERNAL          Called by an external API (e.g., MATLAB, Python).
+     * bit 3  GMT_SESSION_MATLAB_WRAPPER    Called by MATLAB wrapper.
+     * bit 4  GMT_SESSION_JULIA_WRAPPER     Called by Julia wrapper.
+     * bit 5  GMT_SESSION_PYTHON_WRAPPER    Called by Python wrapper.
+     * bit 6  GMT_SESSION_COLMAJOR          External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format]
+     * bit 7  GMT_SESSION_LOGERRORS         External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format]
+     * bit 8  GMT_SESSION_RUNMODE           If set enable GMT's modern runmode. [Classic]
+     * bit 9  GMT_SESSION_NOHISTORY         Do not use gmt.history at all [Let modules decide]
+     * bit 10 GMT_SESSION_NOGDALCLOSE       Do not call GDALDestroyDriverManager when using GDAL functions
+     *
+	 * We reserve the right to add future flags.
 	 * We return the pointer to the allocated API structure.
 	 * If any error occurs we report the error, set the error code via API->error, and return NULL.
 	 * We terminate each session with a call to GMT_Destroy_Session.
@@ -8381,6 +8391,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	struct GMTAPI_CTRL *API = NULL;
 	size_t len;
 	static char *unknown = "unknown";
+    static unsigned int EXTERNAL_MASK = GMT_SESSION_EXTERNAL | GMT_SESSION_MATLAB_WRAPPER | GMT_SESSION_JULIA_WRAPPER | GMT_SESSION_PYTHON_WRAPPER;
 	char *dir = NULL;
 	/* Determine the width of the current terminal */
 #ifdef WIN32
@@ -8397,13 +8408,13 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 #endif
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
-	API->verbose = (mode >> GMT_MSG_BITSHIFT);	/* Pick up any -V settings from gmt.c */
+    API->mode = mode;  /* Verbatim copy of input mode */
+    API->verbose = (mode >> GMT_MSG_BITSHIFT);  /* Pick up any -V settings from gmt.c */
 	API->remote_id = GMT_NOTSET;     /* Not read a remote grid yet */
 	API->pad = pad;     /* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
-	API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */
-	if (API->external && mode & GMT_SESSION_NOGDALCLOSE) API->external = 2;  /* Avoid calling GDALDestroyDriverManager */
+	API->external = (mode & EXTERNAL_MASK);     /* if false (i.e., 0) then we don't list read and write as modules */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
 	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
