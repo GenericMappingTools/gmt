@@ -18,6 +18,8 @@
 
 .. |img2grd_purpose| replace:: Extract a subset from an img file in Mercator or Geographic format
 
+.. |terrain_filter_purpose| replace:: Callable function to do image texture
+
 .. |mgd77convert_purpose| replace:: Convert MGD77 data to other formats
 
 .. |mgd77header_purpose| replace:: Create MGD77 headers from A77 files
@@ -82,6 +84,10 @@
 
 .. |pssac_purpose| replace:: Plot seismograms in SAC format
 
+.. |shake_purpose| replace:: Compute Peak Ground Acceleration/Velocity and Intensity.
+
+.. |vs30_purpose| replace:: Compute VS30
+
 .. |backtracker_purpose| replace:: Generate forward and backward flowlines and hotspot tracks
 
 .. |gmtpmodeler_purpose| replace:: Evaluate a plate motion model at given locations
@@ -101,6 +107,10 @@
 .. |rotconverter_purpose| replace:: Manipulate total reconstruction and stage rotations
 
 .. |rotsmoother_purpose| replace:: Get mean rotations and covariance matrices from set of finite rotations
+
+.. |grdbarb_purpose| replace:: Plot wind barb field from two component grids
+
+.. |barb_purpose| replace:: Plot wind barbs in 2-D and 3-D
 
 .. |grdshake_purpose| replace:: Compute Peak Ground Acceleration/Velocity and Intensity
 
