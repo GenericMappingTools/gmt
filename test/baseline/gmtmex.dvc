@@ -1,5 +1,5 @@
 outs:
-- md5: afc1aa810996a1c1b1d4ce0c3eb9162d.dir
-  size: 2483246
+- md5: aac5e8f4638b3cb788974cd1eb33ef50.dir
   nfiles: 3
   path: gmtmex
+  hash: md5

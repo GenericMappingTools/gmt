@@ -1,6 +1,5 @@
 outs:
-- md5: e0f5ec57ec18927bec8fc07d3334a8b5.dir
-  size: 8865922
+- md5: 2b00b3676b68767788fc36a67b5b6d78.dir
   nfiles: 31
   path: grdimage
   hash: md5
