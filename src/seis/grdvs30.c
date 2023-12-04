@@ -226,16 +226,16 @@ static int check_grid_compat (struct GMTAPI_CTRL *API, struct GMT_GRID *A, struc
 	*/
 	if (fabs((A->header->inc[GMT_X] - B->header->inc[GMT_X]) / A->header->inc[GMT_X]) > 0.002 ||
 		fabs((A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) / A->header->inc[GMT_Y]) > 0.002)
-			return 1;
+		return 1;
 
 	if (fabs((A->header->wesn[XLO] - B->header->wesn[XLO]) / A->header->inc[GMT_X]) > 0.2 ||
 	    fabs((A->header->wesn[XHI] - B->header->wesn[XHI]) / A->header->inc[GMT_X]) > 0.2 ||
 		fabs((A->header->wesn[YLO] - B->header->wesn[YLO]) / A->header->inc[GMT_Y]) > 0.2 ||
 	    fabs((A->header->wesn[YHI] - B->header->wesn[YHI]) / A->header->inc[GMT_Y]) > 0.2)
-			return 2;
+		return 2;
 
 	if (A->header->registration != B->header->registration)
-			return 3;
+		return 3;
 
 	return 0;
 }
