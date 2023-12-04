@@ -14,7 +14,6 @@
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
-/*
 
 /*--------------------------------------------------------------------
  * Compute Peak Ground Acceleration/Velocity and Intensity
