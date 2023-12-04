@@ -14,7 +14,6 @@
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
-/*
 
 /*
  * grad2vs30: convert topographic slope to Vs30
