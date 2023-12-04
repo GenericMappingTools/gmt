@@ -1,5 +1,5 @@
 outs:
-- md5: d12fb4706859d2cc39dde31bf1ef8c39.dir
-  size: 328541
+- md5: 19a661f5d2867f45491a562444c8e09c.dir
   nfiles: 7
   path: psevents
+  hash: md5
