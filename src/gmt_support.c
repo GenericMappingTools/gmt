@@ -1552,6 +1552,68 @@ GMT_LOCAL void gmtsupport_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, do
 	S->i_dz = 1.0 / (S->z_high - S->z_low);
 }
 
+void gmt_explain_cpt_output (struct GMTAPI_CTRL *API, char option) {
+	/* Display usage synopsis for -F cpt output/categorical option in makecpt/grd2cpt */
+
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_COLORMODES_OPT);
+	GMT_Usage (API, -2, "Select the color model for output [Default uses the input model]:");
+	GMT_Usage (API, 3, "R: Output r/g/b or colornames.");
+	GMT_Usage (API, 3, "c: Output c/m/y/k.");
+	GMT_Usage (API, 3, "g: Output gray value (Will apply the YIQ if not a gray value).");
+	GMT_Usage (API, 3, "h: Output h-s-v.");
+	GMT_Usage (API, 3, "r: Output r/g/b only.");
+	GMT_Usage (API, 3, "x: Output hex #rrggbb only.");
+	GMT_Usage (API, -2, "Two modifiers control generation of categorical labels:");
+	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
+		"The <label>, if appended, sets the labels for each category. It may be a "
+		"comma-separated list of category names, or <start>[-] where we automatically build "
+		"labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.");
+	GMT_Usage (API, 3, "+k Set categorical keys rather than numerical values. "
+		"<keys> may be a file with one key per line or a comma-separated list of keys. "
+		"If <keys> is a single letter then we build sequential alphabetical keys from that letter. "
+		"If number of categories is 12 and label is M then we auto-create month name labels, and "
+		"if it is 7 and label is D then we auto-create weekday name labels.");
+}
+
+int gmt_prepare_categorical_cpt (struct GMT_CTRL *GMT, char *label, char *key, struct GMT_PALETTE *Pout) {
+		bool got_key_file = (key && !gmt_access (GMT, key, R_OK));	/* Want categorical labels read from file */
+		unsigned int ns = 0;
+		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
+		if (label || (key && !got_key_file)) {	/* Want auto-categorical labels appended to each CPT record */
+			char **Plabel = gmt_cat_cpt_strings (GMT, (label) ? label : key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
+				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+				if (Plabel[k]) Pout->data[k].label = Plabel[k];	/* Now the job of the CPT to free these strings */
+			}
+			gmt_M_free (GMT, Plabel);	/* But the master array can go */
+		}
+		if (key) {	/* Want categorical labels */
+			char **keys = NULL;
+			if (got_key_file) {	/* Got a file with category keys */
+				ns = gmt_read_list (GMT, key, &keys);
+				if (ns < Pout->n_colors) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "The categorical keys file %s had %d entries but CPT has %d categories\n", key, ns, Pout->n_colors);
+					return (GMT_RUNTIME_ERROR);
+				}
+				else if (ns > Pout->n_colors)
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but only %d are needed - skipping the extra keys\n", key, ns, Pout->n_colors);
+			}
+			else	/* Got comma-separated keys */
+				keys = gmt_cat_cpt_strings (GMT, key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
+				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
+				if (k < ns && keys[k]) {
+					Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+					if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+					Pout->data[k].label = strdup (keys[k]);
+				}
+			}
+			gmt_M_free (GMT, keys);	/* But the master array can go */
+			Pout->categorical = GMT_CPT_CATEGORICAL_KEY;
+		}
+		return (GMT_NOERROR);
+}
+
 bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg) {
 	/* Modern mode only: Detect if no CPT is given but -C was set.
 	 * If -C[+u|U<arg>] is given (i.e., no cpt) then we take that to mean

@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **c**\|\ **g**\|\ **h**\|\ **r**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]
+[ |-F|\ [**R**\|\ **c**\|\ **g**\|\ **h**\|\ **r**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -110,36 +110,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **c**\|\ **g**\|\ **h**\|\ **r**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]
-    Force output CPT to be written in the desired format set by the directives, thus
-    selecting among color names, , single gray-scale values, color names, *r*/*g*/*b* only,
-    *h*-*s*-*v*, *c*/*m*/*y*/*k*, or *#rrggbb* hex codes. Choose from:
- 
-    - **R**: Output color names if possible (and use *r*/*g*/*b* otherwise) [Default].
-    - **c**: Output color using *c*/*m*/*y*/*k* values.
-    - **g**: Output *gray* singles (will transform any colors to gray via YIQ transformation).
-    - **h**: Output *h*-*s*-*v* triplets.
-    - **r**: Output *r*/*g*/*b* codes only (even if a color name apply).
-    - **x**: Output *#rrggbb* hex codes.
-
-    Optionally or alternatively, select from these modifiers:
-
-    - **+c**: Write discrete palettes in categorical format. If *label* is appended
-      then we create labels for each category to be used when the CPT is plotted.
-      The *label* may be a comma-separated list of category names (you can skip a
-      category by not giving a name), or give *start*\ [-], where we automatically
-      build monotonically increasing labels from *start* (a single letter or an integer).
-      Append - to build ranges *start*\ -*start+1* instead.
-    - **+k**: Categorical CPT should have string keys instead of numerical entries. Append
-      *keys*, which is either a file with one key per record or a single letter (e.g., D),
-      then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
-
-    **Notes**: (1) For comma-separated lists of keys, use |-T| instead.
-    (2) If **+cM** is given and the number of categories is 12, then we automatically create
-    a list of month names. (3) If **+cD** is given and the number of categories is 7 then we
-    make a list of weekday names.  The format of these labels will depend on the
-    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
-    :term:`TIME_WEEK_START` settings.
+.. include:: explain_cpt_output.rst_
 
 .. _-G:
 
