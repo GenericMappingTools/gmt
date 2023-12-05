@@ -275,7 +275,7 @@ Optional Arguments
     - **w**: Only output the width of the map in current plot units.
     - **x**: Output the map coordinates of the specific plot reference point *px*/*py*.
 
-    Optionally (for **e** or **r**), append *modifier *+n** to set how many points [100]
+    Optionally (for **e** or **r**), append modifier **+n** to set how many points [100]
     you want along each side for a closed polygon of the oblique area instead.
 
 .. figure:: /_images/GMT_obl_regions.*
