@@ -170,7 +170,7 @@ Optional Arguments
 
     Grid comparison activates several additional error checks. (1)
     Re-weighted Least Squares Regression of ship versus grid data
-    determines slope and interest shift, which when differing from expected 1
+    determines slope and intercept shift, which when differing from expected 1
     and 0, respectively, may indicate incorrectly scaled ship data,
     including incorrect units or instrument drift as well as erroneous
     gravity tie-in. (2) Accumulated ship grid offsets are computed
