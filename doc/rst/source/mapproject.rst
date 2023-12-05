@@ -181,16 +181,16 @@ Optional Arguments
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *table*. The distance
     and the coordinates of the nearest point will be appended to the
-    output as three new columns. COnsider these modifiers:
+    output as three new columns. Consider these modifiers:
 
+   - **+p**: Report the line segment id *seg* and the fractional point number
+     *pnr* instead of *lon*/*lat* of the nearest point.
     - **+u**: Append the distance unit (see `Units`_ for available units and
       how distances are computed [great circle using authalic radius]),
       including **c** (Cartesian distance using input coordinates) or **C**
       (Cartesian distance using projected coordinates). The **C** unit
       requires |-R| and |-J| to be set and all output coordinates will be
       reported as projected.
-   - **+p**: Report the line segment id *seg* and the fractional point number
-     *pnr* instead of *lon*/*lat* of the nearest point.
     
     **Notes**: (1) Calculation mode for geographic data is spherical, hence **-je**
     cannot be used in combination with |-L|. (2) See `Output Order`_ for how |-L|
@@ -203,10 +203,10 @@ Optional Arguments
     :term:`PROJ_ELLIPSOID`) to one of four different auxiliary latitudes
     (longitudes are unaffected). Choose from these directives:
 
-    - **a**: Use authalic latitudes.
-    - **c**: Use conformal latitudes.
-    - **g**: Use geocentric latitudes [Default].
-    - **m**: Use meridional latitudes.
+    - **a**: Convert to authalic latitudes.
+    - **c**: Convert to conformal latitudes.
+    - **g**: Convert to geocentric latitudes [Default].
+    - **m**: Convert to meridional latitudes.
     
     Use |-I| to instead convert from auxiliary latitudes to geodetic latitudes.
 
