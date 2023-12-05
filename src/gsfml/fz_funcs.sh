@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #--------------------------------------------------------------------
 # Copyright (c) 2015-2023 by P. Wessel
 # See LICENSE.TXT file for copying and redistribution conditions.
