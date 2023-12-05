@@ -114,6 +114,7 @@ EXTERN_MSC int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC char * gmt_putcolor (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * gmt_putrgb (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * gmt_puthex (struct GMT_CTRL *GMT, double *rgb);
+EXTERN_MSC char * gmt_putgray (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC double gmt_convert_units (struct GMT_CTRL *GMT, char *value, unsigned int from_default, unsigned int target_unit);
 EXTERN_MSC unsigned int gmt_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit, char *unit_name);
 EXTERN_MSC int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, char *item);

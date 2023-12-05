@@ -73,7 +73,7 @@ struct GRD2CPT_CTRL {
 		char *file;
 		unsigned int levels;
 	} E;
-	struct GRD2CPT_F {	 /* -F[r|R|h|c|x][+c[<label>]] */
+	struct GRD2CPT_F {	 /* -F[R|c|g|h|r|x][+c[<label>]] */
 		bool active;
 		bool cat;
 		unsigned int model;
@@ -151,7 +151,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s [-A<transparency>[+a]] [-C<cpt>] [-D[i|o]] [-E[<nlevels>][+c][+f<file>]] "
-		"[-F[R|r|h|c|x][+c[<label>]]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] "
+		"[-F[R|c|g|h|r|x][+c[<label>]]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] "
 		"[%s] [-Sh|l|m|u] [-T<start>/<stop>/<inc>|<n>] [%s] [-W[w]] [-Z] [%s] [%s] [%s] [%s]\n",
 		name, GMT_INGRID, H_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
@@ -174,10 +174,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append +f<file> to save the CDF table to a file.");
 	GMT_Usage (API, 1, "\n-F[R|r|h|c][+c[<label>]]");
 	GMT_Usage (API, -2, "Select the color model for output [Default uses the input model]:");
-	GMT_Usage (API, 3, "R: Output r/g/b or grayscale or colorname.");
-	GMT_Usage (API, 3, "r: Output r/g/b only.");
-	GMT_Usage (API, 3, "h: Output h-s-v.");
+	GMT_Usage (API, 3, "R: Output r/g/b or colornames.");
 	GMT_Usage (API, 3, "c: Output c/m/y/k.");
+	GMT_Usage (API, 3, "g: Output gray value (Will apply the YIQ if not a gray value).");
+	GMT_Usage (API, 3, "h: Output h-s-v.");
+	GMT_Usage (API, 3, "r: Output r/g/b only.");
 	GMT_Usage (API, 3, "x: Output hex #rrggbb only.");
 	GMT_Usage (API, -2, "One modifier controls generation of categorical labels:");
 	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
@@ -311,11 +312,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 					if (txt_a[0]) Ctrl->F.label = strdup (txt_a);
 				}
 				switch (opt->arg[0]) {
+					case '\0': case 'R': Ctrl->F.model = GMT_RGB; break;
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
+					case 'g': Ctrl->F.model = GMT_GRAY; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
 					case 'c': Ctrl->F.model = GMT_CMYK; break;
 					case 'x': Ctrl->F.model = GMT_RGB + GMT_HEX_COLOR; break;
-					default:  Ctrl->F.model = GMT_RGB; break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized directive %c\n", opt->arg[0]);
+						n_errors++;
+						break;
 				}
 				break;
 			case 'G':	/* truncate incoming CPT */
@@ -890,6 +896,7 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
+	if (Ctrl->F.model & GMT_GRAY) cpt_flags = GMT_CPT_GRAY_SET;	/* Controls if final CPT should be converted to gray via YIQ */
 
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;

@@ -8330,6 +8330,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				X->model = GMT_RGB | GMT_COLORINT;
 			else if (strstr (line, "RGB"))
 				X->model = GMT_RGB;
+			else if (strstr (line, "+GRAY") || strstr (line, "gray"))
+				X->model = GMT_GRAY | GMT_COLORINT;
 			else if (strstr (line, "+HSV") || strstr (line, "hsv"))
 				X->model = GMT_HSV | GMT_COLORINT;
 			else if (strstr (line, "HSV"))
@@ -9473,6 +9475,9 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
+	if (cpt_flags & GMT_CPT_GRAY_SET && !P->is_gray)
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Colors in the CPT file %s were converted to gray via the YIQ-translation.\n", &cpt_file[append]);
+
 	/* When writing the CPT to file it is no longer a normalized CPT with a hinge */
 	P->has_range = P->has_hinge = 0;
 
@@ -9537,6 +9542,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	gmtlib_write_newheaders (GMT, fp, 0);	/* Write general header block */
 
 	if (!(P->model & GMT_COLORINT)) {}	/* Write nothing when color interpolation is not forced */
+	else if (P->model & GMT_GRAY)
+		fprintf (fp, "# COLOR_MODEL = gray\n");
 	else if (P->model & GMT_HSV)
 		fprintf (fp, "# COLOR_MODEL = hsv\n");
 	else if (P->model & GMT_CMYK)
@@ -9562,6 +9569,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 		if (P->categorical) {
 			if (P->categorical & GMT_CPT_CATEGORICAL_KEY) strncpy (lo, P->data[i].key, GMT_LEN64-1);
+			if (P->model & GMT_GRAY)
+				fprintf (fp, format, lo, gmt_putgray (GMT, P->data[i].hsv_low), '\t');
 			if (P->model & GMT_HSV)
 				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
 			else if (P->model & GMT_CMYK) {
@@ -9574,6 +9583,10 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 				fprintf (fp, format, lo, gmt_puthex (GMT, P->data[i].rgb_low), '\t');
 			else
 				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
+		}
+		else if (P->model & GMT_GRAY) {
+			fprintf (fp, format, lo, gmt_putgray (GMT, P->data[i].rgb_low), '\t');
+			fprintf (fp, format, hi, gmt_putgray (GMT, P->data[i].rgb_high), '\t');
 		}
 		else if (P->model & GMT_HSV) {
 			fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
@@ -9615,6 +9628,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		if (!use[i]) continue;	/* This BNF entry does not apply to this CPT */
 		if (P->bfn[i].skip)
 			fprintf (fp, "%c\t-\n", code[i]);
+		else if (P->model & GMT_GRAY)
+			fprintf (fp, "%c\t%s\n", code[i], gmt_putgray (GMT, P->bfn[i].rgb));
 		else if (P->model & GMT_HSV)
 			fprintf (fp, "%c\t%s\n", code[i], gmtlib_puthsv (GMT, P->bfn[i].hsv));
 		else if (P->model & GMT_CMYK) {
