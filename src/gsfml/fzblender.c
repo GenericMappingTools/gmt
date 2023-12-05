@@ -463,7 +463,6 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->E.active) {	/* Now apply the secondary filter */
 			struct GMT_DATASET *D = NULL;
-			char s_in_string[GMT_LEN256], s_out_string[GMT_LEN256];
 			/* Retrieve the primary filtering results */
 			if ((D = GMT_Read_VirtualFile (API, destination)) == NULL) {
 				Return (API->error);
@@ -485,7 +484,6 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			//sprintf (buffer, "-F%s -E -N%d %s ->%s", Ctrl->E.args, POS_DR, s_in_string, s_out_string);
 			sprintf (buffer, "-F%s -N%d %s ->%s", Ctrl->E.args, POS_DR, source, destination);
 			GMT_Report (API, GMT_MSG_DEBUG, "Args to secondary filter1d: %s\n", buffer);
 			if ((status = GMT_Call_Module (API, "filter1d", GMT_MODULE_CMD, buffer))) {
