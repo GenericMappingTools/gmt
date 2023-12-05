@@ -441,8 +441,8 @@ using the following steps:
 - Add the modified images to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/examples/images/<newplot.ps>``
   depending on the type of test modified. RUn one dvc add command per updated PostScript plot.
 - Check that the .dvc file was updated by running ``git status``.
-- Stage the modified .dvc files in git using ``git add test/baseline/<module>.dvc``, ``dvc add doc/scripts/images.dvc``, or
-  ``dvc add doc/examples/images.dvc``, again per updated file.
+- Stage the modified .dvc files in git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``, or
+  ``git add doc/examples/images/<newplot.ps>.dvc``, again per updated file.
 - Commit the changes using ``git commit``.
 - Open a pull request on GitHub with your changes.
 - Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
@@ -459,7 +459,7 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
 - Create a new shell script in the subdirectory under ``test/`` that corresponds to the module you are testing. The
   name of the shell script should be descriptive and unique.
 - Include ``#!/usr/bin/env bash`` and a short description of the test at the top of the script.
-- Add the content of the script that will create a PostScript file. Some general guidelines:
+- Add the content of the script that will create a PostScript file (here just called <newplot.ps>). Some general guidelines:
 
   - Use as small a dataset as possible. See the
     `GMT server cache <https://github.com/GenericMappingTools/gmtserver-admin/tree/master/cache>`_ for some example
@@ -473,11 +473,11 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the new test passes.
 - Run ``dvc diff`` to check that the new file is in the correct directory.
-- Add the new images to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
-  depending on the type of test modified. Use one dvc add command per new PostScript plot.
+- Add the new image to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
+  depending on the type of test modified.
 - Check that the .dvc file was updated by running ``git status``.
-- Add the modified .dvc file to git using ``git add test/baseline/<module>.dvc``, ``dvc add doc/scripts/images.dvc``, or
-  ``dvc add doc/examples/images.dvc``.
+- Add the modified .dvc file to git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``, or
+  ``git add doc/examples/images/<newplot.ps>.dvc``.
 - Commit the changes using ``git commit``.
 - Open a pull request on GitHub with your changes.
 - Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
