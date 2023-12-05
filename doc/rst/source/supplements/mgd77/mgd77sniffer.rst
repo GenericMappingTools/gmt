@@ -61,7 +61,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *fieldabbrev*,\ *scale*,\ *offset*
-    Apply scale factor and DC adjustment to specified data field. Allows
+    Apply scale factor and offset adjustment to specified data field. Allows
     adjustment of cruise data prior to along-track analysis. CAUTION:
     data must be thoroughly examined before applying these global data
     adjustments. May not be used for multiple cruises.
@@ -170,7 +170,7 @@ Optional Arguments
 
     Grid comparison activates several additional error checks. (1)
     Re-weighted Least Squares Regression of ship versus grid data
-    determines slope and DC shift, which when differing from expected 1
+    determines slope and interest shift, which when differing from expected 1
     and 0, respectively, may indicate incorrectly scaled ship data,
     including incorrect units or instrument drift as well as erroneous
     gravity tie-in. (2) Accumulated ship grid offsets are computed
@@ -343,7 +343,7 @@ E77 Error Format
     Information pertaining to an entire cruise, such as NCEI and survey
     institution identification codes, cruise examination time, two-way
     travel time corrector information, data precision warnings, as well
-    as systematic scales, DC shifts and correlation coefficients from
+    as systematic scales, constant offsets and correlation coefficients from
     global grid comparisons are reported as E77 header information.
 
     **Sample**
