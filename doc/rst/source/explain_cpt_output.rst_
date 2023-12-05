@@ -1,13 +1,13 @@
 **-F**\ [**R**\|\ **c**\|\ **g**\|\ **h**\|\ **r**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]
     Force output CPT to be written in the desired format set by the directives, thus
-    selecting among color names, , single gray-scale values, color names, *r*/*g*/*b* only,
+    selecting among color names, single gray-scale values, color names, *r*/*g*/*b* only,
     *h*-*s*-*v*, *c*/*m*/*y*/*k*, or *#rrggbb* hex codes. Choose from:
  
     - **R**: Output color names if possible (and use *r*/*g*/*b* otherwise) [Default].
     - **c**: Output color using *c*/*m*/*y*/*k* values.
     - **g**: Output *gray* singles (will transform any colors to gray via YIQ transformation).
     - **h**: Output *h*-*s*-*v* triplets.
-    - **r**: Output *r*/*g*/*b* codes only (even if a color name apply).
+    - **r**: Output *r*/*g*/*b* codes only (even if a color name applies).
     - **x**: Output *#rrggbb* hex codes.
 
     Optionally or alternatively, append these modifiers:
