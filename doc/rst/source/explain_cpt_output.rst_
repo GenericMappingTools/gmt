@@ -10,7 +10,7 @@
     - **r**: Output *r*/*g*/*b* codes only (even if a color name apply).
     - **x**: Output *#rrggbb* hex codes.
 
-    Optionally or alternatively, append this modifier:
+    Optionally or alternatively, append these modifiers:
 
     - **+c**: Write discrete palettes in categorical format. If *label* is appended
       then we create labels for each category to be used when the CPT is plotted.
