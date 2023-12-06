@@ -172,12 +172,18 @@ Optional Arguments
     record which contains node numbers *a-b-c* and **-Z**\ *polynumber*.
     Optionally, append *first*, where *first* is an integer, to report
     the polygon numbers by counting from *first* [Default starts at zero].
-    Incompatible with |-Q|. Alternatively, use modifier **+z** to instead
-    request that **-Z**\ *zvalue* is placed in the segment headers, where
-    *zvalue* is the mean of the three nodes' *z* values. Append **l**
-    (lowest value), **m** (median), **p** (mode) or **u** (upper value)
-    to select another representative *zvalue* [Default is **a** for mean].
-    **Note**: Modifier **+z** implies |-Z|.
+    Incompatible with |-Q|. Optionally, add modifier
+
+    - **+z**: Request that **-Z**\ *zvalue* is placed in the segment headers,
+      where *zvalue* is a representable value for each triangle.  **Note**:
+    
+    Modifier **+z** implies |-Z|. Append directives to select that value:
+
+    - **a**: Select the mean value [Default].
+    - **l**: Select the lowest value.
+    - **m**: Select the median.
+    - **p**: Select the mode.
+    - **u**: Select the upper value.
 
 .. _-T:
 
