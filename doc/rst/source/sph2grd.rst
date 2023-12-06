@@ -95,8 +95,8 @@ Optional Arguments
 **-N**\ **g**\|\ **m**\|\ **s**
     Normalization used for coefficients.  Choose among these directives:
 
-    - **m**: Mathematical normalization - inner products summed over surface equal 1 [Default].
     - **g**: Geodesy normalization - inner products summed over surface equal :math:`4\pi`.
+    - **m**: Mathematical normalization - inner products summed over surface equal 1 [Default].
     - **s**: Schmidt normalization - as used in geomagnetism.
 
 .. _-Q:
