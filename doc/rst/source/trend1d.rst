@@ -72,7 +72,7 @@ Required Arguments
     *n* indicates the polynomial degree or how many terms in the Fourier series we want to include.
     Choose one of more comma-separated directives **T** from this list:
 
-    - **p**: Polynomial with intercept and powers of *x* up to degree *n*).
+    - **p**: Polynomial with intercept and powers of *x* up to degree *n*.
     - **P**: Just include the single term :math:`x^n`.
     - **f**: Fourier series with *n* terms.
     - **c**: Cosine series with *n* terms.
