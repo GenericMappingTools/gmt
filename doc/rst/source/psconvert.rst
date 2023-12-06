@@ -163,7 +163,7 @@ Optional Arguments
 
 **-N**\ [**+f**\ *fade*][**+g**\ *background*][**+k**\ *fadecolor*][**+p**\ [*pen*]]
     Set optional BoundingBox background fill color, fading, or draw the outline of the BoundingBox.
-    These modifiers lets you change teh specifics:
+    These modifiers lets you change the specifics:
 
     - **+f**: Append *fade* to fade the entire plot towards *fadecolor* [black] (100%) [no fading, 0].
     - **+g**: Append *background* to paint the BoundingBox behind the illustration.
