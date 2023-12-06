@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt spectrum1d** [ *table* ] [ |-S|\ *segment_size* ]
-[ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\|\ **m**] ]
+[ |-C|\ [**acgnopxy**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\|\ **m**] ]
 [ |-N|\ [*name_stem*] ] [ |-T| ] [ |-W| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -33,7 +33,7 @@ Description
 
 **spectrum1d** reads X [and Y] values from the first [and second]
 columns on standard input [or *x[y]file*]. These values are treated as
-timeseries X(t) [Y(t)] sampled at equal intervals spaced *dt* units
+timeseries *X*\ (*t*) [*Y*\ (*t*)] sampled at equal intervals spaced *dt* units
 apart. There may be any number of lines of input. **spectrum1d** will
 create file[s] containing auto- [and cross- ] spectral density estimates
 by *Welch*\ 's [1967] method of ensemble averaging of multiple overlapped windows,
@@ -47,9 +47,9 @@ created; otherwise only one (xpower) is written. The files (which are
 ASCII unless **-bo** is set) are as follows:
 
 *name_stem*.xpower
-    Power spectral density of X(t). Units of X \* X \* *dt*.
+    Power spectral density of *X*\ (*t*). Units of X \* X \* *dt*.
 *name_stem*.ypower
-    Power spectral density of Y(t). Units of Y \* Y \* *dt*.
+    Power spectral density of *Y*\ (*t*). Units of Y \* Y \* *dt*.
 *name_stem*.cpower
     Power spectral density of the coherent output. Units same as ypower.
 *name_stem*.npower
@@ -75,7 +75,7 @@ Required Arguments
 
 *table*
     One or more ASCII (or binary, see **-bi**)
-    files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
+    files holding *X*\ (*t*) [*Y*\ (*t*)] samples in the first 1 [or 2] columns. If
     no files are specified, **spectrum1d** will read from standard input.
 
 .. _-S:
@@ -95,16 +95,24 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**xycnpago**]
+**-C**\ [**acgnopxy**]
     Read the first two columns of input as samples of two time-series,
-    X(t) and Y(t). Consider Y(t) to be the output and X(t) the input in
-    a linear system with noise. Estimate the optimum frequency response
-    function by least squares, such that the noise output is minimized
-    and the coherent output and the noise output are uncorrelated.
-    Optionally specify up to 8 letters from the set { **x y c n p a g
-    o** } in any order to create only those output files instead of the
-    default [all]. **x** = xpower, **y** = ypower, **c** = cpower, **n**
-    = npower, **p** = phase, **a** = admit, **g** = gain, **o** = coh.
+    *X*\ (*t*) and *Y*\ (*t*). Consider *Y*\ (*t*) to be the output and
+    *X*\ (*t*) the input in a linear system with noise. Estimate the
+    optimum frequency response function by least squares, such that the
+    noise output is minimized and the coherent output and the noise output
+    are uncorrelated. Optionally specify up to 8 directives from the set
+    { **acgnopxy** } in any order to create only those output files
+    instead of the default [all]:
+    
+    - **a**: Admittance spectrum, or real part of the transfer function.
+    - **c**: Power spectral density of the coherent output.
+    - **g**: Gain spectrum, or modulus of the transfer function.
+    - **n**: Power spectral density of the noise output.
+    - **o**: Squared coherency spectrum, or linear correlation coefficient as a function of frequency.
+    - **p**: Phase spectrum, or phase of the transfer function.
+    - **x**: Power spectral density of *X*\ (*t*).
+    - **y**: Power spectral density of *Y*\ (*t*).
 
 .. _-D:
 
