@@ -91,11 +91,15 @@ Optional Arguments
 .. _-E:
 
 **-Ed**\|\ **n**\|\ **z**\ [*dist*]
-    Specify the quantity that should be assigned to the grid nodes.  By
-    default we compute distances to the nearest data point [**-Ed**].
-    Use **-En** to assign the ID numbers of the Voronoi polygons that each
-    grid node is inside, or use **-Ez** for a natural nearest-neighbor grid where
-    we assign all nodes inside the polygon the z-value of the center node.
+    Specify the quantity that should be assigned to the grid nodes.
+    Append one of three directives:
+
+    - **d**: Compute distances to the nearest data point [Default].
+    - **n**: Assign the ID numbers of the Voronoi polygons that each
+      grid node is inside.
+    - **z**: For a natural nearest-neighbor grid where we assign all nodes
+      inside the polygon the z-value of the center node.
+    
     Optionally, append the resampling interval along Voronoi arcs in spherical
     degrees [1].
 

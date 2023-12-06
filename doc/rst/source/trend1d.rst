@@ -68,23 +68,32 @@ Required Arguments
 **-N**\ [**p**\|\ **P**\|\ **f**\|\ **F**\|\ **c**\|\ **C**\|\ **s**\|\ **S**\|\ **x**]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
     Specify the components of the (possibly mixed) model.  Append
     one or more comma-separated model components.  Each component is
-    of the form **T**\ *n*, where **T** indicates the basis function and
-    *n* indicates the polynomial degree or how many terms in the Fourier series we want to include.  Choose
-    **T** from **p** (polynomial with intercept and powers of *x* up to degree *n*), **P** (just the
-    single term *x^n*), **f** (Fourier series with *n* terms),
-    **c** (Cosine series with *n* terms), **s** (sine series with
-    *n* terms), **F** (single Fourier component of order *n*),
-    **C** (single cosine component of order *n*), and
-    **S** (single sine component of order *n*).  By default the
-    *x*-origin and fundamental period is set to the mid-point and data
-    range, respectively.  Change this using the **+o**\ *origin* and
-    **+l**\ *length* modifiers.  We normalize *x* before evaluating
-    the basis functions.  Basically, the trigonometric bases all
-    use the normalized *x*' = (2*pi*(*x-origin*\ )/*length*) while
-    the polynomials use *x*' = 2*(*x-x_mid*)/(*xmax - xmin*) for stability.
-    Finally, append **+r** for a robust
-    solution [Default gives a least squares fit].  Use |-V| to see
-    a plain-text representation of the *y(x)* model specified in |-N|.
+    of the form of a directive **T**\ *n*, where **T** indicates the basis function and
+    *n* indicates the polynomial degree or how many terms in the Fourier series we want to include.
+    Choose one of more comma-separated directives **T** from this list:
+
+    - **p**: Polynomial with intercept and powers of *x* up to degree *n*.
+    - **P**: Just include the single term :math:`x^n`.
+    - **f**: Fourier series with *n* terms.
+    - **c**: Cosine series with *n* terms.
+    - **s**: Sine series with *n* terms.
+    - **F**: Single Fourier component of order *n*.
+    - **C**: Single cosine component of order *n*.
+    - **S**: Single sine component of order *n*.
+
+    By default the *x*-origin and fundamental period *length* is set to the mid-point
+    and data range, respectively.  Change this using these modifiers:
+
+    - **+l**: Append a custom *length* value.  
+    - **+o**: Append a custom *x*-origin.
+    - **+r**: Seek a robust solution [Default gives a least squares fit].
+
+    **Notes**: Using *origin* and *length*, we normalize *x* before evaluating
+    the basis functions.  Basically, the trigonometric bases all use the normalized
+    :math:`x' = 2\pi(x-\mbox{origin})/\mbox{length}` while the polynomials
+    use :math:`x' = 2(x-\mbox{origin})/\mbox{length}`
+    for stability. (2) Use |-V| to see a plain-text representation of the *y*\ (*x)
+    model requested.
 
 Optional Arguments
 ------------------

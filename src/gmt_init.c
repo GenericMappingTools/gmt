@@ -13977,7 +13977,7 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 			strcat (text, add_mods);
 		}
 	}
-	else if (F->rgb[0] < -0.5)
+	else if (F->rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, F->rgb)) >= 0)
 		snprintf (text, PATH_MAX+GMT_LEN256, "%s", gmt_M_color_name[i]);
@@ -13997,7 +13997,7 @@ char *gmt_putcolor (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	int i;
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, rgb)) >= 0)
 		snprintf (text, GMT_LEN256, "%s", gmt_M_color_name[i]);
@@ -14015,10 +14015,28 @@ char *gmt_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(rgb,0), gmt_M_t255(rgb,1), gmt_M_t255(rgb,2));
+	gmtinit_append_trans (text, rgb[3]);
+	return (text);
+}
+
+/*! Creates t the string shade corresponding to the RGB triplet */
+char *gmt_putgray (struct GMT_CTRL *GMT, double *rgb) {
+
+	static char text[GMT_LEN256] = {""};
+	gmt_M_unused(GMT);
+
+	if (rgb[0] < -0.5)	/* Skip it */
+		strcpy (text, "-");
+	else if (gmt_M_is_gray(rgb))
+		snprintf (text, GMT_LEN256, "%.5g", gmt_M_t255(rgb,0));
+	else {	/* Must convert to gray */
+		double gray = gmt_M_yiq (rgb);
+		snprintf (text, GMT_LEN256, "%.5g", gray);
+	}
 	gmtinit_append_trans (text, rgb[3]);
 	return (text);
 }
@@ -14029,7 +14047,7 @@ char *gmt_puthex (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "#%02x%02x%02x", urint (gmt_M_t255(rgb,0)), urint (gmt_M_t255(rgb,1)), urint (gmt_M_t255(rgb,2)));
@@ -14043,7 +14061,7 @@ char *gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (cmyk[0] < -0.5)
+	if (cmyk[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g/%.5g", 100.0*gmt_M_q(cmyk[0]), 100.0*gmt_M_q(cmyk[1]), 100.0*gmt_M_q(cmyk[2]), 100.0*gmt_M_q(cmyk[3]));
@@ -14057,7 +14075,7 @@ char *gmtlib_puthsv (struct GMT_CTRL *GMT, double *hsv) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (hsv[0] < -0.5)
+	if (hsv[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g-%.5g-%.5g", gmt_M_q(hsv[0]), gmt_M_q(hsv[1]), gmt_M_q(hsv[2]));

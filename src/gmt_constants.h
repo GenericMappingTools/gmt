@@ -370,6 +370,9 @@ enum GMT_time_period {
 /* Directives and modifiers for -F interpolant option */
 #define GMT_INTERPOLANT_OPT "a|c|e|l|n|s<p>[+d1|2]"
 
+/* Directives and modifiers for -F cpt output option in makecpt/gdr2cpt */
+#define GMT_COLORMODES_OPT "[R|c|g|h|r|x]][+c[<label>]][+k<keys>]"
+
 /* Valid modifiers for various input files */
 
 /* Valid modifiers for -Tmin/max/inc array creator */

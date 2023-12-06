@@ -67,11 +67,13 @@ Optional Arguments
 
 **-A**\ [**+r**][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
-    by the image content. Append **+u** to first remove any GMT-produced time-stamps.
-    Append **+r** to *round* the HighResBoundingBox instead of using the ``ceil`` function.
-    This is going against Adobe Law but can be useful when creating very small images
-    where the difference of one pixel might matter. If |-V| is used we also report
-    the dimensions of the final illustration.
+    by the image content. Two modifiers may be used as well:
+
+    - **+u**: First remove any GMT-produced time-stamps (i.e., set by |SYN_OPT-U|).
+    - **+r**: We *round* the HighResBoundingBox instead of using the ``ceil`` function.
+      This is going against Adobe Law but can be useful when creating very small images
+      where the difference of one pixel might matter. If |-V| is used we also report
+      the dimensions of the final illustration.
 
 .. _-C:
 
@@ -130,17 +132,19 @@ Optional Arguments
 
 **-I**\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*]
     Adjust the BoundingBox and HiResBoundingBox by scaling and/or adding margins.
-    Append **+m** to specify extra margins to extend the bounding box.
-    Give either one (uniform), two (x and y) or four (individual sides)
-    margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
-    Append **+s**\ *width* to resize the output image to exactly *width* units.
-    The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
-    unit and/or impose different width and height (**Note**: This may change the
-    image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
-    work and the final image will retain the DPI resolution set by |-E|.  Append **+sm**
-    to set a maximum size and the new *width* is only imposed if the original figure width
-    exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
-    Alternatively, append **+S**\ *scale* to scale the image by a constant factor.
+    Choose from this set of modifiers:
+    
+    - **+m**: Specify extra margins to extend the bounding box.
+      Give either one (uniform), two (x and y) or four (individual sides)
+      margins; append plot unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
+    - **+s**: Append *width* to resize the output image to exactly *width* units.
+      The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
+      unit and/or impose different width and height (**Note**: This may change the
+      image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
+      work and the final image will retain the DPI resolution set by |-E|.  Prepend **m**
+      to set a maximum size and the new *width* is only imposed if the original figure width
+      exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
+    - **+S**: Append a *scale* to scale the image by a constant factor.
 
 .. _-L:
 
@@ -159,11 +163,13 @@ Optional Arguments
 
 **-N**\ [**+f**\ *fade*][**+g**\ *background*][**+k**\ *fadecolor*][**+p**\ [*pen*]]
     Set optional BoundingBox background fill color, fading, or draw the outline of the BoundingBox.
-    Append **+f**\ *fade* to fade the entire plot towards *fadecolor* [black] (100%) [no fading, 0].
-    Append **+g**\ *background* to paint the BoundingBox behind the illustration.
-    Append **+k**\ *fadecolor* to set the fade color if **+f** is set [black]/
-    Append **+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
-    the default pen of 0.25p,black).
+    These modifiers lets you change the specifics:
+
+    - **+f**: Append *fade* to fade the entire plot towards *fadecolor* [black] (100%) [no fading, 0].
+    - **+g**: Append *background* to paint the BoundingBox behind the illustration.
+    - **+k**: Append *fadecolor* to set the fade color if **+f** is set [black].
+    - **+p**: Append [*pen*] to draw the BoundingBox outline (append a pen or accept
+      the default pen of 0.25p,black).
 
 .. _-Q:
 
@@ -184,15 +190,23 @@ Optional Arguments
 .. _-T:
 
 **-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **t**\ [**+m**][**+q**\ *quality*]
-    Sets the output format, where **b** means BMP, **e** means EPS,
-    **E** means EPS with PageSize command, **f** means PDF, **F** means
-    multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
-    transparent PNG (untouched regions are transparent), **m** means
-    PPM, and **t** means TIFF [default is JPEG]. To **bjgt** you can
-    append **+m** in order to get a monochrome (grayscale) image. To **j** you can
-    append **+q** to change JPEG quality in 0-100 range [90]. The EPS format can be
-    combined with any of the other formats. For example, **-Tef**
-    creates both an EPS and a PDF file. The **-TF** creates a multi-page
+    Sets the output format via one of these directives:
+
+    - **b**: Select BMP raster format.
+    - **e**: Select EPS vector graphics format.
+    - **E**: Same as **e** but with PageSize command.
+    - **f**: Select PDF vector graphics format.
+    - **F**: Same, but for multi-page PDF.
+    - **j**: Select JPEG raster format [Default].
+    - **g**: Select PNG raster format.
+    - **G**: Select transparent PNG raster format (untouched regions are transparent).
+    - **m**: Select PPM raster format.
+    - **t**: Select TIFF raster format.
+
+    **Notes**: (1) To directives **bjgt** you can append **+m** in order to get a monochrome
+    (grayscale) image. (2) To **j** you can append **+q** to change JPEG quality in 0-100
+    range [90]. (3) The EPS format can be combined with any of the other formats. For example,
+    **-Tef** creates both an EPS and a PDF file. (4) The **-TF** creates a multi-page
     PDF file from the list of input PS or PDF files. It requires the |-F| option.
     See also **NOTES** below.
 
@@ -229,7 +243,7 @@ Optional Arguments
     The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a
     .tfw, for jpeg we have a .jgw and so on. **Note**: This option automatically
-    sets |-A| |-P|.  Append **+c** to *not* crop the image.
+    sets |-A| and |-P|.  Append **+c** to *not* crop the image.
 
     Append **+k** to create a minimalist KML file that allows loading the
     image in GoogleEarth. Note that for this option to work it is necessary that the postscript

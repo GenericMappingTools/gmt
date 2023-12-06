@@ -154,57 +154,67 @@ Optional Arguments
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
     :term:`PROJ_LENGTH_UNIT`) or % for a percentage of the font size.
     If *dy* is not specified then it is set equal to *dx*. Optionally,
-    use modifier **+t** to set the shape of the textbox when using |-G| and/or |-W|.
-    Append lower case **o** to get a straight rectangle [Default].
-    Append upper case **O** to get a rounded rectangle. In paragraph
-    mode (|-M|) you can also append lower case **c** to get a concave
-    rectangle or append upper case **C** to get a convex rectangle.
+    use modifier **+t** to append the shape of the textbox when using |-G| and/or |-W|:
+
+    - **o**: Straight rectangle [Default].
+    - **O**: Set a rounded rectangle.
+    - **c**: (Paragraph mode (|-M| only) selects a concave rectangle.
+    - **C**: (Paragraph mode (|-M| only) selects a convex rectangle.
 
 .. _-D:
 
 **-D**\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]]
     Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
-    [0/0]. If *dy* is not specified then it is set equal to *dx*. Use
-    **-Dj** to offset the text away from the point instead (i.e., the
-    text justification will determine the direction of the shift). Using
-    **-DJ** will shorten diagonal offsets at corners by
-    sqrt(2). Optionally, append **+v** which will draw
-    a line from the original point to the shifted point; append a *pen*
-    to change the attributes for this line.  **Note**: The **-Dj**\|\ **J**
-    selection cannot be used with paragraph mode (|-M|).
+    [0/0]. If *dy* is not specified then it is set equal to *dx*. Prepend
+    an optional directive:
+    
+    - **-j**: Offset the text away from the point instead (i.e., the
+      text justification will determine the direction of the shift).
+    - **-J**: Shorten diagonal offsets at corners by :math:`\sqrt{2}`.
+
+    Optionally, append the modifier:
+
+    - **+v**: Draw a line from the original point to the shifted point;
+      append a *pen* to change the attributes for this line.  **Note**:
+      The **-Dj**\|\ **J** selection cannot be used with paragraph mode (|-M|).
 
 .. _-F:
 
 **-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*]\|\ **t**\ *text*\|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
-    annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
+    annotation font attributes [:term:`FONT_ANNOT_PRIMARY`], and centered
     on the data point. Use |-F| to override these defaults by
     specifying up to three text attributes (font, angle, and
-    justification) directly on the command line. Use modifier **+f** to set the
-    font ([*size*][,\ *fontname*][,\ *color*]); if no font info is given then the input
-    file must have this information in one of its columns. Use **+a** to
-    set the *angle*; if no angle is given then the input file must have
-    this as a column. Alternatively, use **+A** to force text-baselines
-    to convert into the -90/+90 range.  Use **+j** to set the justification; if no
-    justification is given then the input file must have this item as a
-    column. Items read from the data file should be in the same order as
-    the modifiers are specified with the |-F| option. Example:
-    **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
-    Helvetica-Bold font and expects to read the justification and angle
-    from the file, in that order, after *x* *y* and before *text*.
-    In addition, the **+c**\ *justification* lets us use *x, y* coordinates extracted from the
-    |-R| string instead of providing them in the input file. For example **-F+c**\ TL
-    gets the *x_min*, *y_max* from the |-R| string and plots the text
-    at the Upper Left corner of the map.  Normally, the text to be plotted
-    comes from the data record.  Instead, use **+h** or **+l** to select the
-    text as the most recent segment header or segment label, respectively in
-    a multisegment input file, **+r** to use the record number (counting up from *first*),
-    **+t**\ *text* to set a fixed text string (if *text* contains plus characters then the
-    **+t** modifier must be the last modifier in |-F|), or **+z** to format incoming *z* values
-    to a string using the supplied *format* [use :term:`FORMAT_FLOAT_MAP`].  **Note**: If |-Z| is
-    in effect then the *z* value used for formatting is in the 4th, not 3rd column.
-    If you only want a specific word from the trailing text and not the whole line,
-    use **-it**\ *word* to indicate which word (0 is the first word) you want.
+    justification) directly on the command line via these modifiers:
+
+    - **+a** : Set the text *angle*; if no angle is given then the input file must have
+      this angle as a column.
+    - **+A**: Force text-baselines to convert into the -90/+90 range.
+    - **+c**: Append *justification* to set the *x, y* coordinates extracted from the
+      |-R| string instead of providing them in the input file. For example **-F+c**\ TL
+      gets the *x_min*, *y_max* from the |-R| string and plots the text
+      at the Upper Left corner of the map.
+    - **+f**: Set the font ([*size*][,\ *fontname*][,\ *color*]); if no font info
+      is given then the input file must have this information in one of its columns.
+    - **+h**: Use the most recent segment header as the text to be plotted.
+      comes from the data record.  Instead, use **+h** or **+l** to select the
+    - **+j**: Set the text justification; if no justification is given then the input
+      file must have this item as a column. 
+    - **+l**: Use the most recent segment label as the text to be plotted.
+    - **+r**: Use the record number (counting up from *first* [0]) as the text to be plotted.
+    - **+t**: Use the appended *text* to set a fixed text string (if *text* contains plus
+      characters then the **+t** modifier must be the last modifier in |-F|).
+    - **+z**: Format incoming *z* values to a string using the supplied *format* 
+      [if not appended we use :term:`FORMAT_FLOAT_MAP`].
+
+     **Notes**: (1) If |-Z| is in effect then the *z* value used for formatting is in the
+     4th, not 3rd column. If you only want a specific word from the trailing text and
+     not the whole line, use **-it**\ *word* to indicate which word (0 is the first word)
+     you want. (2) Items read from the data file should be in the same order as
+     the modifiers are specified with the |-F| option. Example:
+     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
+     Helvetica-Bold font and expects to read the justification and angle
+     from the file, in that order, after *x* *y* and before *text*.
 
 .. _-G:
 
