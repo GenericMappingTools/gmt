@@ -94,7 +94,7 @@ Optional Arguments
       [10], and *U* is the maximum change in a gradient at the last iteration [0.01].
     - **l**: Select smooth interpolation with local gradient estimates.
     - **p**: Use piecewise linear interpolation; no tension is applied.
-    - **s**: Use **s**\ moothing. Optionally append *E*/*U*/*N* [/0/0/3], where *E* is Expected
+    - **s**: Use smoothing. Optionally append *E*/*U*/*N* [/0/0/3], where *E* is Expected
       squared error in a typical (scaled) data value, and *U* is Upper
       bound on weighted sum of squares of deviations from data. Here, *N* is the number of
       iterations used to converge at solutions for gradients when variable
