@@ -176,7 +176,8 @@ Optional Arguments
 
     - **+z**: Request that **-Z**\ *zvalue* is placed in the segment headers,
       where *zvalue* is a representable value for each triangle.  **Note**:
-      Modifier **+z** implies |-Z|. Append directives to select that value:
+    
+    Modifier **+z** implies |-Z|. Append directives to select that value:
 
     - **a**: Select the mean value [Default].
     - **l**: Select the lowest value.
