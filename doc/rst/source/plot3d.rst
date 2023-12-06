@@ -94,8 +94,7 @@ Optional Arguments
 
 .. _-A:
 
-.. include:: explain_line_draw.rst_.rst_
-    **Note**: The |-A| option requires constant *z*-coordinates.
+.. include:: explain_line_draw.rst_
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_

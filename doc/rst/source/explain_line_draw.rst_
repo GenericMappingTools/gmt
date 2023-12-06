@@ -11,3 +11,5 @@
     - **t**: Same, but first move is along *theta*.
     - **x**: For Cartesian data, draw stair-case curves that whose first move is along *x*.
     - **y**: Same, but first move is along *y*.
+
+    **Note**: In :doc:`plot3d`, the |-A| option requires constant *z*-coordinates.
