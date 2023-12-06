@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ *dx*/*dy* ]
+[ |-D|\ *dx*\ [/*dy*] ]
 [ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **p**][**a**\|\ **s**\|\ **t**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill*\|\ **+z** ]
@@ -85,19 +85,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
-    By default, geographic line segments are drawn as great circle arcs by resampling
-    coarse input data along such arcs. To disable this sampling and draw them as
-    straight lines, use the |-A| flag.  For Cartesian data, points are simply connected.
-    To adjust these behaviors, append a directive:
-
-    - **m**: Draw the line by first following a meridian, then a parallel.
-    - **p**: Start following a parallel, then a meridian. (This can be practical
-      to draw a line along parallels, for example).
-    - **r**: For polar projections, draw stair-case curves whose first move is along *r*.
-    - **t**: Same, but first move is along *theta*.
-    - **x**: For Cartesian data, draw stair-case curves that whose first move is along *x*.
-    - **y**: Same, but first move is along *y*.
+.. include:: explain_line_draw.rst_.rst_
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -125,8 +113,8 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *dx*/*dy*
-    Offset the plot symbol or line locations by the given amounts *dx/dy*
+**-D**\ *dx*\ [/*dy*]
+    Offset the plot symbol or line locations by the given amounts
     [Default is no offset]. If *dy* is not given it is set equal to *dx*.
     You may append dimensional units from **c**\ \|\ **i**\ \|\ **p** to each value.
 

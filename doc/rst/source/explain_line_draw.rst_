@@ -1,0 +1,13 @@
+**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
+    By default, geographic line segments are drawn as great circle arcs by resampling
+    coarse input data along such arcs. To disable this sampling and draw them as
+    straight lines, use the |-A| flag.  For Cartesian data, points are simply connected.
+    To adjust these behaviors, append a directive:
+
+    - **m**: Draw the line by first following a meridian, then a parallel.
+    - **p**: Start following a parallel, then a meridian. (This can be practical
+      to draw a line along parallels, for example).
+    - **r**: For polar projections, draw stair-case curves whose first move is along *r*.
+    - **t**: Same, but first move is along *theta*.
+    - **x**: For Cartesian data, draw stair-case curves that whose first move is along *x*.
+    - **y**: Same, but first move is along *y*.
