@@ -75,9 +75,13 @@ Optional Arguments
 **-I**\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*]
     Print current sun position as well as Azimuth and Elevation. Append *lon/lat* to print also the times of
     Sunrise, Sunset, Noon and length of the day.
-    Add **+d**\ *date* in ISO 8601 format, e.g, **+d**\ *2000-04-25T04:52*, to compute sun parameters
-    for this date and time [Default is now]. If necessary, append a time zone via **+z**\ *TZ*. The time zone is given as an offset from UTC.
-    Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
+
+    The default time is now. To select another time, use these two modifiers:
+    
+    - **+d**: Print *date* in ISO 8601 format, e.g, **+d**\ *2000-04-25T04:52*, to compute sun parameters
+      for this date and time [Default is now].
+    - **+z**: If necessary, append the time zone *TZ*. The time zone is given as an offset from UTC.
+      Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -103,10 +107,19 @@ Optional Arguments
 .. _-T:
 
 **-Tdcna**\ [**+d**\ *date*][**+z**\ *TZ*]
-    Plot (or dump; see **-M**\ ) one or more terminators defined via the **dcna** flags. Where:
-    **d** means day/night terminator; **c** means civil twilight; **n** means nautical twilight;
-    **a** means astronomical twilight.  Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
-    to know where the day-night was at that date [Default is now]. If necessary, append time zone via **+z**\ *TZ*.
+    Plot (or dump; see **-M**\ ) one or more terminators by appending any of these directives:
+
+    - **d**: Select the day/night terminator.
+    - **c**: Select civil twilight.
+    - **n**: Select nautical twilight;
+    - **a**: Select astronomical twilight.
+
+    The default time is now. To select another time, use these two modifiers:
+
+    - **+d**: Append *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
+      to know where the day-night was at that date [Default is now]
+    - **+z**: If necessary, append the time zone *TZ*. The time zone is given as an offset from UTC.
+      Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
 
     Refer to https://en.wikipedia.org/wiki/Twilight for definitions of different twilights.
 
