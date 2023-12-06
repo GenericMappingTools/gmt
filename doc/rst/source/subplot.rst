@@ -18,7 +18,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+|-F|\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ [**+af**\|\ **s**][**+c**\ *dx*\ [/*dy*]][**+f**\ *wfracs*\ /*hfracs*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autotag* ]
 [ |-C|\ [*side*]\ *clearance* ]
 [ |-D| ]
@@ -51,38 +51,45 @@ Required Arguments (begin mode)
 
 .. _-F:
 
-**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
-    Specify the dimensions of the figure.  There are two different ways to do this:
-    (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
-    a single subplot.
+**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ [**+af**\|\ **s**][**+c**\ *dx*\ [/*dy*]][**+f**\ *wfracs*\ /*hfracs*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+    Specify the dimensions of the figure.  There are two different ways to do this.
+    Select one of the directives:
 
-**-Ff**
-    Specify the final **f**\ igure dimensions.  The subplot dimensions are then calculated from the figure
-    dimensions after accounting for the space that optional tick marks, annotations, labels, and margins occupy between subplots.
-    As for other figures, annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
-    To specify different subplot dimensions for each row (or column), append **+f** followed by a comma-separated list of width
-    fractions, a slash, and then the list of height fractions.  For example **-Ff**\ 10c/10c\ **+f**\ 3,1/1,2 will make the first column
-    three times as wide as the second, while the second row will be twice as tall as the first row.
-    A single number means constant widths (or heights) [Default].
+    - **f**: Specify overall final figure dimensions. The subplot dimensions are then calculated from the figure
+      dimensions after accounting for the space that optional tick marks, annotations, labels, and margins occupy between subplots.
+      As for other figures, annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
+      To specify different subplot dimensions for each row (or column), append **+f** followed by a comma-separated list of width
+      fractions, a slash, and then the list of height fractions.  For example **-Ff**\ 10c/10c\ **+f**\ 3,1/1,2 will make the first column
+      three times as wide as the second, while the second row will be twice as tall as the first row.
+      A single number means constant widths (or heights) [Default].
+    - **s**: Specify the dimensions of a single subplot directly. Then, the figure dimensions are computed from the
+      subplot dimensions after adding the space that optional tick marks, annotations, labels, and margins occupy between subplots.
+      As for other figures, annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
+      To specify different subplot dimensions for each row (or column), append a comma-separated list of widths,
+      a slash, and then the comma-separated list of heights.  A single number means constant widths (or heights) [Default].
+      For example **-Fs**\ 5c,8c/8c will make the first column 5 cm wide and the second column 8 cm wide, with
+      all having a constant height of 8 cm. The number of values must either be one (constant across the rows or columns)
+      or exactly match the number of rows (or columns).
 
-**-Fs**
-    Specify the dimensions of each **s**\ ubplot directly.  Then, the figure dimensions are computed from the
-    subplot dimensions after adding the space that optional tick marks, annotations, labels, and margins occupy between subplots.
-    As for other figures, annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
-    To specify different subplot dimensions for each row (or column), append a comma-separated list of widths,
-    a slash, and then the comma-separated list of heights.  A single number means constant widths (or heights) [Default].
-    For example **-Fs**\ 5c,8c/8c will make the first column 5 cm wide and the second column 8 cm wide, with
-    all having a constant height of 8 cm. The number of values must either be one (constant across the rows or columns)
-    or exactly match the number of rows (or columns). For geographic maps, the height of each subplot depends on
-    your map region and projection.  There are two options: (1) Specify both |-R| and |-J| and we use these
-    to compute the height of each subplot.  All subplots must share the same region and projection and you specify
-    a zero *height*, or (2) you can select *height* based on trial and error to suit your plot layout.
+    For geographic maps, the height of each subplot depends on your map region and projection.  There are
+    two options: (1) Specify both |-R| and |-J| and we use these to compute the height of each subplot.
+    All subplots must share the same region and projection and you specify a zero *height*, or (2) you can
+    select *height* based on trial and error to suit your plot layout.
 
-    Optionally, you may draw the outline (**+p**\ *pen*) or paint (**+g**\ *fill*\) the figure rectangle behind the
-    subplots, add dividing lines between panels (**+w**\ *pen*), and even expand it via **+c**.  These are most
-    useful if you supply **-B+n** to **subplot begin**, meaning no ticks or annotations will take place in the subplots.
-    By default (**+af**), we auto-scale the fonts and pens based on the geometric mean dimension of the entire figure.
-    Append **+as** to instead determine the scaling from the geometric mean subplot dimension.
+    Several modifiers can be used to adjust the layout. These are most useful if you supply **-B+n** to
+    **subplot begin**, meaning no ticks or annotations will take place in the subplots:
+
+    - **+a**: Normally (append **f** [Default]) we auto-scale the fonts and pens based on the geometric mean
+      dimension of the entire figure. Alternatively, append **s** to  determine the scaling from the
+      geometric mean subplot dimension instead.
+    - **+c**: Expand the panels by the appended plot unit increments *dx*\ [/*dy*].
+    - **+f**: To specify different subplot dimensions for each row (or column), append a comma-separated list of width
+      fractions, a slash, and then the list of height fractions.  For example **-Ff**\ 10c/10c\ **+f**\ 3,1/1,2 will
+      make the first column three times as wide as the second, while the second row will be twice as tall as the first row.
+      A single number means constant widths (or heights) [Default].
+    - **+g**: Paint the figure rectangle behind the subplot panels with the appended *fill*.
+    - **+p**: Draw the outline of the figure rectangle behind the subplot panels with the appended *pen*.
+    - **+w**: Draw dividing lines between panels using the appended *pen*.
 
 Optional Arguments (begin mode)
 -------------------------------
