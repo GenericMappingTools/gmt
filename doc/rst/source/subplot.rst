@@ -18,7 +18,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+|-F|\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ [**+af**\|\ **s**][**+c**\ *dx*\ [/*dy*]][**+f**\ *wfracs*\ /*hfracs*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autotag* ]
 [ |-C|\ [*side*]\ *clearance* ]
 [ |-D| ]
