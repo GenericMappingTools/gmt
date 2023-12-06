@@ -73,26 +73,26 @@ Required Arguments
     Choose one of more comma-separated directives **T** from this list:
 
     - **p**: Polynomial with intercept and powers of *x* up to degree *n*).
-    - **P**: Just include the single term *x^n*.
+    - **P**: Just include the single term :math:`x^n`.
     - **f**: Fourier series with *n* terms.
     - **c**: Cosine series with *n* terms.
-    - **s**: Sine series with *n* terms).
+    - **s**: Sine series with *n* terms.
     - **F**: Single Fourier component of order *n*.
     - **C**: Single cosine component of order *n*.
     - **S**: Single sine component of order *n*.
 
-    By default the *x*-origin and fundamental period is set to the mid-point
+    By default the *x*-origin and fundamental period *length* is set to the mid-point
     and data range, respectively.  Change this using these modifiers:
 
     - **+l**: Append a custom *length* value.  
-    - **+o**: Append a custom *x*-origin*.
+    - **+o**: Append a custom *x*-origin.
     - **+r**: Seek a robust solution [Default gives a least squares fit].
 
     **Notes**: Using *origin* and *length*, we normalize *x* before evaluating
     the basis functions.  Basically, the trigonometric bases all use the normalized
-    :math:`x' = (2\pi(x-\mbox{origin})/\mbox{length}) while the polynomials
-    use :math:`x' = 2(x-x_\mbox{origin})/(x_{\mbox{max}} - _{\mbox{min}})
-    for stability. (2) Use |-V| to see a plain-text representation of the *y(x)*
+    :math:`x' = 2\pi(x-\mbox{origin})/\mbox{length}` while the polynomials
+    use :math:`x' = 2(x-\mbox{origin})/\mbox{length}`
+    for stability. (2) Use |-V| to see a plain-text representation of the *y*\ (*x)
     model requested.
 
 Optional Arguments
