@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Plot the three building blocks G0, G1, G2 in a normalized way
 gmt begin GMT_gsfml_components
 	fzmodeler -D-30/30/0.1 -N1 -W10 -G0 -T-     | gmt plot -W1p,red -Bxafg5 -Byafg1 -R-30/30/-1.1/1.1 -JX15c/-4c -l"-G@-0@-"

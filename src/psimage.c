@@ -117,7 +117,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Change some pixels to be transparent (or to optional <color>) depending on selected modifier (repeatable):");
 	GMT_Usage (API, 3, "+b Replace background color by <color> or make it transparent (1-bit images only).");
 	GMT_Usage (API, 3, "+f Replace foreground color by <color> or make it transparent (1-bit images only).");
-	GMT_Usage (API, 3, "+t Indicate the given <color> should be made transparent [no transparency].");
+	GMT_Usage (API, 3, "+t Indicate the given <color> should be made transparent (for color images) [no transparency].");
 	GMT_Usage (API, 1, "\n-I Invert 1-bit images (does not affect 8 or 24-bit images).");
 	GMT_Option (API, "J-Z,K");
 	GMT_Usage (API, 1, "\n-M Force color -> monochrome image using YIQ-transformation.");
@@ -219,7 +219,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				break;
-			case 'G':	/* Background/foreground color for 1-bit images */
+			case 'G':	/* Background/foreground color for 1-bit images [Repeatable] */
 				Ctrl->G.active = true;
 				if ((p = strstr (opt->arg, "+b")))	/* Background color (or transparency) selected */
 					ind = PSIMAGE_BGD, k = 0, p[0] = '\0';

@@ -114,6 +114,7 @@ EXTERN_MSC int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC char * gmt_putcolor (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * gmt_putrgb (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * gmt_puthex (struct GMT_CTRL *GMT, double *rgb);
+EXTERN_MSC char * gmt_putgray (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC double gmt_convert_units (struct GMT_CTRL *GMT, char *value, unsigned int from_default, unsigned int target_unit);
 EXTERN_MSC unsigned int gmt_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit, char *unit_name);
 EXTERN_MSC int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, char *item);
@@ -553,6 +554,8 @@ EXTERN_MSC int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigne
 EXTERN_MSC int gmt_cube_BC_set (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int direction);
 EXTERN_MSC unsigned int gmt_parse_inv_cpt (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high);
+EXTERN_MSC void gmt_explain_cpt_output (struct GMTAPI_CTRL *API, char option);
+EXTERN_MSC int gmt_prepare_categorical_cpt (struct GMT_CTRL *GMT, char *label, char *key, struct GMT_PALETTE *Pout);
 EXTERN_MSC void gmt_free_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION **S);
 EXTERN_MSC struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *item);
 EXTERN_MSC bool gmt_get_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION *S, uint64_t this);
