@@ -122,6 +122,7 @@ struct GMT_PALETTE_HIDDEN {	/* Supporting information hidden from the API */
 	unsigned int z_mode[2];	 	/* 1 if +U<unit> was parsed, 0 otherwise */
 	unsigned int z_unit[2];	 	/* Unit enum specified via +u<unit> */
 	double z_unit_to_meter[2];	/* Scale, given z_unit, to convert z from <unit> to meters */
+	double internal_hinge;		/* The original hinge z-value for hinged CPTs [0] */
 };
 
 struct GMT_POSTSCRIPT_HIDDEN {	/* Supporting information hidden from the API */
