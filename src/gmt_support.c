@@ -1468,6 +1468,7 @@ GMT_LOCAL int gmtsupport_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETT
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge at z' = 0 for slice k = %u!\n", k);
 		return (int)k;
 	}
+	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Hinge requested but no hinge at z' = 0 was found in this CPT\n");
 	return GMT_NOTSET;
 }
 
