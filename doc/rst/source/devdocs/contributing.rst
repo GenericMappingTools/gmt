@@ -438,11 +438,12 @@ using the following steps:
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the failing tests now pass.
 - Run ``dvc diff`` to check that modified files are in the correct directory.
-- Add the modified images to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/examples/images/<newplot.ps>``
+- Add the modified images to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``,
+  or ``dvc add doc/examples/images/<newplot.ps>``
   depending on the type of test modified. RUn one dvc add command per updated PostScript plot.
 - Check that the .dvc file was updated by running ``git status``.
-- Stage the modified .dvc files in git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``, or
-  ``git add doc/examples/images/<newplot.ps>.dvc``, again per updated file.
+- Stage the modified .dvc files in git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``,
+  or ``git add doc/examples/images/<newplot.ps>.dvc``, again per updated file.
 - Commit the changes using ``git commit``.
 - Open a pull request on GitHub with your changes.
 - Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
@@ -473,7 +474,9 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the new test passes.
 - Run ``dvc diff`` to check that the new file is in the correct directory.
-- Add the new image to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
+- For teh first test of a module, you add the directory via ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``,
+  or ``dvc add doc/scripts/examples``. For later addition you do so per file, e.g. ``dvc add test/baseline/<module>/<newplot.ps>``,
+  ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
   depending on the type of test modified.
 - Check that the .dvc file was updated by running ``git status``.
 - Add the modified .dvc file to git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``, or
