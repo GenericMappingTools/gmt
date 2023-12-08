@@ -15,7 +15,7 @@ Synopsis
 **gmt gpsgridder** [ *table* ]
 |-G|\ *outgrid*
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
-[ |-E|\ [*misfitfile*] ]
+[ |-E|\ [*misfitfile*][**+r++\ *reportfile*] ]
 [ |-F|\ [**d**\|\ **f**]\ *fudge* ]
 [ |SYN_OPT-I| ]
 [ |-L| ]
@@ -118,7 +118,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*misfitfile*]
+**-E**\ [*misfitfile*][**+r++\ *reportfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms) for *u* and
     *v* separately and combined.  Optionally, append a filename and we will
@@ -130,6 +130,13 @@ Optional Arguments
     with eigenvalue number, eigenvalue, percent of model variance explained,
     and overall rms, rms_u, and rms_v misfits.  If |-W| is used we also append
     :math:`\chi^2`, :math:`\chi_u^2`, and :math:`\chi_v^2`.
+
+    Optionally append this modifier:
+
+    - **+r**: Write misfit and variance evaluation statistics to *reportfile*.
+      Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is
+      used we add :math:`\chi^2` as a final 8th column. **Note**: If **+r** is
+      not used then |-V|\ **i** will report the information via verbose messages.
 
 .. _-F:
 

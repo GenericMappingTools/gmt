@@ -17,8 +17,7 @@ Synopsis
 [ |-A|\ *gradfile*\ **+f**\|\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
-[ |-E|\ [*misfitfile*] ]
-[ |-F|\ *evalfile* ]
+[ |-E|\ [*misfitfile*][**+r++\ *reportfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L|\ [**t**][**r**] ]
 [ |-N|\ *nodefile* ]
@@ -189,7 +188,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*misfitfile*]
+**-E**\ [*misfitfile*][**+r++\ *reportfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
@@ -197,15 +196,12 @@ Optional Arguments
     if |-C| is used and history is computed (via one or more of modifiers **+c**
     and **+i**), then we will instead write a table with eigenvalue number,
     eigenvalue, percent of model variance explained, and rms misfit.  If |-W|
-    is used we also append :math:`\chi^2`.
+    is used we also append :math:`\chi^2`. Optionally append this modifier:
 
-.. _-F:
-
-**-F**\ *evalfile*
-    Write misfit and variance evaluation statistics to *evalfile*.
-    Requires |-E| as well. Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is used we
-    add :math:`\chi^2` as a final 8th column. **Note**: If |-F| is not used then
-    |-V|\ **i** will report these via two verbose messages.
+    - **+r**: Write misfit and variance evaluation statistics to *reportfile*.
+      Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is
+      used we add :math:`\chi^2` as a final 8th column. **Note**: If **+r** is
+      not used then |-V|\ **i** will report the information via verbose messages.
 
 .. _-I:
 
