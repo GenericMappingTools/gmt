@@ -57,7 +57,7 @@
 #define THIS_MODULE_PURPOSE	"Interpolate using Green's functions for splines in 1-3 dimensions"
 #define THIS_MODULE_KEYS	"<D{,AD(=,ED),ND(,TG(,CD)=f,G?},GDN"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>Vbdefghioqrsw" GMT_OPT("H") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:>Vbdefghioqrsw" GMT_OPT("FH") GMT_ADD_x_OPT
 
 EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
