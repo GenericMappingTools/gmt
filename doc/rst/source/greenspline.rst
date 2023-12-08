@@ -147,12 +147,12 @@ Optional Arguments
     - **1**: Records contain *x*, *y*, *azimuth*, :math:`v` (*azimuth* in degrees is
       measured clockwise from the vertical (north) [Default] (2-D data set).
     - **2**: Records contain *x*, *y*, :math:`v`, *azimuth* (*azimuth* in degrees is
-      measured clockwise from the vertical (north;  2-D data set).
+      measured clockwise from the vertical (north);  2-D data set).
     - **3**: Records contain **x**, *direction(s)*, :math:`v` (*direction(s)* in degrees
       are measured counter-clockwise from the horizontal, and for 3-D the vertical axis 
       (2-D or 3-D data set).
     - **4**: Records contain **x**, :math:`\mathbf{v}` (2-D or 3-D data set).
-    - **5**: Records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`( 2-D or 3-D data set).
+    - **5**: Records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v` (2-D or 3-D data set).
     
     **Note**: The slope constraints must not be at the same locations as the
     data constraints. That scenario has not yet been implemented.
