@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ *gradfile*\ **+f**\|\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
-[ |-E|\ [*misfitfile*][**+r++\ *reportfile*] ]
+[ |-E|\ [*misfitfile*][**+r**\ *reportfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L|\ [**t**][**r**] ]
 [ |-N|\ *nodefile* ]
@@ -188,7 +188,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*misfitfile*][**+r++\ *reportfile*]
+**-E**\ [*misfitfile*][**+r**\ *reportfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by

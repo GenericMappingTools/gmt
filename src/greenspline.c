@@ -238,7 +238,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] "
 		"[-D<information>] [-E[<misfitfile>][+r<reportfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
-		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
+		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|p|q|r|t][<tension>[/<scale>]][+e<limit>][+n<odd>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -308,18 +308,18 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 			"Requires -I for specifying equidistant increments.  For 2-D gridding a gridfile may be given; "
 			"this then also sets -I (and perhaps -r); use those options to override the grid settings.");
 	}
-	GMT_Usage (API, 1, "\n-Sc|l|t|r|p|q[<pars>]");
+	GMT_Usage (API, 1, "\n-Sc|l|p|q|r|t][<tension>[/<scale>]][+e<limit>][+n<odd>]");
 	GMT_Usage (API, -2, "Specify which spline to use; except for c|p, append normalized <tension> between 0 and 1:");
 	GMT_Usage (API, 3, "c: Minimum curvature spline (Sandwell, 1987) [Default].");
 	GMT_Usage (API, 3, "l: Linear (1-D) or bilinear (2-D) spline.");
-	GMT_Usage (API, 3, "t: Cartesian spline in tension (Wessel & Bercovici, 1998). Append <tension> and "
-		"optionally append /<scale> for length-scale [Default is the given output spacing].");
-	GMT_Usage (API, 3, "r: Regularized spline in tension (Mitasova & Mitas, 1993). Append <tension> and "
-		"optionally append /<scale> for length-scale [Default is given output spacing].");
 	GMT_Usage (API, 3, "p: Spherical surface spline (Parker, 1994); automatically sets -D4.");
 	GMT_Usage (API, 3, "q: Spherical surface spline in tension (Wessel & Becker, 2008); automatically sets -D4. Append <tension>. "
-		"Optionally, append +e<error> to change maximum error in series truncation [%g] and "
-		"+n<n> to change the (odd) number of precalculated nodes for spline interpolation [%d].", SQ_TRUNC_ERROR, SQ_N_NODES);
+		"Optionally, append +e<limit> to change maximum error in series truncation [%g] and "
+		"+n<odd> to change the (odd) number of precalculated nodes for spline interpolation [%d].", SQ_TRUNC_ERROR, SQ_N_NODES);
+	GMT_Usage (API, 3, "r: Regularized spline in tension (Mitasova & Mitas, 1993). Append <tension> and "
+		"optionally append /<scale> for length-scale [Default is given output spacing].");
+	GMT_Usage (API, 3, "t: Cartesian spline in tension (Wessel & Bercovici, 1998). Append <tension> and "
+		"optionally append /<scale> for length-scale [Default is the given output spacing].");
 	GMT_Usage (API, 1, "\n-T<maskgrid>");
 	GMT_Usage (API, -2, "Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r) and thus -T only applies to 2-D gridding.");
 	GMT_Usage (API, 1, "\n-W[w]");
