@@ -1468,8 +1468,8 @@ GMT_LOCAL int gmtsupport_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETT
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge at z' = 0 for slice k = %u!\n", k);
 		return (int)k;
 	}
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Hinge requested but no hinge at z' = 0 was found in this CPT\n");
-	return GMT_NOTSET;
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Hinge requested but no hinge at z' = 0 was found in this CPT\n");
+	return GMT_PARSE_ERROR;
 }
 
 /*! . */
@@ -9041,7 +9041,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		}
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
-		gmt_stretch_cpt (GMT, P, zmin, zmax);
+		if ((gmt_stretch_cpt (GMT, P, zmin, zmax)) == GMT_PARSE_ERROR) return (NULL);
 	}
 	else if (file) {	/* Gave a CPT file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
@@ -9098,6 +9098,7 @@ GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	if (!P->has_hinge) return GMT_NOTSET;	/* Not our concern here */
 	/* Claims to have a hinge */
 	ks = gmtsupport_find_cpt_hinge (GMT, P);	/* Get hinge slice (or -1 if no hinge found) */
+	if (ks == GMT_PARSE_ERROR) return (GMT_PARSE_ERROR);
 	if (ks == GMT_NOTSET) {	/* Must be a rogue CPT - ignore the hinge setting */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_stretch_cpt: CPT says it has a hinge but none is actually found? - ignored.\n");
 		P->has_hinge = 0;
@@ -9123,7 +9124,7 @@ GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 }
 
 /*! . */
-void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
+unsigned int gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead (if available).
 	 * Note: If P has a hinge then its value is expected to be in the final user data values.
@@ -9138,11 +9139,11 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_stretch_cpt: Passed z_low == z_high but CPT has no explicit range.  No changes made\n");
-			return;
+			return GMT_NOERROR;
 		}
 		z_low = P->minmax[0];	z_high = P->minmax[1];
 	}
-	ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high);	/* Deal with any issure related to hinges */
+	if ((ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high)) == GMT_PARSE_ERROR) return (GMT_PARSE_ERROR);	/* Deal with any issue related to hinges */
 
 	z_min = P->data[0].z_low;
 	z_start = z_low;
@@ -9160,6 +9161,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		P->data[is].z_high = z_start + (P->data[is].z_high - z_min) * scale;
 		P->data[is].i_dz /= scale;
 	}
+	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -9743,7 +9745,7 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	 * expand it to its natural z-range before we can truncate since z_low/z_high are in user units */
 
 	if (P->has_range) {
-		gmt_stretch_cpt (GMT, P, 0.0, 0.0);	/* Stretch to its natural range first */
+		if ((gmt_stretch_cpt (GMT, P, 0.0, 0.0)) == GMT_PARSE_ERROR) return NULL;	/* Stretch to its natural range first */
 		P->has_range = 0;
 	}
 

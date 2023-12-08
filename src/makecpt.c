@@ -630,7 +630,9 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	if (!Ctrl->T.interpolate) {	/* Just copy what was in the CPT but stretch to given range min/max */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->T.T.min, Ctrl->T.T.max);	/* Stretch to given range or use natural range if 0/0 */
+		/* Stretch to given range or use natural range if 0/0 */
+		if ((gmt_stretch_cpt (GMT, Pout, Ctrl->T.T.min, Ctrl->T.T.max)) == GMT_PARSE_ERROR)
+			Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)	/* Also flip the colors */
 			gmt_invert_cpt (GMT, Pout);
 		if (Ctrl->Q.mode == 1)
