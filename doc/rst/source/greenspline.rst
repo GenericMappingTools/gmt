@@ -23,7 +23,8 @@ Synopsis
 [ |-N|\ *nodefile* ]
 [ |-Q|\ [*az*\|\ *x/y/z*] ]
 [ |-R|\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
-[ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
+[ |-S|\ **c**\|\ **l**\|\ **p**\|\ **q**\|\ **r**\|\ **t**\ [*pars*][**+e**][**+n**] ]
+[ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]]
 [ |-Z|\ *mode* ]
@@ -263,28 +264,31 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*]
+**-S**\ **c**\|\ **l**\|\ **p**\|\ **q**\|\ **r**\|\ **t**\ [*pars*][**+e**][**+n**]
     Select one of six different splines. The first two are used for
     1-D, 2-D, or 3-D Cartesian splines (see |-Z| for discussion). Note
     that all tension values are expected to be normalized tension in the
-    range 0 < *t* < 1: (**c**) Minimum curvature spline [*Sandwell*,
-    1987], (**t**) Continuous curvature spline in tension [*Wessel and
-    Bercovici*, 1998]; append *tension*\ [/*scale*] with *tension* in
-    the 0-1 range and optionally supply a length scale [Default is the
-    average grid spacing]. The next is a 1-D or 2-D spline: (**l**)
-    Linear (1-D) or Bilinear (2-D) spline; these produce output that do
-    not exceed the range of the given data.  The next is a 2-D or 3-D spline: (**r**)
-    Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
-    append *tension* and optional *scale*. The last two are spherical
-    surface splines and both imply **-Z**\ 4: (**p**) Minimum
-    curvature spline [*Parker*, 1994], (**q**) Continuous curvature
-    spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
-    :math:`g(\mathbf{x}; \mathbf{x}')` for the last method is slower to compute (a series solution) so we
-    pre-calculate values and use cubic spline interpolation lookup instead.
-    Optionally append **+n**\ *N* (an odd integer) to change how many
-    points to use in the spline setup [10001].  The finite Legendre sum has
-    a truncation error [1e-6]; you can lower that by appending **+e**\ *limit*
-    at the expense of longer run-time.
+    range 0 < *t* < 1. Choose among these directives:
+
+    - **c**: Minimum curvature spline [*Sandwell*, 1987] (1-D, 2-D, or 3-D Cartesian spline).
+    - **l**: Linear (1-D) or Bilinear (2-D) spline; these produce output that do
+      not exceed the range of the given data  (1-D or 2-DCartesian spline).
+    - **p**: Minimum curvature spline [*Parker*, 1994] (spherical surface splines and implies **-Z**).
+    - **q**: Continuous curvature spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
+      :math:`g(\mathbf{x}; \mathbf{x}')` for the last method is slower to compute (a series solution),
+      so we pre-calculate values and use cubic spline interpolation lookup instead.(spherical surface
+      splines and implies **-Z**).
+    - **r**: Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
+      append *tension* and optional *scale* (2-D or 3-D spline).
+    - **t**: Continuous curvature spline in tension [*Wessel and Bercovici*, 1998];
+      append *tension*\ [/*scale*] with *tension* in the 0-1 range and optionally
+      supply a length scale [Default is the average grid spacing] (1-D, 2-D, or 3-D Cartesian spline).
+
+      **Note**: Directive **q** can take two optional modifiers:
+      
+      - **+e**: The finite Legendre sum has a truncation error [1e-6]; you can lower that by appending *limit*
+        at the expense of longer run-time.
+      - **+n**: Change how many  points to use in the spline setup by appending *N* [10001] (must be an odd integer).
 
 .. _-T:
 
