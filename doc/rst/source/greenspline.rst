@@ -18,8 +18,8 @@ Synopsis
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
+[ |-F|\ *evalfile* ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
-[ |-K|\ [*file*] ]
 [ |-L|\ [**t**][**r**] ]
 [ |-N|\ *nodefile* ]
 [ |-Q|\ [*az*\|\ *x/y/z*] ]
@@ -195,18 +195,18 @@ Optional Arguments
     eigenvalue, percent of model variance explained, and rms misfit.  If |-W|
     is used we also append :math:`\chi^2`.
 
+.. _-F:
+
+**-F**\ *evalfile*
+    Write misfit and variance evaluation statistics to *evalfile*.
+    Requires |-E| as well. Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is used we
+    add :math:`\chi^2` as a final 8th column. **Note**: If |-F| is not used then
+    |-V|\ **i** will report these via two verbose messages.
+
 .. _-I:
 
 **-I**\ *xinc*\ [/*yinc*\ [/*zinc*]]
     Specify equidistant sampling intervals, on for each dimension, separated by slashes.
-
-.. _-K:
-
-**-K**\ [*file*]
-    Write misfit and variance evaluation statistics to *file* (or *stdout* if no file is given).
-    Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is used we
-    add :math:`\chi^2` as a final 8th column. **Note**: If |-K| is not used then
-    |-V|\ **i** will report these via two verbose messages.
 
 .. _-L:
 
