@@ -94,27 +94,31 @@ Optional Arguments
 .. _-C:
 
 **-C**\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
-    Find an approximate surface fit: Solve the linear system for the
+   Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from smaller
     eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly (unless |-W| is used)]. Append a directive and *value*
-    to determine which eigenvalues to keep: **n** will retain only the *value* largest
-    eigenvalues [all], **r** [Default] will retain those eigenvalues whose ratio
-    to the largest eigenvalue is less than *value* [0], while **v** will retain
-    the eigenvalues needed to ensure the model prediction variance fraction is at
-    least *value*. For **n** and **v** you may append % if *value* is given as a
-    *percentage* of the total instead.  Several optional modifiers are available:
-    Append **+f**\ *file* to save the eigenvalues to the specified file for further
-    analysis. If **+n** is given then **+f**\ *file* is required and execution will
-    stop after saving the eigenvalues, i.e., no surface output is produced.
-    The two other modifiers (**+c** and **+i**) can be used to
-    write intermediate grids, two (*u* and *v*) per eigenvalue, and we will
-    automatically insert "_cum_###" or "_inc_###" before the file extension,
-    using a fixed integer format for the eigenvalue number starting at 0.  The
-    **+i** modifier will write the **i**\ ncremental contributions to the grids
-    for each eigenvalue, while **+c** will instead produce the **c**\ umulative
-    sum of these contributions. Use both modifiers to write both types of
-    intermediate grids.
+    to determine which eigenvalues to keep:
+
+    - **n**: Retain only the *value* numbers largest eigenvalues [all]. Optionally,
+      append % to indicate *value* is given in percentage.
+    - **r**: Retain those eigenvalues whose ratio to the largest eigenvalue is less than
+      *value* [Default, with *value* = 0].
+    - **v**: Retain the eigenvalues needed to ensure the model prediction variance fraction
+      is at least *value*. Optionally, append % to indicate *value* is given in percentage.
+
+    Several optional modifiers are available:
+
+    - **+c**: Produce the cumulative sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
+    - **+f**: Append *file* to save the eigenvalues to the specified file for further analysis.
+    - **+i**: Produce the incremental sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
+    - **+n**: If given then **+f**\ *file* is required and execution will
+      stop after saving the eigenvalues, i.e., no surface output is produced. 
+    
+    **Notes**: (1) Modifiers **++c** and **+i** require a file name with a suitable extension
+    to be given via |-G| (we automatically insert "_cum_###" or "_inc_###" before the
+    extension, using a fixed integer format for the eigenvalue number, starting at 0).
+    (2) Use both modifiers to write both types of intermediate grids.
 
 .. _-E:
 
