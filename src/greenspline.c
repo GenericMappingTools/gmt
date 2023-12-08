@@ -82,10 +82,12 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		char *information;
 	} D;
-	struct GREENSPLINE_E {	/* -E[<file>] */
+	struct GREENSPLINE_E {	/* -E[<misfile>][+r<reportfile>] */
 		bool active;
+		bool report;
 		unsigned int mode;
-		char *file;
+		char *misfitfile;
+		char *reportfile;	/* Output file for log */
 	} E;
 	struct GREENSPLINE_G {	/* -G<output_grdfile> */
 		bool active;
@@ -222,6 +224,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->E.misfitfile);
+	gmt_M_str_free (C->E.reportfile);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->N.file);
 	gmt_M_str_free (C->T.file);
@@ -233,8 +237,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] "
-		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
-		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
+		"[-D<information>] [-E[<misfitfile>][+r<reportfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
+		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|p|q|r|t][<tension>[/<scale>]][+e<limit>][+n<odd>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -276,10 +280,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+n Stop execution after reporting the eigenvalues - no solution is computed.");
 	GMT_Usage (API, -2, "Note: Without -C we use Gauss-Jordan elimination to solve the linear system.");
 	gmt_grdcube_info_syntax (API->GMT, 'D');
-	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
+	GMT_Usage (API, 1, "\n-E[<misfitfile>][+r<reportfile>]");
 	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
-		"Append a filename to save all data with two extra columns for model and misfit. "
+		"Append <misfitfile> to save all data with two extra columns for model and misfit [<stdout>]. "
 		"If -C+i|c are used then we instead report the history of model variance and rms misfit.");
+	GMT_Usage (API, 3, "+r Write statistics to file <reportfile> [By default we write to <stderr> if -Vi is selected]");
 	GMT_Usage (API, 1, "\n-I<dx>[/<dy>[/<dz>]]");
 	GMT_Usage (API, -2, "Specify a regular set of output locations. Give equidistant increment for each dimension. "
 		"Requires -R for specifying the output domain.");
@@ -303,18 +308,18 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 			"Requires -I for specifying equidistant increments.  For 2-D gridding a gridfile may be given; "
 			"this then also sets -I (and perhaps -r); use those options to override the grid settings.");
 	}
-	GMT_Usage (API, 1, "\n-Sc|l|t|r|p|q[<pars>]");
+	GMT_Usage (API, 1, "\n-Sc|l|p|q|r|t][<tension>[/<scale>]][+e<limit>][+n<odd>]");
 	GMT_Usage (API, -2, "Specify which spline to use; except for c|p, append normalized <tension> between 0 and 1:");
 	GMT_Usage (API, 3, "c: Minimum curvature spline (Sandwell, 1987) [Default].");
 	GMT_Usage (API, 3, "l: Linear (1-D) or bilinear (2-D) spline.");
-	GMT_Usage (API, 3, "t: Cartesian spline in tension (Wessel & Bercovici, 1998). Append <tension> and "
-		"optionally append /<scale> for length-scale [Default is the given output spacing].");
-	GMT_Usage (API, 3, "r: Regularized spline in tension (Mitasova & Mitas, 1993). Append <tension> and "
-		"optionally append /<scale> for length-scale [Default is given output spacing].");
 	GMT_Usage (API, 3, "p: Spherical surface spline (Parker, 1994); automatically sets -D4.");
 	GMT_Usage (API, 3, "q: Spherical surface spline in tension (Wessel & Becker, 2008); automatically sets -D4. Append <tension>. "
-		"Optionally, append +e<error> to change maximum error in series truncation [%g] and "
-		"+n<n> to change the (odd) number of precalculated nodes for spline interpolation [%d].", SQ_TRUNC_ERROR, SQ_N_NODES);
+		"Optionally, append +e<limit> to change maximum error in series truncation [%g] and "
+		"+n<odd> to change the (odd) number of precalculated nodes for spline interpolation [%d].", SQ_TRUNC_ERROR, SQ_N_NODES);
+	GMT_Usage (API, 3, "r: Regularized spline in tension (Mitasova & Mitas, 1993). Append <tension> and "
+		"optionally append /<scale> for length-scale [Default is given output spacing].");
+	GMT_Usage (API, 3, "t: Cartesian spline in tension (Wessel & Bercovici, 1998). Append <tension> and "
+		"optionally append /<scale> for length-scale [Default is the given output spacing].");
 	GMT_Usage (API, 1, "\n-T<maskgrid>");
 	GMT_Usage (API, -2, "Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r) and thus -T only applies to 2-D gridding.");
 	GMT_Usage (API, 1, "\n-W[w]");
@@ -567,10 +572,14 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 					Ctrl->D.information = strdup (opt->arg);
 				}
 				break;
-			case 'E':	/* Evaluate misfit -E[<file>]*/
+			case 'E':	/* Evaluate misfit -E[<misfitfile>][+r<reportfile>] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				if (opt->arg) {
-					Ctrl->E.file = strdup (opt->arg);
+				if ((c = strstr (opt->arg, "+r"))) {
+					Ctrl->E.reportfile = strdup (&c[2]);
+					c[0] = '\0';
+				}
+				if (opt->arg) {	/* Gave a misfit file [stdout] */
+					Ctrl->E.misfitfile = strdup (opt->arg);
 					Ctrl->E.mode = 1;
 				}
 				break;
@@ -2529,6 +2538,19 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		rms = sqrt (rms / nm);
 		std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
+		if (Ctrl->E.report) {	/* Want a log file of the evaluations instead of writing to stderr */
+			FILE *fp = NULL;
+			if ((fp = fopen (Ctrl->E.reportfile, "w")) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unable to create report file %s - aborting\n", Ctrl->E.reportfile);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			fprintf (fp, "# Misfit & Variance Evaluation: Data\tModel\tExplained(%%)\tN\tMean\tStd.dev\tRMS%s\n", (Ctrl->W.active) ? "\tChi^2" : "");
+			if (Ctrl->W.active)	/* Add misfit chi^2 as extra column */
+				fprintf (fp, "%g\t%g\t%g\t%" PRIu64 "\t%g\t%g\t%g\t%g\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum, nm, mean, std, rms, chi2_sum);
+			else
+				fprintf (fp, "%g\t%g\t%g\t%" PRIu64 "\t%g\t%g\t%g\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum, nm, mean, std, rms);
+			if (fp != stdout) fclose (fp);	/* Close the file */
+		}
 		if (Ctrl->W.active)
 			GMT_Report (API, GMT_MSG_INFORMATION, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", nm, mean, std, rms, chi2_sum);
 		else
@@ -2549,7 +2571,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.misfitfile, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -2790,7 +2812,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
 				for (k = 0; k < 5; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
-				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.misfitfile, E) != GMT_NOERROR) {
 					Return (API->error);
 				}
 				gmt_M_free (GMT, eigen);
