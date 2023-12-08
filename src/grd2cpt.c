@@ -710,7 +710,8 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max);
+		if ((gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max)) == GMT_PARSE_ERROR)
+			Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)
 			gmt_invert_cpt (GMT, Pout);	/* Also flip the colors */
 		cpt_flags = 0;

@@ -1922,8 +1922,10 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		Ctrl->D.emode &= 4;	/* This removes any 1,2,3 of selected but leaves 4 for nan */
 	}
 
-	if (P->has_range)	/* Convert from normalized to default CPT z-range */
-		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
+	if (P->has_range) {	/* Convert from normalized to default CPT z-range */
+		if ((gmt_stretch_cpt (GMT, P, 0.0, 0.0)) == GMT_PARSE_ERROR)
+			Return (GMT_RUNTIME_ERROR);
+	}
 
 	if (P->categorical && (Ctrl->D.emode & 1 || Ctrl->D.emode & 2)) {
 			GMT_Report (API, GMT_MSG_WARNING, "Option -D: Cannot select back/fore-ground extender for categorical CPT\n");
