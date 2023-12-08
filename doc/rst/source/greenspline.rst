@@ -19,6 +19,7 @@ Synopsis
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
+[ |-K|\ [*file*] ]
 [ |-L|\ [**t**][**r**] ]
 [ |-N|\ *nodefile* ]
 [ |-Q|\ [*az*\|\ *x/y/z*] ]
@@ -198,6 +199,14 @@ Optional Arguments
 
 **-I**\ *xinc*\ [/*yinc*\ [/*zinc*]]
     Specify equidistant sampling intervals, on for each dimension, separated by slashes.
+
+.. _-K:
+
+**-K**\ [*file*]
+    Write misfit and variance evaluation statistics to *file* (or *stdout* if no file is given).
+    Output order is *Data Model Explained(%) N Mean Std.dev RMS*; if |-W| is used we
+    add *chi^2* as a final 8th column.
+    If |-K| is not used then |-V|\ **i** will report these via two verbose messages.
 
 .. _-L:
 

@@ -95,6 +95,10 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		double inc[3];
 	} I;
+	struct GREENSPLINE_K {	/* -K[<file>] */
+		bool active;
+		char *file;		/* Output file for log (stdout if NULL) */
+	} K;
 	struct GREENSPLINE_L {	/* -L */
 		bool active;
 		bool detrend;	/* true if OK to detrend a linear curve/plane */
@@ -223,6 +227,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* De
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->K.file);
 	gmt_M_str_free (C->N.file);
 	gmt_M_str_free (C->T.file);
 	gmt_M_str_free (C->S.arg);
@@ -233,7 +238,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] "
-		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
+		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-K[<file>]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
 		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
@@ -283,6 +288,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-I<dx>[/<dy>[/<dz>]]");
 	GMT_Usage (API, -2, "Specify a regular set of output locations. Give equidistant increment for each dimension. "
 		"Requires -R for specifying the output domain.");
+	GMT_Usage (API, 1, "\n[-K[<file>]]");
+	GMT_Usage (API, -2, "Write statistics to <file> [<stdout> if no <file> is given. without -K we write to <stderr> if -Vi is selected].");
 	GMT_Usage (API, 1, "\n-L Control the trend function T(x) and normalization used. We always remove/restore the mean data value. "
 		"We can (and by default will) remove/restore a linear trend and normalize/renormalize by data residual range. Change default by adding on or both of these directives:");
 	GMT_Usage (API, 3, "t: Fit a least-squares line (1-D) or plane (2-D) and remove/restore this trend from data and gradients [Default is possible].");
@@ -587,6 +594,10 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				}
 				if (Ctrl->I.inc[GMT_Y] == 0.0) Ctrl->I.inc[GMT_Y] = Ctrl->I.inc[GMT_X];
 				if (Ctrl->I.inc[GMT_Z] == 0.0) Ctrl->I.inc[GMT_Z] = Ctrl->I.inc[GMT_X];
+				break;
+			case 'K':	/* Control desired log statistic saved to <file> */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->K.active);
+				if (opt->arg[0]) n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->K.file));
 				break;
 			case 'L':	/* Control desired combination of detrending and normalization */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
@@ -2529,7 +2540,20 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		rms = sqrt (rms / nm);
 		std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
-		if (Ctrl->W.active)
+		if (Ctrl->K.active) {	/* Want a log file of the evaluations instead of to stderr */
+			FILE *fp = stdout;	/* Default output if no file is given */
+			if (Ctrl->K.file && (fp = fopen (Ctrl->K.file, "w")) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Option -K: Unable to create file %s - aborting\n", Ctrl->K.file);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			fprintf (fp, "# Misfit & Variance Evaluation: Data\tModel\tExplained(%%)\tN\tMean\tStd.dev\tRMS%s\n", (Ctrl->W.active) ? "\tChi^2" : "");
+			if (Ctrl->W.active)	/* Add misfit chi^2 as extra column */
+				fprintf (fp, "%g\t%g\t%g\t%" PRIu64 "\t%g\t%g\t%g\t%g\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum, nm, mean, std, rms, chi2_sum);
+			else
+				fprintf (fp, "%g\t%g\t%g\t%" PRIu64 "\t%g\t%g\t%g\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum, nm, mean, std, rms);
+			if (fp != stdout) fclose (fp);	/* Close the file */
+		}
+		else if (Ctrl->W.active)
 			GMT_Report (API, GMT_MSG_INFORMATION, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", nm, mean, std, rms, chi2_sum);
 		else
 			GMT_Report (API, GMT_MSG_INFORMATION, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", nm, mean, std, rms);
