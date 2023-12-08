@@ -6,6 +6,32 @@
 Changelog
 =========
 
+New Features in GMT 6.5
+=======================
+
+New Core Module Features in GMT 6.5
+-----------------------------------
+
+* :doc:`batch`: Allow -F to set a more specific naming template (`#6934 <https://github.com/GenericMappingTools/gmt/pull/6934>`_)
+* :doc:`batch`: Let -D drop the mandatory moving of product files (`#6933 <https://github.com/GenericMappingTools/gmt/pull/6933>`_)
+* :doc:`convert`: Add option to transpose a dataset (`#7478 <https://github.com/GenericMappingTools/gmt/pull/7478>`_)
+* :doc:`grdcut`: Let -E extract a vertical slice from a 3-D cube (`#7961 <https://github.com/GenericMappingTools/gmt/pull/7961>`_)
+* :doc:`movie`: Let -A handle addition of audio track (`#7461 <https://github.com/GenericMappingTools/gmt/pull/7461>`_)
+* :doc:`select`: Add modifier +h[k|s] to -Z (`#7309 <https://github.com/GenericMappingTools/gmt/pull/7309>`_)
+* :doc:`spatial`: Augment with -N+i (`#7747 <https://github.com/GenericMappingTools/gmt/pull/7747>`_)
+
+Supplement updates in GMT 6.5
+-----------------------------
+
+Enhancements in GMT 6.5
+-----------------------
+
+Maintenance updates in GMT 6.5
+------------------------------
+
+Deprecations in GMT 6.5
+-----------------------
+
 New Features in GMT 6.4
 =======================
 
@@ -76,8 +102,8 @@ Enhancements in GMT 6.4
 * Handle longer strings for netCDF history, remark and title (`#6084 <https://github.com/GenericMappingTools/gmt/pull/6084>`_)
 * Let -X -Y also handle multipliers and not just divisors (`#6305 <https://github.com/GenericMappingTools/gmt/pull/6305>`_)
 
-Maintenance updates in GMT 6.4.0
---------------------------------
+Maintenance updates in GMT 6.4
+------------------------------
 
 * Initialize data version control for managing test images (`#5888 <https://github.com/GenericMappingTools/gmt/pull/5888>`_)
 
