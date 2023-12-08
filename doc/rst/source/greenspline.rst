@@ -204,9 +204,9 @@ Optional Arguments
 
 **-K**\ [*file*]
     Write misfit and variance evaluation statistics to *file* (or *stdout* if no file is given).
-    Output order is *Data Model Explained(%) N Mean Std.dev RMS*; if |-W| is used we
-    add *chi^2* as a final 8th column.
-    If |-K| is not used then |-V|\ **i** will report these via two verbose messages.
+    Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is used we
+    add :math:`\chi^2` as a final 8th column. **Note**: If |-K| is not used then
+    |-V|\ **i** will report these via two verbose messages.
 
 .. _-L:
 
