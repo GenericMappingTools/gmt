@@ -20,7 +20,7 @@ Synopsis
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
-[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
 [ |-Q|\ [*color*][**+z**\ *value*] ]
