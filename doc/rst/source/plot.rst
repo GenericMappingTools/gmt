@@ -124,33 +124,33 @@ Optional Arguments
     Draw error bars or box-and-whisker symbols. Make the selection via a directive
     (if no directive is given we plot both the *x* and *y* error bars, i.e., |-E|\ **xy**):
 
-    - **x**: Draw an error bar in *x* direction. The *x* errors must be stored
+    - **x** - Draw an error bar in *x* direction. The *x* errors must be stored
       in the columns after the (*x, y*) pair [or (*x, y, z*) triplet].
-    - **y**: Draw an error bar in *y* direction. The *y* errors must be stored
+    - **y** - Draw an error bar in *y* direction. The *y* errors must be stored
       in the columns after the (*x, y*) pair [or (*x, y, z*) triplet].
-    - **X**: Draw a box-and-whisker symbol (i.e., stem-and-leaf) in *x* direction.
+    - **X** - Draw a box-and-whisker symbol (i.e., stem-and-leaf) in *x* direction.
       The *x* coordinate is then taken as the median value, and four more columns
       are expected to contain the minimum (0% quantile), the 25% quantile, the 75% quantile,
       and the maximum (100% quantile) *x*-values. The 25-75% box may be filled by
       using |-G|. These quantities must be stored in the columns after the (*x, y*)
       pair [or (*x, y, z*) triplet].
-    - **Y**: Draw a box-and-whisker symbol (i.e., stem-and-leaf) in *y* direction.
+    - **Y** - Draw a box-and-whisker symbol (i.e., stem-and-leaf) in *y* direction.
       Same layount as for **X**.
 
     Several modifiers can affect the appearance of the symbols:
 
-    - **+a**: Draw asymmetrical error bars [Default is symmetrical error bars];
+    - **+a** - Draw asymmetrical error bars [Default is symmetrical error bars];
       these requires two rather than one extra data column, with the two signed
       deviations.
-    - **+A**: Similar, but read the low and high bounds rather than signed deviations.
-    - **+n**: Draw notched "box-and-whisker" symbols where the notch width reflects
+    - **+A** - Similar, but read the low and high bounds rather than signed deviations.
+    - **+n** - Draw notched "box-and-whisker" symbols where the notch width reflects
       the uncertainty in the median. This symbol requires a 5th extra data column to
       contain the number of points in the distribution.
-    - **+w**: Set the *width* that indicates the length of the end-cap on error bars [7\ **p**].
+    - **+w** - Set the *width* that indicates the length of the end-cap on error bars [7\ **p**].
       For box-and-whisker symbols it sets both the default box width *and* whisker cap length [7\ **p**].
       Append *width*\ /*cap* to set separate width and cap dimensions for such symbols.
-    - **+p**: Append preferred error bar *pen* [Defaults: width = 0.25p, color = black, style = solid].
-    - **+c**: When |-C| is used we can control how the look-up color is applied to our symbol.
+    - **+p** - Append preferred error bar *pen* [Defaults: width = 0.25p, color = black, style = solid].
+    - **+c** - When |-C| is used we can control how the look-up color is applied to our symbol.
       Append **+cf** to use it to fill the symbol, while **+cl** will just
       set the error pen color and turn off symbol fill.  Giving **+c** without an argument
       will set both color items.
@@ -227,11 +227,11 @@ Optional Arguments
 **-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] |ex_OPT-L|
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment:
 
-    - **+d**: Build a symmetrical envelope around *y*\ (*x*) using deviations *dy*\ (*x*) given in extra column 3.
-    - **+D**: Build an asymmetrical envelope around *y*\ (*x*) using deviations *dy1*\ (*x*) and *dy2*\ (*x)* from extra columns 3-4.
-    - **+b**: Build an asymmetrical envelope around *y*\ (*x*) using bounds *yl*\ (*x*) and *yh*\ (*x*) from extra columns 3-4.
-    - **+x**: Connect first and last point to anchor points at either *xmin* (append **l**), *xmax* (append **r**), or *x0* (append it).
-    - **+y**: Connect first and last point to anchor points at either *ymin* (append **b**), *xmax* (append **t**), or *y0* (append it).
+    - **+d** - Build a symmetrical envelope around *y*\ (*x*) using deviations *dy*\ (*x*) given in extra column 3.
+    - **+D** - Build an asymmetrical envelope around *y*\ (*x*) using deviations *dy1*\ (*x*) and *dy2*\ (*x)* from extra columns 3-4.
+    - **+b** - Build an asymmetrical envelope around *y*\ (*x*) using bounds *yl*\ (*x*) and *yh*\ (*x*) from extra columns 3-4.
+    - **+x** - Connect first and last point to anchor points at either *xmin* (append **l**), *xmax* (append **r**), or *x0* (append it).
+    - **+y** - Connect first and last point to anchor points at either *ymin* (append **b**), *xmax* (append **t**), or *y0* (append it).
 
     Such polygons may be painted (|-G|) and optionally outlined by adding modifier **+p**\ *pen* [no outline].
     **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
@@ -245,23 +245,23 @@ Optional Arguments
     number of segments (which can vary from pair to pair). Thus, the order of the even
     number of tables given on the command line is important. Two directives are available:
 
-    - **c**: Indicate that :math:`y_1(x)` is co-registered with :math:`y_0(x)` and is given
+    - **c** - Indicate that :math:`y_1(x)` is co-registered with :math:`y_0(x)` and is given
       as column 2 (i.e., third) in any number of files having three columns. Each file may
       contain any number of segments per file.
-    - **s**: Same but the two curves are given via separate pairs of tables [Default].
+    - **s** - Same but the two curves are given via separate pairs of tables [Default].
     
     Several modifiers are at your disposal:
 
-    - **+g**: We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds
+    - **+g** - We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds
       :math:`y_1(x)`. For the opposite case, append another *fill* here.  
-    - **+l**: For the primary curve :math:`y_0(x)`, a legend label can be set via option
+    - **+l** - For the primary curve :math:`y_0(x)`, a legend label can be set via option
       |SYN_OPT-l|. For a secondary label use this modifier to append the label.  
-    - **+p**: Specify a separate pen for drawing curve :math:`y_1(x)` [Default is same pen
+    - **+p** - Specify a separate pen for drawing curve :math:`y_1(x)` [Default is same pen
       as :math:`y_0(x)`]. See |-W| for specifying the pen for curve :math:`y_0(x)`.
-    - **+r**: Specify a pen to simply draw a line instead of a filled box in the legend, but
+    - **+r** - Specify a pen to simply draw a line instead of a filled box in the legend, but
       replace the color information with that from the fill settings (i.e., only the *pen*
       width is used as specified, the color is not used).
-    - **+y**: Compare your data with a horizontal constant line then append the level and the
+    - **+y** - Compare your data with a horizontal constant line then append the level and the
       :math:`y_1(x)` curve is generated for you and all input files will be compared with it.
 
     **Notes**: (1) Normally, we show one (|-G|) or two (**+g**) filled rectangles in the legend
@@ -309,21 +309,21 @@ Optional Arguments
     *width* = 0.25p, *color* = black, *style* = solid]. Modifiers can be used to change the
     appearance of the line:
 
-    - **+c**: Determine how the color from the cpt file lookup is applied to symbol 
+    - **+c** - Determine how the color from the cpt file lookup is applied to symbol 
       and|or fill.  Append **l** to have the color of the line to be taken from the CPT (see
       |-C|). If instead **f** is appended then the color from the cpt file is applied
       to symbol fill.  If no argument is given the we use the color for both pen and fill.
-    - **+o**: Append *offset*\ [*unit*] and we will start and stop drawing the line at the
+    - **+o** - Append *offset*\ [*unit*] and we will start and stop drawing the line at the
       given distance *offset* from the end point. Append a *unit* from **c**\|\ **i**\|\ **p** to
       indicate plot distance offsets on the map or append map distance units instead (see Units below)
       [Cartesian distances]. Give *offset* as *b_offset*/*e_offset* if the beginning and end of the
       line should have different offsets.
-    - **+s**: Draw the line using a Bezier spline [linear spline].
-    - **+v**: Given [**b**\|\ **e**]\ *vspecs*, we place a vector head at the ends of the lines. Prepend
+    - **+s** - Draw the line using a Bezier spline [linear spline].
+    - **+v** - Given [**b**\|\ **e**]\ *vspecs*, we place a vector head at the ends of the lines. Prepend
       **b** (beginning) or **e** (end) to add a vector at only one end [Default is shared specs for both end of the line].
-      **Note**: Because **+v** may take additional modifiers it must necessarily be given
+      **Note** - Because **+v** may take additional modifiers it must necessarily be given
       at the end of the pen specification. See the `Vector Attributes`_ for more information or such modifiers.
-    - **+z**: If |-Z| is set, assign pen color via **-C**\ *cpt* and the *z*-values obtained
+    - **+z** - If |-Z| is set, assign pen color via **-C**\ *cpt* and the *z*-values obtained
       (same if transparency is set via |-Z|).  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
       we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
       or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
@@ -346,14 +346,14 @@ Optional Arguments
 
     To apply the color we must use the |-G| or |-W| options in conjunction with |-Z|:
 
-    - **-G+z**: Apply the color to the polygon fill.
-    - **-W+z**: Apply the color to the pen instead.
+    - **-G+z** - Apply the color to the polygon fill.
+    - **-W+z** - Apply the color to the pen instead.
 
     Two modifiers is used to also handle transparency and|or color:
 
-    - **+t**: Modulate the transparency of the polygon or line instead; the
+    - **+t** - Modulate the transparency of the polygon or line instead; the
       *z*-value will be assumed to be transparency in the 0-100 % range.
-    - **+T**: Supply two columns via *file*: The last column must be the *z*-value
+    - **+T** - Supply two columns via *file*: The last column must be the *z*-value
       while the penultimate column must have transparencies (in 0-100 % range).
 
 .. include:: explain_-aspatial.rst_

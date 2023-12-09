@@ -99,10 +99,10 @@ Optional Arguments
     to *height*.  If |-H| is used to compute variable density contrasts then we must split each prism into a stack
     of sub-prisms with individual densities. This is controlled via these modifiers:
 
-    - **+q**: Quit execution once that *file* set with **+w** has been saved, i.e., no geopotential calculations
+    - **+q** - Quit execution once that *file* set with **+w** has been saved, i.e., no geopotential calculations
       will take place.
-    - **+w**: Append *file* to save the prisms to a table.
-    - **+z**: Append *dz* for the heights of these sub-prisms (the first and last sub-prisms in the stack may have
+    - **+w** - Append *file* to save the prisms to a table.
+    - **+z** - Append *dz* for the heights of these sub-prisms (the first and last sub-prisms in the stack may have
       their heights adjusted to match the limits of the surfaces). Without |-H| we only create a single
       uniform-density prism, but those prisms may have spatially varying densities via a grid given in |-D|.
 
@@ -148,11 +148,11 @@ Optional Arguments
     the *rho_l* and *rho_h* seamount densities in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3` and
     the fixed reference height *H* in meters.  Modifiers can be used for further changes:
     
-    - **+b**: Simulate the higher starting densities in truncated guyots. You can *boost* the seamount
+    - **+b** - Simulate the higher starting densities in truncated guyots. You can *boost* the seamount
       height by this factor [1]. Requires |-S| to know the full height of the seamount.
-    - **+d**: Change the water-pressure-driven flank *densify* gradient over the
+    - **+d** - Change the water-pressure-driven flank *densify* gradient over the
       full reference height [0].
-    - **+p**: Change variable density profile exponent *power* [Default is 1, i.e., a linear change].
+    - **+p** - Change variable density profile exponent *power* [Default is 1, i.e., a linear change].
 
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
 

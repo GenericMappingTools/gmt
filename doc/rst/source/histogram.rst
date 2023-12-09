@@ -113,10 +113,10 @@ Optional Arguments
     Annotate each bar with the count it represents.  Append any of the
     following modifiers:
 
-    - **+b**: Place the labels beneath the bars instead of above.
-    - **+f**: Change to another font than the default annotation font.
-    - **+o**: Change the offset between bar and label [6p].
-    - **+r**: Rotate the labels from horizontal to vertical.
+    - **+b** - Place the labels beneath the bars instead of above.
+    - **+f** - Change to another font than the default annotation font.
+    - **+o** - Change the offset between bar and label [6p].
+    - **+r** - Rotate the labels from horizontal to vertical.
 
 .. _-E:
 
@@ -159,9 +159,9 @@ Optional Arguments
     The directives specify the handling of extreme values that fall outside the range
     set by |-T|.  By default these values are ignored.  Choose among these:
 
-    - **b**: Let these values be included in the first or last bins.
-    - **l**: Only include extreme values below first bin into the first bin.
-    - **h**: Only include extreme values above the last bin into that last bin.
+    - **b** - Let these values be included in the first or last bins.
+    - **l** - Only include extreme values below first bin into the first bin.
+    - **h** - Only include extreme values above the last bin into that last bin.
 
 .. _-N:
 

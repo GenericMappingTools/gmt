@@ -174,16 +174,16 @@ Optional Arguments
     the polygon numbers by counting from *first* [Default starts at zero].
     Incompatible with |-Q|. Optionally, add modifier
 
-    - **+z**: Request that **-Z**\ *zvalue* is placed in the segment headers,
+    - **+z** - Request that **-Z**\ *zvalue* is placed in the segment headers,
       where *zvalue* is a representable value for each triangle.  **Note**:
     
     Modifier **+z** implies |-Z|. Append directives to select that value:
 
-    - **a**: Select the mean value [Default].
-    - **l**: Select the lowest value.
-    - **m**: Select the median.
-    - **p**: Select the mode.
-    - **u**: Select the upper value.
+    - **a** - Select the mean value [Default].
+    - **l** - Select the lowest value.
+    - **m** - Select the median.
+    - **p** - Select the mode.
+    - **u** - Select the upper value.
 
 .. _-T:
 

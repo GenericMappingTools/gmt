@@ -70,19 +70,19 @@ Optional Arguments
     For track resampling (if |-T|...\ *unit* is set) we can select how
     this is to be performed via these directives:
 
-    - **f**: Keep original points, but add intermediate points if needed;
+    - **f** - Keep original points, but add intermediate points if needed;
       note this selection does not necessarily yield equidistant points [Default].
-    - **m**: Same as **+f**, but first follow meridian (along *y*) then parallel (along *x*).
-    - **p**: Same as **+f**, but first follow parallel (along *x*) then meridian (along *y*).
-    - **r**: Resample at equidistant locations; input points are not
+    - **m** - Same as **+f**, but first follow meridian (along *y*) then parallel (along *x*).
+    - **p** - Same as **+f**, but first follow parallel (along *x*) then meridian (along *y*).
+    - **r** - Resample at equidistant locations; input points are not
       necessarily included in the output.
-    - **R**: Same as **r**, but adjust given spacing to fit the track length exactly.
+    - **R** - Same as **r**, but adjust given spacing to fit the track length exactly.
 
     A few modifiers can also be used:
 
-    - **+d**: Delete duplicate input records (identified by having
+    - **+d** - Delete duplicate input records (identified by having
       no change in the time column, and
-    - **+l**: If distances should be measured along rhumb lines (loxodromes).
+    - **+l** - If distances should be measured along rhumb lines (loxodromes).
     
     **Note**: Calculation mode for loxodromes is spherical, hence **-je**
     cannot be used in combination with **+l**.

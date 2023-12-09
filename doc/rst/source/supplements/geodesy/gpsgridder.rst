@@ -100,19 +100,19 @@ Optional Arguments
     and fit the data exactly (unless |-W| is used)]. Append a directive and *value*
     to determine which eigenvalues to keep:
 
-    - **n**: Retain only the *value* numbers largest eigenvalues [all]. Optionally,
+    - **n** - Retain only the *value* numbers largest eigenvalues [all]. Optionally,
       append % to indicate *value* is given in percentage.
-    - **r**: Retain those eigenvalues whose ratio to the largest eigenvalue is less than
+    - **r** - Retain those eigenvalues whose ratio to the largest eigenvalue is less than
       *value* [Default, with *value* = 0].
-    - **v**: Retain the eigenvalues needed to ensure the model prediction variance fraction
+    - **v** - Retain the eigenvalues needed to ensure the model prediction variance fraction
       is at least *value*. Optionally, append % to indicate *value* is given in percentage.
 
     Several optional modifiers are available:
 
-    - **+c**: Produce the cumulative sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
-    - **+f**: Append *file* to save the eigenvalues to the specified file for further analysis.
-    - **+i**: Produce the incremental sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
-    - **+n**: If given then **+f**\ *file* is required and execution will
+    - **+c** - Produce the cumulative sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
+    - **+f** - Append *file* to save the eigenvalues to the specified file for further analysis.
+    - **+i** - Produce the incremental sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
+    - **+n** - If given then **+f**\ *file* is required and execution will
       stop after saving the eigenvalues, i.e., no surface output is produced. 
     
     **Notes**: (1) Modifiers **++c** and **+i** require a file name with a suitable extension
@@ -137,7 +137,7 @@ Optional Arguments
 
     Optionally append this modifier:
 
-    - **+r**: Write misfit and variance evaluation statistics to *reportfile*.
+    - **+r** - Write misfit and variance evaluation statistics to *reportfile*.
       Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is
       used we add :math:`\chi^2` as a final 8th column. **Note**: If **+r** is
       not used then |-V|\ **i** will report the information via verbose messages.
