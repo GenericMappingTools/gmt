@@ -159,9 +159,9 @@ Optional Arguments
 **-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*]
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment:
 
-    - **+d**: Build a symmetrical envelope around *y*\ (*x*) using deviations *dy*(\ *x*) given in extra column 3.
-    - **+D**: Build an asymmetrical envelope around *y*\ (*x*) using deviations *dy1*\ (*x*) and *dy2*\ (*x)* from extra columns 3-4.
-    - **+b**: Build an asymmetrical envelope around *y*\ (*x*) using bounds *yl*\ (*x*) and *yh*(*x*) from extra columns 3-4.
+    - **+d**: Build a symmetrical envelope around *y*\ (*x*) using deviations *dy*\ (*x*) given in extra column 3.
+    - **+D**: Build an asymmetrical envelope around *y*\ (*x*) using deviations *dy1*\ (*x*) and *dy2*\ (*x*) from extra columns 3-4.
+    - **+b**: Build an asymmetrical envelope around *y*\ (*x*) using bounds *yl*\ (*x*) and *yh*\ (*x*) from extra columns 3-4.
     - **+x**: Connect first and last point to anchor points at either *xmin* (append **l**), *xmax* (append **r**), or *x0* (append it).
     - **+y**: Connect first and last point to anchor points at either *ymin* (append **b**), *xmax* (append **t**), or *y0* (append it).
 

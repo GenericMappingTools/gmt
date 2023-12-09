@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
 [ |-H|\ *scale* ]
-[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-L|\ *tilesize* ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]

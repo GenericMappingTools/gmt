@@ -92,7 +92,7 @@ Required Arguments
     the basis functions.  Basically, the trigonometric bases all use the normalized
     :math:`x' = 2\pi(x-\mbox{origin})/\mbox{length}` while the polynomials
     use :math:`x' = 2(x-\mbox{origin})/\mbox{length}`
-    for stability. (2) Use |-V| to see a plain-text representation of the *y*\ (*x)
+    for stability. (2) Use |-V| to see a plain-text representation of the *y*\ (*x*)
     model requested.
 
 Optional Arguments

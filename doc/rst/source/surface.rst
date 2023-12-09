@@ -47,7 +47,7 @@ Description
 -----------
 
 **surface** reads randomly-spaced (*x, y, z*) triplets from standard input
-[or *table*] and produces a binary file of gridded values *z*(*x, y*) by
+[or *table*] and produces a binary file of gridded values *z*\ (*x, y*) by
 solving the differential equation (away from data points)
 
 .. math::
