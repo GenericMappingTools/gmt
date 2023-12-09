@@ -16,7 +16,7 @@ Synopsis
 |-J|\ *parameters*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cpt* ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
@@ -215,6 +215,8 @@ Optional Arguments
 .. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 .. module_common_ends
 

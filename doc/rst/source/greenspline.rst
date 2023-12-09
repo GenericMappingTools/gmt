@@ -14,16 +14,17 @@ Synopsis
 
 **gmt greenspline** [ *table* ]
 |-G|\ *grdfile*
-[ |-A|\ *gradfile*\ **+f**\ **0**\|**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
+[ |-A|\ *gradfile*\ **+f**\|\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
-[ |-E|\ [*misfitfile*] ]
+[ |-E|\ [*misfitfile*][**+r**\ *reportfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L|\ [**t**][**r**] ]
 [ |-N|\ *nodefile* ]
 [ |-Q|\ [*az*\|\ *x/y/z*] ]
 [ |-R|\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
-[ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
+[ |-S|\ **c**\|\ **l**\|\ **p**\|\ **q**\|\ **r**\|\ **t**\ [*tension*\ [/*scale*]][**+e**\ *limit*][**+n**\ *odd*] ]
+[ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]]
 [ |-Z|\ *mode* ]
@@ -130,7 +131,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *gradfile*\ **+f**\ **0**\|**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
+**-A**\ *gradfile*\ **+f**\|\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
     The solution will partly be constrained by surface gradients
     :math:`\mathbf{v} = v \hat{\mathbf{n}}`, where :math:`v` is the gradient
     magnitude and :math:`\hat{\mathbf{n}}` its unit vector direction.
@@ -138,20 +139,23 @@ Optional Arguments
     (either unit vector :math:`\hat{\mathbf{n}}` and magnitude :math:`v` separately
     or gradient components :math:`\mathbf{v}` directly) or
     angles w.r.t. the coordinate axes. Append name of ASCII file with
-    the surface gradients.  Use **+f** to select one of five input
-    formats: **0**: For 1-D data there is no direction, just gradient
-    magnitude (slope) so the input format is *x*, :math:`v`. Options
-    1-2 are for 2-D data sets: **1**: records contain *x*, *y*,
-    *azimuth*, :math:`v` (*azimuth* in degrees is measured clockwise
-    from the vertical (north) [Default]). **2**: records contain *x*,
-    *y*, :math:`v`, *azimuth* (*azimuth* in degrees is measured
-    clockwise from the vertical (north)). Options 3-5 are for either 2-D
-    or 3-D data: **3**: records contain **x**, *direction(s)*, :math:`v`
-    (*direction(s)* in degrees are measured counter-clockwise from the
-    horizontal (and for 3-D the vertical axis)). **4**: records contain
-    **x**, :math:`\mathbf{v}`. **5**: records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`.
+    the surface gradients.  Use modifier **+f** to select one of five input
+    formats:
+
+    - **0**: For 1-D data there is no direction, just gradient magnitude (slope) so
+      the input format is *x*, :math:`v` (1-D data set).
+    - **1**: Records contain *x*, *y*, *azimuth*, :math:`v` (*azimuth* in degrees is
+      measured clockwise from the vertical (north) [Default] (2-D data set).
+    - **2**: Records contain *x*, *y*, :math:`v`, *azimuth* (*azimuth* in degrees is
+      measured clockwise from the vertical (north);  2-D data set).
+    - **3**: Records contain **x**, *direction(s)*, :math:`v` (*direction(s)* in degrees
+      are measured counter-clockwise from the horizontal, and for 3-D the vertical axis 
+      (2-D or 3-D data set).
+    - **4**: Records contain **x**, :math:`\mathbf{v}` (2-D or 3-D data set).
+    - **5**: Records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v` (2-D or 3-D data set).
+    
     **Note**: The slope constraints must not be at the same locations as the
-    data constraints.  That scenario has not yet been implemented.
+    data constraints. That scenario has not yet been implemented.
 
 .. _-C:
 
@@ -160,23 +164,27 @@ Optional Arguments
     spline coefficients by SVD and eliminate the contribution from smaller
     eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly (unless |-W| is used)]. Append a directive and *value*
-    to determine which eigenvalues to keep: **n** will retain only the *value* largest
-    eigenvalues [all], **r** [Default] will retain those eigenvalues whose ratio
-    to the largest eigenvalue is less than *value* [0], while **v** will retain
-    the eigenvalues needed to ensure the model prediction variance fraction is at
-    least *value*. For **n** and **v** you may append % if *value* is given as a
-    *percentage* of the total instead.  Several optional modifiers are available:
-    Append **+f**\ *file* to save the eigenvalues to the specified file for further
-    analysis. If **+n** is given then **+f**\ *file* is required and execution will
-    stop after saving the eigenvalues, i.e., no surface output is produced.  The
-    two other modifiers (**+c** and **+i**) are only available for 2-D gridding and
-    can be used to write intermediate grids, one per added eigenvalue, and thus require
-    a file name with a suitable extension to be given via |-G| (we automatically
-    insert "_cum_###" or "_inc_###" before the extension, using a fixed integer
-    format for the eigenvalue number starting at 0).  The **+i** modifier will
-    write the **i**\ ncremental contributions to the grid for each eigenvalue added,
-    while **+c** will instead produce the **c**\ umulative sum of these contributions.
-    Use both modifiers to write both types of intermediate grids.
+    to determine which eigenvalues to keep:
+
+    - **n**: Retain only the *value* numbers largest eigenvalues [all]. Optionally,
+      append % to indicate *value* is given in percentage.
+    - **r**: Retain those eigenvalues whose ratio to the largest eigenvalue is less than
+      *value* [Default, with *value* = 0].
+    - **v**: Retain the eigenvalues needed to ensure the model prediction variance fraction
+      is at least *value*. Optionally, append % to indicate *value* is given in percentage.
+
+    Several optional modifiers are available:
+
+    - **+c**: Produce the cumulative sum of these contributions, one grid per eigenvalue (2-D only).
+    - **+f**: Append *file* to save the eigenvalues to the specified file for further analysis.
+    - **+n**: If given then **+f**\ *file* is required and execution will
+      stop after saving the eigenvalues, i.e., no surface output is produced. 
+    - **+i**: Produce the incremental sum of these contributions, one grid per eigenvalue (2-D only).
+        
+    **Notes**: (1) Modifiers **++c** and **+i** require a file name with a suitable extension
+    to be given via |-G| (we automatically insert "_cum_###" or "_inc_###" before the
+    extension, using a fixed integer format for the eigenvalue number, starting at 0).
+    (2) Use both modifiers to write both types of intermediate grids.
 
 .. _-D:
 
@@ -184,7 +192,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*misfitfile*]
+**-E**\ [*misfitfile*][**+r**\ *reportfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
@@ -192,7 +200,12 @@ Optional Arguments
     if |-C| is used and history is computed (via one or more of modifiers **+c**
     and **+i**), then we will instead write a table with eigenvalue number,
     eigenvalue, percent of model variance explained, and rms misfit.  If |-W|
-    is used we also append :math:`\chi^2`.
+    is used we also append :math:`\chi^2`. Optionally append this modifier:
+
+    - **+r**: Write misfit and variance evaluation statistics to *reportfile*.
+      Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is
+      used we add :math:`\chi^2` as a final 8th column. **Note**: If **+r** is
+      not used then |-V|\ **i** will report the information via verbose messages.
 
 .. _-I:
 
@@ -263,28 +276,31 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*]
-    Select one of six different splines. The first two are used for
-    1-D, 2-D, or 3-D Cartesian splines (see |-Z| for discussion). Note
-    that all tension values are expected to be normalized tension in the
-    range 0 < *t* < 1: (**c**) Minimum curvature spline [*Sandwell*,
-    1987], (**t**) Continuous curvature spline in tension [*Wessel and
-    Bercovici*, 1998]; append *tension*\ [/*scale*] with *tension* in
-    the 0-1 range and optionally supply a length scale [Default is the
-    average grid spacing]. The next is a 1-D or 2-D spline: (**l**)
-    Linear (1-D) or Bilinear (2-D) spline; these produce output that do
-    not exceed the range of the given data.  The next is a 2-D or 3-D spline: (**r**)
-    Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
-    append *tension* and optional *scale*. The last two are spherical
-    surface splines and both imply **-Z**\ 4: (**p**) Minimum
-    curvature spline [*Parker*, 1994], (**q**) Continuous curvature
-    spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
-    :math:`g(\mathbf{x}; \mathbf{x}')` for the last method is slower to compute (a series solution) so we
-    pre-calculate values and use cubic spline interpolation lookup instead.
-    Optionally append **+n**\ *N* (an odd integer) to change how many
-    points to use in the spline setup [10001].  The finite Legendre sum has
-    a truncation error [1e-6]; you can lower that by appending **+e**\ *limit*
-    at the expense of longer run-time.
+**-S**\ **c**\|\ **l**\|\ **p**\|\ **q**\|\ **r**\|\ **t**\ [*tension*\ [/*scale*]][**+e**\ *limit*][**+n**\ *odd*]
+    Select one of six different splines. Some are 1-D, 2-D, or 3-D Cartesian splines
+    (see |-Z| for discussion). Note that all *tension* values are expected to be
+    normalized tension in the range 0 < *tension* < 1. Choose among these directives:
+
+    - **c**: Minimum curvature spline [*Sandwell*, 1987] (1-D, 2-D, or 3-D Cartesian spline).
+    - **l**: Linear or bilinear spline; these produce output that do
+      not exceed the range of the given data (1-D or 2-D Cartesian spline).
+    - **p**: Minimum curvature spline [*Parker*, 1994] (spherical surface splines and implies **-Z**).
+    - **q**: Continuous curvature spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
+      :math:`g(\mathbf{x}; \mathbf{x}')` for the last method is slower to compute (a series solution),
+      so we pre-calculate values and use cubic spline interpolation lookup instead (spherical surface
+      spline and implies **-Z**).
+    - **r**: Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
+      append *tension* and optional *scale* (2-D or 3-D spline).
+    - **t**: Continuous curvature spline in tension [*Wessel and Bercovici*, 1998];
+      append *tension*\ [/*scale*] with *tension* in the 0-1 range and optionally
+      supply a length *scale* [Default is the average grid spacing] (1-D, 2-D, or 3-D Cartesian spline).
+
+    **Note**: Directive **q** may take two optional modifiers:
+  
+    - **+e**: The finite Legendre sum has a truncation error [1e-6]; you can lower that by
+      appending *limit* at the expense of longer run-time.
+    - **+n**: Change how many  points to use in the spline setup by appending *odd* [10001]
+      (must be an odd integer).
 
 .. _-T:
 

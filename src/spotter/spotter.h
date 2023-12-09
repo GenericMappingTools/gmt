@@ -35,9 +35,9 @@
 #define PA_2_T  (1.0 / T_2_PA)
 #define SQRT_CHI2 2.44774689322	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
 
-/* Latest GPlates rotation model and polygon IDs [Muller 2019] */
+/* Latest GPlates rotation model and polygon IDs [Muller 2023] */
 #define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table"		/* .txt */
-#define GPLATES_ROTATIONS "Global_250-0Ma_Rotations_2019_v2"		/* .rot */
+#define GPLATES_ROTATIONS "Muller2019-Young2019-Cao2020_CombinedRotations.rot"		/* .rot */
 
 #define SPOTTER_E_OPT "-E<rottable>|<ID1>-<ID2>|<plon>/<plat>/<prot>[+i]"
 
