@@ -54,6 +54,8 @@
  *	gmt_contour_edge_init
  *	gmt_contour_first_pos
  *	gmt_contours
+ *  gmt_explain_cpt_input
+ *  gmt_explain_cpt_output
  *	gmt_cpt_default
  *	gmt_cpt_interval_modifier
  *	gmt_cpt_transparency
@@ -1591,7 +1593,7 @@ void gmt_explain_cpt_input (struct GMTAPI_CTRL *API, char option) {
 	GMT_Usage (API, 3, "+u Scale CPT z-values from another <unit> to meters.");
 	GMT_Usage (API, 3, "+U Scale CPT z-values from meters to another <unit>.");
 	GMT_Usage (API, 3, "+s Append <fname> to save the generated CPT to file.");
-	GMT_Usage (API, -2, "Note: For converting units with +u|U, see units %s,", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Usage (API, -2, "Note: For converting units with +u|U, see units %s.", GMT_LEN_UNITS2_DISPLAY);
 }
 
 int gmt_prepare_categorical_cpt (struct GMT_CTRL *GMT, char *label, char *key, struct GMT_PALETTE *Pout) {
