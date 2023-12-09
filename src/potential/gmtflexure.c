@@ -45,8 +45,8 @@
  * input files. 1) Load file having x and load, and 2) Rigidity file
  * having x and rigidity. If both files are present, they must list load and
  * rigidity at the same x positions. All units must be in SI. The program writes
- * the deflections to standard output. Z axis is positive DOWN, so
- * positive loads, moments, and forces will all generate positive deflections.
+ * the deflections to standard output. Z axis is positive UP, so
+ * positive loads, moments, and forces will all generate negative deflections.
  * The load file is optional, whereas the rigidity file OR a uniform plate
  * thickness (-E) must be supplied. If no input files are given, then the min/max
  * distance and increment must be given on the command line using the -T option.
@@ -356,7 +356,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify water depth in m; append k for km.  Must be positive. "
 		"Subaerial topography will be scaled via -D to account for density differences.");
 	GMT_Usage (API, 1, "\n-Z<zm>[k]");
-	GMT_Usage (API, -2, "Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].");
+	GMT_Usage (API, -2, "Specify distance from observation level (z = 0) to flexed surface in m; append k for km.  Must be positive [0].");
 	GMT_Option (API, "bi,bo,d,e,h,i,o,.");
 	return (GMT_MODULE_USAGE);
 }
