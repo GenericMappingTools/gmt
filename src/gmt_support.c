@@ -1468,7 +1468,8 @@ GMT_LOCAL int gmtsupport_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETT
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge at z' = 0 for slice k = %u!\n", k);
 		return (int)k;
 	}
-	return GMT_NOTSET;
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Hinge requested but no hinge at z' = 0 was found in this CPT\n");
+	return GMT_PARSE_ERROR;
 }
 
 /*! . */
@@ -1550,6 +1551,68 @@ GMT_LOCAL void gmtsupport_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, do
 	for (k = 0; k < 4; k++) S->hsv_diff[k] = S->hsv_high[k] - S->hsv_low[k];
 	/* Recompute inverse stepsize */
 	S->i_dz = 1.0 / (S->z_high - S->z_low);
+}
+
+void gmt_explain_cpt_output (struct GMTAPI_CTRL *API, char option) {
+	/* Display usage synopsis for -F cpt output/categorical option in makecpt/grd2cpt */
+
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_COLORMODES_OPT);
+	GMT_Usage (API, -2, "Select the color model for output [Default uses the input model]:");
+	GMT_Usage (API, 3, "R: Output r/g/b or colornames.");
+	GMT_Usage (API, 3, "c: Output c/m/y/k.");
+	GMT_Usage (API, 3, "g: Output gray value (Will apply the YIQ if not a gray value).");
+	GMT_Usage (API, 3, "h: Output h-s-v.");
+	GMT_Usage (API, 3, "r: Output r/g/b only.");
+	GMT_Usage (API, 3, "x: Output hex #rrggbb only.");
+	GMT_Usage (API, -2, "Two modifiers control generation of categorical labels:");
+	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
+		"The <label>, if appended, sets the labels for each category. It may be a "
+		"comma-separated list of category names, or <start>[-] where we automatically build "
+		"labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.");
+	GMT_Usage (API, 3, "+k Set categorical keys rather than numerical values. "
+		"<keys> may be a file with one key per line or a comma-separated list of keys. "
+		"If <keys> is a single letter then we build sequential alphabetical keys from that letter. "
+		"If number of categories is 12 and label is M then we auto-create month name labels, and "
+		"if it is 7 and label is D then we auto-create weekday name labels.");
+}
+
+int gmt_prepare_categorical_cpt (struct GMT_CTRL *GMT, char *label, char *key, struct GMT_PALETTE *Pout) {
+		bool got_key_file = (key && !gmt_access (GMT, key, R_OK));	/* Want categorical labels read from file */
+		unsigned int ns = 0;
+		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
+		if (label || (key && !got_key_file)) {	/* Want auto-categorical labels appended to each CPT record */
+			char **Plabel = gmt_cat_cpt_strings (GMT, (label) ? label : key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
+				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+				if (Plabel[k]) Pout->data[k].label = Plabel[k];	/* Now the job of the CPT to free these strings */
+			}
+			gmt_M_free (GMT, Plabel);	/* But the master array can go */
+		}
+		if (key) {	/* Want categorical labels */
+			char **keys = NULL;
+			if (got_key_file) {	/* Got a file with category keys */
+				ns = gmt_read_list (GMT, key, &keys);
+				if (ns < Pout->n_colors) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "The categorical keys file %s had %d entries but CPT has %d categories\n", key, ns, Pout->n_colors);
+					return (GMT_RUNTIME_ERROR);
+				}
+				else if (ns > Pout->n_colors)
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but only %d are needed - skipping the extra keys\n", key, ns, Pout->n_colors);
+			}
+			else	/* Got comma-separated keys */
+				keys = gmt_cat_cpt_strings (GMT, key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
+				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
+				if (k < ns && keys[k]) {
+					Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+					if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+					Pout->data[k].label = strdup (keys[k]);
+				}
+			}
+			gmt_M_free (GMT, keys);	/* But the master array can go */
+			Pout->categorical = GMT_CPT_CATEGORICAL_KEY;
+		}
+		return (GMT_NOERROR);
 }
 
 bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg) {
@@ -8330,6 +8393,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				X->model = GMT_RGB | GMT_COLORINT;
 			else if (strstr (line, "RGB"))
 				X->model = GMT_RGB;
+			else if (strstr (line, "+GRAY") || strstr (line, "gray"))
+				X->model = GMT_GRAY | GMT_COLORINT;
 			else if (strstr (line, "+HSV") || strstr (line, "hsv"))
 				X->model = GMT_HSV | GMT_COLORINT;
 			else if (strstr (line, "HSV"))
@@ -8976,7 +9041,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		}
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
-		gmt_stretch_cpt (GMT, P, zmin, zmax);
+		if ((gmt_stretch_cpt (GMT, P, zmin, zmax)) == GMT_PARSE_ERROR) return (NULL);
 	}
 	else if (file) {	/* Gave a CPT file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
@@ -9033,6 +9098,7 @@ GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	if (!P->has_hinge) return GMT_NOTSET;	/* Not our concern here */
 	/* Claims to have a hinge */
 	ks = gmtsupport_find_cpt_hinge (GMT, P);	/* Get hinge slice (or -1 if no hinge found) */
+	if (ks == GMT_PARSE_ERROR) return (GMT_PARSE_ERROR);
 	if (ks == GMT_NOTSET) {	/* Must be a rogue CPT - ignore the hinge setting */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_stretch_cpt: CPT says it has a hinge but none is actually found? - ignored.\n");
 		P->has_hinge = 0;
@@ -9058,7 +9124,7 @@ GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 }
 
 /*! . */
-void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
+unsigned int gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead (if available).
 	 * Note: If P has a hinge then its value is expected to be in the final user data values.
@@ -9073,11 +9139,11 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_stretch_cpt: Passed z_low == z_high but CPT has no explicit range.  No changes made\n");
-			return;
+			return GMT_NOERROR;
 		}
 		z_low = P->minmax[0];	z_high = P->minmax[1];
 	}
-	ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high);	/* Deal with any issure related to hinges */
+	if ((ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high)) == GMT_PARSE_ERROR) return (GMT_PARSE_ERROR);	/* Deal with any issue related to hinges */
 
 	z_min = P->data[0].z_low;
 	z_start = z_low;
@@ -9095,6 +9161,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		P->data[is].z_high = z_start + (P->data[is].z_high - z_min) * scale;
 		P->data[is].i_dz /= scale;
 	}
+	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -9473,6 +9540,9 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
+	if (cpt_flags & GMT_CPT_GRAY_SET && !P->is_gray)
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Colors in the CPT file %s were converted to gray via the YIQ-translation.\n", &cpt_file[append]);
+
 	/* When writing the CPT to file it is no longer a normalized CPT with a hinge */
 	P->has_range = P->has_hinge = 0;
 
@@ -9537,6 +9607,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	gmtlib_write_newheaders (GMT, fp, 0);	/* Write general header block */
 
 	if (!(P->model & GMT_COLORINT)) {}	/* Write nothing when color interpolation is not forced */
+	else if (P->model & GMT_GRAY)
+		fprintf (fp, "# COLOR_MODEL = gray\n");
 	else if (P->model & GMT_HSV)
 		fprintf (fp, "# COLOR_MODEL = hsv\n");
 	else if (P->model & GMT_CMYK)
@@ -9562,6 +9634,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 		if (P->categorical) {
 			if (P->categorical & GMT_CPT_CATEGORICAL_KEY) strncpy (lo, P->data[i].key, GMT_LEN64-1);
+			if (P->model & GMT_GRAY)
+				fprintf (fp, format, lo, gmt_putgray (GMT, P->data[i].hsv_low), '\t');
 			if (P->model & GMT_HSV)
 				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
 			else if (P->model & GMT_CMYK) {
@@ -9574,6 +9648,10 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 				fprintf (fp, format, lo, gmt_puthex (GMT, P->data[i].rgb_low), '\t');
 			else
 				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
+		}
+		else if (P->model & GMT_GRAY) {
+			fprintf (fp, format, lo, gmt_putgray (GMT, P->data[i].rgb_low), '\t');
+			fprintf (fp, format, hi, gmt_putgray (GMT, P->data[i].rgb_high), '\t');
 		}
 		else if (P->model & GMT_HSV) {
 			fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
@@ -9615,6 +9693,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		if (!use[i]) continue;	/* This BNF entry does not apply to this CPT */
 		if (P->bfn[i].skip)
 			fprintf (fp, "%c\t-\n", code[i]);
+		else if (P->model & GMT_GRAY)
+			fprintf (fp, "%c\t%s\n", code[i], gmt_putgray (GMT, P->bfn[i].rgb));
 		else if (P->model & GMT_HSV)
 			fprintf (fp, "%c\t%s\n", code[i], gmtlib_puthsv (GMT, P->bfn[i].hsv));
 		else if (P->model & GMT_CMYK) {
@@ -9665,7 +9745,7 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	 * expand it to its natural z-range before we can truncate since z_low/z_high are in user units */
 
 	if (P->has_range) {
-		gmt_stretch_cpt (GMT, P, 0.0, 0.0);	/* Stretch to its natural range first */
+		if ((gmt_stretch_cpt (GMT, P, 0.0, 0.0)) == GMT_PARSE_ERROR) return NULL;	/* Stretch to its natural range first */
 		P->has_range = 0;
 	}
 

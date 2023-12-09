@@ -292,7 +292,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>/<dy>][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>[/<dy>]][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] %s "
 		"[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Ql|u] [-S[<dx>/<dy>/][<shade>]] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
 		"[%s] %s[%s] [%s] [%s] [-it<word>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -341,9 +341,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Angles given as azimuths; convert to directions using current projection.");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-C[<dx>/<dy>][+tc|C|o|O]");
+	GMT_Usage (API, 1, "\n-C[<dx>[/<dy>]][+tc|C|o|O]");
 	GMT_Usage (API, -2, "Set the clearance between characters and surrounding box. Only used "
-		"if -W has been set. Append units {%s} or %% of fontsize [%d%%]. "
+		"if -W has been set. If <dy> is not given it equals <dx>. Append units {%s} or %% of fontsize [%d%%]. "
 		"Optionally append +t<shape> when -G and/or -W is used. Append a shape:", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
 	GMT_Usage (API, 3, "c: Concave rectangle (requires -M).");
 	GMT_Usage (API, 3, "C: Convex rectangle (requires -M).");

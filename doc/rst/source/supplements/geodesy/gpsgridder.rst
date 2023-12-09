@@ -15,7 +15,7 @@ Synopsis
 **gmt gpsgridder** [ *table* ]
 |-G|\ *outgrid*
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
-[ |-E|\ [*misfitfile*] ]
+[ |-E|\ [*misfitfile*][**+r**\ *reportfile*] ]
 [ |-F|\ [**d**\|\ **f**]\ *fudge* ]
 [ |SYN_OPT-I| ]
 [ |-L| ]
@@ -94,31 +94,35 @@ Optional Arguments
 .. _-C:
 
 **-C**\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
-    Find an approximate surface fit: Solve the linear system for the
+   Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from smaller
     eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly (unless |-W| is used)]. Append a directive and *value*
-    to determine which eigenvalues to keep: **n** will retain only the *value* largest
-    eigenvalues [all], **r** [Default] will retain those eigenvalues whose ratio
-    to the largest eigenvalue is less than *value* [0], while **v** will retain
-    the eigenvalues needed to ensure the model prediction variance fraction is at
-    least *value*. For **n** and **v** you may append % if *value* is given as a
-    *percentage* of the total instead.  Several optional modifiers are available:
-    Append **+f**\ *file* to save the eigenvalues to the specified file for further
-    analysis. If **+n** is given then **+f**\ *file* is required and execution will
-    stop after saving the eigenvalues, i.e., no surface output is produced.
-    The two other modifiers (**+c** and **+i**) can be used to
-    write intermediate grids, two (*u* and *v*) per eigenvalue, and we will
-    automatically insert "_cum_###" or "_inc_###" before the file extension,
-    using a fixed integer format for the eigenvalue number starting at 0.  The
-    **+i** modifier will write the **i**\ ncremental contributions to the grids
-    for each eigenvalue, while **+c** will instead produce the **c**\ umulative
-    sum of these contributions. Use both modifiers to write both types of
-    intermediate grids.
+    to determine which eigenvalues to keep:
+
+    - **n**: Retain only the *value* numbers largest eigenvalues [all]. Optionally,
+      append % to indicate *value* is given in percentage.
+    - **r**: Retain those eigenvalues whose ratio to the largest eigenvalue is less than
+      *value* [Default, with *value* = 0].
+    - **v**: Retain the eigenvalues needed to ensure the model prediction variance fraction
+      is at least *value*. Optionally, append % to indicate *value* is given in percentage.
+
+    Several optional modifiers are available:
+
+    - **+c**: Produce the cumulative sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
+    - **+f**: Append *file* to save the eigenvalues to the specified file for further analysis.
+    - **+i**: Produce the incremental sum of these contributions, two (*u* and *v*) grids per eigenvalue (2-D only).
+    - **+n**: If given then **+f**\ *file* is required and execution will
+      stop after saving the eigenvalues, i.e., no surface output is produced. 
+    
+    **Notes**: (1) Modifiers **++c** and **+i** require a file name with a suitable extension
+    to be given via |-G| (we automatically insert "_cum_###" or "_inc_###" before the
+    extension, using a fixed integer format for the eigenvalue number, starting at 0).
+    (2) Use both modifiers to write both types of intermediate grids.
 
 .. _-E:
 
-**-E**\ [*misfitfile*]
+**-E**\ [*misfitfile*][**+r**\ *reportfile*]
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms) for *u* and
     *v* separately and combined.  Optionally, append a filename and we will
@@ -131,9 +135,16 @@ Optional Arguments
     and overall rms, rms_u, and rms_v misfits.  If |-W| is used we also append
     :math:`\chi^2`, :math:`\chi_u^2`, and :math:`\chi_v^2`.
 
+    Optionally append this modifier:
+
+    - **+r**: Write misfit and variance evaluation statistics to *reportfile*.
+      Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is
+      used we add :math:`\chi^2` as a final 8th column. **Note**: If **+r** is
+      not used then |-V|\ **i** will report the information via verbose messages.
+
 .. _-F:
 
-**-F**\ [**d**\|\ **f**]\ *fudge*\
+**-F**\ [**d**\|\ **f**]\ *fudge*
     The Green's functions are proportional to :math:`r^{-2}` and :math:`\log(r)`
     and thus blow up for *r == 0*.  To prevent that we offer two fudging schemes:
     **-Fd**\ *del_radius* lets you add a constant offset to all radii

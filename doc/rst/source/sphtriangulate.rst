@@ -103,9 +103,13 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ **d**\|\ **v**
-    Append **d** for Delaunay triangles or **v** for Voronoi polygons [Delaunay].
-    If **-bo** is used then |-N| may be used to specify a separate file where the
-    polygon information normally is written.
+    Append one of two directives to set the output type:
+
+    - **d**: Create Delaunay triangles [Default].
+    - **v**: Create Voronoi polygons.
+
+    **Note**: If **-bo** is active then |-N| may be used to specify a
+    separate file where the polygon information normally is written.
 
 .. _-T:
 
