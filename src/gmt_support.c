@@ -1576,6 +1576,24 @@ void gmt_explain_cpt_output (struct GMTAPI_CTRL *API, char option) {
 		"if it is 7 and label is D then we auto-create weekday name labels.");
 }
 
+void gmt_explain_cpt_input (struct GMTAPI_CTRL *API, char option) {
+	/* Display CPT usage for grd* plotters */
+
+	GMT_Usage (API, 1, "\n-%c%s", option, CPT_OPT_ARGS);
+	GMT_Usage (API, -2, "Color palette file to convert grid values to colors, provided by one of three ways:");
+	GMT_Usage (API, 3, "%s Name one of the master CPTs (no extension) [%s].", GMT_LINE_BULLET, API->GMT->current.setting.cpt);
+	GMT_Usage (API, 3, "%s Name a local regular CPTs (with extension).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Specify <color1>,<color2>[,<color3>,...] to build a linear continuous "
+		"CPT to automatically assign continuous colors over the grid data range.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "A few modifiers control generation of the active CPT:");
+	GMT_Usage (API, 3, "+h Enable a soft hinge in your master CPT. Append <hinge> to change its value.");
+	GMT_Usage (API, 3, "+i Append <dz> to quantize the grid range [Default uses the exact grid range].");
+	GMT_Usage (API, 3, "+u Scale CPT z-values from another <unit> to meters.");
+	GMT_Usage (API, 3, "+U Scale CPT z-values from meters to another <unit>.");
+	GMT_Usage (API, 3, "+s Append <fname> to save the generated CPT to file.");
+	GMT_Usage (API, -2, "Note: For converting units with +u|U, see units %s,", GMT_LEN_UNITS2_DISPLAY);
+}
+
 int gmt_prepare_categorical_cpt (struct GMT_CTRL *GMT, char *label, char *key, struct GMT_PALETTE *Pout) {
 		bool got_key_file = (key && !gmt_access (GMT, key, R_OK));	/* Want categorical labels read from file */
 		unsigned int ns = 0;
