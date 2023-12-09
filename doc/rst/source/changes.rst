@@ -22,6 +22,8 @@ New Core Module Features in GMT 6.5
 
 Supplement updates in GMT 6.5
 -----------------------------
+* :doc:`gsfml`: New supplement for the Global Seafloor Fabric and Magnetic Lineations (`<https://http://www.soest.hawaii.edu/PT/GSFML/>`_)
+* :doc:`potential`: New  modules **grdshake** and **grdvs30** to build shake-maps.
 
 Enhancements in GMT 6.5
 -----------------------
