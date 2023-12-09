@@ -199,7 +199,8 @@ Optional Arguments
 
 **-Z**\ *level*\|\ *obsgrid*
     Set observation level, either as a constant or variable by giving the name of a grid with observation
-    levels.  If the latter is used then this grid determines the output grid region as well [0].
+    levels.  If the latter is used then this grid determines the output grid region as well [0]. **Note**:
+    the positive *z*-direction is up.
 
 .. |Add_-bo| replace:: [Default is 2 output columns].
 .. include:: ../../explain_-bo.rst_
