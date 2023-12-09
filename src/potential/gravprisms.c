@@ -479,7 +479,7 @@ GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, dou
 	n221 = -(0.5 * (dx1_sq * zatan (dy2dz2, (dx1 * R221)) + dy2_sq * zatan (dx1dz2, (dy2 * R221)) + dz2_sq * zatan (dx1dy2, (dz2 * R221))) - zlog (dx1dz2, R221 + dy2) - zlog (dy2dz2, R221 + dx1) - zlog (dx1dy2, R221 + dz2));
 	n222 = +(0.5 * (dx2_sq * zatan (dy2dz2, (dx2 * R222)) + dy2_sq * zatan (dx2dz2, (dy2 * R222)) + dz2_sq * zatan (dx2dy2, (dz2 * R222))) - zlog (dx2dz2, R222 + dy2) - zlog (dy2dz2, R222 + dx2) - zlog (dx2dy2, R222 + dz2));
 
-	n = -rho * NEWTON_G * (n111 + n112 + n121 + n122 + n211 + n212 + n221 + n222);
+	n = rho * NEWTON_G * (n111 + n112 + n121 + n122 + n211 + n212 + n221 + n222);
 
 	return (n);
 }
@@ -969,8 +969,6 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		error = GMT_RUNTIME_ERROR;
 		goto end_it_all;
 	}
-
-	Ctrl->Z.level = -Ctrl->Z.level;	/* Since algorithm had z positive down */
 
 	/* Read polygon information from multiple segment file */
 
