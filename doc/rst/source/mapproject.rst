@@ -85,9 +85,9 @@ Optional Arguments
     Calculate azimuth along track *or* to the optional *fixed* point set
     with *lon0/lat0*.  Choose among several directives:
 
-    - **b**: Calculate the back-azimuth from data points to the fixed point.
-    - **f**: Calculate the forward azimuth from the fixed point to each data point.
-    - **o**: Get orientations (-90/90) rather than azimuths (0/360).
+    - **b** - Calculate the back-azimuth from data points to the fixed point.
+    - **f** - Calculate the forward azimuth from the fixed point to each data point.
+    - **o** - Get orientations (-90/90) rather than azimuths (0/360).
 
     Upper case directives **F**, **B** or **O** will convert from
     geodetic to geocentric latitudes and estimate azimuth of geodesics
@@ -95,7 +95,7 @@ Optional Arguments
     point is given then we compute the azimuth (or back-azimuth) from the
     previous point.  One modifier is available:
 
-    - **+v**: Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns 3-4
+    - **+v** - Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns 3-4
       in the input file.
 
     See `Output Order`_ for how |-A| affects the output record.  **Note**:
@@ -150,15 +150,15 @@ Optional Arguments
     we calculate *incremental* distances.  You can modify this and other
     features via some modifiers:
     
-    - **+a**: Select accumulated distances.
-    - **+i**: Select incremental distances.
-    - **+u**: Append the distance unit (see `Units`_ for available units and
+    - **+a** - Select accumulated distances.
+    - **+i** - Select incremental distances.
+    - **+u** - Append the distance unit (see `Units`_ for available units and
       how distances are computed [great circle using authalic radius]),
       including **c** (Cartesian distance using input coordinates) or **C**
       (Cartesian distance using projected coordinates). The **C** unit
       requires |-R| and |-J| to be set and all output coordinates will be
       reported as projected.
-    - **+v**: Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns
+    - **+v** - Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns
       3-4 in the input file; this updates the fixed point per record and thus the
       selection defaults to incremental distances.
     
@@ -183,9 +183,9 @@ Optional Arguments
     and the coordinates of the nearest point will be appended to the
     output as three new columns. Consider these modifiers:
 
-   - **+p**: Report the line segment id *seg* and the fractional point number
+   - **+p** - Report the line segment id *seg* and the fractional point number
      *pnr* instead of *lon*/*lat* of the nearest point.
-    - **+u**: Append the distance unit (see `Units`_ for available units and
+    - **+u** - Append the distance unit (see `Units`_ for available units and
       how distances are computed [great circle using authalic radius]),
       including **c** (Cartesian distance using input coordinates) or **C**
       (Cartesian distance using projected coordinates). The **C** unit
@@ -203,10 +203,10 @@ Optional Arguments
     :term:`PROJ_ELLIPSOID`) to one of four different auxiliary latitudes
     (longitudes are unaffected). Choose from these directives:
 
-    - **a**: Convert to authalic latitudes.
-    - **c**: Convert to conformal latitudes.
-    - **g**: Convert to geocentric latitudes [Default].
-    - **m**: Convert to meridional latitudes.
+    - **a** - Convert to authalic latitudes.
+    - **c** - Convert to conformal latitudes.
+    - **g** - Convert to geocentric latitudes [Default].
+    - **m** - Convert to meridional latitudes.
     
     Use |-I| to instead convert from auxiliary latitudes to geodetic latitudes.
 
@@ -254,26 +254,26 @@ Optional Arguments
     The chosen unit of reported plot dimensions may be changed via |-D|.  For
     other results, select from these directives:
 
-    - **b**: Get the bounding box in longitude and latitude.
-    - **B**: Same, but get the result in -Rw/e/s/n string format returned as trailing text.
-    - **e**: Return the coordinates of the rectangular area encompassing the non-rectangular
+    - **b** - Get the bounding box in longitude and latitude.
+    - **B** - Same, but get the result in -Rw/e/s/n string format returned as trailing text.
+    - **e** - Return the coordinates of the rectangular area encompassing the non-rectangular
       area defined by your |-R| |-J|
-    - **E**: Same, but in -Rw/e/s/n string format returned as trailing text.
-    - **g**: Output the plot coordinates of the appended map point *lon*/*lat*.
-    - **h**: Only output the height of the map.
-    - **j**: Output the map coordinates of a reference point by appending its *code* (with
+    - **E** - Same, but in -Rw/e/s/n string format returned as trailing text.
+    - **g** - Output the plot coordinates of the appended map point *lon*/*lat*.
+    - **h** - Only output the height of the map.
+    - **j** - Output the map coordinates of a reference point by appending its *code* (with
       standard two-character justification codes).
-    - **n**: Same, but appended reference point *rx*/*ry* is given as normalized positions
+    - **n** - Same, but appended reference point *rx*/*ry* is given as normalized positions
       in the 0-1 range,.
-    - **o**: If an oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
+    - **o** - If an oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
       return the diagonal corner coordinates in degrees (in the order *llx urx lly ury*) 
-    - **O**: Same, but get the equivalent |-R| string format returned as trailing text.
-    - **m**: Get the rectangular region in projected plot coordinates instead.
-    - **M**: Same, but returned in |-R| string format returned as trailing text.
-    - **r**: Output the rectangular domain that covers an oblique area as defined by |-R| |-J|.
-    - **R**: Same, but get the result in -R| string format returned as trailing text.
-    - **w**: Only output the width of the map in current plot units.
-    - **x**: Output the map coordinates of the specific plot reference point *px*/*py*.
+    - **O** - Same, but get the equivalent |-R| string format returned as trailing text.
+    - **m** - Get the rectangular region in projected plot coordinates instead.
+    - **M** - Same, but returned in |-R| string format returned as trailing text.
+    - **r** - Output the rectangular domain that covers an oblique area as defined by |-R| |-J|.
+    - **R** - Same, but get the result in -R| string format returned as trailing text.
+    - **w** - Only output the width of the map in current plot units.
+    - **x** - Output the map coordinates of the specific plot reference point *px*/*py*.
 
     Optionally (for **e** or **r**), append modifier **+n** to set how many points [100]
     you want along each side for a closed polygon of the oblique area instead.
@@ -298,12 +298,12 @@ Optional Arguments
     in the distance units set via |-G| per time unit controlled
     by :term:`TIME_UNIT` [m/s].  A few modifiers are available:
 
-    - **+i**: Output *incremental* travel times between successive points.
-    - **+a**: Output *accumulated* travel times.
-    - **+f**: Format the accumulated (elapsed) travel time according
+    - **+i** - Output *incremental* travel times between successive points.
+    - **+a** - Output *accumulated* travel times.
+    - **+f** - Format the accumulated (elapsed) travel time according
       to the ISO 8601 convention. As for the number of decimals used to
       represent seconds we consult the :term:`FORMAT_CLOCK_OUT` setting.
-    - **+t**: Append *epoch* to report absolute times (ETA) for successive points.
+    - **+t** - Append *epoch* to report absolute times (ETA) for successive points.
       Because of the need for incremental distances the |-G| option with the
       **+i** modifier is required.
 

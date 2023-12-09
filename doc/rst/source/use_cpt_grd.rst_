@@ -15,14 +15,14 @@
 
     A few modifiers pertains to hinges and units:
 
-    - **+h**: If given a master CPT with soft hinges then you can enable the hinge at
+    - **+h** - If given a master CPT with soft hinges then you can enable the hinge at
       data value *hinge* [0], whereas for hard-hinge CPTs you can adjust the location
       of the hinge [0] but not disable it.
-    - **+i**: Append increment *dz* to quantize the grid range [Default uses the exact grid range].
-    - **+s**: Append *fname* to save the finalized CPT in a disk file.
+    - **+i** - Append increment *dz* to quantize the grid range [Default uses the exact grid range].
+    - **+s** - Append *fname* to save the finalized CPT in a disk file.
       This is useful when the CPT is generated automatically, but if used, **must** be
       at the end of the **-C** option.
-    - **+u**: For any other *master* CPT, you may convert their *z*-values from 
+    - **+u** - For any other *master* CPT, you may convert their *z*-values from 
       other distance `Units`_ to meter by appending the original unit code.
-    - **+U**: Likewise, you may convert their *z*-values from meter to other `Units`_
+    - **+U** - Likewise, you may convert their *z*-values from meter to other `Units`_
       by appending the desired unit code.

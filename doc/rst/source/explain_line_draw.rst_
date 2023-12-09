@@ -4,12 +4,12 @@
     straight lines, use the |-A| flag.  For Cartesian data, points are simply connected.
     To adjust these behaviors, append a directive:
 
-    - **m**: Draw the line by first following a meridian, then a parallel.
-    - **p**: Start following a parallel, then a meridian. (This can be practical
+    - **m** - Draw the line by first following a meridian, then a parallel.
+    - **p** - Start following a parallel, then a meridian. (This can be practical
       to draw a line along parallels, for example).
-    - **r**: For polar projections, draw stair-case curves whose first move is along *r*.
-    - **t**: Same, but first move is along *theta*.
-    - **x**: For Cartesian data, draw stair-case curves that whose first move is along *x*.
-    - **y**: Same, but first move is along *y*.
+    - **r** - For polar projections, draw stair-case curves whose first move is along *r*.
+    - **t** - Same, but first move is along *theta*.
+    - **x** - For Cartesian data, draw stair-case curves that whose first move is along *x*.
+    - **y** - Same, but first move is along *y*.
 
     **Note**: In :doc:`plot3d`, the |-A| option requires constant *z*-coordinates.

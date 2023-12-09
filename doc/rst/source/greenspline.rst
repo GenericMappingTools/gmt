@@ -142,17 +142,17 @@ Optional Arguments
     the surface gradients.  Use modifier **+f** to select one of five input
     formats:
 
-    - **0**: For 1-D data there is no direction, just gradient magnitude (slope) so
+    - **0** - For 1-D data there is no direction, just gradient magnitude (slope) so
       the input format is *x*, :math:`v` (1-D data set).
-    - **1**: Records contain *x*, *y*, *azimuth*, :math:`v` (*azimuth* in degrees is
+    - **1** - Records contain *x*, *y*, *azimuth*, :math:`v` (*azimuth* in degrees is
       measured clockwise from the vertical (north) [Default] (2-D data set).
-    - **2**: Records contain *x*, *y*, :math:`v`, *azimuth* (*azimuth* in degrees is
+    - **2** - Records contain *x*, *y*, :math:`v`, *azimuth* (*azimuth* in degrees is
       measured clockwise from the vertical (north);  2-D data set).
-    - **3**: Records contain **x**, *direction(s)*, :math:`v` (*direction(s)* in degrees
+    - **3** - Records contain **x**, *direction(s)*, :math:`v` (*direction(s)* in degrees
       are measured counter-clockwise from the horizontal, and for 3-D the vertical axis 
       (2-D or 3-D data set).
-    - **4**: Records contain **x**, :math:`\mathbf{v}` (2-D or 3-D data set).
-    - **5**: Records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v` (2-D or 3-D data set).
+    - **4** - Records contain **x**, :math:`\mathbf{v}` (2-D or 3-D data set).
+    - **5** - Records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v` (2-D or 3-D data set).
     
     **Note**: The slope constraints must not be at the same locations as the
     data constraints. That scenario has not yet been implemented.
@@ -166,20 +166,20 @@ Optional Arguments
     and fit the data exactly (unless |-W| is used)]. Append a directive and *value*
     to determine which eigenvalues to keep:
 
-    - **n**: Retain only the *value* numbers largest eigenvalues [all]. Optionally,
+    - **n** - Retain only the *value* numbers largest eigenvalues [all]. Optionally,
       append % to indicate *value* is given in percentage.
-    - **r**: Retain those eigenvalues whose ratio to the largest eigenvalue is less than
+    - **r** - Retain those eigenvalues whose ratio to the largest eigenvalue is less than
       *value* [Default, with *value* = 0].
-    - **v**: Retain the eigenvalues needed to ensure the model prediction variance fraction
+    - **v** - Retain the eigenvalues needed to ensure the model prediction variance fraction
       is at least *value*. Optionally, append % to indicate *value* is given in percentage.
 
     Several optional modifiers are available:
 
-    - **+c**: Produce the cumulative sum of these contributions, one grid per eigenvalue (2-D only).
-    - **+f**: Append *file* to save the eigenvalues to the specified file for further analysis.
-    - **+n**: If given then **+f**\ *file* is required and execution will
+    - **+c** - Produce the cumulative sum of these contributions, one grid per eigenvalue (2-D only).
+    - **+f** - Append *file* to save the eigenvalues to the specified file for further analysis.
+    - **+n** - If given then **+f**\ *file* is required and execution will
       stop after saving the eigenvalues, i.e., no surface output is produced. 
-    - **+i**: Produce the incremental sum of these contributions, one grid per eigenvalue (2-D only).
+    - **+i** - Produce the incremental sum of these contributions, one grid per eigenvalue (2-D only).
         
     **Notes**: (1) Modifiers **++c** and **+i** require a file name with a suitable extension
     to be given via |-G| (we automatically insert "_cum_###" or "_inc_###" before the
@@ -202,7 +202,7 @@ Optional Arguments
     eigenvalue, percent of model variance explained, and rms misfit.  If |-W|
     is used we also append :math:`\chi^2`. Optionally append this modifier:
 
-    - **+r**: Write misfit and variance evaluation statistics to *reportfile*.
+    - **+r** - Write misfit and variance evaluation statistics to *reportfile*.
       Output order is *Data Model Explained(%) N Mean Std.dev RMS*. If |-W| is
       used we add :math:`\chi^2` as a final 8th column. **Note**: If **+r** is
       not used then |-V|\ **i** will report the information via verbose messages.
@@ -281,25 +281,25 @@ Optional Arguments
     (see |-Z| for discussion). Note that all *tension* values are expected to be
     normalized tension in the range 0 < *tension* < 1. Choose among these directives:
 
-    - **c**: Minimum curvature spline [*Sandwell*, 1987] (1-D, 2-D, or 3-D Cartesian spline).
-    - **l**: Linear or bilinear spline; these produce output that do
+    - **c** - Minimum curvature spline [*Sandwell*, 1987] (1-D, 2-D, or 3-D Cartesian spline).
+    - **l** - Linear or bilinear spline; these produce output that do
       not exceed the range of the given data (1-D or 2-D Cartesian spline).
-    - **p**: Minimum curvature spline [*Parker*, 1994] (spherical surface splines and implies **-Z**).
-    - **q**: Continuous curvature spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
+    - **p** - Minimum curvature spline [*Parker*, 1994] (spherical surface splines and implies **-Z**).
+    - **q** - Continuous curvature spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
       :math:`g(\mathbf{x}; \mathbf{x}')` for the last method is slower to compute (a series solution),
       so we pre-calculate values and use cubic spline interpolation lookup instead (spherical surface
       spline and implies **-Z**).
-    - **r**: Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
+    - **r** - Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
       append *tension* and optional *scale* (2-D or 3-D spline).
-    - **t**: Continuous curvature spline in tension [*Wessel and Bercovici*, 1998];
+    - **t** - Continuous curvature spline in tension [*Wessel and Bercovici*, 1998];
       append *tension*\ [/*scale*] with *tension* in the 0-1 range and optionally
       supply a length *scale* [Default is the average grid spacing] (1-D, 2-D, or 3-D Cartesian spline).
 
     **Note**: Directive **q** may take two optional modifiers:
   
-    - **+e**: The finite Legendre sum has a truncation error [1e-6]; you can lower that by
+    - **+e** - The finite Legendre sum has a truncation error [1e-6]; you can lower that by
       appending *limit* at the expense of longer run-time.
-    - **+n**: Change how many  points to use in the spline setup by appending *odd* [10001]
+    - **+n** - Change how many  points to use in the spline setup by appending *odd* [10001]
       (must be an odd integer).
 
 .. _-T:

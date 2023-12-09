@@ -3,22 +3,22 @@
     selecting among color names, single gray-scale values, color names, *r*/*g*/*b* only,
     *h*-*s*-*v*, *c*/*m*/*y*/*k*, or *#rrggbb* hex codes. Choose from:
  
-    - **R**: Output color names if possible (and use *r*/*g*/*b* otherwise) [Default].
-    - **c**: Output color using *c*/*m*/*y*/*k* values.
-    - **g**: Output *gray* singles (will transform any colors to gray via YIQ transformation).
-    - **h**: Output *h*-*s*-*v* triplets.
-    - **r**: Output *r*/*g*/*b* codes only (even if a color name applies).
-    - **x**: Output *#rrggbb* hex codes.
+    - **R** - Output color names if possible (and use *r*/*g*/*b* otherwise) [Default].
+    - **c** - Output color using *c*/*m*/*y*/*k* values.
+    - **g** - Output *gray* singles (will transform any colors to gray via YIQ transformation).
+    - **h** - Output *h*-*s*-*v* triplets.
+    - **r** - Output *r*/*g*/*b* codes only (even if a color name applies).
+    - **x** - Output *#rrggbb* hex codes.
 
     Optionally or alternatively, append these modifiers:
 
-    - **+c**: Write discrete palettes in categorical format. If *label* is appended
+    - **+c** - Write discrete palettes in categorical format. If *label* is appended
       then we create labels for each category to be used when the CPT is plotted.
       The *label* may be a comma-separated list of category names (you can skip a
       category by not giving a name), or give *start*\ [-], where we automatically
       build monotonically increasing labels from *start* (a single letter or an integer).
       Append - to build ranges *start*\ -*start+1* instead.
-    - **+k**: Categorical CPT should have string keys instead of numerical entries.
+    - **+k** - Categorical CPT should have string keys instead of numerical entries.
       Append keys, which is either a file with one key per record or a single letter
       (e.g., D), then we build sequential letter keys (e.g., D, E, F, …) starting at that point.
  

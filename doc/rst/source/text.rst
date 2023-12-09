@@ -156,10 +156,10 @@ Optional Arguments
     If *dy* is not specified then it is set equal to *dx*. Optionally,
     use modifier **+t** to append the shape of the textbox when using |-G| and/or |-W|:
 
-    - **o**: Straight rectangle [Default].
-    - **O**: Set a rounded rectangle.
-    - **c**: (Paragraph mode (|-M| only) selects a concave rectangle.
-    - **C**: (Paragraph mode (|-M| only) selects a convex rectangle.
+    - **o** - Straight rectangle [Default].
+    - **O** - Set a rounded rectangle.
+    - **c** - (Paragraph mode (|-M| only) selects a concave rectangle.
+    - **C** - (Paragraph mode (|-M| only) selects a convex rectangle.
 
 .. _-D:
 
@@ -168,13 +168,13 @@ Optional Arguments
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Prepend
     an optional directive:
     
-    - **-j**: Offset the text away from the point instead (i.e., the
+    - **-j** - Offset the text away from the point instead (i.e., the
       text justification will determine the direction of the shift).
-    - **-J**: Shorten diagonal offsets at corners by :math:`\sqrt{2}`.
+    - **-J** - Shorten diagonal offsets at corners by :math:`\sqrt{2}`.
 
     Optionally, append the modifier:
 
-    - **+v**: Draw a line from the original point to the shifted point;
+    - **+v** - Draw a line from the original point to the shifted point;
       append a *pen* to change the attributes for this line.  **Note**:
       The **-Dj**\|\ **J** selection cannot be used with paragraph mode (|-M|).
 
@@ -187,24 +187,24 @@ Optional Arguments
     specifying up to three text attributes (font, angle, and
     justification) directly on the command line via these modifiers:
 
-    - **+a** : Set the text *angle*; if no angle is given then the input file must have
+    - **+a** - Set the text *angle*; if no angle is given then the input file must have
       this angle as a column.
-    - **+A**: Force text-baselines to convert into the -90/+90 range.
-    - **+c**: Append *justification* to set the *x, y* coordinates extracted from the
+    - **+A** - Force text-baselines to convert into the -90/+90 range.
+    - **+c** - Append *justification* to set the *x, y* coordinates extracted from the
       |-R| string instead of providing them in the input file. For example **-F+c**\ TL
       gets the *x_min*, *y_max* from the |-R| string and plots the text
       at the Upper Left corner of the map.
-    - **+f**: Set the font ([*size*][,\ *fontname*][,\ *color*]); if no font info
+    - **+f** - Set the font ([*size*][,\ *fontname*][,\ *color*]); if no font info
       is given then the input file must have this information in one of its columns.
-    - **+h**: Use the most recent segment header as the text to be plotted.
+    - **+h** - Use the most recent segment header as the text to be plotted.
       comes from the data record.  Instead, use **+h** or **+l** to select the
-    - **+j**: Set the text justification; if no justification is given then the input
+    - **+j** - Set the text justification; if no justification is given then the input
       file must have this item as a column. 
-    - **+l**: Use the most recent segment label as the text to be plotted.
-    - **+r**: Use the record number (counting up from *first* [0]) as the text to be plotted.
-    - **+t**: Use the appended *text* to set a fixed text string (if *text* contains plus
+    - **+l** - Use the most recent segment label as the text to be plotted.
+    - **+r** - Use the record number (counting up from *first* [0]) as the text to be plotted.
+    - **+t** - Use the appended *text* to set a fixed text string (if *text* contains plus
       characters then the **+t** modifier must be the last modifier in |-F|).
-    - **+z**: Format incoming *z* values to a string using the supplied *format* 
+    - **+z** - Format incoming *z* values to a string using the supplied *format* 
       [if not appended we use :term:`FORMAT_FLOAT_MAP`].
 
      **Notes**: (1) If |-Z| is in effect then the *z* value used for formatting is in the

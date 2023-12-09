@@ -69,11 +69,11 @@ Optional Arguments
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Two modifiers may be used as well:
 
-    - **+u**: First remove any GMT-produced time-stamps (i.e., set by |SYN_OPT-U|).
-    - **+r**: We *round* the HighResBoundingBox instead of using the ``ceil`` function.
+    - **+r** - We *round* the HighResBoundingBox instead of using the ``ceil`` function.
       This is going against Adobe Law but can be useful when creating very small images
       where the difference of one pixel might matter. If |-V| is used we also report
       the dimensions of the final illustration.
+    - **+u** - First remove any GMT-produced time-stamps (i.e., set by |SYN_OPT-U|).
 
 .. _-C:
 
@@ -134,17 +134,17 @@ Optional Arguments
     Adjust the BoundingBox and HiResBoundingBox by scaling and/or adding margins.
     Choose from this set of modifiers:
     
-    - **+m**: Specify extra margins to extend the bounding box.
+    - **+m** - Specify extra margins to extend the bounding box.
       Give either one (uniform), two (x and y) or four (individual sides)
       margins; append plot unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
-    - **+s**: Append *width* to resize the output image to exactly *width* units.
+    - **+s** - Append *width* to resize the output image to exactly *width* units.
       The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
       unit and/or impose different width and height (**Note**: This may change the
       image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
       work and the final image will retain the DPI resolution set by |-E|.  Prepend **m**
       to set a maximum size and the new *width* is only imposed if the original figure width
       exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
-    - **+S**: Append a *scale* to scale the image by a constant factor.
+    - **+S** - Append a *scale* to scale the image by a constant factor.
 
 .. _-L:
 
@@ -165,10 +165,10 @@ Optional Arguments
     Set optional BoundingBox background fill color, fading, or draw the outline of the BoundingBox.
     These modifiers lets you change the specifics:
 
-    - **+f**: Append *fade* to fade the entire plot towards *fadecolor* [black] (100%) [no fading, 0].
-    - **+g**: Append *background* to paint the BoundingBox behind the illustration.
-    - **+k**: Append *fadecolor* to set the fade color if **+f** is set [black].
-    - **+p**: Append [*pen*] to draw the BoundingBox outline (append a pen or accept
+    - **+f** - Append *fade* to fade the entire plot towards *fadecolor* [black] (100%) [no fading, 0].
+    - **+g** - Append *background* to paint the BoundingBox behind the illustration.
+    - **+k** - Append *fadecolor* to set the fade color if **+f** is set [black].
+    - **+p** - Append [*pen*] to draw the BoundingBox outline (append a pen or accept
       the default pen of 0.25p,black).
 
 .. _-Q:
@@ -192,16 +192,16 @@ Optional Arguments
 **-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **t**\ [**+m**][**+q**\ *quality*]
     Sets the output format via one of these directives:
 
-    - **b**: Select BMP raster format.
-    - **e**: Select EPS vector graphics format.
-    - **E**: Same as **e** but with PageSize command.
-    - **f**: Select PDF vector graphics format.
-    - **F**: Same, but for multi-page PDF.
-    - **j**: Select JPEG raster format [Default].
-    - **g**: Select PNG raster format.
-    - **G**: Select transparent PNG raster format (untouched regions are transparent).
-    - **m**: Select PPM raster format.
-    - **t**: Select TIFF raster format.
+    - **b** - Select BMP raster format.
+    - **e** - Select EPS vector graphics format.
+    - **E** - Same as **e** but with PageSize command.
+    - **f** - Select PDF vector graphics format.
+    - **F** - Same, but for multi-page PDF.
+    - **j** - Select JPEG raster format [Default].
+    - **g** - Select PNG raster format.
+    - **G** - Select transparent PNG raster format (untouched regions are transparent).
+    - **m** - Select PPM raster format.
+    - **t** - Select TIFF raster format.
 
     **Notes**: (1) To directives **bjgt** you can append **+m** in order to get a monochrome
     (grayscale) image. (2) To **j** you can append **+q** to change JPEG quality in 0-100

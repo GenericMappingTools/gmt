@@ -2,17 +2,19 @@
     along the innermost closed contours only. User may choose to tick only local
     highs or local lows by appending the directives **h** or **l**, respectively.
     This behavior can be further changed with these modifiers:
-  - **+a** will tick all closed contours, not just the innermost.
-  - **+d**\ *gap*\ [/*length*] sets the gap between ticks and optionally the tick
-    mark *length* (append units as **c**, **i**, or **p**) or use defaults
-    [15\ **p**/3\ **p**].
-  - **+l**\ *labels* sets how to annotate the centers of closed innermost contours
-    (i.e., the local lows and highs). If no *labels* is appended we use **-**
-    and **+** as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
-    will plot the two characters (here, L and H) as labels. For more elaborate
-    labels, separate the low and high label strings with a comma (e.g.,
-    **+l**\ *lo*,\ *hi*). If a file is given by |-C| and |-T| is set,
-    then only contours marked with upper case C or A will have tick marks
-    [and annotations]. **Note**: The labeling of local highs and lows may plot sometimes
-    outside the innermost contour since only the mean value of the contour coordinates
-    is used to position the label.
+
+    - **+a** - Tick all closed contours, not just the innermost.
+    - **+d** - Append *gap*\ [/*length*] to set the gap between ticks and optionally the tick
+      mark *length* (append units as **c**, **i**, or **p**) or use defaults
+      [15\ **p**/3\ **p**].
+    - **+l** - Append *labels* to set how to annotate the centers of closed innermost contours
+      (i.e., the local lows and highs). If no *labels* is appended we use **-**
+      and **+** as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
+      will plot the two characters (here, L and H) as labels. For more elaborate
+      labels, separate the low and high label strings with a comma (e.g.,
+      **+l**\ *lo*,\ *hi*). If a file is given by |-C| and |-T| is set,
+      then only contours marked with upper case C or A will have tick marks
+      [and annotations]. **Note**: The labeling of local highs and lows may plot sometimes
+      outside the innermost contour since only the mean value of the contour coordinates
+      is used to position the label.
+  

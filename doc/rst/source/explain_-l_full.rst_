@@ -18,23 +18,23 @@ symbols or lines. Optionally, append a text *label* to describe the entry. The f
 allow further changes to the legend that is built by :doc:`/legend` (upper-case modifiers reflect legend codes described
 in :doc:`/legend`, which provides more details and customization):
 
-- **+D** to draw a horizontal line in the given *pen* before the legend entry is placed [default is no line].
-- **+G** to add the vertical space specified by *gap* [default is no extra space].
-- **+H** to add the specified legend *header* [default is no header].
-- **+L** to set a line *text*. Optionally, prepend a horizontal justification code **L**\ (eft), **C**\ (enter),
+- **+D** - Draw a horizontal line in the given *pen* before the legend entry is placed [default is no line].
+- **+G** - Add the vertical space specified by *gap* [default is no extra space].
+- **+H** - Add the specified legend *header* [default is no header].
+- **+L** - Set a line *text*. Optionally, prepend a horizontal justification code **L**\ (eft), **C**\ (enter),
   or **R**\ (ight) for *text* [default is **C**].
-- **+N** to change the number of columns used to set the following legend items to *cols* [default is 1].
-- **+S** to override the *size* of the current symbol for the legend or set a *height* if plotting a line or contour
+- **+N** - Change the number of columns used to set the following legend items to *cols* [default is 1].
+- **+S** - Override the *size* of the current symbol for the legend or set a *height* if plotting a line or contour
   [default uses the same symbol as plotted].
-- **+V** to start and **+v**\ *pen* to stop drawing vertical line from previous to current horizontal line [default is
+- **+V** - Start and **+v**\ *pen* to stop drawing vertical line from previous to current horizontal line [default is
   no vertical line].
-- **+f** to set the *font* used for the legend header [default is :term:`FONT_TITLE`].
-- **+g** to set the *fill* used for the legend frame [default is white].
-- **+j** to set placement of the legend using the two-character justification code *justify* [default is **TR**].
-- **+o** to set the *offset* from legend frame to anchor point [default is 0.2c].
-- **+p** to set the *pen* used for the legend frame [default is 1p].
-- **+s** to resize all symbol and length sizes in the legend by *scale* [default is no scaling].
-- **+w** to set legend frame *width* [default is auto].
+- **+f** - Set the *font* used for the legend header [default is :term:`FONT_TITLE`].
+- **+g** - Set the *fill* used for the legend frame [default is white].
+- **+j** - Set placement of the legend using the two-character justification code *justify* [default is **TR**].
+- **+o** - Set the *offset* from legend frame to anchor point [default is 0.2c].
+- **+p** - Set the *pen* used for the legend frame [default is 1p].
+- **+s** - Resize all symbol and length sizes in the legend by *scale* [default is no scaling].
+- **+w** - Set legend frame *width* [default is auto].
 
 **Notes**: (1) Default pen is given by :term:`MAP_DEFAULT_PEN`. (2) **+H**, **+g**, **+j**, **+o**, **+p**, **+w**, and
 **+s** will only take effect if appended to the very \ first **-l** option for a plot. The **+N** modifier, if appended

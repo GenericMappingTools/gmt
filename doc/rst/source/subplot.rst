@@ -55,14 +55,14 @@ Required Arguments (begin mode)
     Specify the dimensions of the figure.  There are two different ways to do this.
     Select one of the directives:
 
-    - **f**: Specify overall final figure dimensions. The subplot dimensions are then calculated from the figure
+    - **f** - Specify overall final figure dimensions. The subplot dimensions are then calculated from the figure
       dimensions after accounting for the space that optional tick marks, annotations, labels, and margins occupy between subplots.
       As for other figures, annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
       To specify different subplot dimensions for each row (or column), append **+f** followed by a comma-separated list of width
       fractions, a slash, and then the list of height fractions.  For example **-Ff**\ 10c/10c\ **+f**\ 3,1/1,2 will make the first column
       three times as wide as the second, while the second row will be twice as tall as the first row.
       A single number means constant widths (or heights) [Default].
-    - **s**: Specify the dimensions of a single subplot directly. Then, the figure dimensions are computed from the
+    - **s** - Specify the dimensions of a single subplot directly. Then, the figure dimensions are computed from the
       subplot dimensions after adding the space that optional tick marks, annotations, labels, and margins occupy between subplots.
       As for other figures, annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
       To specify different subplot dimensions for each row (or column), append a comma-separated list of widths,
@@ -79,17 +79,17 @@ Required Arguments (begin mode)
     Several modifiers can be used to adjust the layout. These are most useful if you supply **-B+n** to
     **subplot begin**, meaning no ticks or annotations will take place in the subplots:
 
-    - **+a**: Normally (append **f** [Default]) we auto-scale the fonts and pens based on the geometric mean
+    - **+a** - Normally (append **f** [Default]) we auto-scale the fonts and pens based on the geometric mean
       dimension of the entire figure. Alternatively, append **s** to  determine the scaling from the
       geometric mean subplot dimension instead.
-    - **+c**: Expand the panels by the appended plot unit increments *dx*\ [/*dy*].
-    - **+f**: To specify different subplot dimensions for each row (or column), append a comma-separated list of width
+    - **+c** - Expand the panels by the appended plot unit increments *dx*\ [/*dy*].
+    - **+f** - To specify different subplot dimensions for each row (or column), append a comma-separated list of width
       fractions, a slash, and then the list of height fractions.  For example **-Ff**\ 10c/10c\ **+f**\ 3,1/1,2 will
       make the first column three times as wide as the second, while the second row will be twice as tall as the first row.
       A single number means constant widths (or heights) [Default].
-    - **+g**: Paint the figure rectangle behind the subplot panels with the appended *fill*.
-    - **+p**: Draw the outline of the figure rectangle behind the subplot panels with the appended *pen*.
-    - **+w**: Draw dividing lines between panels using the appended *pen*.
+    - **+g** - Paint the figure rectangle behind the subplot panels with the appended *fill*.
+    - **+p** - Draw the outline of the figure rectangle behind the subplot panels with the appended *pen*.
+    - **+w** - Draw dividing lines between panels using the appended *pen*.
 
 Optional Arguments (begin mode)
 -------------------------------
@@ -100,22 +100,25 @@ Optional Arguments (begin mode)
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
-    as part of the tag (**Note**: In UNIX shells you may need to escape these parentheses.)
-    Use **+j**\|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
-    **Note**: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
-    while **+J** instead selects the mirror opposite (suitable for exterior tags).
-    Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
-    requested via **+g** or **+p** [3p/3p, i.e., 15% of the :term:`FONT_TAG` size dimension].
-    Append **+g**\ *fill* to paint the tag's text box with *fill* [no painting].
-    Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
-    by the justification [4p/4p, i.e., 20% of the :term:`FONT_TAG` size].
-    Append **+p**\ *pen* to draw the outline of the tag's text box using selected *pen* [no outline].
-    Append **+r** to typeset your tag numbers using lowercase Roman numerals;
-    use **+R** for uppercase Roman numerals [Arabic numerals].
-    Append **+s** to draw an offset background shaded rectangle. Here, *dx*/*dy* indicates the
-    shift relative to the tag box [default is **2p**\ /**-2p**] and *shade* sets the
-    fill style to use for shading [default is **gray50**].
-    Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
+    as part of the tag (**Note**: In UNIX shells you may need to escape these parentheses.).
+    Placement, box outline and fill etc are controlled by modifiers:
+
+    - **+c** - Append *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
+      requested via **+g** or **+p** [3p/3p, i.e., 15% of the :term:`FONT_TAG` size dimension].
+    - **+g** - Append *fill* to paint the tag's text box [default is no painting].
+    - **+j** - Append the *refpoint* justification of the tag (suitable for interior tags) using the
+      nine standard justification codes [**B**\|\ **M**\|\ **T**][**L**\|\ **C**\|\ **R**] shown in :doc:`text` [TL].
+    - **+J** - As **+j**, but instead selects the mirror opposite location (suitable for exterior tags).
+    - **+o** - Append *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
+      by the justification [4p/4p, i.e., 20% of the :term:`FONT_TAG` size].
+    - **+p** - Supply a *pen* to draw the outline of the tag's text box [default is no outline].
+    - **+r** - Typeset your tag numbers using lowercase Roman numerals.
+    - **+R** - Same for uppercase Roman numerals [default is Arabic numerals].
+    - **+s** - Place an offset background shaded rectangle. Here, *dx*/*dy* indicates the
+      shift relative to the tag box [default is **2p**\ /**-2p**] and *shade* sets the
+      fill style to use for shading [default is **gray50**].
+    - **+v** - Increase tag numbers vertically down columns [default is horizontally across rows].
+    
     **Note**: Currently you cannot use LaTeX expressions in the panel tag. The workaround is
     to place such tags separately via :doc:`text`.
 
