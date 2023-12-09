@@ -194,6 +194,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_distunits.rst_
+
 .. include:: explain_grdresample.rst_
 
 .. module_common_ends

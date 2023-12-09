@@ -23,5 +23,6 @@
       This is useful when the CPT is generated automatically, but if used, **must** be
       at the end of the **-C** option.
     - **+u**: For any other *master* CPT, you may convert their *z*-values from 
-      another distance *unit* to meter.
-    - **+U**: Likewise, you may convert their *z*-values from meter to another *unit*.
+      other distance `Units`_ to meter by appending the original unit code.
+    - **+U**: Likewise, you may convert their *z*-values from meter to other `Units`_
+      by appending the desired unit code.

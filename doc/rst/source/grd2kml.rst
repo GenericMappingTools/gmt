@@ -153,6 +153,10 @@ Optional Arguments
 
 .. include:: explain_-n.rst_
 
+.. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
+
 Quadtree building
 -----------------
 
