@@ -152,7 +152,7 @@ Optional Arguments
       height by this factor [1]. Requires |-S| to know the full height of the seamount.
     - **+d**: Change the water-pressure-driven flank *densify* gradient over the
       full reference height [0].
-    - **+p**: Change variable density profile exponent *power* [Default is 1, i.e., a linear change]..
+    - **+p**: Change variable density profile exponent *power* [Default is 1, i.e., a linear change].
 
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
 
