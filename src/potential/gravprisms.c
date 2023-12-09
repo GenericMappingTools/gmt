@@ -88,7 +88,7 @@ struct GRAVPRISMS_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct GRAVPRISMS_H {	/* -H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>][+b<boost>] */
+	struct GRAVPRISMS_H {	/* -H<H>/<rho_l>/<rho_h>[+b<boost>][+d<densify>][+p<power>] */
 		bool active;
 		double H, rho_l, rho_h;
 		double p, densify, boost;
