@@ -15,7 +15,7 @@ Synopsis
 **gmt grd2kml** *ingrid*
 |-N|\ *prefix*
 [ |-A|\ **a**\|\ **g**\|\ **s**\ [*altitude*] ]
-[ |-C|\ *cpt* ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
 [ |-H|\ *scale* ]
@@ -152,6 +152,10 @@ Optional Arguments
 .. include:: explain_-f.rst_
 
 .. include:: explain_-n.rst_
+
+.. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 Quadtree building
 -----------------
