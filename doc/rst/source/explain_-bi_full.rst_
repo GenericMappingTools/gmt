@@ -30,7 +30,7 @@ Force byte-swapping of a group by appending **w** at the end of the group.
 For records with mixed types, append additional comma-separated groups (no space between groups).
 The following modifiers are supported:
 
-    - **+b**\|\ **l** to indicate that the entire data file should be read as big- or little-endian, respectively.
+    - **+b**\|\ **l** - Indicate that the entire data file should be read as big- or little-endian, respectively.
 
 The cumulative number of *ncols* may exceed the columns actually needed by the program. If *ncols* is not specified we
 assume that *type* applies to all columns and that *ncols* is implied by the expectation of the program. When using
