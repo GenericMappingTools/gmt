@@ -3204,7 +3204,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 	char fmt[GMT_LEN64] = {""};
 	strncpy (GMT->current.setting.format_float_out_orig, value, GMT_LEN256-1);
 	if (strchr (value, ',')) {
-		unsigned int start = 0, stop = 0, error = 0;
+		unsigned int start = 0, stop = 0;
 		char *p = NULL;
 		/* Look for multiple comma-separated format statements of type [<cols>:]<format>.
 		 * Last format also becomes the default for unspecified columns */
@@ -3216,7 +3216,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 				else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
 					start = stop = atoi (fmt);
 				else				/* Something bad */
-					error++;
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad column specification: %s - expect trouble\n", fmt);
 				p++;	/* Move to format */
 				for (k = start; k <= stop; k++)
 					GMT->current.io.o_format[k] = strdup (p);

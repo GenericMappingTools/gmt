@@ -796,6 +796,7 @@ GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl
 	 */
 	unsigned int direction = (section == PSEVENTS_RISE) ? PSEVENTS_RAMP_UP : PSEVENTS_RAMP_DOWN;
 	double t_norm = 1.0 + (t_now - t[section])/Ctrl->E.dt[kind][section], ramp = 0.0;
+	gmt_M_unused (GMT);
 	if (section == PSEVENTS_FADE) t_norm -= 1.0;
 
 	t_norm = fabs (t_norm);
