@@ -347,6 +347,9 @@ enum GMT_time_period {
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U
 
+/* -C (cpt) args for grd*.c plotters: */
+#define CPT_OPT_ARGS "[<section>/]<master>|<cpt>|<*color1,color2[,color3,...][+h[<hinge>]][+i<dz>][+u|U<unit>][+s<fname>]"
+
 #define GMT_IS_ROMAN_LCASE	1	/* For converting Arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
 
