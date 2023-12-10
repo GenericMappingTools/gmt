@@ -2153,12 +2153,19 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 							if (n_scan == 1) {	/* Got gray shade */
 								rgb[0] /= 255.0;	/* Normalize to 0-1 range */
 								rgb[1] = rgb[2] = rgb[0];
-								if (rgb[0] < 0.0 || rgb[0] > 1.0) error++;
+								if (rgb[0] < 0.0 || rgb[0] > 1.0) {
+									PSL_message (PSL, PSL_MSG_ERROR, "Error: Normalized gray value < 0 or > 1\n");
+									error++;
+								}
 							}
 							else if (n_scan == 3) {	/* Got r/g/b */
+								static *color[3] = {"red", "gree", "blue"};
 								for (p = 0; p < 3; p++) {
 									rgb[p] /= 255.0;	/* Normalize to 0-1 range */
-									if (rgb[p] < 0.0 || rgb[p] > 1.0) error++;
+									if (rgb[p] < 0.0 || rgb[p] > 1.0) {
+										error++;
+										PSL_message (PSL, PSL_MSG_ERROR, "Error: Normalized %s value < 0 or > 1\n", color[p]);
+									}
 								}
 							}
 							else	/* Got crap */
@@ -2344,7 +2351,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 
 	psl_freewords (word, n_alloc_txt);
 	PSL_free (word);
-	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
+	return (error + sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
 
 static void psl_get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2) {

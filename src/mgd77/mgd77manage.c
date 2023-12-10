@@ -333,7 +333,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_cruises = 0;
+	unsigned int n_errors = 0, k;
 	bool got_table, got_grid, strings;
 	nc_type c_nc_type;
 	char file[PATH_MAX] = {""}, *c = NULL;
@@ -345,7 +345,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 
 			case '<':	/* Input files */
 			case '#':	/* Skip input files confused as numbers (e.g. 123456) */
-				n_cruises++;
 				break;
 
 			/* Processes program-specific parameters */

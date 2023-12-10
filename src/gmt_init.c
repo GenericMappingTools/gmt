@@ -615,6 +615,7 @@ GMT_LOCAL char * gmtinit_colon_digexcl (char *string) {
 	return NULL;
 }
 
+#if 0/* Not in use yet, Roger, or this is my old stuff?
 /*! . */
 GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predexcl) {
 	/* Version of strchr() that will ignore any instance of target
@@ -626,6 +627,7 @@ GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predex
 		if ((*c == target) && ((c == string) || (*(c-1) != predexcl))) return c;
 	return NULL;
 }
+#endif
 
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {

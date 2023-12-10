@@ -11053,7 +11053,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					X[np].y0 = S0->data[col_y0][row];	/* Critical point's y0 coordinate */
 					X[np].s0_i0 = row;	/* Set S0 first index inside this section */
 					/* Must interpolate to get the corresponding value at x along S1 */
-					result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+					if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 					kk = 0;
 					while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first x point beyond the NaN gap */
 					X[np].s1_i0 = kk;	/* Set first S1 index inside this section */
@@ -11062,7 +11062,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					X[np].y1 = S0->data[col_y0][row];	/* Critical point's y1 coordinate */
 					X[np].s1_i0 = row;	/* Set S1 first index inside this section */
 					/* Must interpolate to get the corresponding value at x along S0 */
-					result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+					if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 					kk = 0;
 					while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond the NaN gap */
 					X[np].s0_i0 = kk;	/* Set first S0 index inside this section */
@@ -11080,7 +11080,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 						X[np].y0 = S0->data[col_y0][row];	/* Critical point's y0 coordinate */
 						X[np].s0_i0 = row;	/* Set S0 first index inside this section */
 						/* Must interpolate to get the corresponding value at x along S1 */
-						result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+						if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 						kk = 0;
 						while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
 						X[np].s1_i0 = kk;	/* Set S1 first index inside this section */
@@ -11088,7 +11088,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					else {	/* Working on S1 */
 						X[np].y1 = S1->data[col_y1][row];	/* Critical point's y1 coordinate */
 						X[np].s1_i0 = row;	/* Set S1 first index inside this section */
-						result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+						if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 						kk = 0;
 						while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
 						X[np].s0_i0 = kk;	/* Set first S0 index inside this section */
@@ -11119,7 +11119,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		/* Must interpolate to get the corresponding value at x along S1 (y1) */
-		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	else if (S1->data[GMT_X][0] >= S0->data[GMT_X][0]) {	/* S0 has the minimum x */
@@ -11136,7 +11136,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		/* Must interpolate to get the corresponding value at x along S0 (y0) */
-		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	/* If S0 ends before S1 or the other way around we must get the y-value at the smallest end point */
@@ -11154,7 +11154,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].s1_i0 = stop[1];	/* S1 has been wound back to stop[1] */
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
-		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	else if (S1->data[GMT_X][last[1]] <= S0->data[GMT_X][last[0]]) {
@@ -11170,7 +11170,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].s0_i0 = stop[0];	/* S0 has been wound back to stop[0] */
 		X[np].s1_i0 = last[1];	/* Last S1 in overlap is its last point */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
-		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		np++;
 	}

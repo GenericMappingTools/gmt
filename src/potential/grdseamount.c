@@ -829,7 +829,6 @@ GMT_LOCAL double grdseamount_para_solver (struct SEAMOUNT *S, double f, double v
 
 GMT_LOCAL double grdseamount_gauss_solver (struct SEAMOUNT *S, double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction for a Gaussian seamount */
-	int n = 0;
 	double A, B, V0, phi, phi0, r02, h0;
 	r02 = (elliptical) ? S->major * S->minor : S->radius * S->radius;
 	h0  = S->height;
