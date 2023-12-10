@@ -3062,7 +3062,7 @@ GMT_LOCAL int gmtmap_init_miller (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (gmtmap_cyl_validate_clon (GMT, 1))	/* Make sure the central longitude is valid */
 		return GMT_PROJECTION_ERROR;
-	gmtproj_vmiller (GMT, GMT->current.proj.pars[0]);
+	gmtproj_vmiller (GMT, GMT->current.proj.pars[0], 0.0);
 	gmtproj_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 #ifdef CHRISTMAS
 	if (GMT->common.R.wesn[YLO] > 0.0) {

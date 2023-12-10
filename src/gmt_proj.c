@@ -767,7 +767,7 @@ GMT_LOCAL void gmtproj_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *la
  * triangle.  Doing all for quadrants results in a square map with radial
  * meridians and lots of distortion along the boundaries.  This was used to
  * build a 3-D cube of the world with this triangle projection being used to
- * map the top (N polar to 34N) and bottom (S pole to 45S) sides, with the
+ * map the top (N polar to 45N) and bottom (S pole to 45S) sides, with the
  * remaining 4 sides just being -JQ maps.  I left it here since I may want
  * to mess with this in the future.  P. Wessel, Dec. 2016.
  */
@@ -811,7 +811,7 @@ GMT_LOCAL void gmtproj_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, 
 	}
 }
 #else
-GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0) {
+GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0, double unused) {
 	/* Set up a Miller Cylindrical transformation */
 
 	gmtproj_check_R_J (GMT, &lon0);
