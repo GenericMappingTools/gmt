@@ -2159,7 +2159,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 								}
 							}
 							else if (n_scan == 3) {	/* Got r/g/b */
-								static *color[3] = {"red", "gree", "blue"};
+								static char *color[3] = {"red", "green", "blue"};
 								for (p = 0; p < 3; p++) {
 									rgb[p] /= 255.0;	/* Normalize to 0-1 range */
 									if (rgb[p] < 0.0 || rgb[p] > 1.0) {

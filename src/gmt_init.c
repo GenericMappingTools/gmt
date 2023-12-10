@@ -615,7 +615,7 @@ GMT_LOCAL char * gmtinit_colon_digexcl (char *string) {
 	return NULL;
 }
 
-#if 0/* Not in use yet, Roger, or this is my old stuff?
+#if 0	/* Not in use yet, Roger, or this is my old abandoned stuff? */
 /*! . */
 GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predexcl) {
 	/* Version of strchr() that will ignore any instance of target

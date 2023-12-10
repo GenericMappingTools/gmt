@@ -839,8 +839,7 @@ GMT_LOCAL double grdseamount_gauss_solver (struct SEAMOUNT *S, double f, double 
 	do {
 		phi0 = phi;
 		phi = M_SQRT2 * sqrt (-log (B/(1 + 4.5 * phi0*phi0))) / 3.0;
-		n++;
-	} while (fabs (phi-phi0) > 1e-6);
+	} while (fabs (phi-phi0) > GMT_CONV6_LIMIT);
 	return (phi);
 }
 

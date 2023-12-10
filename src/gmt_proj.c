@@ -487,7 +487,7 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 			phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: %2d P %12.7f phig %12.7f\n", niter, P, phig);
 		}
-		while (fabs (phig - phig_last) > 1e-9);
+		while (fabs (phig - phig_last) > GMT_PROJ_CONV_LIMIT);
 		sincosd (phig, &sphig, &cphig);
 		P = (cphi1/cphig)*(H + N1 + h0)/a;
 	}
