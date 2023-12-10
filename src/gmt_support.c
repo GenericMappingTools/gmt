@@ -15702,10 +15702,10 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	 * an array with coordinates and labels, and set interval to true if applicable.
 	 */
 	int nc, error;
-	unsigned int save_coltype, save_max_cols_to_read;
+	unsigned int k = 0, save_coltype, save_max_cols_to_read;
 	uint64_t row;
 	bool text, found, save_trailing;
-	unsigned int k = 0, n_annot = 0, n_int = 0;
+	//unsigned int n_annot = 0, n_int = 0;
 	double *x = NULL, limit[2] = {-DBL_MAX, +DBL_MAX};
 	char **L = NULL, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
 	struct GMT_DATASET *D = NULL;
@@ -15749,8 +15749,10 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 			}
 		}
 		else if (S->data[GMT_X][row] < limit[0] || S->data[GMT_X][row] > limit[1]) continue;	/* Cartesian check */
+#if 0	/* Old degguging things left commented */
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
+#endif
 		x[k] = S->data[GMT_X][row];
 		if (text && nc == 2) {
 			gmtlib_enforce_rgb_triplets (GMT, txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */

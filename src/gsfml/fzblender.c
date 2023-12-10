@@ -361,8 +361,8 @@ struct TREND {	/* Holds slope and intercept for each segment column we need to d
 
 EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 	unsigned int fz, row;
-	int error = 0, n_d, n_g, k, n, item, status, ndig;
-	int col[N_BLEND_COLS][N_BLENDS] =	/* Columns in the analyzis file for b,d,e,t,u trace parameters */
+	int error = 0, n_d, n_g, k, n, item, status;
+	int col[N_BLEND_COLS][N_BLENDS] =	/* Columns in the analysis file for b,d,e,t,u trace parameters */
 	{
 		{POS_XB0, POS_XD0, POS_XE0, POS_XT0, POS_XR},	/* FZ longitudes */
 		{POS_YB0, POS_YD0, POS_YE0, POS_YT0, POS_YR},	/* FZ latitudes */
@@ -572,7 +572,7 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 			continue;
 		}
 	
-		ndig = irint (floor (log10 ((double)Tin->segment[fz]->n_rows))) + 1;	/* Determine how many decimals are needed for largest FZ id */
+		//ndig = irint (floor (log10 ((double)Tin->segment[fz]->n_rows))) + 1;	/* Determine how many decimals are needed for largest FZ id */
 		
 		for (row = 0; row < Tin->segment[fz]->n_rows; row++) {	/* Process each point along digitized FZ trace */
 			

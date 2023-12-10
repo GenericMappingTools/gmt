@@ -121,7 +121,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_opts = 0;
+	unsigned int n_errors = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -163,9 +163,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GM
 				break;
 		}
 	}
-	if (Ctrl->M.mode == RAW_HEADER) n_opts++;
-	if (Ctrl->M.mode == M77T_HEADER) n_opts++;
-	if (Ctrl->M.mode == FORMATTED_HEADER) n_opts++;
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

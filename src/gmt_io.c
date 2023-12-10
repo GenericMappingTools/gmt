@@ -9908,6 +9908,7 @@ GMT_LOCAL unsigned int gmtio_count_special (struct GMT_CTRL *GMT, char *string) 
 	char *p = NULL;
 	int code;
 	unsigned int L = strlen (string), start = 0, n_special = 0, k;
+	gmt_M_unused (GMT);
 
 	if (string[start] == '-' || string[start] == '+') start++;	/* Skip any leading signs */
 	p = &string[start];	/* Start of arg after skipping potential signs */
@@ -9945,6 +9946,7 @@ GMT_LOCAL bool gmtio_is_float (struct GMT_CTRL *GMT, char *string, bool allow_ex
 	 * Note: string has no leading sign. */
 
 	unsigned int L = strlen (string), k = 0, n_exp = 0, n_sep = 0;
+	gmt_M_unused (GMT);
 	for (k = 0; k < L; k++) {
 		if (string[k] == 'e' || string[k] == 'd') {	/* Allow junk FORTRAN output using d for double precision exponential format */
 			if (!allow_exp) return (false);

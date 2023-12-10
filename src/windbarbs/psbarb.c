@@ -294,9 +294,9 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 	bool penset_OK = true, old_is_world;
 	bool get_rgb, clip_set = false, fill_active;
 	bool default_outline, outline_active;
-	unsigned int k, j, geometry, pos2x, pos2y, set_type;
+	unsigned int k, j, geometry, pos2y, set_type;
 	unsigned int n_cols_start = 3, justify;
-	unsigned int ex1, ex2, ex3, n_needed, read_mode;
+	unsigned int ex1, ex2, n_needed, read_mode;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;
@@ -363,12 +363,11 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 	/* Extra columns 1, 2, and 3 */
 	ex1 = (get_rgb) ? 4 : 3;
 	ex2 = (get_rgb) ? 5 : 4;
-	ex3 = (get_rgb) ? 6 : 5;
 	if (!GMT->common.J.zactive) {			/* PSBARB */
-		ex1--; ex2--; ex3--; n_cols_start--;
+		ex1--; ex2--; n_cols_start--;
 		for (j = 0; j < S.n_nondim; j++) S.nondim_col[j]--;
 	}
-	pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
+	// pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 	n_needed = n_cols_start + S.n_required;
 

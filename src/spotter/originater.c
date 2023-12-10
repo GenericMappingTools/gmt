@@ -697,6 +697,8 @@ EXTERN_MSC int GMT_originater (void *V_API, int mode, void *args) {
 		smt++;
 	} while (true);
 
+	if (n_skipped) GMT_Report (API, GMT_MSG_INFORMATION, "%u seamount skipped as flagged by negative ages\n", n_skipped);
+
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
