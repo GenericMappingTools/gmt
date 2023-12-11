@@ -2239,14 +2239,15 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 		else
 			L->angle = L->line_angle + cangle;
 	}
-	if (angle_type == GMT_ANGLE_LINE_FIXED) {	/* Just return the fixed angle given (unless NaN) */
+	else if (angle_type == GMT_ANGLE_LINE_FIXED) {	/* Just return the fixed angle given (unless NaN) */
 		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
 			angle_type = GMT_ANGLE_LINE_PARALLEL;
 		else
 			L->angle = L->line_angle = cangle;
 	}
-	if (angle_type != GMT_ANGLE_LINE_FIXED) {	/* Must base label angle on the contour angle */
-		L->angle = L->line_angle + angle_type * 90.0;	/* May add 90 to get normal */
+	else {	/* Must base label angle on the contour angle or its normal */
+		L->angle = L->line_angle ;
+		if (angle_type == GMT_ANGLE_LINE_NORMAL) L->angle += 90.0;	/* Add 90 to get normal */
 		if (L->angle < 0.0) L->angle += 360.0;
 		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
 	}
@@ -2268,14 +2269,21 @@ GMT_LOCAL void gmtsupport_line_angle_line (struct GMT_CTRL *GMT, double x[], dou
 	dx = x[stop] - x[start];
 	dy = y[stop] - y[start];
 	L->line_angle =  d_atan2d (dy, dx);
-	if (angle_type == GMT_ANGLE_LINE_FIXED) {	/* Just return the fixed angle given (unless NaN) */
+	if (angle_type == GMT_ANGLE_LINE_DELTA) {	/* Add delta angle to line angle */
+		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
+			angle_type = GMT_ANGLE_LINE_PARALLEL;
+		else
+			L->angle = L->line_angle + cangle;
+	}
+	else if (angle_type == GMT_ANGLE_LINE_FIXED) {	/* Just return the fixed angle given (unless NaN) */
 		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
 			angle_type = GMT_ANGLE_LINE_PARALLEL;
 		else
 			L->angle = cangle;
 	}
-	if (angle_type != GMT_ANGLE_LINE_FIXED) {	/* Must base label angle on the contour angle */
-		L->angle = L->line_angle + angle_type * 90.0;	/* May add 90 to get normal */
+	else  {	/* Must base label angle on the contour angle or its normal */
+		L->angle = L->line_angle ;
+		if (angle_type == GMT_ANGLE_LINE_NORMAL) L->angle += 90.0;	/* Add 90 to get normal */
 		if (L->angle < 0.0) L->angle += 360.0;
 		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
 	}
@@ -10630,6 +10638,14 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 						G->hill_label = +1;
 					else if (p[2] == 'd' || p[2] == 'D')	/* Line-parallel label readable when looking down hill */
 						G->hill_label = -1;
+					else if (p[2]) {	/* Gave optional fixed angle deviation from line-parallel */
+						G->angle_type = GMT_ANGLE_LINE_DELTA;
+						G->label_angle = atof (&p[2]);
+						gmt_lon_range_adjust (GMT_IS_M180_TO_P180_RANGE, &G->label_angle);	/* Now -180/+180 */
+						while (fabs (G->label_angle) > 90.0) G->label_angle -= copysign (180.0, G->label_angle);
+					}
+					else
+						G->angle_type = GMT_ANGLE_LINE_PARALLEL;
 				}
 				else if (p[1] == 'n' || p[1] == 'N')	/* Line-normal label */
 					G->angle_type = GMT_ANGLE_LINE_NORMAL;

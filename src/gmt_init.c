@@ -8587,8 +8587,9 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	if (kind == 0) {
 		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
 			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. "
-			"For +ap, you may optionally append u for up-hill"
-			"and d for down-hill cartographic annotations.\n", feature[kind]);
+			"For +ap, you may optionally append u for up-hill "
+			"and d for down-hill cartographic annotations. If p<angle> is appended then "
+			"<angle> is used as a fixed deviation from the line orientation\n", feature[kind]);
 	}
 	else {
 		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "

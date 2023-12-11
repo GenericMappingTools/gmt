@@ -435,7 +435,8 @@
 
             **+a**\ *angle*
                 Force annotations at a fixed angle, **+an** for line-normal, or
-                **+ap** for line-parallel [Default].
+                **+ap** for line-parallel [Default]. If *angle* is appended to **p**
+                then we add this deviation to the line angle instead.
 
             **+c**\ *dx*\ [/*dy*]
                 Set clearance between label and optional text box. Append

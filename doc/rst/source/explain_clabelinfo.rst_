@@ -1,7 +1,8 @@
-    **+a**\ *angle*
+    **+a**\ [**n**\|\ **p**\ [**d**\|\ **u**]]\ *angle*
        Place annotations at a fixed angle, or use **+an** for contour-normal and
        **+ap** for contour-parallel [Default].  For **+ap**, you may optionally
-       append **u** for up-hill and **d** for down-hill cartographic annotations.
+       append **u** for up-hill and **d** for down-hill cartographic annotations,
+       and if *angle* is appended we add this deviation to the line angle.
 
     **+c**\ *dx*\ [/*dy*]
        Sets the clearance between label and optional text box. Append
