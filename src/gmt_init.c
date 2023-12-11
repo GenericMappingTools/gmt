@@ -8592,7 +8592,8 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	}
 	else {
 		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
-			"Or, specify +an (line-normal) or +ap (line-parallel) [Default].", feature[kind]);
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. If p<angle> is appended then
+				<angle> is used as a fixed deviation from the line orientation", feature[kind]);
 	}
 	if (kind < 2) GMT_Usage (API, indent, "+c Set clearance <dx>[/<dy>] between label and text box [15%%].");
 	GMT_Usage (API, indent, "+d Debug mode which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
