@@ -4,21 +4,23 @@
     **Geographical (degrees) coordinates**: Optionally, append an increment unit.
     Choose among:
 
-        - **m** to indicate arc minutes
-        - **s** to indicate arc seconds
-        - **e** (meter), **f** (foot), **k** (km), **M** (mile), **n** (nautical
-          mile) or **u** (US survey foot), in which case the increment will be
-          converted to the equivalent degrees longitude at the middle latitude
-          of the region  (the conversion depends on :term:`PROJ_ELLIPSOID`). If
-          *y_inc* is not given or given but set to 0 it will be reset equal to *x_inc*;
-          otherwise it will be converted to degrees latitude.
+        - **d** - Indicate arc degrees
+        - **m** - Indicate arc minutes
+        - **s** - Indicate arc seconds
+
+        If one of **e** (meter), **f** (foot), **k** (km), **M** (mile), **n** (nautical
+        mile) or **u** (US survey foot), the the increment will be
+        converted to the equivalent degrees longitude at the middle latitude
+        of the region  (the conversion depends on :term:`PROJ_ELLIPSOID`). If
+        *y_inc* is not given or given but set to 0 it will be reset equal to *x_inc*;
+        otherwise it will be converted to degrees latitude.
     
     **All coordinates**: The following modifiers are supported:
     
-        - **+e** to slightly adjust the max *x* (*east*) or *y* (*north*) to fit
+        - **+e** - Slightly adjust the max *x* (*east*) or *y* (*north*) to fit
           exactly the given increment if needed [Default is to slightly adjust
           the increment to fit the given domain].
-        - **+n** to define the *number of nodes* rather than the increment, in
+        - **+n** - Define the *number of nodes* rather than the increment, in
           which case the increment is recalculated from the number of nodes,
           the *registration* (see :ref:`GMT File Formats`), and the domain.
           **Note**: If **-R**\ *grdfile* is used then the grid spacing and

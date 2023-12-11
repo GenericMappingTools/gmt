@@ -1667,7 +1667,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[MOVIE_PREFLIGHT].active) {	/* Create the preflight script from the user's background script */
 		/* The background script must be modern mode */
-		unsigned int rec = 0;
 		if (Ctrl->S[MOVIE_PREFLIGHT].PS)	/* Just got a PS file, nothing to do */
 			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);
 		else {	/* Run the preflight script */
@@ -1710,7 +1709,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					else if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 					fprintf (fp, "%s", line);	/* Just copy the line as is */
 				}
-				rec++;
 			}
 			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);	/* Done reading the foreground script */
 			fclose (fp);	/* Done writing the preflight script */

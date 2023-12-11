@@ -1022,7 +1022,7 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol];	/* Start of current pixel node */
 			index = (int)Conf->Image->data[node_s];
-			if (index < start) {	/* E.g., data is 0 for Nodata */
+			if (index < (int64_t)start) {	/* E.g., data is 0 for Nodata */
 				for (k = 0; k < 3; k++)
 					image[byte++] = (unsigned char)gmt_M_s255 (Conf->P->bfn[GMT_NAN].rgb[k]);
 			}

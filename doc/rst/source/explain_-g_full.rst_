@@ -13,13 +13,13 @@ A criterion is specified using one of the **x**\|\ **y**\|\ **z**\|\ **d**\|\ **
 upper-case directives specify that the criterion should be applied to the projected coordinates for
 modules that map data to map coordinates.
 
-- **x**\|\ **X** - define a gap when there is a large enough change in the x coordinates (upper case to use
+- **x**\|\ **X** - Define a gap when there is a large enough change in the x coordinates (upper case to use
   projected coordinates).
-- **y**\|\ **Y** - define a gap when there is a large enough change in the y coordinates (upper case to use
+- **y**\|\ **Y** - Define a gap when there is a large enough change in the y coordinates (upper case to use
   projected coordinates).
-- **z** - define a gap when there is a large enough change in the z data. Use **+c**\ *col* to change
+- **z** - Define a gap when there is a large enough change in the z data. Use **+c**\ *col* to change
   the z data column [Default *col* is 2 (i.e., 3rd column)].
-- **d**\|\ **D** - define a gap when there is a large enough distance between coordinates (upper case to use
+- **d**\|\ **D** - Define a gap when there is a large enough distance between coordinates (upper case to use
   projected coordinates).
 
 A unit **u** may be appended to the specified *gap*:
@@ -34,8 +34,8 @@ Append modifier **+a** to specify that *all* the criteria must be met [default i
 
 One of the following modifiers can be appended:
 
-- **+n** - specify that the previous value minus the current column value must exceed *gap* for a break to be imposed.
-- **+p** - specify that the current value minus the previous value must exceed *gap* for a break to be imposed.
+- **+n** - Specify that the previous value minus the current column value must exceed *gap* for a break to be imposed.
+- **+p** - Specify that the current value minus the previous value must exceed *gap* for a break to be imposed.
 
 Default imposes breaks based on the absolute value of the difference between the current and previous value.
 **Notes**: (1) For **x**\|\ **y**\|\ **z** with time data the unit is instead controlled by :term:`TIME_UNIT`. (2) GMT

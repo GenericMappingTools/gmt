@@ -223,6 +223,7 @@ static int check_grid_compat (struct GMTAPI_CTRL *API, struct GMT_GRID *A, struc
 	   return 1		if any of the corners differ more than 1/5 of the grid spacing
 	   return 3		if registrations are not equal
 	*/
+	gmt_M_unused (API);
 	if (fabs((A->header->inc[GMT_X] - B->header->inc[GMT_X]) / A->header->inc[GMT_X]) > 0.002 ||
 		fabs((A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) / A->header->inc[GMT_Y]) > 0.002)
 		return 1;
