@@ -245,7 +245,7 @@ enum GMT_time_period {
  * non-user-facing translation entries.
  */
 #define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number", GMT_TP_STANDARD }
-#define GMT_C_CPT_KW	{ 0, 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit", GMT_TP_STANDARD }
+#define GMT_C_CPT_KW	{ 0, 'C', "cpt|cmap", "", "", "h,i,s,u,U", "hinge,zinc,file,fromunit,tounit", GMT_TP_STANDARD }
 #define GMT_G_OUTGRID_KW { 0, 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list", GMT_TP_STANDARD }
 #define GMT_W_PEN_KW	{ 0, 'W', "pen", "", "", "c", "color", GMT_TP_STANDARD }
 
