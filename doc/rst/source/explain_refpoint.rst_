@@ -1,9 +1,5 @@
 - **g** - Append *lon*/*lat* for :ref:`map coordinates <Reference_Points_g>`. Requires both |-R| and |-J| to be set.
-- **j** - Append *code* to **j** or  **J**\ *code* for setting the *refpoint* via a 2-char
-   :ref:`justification code <Reference_Points_j>` that refers to the (invisible) projected map bounding box. Requires
-   both |-R| and |-J| to be set. Upper case means justify on the outside.
-- **n** - Append *xn*/*yn* for :ref:`normalized bounding box coordinates <Reference_Points_n>` (0-1). Requires both
-   |-R| and |-J| to be set.
-- **x** - Append *x*/*y* for :ref:`plot coordinates <Reference_Points_x>` (append **c**\ m, **i**\ nch, or
-   **p**\ point).
+- **j** - Append *code* to **j** or  **J**\ *code* for setting the *refpoint* via a 2-char :ref:`justification code <Reference_Points_j>` that refers to the (invisible) projected map bounding box. Requires both |-R| and |-J| to be set. Upper case means justify on the outside.
+- **n** - Append *xn*/*yn* for :ref:`normalized bounding box coordinates <Reference_Points_n>` (0-1). Requires both |-R| and |-J| to be set.
+- **x** - Append *x*/*y* for :ref:`plot coordinates <Reference_Points_x>` (append **c**\ m, **i**\ nch, or **p**\ point).
    
