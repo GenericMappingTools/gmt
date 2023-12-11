@@ -2233,6 +2233,12 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 			if (fabs (L->line_angle - angle) > 145.0) L->line_angle += 180.0;
 		}
 	}
+	if (angle_type == GMT_ANGLE_LINE_DELTA) {	/* Add delta angle to line angle */
+		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
+			angle_type = GMT_ANGLE_LINE_PARALLEL;
+		else
+			L->angle = L->line_angle + cangle;
+	}
 	if (angle_type == GMT_ANGLE_LINE_FIXED) {	/* Just return the fixed angle given (unless NaN) */
 		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
 			angle_type = GMT_ANGLE_LINE_PARALLEL;
@@ -3387,6 +3393,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 /*! . */
 GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
 	/* Add a symbol location to the growing segment */
+	double angle;
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	if (S->n_rows == SH->n_alloc) {	/* Need more memory for the segment */
 		uint64_t col;
@@ -3411,7 +3418,10 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	S->data[GMT_X][S->n_rows] = L->x;
 	S->data[GMT_Y][S->n_rows] = L->y;
 	S->data[GMT_Z][S->n_rows] = gmt_M_to_inch (GMT, G->size);
-	S->data[3][S->n_rows] = L->line_angle;	/* Change this in inches internally instead of string */
+	if (G->angle_type == GMT_ANGLE_LINE_DELTA) angle = G->symbol_angle + L->line_angle;
+	else if (G->angle_type == GMT_ANGLE_LINE_FIXED) angle = G->symbol_angle;
+	else angle = L->line_angle;
+	S->data[3][S->n_rows] = angle;
 	S->text[S->n_rows++] = strdup (G->symbol_code);
 }
 
@@ -10959,8 +10969,16 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 	while ((gmt_strtok (specs, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
-				if (p[1] == 'p' || p[1] == 'P')	/* Line-parallel label */
-					G->angle_type = GMT_ANGLE_LINE_PARALLEL;
+				if (p[1] == 'p' || p[1] == 'P')	{ /* Line-parallel label */
+					if (p[2]) {	/* Gave optional fixed angle deviation from line-parallel */
+						G->angle_type = GMT_ANGLE_LINE_DELTA;
+						G->symbol_angle = atof (&p[2]);
+						gmt_lon_range_adjust (GMT_IS_M180_TO_P180_RANGE, &G->symbol_angle);	/* Now -180/+180 */
+						while (fabs (G->symbol_angle) > 90.0) G->symbol_angle -= copysign (180.0, G->symbol_angle);
+					}
+					else
+						G->angle_type = GMT_ANGLE_LINE_PARALLEL;
+				}
 				else if (p[1] == 'n' || p[1] == 'N')	/* Line-normal label */
 					G->angle_type = GMT_ANGLE_LINE_NORMAL;
 				else {					/* Label at a fixed angle */
