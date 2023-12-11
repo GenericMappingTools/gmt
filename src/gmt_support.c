@@ -3411,7 +3411,7 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	S->data[GMT_X][S->n_rows] = L->x;
 	S->data[GMT_Y][S->n_rows] = L->y;
 	S->data[GMT_Z][S->n_rows] = gmt_M_to_inch (GMT, G->size);
-	S->data[3][S->n_rows] = L->line_angle;	/* Change this in inches internally instead of string */
+	S->data[3][S->n_rows] = (G->angle_type == GMT_ANGLE_LINE_FIXED) ? G->symbol_angle : L->line_angle;
 	S->text[S->n_rows++] = strdup (G->symbol_code);
 }
 
