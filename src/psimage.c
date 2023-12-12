@@ -165,6 +165,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				strncpy(string, opt->arg, GMT_LEN256 - 1);
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
