@@ -9468,10 +9468,12 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		gmt_DCW_free (GMT, &info);
 		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
-		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+		if (GMT->current.setting.format_geo_out[0] == 'D')			/* [-180 180]*/
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
-		else
+		else if (GMT->current.setting.format_geo_out[0] == '+')		/* [0 360]*/
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		else if (GMT->current.setting.format_geo_out[0] == '-')		/* [-360 0]*/
+			GMT->current.io.geo.range = GMT_IS_M360_TO_0_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.R.via_polygon = true;
 		return (GMT_NOERROR);
