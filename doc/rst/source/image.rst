@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+r**\ *dpi*[**c**]\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+r**\ *dpi*\ [**c**]\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]
     Sets reference point on the map for the image using one of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
@@ -79,6 +79,8 @@ Optional Arguments
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Specify image size in one of two ways:
     
+    - **+n** - Append \ *nx*\ [/*ny*] to replicate the (scaled) image *nx* times horizontally and
+      *ny* times vertically. If *ny* is omitted, it will be identical to *nx* [Default is 1/1].
     - **+r** - Specify *dpi* to set the dpi of the image in dots per inch, or append **c**
       to indicate this is dots per cm [inches].
     - **+w** - Append [**-**]\ *width*\ [/*height*] to set the width (and height) of the
@@ -87,9 +89,6 @@ Optional Arguments
       is negative we use the absolute value and interpolate image to the device resolution
       using the PostScript image operator. If neither dimensions nor *dpi* are set then we
       revert to the default dpi [:term:`GMT_GRAPHICS_DPU`].
-    - **+n** - Alternatively, append \ *nx*\ [/*ny*] to replicate the image *nx* times
-      horizontally and *ny* times vertically. If *ny* is omitted, it will be identical to
-      *nx* [Default is 1/1].
 
 .. _-F:
 
