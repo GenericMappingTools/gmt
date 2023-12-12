@@ -15436,7 +15436,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 
 							tx_a = ta_start + fabs (xc - xa[ta_start]) * i_del_xa;
 							tx_b = tb_start + fabs (xc - xb[tb_start]) * i_del_xb;
-							if (tx_a < ta_stop && tx_b < tb_stop) {
+							if (tx_a < ta_stop && tx_b <= tb_stop) {	/* Equality means the crossing occurred on the second data node */
 								X->x[nx] = xc;
 								X->y[nx] = ya[xa_start] + (xc - xa[xa_start]) * slp_a;
 								X->xnode[0][nx] = tx_a;
