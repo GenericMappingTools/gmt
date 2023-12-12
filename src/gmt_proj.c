@@ -786,7 +786,6 @@ GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0, double slat) 
 
 GMT_LOCAL void gmtproj_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Cylindrical equidistant x/y */
-
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (lat > 0.0) {
 		*x = (0.5 + lon * (90.0 - lat) / 4050.0) * GMT->current.proj.j_x;
@@ -813,7 +812,7 @@ GMT_LOCAL void gmtproj_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, 
 #else
 GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0, double unused) {
 	/* Set up a Miller Cylindrical transformation */
-
+	gmt_M_unused (unused);
 	gmtproj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.j_x = D2R * GMT->current.proj.EQ_RAD;
