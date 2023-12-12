@@ -3288,7 +3288,6 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 			for (line_no = 0; line_no < G->X->n_segments; line_no++) {	/* For each of the crossing lines */
 				S = G->X->table[0]->segment[line_no];	/* Current segment */
 				gmt_init_track (GMT, S->data[GMT_Y], S->n_rows, &(G->ylist_XP));
-				/* Both the created lines and the contours here are in projected coordinates, so we pass geo = false */
 				G->nx = (unsigned int)gmt_crossover (GMT, S->data[GMT_X], S->data[GMT_Y], NULL, G->ylist_XP, S->n_rows, xx, yy, NULL, G->ylist, nn, false, gmt_M_x_is_lon (GMT, GMT_IN), &G->XC);
 				gmt_M_free (GMT, G->ylist_XP);
 				if (G->nx == 0) continue;
@@ -3542,7 +3541,6 @@ GMT_LOCAL void gmtsupport_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, 
 		for (line_no = 0; line_no < G->X->n_segments; line_no++) {	/* For each of the crossing lines */
 			Sd = G->X->table[0]->segment[line_no];	/* Current segment */
 			gmt_init_track (GMT, Sd->data[GMT_Y], Sd->n_rows, &(G->ylist_XP));
-			/* Both the created lines and the contours here are in projected coordinates, so we pass geo = false */
 			G->nx = (unsigned int)gmt_crossover (GMT, Sd->data[GMT_X], Sd->data[GMT_Y], NULL, G->ylist_XP, Sd->n_rows, xx, yy, NULL, G->ylist, nn, false, gmt_M_x_is_lon (GMT, GMT_IN), &G->XC);
 			gmt_M_free (GMT, G->ylist_XP);
 			if (G->nx == 0) continue;
@@ -15134,8 +15132,6 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 
 		/* First check for internal neighboring segments which cannot cross */
 
-if (this_b == 178)
-	nx = 0;
 		if (internal && (this_a == this_b || (A[this_a].stop == B[this_b].start || A[this_a].start == B[this_b].stop) || (A[this_a].start == B[this_b].start || A[this_a].stop == B[this_b].stop))) {	/* Neighboring segments cannot cross */
 			this_b++;
 			new_b = true;
@@ -15413,13 +15409,7 @@ if (this_b == 178)
 						}
 					}
 					else {	/* Segments are not parallel */
-						//bool xc_ab_status, xc_ae_status, xc_bb_status, xc_be_status;
 						xc = (yb[xb_start] - ya[xa_start] + slp_a * xa[xa_start] - slp_b * xb[xb_start]) / (slp_a - slp_b);
-						//xc_ab_status = (xc < xa[xa_start]);	/* None of these must be true */
-						//xc_ae_status = (xc > xa[xa_stop]);
-						//xc_bb_status = (xc < xb[xb_start]);
-						//xc_be_status = (xc > xb[xb_stop]);
-						//if (!(xc_ab_status || xc_ae_status || xc_bb_status || xc_be_status)) {	/* Did cross within the segment extents */
 						if (!(xc < xa[xa_start] || xc > xa[xa_stop] || xc < xb[xb_start] || xc > xb[xb_stop])) {	/* Did cross within the segment extents */
 
 							/* Only accept xover if occurring before segment end (in time) */
