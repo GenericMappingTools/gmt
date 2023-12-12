@@ -138,7 +138,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 
 	unsigned int n_errors = 0, ind = PSIMAGE_FGD, k = 0;
 	int n;
-	char string[GMT_LEN256] = {""}, *p = NULL;
+	char cstring[GMT_LEN256] = {""}, fstring[GMT_LEN256] = {""}, *p = NULL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[4] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -157,21 +157,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 			case 'C':	/* Image placement (old syntax) */
 				GMT_Report (API, GMT_MSG_COMPAT, "-C option is deprecated, use -Dx instead.\n");
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, txt_c);
-				sprintf (string, "x%s/%s", txt_a, txt_b);
-				if (n == 3) {
-					strcat (string, "+j");
-					strcat (string, txt_c);
+				sprintf (cstring, "x%s/%s", txt_a, txt_b);	/* Build +x modifier* for -D */
+				if (n == 3) {	/* Append modifier +j with given argument */
+					strcat (cstring, "+j");
+					strcat (cstring, txt_c);
 				}
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				strncpy(string, opt->arg, GMT_LEN256 - 1);
-				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
+				p = (cstring[0]) ? cstring : opt->arg;	/* If -C was used then cstring is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
 					n_errors++;
 				}
 				else {	/* args are now [+j<justify>][+o<dx>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */
+					char string[GMT_LEN256] = {""};
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw", GMT_MSG_ERROR)) n_errors++;
 					/* Required modifier +w OR +r */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
@@ -206,16 +206,18 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 			case 'E':	/* Specify image dpi */
 				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
 				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +r instead.\n");
-				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+r) with the old-style -C option.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Note: You cannot mix new-style modifiers (+r) with the old-style -C option.\n");
 				Ctrl->D.dpi = atof (opt->arg);
 				break;
-			case 'F':	/* Specify frame pen */
+			case 'F':	/* Specify panel behind image */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				if (gmt_M_compat_check (GMT, 5) && opt->arg[0] != '+') /* Warn but process old -F<pen> */
-					sprintf (string, "+c0+p%s", opt->arg);
-				else
-					strncpy (string, opt->arg, GMT_LEN256-1);
-				if (gmt_getpanel (GMT, opt->option, string, &(Ctrl->F.panel))) {
+				if (gmt_M_compat_check (GMT, 5) && opt->arg[0] != '+') { /* Warn but process old -F<pen> */
+					GMT_Report (API, GMT_MSG_COMPAT, "The -F<pen> option is deprecated but was accepted. Use -F modifier +p<pen> instead\n");
+					sprintf (fstring, "+c0+p%s", opt->arg);	/* Reformat using new syntax */
+				}
+				else	/* Expect syntax given (ew hope) */
+					strncpy (fstring, opt->arg, GMT_LEN256-1);
+				if (gmt_getpanel (GMT, opt->option, fstring, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the image", 1);
 					n_errors++;
 				}
