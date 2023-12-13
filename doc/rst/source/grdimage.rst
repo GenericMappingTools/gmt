@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [*color*][**+z**\ *value*] ]
+[ |-Q|\ [**+o**\|\ **t**][*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
@@ -158,12 +158,25 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**+z**\ *value*][*color*]
-    Make grid nodes with NaN values transparent, using the color-masking
-    feature in PostScript Level 3 (the PS device must support PS Level 3).
-    If the input is a grid, use **+z** to select another grid value than NaN.
-    If input is instead an image, append an alternate color to select another
-    pixel value to be transparent [Default is black].
+**-Q**\ [**+o**\|\ **t**][*color*][**+z**\ *value*]
+    Handle transparency or opacity for grids or images. There are three general schemes:
+
+    - Grid - Make grid nodes with NaN values transparent, using the color-masking
+      feature in PostScript Level 3 (the PS device must support PS Level 3).
+      Use **+z** to specify another grid *value* than NaN. Each pixel is either opaque
+      or transparent.
+    - RGB Image - Append an color to identify pixels to be turned transparent
+      [Default is black]. Each pixel is either opaque or transparent in the output image.
+    - RGBA image with two A values 90, 255) - True transparent image requires an alpha
+      channel that is either 0 or 255. Default turns any pixel with alpha = 0 transparent.
+    - RGBA image with variable transparency - If we have an alpha channel with variable
+      transparency between 0 and 255 on a per pixel basis then *PostScript* cannot create
+      true variable pixel transparency.  Instead, use **+t** to convert the alpha range
+      to *t* = 0-1 normalized transparency or use **+o** to instead convert the alpha
+      range to normalized 0-1 opacity *o* (then recover transparency as :math:`t = 1-o`).
+      Each *r*, *g*, and *b* pixel value is then converted like :math:`r' = t R + (1-t) r`,
+      where *R* (and *G*, *B*) is the transparent color [Default is white] at full transparency.
+      If *color* is appended then it becomes the *R*, *B*, *G*  at full transparency.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
