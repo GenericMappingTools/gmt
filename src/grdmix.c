@@ -351,7 +351,7 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	char *type[N_ITEMS] = {NULL, NULL, NULL, "alpha", "blend", "intens"};
 
-	bool got_R = false;
+	bool got_R = false, got_image = false;
 
 	int error = 0;
 	unsigned int img = 0, k, band;
@@ -424,6 +424,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			h[k] = I_in[k]->header;	/* Pointer to image header */
+			if (k == 0) got_image = true;
 		}
 		HH[k] = gmt_get_H_hidden (h[k]);
 	}
@@ -569,41 +570,47 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
 		uint64_t dim[3] = {0,0,3};
-		GMT_Report (API, GMT_MSG_INFORMATION, "Construct image from %d component grid layers\n", Ctrl->In.n_in);
-		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, G_in[0]->header->wesn, G_in[0]->header->inc, G_in[0]->header->registration, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		H = I->header;
-		for (band = 0; band < H->n_bands; band++) {	/* Check if any of the grids exceed the required 0-1 range */
-			if (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0)	/* Probably not normalized and forgot -Ni */
-				GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
-		}
-		if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
-#ifdef _OPENMP
-#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
-#endif
-			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-				for (band = 0; band < 3; band++)	/* March across the RGB values in both images and increment counters */
-					rgb[band] = G_in[band]->data[node];
-				/* Modify colors based on intensity */
-				gmt_illuminate (GMT, intens[node], rgb);
-				for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* March across the RGB values */
-					I->data[pix] = gmt_M_u255 (rgb[band]);
+		if (Ctrl->In.type[0] == GMT_NOTSET) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Construct image from %d component grid layers\n", Ctrl->In.n_in);
+			if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, G_in[0]->header->wesn, G_in[0]->header->inc, G_in[0]->header->registration, 0, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to duplicate an image for output!\n");
+				Return (GMT_RUNTIME_ERROR);
 			}
-		}
-		else {
-			gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-				for (band = 0; band < H->n_bands; band++)	/* March across the RGB values in both images and increment counters */
-					rgb[band] = G_in[band]->data[node];
-				if (Ctrl->I.active)	{	/* Modify colors based on intensity */
-					if (Ctrl->In.n_in == 1)	/* Duplicate grays so illuminate can work */
-						rgb[1] = rgb[2] = rgb[0];
+			H = I->header;
+			for (band = 0; band < H->n_bands; band++) {	/* Check if any of the grids exceed the required 0-1 range */
+				if (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0)	/* Probably not normalized and forgot -Ni */
+					GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
+			}
+			if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
+	#ifdef _OPENMP
+	#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
+	#endif
+				gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+					for (band = 0; band < 3; band++)	/* March across the RGB values in both images and increment counters */
+						rgb[band] = G_in[band]->data[node];
+					/* Modify colors based on intensity */
 					gmt_illuminate (GMT, intens[node], rgb);
+					for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* March across the RGB values */
+						I->data[pix] = gmt_M_u255 (rgb[band]);
 				}
-				for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* March across the RGB values */
-					I->data[pix] = gmt_M_u255 (rgb[band]);
 			}
+			else {
+				gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+					for (band = 0; band < H->n_bands; band++)	/* March across the RGB values in both images and increment counters */
+						rgb[band] =  G_in[band]->data[node];
+					if (Ctrl->I.active)	{	/* Modify colors based on intensity */
+						if (Ctrl->In.n_in == 1)	/* Duplicate grays so illuminate can work */
+							rgb[1] = rgb[2] = rgb[0];
+						gmt_illuminate (GMT, intens[node], rgb);
+					}
+					for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* March across the RGB values */
+						I->data[pix] = gmt_M_u255 (rgb[band]);
+				}
+			}
+		}
+		else {	/* Just got input RGB image to which we will add transparencies when saving */
+			I = I_in[0];
+			H = I->header;
 		}
 	}
 	else {	/* The remaining options */
@@ -660,7 +667,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	for (k = 0; k < ALPHA; k++) {	/* Free up memory no longer needed here */
+	for (k = 0; !got_image && k < ALPHA; k++) {	/* Free up memory no longer needed here */
 		void *W = (Ctrl->In.type[k] == GMT_NOTSET) ? (void *)G_in[k] : (void *)I_in[k];
 		if (W == NULL) continue;
 		if (GMT_Destroy_Data (API, &W) != GMT_NOERROR) {
