@@ -429,6 +429,11 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		HH[k] = gmt_get_H_hidden (h[k]);
 	}
 
+	if (got_image && (Ctrl->A.active || Ctrl->I.active) && !Ctrl->C.active) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Single input image and -A and/or -I options requires -C!\n");
+		Return (GMT_RUNTIME_ERROR);		
+	}
+
 	if (Ctrl->In.file[INTENS] && I_in[INTENS]) {
 			GMT_Report (API, GMT_MSG_ERROR, "The intensity information must be a grid with values in the -1 to +1 range, not an image!\n");
 			Return (GMT_RUNTIME_ERROR);		
@@ -438,10 +443,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Both inputs must either be images or grids, not a mix\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	for (k = 1; k < N_ITEMS; k++) {	/* Make sure all rasters have matching dimensions */
+	for (k = 1; k < N_ITEMS; k++) {	/* Make sure all grids and rasters have matching dimensions */
 		if (Ctrl->In.file[k] == NULL) continue;
 		if (h[0]->registration != h[k]->registration || (h[0]->n_rows != h[k]->n_rows) || (h[0]->n_columns != h[k]->n_columns)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Dimensions/registrations of %s are not compatible for the other rasters!\n", Ctrl->In.file[k]);
+			GMT_Report (API, GMT_MSG_ERROR, "Dimensions/registrations of %s are not compatible for the other grids or rasters!\n", Ctrl->In.file[k]);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->In.type[0] != GMT_NOTSET)	/* Get the array index to the image with the largest number of bands (should they differ) */

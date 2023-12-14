@@ -88,7 +88,8 @@ Optional Arguments
     these grids must all have values in the 0-1 range only (see **-Ni** if they don't).
     Optionally, use |-A| to add transparency and |-I| to add intensity
     to the colors before writing the image. For three layers the input order must
-    be red grid first, then the green grid, and finally the blue grid.
+    be red grid first, then the green grid, and finally the blue grid. It is also
+    valid to give a single input image and then enhance it via |-A| or |-I|.
 
 .. _-D:
 
