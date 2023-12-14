@@ -1477,8 +1477,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					break;
 			}
 		}
-		else
-			fprintf (stderr, "!!!!!!!!!WTF!!!!!!!!!!\n");
 
 		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
