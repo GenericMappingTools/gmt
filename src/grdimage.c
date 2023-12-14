@@ -126,6 +126,14 @@ struct GRDIMAGE_CONF {
 	struct GMT_IMAGE *Image;	/* Pointer to the active image [NUYLL if grid] */
 };
 
+struct GRDIMAGE_TRANSP {
+	unsigned int alpha[256];	/* Transparency distribution for RGBA image */
+	unsigned int mode;			/* value is transparency (mode == 0) or count (mode == 1) */
+	unsigned int value;			/* Either chosen transparency (mode == 0) */
+	uint64_t n_transp;		/* Number of different transparencies found */
+	uint64_t n_dominant;	/* Number of top transparencies found */
+};
+
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDIMAGE_CTRL *C;
 
@@ -1035,6 +1043,59 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 	}
 }
 
+GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GRDIMAGE_TRANSP *T) {
+	/* Determine if we have a transparency channel and if a fixed or variable (per-pixel) situation.
+	 * We return false if no alpha channel present, T is left untouched, else return true.
+	 * Return values via T are: T->n_transp is the number of different transparencies found.
+	 * For modes 3 & 4, T->n_dominant is how many in the majority
+	 *
+	 *   T-> mode == 1: T->value is the constant transparency k
+	 *   T-> mode == 2: T->value is dominant transparency k when >2 are found
+	 *   T-> mode == 3: T->value is dominant transparency 0
+	 *   T-> mode == 4: T->value is dominant transparency 255
+	 */
+
+	int64_t row, col, k, node_a, n_0 = 0, n_255 = 0, tr_max = 0;
+	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
+
+	if (H->n_bands < 4) return false;	/* No transparencies at all */
+	gmt_M_memset (T, 1, struct GRDIMAGE_TRANSP);	/* Start with nuthin' */
+	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
+		k = gmt_M_ijpgi (H, row, 0);	/* Start pixel of this image row */
+		for (col = 0; col < H->n_columns; col++) {	/* March along this scanline */
+			node_a = k + col * 4 + 3;		/* Current alpha entry */
+			T->alpha[I->data[node_a]]++;	/* Count frequency of transparency values */
+		}
+	}
+	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
+		if (T->alpha[k]) {	/* Used at least once */
+			T->n_transp++;
+			if (T->alpha[k] > tr_max) tr_max = k;
+		}
+	}
+	if (T->n_transp == 1) {		/* Constant transparency? */
+		T->mode = 1;
+		T->value = tr_max;
+		T->n_dominant = T->n_transp;
+	}
+	else if (T->n_transp > 2) {	/* Cannot handle per-pixel transparency variation */
+		T->value = tr_max;
+		T->mode = 2;
+		T->n_dominant = T->alpha[tr_max];
+	}
+	else if (T->alpha[0] > T->alpha[255]) {	/* 0 most used of two transparencies */
+		T->value = 0;
+		T->mode = 3;
+		T->n_dominant = T->alpha[0];
+	}
+	else {
+		T->value = 255;	/* 255 most used of two transparencies */
+		T->n_dominant = T->alpha[255];
+		T->mode = 4;
+	}
+	return (true);
+}
+
 GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
 	bool transparency = (Conf->Image->header->n_bands == 4);
@@ -1269,6 +1330,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_IMAGE *Out = NULL;	/* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
 	struct GRDIMAGE_CONF *Conf = NULL;
+	struct GRDIMAGE_TRANSP Trans;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -1397,6 +1459,27 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX | pad_mode, I_wesn, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+
+		if (grdimage_transparencies (GMT, I, &Trans)) {	/* What if any transparency situation do we have in the image? */
+			double percent = 100.0 * (double)Trans.n_dominant / (double) I->header->nm;
+			switch (Trans.mode) {
+				case 1:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Constant transparency is %d.\n", Trans.value);
+					break;
+				case 2:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Trans.value);
+					break;
+				case 3:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
+					break;
+				case 4:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 255.\n", percent);
+					break;
+			}
+		}
+		else
+			fprintf (stderr, "!!!!!!!!!WTF!!!!!!!!!!\n");
+
 		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
 		if (grid_registration != GMT_GRID_PIXEL_REG)
