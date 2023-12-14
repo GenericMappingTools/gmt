@@ -123,7 +123,8 @@ struct GRDIMAGE_CONF {
 	struct GMT_PALETTE *P;		/* Pointer to the active palette [NULL if image] */
 	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
 	struct GMT_GRID *Intens;	/* Pointer to the active intensity grid [NULL if no intensity] */
-	struct GMT_IMAGE *Image;	/* Pointer to the active image [NUYLL if grid] */
+	struct GMT_IMAGE *Image;	/* Pointer to the active image [NULL if grid] */
+	struct GRDIMAGE_TRANSP *Transp;	/* Pointer to the transparency structure [NULL if grid or RGB image] */
 };
 
 struct GRDIMAGE_TRANSP {
@@ -1330,7 +1331,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_IMAGE *Out = NULL;	/* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
 	struct GRDIMAGE_CONF *Conf = NULL;
-	struct GRDIMAGE_TRANSP Trans;
+	struct GRDIMAGE_TRANSP Transp;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -1460,14 +1461,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (grdimage_transparencies (GMT, I, &Trans)) {	/* What if any transparency situation do we have in the image? */
-			double percent = 100.0 * (double)Trans.n_dominant / (double) I->header->nm;
-			switch (Trans.mode) {
+		if (grdimage_transparencies (GMT, I, &Transp)) {	/* What if any transparency situation do we have in the image? */
+			double percent = 100.0 * (double)Transp.n_dominant / (double) I->header->nm;
+			switch (Transp.mode) {
 				case 1:
-					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Constant transparency is %d.\n", Trans.value);
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Constant transparency is %d.\n", Transp.value);
 					break;
 				case 2:
-					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Trans.value);
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Transp.value);
 					break;
 				case 3:
 					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
@@ -1476,6 +1477,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 255.\n", percent);
 					break;
 			}
+			Conf->Transp = &Transp;
 		}
 
 		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
