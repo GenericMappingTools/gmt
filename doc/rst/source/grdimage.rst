@@ -177,6 +177,7 @@ Optional Arguments
       Each *r*, *g*, and *b* pixel value is then converted like :math:`r' = t R + (1-t) r`,
       where *R* (and *G*, *B*) is the transparent color [Default is white] at full transparency.
       If *color* is appended then it becomes the *R*, *B*, *G*  at full transparency.
+      See `Limitations on transparency`_ for more discussion.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -268,6 +269,23 @@ If a 1-byte single layer image is given and the file has no color map then we wi
 interpret the byte values as categories and a categorical CPT is required via |-C|.
 If no |-C| is given then we assume the image is a grayscale image with values in the
 0-255 range.
+
+Limitations on transparency
+---------------------------
+
+The PostScript imaging model does not support any form of transparency.  However,
+Adobe added pdfmark which allows PostScript to specify transparency but only is
+activated when converting PS or EPS to PDF with Adobe Distiller or GhostScript.
+Each graphic (e.g., polygon, line, text, image) can have a specified transparency.
+Yet, for images this is very limited: We can choose a particular characteristic of
+the image to mean transparency, *e.g, a specific r/g/b color or an alpha channel
+level (0-255).  Thus variable pixel-by-pixel transparency in a sophisticated RGBA
+file (color + transparency) cannot be see-through for more than one color.  Our
+approximation for transparent RGBA images is to simulate the transparency effect on
+the color, but the image remains opaque (optionally apart from a single color).
+Since polygons can have separate transparency then one slow option is to paint the
+image by polygonal tiles with a custom CPT file that has one entry for each of the
+(up to) 255 values in the alpha channel.
 
 Image formats recognized
 ------------------------

@@ -42,6 +42,9 @@ static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "
 
 #define GRDIMAGE_NAN_INDEX	(GMT_NAN - 3)
 
+#define GRDIMAGE_OPACITY		1	/* Alpha channel has opacity (255 - transparency) */
+#define GRDIMAGE_TRANSPARITY	2	/* Alpha channel has transparency */
+
 /* Control structure for grdimage */
 
 struct GRDIMAGE_CTRL {
@@ -94,10 +97,11 @@ struct GRDIMAGE_CTRL {
 	struct GRDIMAGE_N {	/* -N */
 		bool active;
 	} N;
-	struct GRDIMAGE_Q {	/* -Q[r/g/b][+z<value>] */
+	struct GRDIMAGE_Q {	/* -Q[+o|t][r/g/b][+z<value>] */
 		bool active;
 		bool transp_color;	/* true if a color was given */
 		bool z_given;	/* true if a z-value was given */
+		unsigned int mode;	/* 1 = +o set, 2 = +t set, [0] */
 		double rgb[4];	/* Pixel value for transparency in images */
 		double value;	/* If +z is used this z-value will give us the r/g/b via CPT */
 	} Q;
@@ -421,6 +425,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'Q':	/* PS3 colormasking */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				if (strstr (opt->arg, "+o"))
+					Ctrl->Q.mode = GRDIMAGE_OPACITY;
+				else if (strstr (opt->arg, "+t"))
+					Ctrl->Q.mode = GRDIMAGE_TRANSPARITY;
 				if ((c = strstr (opt->arg, "+z"))) {	/* Gave a z-value */
 					if (c[2]) {
 						Ctrl->Q.value = atof (&c[2]);
@@ -432,8 +440,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 					}
 					c[0] = '\0';	/* Chop off modifier */
 				}
-				if (opt->arg[0]) {	/* Change input image transparency pixel color */
-					if (gmt_getrgb (GMT, opt->arg, Ctrl->Q.rgb)) {	/* Change input image transparency pixel color */
+				if (opt->arg[0] == '+' && strchr ("ot", opt->arg[1])) k = 2;	/* Move beyond leading +o|t */
+				if (opt->arg[k]) {	/* Change input image transparency pixel color */
+					if (gmt_getrgb (GMT, &opt->arg[k], Ctrl->Q.rgb)) {	/* Change input image transparency pixel color */
 						gmt_rgb_syntax (GMT, 'Q', " ");
 						n_errors++;
 					}
