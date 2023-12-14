@@ -59,7 +59,7 @@
  *  gmt_map_title
  *  gmt_plane_perspective
  *  gmt_plot_geo_ellipse
- *  gmt_plot_image_graticules
+ *  gmt_plot_grid_graticules
  *  gmt_plot_line
  *  gmt_plot_timex_grid
  *  gmt_plotcanvas
@@ -10829,7 +10829,7 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	return (P);
 }
 
-void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
+void gmt_plot_grid_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
 	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
 	 * so it can also be used in grdimage.
 	 * G is the data grid

@@ -1703,7 +1703,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->T.active) {	/* Plot colored graticules instead */
 		need_to_project = false;	/* Since we are not doing reprojection of the grid */
-		gmt_plot_image_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, false);
+		gmt_plot_grid_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, false);
 		goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 	}
 
