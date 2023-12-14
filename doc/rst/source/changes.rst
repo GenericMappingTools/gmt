@@ -17,6 +17,7 @@ New Core Module Features in GMT 6.5
 * :doc:`convert`: Add option to transpose a dataset (`#7478 <https://github.com/GenericMappingTools/gmt/pull/7478>`_)
 * :doc:`grdcut`: Let -E extract a vertical slice from a 3-D cube (`#7961 <https://github.com/GenericMappingTools/gmt/pull/7961>`_)
 * :doc:`movie`: Let -A handle addition of audio track (`#7461 <https://github.com/GenericMappingTools/gmt/pull/7461>`_)
+* :doc:`plot`: Filling area between two time- or space-series (`#7900 <https://github.com/GenericMappingTools/gmt/pull/7900>`_)
 * :doc:`select`: Add modifier +h[k|s] to -Z (`#7309 <https://github.com/GenericMappingTools/gmt/pull/7309>`_)
 * :doc:`spatial`: Augment with -N+i (`#7747 <https://github.com/GenericMappingTools/gmt/pull/7747>`_)
 
