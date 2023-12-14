@@ -274,15 +274,15 @@ Limitations on transparency
 ---------------------------
 
 The PostScript imaging model does not support any form of transparency.  However,
-Adobe added pdfmark which allows PostScript to specify transparency but only is
-activated when converting PS or EPS to PDF with Adobe Distiller or GhostScript.
+Adobe added pdfmark which allows PostScript to specify transparency but only if
+activated when converting PostScript or EPS to PDF with Adobe Distiller or GhostScript.
 Each graphic (e.g., polygon, line, text, image) can have a specified transparency.
 Yet, for images this is very limited: We can choose a particular characteristic of
-the image to mean transparency, *e.g, a specific r/g/b color or an alpha channel
-level (0-255).  Thus variable pixel-by-pixel transparency in a sophisticated RGBA
-file (color + transparency) cannot be see-through for more than one color.  Our
-approximation for transparent RGBA images is to simulate the transparency effect on
-the color, but the image remains opaque (optionally apart from a single color).
+the image to mean transparency, e.g, a specific *r*\ /*g*\ /*b* color or an *alpha* channel
+level (0-255).  Thus, variable pixel-by-pixel transparency in a sophisticated RGBA
+image (color + transparency) cannot be see-through for more than a single color.  Our
+approximation for plotting transparent RGBA images is to simulate the transparency effect
+on the color, but the image remains opaque (optionally apart from a single color).
 Since polygons can have separate transparency then one slow option is to paint the
 image by polygonal tiles with a custom CPT file that has one entry for each of the
 (up to) 255 values in the alpha channel.
