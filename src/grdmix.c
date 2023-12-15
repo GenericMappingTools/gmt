@@ -367,7 +367,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	bool got_R = false, got_image = false;
 
 	int error = 0;
-	unsigned int img = 0, k, band, n_input_grids = 0, n_input_images = 0;
+	unsigned int img = 0, k, band, n_input_grids = 0, n_input_images = 0, n_inputs;
 	openmp_int row, col;
 	int64_t node, pix;
 
@@ -445,12 +445,13 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		HH[k] = gmt_get_H_hidden (h[k]);
 	}
 
+	n_inputs = n_input_images + n_input_grids;
 	if (Ctrl->C.file && n_input_grids != 1) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Single input grid required when -C specifies a CPT!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
 
-	if (got_image && (Ctrl->A.active || Ctrl->I.active) && !Ctrl->C.active) {
+	if (got_image && n_inputs == 1 && (Ctrl->A.active || Ctrl->I.active) && !Ctrl->C.active) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Single input image and -A and/or -I options requires -C!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
