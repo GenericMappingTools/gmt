@@ -1800,6 +1800,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 	}
 
+	if (Transp.mode == 2) {	/* Must do variable transparency via squares and projection */
+		goto tr_image;
+	}
 	if (need_to_project) {	/* Need to resample the grid or image [and intensity grid] using the specified map projection */
 		int nx_proj = 0, ny_proj = 0;
 		double inc[2] = {0.0, 0.0};
@@ -1819,7 +1822,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			ny_proj = Conf->n_rows;
 		}
 		if (Ctrl->D.active) { /* Must project the input image instead */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
+tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
+			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
+				nx_proj = Conf->n_columns;
+				ny_proj = Conf->n_rows;	
+			}
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);

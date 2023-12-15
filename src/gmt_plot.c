@@ -10918,19 +10918,24 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struc
 	 * pen is an optional pen for drawing the graticules, or NULL
 	 * skip determines if we paint NaN polygons or not
 	 * intensity is pointer to a constant intensity or NULL.
+	 * NOte: the image may have an alpha channel or has 2 or 4 bands, the last having the alphas.
 	 */
 	openmp_int row, col;
-	unsigned int band;
+	unsigned int band, alpha_mode = 0;
 	uint64_t node, n, pix;
 	double trans[2] = {0.0, 0.0}, dim[2] = {0.0,0.0}, x, y;
 	struct GMT_FILL fill;
 	struct GMT_GRID_HEADER *H = I->header;
-	gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);   /* Initialize fill structure */
+	//if (I->alpha)
+	//	alpha_mode = 1;
+	//else if (H->n_bands == 2 || H->n_bands == 4)
+	//	alpha_mode = 2;
+	//gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);   /* Initialize fill structure */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Simulate transparent image via tiny squares\n");
 
-	dim[GMT_X] = H->inc[GMT_X];
-	dim[GMT_Y] = H->inc[GMT_Y];
+	dim[GMT_X] = H->inc[GMT_X] * 1.414213562;
+	dim[GMT_Y] = H->inc[GMT_Y] * 1.414213562;
 	gmt_M_row_loop (GMT, I, row) {	/* For each row */
 		y = gmt_M_grd_row_to_y (GMT, row, H);	/* Current y for this row */
 		gmt_M_col_loop (GMT, I, row, col, node) { /* Compute rgb for each pixel */
@@ -10939,7 +10944,16 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struc
 			/* Get pixel color into the fill struct */
 			for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* March across the RGB values in both images and increment counters */
 				fill.rgb[band] = gmt_M_is255 (I->data[pix]);
-			trans[GMT_FILL_TRANSP] = gmt_M_is255 (I->alpha[node]);	/* Get the A 0-255 and convert to 0-1 */
+			//switch (alpha_mode) {
+			//	case 1:
+			//		trans[GMT_FILL_TRANSP] = gmt_M_is255 (I->alpha[node]);	/* Get the A 0-255 and convert to 0-1 */
+			//		break;
+			//	case 2:
+			//		trans[GMT_FILL_TRANSP] = gmt_M_is255 (I->data[pix]);	/* Get the A 0-255 and convert to 0-1 */
+			//		break;
+			//	default:	/* No transparency */
+			//		break;
+			//}
 			if (Intens)	/* Adjust color due to variable intensity */
 				gmt_illuminate (GMT, Intens->data[node], fill.rgb);
 			else if (intensity)	/* Adjust color due to constant intensity */

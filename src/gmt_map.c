@@ -8608,6 +8608,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 						rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + I->data[nb*ij_in+b])/(nz[ij_out] + 1.0);	/* Update the mean pix values inside this rect... */
 						O->data[nb*ij_out+b] = (unsigned char) lrint (gmt_M_0_255_truncate (rgb[b]));
 					}
+					if (O->alpha) O->alpha[ij_out] = ((double)nz[ij_out] * O->alpha[ij_out] + I->alpha[ij_in]) / (nz[ij_out] + 1.0);	/* Update the mean alpha value for this rect... */
 					nz[ij_out]++;		/* ..and how many points there were */
 				}
 			}
