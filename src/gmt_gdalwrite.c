@@ -94,7 +94,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->ULy = I->header->wesn[YHI];
 	}
 	else {
-		to_GDALW->ULx = 1;
+		to_GDALW->ULx = 0;
 		to_GDALW->ULy = I->header->n_rows;
 	}
 
