@@ -10909,9 +10909,9 @@ void gmt_plot_grid_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct 
 	gmt_free_segment (GMT, &S);
 }
 
-void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_GRID *Intens, struct GMT_PEN *pen, bool skip, double *intensity, struct GMT_GRID *Drape) {
+void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_GRID *Intens, bool skip, double *intensity) {
 	/* Lay down an image from a RGBA image using squares for pixels.  Implemented to handle transparencies.
-	 * I is the data RGBA image an G is the drape topograpic
+	 * I is the data RGBA image 
 	 * Intens is an optional intensity grid.  If NULL then either intensity points to a
 	 *    constant intensity or it is also NULL, meaning no intensity adjustment for colors.
 	 * P is the CPT in use for fills
@@ -10920,74 +10920,35 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struc
 	 * intensity is pointer to a constant intensity or NULL.
 	 */
 	openmp_int row, col;
-	uint64_t ij, n;
-	int outline = 0;
-	bool delay_outline = false;
-	double *xx = NULL, *yy = NULL, inc2[2] = {0.0, 0.0}, trans[2] = {0.0, 0.0};
+	unsigned int band;
+	uint64_t node, n, pix;
+	double trans[2] = {0.0, 0.0}, dim[2] = {0.0,0.0}, x, y;
 	struct GMT_FILL fill;
-	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
+	struct GMT_GRID_HEADER *H = I->header;
 	gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);   /* Initialize fill structure */
 
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tiling image without interpolation\n");
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Simulate transparent image via tiny squares\n");
 
-	inc2[GMT_X] = 0.5 * I->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * I->header->inc[GMT_Y];
-	if (pen) {	/* Want to outline each graticule with given pen */
-		if (gmt_M_is_zero (pen->rgb[3])) {	/* No transparency, use the pen as is while painting polygons */
-			gmt_setpen (GMT, pen);
-			outline = 1;
-		}
-		else {	/* Pen has transparency so do lines separately */
-			delay_outline = true;
-			outline = 0;
-		}
-	}
-	S->data = gmt_M_memory (GMT, NULL, 2, double *);
-	S->n_columns = 2;
-	gmt_M_grd_loop (GMT, I, row, col, ij) { /* Compute rgb for each pixel */
-		if (Intens && skip && gmt_M_is_fnan (Intens->data[ij])) continue;
-		fill.rgb[0] = gmt_M_is255(I->data[3*ij]);
-		fill.rgb[1] = gmt_M_is255(I->data[3*ij+1]);
-		fill.rgb[2] = gmt_M_is255(I->data[3*ij+2]);
-		if (Intens)
-			gmt_illuminate (GMT, Intens->data[ij], fill.rgb);
-		else if (intensity)
-			gmt_illuminate (GMT, *intensity, fill.rgb);
-		gmt_setfill (GMT, &fill, outline);
-		trans[GMT_FILL_TRANSP] = gmt_M_is255 (I->data[3*ij+3]);	/* Get the A 0-255 and convert to 0-1 */
-		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, I->x[col] - inc2[GMT_X], I->x[col] + inc2[GMT_X], I->y[row] - inc2[GMT_Y], I->y[row] + inc2[GMT_Y]);
-		PSL_settransparencies (GMT->PSL, trans);
-		
-		if (GMT->current.proj.three_D && Drape) {	/* Deal with grdview draping of image over surface */
-			uint64_t k;
-			double xp, yp;
-			for (k = 0; k < n; k++) {
-				gmt_geoz_to_xy (GMT, xx[k], yy[k], Drape->data[ij], &xp, &yp);
-				xx[k] = xp;	yy[k] = yp;
-			}
-			PSL_plotpolygon (GMT->PSL, xx, yy, n);
-		}
-		else {	/* 2-D, most likely grdimage w/wo -p */
-			S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
-			gmt_geo_polygons (GMT, S);
-		}
-		gmt_M_free (GMT, xx);
-		gmt_M_free (GMT, yy);
-	}
-	if (delay_outline) {	/* Just get graticule outlines and draw them */
- 		gmt_setpen (GMT, pen);	/* Set outline pen */
-		gmt_setfill (GMT, NULL, 1);	/* Turn off fill */
-	 	gmt_M_grd_loop (GMT, I, row, col, ij) { /* Visit each node */
-			if (Intens && skip && gmt_M_is_fnan (I->data[ij])) continue;
-			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, I->x[col] - inc2[GMT_X], I->x[col] + inc2[GMT_X], I->y[row] - inc2[GMT_Y], I->y[row] + inc2[GMT_Y]);
-			S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
-			gmt_geo_polygons (GMT, S);
-			gmt_M_free (GMT, xx);
-			gmt_M_free (GMT, yy);
+	dim[GMT_X] = H->inc[GMT_X];
+	dim[GMT_Y] = H->inc[GMT_Y];
+	gmt_M_row_loop (GMT, I, row) {	/* For each row */
+		y = gmt_M_grd_row_to_y (GMT, row, H);	/* Current y for this row */
+		gmt_M_col_loop (GMT, I, row, col, node) { /* Compute rgb for each pixel */
+			x = gmt_M_grd_col_to_x (GMT, col, H);	
+			if (Intens && skip && gmt_M_is_fnan (Intens->data[node])) continue;
+			/* Get pixel color into the fill struct */
+			for (band = 0, pix = node; band < H->n_bands; band++, pix += H->size)	/* March across the RGB values in both images and increment counters */
+				fill.rgb[band] = gmt_M_is255 (I->data[pix]);
+			trans[GMT_FILL_TRANSP] = gmt_M_is255 (I->alpha[node]);	/* Get the A 0-255 and convert to 0-1 */
+			if (Intens)	/* Adjust color due to variable intensity */
+				gmt_illuminate (GMT, Intens->data[node], fill.rgb);
+			else if (intensity)	/* Adjust color due to constant intensity */
+				gmt_illuminate (GMT, *intensity, fill.rgb);
+			gmt_setfill (GMT, &fill, 0);	/* Set current square pixel color w/ no outline */
+			PSL_settransparencies (GMT->PSL, trans);	/* Sett transparency for current square pixel */
+			PSL_plotsymbol (GMT->PSL, x, y, dim, PSL_SQUARE);	/* Plot the square */
 		}
 	}
-  	
-	S->data[GMT_X] = S->data[GMT_Y] = NULL; /* Since xx and yy was set to NULL but not data... */
-	gmt_free_segment (GMT, &S);
 }
 
 /* We have two segments S0 and S1 that we want to fill in the area between them.

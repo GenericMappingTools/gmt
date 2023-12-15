@@ -1835,7 +1835,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				Return (API->error);	/* Failed to free the image */
 			}
 			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
-				gmt_plot_image_graticules (GMT, Img_proj, Intens_orig, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, NULL);
+				gmt_plot_image_graticules (GMT, Img_proj, Intens_orig, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL);
 				goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 			}
 		}
