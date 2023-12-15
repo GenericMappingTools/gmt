@@ -60,8 +60,11 @@ struct GRDMIX_CTRL {
 		char *file[N_ITEMS];
 	} In;
 	struct GRDMIX_AIW A; /* alpha raster */
-	struct GRDMIX_C {	/* -C */
+	struct GRDMIX_C {	/* -C[<cpt>] */
 		bool active;
+		double dz;	/* Rounding for min/max determined from data */
+		char *file;	/* CPT file for converting grid to image */
+		char *savecpt;	/* Optional to save a generated CPT to a file */
 	} C;
 	struct GRDMIX_D {	/* -D */
 		bool active;
@@ -110,9 +113,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char *type[2] = {"grid(s) or image(s)", "image(s)"};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<transp>] [-C] [-D] "
+	GMT_Usage (API, 0, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<transp>] [-C[%s]] [-D] "
 		"[-I<intens>] [-M] [-N[i|o][<divisor>]] [-Q] [%s] [%s] [-W<weight>] [%s] [%s]\n",
-		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+		name, CPT_OPT_ARGS, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -125,8 +128,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-A<transp>");
 	GMT_Usage (API, -2, "Specify a transparency grid or image, or set a constant transparency value [no transparency]. "
 		"An image must have 0-255 values, while a grid or constant must be in the 0-1 range.");
-	GMT_Usage (API, 1, "\n-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
-		"You may optionally supply transparency (-A) and/or intensity (-I).");
+	GMT_Usage (API, 1, "\n-C ith no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
+		"You may optionally supply transparency (-A) and/or intensity (-I).  With CPT arguments we expect a "
+		"single grid and we convert it to a color image via the CPT information.");
 	GMT_Usage (API, 1, "\n-D Deconstruct an image into 1 or 3 output component grids, plus any transparency. "
 		"We write the raw layer values (0-255); use -N to normalize the layers (0-1).");
 	GMT_Usage (API, 1, "\n-I<intens>");
@@ -171,6 +175,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	 */
 
 	unsigned int n_errors = 0, k;
+	char *f = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -198,7 +203,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+				gmt_M_str_free (Ctrl->C.file);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0] && (f = gmt_strrstr (Ctrl->C.file, "+s")) != NULL) {	/* Filename has a +s<outname>, extract that part */
+					Ctrl->C.savecpt = &f[2];
+					f[0] = '\0';		/* Remove the +s<outname> from Ctrl->C.file */
+				}
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 
 			case 'D':
@@ -256,9 +267,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
+	if (Ctrl->C.file) gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify at least one input raster file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 1 && !(Ctrl->A.active || Ctrl->D.active || Ctrl->I.active || Ctrl->M.active || Ctrl->Q.active),
-		"For one input image you must specify one or more of -A, -D, -I, -M, -Q\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 1 && !(Ctrl->A.active || Ctrl->C.active || Ctrl->D.active || Ctrl->I.active || Ctrl->M.active || Ctrl->Q.active),
+		"For one input image you must specify one or more of -A, -C, -D, -I, -M, -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 2 && !Ctrl->W.active, "For two input images you must provide weights in -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 3 && !Ctrl->C.active, "For three input images you must select -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Option -A: A constant transparency must be in the 0-1 range\n");
@@ -354,7 +367,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	bool got_R = false, got_image = false;
 
 	int error = 0;
-	unsigned int img = 0, k, band;
+	unsigned int img = 0, k, band, n_input_grids = 0, n_input_images = 0, n_inputs;
 	openmp_int row, col;
 	int64_t node, pix;
 
@@ -366,6 +379,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
 	struct GMT_GRID_HEADER *h[N_ITEMS], *H = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH[N_ITEMS];
+	struct GMT_PALETTE *P = NULL;
 	struct GRDMIX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -406,7 +420,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		Ctrl->In.type[k] = gmt_raster_type (GMT, Ctrl->In.file[k], true);
 	}
 
-	if (Ctrl->In.n_in == 1 && Ctrl->In.type[0] == GMT_NOTSET && !Ctrl->D.active) {
+	if (Ctrl->In.n_in == 1 && Ctrl->In.type[0] == GMT_NOTSET && !Ctrl->D.active && !Ctrl->C.file) {
 		GMT_Report (API, GMT_MSG_ERROR, "For a single input raster it must be an image\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
@@ -418,6 +432,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			h[k] = G_in[k]->header;	/* Pointer to grid header */
+			if (k < ALPHA) n_input_grids++;	/* Count main input grids (1 or 3) */
 		}
 		else {	/* Got an image */
 			if ((I_in[k] = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
@@ -425,11 +440,18 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 			h[k] = I_in[k]->header;	/* Pointer to image header */
 			if (k == 0) got_image = true;
+			n_input_images++;
 		}
 		HH[k] = gmt_get_H_hidden (h[k]);
 	}
 
-	if (got_image && (Ctrl->A.active || Ctrl->I.active) && !Ctrl->C.active) {
+	n_inputs = n_input_images + n_input_grids;
+	if (Ctrl->C.file && n_input_grids != 1) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Single input grid required when -C specifies a CPT!\n");
+		Return (GMT_RUNTIME_ERROR);		
+	}
+
+	if (got_image && n_inputs == 1 && (Ctrl->A.active || Ctrl->I.active) && !Ctrl->C.active) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -C: Single input image and -A and/or -I options requires -C!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
@@ -487,6 +509,14 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) grdmix_dump_image (GMT, I_in[k], Ctrl->In.file[k]);
 #endif
 		}
+	}
+
+	if (Ctrl->C.file) {	/* Read a palette file and scale it to grid range ± slop [0] */
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, h[0]->z_min, h[0]->z_max, Ctrl->C.dz)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
+			Return (API->error);
+		}
+		if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
 	}
 
 	if (Ctrl->A.active) {	/* Set up the transparencies, then free the grid/image struct */
@@ -583,7 +613,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 			H = I->header;
 			for (band = 0; band < H->n_bands; band++) {	/* Check if any of the grids exceed the required 0-1 range */
-				if (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0)	/* Probably not normalized and forgot -Ni */
+				if (n_input_grids > 1 && (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0))	/* Probably not normalized and forgot -Ni */
 					GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
 			}
 			if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
@@ -591,10 +621,24 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
 	#endif
 				gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
-					for (band = 0; band < 3; band++)	/* March across the RGB values in both images and increment counters */
-						rgb[band] = G_in[band]->data[node];
+					if (P)	/* Get r/g/b from grid z-value via CPT lookup */
+						(void)gmt_get_rgb_from_z (GMT, P, G_in[0]->data[node], rgb);
+					else {	/* Get r,g,b from three normalized grids */
+						for (band = 0; band < 3; band++)	/* March across the RGB values in both images and increment counters */
+							rgb[band] = G_in[band]->data[node];
+					}
 					/* Modify colors based on intensity */
 					gmt_illuminate (GMT, intens[node], rgb);
+					for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* March across the RGB values */
+						I->data[pix] = gmt_M_u255 (rgb[band]);
+				}
+			}
+			else if (P) {	/* Convert z-values to image colors via CPT */
+				gmt_M_grd_loop (GMT, G_in[0], row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
+					/* Get r/g/b from grid z-value via CPT lookup */
+					(void)gmt_get_rgb_from_z (GMT, P, G_in[0]->data[node], rgb);
+					/* Modify colors based on optional intensity */
+					if (intens) gmt_illuminate (GMT, intens[node], rgb);
 					for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* March across the RGB values */
 						I->data[pix] = gmt_M_u255 (rgb[band]);
 				}
@@ -791,6 +835,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 	/* Write out image */
 	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
 		Return (API->error);
+	}
+
+	if (P && Ctrl->C.savecpt && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->C.savecpt, P) != GMT_NOERROR) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to save the used CPT in file: %s\n", Ctrl->C.savecpt);
 	}
 
 	Return (GMT_NOERROR);

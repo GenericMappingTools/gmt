@@ -16,7 +16,7 @@ Synopsis
 *raster1* [ *raster2* [ *raster3*]]
 |-G|\ *outfile*
 [ |-A|\ *alpha* ]
-[ |-C| ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-D| ]
 [ |-I|\ *intensity* ]
 [ |-M| ]
@@ -81,20 +81,26 @@ Optional Arguments
     Get a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
     The final image will have a transparency layer add based on these values.
 
-.. _-C:
+.. _-C1:
 
 **-C**
-    **C**\ onstruct an output image from one or three normalized input grids;
+    Construct an output image from one or three normalized input grids;
     these grids must all have values in the 0-1 range only (see **-Ni** if they don't).
-    Optionally, use |-A| to add transparency and |-I| to add intensity
+    Optionally, use |-A| to add transparency or |-I| to add intensity
     to the colors before writing the image. For three layers the input order must
     be red grid first, then the green grid, and finally the blue grid. It is also
-    valid to give a single input image and then enhance it via |-A| or |-I|.
+    valid to give a single input image and then enhance it via |-A| or |-I|. **Note**:
+    to build an image from a single input grid and a CPT lookup table, see the long
+    form of |-C| below.
+
+.. _-C2:
+
+.. include:: use_cpt_grd.rst_
 
 .. _-D:
 
 **-D**
-    **D**\ econstruct a single image into one or three output grids.
+    Deconstruct a single image into one or three output grids.
     An extra grid will be written if the image contains an alpha (transparency layer).
     All grids written will reflect the original image values in the 0-255 range exclusively;
     however, you can use **-No** to normalize the values to the 0-1 range.
@@ -169,6 +175,10 @@ To insert the values from the grid transparency.grd into the image gravity.tif a
 (transparency) layer, and write out a transparent PNG image, try::
 
     gmt grdmix gravity.tif -Atransparency.grd -Gmap.png
+
+To convert relief.nc via a CPT (relief.cpt) to a RGB jpg file relief.jpg, try::
+
+    gmt grdmix relief.nc -Crelief.cpt -Grelief.jpg
 
 To break the color image layers.png into separate, normalized red, green, and blue grids (and possibly an alpha grid),
 we run::
