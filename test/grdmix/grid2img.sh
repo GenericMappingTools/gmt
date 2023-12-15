@@ -4,7 +4,7 @@
 # via a CPT w/wo shading.
 
 gmt begin grid2img ps
-	gmt subplot begin 2x2 -Rd -Fs10c/5c -Scb -Srl -JQ10c -A+gwhite+p0.5p
+	gmt subplot begin 2x2 -Rd -Fs9c/4.5c -Scb -Srl -JQ9c -A+gwhite+p0.5p
 		# Plain Earth relief map for comparison
 		gmt subplot set 0 -A"Z+CPT"
 		gmt grdimage @earth_relief_30m_p
