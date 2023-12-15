@@ -1059,10 +1059,10 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	 * Return values via T are: T->n_transp is the number of different transparencies found.
 	 * For modes 3 & 4, T->n_dominant is how many in the majority
 	 *
-	 *   T-> mode == 1: T->value is the constant transparency k
-	 *   T-> mode == 2: T->value is dominant transparency k when >2 are found
-	 *   T-> mode == 3: T->value is dominant transparency 0
-	 *   T-> mode == 4: T->value is dominant transparency 255
+	 *   T->mode == 1: T->value is the constant transparency k
+	 *   T->mode == 2: T->value is dominant transparency k when >2 are found
+	 *   T->mode == 3: T->value is dominant transparency 0
+	 *   T->mode == 4: T->value is dominant transparency 255
 	 */
 
 	int64_t row, col, k, node_a, n_0 = 0, n_255 = 0, tr_max = 0;
@@ -1797,8 +1797,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		need_to_project = false;	/* Since we are not doing reprojection of the grid */
 		if (Grid_orig)
 			gmt_plot_grid_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, false);
-		else
-			gmt_plot_image_graticules (GMT, I, Intens_orig, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, NULL);
 		goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 	}
 
@@ -1835,6 +1833,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (gmt_img_project (GMT, I, Img_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the image onto the projected rectangle */
 			if (!API->external && (GMT_Destroy_Data (API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected.  Use Img_proj from now on */
 				Return (API->error);	/* Failed to free the image */
+			}
+			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
+				gmt_plot_image_graticules (GMT, Img_proj, Intens_orig, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, NULL);
+				goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 			}
 		}
 		else {	/* Project the grid */

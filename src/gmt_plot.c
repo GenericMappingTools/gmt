@@ -60,6 +60,7 @@
  *  gmt_plane_perspective
  *  gmt_plot_geo_ellipse
  *  gmt_plot_grid_graticules
+ *  gmt_plot_image_graticules
  *  gmt_plot_line
  *  gmt_plot_timex_grid
  *  gmt_plotcanvas
@@ -10909,7 +10910,7 @@ void gmt_plot_grid_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct 
 }
 
 void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_GRID *Intens, struct GMT_PEN *pen, bool skip, double *intensity, struct GMT_GRID *Drape) {
-	/* Lay down an image from a RGBA image using polygons of the graticules.  Implemented to handle transparencies.
+	/* Lay down an image from a RGBA image using squares for pixels.  Implemented to handle transparencies.
 	 * I is the data RGBA image an G is the drape topograpic
 	 * Intens is an optional intensity grid.  If NULL then either intensity points to a
 	 *    constant intensity or it is also NULL, meaning no intensity adjustment for colors.
@@ -10951,10 +10952,11 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struc
 			gmt_illuminate (GMT, Intens->data[ij], fill.rgb);
 		else if (intensity)
 			gmt_illuminate (GMT, *intensity, fill.rgb);
-		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, I->x[col] - inc2[GMT_X], I->x[col] + inc2[GMT_X], I->y[row] - inc2[GMT_Y], I->y[row] + inc2[GMT_Y]);
 		gmt_setfill (GMT, &fill, outline);
 		trans[GMT_FILL_TRANSP] = gmt_M_is255 (I->data[3*ij+3]);	/* Get the A 0-255 and convert to 0-1 */
+		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, I->x[col] - inc2[GMT_X], I->x[col] + inc2[GMT_X], I->y[row] - inc2[GMT_Y], I->y[row] + inc2[GMT_Y]);
 		PSL_settransparencies (GMT->PSL, trans);
+		
 		if (GMT->current.proj.three_D && Drape) {	/* Deal with grdview draping of image over surface */
 			uint64_t k;
 			double xp, yp;
