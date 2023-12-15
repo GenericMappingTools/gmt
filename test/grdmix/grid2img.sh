@@ -3,7 +3,7 @@
 # Testing gmt grdmix on converting a grid to an image
 # via a CPT w/wo shading.
 
-gmt begin grid2img pdf
+gmt begin grid2img ps
 	gmt subplot begin 2x2 -Rd -Fs10c/5c -Scb -Srl -JQ10c -A+gwhite+p0.5p
 		# Plain Earth relief map for comparison
 		gmt subplot set 0 -A"Z+CPT"
