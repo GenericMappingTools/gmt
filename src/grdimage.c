@@ -1054,7 +1054,7 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 	}
 }
 
-GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GRDIMAGE_TRANSP *T) {
+GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool opacity, struct GRDIMAGE_TRANSP *T) {
 	/* Determine if we have a transparency channel and if a fixed or variable (per-pixel) situation.
 	 * We return false if no alpha channel present, T is left untouched, else return true.
 	 * Return values via T are: T->n_transp is the number of different transparencies found.
@@ -1066,16 +1066,24 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	 *   T->mode == 4: T->value is dominant transparency 255
 	 */
 
-	int64_t row, col, k, node_a, n_0 = 0, n_255 = 0, tr_max = 0;
+	int64_t row, col, node, n_0 = 0, n_255 = 0;
+	unsigned int k, tr, tr_max = 0, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
+	unsigned char *transparency;	/* Pointer to memory where transparency resides */
 	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
+	unsigned int rgba[4];
 
-	if (H->n_bands < 4) return false;	/* No transparencies at all */
+	if (H->n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies as band 1 or 4 nor in alpha */
+
+	tr_band = (I->alpha) ? 0 : H->n_bands - 1;
+	transparency = (tr_band) ? &(I->data[tr_band*H->size]) : I->alpha;
 	gmt_M_memset (T, 1, struct GRDIMAGE_TRANSP);	/* Start with nuthin' */
 	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
-		k = gmt_M_ijpgi (H, row, 0);	/* Start pixel of this image row */
-		for (col = 0; col < H->n_columns; col++) {	/* March along this scanline */
-			node_a = k + col * 4 + 3;		/* Current alpha entry */
-			T->alpha[I->data[node_a]]++;	/* Count frequency of transparency values */
+		node = gmt_M_ijpgi (H, row, 0);	/* Start pixel of this image row */
+		for (col = 0; col < H->n_columns; col++, node++) {	/* March along this scanline */
+			tr = (unsigned int)transparency[node];	/* Get transparency values */
+			if (opacity) tr = 255 - tr;
+			T->alpha[tr]++;	/* Count frequency of transparency values */
+			fprintf (stderr, "%d\t%d\t%d\t%d\n", I->data[node], I->data[H->size+node], I->data[2*H->size+node], tr);
 		}
 	}
 	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
@@ -1471,20 +1479,20 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (grdimage_transparencies (GMT, I, &Transp)) {	/* What if any transparency situation do we have in the image? */
+		if (grdimage_transparencies (GMT, I, Ctrl->Q.mode == GRDIMAGE_OPACITY, &Transp)) {	/* What if any transparency situation do we have in the image? */
 			double percent = 100.0 * (double)Transp.n_dominant / (double) I->header->nm;
 			switch (Transp.mode) {
 				case 1:
-					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Constant transparency is %d.\n", Transp.value);
+					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: Constant transparency is %d.\n", Transp.value);
 					break;
 				case 2:
-					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Transp.value);
+					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Transp.value);
 					break;
 				case 3:
-					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
+					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
 					break;
 				case 4:
-					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 255.\n", percent);
+					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 255.\n", percent);
 					break;
 			}
 			Conf->Transp = &Transp;
