@@ -403,18 +403,19 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Just sample the CPT for last input column value and append four columns r g b a */
 		struct GMT_PALETTE *P = NULL;
 		double rgb[4] = {0.0, 0.0, 0.0, 0.0};
-		unsigned int k, col, last = Din->n_columns - 1;
+		unsigned int k, col, last = Din->n_columns - 1, nc;
 		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, 0.0, 255.0, Ctrl->C.dz)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 			Return (API->error);	/* Well, that did not go so well... */
 		}
-		gmt_adjust_dataset (GMT, Din, Din->n_columns + 4);	/* Add one more output columns for r, g, b, a */
+		nc = (P->is_gray) ? 1 : 3;
+		gmt_adjust_dataset (GMT, Din, Din->n_columns + nc + 1);	/* Add one more output columns for r[, g, b], a */
 		for (tbl = 0; tbl < Din->n_tables; tbl++) {
 			for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 				S = Din->table[tbl]->segment[seg];	/* Current segment */
 				for (row = 0; row < S->n_rows; row++) {	/* Current point */
 					gmt_get_rgb_from_z (GMT, P, S->data[last][row], rgb);
-					for (k = 0, col = last + 1; k < 3; k++, col++)
+					for (k = 0, col = last + 1; k < nc; k++, col++)
 						S->data[col][row] = irint (255.0 * rgb[k]);	/* r/g/b in 0-255 range */
 					S->data[col][row] = irint (100.0 * rgb[k]);	/* Transparency in 0-100% range */
 				}

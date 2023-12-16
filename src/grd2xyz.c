@@ -489,11 +489,18 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	}
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
+	if (Ctrl->C.active) {	/* Just sample the CPT for the grid z values and append three columns r g b a to the x y z */
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, 0.0, 255.0, Ctrl->C.dz)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
+			Return (API->error);	/* Well, that did not go so well... */
+		}
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+	}
 	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : ((Ctrl->F.mode == 2) ? 2 : 3));
 	if (Ctrl->Z.active)
 		n_output = 1;
-	else if (Ctrl->C.active)	/* x, y, z, r, g, b, a */
-		n_output = 7;
+	else if (Ctrl->C.active)	/* x, y, z, r[, g, b], a */
+		n_output = (P->is_gray) ? 5 : 7;
 	else {
 		n_output = (Ctrl->F.mode == 2) ? 2 : 3;
 		if (Ctrl->W.active) n_output++;
@@ -513,13 +520,6 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 	out[w_col] = Ctrl->W.weight;
 
-	if (Ctrl->C.active) {	/* Just sample the CPT for the grid z values and append three columns r g b a to the x y z */
-		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, 0.0, 255.0, Ctrl->C.dz)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
-			Return (API->error);	/* Well, that did not go so well... */
-		}
-		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
@@ -539,16 +539,18 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->C.active) {	/* Just sample the CPT for the z value and append four columns r g b a */
-			unsigned int k, kol, geo = gmt_M_is_geographic (GMT, GMT_IN);
-			static char *coord[2] = {"x\ty\tz\tred\tgreen\tblue\ttransparency", "lon\tlat\tz\tred\tgreen\tblue\ttransparency"};
-			if (first_grd) GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, coord[geo]);
+			unsigned int k, kol, geo = gmt_M_is_geographic (GMT, GMT_IN), nc = (P->is_gray) ? 1 : 3;
+			static char *rgbcoord[2] = {"x\ty\tz\tred\tgreen\tblue\ttransparency", "lon\tlat\tz\tred\tgreen\tblue\ttransparency"};
+			static char *graycoord[2] = {"x\ty\tz\tgray\ttransparency", "lon\tlat\tz\tgray\ttransparency"};
+			char *this = (nc == 3) ? rgbcoord[geo] : graycoord[geo];
+			if (first_grd) GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, this);
 			first_grd = false;
 			x = (G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
 			y = (G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
 			gmt_M_grd_loop (GMT, G, row, col, ij) {
 				out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 				gmt_get_rgb_from_z (GMT, P, G->data[ij], rgb);
-				for (k = 0, kol = GMT_Z + 1; k < 3; k++) out[kol++] = irint (255.0 * rgb[k]);	/* r/g/b in 0-255 range */
+				for (k = 0, kol = GMT_Z + 1; k < nc; k++) out[kol++] = irint (255.0 * rgb[k]);	/* r/g/b in 0-255 range */
 				out[kol] = irint (100.0 * rgb[k]);	/* Transparency in 0-100% range */
 				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */

@@ -30,4 +30,5 @@
 
     **Note**: We append four extra output columns at the end of the output records.  These
     are the red, green, and blue components color components (all in 0-255 range) and the
-    transparency value (0-100% range, with 0 meaning opaque).
+    transparency value (0-100% range, with 0 meaning opaque). If the color table is a gray
+    table, then we output *gray* (0-255) instead of three identical components.
