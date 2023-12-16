@@ -433,7 +433,7 @@ void place_base_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, b
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
-	bool first = true, first_geo = true;
+	bool first = true, first_geo = true, first_grd = true;
 	openmp_int row, col;
 	unsigned int n_output, w_col = 3, orig_mode;
 	int error = 0, write_error = 0;
@@ -518,6 +518,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 			Return (API->error);	/* Well, that did not go so well... */
 		}
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
@@ -538,7 +539,10 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->C.active) {	/* Just sample the CPT for the z value and append four columns r g b a */
-			unsigned int k;
+			unsigned int k, geo = gmt_M_is_geographic (GMT, GMT_IN);
+			static char *coord[2] = {"x\ty\tz\tred\tgreen\tblue\ttransparency", "lon\tlat\tz\tred\tgreen\tblue\ttransparency"};
+			if (first_grd) GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, coord[geo]);
+			first_grd = false;
 			x = (G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
 			y = (G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
 			gmt_M_grd_loop (GMT, G, row, col, ij) {
@@ -854,6 +858,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
+
+	if (Ctrl->C.active) gmt_M_free (GMT, Out);
 
 	if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {

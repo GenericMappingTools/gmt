@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-C:
 
-.. include:: use_cpt_grd.rst_
+.. include:: dump_rgb.rst_
 
 .. _-E:
 

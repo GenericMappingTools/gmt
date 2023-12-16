@@ -1,0 +1,33 @@
+**-C**\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*]
+    Determine the color components based on the *z* values.
+    Append name of a master CPT, an input CPT file or a comma-separated list of colors from which to build a CPT.
+    If no argument is given then under modern mode we select the current CPT, if it is available.
+    Generally, the input can be many things:
+
+    #. A standard GMT *master* CPT file, e.g., *earth* 
+       (see :ref:`Of Colors and Color Legends`) and can be either addressed
+       by *master* or *section*/*master* (without any **.cpt** extension).
+    #. File name of already custom-made *cpt* file (e.g, *my_colors.cpt*).
+    #. Build a linear continuous CPT from *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]
+       automatically, where *z* starts at 0 and is incremented by one for each color. In this case,
+       *color*\ :math:`_i` can be a *r*/*g*/*b* (e.g., 255/100/75), *h*-*s*-*v* triplet (e.g., 180-0.8-1),
+       a *c*/*m*/*y*/*k* quadruple (e.g., 80/50/40/30), an HTML hexadecimal color (e.g. *#aabbcc*),
+       or a :ref:`color name <RGBchart>`. No spaces between commas are allowed.
+
+    A few modifiers pertains to hinges and units:
+
+    - **+h** - If given a master CPT with soft hinges then you can enable the hinge at
+      data value *hinge* [0], whereas for hard-hinge CPTs you can adjust the location
+      of the hinge [0] but not disable it.
+    - **+i** - Append increment *dz* to quantize the grid range [Default uses the exact grid range].
+    - **+s** - Append *fname* to save the finalized CPT in a disk file.
+      This is useful when the CPT is generated automatically, but if used, **must** be
+      at the end of the **-C** option.
+    - **+u** - For any other *master* CPT, you may convert their *z*-values from 
+      other distance `Units`_ to meter by appending the original unit code.
+    - **+U** - Likewise, you may convert their *z*-values from meter to other `Units`_
+      by appending the desired unit code.
+
+    **Note**: We append four extra output columns at the end of the output records.  These
+    are the red, green, and blue components color components (all in 0-255 range) and the
+    transparency value (0-100% range, with 0 meaning opaque).
