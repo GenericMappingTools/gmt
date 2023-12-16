@@ -25,7 +25,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'C', "",
+	GMT_C_CPT_KW,
+	{ 0, 'F', "",
 	          "",                  "",
 	          "",                  "",
 		  GMT_TP_STANDARD },
