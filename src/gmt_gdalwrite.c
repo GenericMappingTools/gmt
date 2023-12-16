@@ -93,7 +93,11 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->ULx = I->header->wesn[XLO];
 		to_GDALW->ULy = I->header->wesn[YHI];
 	}
-	else {
+	else if (I->header->wesn[XHI] > I->header->wesn[XLO] && I->header->wesn[YHI] > I->header->wesn[YLO]) {	/* Header has valid -R */
+		to_GDALW->ULx = I->header->wesn[XLO];
+		to_GDALW->ULy = I->header->wesn[YHI];
+	}
+	else {	/* Stuck with dimensions */
 		to_GDALW->ULx = 0;
 		to_GDALW->ULy = I->header->n_rows;
 	}
