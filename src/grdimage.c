@@ -1085,7 +1085,7 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 			tr = (unsigned int)transparency[node];	/* Get transparency values */
 			if (opacity) tr = 255 - tr;
 			T->alpha[tr]++;	/* Count frequency of transparency values */
-			fprintf (stderr, "%d\t%d\t%d\t%d\n", I->data[node], I->data[H->size+node], I->data[2*H->size+node], tr);
+			//fprintf (stderr, "%d\t%d\t%d\t%d\n", I->data[node], I->data[H->size+node], I->data[2*H->size+node], tr);
 		}
 	}
 	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
@@ -1528,16 +1528,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			double percent = 100.0 * (double)Transp.n_dominant / (double) I->header->nm;
 			switch (Transp.mode) {
 				case 1:
-					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: Constant transparency is %d.\n", Transp.value);
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Constant transparency is %d.\n", Transp.value);
 					break;
 				case 2:
-					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Transp.value);
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Transp.value);
 					break;
 				case 3:
-					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
 					break;
 				case 4:
-					GMT_Report(API, GMT_MSG_NOTICE, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 255.\n", percent);
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 255.\n", percent);
 					break;
 			}
 			Conf->Transp = &Transp;
