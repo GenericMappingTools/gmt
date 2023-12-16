@@ -42,6 +42,8 @@ static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "
 
 #define GRDIMAGE_NAN_INDEX	(GMT_NAN - 3)
 
+#define SS_SCALE	M_SQRT2		/* Scale to get symbol -Ss1m to actually be 1 cm wide */
+
 /* Control structure for grdimage */
 
 struct GRDIMAGE_CTRL {
@@ -1250,8 +1252,8 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 	struct GMT_FILL fill;
 
 	gmt_M_memset (&fill, 1, struct GMT_FILL);	/* Wipe completely first */
-	dim[GMT_X] = Conf->dim[GMT_X] * 1.414213562;	/* Sale so the square has the correct dim */
-	dim[GMT_Y] = Conf->dim[GMT_Y] * 1.414213562;
+	dim[GMT_X] = Conf->dim[GMT_X] * SS_SCALE;	/* Sale so the square has the correct dim */
+	dim[GMT_Y] = Conf->dim[GMT_Y] * SS_SCALE;
 	y = Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * Conf->n_rows;
 
 #ifdef _OPENMP
