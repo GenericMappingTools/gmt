@@ -171,12 +171,16 @@ Optional Arguments
       channel that is either 0 or 255. Default turns any pixel with alpha = 0 transparent.
     - RGBA image with variable transparency - If we have an alpha channel with variable
       transparency between 0 and 255 on a per pixel basis then *PostScript* cannot create
-      true variable pixel transparency.  Instead, use **+t** to convert the alpha range
-      to *t* = 0-1 normalized transparency or use **+o** to instead convert the alpha
-      range to normalized 0-1 opacity *o* (then recover transparency as :math:`t = 1-o`).
-      Each *r*, *g*, and *b* pixel value is then converted like :math:`r' = t R + (1-t) r`,
-      where *R* (and *G*, *B*) is the transparent color [Default is white] at full transparency.
-      If *color* is appended then it becomes the *R*, *B*, *G*  at full transparency.
+      true variable pixel transparency.  Instead, each *r*, *g*, and *b* pixel value are
+      converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the transparent
+      color [Default is white] at full transparency. If *color* is appended then it becomes
+      the *R*, *B*, *G*  at full transparency. For RGBA images you have two modifiers:
+
+      - **+t** - Convert the alpha range to *t* = 0-1 normalized transparency and plot the
+        image with *n_columns* by *n_rows* tiny squares with variable color and transparentcy.
+      - **+o** - Instead convert the alpha range to normalized 0-1 opacity *o* (then recover
+        transparency as :math:`t = 1-o`).
+      
       See `Limitations on transparency`_ for more discussion.
 
 .. |Add_-R| replace:: |Add_-R_links|
