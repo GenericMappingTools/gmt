@@ -1850,7 +1850,7 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 			if (!API->external && (GMT_Destroy_Data (API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected.  Use Img_proj from now on */
 				Return (API->error);	/* Failed to free the image */
 			}
-			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
+			if (Transp.mode == 2 && !Ctrl->A.active) {	/* Must do variable transparency via squares */
 				gmt_plot_image_graticules (GMT, Img_proj, Intens_orig, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL);
 				goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 			}
