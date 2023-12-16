@@ -165,21 +165,22 @@ Optional Arguments
       feature in PostScript Level 3 (the PS device must support PS Level 3).
       Use **+z** to specify another grid *value* than NaN. Each pixel is either opaque
       or transparent.
-    - RGB Image - Append an color to identify pixels to be turned transparent
-      [Default is black]. Each pixel is either opaque or transparent in the output image.
-    - RGBA image with two A values 90, 255) - True transparent image requires an alpha
+    - RGB Image - Append a color to identify pixels to be turned transparent
+      [Default is white]. Each pixel is either opaque or transparent in the output image.
+    - RGBA image with two A values (0, 255) - True transparent image requires an alpha
       channel that is either 0 or 255. Default turns any pixel with alpha = 0 transparent.
     - RGBA image with variable transparency - If we have an alpha channel with variable
-      transparency between 0 and 255 on a per pixel basis then *PostScript* cannot create
+      transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator cannot create
       true variable pixel transparency.  Instead, each *r*, *g*, and *b* pixel value are
       converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the transparent
       color [Default is white] at full transparency. If *color* is appended then it becomes
-      the *R*, *B*, *G*  at full transparency. For RGBA images you have two modifiers:
+      the *R*, *B*, *G*  at full transparency. For RGBA images you have two modifiers that
+      will represent the image by *n_columns* times *n_rows* tiny squares with variable
+      color and transparency:
 
-      - **+t** - Convert the alpha range to *t* = 0-1 normalized transparency and plot the
-        image with *n_columns* by *n_rows* tiny squares with variable color and transparentcy.
-      - **+o** - Instead convert the alpha range to normalized 0-1 opacity *o* (then recover
-        transparency as :math:`t = 1-o`).
+      - **+o** - Convert the alpha range to normalized 0-1 opacity *o*, then recover
+        transparency as :math:`t = 1-o`.
+      - **+t** - Convert the alpha range to *t* = 0-1 (normalized transparency).
       
       See `Limitations on transparency`_ for more discussion.
 
@@ -278,7 +279,7 @@ Limitations on transparency
 ---------------------------
 
 The PostScript imaging model does not support any form of transparency.  However,
-Adobe added pdfmark which allows PostScript to specify transparency but only if
+Adobe added *pdfmark* which allows PostScript to specify transparency but only if
 activated when converting PostScript or EPS to PDF with Adobe Distiller or GhostScript.
 Each graphic (e.g., polygon, line, text, image) can have a specified transparency.
 Yet, for images this is very limited: We can choose a particular characteristic of
@@ -286,9 +287,9 @@ the image to mean transparency, e.g, a specific *r*\ /*g*\ /*b* color or an *alp
 level (0-255).  Thus, variable pixel-by-pixel transparency in a sophisticated RGBA
 image (color + transparency) cannot be see-through for more than a single color.  Our
 approximation for plotting transparent RGBA images is to simulate the transparency effect
-on the color, but the image remains opaque (optionally apart from a single color).
-Since polygons can have separate transparency then one slow option is to paint the
-image by polygonal tiles with a custom CPT file that has one entry for each of the
+on the color, but the image remains opaque (optionally apart from a single color via |-Q|).
+Since polygons can have separate transparencies then one slow option is to paint the
+image by squares with a custom CPT file that has one entry for each of the
 (up to) 255 values in the alpha channel.
 
 Image formats recognized

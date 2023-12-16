@@ -972,9 +972,9 @@ GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIM
 	   But what would it take to have a user selected background color? */
 	double o, t;		/* o - opacity, t = transparency */
 	o = pix4 / 255.0;	t = 1 - o;
-	rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];	if (rgb[0] > 1.0) rgb[0] = 1.0; else if (rgb[0] < 0.0) rgb[0] = 0.0;
-	rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];	if (rgb[1] > 1.0) rgb[1] = 1.0; else if (rgb[1] < 0.0) rgb[1] = 0.0;
-	rgb[2] = o * rgb[2] + t * Conf->tr_rgb[2];	if (rgb[2] > 1.0) rgb[2] = 1.0; else if (rgb[2] < 0.0) rgb[2] = 0.0;
+	rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];
+	rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];
+	rgb[2] = o * rgb[2] + t * Conf->tr_rgb[2];
 }
 
 GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
@@ -1091,7 +1091,6 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 			tr = (unsigned int)transparency[node];	/* Get transparency values */
 			if (opacity) tr = 255 - tr;
 			T->alpha[tr]++;	/* Count frequency of transparency values */
-			//fprintf (stderr, "%d\t%d\t%d\t%d\n", I->data[node], I->data[H->size+node], I->data[2*H->size+node], tr);
 		}
 	}
 	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
