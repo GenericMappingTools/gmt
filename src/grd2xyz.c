@@ -539,7 +539,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->C.active) {	/* Just sample the CPT for the z value and append four columns r g b a */
-			unsigned int k, geo = gmt_M_is_geographic (GMT, GMT_IN);
+			unsigned int k, kol, geo = gmt_M_is_geographic (GMT, GMT_IN);
 			static char *coord[2] = {"x\ty\tz\tred\tgreen\tblue\ttransparency", "lon\tlat\tz\tred\tgreen\tblue\ttransparency"};
 			if (first_grd) GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, coord[geo]);
 			first_grd = false;
@@ -548,7 +548,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			gmt_M_grd_loop (GMT, G, row, col, ij) {
 				out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 				gmt_get_rgb_from_z (GMT, P, G->data[ij], rgb);
-				for (k = 0; k < 4; k++) out[GMT_Z + 1 + k] = rgb[k];
+				for (k = 0, kol = GMT_Z + 1; k < 3; k++) out[kol++] = irint (255.0 * rgb[k]);	/* r/g/b in 0-255 range */
+				out[kol] = irint (100.0 * rgb[k]);	/* Transparency in 0-100% range */
 				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
 			}

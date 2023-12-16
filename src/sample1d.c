@@ -415,8 +415,8 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 				for (row = 0; row < S->n_rows; row++) {	/* Current point */
 					gmt_get_rgb_from_z (GMT, P, S->data[last][row], rgb);
 					for (k = 0, col = last + 1; k < 3; k++, col++)
-						S->data[col][row] = irint (255.0 * rgb[k]);
-					S->data[col][row] = irint (100.0 * rgb[k]);
+						S->data[col][row] = irint (255.0 * rgb[k]);	/* r/g/b in 0-255 range */
+					S->data[col][row] = irint (100.0 * rgb[k]);	/* Transparency in 0-100% range */
 				}
 			}
 		}
