@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [**+o**\|\ **t**][*color*][**+z**\ *value*] ]
+[ |-Q|\ [**+i**][*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
@@ -158,31 +158,26 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**+o**\|\ **t**][*color*][**+z**\ *value*]
+**-Q**\ [**+i**][*color*][**+z**\ *value*]
     Handle transparency or opacity for grids or images. There are three general schemes:
 
     - Grid - Make grid nodes with NaN values transparent, using the color-masking
       feature in PostScript Level 3 (the PS device must support PS Level 3).
-      Use **+z** to specify another grid *value* than NaN. Each pixel is either opaque
-      or transparent.
-    - RGB Image - Append a color to identify pixels to be turned transparent
-      [Default is white]. Each pixel is either opaque or transparent in the output image.
+      Use **+z**\ *value* to specify another grid value than NaN. Each pixel is now
+      either opaque color or fully transparent.
+    - RGB Image - Append a *color* to identify pixels that should be turned transparent
+      [Default is white]. Each pixel is then either opaque or transparent in the output image.
     - RGBA image with two A values (0, 255) - True transparent image requires an alpha
       channel that is either 0 or 255. Default turns any pixel with alpha = 0 transparent.
     - RGBA image with variable transparency - If we have an alpha channel with variable
-      transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator cannot create
-      true variable pixel transparency.  Instead, each *r*, *g*, and *b* pixel value are
-      converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the transparent
-      color [Default is white] at full transparency. If *color* is appended then it becomes
-      the *R*, *B*, *G*  at full transparency. For RGBA images you have two modifiers that
-      will represent the image by *n_columns* times *n_rows* tiny squares with variable
-      color and transparency:
-
-      - **+o** - Convert the alpha range to normalized 0-1 opacity *o*, then recover
-        transparency as :math:`t = 1-o`.
-      - **+t** - Convert the alpha range to *t* = 0-1 (normalized transparency).
-      
-      See `Limitations on transparency`_ for more discussion.
+      transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator
+      cannot create true variable pixel transparency. Instead, each *r*, *g*, and *b* pixel
+      value are converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the
+      transparent color at full transparency [Default is white]. If *color* is appended 
+      then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will 
+      be represented by *n_columns* times *n_rows* tiny squares with variable color and
+      transparency.  If the A reflects opacity instead of transparency then use **+i**
+      to invert these numbers first. See `Limitations on transparency`_ for more discussion.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
