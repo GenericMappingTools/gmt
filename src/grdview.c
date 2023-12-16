@@ -409,6 +409,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->C.savecpt);
 	for (i = 0; i < 3; i++) gmt_M_str_free (C->G.file[i]);
 	gmt_M_str_free (C->I.file);
 	gmt_M_str_free (C->I.azimuth);
