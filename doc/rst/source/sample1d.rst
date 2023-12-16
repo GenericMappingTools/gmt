@@ -14,6 +14,7 @@ Synopsis
 
 **gmt sample1d** [ *table* ]
 [ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**] ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-E| ]
 [ |-F|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
@@ -49,7 +50,8 @@ Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
 schemes are available, in addition to a *smoothing* spline which trades off misfit
 for curvature. Extrapolation outside the range of the input data
-is not supported.
+is not supported. By giving a CPT via |-C| we will add *r*, *g*, *b*, *a* columns to the output
+based on the last input data column.
 
 Required Arguments
 ------------------
@@ -86,6 +88,10 @@ Optional Arguments
     
     **Note**: Calculation mode for loxodromes is spherical, hence **-je**
     cannot be used in combination with **+l**.
+
+.. _-C:
+
+.. include:: use_cpt_grd.rst_
 
 .. _-E:
 

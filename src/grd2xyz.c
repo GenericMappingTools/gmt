@@ -42,15 +42,21 @@ enum grd2xyz_mode {
 };
 
 struct GRD2XYZ_CTRL {
-	struct GRD2XYZ_C {	/* -C[f|i] */
+	struct GRD2XYZ_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
-		unsigned int mode;
+		double dz;	/* Rounding for min/max determined from data */
+		char *file;
+		char *savecpt;	/* For when we want to save the automatically generated CPT */
 	} C;
 	struct GRD2XYZ_E {	/* -E[f][<nodata>] */
 		bool active;
 		bool floating;
 		double nodata;
 	} E;
+	struct GRD2XYZ_F {	/* -F[f|i] */
+		bool active;
+		unsigned int mode;
+	} F;
 	struct GRD2XYZ_L {	/* -Lc|r|x|y<value> */
 		bool active;
 		unsigned int mode;
@@ -90,15 +96,17 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->C.savecpt);
 	gmt_M_free (GMT, C);
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-C[f|i]] [-Lc|r|x|y<value>] [%s] [-T[a|b][<base>]] [%s] [-W[a[+u<unit>]|<weight>]] "
+	GMT_Usage (API, 0, "usage: %s %s  [-C%s] [-F[f|i]] [-Lc|r|x|y<value>] [%s] [-T[a|b][<base>]] [%s] [-W[a[+u<unit>]|<weight>]] "
 		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT,
+		name, GMT_INGRID, CPT_OPT_ARGS, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT,
 		GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -106,7 +114,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-C[f|i]");
+	gmt_explain_cpt_input (API, 'C');
+	GMT_Usage (API, 1, "\n-F[f|i]");
 	GMT_Usage (API, -2, "Write row,col instead of x,y. Append f to start at 1, else 0 [Default]. "
 		"Use -Ci to write grid index instead of (x,y).");
 	GMT_Usage (API, 1, "\n-Lc|r|x|y<value>");
@@ -161,6 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 	 */
 
 	unsigned int n_errors = 0, n_files = 0, k = 0;
+	char *f = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -175,11 +185,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 
 			/* Processes program-specific parameters */
 
-			case 'C':	/* Write row,col or index instead of x,y */
+			case 'C':	/* CPT */
+				if (opt->arg[0] && strchr ("if", opt->arg[0])) goto the_F;	/* Backwars compatibility for -Ci|f */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				if (opt->arg[0] == 'c') Ctrl->C.mode = 0;
-				else if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
-				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
+				gmt_M_str_free (Ctrl->C.file);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0] && (f = gmt_strrstr (Ctrl->C.file, "+s")) != NULL) {	/* Filename has a +s<outname>, extract that part */
+					Ctrl->C.savecpt = &f[2];
+					f[0] = '\0';		/* Remove the +s<outname> from Ctrl->C.file */
+				}
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
+				break;
+the_F:		case 'F':	/* Write row,col or index instead of x,y */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				if (opt->arg[0] == 'c') Ctrl->F.mode = 0;
+				else if (opt->arg[0] == 'f') Ctrl->F.mode = 1;
+				else if (opt->arg[0] == 'i') Ctrl->F.mode = 2;
 				break;
 			case 'E':	/* Old ESRI option */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -421,13 +442,15 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 	char header[GMT_BUFSIZ];
 
-	double wesn[4], d_value, A_scale = 1.0, A_geo = 0.0, out[4], *x = NULL, *y = NULL;
+	double wesn[4], d_value, A_scale = 1.0, A_geo = 0.0, out[7], *x = NULL, *y = NULL;
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
 	struct GMT_GRID *G = NULL, *W = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *H = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_Z_IO io;
 	struct GMT_OPTION *opt = NULL;
+	struct GMT_PALETTE *P = NULL;
 	struct GRD2XYZ_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -466,13 +489,15 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	}
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
-	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : ((Ctrl->C.mode == 2) ? 2 : 3));
+	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : ((Ctrl->F.mode == 2) ? 2 : 3));
 	if (Ctrl->Z.active)
 		n_output = 1;
+	else if (Ctrl->C.active)	/* x, y, z, r, g, b, a */
+		n_output = 7;
 	else {
-		n_output = (Ctrl->C.mode == 2) ? 2 : 3;
+		n_output = (Ctrl->F.mode == 2) ? 2 : 3;
 		if (Ctrl->W.active) n_output++;
-		if (Ctrl->C.mode == 2) w_col = 2;
+		if (Ctrl->F.mode == 2) w_col = 2;
 	}
 	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 
@@ -487,6 +512,13 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	}
 
 	out[w_col] = Ctrl->W.weight;
+
+	if (Ctrl->C.active) {	/* Just sample the CPT for the grid z values and append three columns r g b a to the x y z */
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, 0.0, 255.0, Ctrl->C.dz)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
+			Return (API->error);	/* Well, that did not go so well... */
+		}
+	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
@@ -505,6 +537,22 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			Return (API->error);	/* Get subset */
 		}
 
+		if (Ctrl->C.active) {	/* Just sample the CPT for the z value and append four columns r g b a */
+			unsigned int k;
+			x = (G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
+			y = (G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
+			gmt_M_grd_loop (GMT, G, row, col, ij) {
+				out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
+				gmt_get_rgb_from_z (GMT, P, G->data[ij], rgb);
+				for (k = 0; k < 4; k++) out[GMT_Z + 1 + k] = rgb[k];
+				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
+			}
+			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Free the grid since there may be more of them */
+				Return (API->error);
+			}
+			continue;	/* Back to next grid */
+		}
 		if (Ctrl->L.active) {	/* Check that limits are within range and warn otherwise */
 			orig_mode = Ctrl->L.mode;	/* In case we have many grids */
 			if (Ctrl->L.mode == GRD2XYZ_Y) {	/* Convert y coordinate to nearest row */
@@ -735,10 +783,10 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			x = (G->x) ? G->x : gmt_grd_coord (GMT, G->header, GMT_X);
 			y = (G->y) ? G->y : gmt_grd_coord (GMT, G->header, GMT_Y);
 			Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-			if (Ctrl->C.active) {	/* Replace x,y with col,row */
-				if (Ctrl->C.mode < 2) {
-					gmt_M_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;
-					gmt_M_col_loop2 (GMT, G, col) x[col] = col + Ctrl->C.mode;
+			if (Ctrl->F.active) {	/* Replace x,y with col,row */
+				if (Ctrl->F.mode < 2) {
+					gmt_M_row_loop  (GMT, G, row) y[row] = row + Ctrl->F.mode;
+					gmt_M_col_loop2 (GMT, G, col) x[col] = col + Ctrl->F.mode;
 				}
 				else
 					GMT->current.io.io_nan_col[0] = GMT_Y;	/* Since that is where z will go now */
@@ -748,7 +796,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			if (GMT->current.setting.io_header[GMT_OUT] && first) {
 				if (!G->header->x_units[0]) strcpy (G->header->x_units, "x");
 				if (!G->header->y_units[0]) strcpy (G->header->y_units, "y");
-				if (Ctrl->C.active) {
+				if (Ctrl->F.active) {
 					strcpy (G->header->x_units, "col");
 					strcpy (G->header->y_units, "row");
 				}
@@ -772,7 +820,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					if (Ctrl->L.mode == GRD2XYZ_Y && !doubleAlmostEqualZero (y[row], Ctrl->L.value)) continue;	/* Skip these rows */
 					if (Ctrl->L.mode == GRD2XYZ_X && !doubleAlmostEqualZero (x[col], Ctrl->L.value)) continue;	/* Skip these columns */
 				}
-				if (Ctrl->C.mode == 2) {	/* Write index, z */
+				if (Ctrl->F.mode == 2) {	/* Write index, z */
 					out[GMT_X] = (double)gmt_M_ij0 (G->header, row, col);
 					out[GMT_Y] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (out[GMT_Y]))	/* Input matched no-data setting, so change to NaN */

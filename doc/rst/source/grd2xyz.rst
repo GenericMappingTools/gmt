@@ -13,7 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grd2xyz** *ingrid*
-[ |-C|\ [**f**\|\ **i**] ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
+[ |-F|\ [**f**\|\ **i**] ]
 [ |-L|\ [**c**\|\ **r**\|\ **x**\|\ **y**]\ *value* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -40,7 +41,8 @@ precision of the ASCII output format by editing the
 **--FORMAT_FLOAT_OUT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
 output z-values without the (*x, y*) coordinates (see |-Z| below) or you can
-save the grid in the STL format for 3-D printers.
+save the grid in the STL format for 3-D printers. Also, by giving a CPT via
+|-C| we will add *r*, *g*, *b*, *a* columns to the output based on *z* values.
 
 Required Arguments
 ------------------
@@ -55,7 +57,11 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**f**\|\ **i**]
+.. include:: use_cpt_grd.rst_
+
+.. _-F:
+
+**-F**\ [**f**\|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
     **f** to start at 1 (FORTRAN-style counting). Alternatively, append
