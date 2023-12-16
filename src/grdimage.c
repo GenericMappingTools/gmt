@@ -1264,8 +1264,7 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			/* Get pixel color */
-			for (k = 0; k < 3; k++) fill.rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			fill.rgb[3] = Conf->Image->data[node_s] / 100.0;
+			for (k = 0; k < n_bands; k++) fill.rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
 				gmt_illuminate (GMT, Conf->Intens->data[node_i], fill.rgb);	/* Apply illumination to this color */
