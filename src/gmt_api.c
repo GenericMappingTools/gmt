@@ -4652,7 +4652,8 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	unsigned int c, index;
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
-	struct GMT_GRID_HEADER *h = I_in->header;
+    struct GMT_GRID_HEADER *h = I_in->header;
+    struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	if (I_in->n_indexed_colors == 0) {	/* Regular gray or r/g/b image - use as is */
 		(*I_out) = I_in;
@@ -4705,6 +4706,11 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	/* Reset meta data to reflect a regular 3-band r,g,b image */
 	h->n_bands = 3;
 	I->n_indexed_colors = 0;
+	if (h->nan_value) { /* Preserve the NaN color */
+		unsigned int k = rint (h->nan_value);
+		for (c = 0; c < 3; c++, k++) HH->nan_rgb[c] = gmt_M_get_rgba (I->colormap, k, c, n_colors);	/* Save NaN r,g,b */
+		HH->has_NaN_rgb = 1;
+	}
 	gmt_M_free (GMT, I->colormap);	/* Free the colormap */
 	I->color_interp = NULL;
 

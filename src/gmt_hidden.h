@@ -173,9 +173,11 @@ struct GMT_GRID_HEADER_HIDDEN {
 	size_t n_alloc;                  /* Bytes allocated for this grid */
 	unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
+	double nan_rgb[4];				 /* Transparent NaN color in an indexed RGB image, with nan_value as that index */
 	char   flags[4];                 /* Flags used for ESRI grids */
 	char  *pocket;                   /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 	double bcr_threshold;            /* sum of cardinals must >= threshold in bilinear; else NaN */
+	unsigned int has_NaN_rgb;        /* Is 1 if an indexed RGB image had a specific NaN color for transparency */
 	unsigned int has_NaNs;           /* Is 2 if the grid contains any NaNs, 1 if it does not, and 0 if no check has yet happened */
 	unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
 	unsigned int bcr_n;              /* Width of the interpolation function */
