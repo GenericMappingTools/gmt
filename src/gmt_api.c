@@ -4662,7 +4662,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	/* Here we have an indexed image */
 	if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot reallocate a non-GMT read-only input array */
 		if ((I = GMT_Duplicate_Data (GMT->parent, GMT_IS_IMAGE, GMT_DUPLICATE_DATA, I_in)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate image! - this is not a good thing and may crash this module\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate external image! - this is not a good thing and may crash this module\n");
 			(*I_out) = I_in;
 		}
 		else {
