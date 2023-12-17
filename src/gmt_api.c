@@ -4708,7 +4708,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	I->n_indexed_colors = 0;
 	if (!gmt_M_is_fnan (h->nan_value)) { /* Preserve the NaN color index */
 		unsigned int k = rint (h->nan_value);
-		for (c = 0; c < 3; c++, k++) HH->nan_rgb[c] = gmt_M_get_rgba (I->colormap, k, c, n_colors);	/* Save NaN r,g,b */
+		for (c = 0; c < 3; c++) HH->nan_rgb[c] = gmt_M_get_rgba (I->colormap, k, c, n_colors);	/* Save NaN r,g,b */
 		HH->has_NaN_rgb = 1;
 	}
 	gmt_M_free (GMT, I->colormap);	/* Free the colormap */
