@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [**+i**][*color*][**+z**\ *value*] ]
+[ |-Q|\ [*color*][**+i**][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
@@ -158,26 +158,26 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**+i**][*color*][**+z**\ *value*]
-    Handle transparency or opacity for grids or images. There are three general schemes:
+**-Q**\ [*color*][**+i**][**+z**\ *value*]
+    Handle transparency or opacity for grids or images. There are four general schemes:
 
-    - Grid - Make grid nodes with NaN values transparent, using the color-masking
+    - Grid - Make grid nodes with NaN values transparent in the image, using the color-masking
       feature in PostScript Level 3 (the PS device must support PS Level 3).
-      Use **+z**\ *value* to specify another grid value than NaN. Each pixel is now
+      Use modifier **+z**\ *value* to specify another grid value than NaN. Each pixel is now
       either opaque color or fully transparent.
-    - RGB Image - Append a *color* to identify pixels that should be turned transparent
+    - RGB image - Append a *color* to identify pixels that should be turned transparent
       [Default is white]. Each pixel is then either opaque or transparent in the output image.
-    - RGBA image with two A values (0, 255) - True transparent image requires an alpha
+    - RGBA image with two *A* values (0, 255) - True transparent image requires an alpha
       channel that is either 0 or 255. Default turns any pixel with alpha = 0 transparent.
     - RGBA image with variable transparency - If we have an alpha channel with variable
       transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator
-      cannot create true variable pixel transparency. Instead, each *r*, *g*, and *b* pixel
-      value are converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the
-      transparent color at full transparency [Default is white]. If *color* is appended 
+      cannot create true variable pixel transparency *t*. Instead, each *r*, *g*, and *b* pixel
+      values are converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the
+      transparent color at full transparency [Default is white]. If *color* is given 
       then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will 
-      be represented by *n_columns* times *n_rows* tiny squares with variable color and
-      transparency.  If the A reflects opacity instead of transparency then use **+i**
-      to invert these numbers first. See `Limitations on transparency`_ for more discussion.
+      be approximated by *n_columns* times *n_rows* of tiny squares with variable color and
+      transparency.  If *A* reflects opacity instead of transparency then you can use modifier
+      **+i** to invert these numbers first. See `Limitations on transparency`_ for more discussion.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -273,19 +273,18 @@ If no |-C| is given then we assume the image is a grayscale image with values in
 Limitations on transparency
 ---------------------------
 
-The PostScript imaging model does not support any form of transparency.  However,
-Adobe added *pdfmark* which allows PostScript to specify transparency but only if
-activated when converting PostScript or EPS to PDF with Adobe Distiller or GhostScript.
-Each graphic (e.g., polygon, line, text, image) can have a specified transparency.
-Yet, for images this is very limited: We can choose a particular characteristic of
-the image to mean transparency, e.g, a specific *r*\ /*g*\ /*b* color or an *alpha* channel
-level (0-255).  Thus, variable pixel-by-pixel transparency in a sophisticated RGBA
+The PostScript imaging model does not support any form of transparency.  However, Adobe added
+`pdfMark <https://opensource.adobe.com/dc-acrobat-sdk-docs/acrobatsdk/pdfs/acrobatsdk_pdfmark.pdf>`_
+which allows PostScript to specify transparency but only if activated when converting PostScript
+or EPS to PDF with Adobe Distiller or GhostScript. Each graphic (e.g., polygon, line, text, image)
+can have a specified transparency. Yet, for images this is very limited: We can choose a particular
+characteristic of the image to mean transparency, e.g, a specific *r*\ /*g*\ /*b* color or an
+*alpha* channel level (0-255). Thus, variable pixel-by-pixel transparency in a sophisticated RGBA
 image (color + transparency) cannot be see-through for more than a single color.  Our
 approximation for plotting transparent RGBA images is to simulate the transparency effect
 on the color, but the image remains opaque (optionally apart from a single color via |-Q|).
-Since polygons can have separate transparencies then one slow option is to paint the
-image by squares with a custom CPT file that has one entry for each of the
-(up to) 255 values in the alpha channel.
+Since polygons can have separate transparencies then we may simulate the image by squares symbols
+that can have individualized color *and* transparency via (up to) 255 values in the alpha channel.
 
 Image formats recognized
 ------------------------
