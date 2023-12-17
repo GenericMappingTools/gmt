@@ -14447,6 +14447,7 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	/* Read the grid header */
 
 	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
+	header.hidden = gmt_M_memory (API->GMT, NULL, 1, struct GMT_GRID_HEADER_HIDDEN);
 	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening file %s\n", file);
 		gmt_M_str_free (file);
@@ -14548,6 +14549,7 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 	file = strndup (name, lname);
 
 	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
+	header.hidden = gmt_M_memory (API->GMT, NULL, 1, struct GMT_GRID_HEADER_HIDDEN);
 	gmt_grd_init (API->GMT, &header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_ERROR, "Grid domain not specified for %s\n", file);
