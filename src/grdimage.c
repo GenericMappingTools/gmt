@@ -1241,11 +1241,6 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	}
 }
 
-GMT_LOCAL int grdimage_iz (struct PSL_CTRL *PSL, double z) {
-	/* Convert user distances to PS dots */
-	return (z * PSL->internal.dpu);
-}
-
 GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isize[]) {
 	/* Plotting a high-resolution square with coordinate in 10*PS units as integers.
 	 * We will write x, y, dims using one decimal by dividing by 10 to get exact matches
