@@ -63,7 +63,7 @@ Optional Arguments
 ------------------
 
 *ingrid*
-    Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+    Name of a grid file in geographical (*lon, lat*) coordinates with ages in Myr.
     If no grid is provided then you may define the domain via |-R|, |-I|, and optionally **-r**.
 
 .. _-F:
@@ -79,7 +79,7 @@ Optional Arguments
     given the specified rotations. **Note**: If you specified more than one
     model prediction in |-S| then the filename *must* be a template
     that contains the format %s; this will be replaced with the corresponding
-    tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
+    tags *az, dist, stage, vel, omega, dlon, dlat, lon, lat*.
     If the |-G| option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
 .. include:: /explain_grd_inout.rst_
@@ -170,7 +170,7 @@ To save the coordinates of the crust's formation to separate grids, try
   gmt grdpmodeler pac_age.nc -EPac_APM.txt -V -Fpac_clip_path.txt \
                   -Gpac_origin_%s.nc -SXY
 
-To repeat the same exercise but save output *lon,lat,age,xorigin,yorigin* to a table, use
+To repeat the same exercise but save output *lon, lat, age, xorigin, yorigin* to a table, use
 
 ::
 

@@ -149,13 +149,13 @@ maximizes the ratio of volume to surface area for the file peaks.nc, use
 
 ::
 
-  gmt grdvolume peaks.nc -C100/300/10 -Th > results.d
+  gmt grdvolume peaks.nc -C100/300/10 -Th > results.txt
 
 To see the areas and volumes for all the contours in the previous example, use
 
 ::
 
-  gmt grdvolume peaks.nc -C100/300/10 > results.d
+  gmt grdvolume peaks.nc -C100/300/10 > results.txt
 
 To find the volume of water in a lake with its free surface at 0 and max depth of 300 meters, use
 

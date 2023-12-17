@@ -185,8 +185,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify position and dimensions of the scale bar [JBC]. ");
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_COLORBAR, 3);
 	//gmt_refpoint_syntax (API->GMT, "  ", "  Specify position and dimensions of the scale bar [JBC].", GMT_ANCHOR_COLORBAR, 1);
-	GMT_Usage (API, -2, "For -DJ|j w/TC|BC|ML|MR the values for +w (85%% of map width), +h|v,+j,+o,+m have defaults. "
-		"You can override any of these settings with these explicit modifiers:");
+	GMT_Usage (API, -2, "For -DJ|j w/TC|BC|ML|MR the values for +w (%d%% of map width), +h|v,+j,+o,+m have defaults. "
+		"You can override any of these settings with these explicit modifiers:", PSSCALE_L_SCALE);
 	GMT_Usage (API, 3, "+h Select a horizontal scale.");
 	GMT_Usage (API, 3, "+r Reverse the positive direction along the scale bar.");
 	GMT_Usage (API, 3, "+v Select a vertical scale [Default].");
@@ -1922,8 +1922,10 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		Ctrl->D.emode &= 4;	/* This removes any 1,2,3 of selected but leaves 4 for nan */
 	}
 
-	if (P->has_range)	/* Convert from normalized to default CPT z-range */
-		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
+	if (P->has_range) {	/* Convert from normalized to default CPT z-range */
+		if ((gmt_stretch_cpt (GMT, P, 0.0, 0.0)) == GMT_PARSE_ERROR)
+			Return (GMT_RUNTIME_ERROR);
+	}
 
 	if (P->categorical && (Ctrl->D.emode & 1 || Ctrl->D.emode & 2)) {
 			GMT_Report (API, GMT_MSG_WARNING, "Option -D: Cannot select back/fore-ground extender for categorical CPT\n");

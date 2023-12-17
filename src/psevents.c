@@ -291,6 +291,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 GMT_LOCAL unsigned int psevents_parse_ramp_type (struct GMT_CTRL *GMT, char *string, unsigned int *start) {
 	/* Detect optional ramp codes c, l, q[Default] and start of parsing text for value */
 	unsigned int type = PSEVENTS_RAMP_QUAD;	/* Default ramp (except for fade which was linear) */
+	gmt_M_unused (GMT);
 
 	switch (string[1]) {
 		case 'c':	type = PSEVENTS_RAMP_COSINE;	*start = 2;	break;
@@ -795,6 +796,7 @@ GMT_LOCAL double psevents_ramp (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl
 	 */
 	unsigned int direction = (section == PSEVENTS_RISE) ? PSEVENTS_RAMP_UP : PSEVENTS_RAMP_DOWN;
 	double t_norm = 1.0 + (t_now - t[section])/Ctrl->E.dt[kind][section], ramp = 0.0;
+	gmt_M_unused (GMT);
 	if (section == PSEVENTS_FADE) t_norm -= 1.0;
 
 	t_norm = fabs (t_norm);
@@ -914,7 +916,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	enum gmt_col_enum time_type, end_type;
 
-	unsigned int n_cols_needed, n_copy_to_out, col, s_in = 2, t_in = 2, d_in = 3, x_col = 2, i_col = 3, t_col = 4;
+	unsigned int n_cols_needed, n_copy_to_out, col, t_in = 2, d_in = 3, x_col = 2, i_col = 3, t_col = 4;
 	unsigned int x_type, y_type, geometry;
 
 	uint64_t tbl, seg, row, n_symbols_plotted = 0, n_labels_plotted = 0;
@@ -1168,7 +1170,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->Z.active) {
-		if (Ctrl->C.active) s_in++, t_in++, d_in++, x_col++, i_col++, t_col++;	/* Must allow for z-value in input/output before size, time, length */
+		if (Ctrl->C.active) t_in++, d_in++, x_col++, i_col++, t_col++;	/* Must allow for z-value in input/output before size, time, length */
 		if (Ctrl->S.mode) t_in++, d_in++, x_col++, i_col++, t_col++;	/* Must allow for size in input/output before time and length */
 	}
 	/* Determine if there is a coda phase where symbols remain visible after the event ends: */

@@ -127,18 +127,16 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**]
-    |-L|\ **0**
-        Report range of *v* after actually scanning the data, not just
-        reporting what the header says.
-    |-L|\ **1**
-        Report median and L1 scale of *v* (L1 scale = 1.4826 \* Median
-        Absolute Deviation (MAD)).
-    |-L|\ **2**
-        Report mean, standard deviation, and root-mean-square (rms) of *v*.
-    |-L|\ **p**
-        Report mode (LMS) and LMS scale of *v*.
-    |-L|\ **a**
-        All of the above.
+    Select various statistical reports of the grid values. Choose
+    from these directives:
+
+    - **0**: Report range of *v* after actually scanning the data, not just
+      reporting what the header says.
+    - **1**: Report median and L1 scale of *v* (L1 scale = 1.4826 \* Median
+      Absolute Deviation (MAD)).
+    - **2**: Report mean, standard deviation (L2 scale), and root-mean-square (rms) of *v* [Default].
+    - **p**: Report mode (LMS) and LMS scale of *v*.
+    - **a**: Report all of the above.
 
     **Note**: If the grid is geographic then each node represents a physical
     area that decreases with increasing latitude.  We therefore report

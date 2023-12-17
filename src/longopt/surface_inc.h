@@ -21,30 +21,38 @@
 /* Translation table from long to short module options, directives and modifiers */
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
+	/* separator, short_option, long_option,
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'A', "aspect",
 		  "m",       "middle",
-		  "",        "" },
-	{ 0, 'C', "convergence",     "", "", "", "" },
+		  "",        "",
+		  GMT_TP_STANDARD },
+	{ 0, 'C', "convergence",     "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'D', "breakline",
 		  "",        "",
-		  "z",       "zvalue" },
+		  "z",       "zvalue",
+		  GMT_TP_STANDARD },
 	GMT_I_INCREMENT_KW,
 	{ 0, 'L', "limit",
 		  "l,u",     "lower,upper",
-		  "",        "" },
-	{ 0, 'M', "maskradius|mask", "", "", "", "" },
-	{ 0, 'N', "maxiterations",   "", "", "", "" },
+		  "",        "",
+		  GMT_TP_STANDARD },
+	{ 0, 'M', "maskradius|mask", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "maxiterations",   "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'Q', "quicksize",
 		  "r",       "region",
-		  "",        "" },
-	{ 0, 'S', "searchradius",    "", "", "", "" },
+		  "",        "",
+		  GMT_TP_STANDARD },
+	{ 0, 'S', "searchradius",    "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'T', "tension",
 		  "b,i",     "boundary,interior",
-		  "",        "" },
-	{ 0, 'W', "logfile",         "", "", "", "" },
-	{ 0, 'Z', "relax",           "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  "",        "",
+		  GMT_TP_STANDARD },
+	{ 0, 'W', "logfile",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Z', "relax",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !SURFACE_INC_H */

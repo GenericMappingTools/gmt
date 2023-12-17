@@ -102,7 +102,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *dumpfile*
-    Dump the (x,y) coordinates of each clipping polygon to one or more
+    Dump the (*x, y*) coordinates of each clipping polygon to one or more
     output files (or standard output if *template* is not given). No plotting
     will take place. If *template* contains the C-format specifier %d
     (including modifications like %05d) then polygons will be written to

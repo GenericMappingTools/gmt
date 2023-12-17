@@ -13,12 +13,12 @@ Specify that the primary input file(s) has *n* header record(s). The default num
 will write out header records if the input data have them]. For output you may control the writing of header records
 using **-h**\ [**o**] and the optional modifiers:
 
-- **+d** to remove existing header records.
-- **+c** to add a header comment with column names to the output [default is no column names].
-- **+m** to add a segment header *segheader* to the output after the header block [default is no segment header].
-- **+r** to add a *remark* comment to the output [default is no comment]. The *remark* string may contain \\n to
+- **+d** - Remove existing header records.
+- **+c** - Add a header comment with column names to the output [default is no column names].
+- **+m** - Add a segment header *segheader* to the output after the header block [default is no segment header].
+- **+r** - Add a *remark* comment to the output [default is no comment]. The *remark* string may contain \\n to
   indicate line-breaks.
-- **+t** to add a *title* comment to the output [default is no title]. The *title* string may contain \\n to indicate
+- **+t** - Add a *title* comment to the output [default is no title]. The *title* string may contain \\n to indicate
   line-breaks.
 
 **Notes**: (1) Blank lines and lines starting with # are always skipped. To use another leading character for indicating

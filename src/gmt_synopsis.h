@@ -87,8 +87,8 @@
 
 /* Argument for segmentation option */
 
-#define GMT_SEGMENTIZE3	"[c|n|p][a|t|s|r|<refpoint>]"
-#define GMT_SEGMENTIZE4	"[c|n|p|v][a|t|s|r|<refpoint>]"
+#define GMT_SEGMENTIZE3	"[c|n|p][a|r|s|t|<refpoint>]"
+#define GMT_SEGMENTIZE4	"[c|n|p|v][a|r|s|t|<refpoint>]"
 
 /* Argument to *contour programs */
 

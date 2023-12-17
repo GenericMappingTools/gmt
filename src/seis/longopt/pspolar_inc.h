@@ -22,25 +22,33 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "center",            "", "", "", "" },
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'D', "center",            "", "", "", "",
+		  GMT_TP_STANDARD },
 	{ 0, 'M', "size",
 	          "",                  "",
-	          "m",                 "magnitude" },
+	          "m",                 "magnitude",
+		  GMT_TP_STANDARD },
 	{ 0, 'S', "symbol",
 	          "a,c,d,h,i,p,s,t,x", "star,circle,diamond,hexagon,invtriangle,point,square,triangle,cross",
-	          "",                  "" },
-	{ 0, 'N', "noclip",            "", "", "", "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "noclip",            "", "", "", "",
 /* PROBLEM: +v modifier for -Q (following entry) can take arg strings which include + */
+		  GMT_TP_STANDARD },
 	{ 0, 'Q', "mode",
 	          "e,f,g,h,s,t",       "extensive,focal,compressional,hypo71,spolarity,station",
-	          "",                  "" },
+	          "",                  "",
+		  GMT_TP_STANDARD },
 	{ 0, 'T', "station",
 	          "",                  "",
-	          "a,f,j,o",           "angle,font,justify,offset" },
-	{ 0, 'W', "pen",               "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "a,f,j,o",           "angle,font,justify,offset",
+		  GMT_TP_STANDARD },
+	{ 0, 'W', "pen",               "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0}  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !PSPOLAR_INC_H */

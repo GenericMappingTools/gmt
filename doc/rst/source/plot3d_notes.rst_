@@ -87,7 +87,7 @@ Bugs
 No hidden line removal is employed for polygons and lines. Symbols,
 however, are first sorted according to their distance from the viewpoint
 so that nearby symbols will overprint more distant ones should they
-project to the same x,y position.
+project to the same *x, y* position.
 
 The module cannot handle filling of polygons that contain the south or
 north pole. For such a polygon, make a copy and split it into two and

@@ -167,7 +167,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**+**\|\ **-**]\ *limit*
+**-Z**\ [±]\ *limit*
     Change the threshold for outlier detection: When **-Nw** is used, residual *z-scores* that exceed this *limit* [±2.5] will
     be flagged as outliers.  To only consider negative or positive *z-scores* as possible outliers, specify a signed *limit*.
 
@@ -284,6 +284,11 @@ To force an orthogonal LMS to pick the best solution with a positive slope, try
 
   gmt regress points.txt -A+fp -Eo -Nr > best_pos_slope.txt
 
+Note
+----
+
+For regressions involving more general linear models beyond a straight line fit,
+see :doc:`gmtmath` **-A** and the operators **LSQFIT** or **SVDFIT**.
 
 References
 ----------
@@ -305,5 +310,6 @@ See Also
 --------
 
 :doc:`gmt`,
+:doc:`gmtmath`,
 :doc:`trend1d`,
 :doc:`trend2d`

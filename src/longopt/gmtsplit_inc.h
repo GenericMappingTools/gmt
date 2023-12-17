@@ -22,29 +22,19 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "azimuth_tolerance|azim_tol", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "course_change",     "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "min_distance|min_dist", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "filter",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "multifile|multi",   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Q', "outputs|fields",
+	          "x,y,z,d,h",         "x,y,z,distance|dist,heading|hdg",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Q', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_MULTIDIR },
+	{ 0, 'S', "extended|dist_head", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTSPLIT_INC_H */

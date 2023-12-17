@@ -22,26 +22,38 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'S', "format",
 	          "a,c,m,d,z,p,x,y,t", "aki,cmt,smtfull,smtdouble,smtdev,partial,axisfull,axisdouble,axisdev",
-	          "a,f,j,l,m,o,s",     "angle,font,justify,moment,samesize,offset,mreference" },
+	          "a,f,j,l,m,o,s",     "angle,font,justify,moment,samesize,offset,mreference",
+		  GMT_TP_STANDARD },
 	{ 0, 'A', "focaloffset",
 	          "",                  "",
-	          "p,s",               "pen,size" },
-	{ 0, 'C', "cpt",               "", "", "", "" },
-	{ 0, 'D', "depth",             "", "", "", "" },
+	          "p,s",               "pen,size",
+		  GMT_TP_STANDARD },
+	{ 0, 'C', "cpt",               "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, 'D', "depth",             "", "", "", "",
+		  GMT_TP_STANDARD },
 	{ 0, 'F', "mode",
 	          "a,e,g,o,p,r,t,z",   "ptaxes,taxisfill,paxisfill,nodepth,paxispen,box,taxispen,overlaypen",
-	          "",                  "" },
-	{ 0, 'H', "scale",             "", "", "", "" },
-	{ 0, 'I', "intensity",         "", "", "", "" },
-	{ 0, 'L', "outlinepen",        "", "", "", "" },
-	{ 0, 'N', "noclip",            "", "", "", "" },
-	{ 0, 'T', "nodal",             "", "", "", "" },
-	{ 0, 'W', "pen",               "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "",                  "",
+		  GMT_TP_STANDARD },
+	{ 0, 'H', "scale",             "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, 'I', "intensity",         "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, 'L', "outlinepen",        "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "noclip",            "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, 'T', "nodal",             "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, 'W', "pen",               "", "", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0}  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !PSMECA_INC_H */

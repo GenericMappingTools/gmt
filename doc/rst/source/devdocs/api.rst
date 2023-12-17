@@ -2340,7 +2340,7 @@ you call GMT_Begin_IO_.
 
     The modes for setting various comment types.
 
-The named modes (*command*, *remark*, *title*, *name_x,y,z* and
+The named modes (*command*, *remark*, *title*, *name_x*\|\ *y*\|\ *z* and
 *colnames* are used to distinguish regular text comments from specific
 fields in the header structures of the data resources, such as
 :ref:`GMT_GRID <struct-grid>`. For the various table resources (e.g., :ref:`GMT_DATASET <struct-dataset>`)

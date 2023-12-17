@@ -115,9 +115,9 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <gridx> <gridy> %s [-A] [%s] [-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] "
+	GMT_Usage (API, 0, "usage: %s <gridx> <gridy> %s [-A] [%s] [-C%s] [-G<fill>] [-I[x]<dx>[/<dy>]] "
 		"%s[-N] %s%s[-Q<params>] [%s] [-S[i|l]<length>|<scale>[+c[<slon>/]<slat>][+s<refsize>]] [-T] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
-		"%s [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
+		"%s [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, CPT_OPT_ARGS, API->K_OPT, API->O_OPT, API->P_OPT,
 		GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_l_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -128,15 +128,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-C[<cpt>]");
-	GMT_Usage (API, -2, "Color palette file to convert vector length to colors. Optionally, name a master cpt "
-		"to automatically assign continuous colors over the data range [%s]; if so, "
-		"optionally append +i<dz> to quantize the range [the exact grid range]. "
-		"Another option is to specify -Ccolor1,color2[,color3,...] to build a linear "
-		"continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+	gmt_explain_cpt_input (API, 'C');
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Select vector fill [Default is outlines only].");
-	GMT_Usage (API, 1, "\n-I[x]<dx>/<dy>");
-	GMT_Usage (API, -2, "Plot only those nodes that are <dx>/<dy> apart [Default is all nodes]. "
+	GMT_Usage (API, 1, "\n-I[x]<dx>[/<dy>]");
+	GMT_Usage (API, -2, "Plot only those nodes that are <dx> and <dy> apart [Default is all nodes]. "
 		"Optionally, use -Ix<fact>[/<yfact>] to give multiples of grid spacing.");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-N Do Not clip vectors that exceed the map boundaries [Default will clip].");

@@ -21,10 +21,10 @@ plots, which ensures that boundary annotations fit on the page. Subsequent overl
 previous plot unless the origin is shifted using these options. The following directives are supported
 [default is **r**]:
 
-- Prepend **a** to shift the origin back to the original position after plotting.
-- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*) (classic mode only).
-- Prepend **f** to shift the origin relative to the fixed lower left (classic mode only).
-- Prepend **r** to move the origin relative to its current location.
+- **a** - Prepend to shift the origin back to the original position after plotting.
+- **c** - Prepend to center the plot on the center of the paper (optionally add a *shift*) (classic mode only).
+- **f** - Prepend to shift the origin relative to the fixed lower left (classic mode only).
+- **r** - Prepend to move the origin relative to its current location.
 
 **Note**: Directives **c** and **f** are only available in classic mode.
 When **-X** or **-Y** are used without any further arguments, the values from the last use of that option in a previous

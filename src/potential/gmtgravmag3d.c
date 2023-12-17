@@ -261,7 +261,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int pos = 0, n_errors = 0, n_files = 0;
+	unsigned int pos = 0, n_errors = 0;
 	int n_par, err_npar = 0, nBELL = 0, nCIL = 0, nPRI = 0, nCONE = 0, nELL = 0, nPIR = 0, nSPHERE = 0;
 	char p[GMT_LEN256] = {""}, p2[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -273,7 +273,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 			case '<':	/* Input files */
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				Ctrl->T.xyz_file = strdup(opt->arg);
-				n_files++;
 				break;
 
 			/* Processes program-specific parameters */

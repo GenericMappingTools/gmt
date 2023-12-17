@@ -389,7 +389,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-A[n|<contours>][<labelinfo>]] [%s] [-C<contours>] [-D<template>] "
-		"[-E<indextable>[+b]] [%s] [-I] %s[-L<pen>] [-N] %s%s[-Q[<n>][+z]] [-S[p|t]] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] "
+		"[-E<indextable>[+b]] [%s] [-I] %s[-L<pen>] [-N] %s%s[-Q[<n>|<length>[unit]][+z]] [-S[p|t]] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] "
 		"[%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 	     name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_CONTG, API->K_OPT, API->O_OPT, API->P_OPT, GMT_CONTT, GMT_U_OPT,
 	     GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
@@ -445,7 +445,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'L', NULL, "Draws the triangular mesh with the specified pen.", NULL, 0);
 	GMT_Usage (API, 1, "\n-N Do NOT clip contours/image at the border [Default clips].");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-Q[<n>][+z]");
+	GMT_Usage (API, 1, "\n-Q[<n>|<length>[unit]][+z]");
 	GMT_Usage (API, -2, "Do not draw closed contours with less than <n> points [Draw all contours]. "
 		"Alternatively, give a minimum contour length and append a unit (%s, or c for Cartesian). "
 		"Unit C means Cartesian distances after first projecting the input coordinates. "
@@ -908,7 +908,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 			else
 				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
 			cont[c].type = (P->data[i].annot && !Ctrl->A.info.mode) ? 'A' : 'C';
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = Ctrl->T.active;
 			GMT_Report (API, GMT_MSG_DEBUG, "Contour slice %d: Value = %g type = %c angle = %g\n", c, cont[c].val, cont[c].type, cont[c].angle);
 			c++;
@@ -921,7 +921,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 				cont[c].type = 'A';
 			else
 				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = Ctrl->T.active;
 			c++;
 		}
@@ -946,13 +946,13 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 			cont[c].type = 'C';
 			cont[c].val = zc[c];
 			cont[c].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		}
 		for (c = 0; c < na; c++) {
 			cont[c+nc].type = 'A';
 			cont[c+nc].val = za[c];
 			cont[c+nc].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c+nc].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c+nc].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 		}
 		if (za) gmt_M_free (GMT, za);
 		if (zc) gmt_M_free (GMT, zc);
@@ -971,7 +971,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 			cont[n_contours].type = 'A';
 			cont[n_contours].val = Ctrl->A.info.single_cont;
 			cont[n_contours].do_tick = Ctrl->T.active;
-			cont[n_contours].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[n_contours].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			n_contours++;
 		}
 	}
@@ -1013,7 +1013,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->contour.annot && (cont[c].val - aval) > noise) aval += Ctrl->A.info.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < noise) ? 'A' : 'C';
-			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = Ctrl->T.active;
 		}
 		n_contours = c;

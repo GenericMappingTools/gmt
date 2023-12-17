@@ -104,7 +104,7 @@ Optional Arguments
 **-L**\ [**l**\|\ **t**\|\ **w**\| **L**\|\ **T**\|\ **W**]
     Output closest approach for nearest hotspot only (ignores |-S|).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
-    (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).
+    (*omega*, *dist*, *z*), and **-Ll** for (*lon, lat, time, dist, z*).
     Normally, *dist* is in km; use upper case modifiers **TWL** to get
     *dist* in spherical degrees.
 
@@ -169,7 +169,7 @@ Examples
 --------
 
 To find the likely (hotspot) origins of the seamounts represented by the
-(x,y,z,r,tc) points in the file seamounts.txt, using the DC85.txt Euler
+(*x, y, z, r, tc*) points in the file seamounts.txt, using the DC85.txt Euler
 poles and the pac_hs.txt list of possible hotspots, and report the 2 most
 likely hotspot candidates for each seamount, run
 

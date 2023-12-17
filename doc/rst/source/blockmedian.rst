@@ -92,31 +92,32 @@ Optional Arguments
 
 **-C**
     Use the center of the block as the output location [Default uses the
-    median x and median y as location (but see |-Q|)].
+    median *x* and median *y* as location (but see |-Q|)].
 
 .. _-E:
 
-**-E**\ [**b**]
-    Provide Extended report which includes **s** (the L1 scale of the
-    median, i.e., 1.4826 \* median absolute deviation [MAD]), **l**, the lowest
-    value, and **h**, the high value for each block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
-    *x*,\ *y*,\ *z*\ [,\ *w*]. For box-and-whisker calculation, use
-    **-Eb** which will output
-    *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and
-    *q75* are the 25% and 75% quantiles, respectively. See |-W| for
-    *w* output.
+**-E**\ [**b**\|\ **r**\|\ **s**\ [**+l**\|\ **h**]]
+    Provide Extended reporting beyond the default *x*,\ *y*,\ *z*\ [,\ *w*].
+    One of several directives affects what the extended output record contains.
+    In all cases, see |-W| for appending weights *w* to the output record:
 
-**-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
-    Provide source id **s** or record number **r** output, i.e., append
-    the source id or record number associated with the median value. If
-    tied then report the record number of the higher of the two values (i.e., **+h** is the default);
-    append **+l** to instead report the record number of the lower value.
-    Note that |-E| may be repeated so that both **-E**\ [**b**] and
-    **-E**\ **r**\ [**+l**\|\ **h**] can be
-    specified. For **-E**\ **s** we expect input records of the form
-    *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
-    source id.
+    - **b**: Write output suitable for box-and-whisker plots. Output will include
+      *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and *q75*
+      are the 25% and 75% quantiles, respectively.
+    - **r**: Append the record number associated with the median value. If tied then
+      report the record number of the higher of the two values (i.e., **+h** is the default).
+      Append **+l** to instead report the record number of the lower median value.
+    - **s**: Append the source id associated with the median value.  We expect input
+      records of the form *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned
+      integer source id. If tied then report the source id of the higher of the two
+      median values (i.e., **+h** is the default). Append **+l** to instead report
+      the source id of the lower median value.
+
+    If no directive is given then we compute *s*, the L1 scale of the median, i.e.,
+    1.4826 \* median absolute deviation [MAD]), *l*, the lowest value, and *h*, the highest
+    value for each block. Output order becomes *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*].
+    **Note**: |-E| may be repeated so that both **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
+    and **-E**\ [**b**] can be specified.
 
 .. _-G:
 

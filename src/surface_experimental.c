@@ -1933,7 +1933,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);	/* Default convergence criteria */
+	ppm = urint (SURFACE_CONV_LIMIT / GMT_CONV6_LIMIT);	/* Default convergence criteria */
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
 	GMT_Option (API, "I,R");

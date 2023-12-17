@@ -77,7 +77,7 @@ X2sys Databases
 The **x2sys_put** utility adds new information to the x2sys data bases.
 These consists of two files: The first file contains a listing of all
 the tracks that have been added to the system; it is named
-*TAG*\ \_tracks.d and is in ASCII format. The second file is named
+*TAG*\ \_tracks.txt and is in ASCII format. The second file is named
 *TAG*\ \_index.b and is in native binary format. It contains information
 on which tracks cross each of the bins, and what data sets were observed
 while crossing the bin. The bins are defined by the |-R| and |-I|

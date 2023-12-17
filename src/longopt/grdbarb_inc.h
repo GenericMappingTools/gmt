@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *
+*
  *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
@@ -22,32 +22,24 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "speed_theta",       "", "", "", "", GMT_TP_STANDARD },
+	GMT_C_CPT_KW,
+	{ 0, 'G', "fill",              "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "increment|inc",
+	          "x",                 "xmult",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "noclip",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Q', "barbs",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Q', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Z', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "a,g,p,j,s,w",       "angle,fill,pen,justify,longspeed,width",
+		  GMT_TP_STANDARD },
+	{ 0, 'T', "adjust_azimuths",   "", "", "", "", GMT_TP_STANDARD },
+	GMT_W_PEN_KW,
+	{ 0, 'Z', "theta_azimuths",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDBARB_INC_H */

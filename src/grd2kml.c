@@ -144,9 +144,9 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s -N<name> [-Aa|g|s[<altitude>]] [-C<cpt>] [-E<url>] [-F<filter>] "
+	GMT_Usage (API, 0, "usage: %s %s -N<name> [-Aa|g|s[<altitude>]] [-C%s] [-E<url>] [-F<filter>] "
 		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
-		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
+		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_INGRID, CPT_OPT_ARGS, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -165,12 +165,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "g: Altitude relative to sea surface or ground.");
 	GMT_Usage (API, 3, "s: Altitude relative to sea floor or ground.");
 	GMT_Usage (API, -2, "Optionally, append fixed <altitude> [g0: Clamped to sea surface or ground].");
-	GMT_Usage (API, 1, "\n-C<cpt>");
-	GMT_Usage (API, -2, "Color palette file to convert grid values to colors. Optionally, instead give name of a master cpt "
-		"to automatically assign continuous colors over the data range [%s]; if so, "
-		"optionally append +i<dz> to quantize the range [the exact grid range]. "
-		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
-		"linear continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+	gmt_explain_cpt_input (API, 'C');
 	GMT_Usage (API, 1, "\n-E<url>");
 	GMT_Usage (API, -2, "To store all files remotely, give leading URL [local files only].");
 	GMT_Usage (API, 1, "\n-F<filter>");

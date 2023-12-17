@@ -150,8 +150,8 @@ Optional Arguments
 
 **-M**\ *parameters*
     Used with |-E| to modify vector parameters. For vector heads,
-    append vector head *size* [Default is 0, i.e., a line]. See VECTOR
-    ATTRIBUTES for specifying additional attributes.  If |-E| is not
+    append vector head *size* [Default is 0, i.e., a line]. See `Vector Attributes`_
+    for specifying additional attributes.  If |-E| is not
     given and the current plot mode is to draw a windrose diagram then
     using |-M| will add vector heads to all individual directions
     using the supplied attributes.
@@ -160,7 +160,7 @@ Optional Arguments
 
 **-N**\ *mode*\ [**+p**\ *pen*]
     Draw the equivalent circular normal distribution, i.e., the *von Mises*
-    distribution; append desired pen [0.25p,black].
+    distribution; optionally append desired pen via the **+p** modifier [0.25p,black].
     The *mode* selects which central location and scale to use:
 
     * 0 = mean and standard deviation;
@@ -191,8 +191,8 @@ Optional Arguments
 **-S**\ [**+a**]
     Normalize input radii (or bin counts if |-A| is used) by the largest
     value so all radii (or bin counts) range from 0 to 1.  Optionally,
-    further normalize rose plots for area (i.e., take :math:`sqrt(r)` before
-    plotting [Default is no normalizations].
+    further normalize rose plots for area via modifier **+a** (i.e., take
+    :math:`sqrt(r)` before plotting [Default is no normalizations].
 
 .. _-T:
 

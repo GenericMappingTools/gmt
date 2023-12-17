@@ -81,15 +81,19 @@ Optional Arguments
 **-A**\ [**d**\|\ **f**\|\ **l**\|\ **m**\|\ **n**\|\ **r**\|\ **S**\|\ **s**\|\ **u**\|\ **z**]
     By default we will calculate mean values if multiple entries fall on
     the same node. Use |-A| to change this behavior, except it is
-    ignored if |-Z| is given. Append **f** or **s** to simply keep the
-    first or last data point that was assigned to each node. Append
-    **l** or **u** or **d** to find the lowest (minimum) or upper (maximum) value
-    or the difference between the maximum and minimum values
-    at each node, respectively. Append **m** or **r** or **S** to compute mean or
-    RMS value or standard deviation at each node, respectively. Append **n** to simply count
-    the number of data points that were assigned to each node (this only
-    requires two input columns *x* and *y* as *z* is not consulted). Append
-    **z** to sum multiple values that belong to the same node.
+    ignored if |-Z| is given. Append a desired directive:
+
+    - **d**: Find the difference between the maximum and minimum values at each node.
+    - **f**: Simply keep the first data point that was assigned to each node.
+    - **l**: Find the lowest (minimum) value at each node.
+    - **m**: Compute the mean of all values falling to each node [Default].
+    - **n**: Report the number of data points that were assigned to each node (this only
+      requires two input columns *x* and *y* as *z* is not consulted).
+    - **r**: Compute the rms of all values falling to each node.
+    - **S**: Compute the standard deviation of all values falling to each node.
+    - **s**: Simply keep the last data point that was assigned to each node.
+    - **u**: Find the upper (maximum) value at each node.
+    - **z**: Report sum of multiple values that belong to the same node.
 
 .. _-D:
 

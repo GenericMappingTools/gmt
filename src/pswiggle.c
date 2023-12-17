@@ -334,7 +334,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				}
 				break;
-			case 'G':	/* -G<fill>[+n][+p] */
+			case 'G':	/* -G<fill>[+n][+p] (repeatable) */
 				j = 0;	neg = pos = false;
 				if ((c = strstr (opt->arg, "+n+p")) || (c = strstr (opt->arg, "+p+n")) || (c = strstr (opt->arg, "+n")) || (c = strstr (opt->arg, "+p"))) {	/* Gave +n and/or +p */
 					pp = 0;	txt_a[0] = 0;

@@ -40,7 +40,7 @@ Description
 -----------
 
 **sphdistance** reads one or more ASCII [or binary] files (or standard
-input) containing lon, lat and performs the construction of Voronoi
+input) containing (*lon, lat*) and performs the construction of Voronoi
 polygons. These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.
 The Voronoi algorithm used is STRIPACK [*Renka*\ , 1997]. As an option,
@@ -91,11 +91,15 @@ Optional Arguments
 .. _-E:
 
 **-Ed**\|\ **n**\|\ **z**\ [*dist*]
-    Specify the quantity that should be assigned to the grid nodes.  By
-    default we compute distances to the nearest data point [**-Ed**].
-    Use **-En** to assign the ID numbers of the Voronoi polygons that each
-    grid node is inside, or use **-Ez** for a natural nearest-neighbor grid where
-    we assign all nodes inside the polygon the z-value of the center node.
+    Specify the quantity that should be assigned to the grid nodes.
+    Append one of three directives:
+
+    - **d**: Compute distances to the nearest data point [Default].
+    - **n**: Assign the ID numbers of the Voronoi polygons that each
+      grid node is inside.
+    - **z**: For a natural nearest-neighbor grid where we assign all nodes
+      inside the polygon the z-value of the center node.
+    
     Optionally, append the resampling interval along Voronoi arcs in spherical
     degrees [1].
 
@@ -110,7 +114,7 @@ Optional Arguments
 
 **-N**\ *nodetable*
     Read the information pertaining to each Voronoi
-    polygon (the unique node lon, lat and polygon area) from a separate
+    polygon (the unique node (*lon, lat*) and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
     headers of the output file]. Required if binary input via |-Q| is used.
 

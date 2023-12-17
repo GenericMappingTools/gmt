@@ -50,10 +50,12 @@ struct GPSGRIDDER_CTRL {
 		double value;
 		char *file;
 	} C;
-	struct GPSGRIDDER_E {	/* -E[<file>] */
+	struct GPSGRIDDER_E {	/* -E[<misfile>][+r<reportfile>] */
 		bool active;
+		bool report;
 		unsigned int mode;
-		char *file;
+		char *misfitfile;
+		char *reportfile;	/* Output file for log */
 	} E;
 	struct GPSGRIDDER_F {	/* -F<fudgefactor> or -Fa<mindist> */
 		bool active;
@@ -153,6 +155,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->E.misfitfile);
+	gmt_M_str_free (C->E.reportfile);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->N.file);
 	gmt_M_str_free (C->T.file);
@@ -162,7 +166,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [%s] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>[+r<reportfile>]] [-Fd|f<val>] [%s] "
 		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -197,9 +201,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+n Stop execution after reporting the eigenvalues - no solution is computed.");
 	GMT_Usage (API, -2, "Note: ~25%% of the total number of data constraints is a good starting point. "
 		"Without -C we use Gauss-Jordan elimination to solve the linear system.");
-	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
-	GMT_Usage (API, -2, "Evaluate spline at input locations and report statistics on the misfit. "
-		"If <misfitfile> is given then we write individual location misfits to that file.");
+	GMT_Usage (API, 1, "\n-E[<misfitfile>][+r<reportfile>]");
+	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
+		"Append <misfitfile> to save all data with two extra columns for model and misfit [<stdout>]. "
+		"If -C+i|c are used then we instead report the history of model variance and rms misfit.");
+	GMT_Usage (API, 3, "+r Write statistics to file <reportfile> [By default we write to <stderr> if -Vi is selected]");
 	GMT_Usage (API, 1, "\n-Fd|f<val>");
 	GMT_Usage (API, -2, "Fudging factor to avoid Green-function singularities. Choose among two directives:");
 	GMT_Usage (API, 3, "d: Append <del_radius> to add to all distances between nodes and points "
@@ -307,10 +313,14 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				}
 				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Check for deprecated syntax giving negative value */
 				break;
-			case 'E':	/* Evaluate misfit -E[<file>]*/
+			case 'E':	/* Evaluate misfit -E[<misfitfile>][+r<reportfile>] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				if (opt->arg[0]) {
-					Ctrl->E.file = strdup (opt->arg);
+				if ((c = strstr (opt->arg, "+r"))) {
+					Ctrl->E.reportfile = strdup (&c[2]);
+					c[0] = '\0';
+				}
+				if (opt->arg) {	/* Gave a misfit file [stdout] */
+					Ctrl->E.misfitfile = strdup (opt->arg);
 					Ctrl->E.mode = GPSGRIDDER_MISFIT;
 				}
 				break;
@@ -1146,6 +1156,20 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		std_u = (m > 1)  ? sqrt (std_u / (m-1.0)) : GMT->session.d_NaN;
 		std_v = (m > 1)  ? sqrt (std_v / (m-1.0)) : GMT->session.d_NaN;
 		std   = (m2 > 1) ? sqrt (std / (m2-1.0))  : GMT->session.d_NaN;
+		if (Ctrl->E.report) {	/* Want a log file of the evaluations instead of writing to stderr */
+			FILE *fp = NULL;
+			if ((fp = fopen (Ctrl->E.reportfile, "w")) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unable to create report file %s - aborting\n", Ctrl->E.reportfile);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			fprintf (fp, "# Total u,v Misfit & Variance Evaluation: Data\tModel\tExplained(%%)\tMisfit\tN\tMean\tStd.dev\tRMS%s\n", (Ctrl->W.active) ? "\tChi^2" : "");
+			if (Ctrl->W.active)	/* Add misfit chi^2 as extra column */
+				fprintf (fp, "%g\t%g\t%g\t%" PRIu64 "\t%g\t%g\t%g\t%g\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum, n_params, mean, std, rms, chi2u_sum + chi2v_sum);
+			else
+				fprintf (fp, "%g\t%g\t%g\t%" PRIu64 "\t%g\t%g\t%g\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum, n_params, mean, std, rms);
+			if (fp != stdout) fclose (fp);	/* Close the file */
+		}
+		/* Standard verbose report */
 		if (Ctrl->W.active && Ctrl->W.mode == GPSGRIDDER_GOT_SIG) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Separate u Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_uv, mean_u, std_u, rms_u, chi2u_sum);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Separate v Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_uv, mean_v, std_v, rms_v, chi2v_sum);
@@ -1157,12 +1181,13 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Total u,v Misfit : N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", n_params, mean, std, rms);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Variance evaluation: Data = %g\tModel = %g\tExplained = %5.1lf %%\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum);
+	
 		gmt_M_free (GMT, orig_u);
 		gmt_M_free (GMT, orig_v);
 		gmt_M_free (GMT, predicted);
 		gmt_M_free (GMT, A_orig);
 		if (Ctrl->E.mode == GPSGRIDDER_MISFIT) {	/* Want to write out prediction errors */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.misfitfile, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
@@ -1354,7 +1379,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				}
 				gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
 				for (k = 0; k < 9; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
-				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.misfitfile, E) != GMT_NOERROR) {
 					Return (API->error);
 				}
 				gmt_M_free (GMT, eigen);

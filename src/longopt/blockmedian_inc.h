@@ -22,21 +22,24 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
     /* separator, short_option, long_option,
-                                    short_directives, long_directives,
-                                    short_modifiers,  long_modifiers */
-    { 0, 'A', "fields",   "", "", "", "" },
-    { 0, 'C', "center",   "", "", "", "" },
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+    { 0, 'A', "fields",   "", "", "", "", GMT_TP_STANDARD },
+    { 0, 'C', "center",   "", "", "", "", GMT_TP_STANDARD },
     { 0, 'E', "extend",
                   "b,r,s",    "boxwhisker,record,source",
-                  "l,h",      "lower,higher" },
+                  "l,h",      "lower,higher",
+		  GMT_TP_STANDARD },
     GMT_G_OUTGRID_KW,
     GMT_I_INCREMENT_KW,
-    { 0, 'Q', "quick",    "", "", "", "" },
-    { 0, 'T', "quantile", "", "", "", "" },
+    { 0, 'Q', "quick",    "", "", "", "", GMT_TP_STANDARD },
+    { 0, 'T', "quantile", "", "", "", "", GMT_TP_STANDARD },
     { 0, 'W', "weights",
                   "i,o",      "in,out",
-                  "s",        "sigma" },
-    { 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+                  "s",        "sigma",
+		  GMT_TP_STANDARD },
+    { 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !BLOCKMEDIAN_INC_H */

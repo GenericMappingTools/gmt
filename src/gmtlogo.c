@@ -217,7 +217,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
-	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
+	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 5);
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LOGO, 2);
 	GMT_Usage (API, 3, "+h Set the <height> of the GMT logo [72p], or");
 	GMT_Usage (API, 3, "+w Set the <width> of the GMT logo [144p]");

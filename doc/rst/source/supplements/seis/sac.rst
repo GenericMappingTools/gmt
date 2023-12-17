@@ -90,8 +90,8 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *dx*\ [**/**\ *dy*]
-    Offset seismogram positions by the given mount *dx/dy* [Default is no offset].
+**-D**\ *dx*\ [/*dy*]
+    Offset seismogram positions by the given mount *dx*\ /*dy* [Default is no offset].
     If *dy* is not given it is set equal to *dx*.
 
 .. _-E:

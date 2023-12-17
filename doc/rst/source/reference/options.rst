@@ -68,7 +68,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-x <option_-x_core>`     | Set number of cores to be used in multi-threaded applications      |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-: <option_colon>`       | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |
+| :ref:`-: <option_colon>`       | Assume input geographic data are (*lat, lon*) and not (*lon, lat*) |
 +--------------------------------+--------------------------------------------------------------------+
 
 .. _option_-R:
@@ -722,7 +722,7 @@ Input columns selection: The **-i** option
 
 **Examples**
 
-For example, to use the 4th, 7th, and 3rd data column as the required *x,y,z*
+For example, to use the 4th, 7th, and 3rd data column as the required *x, y, z*
 to :doc:`/blockmean` you would specify **-i**\ 3,6,2 (since 0 is the first
 column). The chosen data columns will be used as given.
 

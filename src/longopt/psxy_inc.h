@@ -22,30 +22,36 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
-	          short_directives,          long_directives,
-	          short_modifiers,           long_modifiers */
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
 	{ 0, 'A', "straightlines",
 	          "m,p,x,y,r,t",             "mpfollow,pmfollow,xyalong,yxalong,rtalong,tralong",
-	          "",                        "" },
+	          "",                        "",
+		  GMT_TP_STANDARD },
 	GMT_C_CPT_KW,
-	{ 0, 'D', "offset",                  "", "", "", "" },
+	{ 0, 'D', "offset",                  "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'E', "errorbars",
 	          "x,y,X,Y",                 "xbar,ybar,boxwhisker,stemleaf",
-	          "a,A,c,n,w,p",             "asymmetrical,lhbounds,symbolfill,notch,capwidth,pen" },
+	          "a,A,c,n,w,p",             "asymmetrical,lhbounds,symbolfill,notch,capwidth,pen",
+		  GMT_TP_STANDARD },
 	{ 0, 'F', "connection",
 	          "c,n,p",                   "continuous,network,refpoint",
-	          "",                        "" },
-	{ 0, 'H', "scale",                   "", "", "", "" },
-	{ 0, 'I', "intensity",               "", "", "", "" },
+	          "",                        "",
+		  GMT_TP_STANDARD },
+	{ 0, 'H', "scale",                   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "intensity",               "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'L', "polygon",
 		  "",                        "",
-	          "b,d,D,x,y,p",             "bounds,symdev,asymdev,xanchor,yanchor,pen" },
+	          "b,d,D,x,y,p",             "bounds,symdev,asymdev,xanchor,yanchor,pen",
+		  GMT_TP_STANDARD },
 	{ 0, 'N', "noclip",
 	          "c,r",                     "clipnorepeat,repeatnoclip",
-	          "",                        "" },
-	{ 0, 'T', "ignoreinfiles",           "", "", "", "" },
-	{ 0, 'Z', "zvalue|level",            "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "",                        "",
+		  GMT_TP_STANDARD },
+	{ 0, 'T', "ignoreinfiles",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Z', "zvalue|level",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 
 #endif  /* !PSXY_INC_H */

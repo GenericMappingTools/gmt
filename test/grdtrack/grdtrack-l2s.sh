@@ -39,7 +39,7 @@ gmt $m $l2s --profile=25/10+azimuth:-7+connect --profile=LB+distance >> $b
 gmt $m $l2s --profile=CM+degrees+incr:0.5 --profile=RT,LB+length:4 >> $b
 gmt $m $l2s --profile=3/2+npoints:5000+origin:6 --profile=RT+radius:3.5 >> $b
 gmt $m $l2s --critical+balance+negative --critical+rms+zvalue:12 >> $b
-gmt $m $l2s --grid=/My/Big/File.grd --grid+list:someListfile.txt >> $b
+gmt $m $l2s --outgrid=/My/Big/File.grd --outgrid+list:someListfile.txt >> $b
 gmt $m $l2s --noskip >> $b
 gmt $m $l2s --stack=average+values --stack=median+deviations --stack=mode >> $b
 gmt $m $l2s --stack=lower+residuals --stack=lowerpos+save:savefile >> $b

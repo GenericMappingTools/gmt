@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-D|\ [*east*] ]
-[ |-Q|\ *mode*\ [*options*] ]
+[ |-Q|\ **g**\|\ **l**\|\ **p**\|\ **s**\ [*args*] ]
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
@@ -81,28 +81,24 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *mode*\ [*options*]
+**-Q**\ **g**\|\ **l**\|\ **p**\|\ **s**\ [*args*]
     Specify one of four ways to calculate tension factors to preserve
     local shape properties or satisfy arc constraints [Default is no
-    tension].
-**-Qp**
-    Use **p**\ iecewise linear interpolation; no tension is applied.
-**-Ql**
-    Smooth interpolation with **l**\ ocal gradient estimates.
-**-Qg**\ [*N*/*M*/*U*]
-    Smooth interpolation with **g**\ lobal gradient estimates. You may
-    optionally append *N*/*M*/*U*, where *N* is the number of
-    iterations used to converge at solutions for gradients when variable
-    tensions are selected (e.g., |-T| only) [3], *M* is the number of
-    Gauss-Seidel iterations used when determining the global gradients
-    [10], and *U* is the maximum change in a gradient at the last
-    iteration [0.01].
-**-Qs**\ [*E*/*U*/*N*]
-    Use **s**\ moothing. Optionally append *E*/*U*/*N* [/0/0/3], where *E* is Expected
-    squared error in a typical (scaled) data value, and *U* is Upper
-    bound on weighted sum of squares of deviations from data. Here, *N* is the number of
-    iterations used to converge at solutions for gradients when variable
-    tensions are selected (e.g., |-T| only) [3]
+    tension].  Choose among these directives:
+
+    - **g**: Smooth interpolation with global gradient estimates. You may
+      optionally append *N*/*M*/*U*, where *N* is the number of
+      iterations used to converge at solutions for gradients when variable
+      tensions are selected (e.g., |-T| only) [3], *M* is the number of
+      Gauss-Seidel iterations used when determining the global gradients
+      [10], and *U* is the maximum change in a gradient at the last iteration [0.01].
+    - **l**: Select smooth interpolation with local gradient estimates.
+    - **p**: Use piecewise linear interpolation; no tension is applied.
+    - **s**: Use smoothing. Optionally append *E*/*U*/*N* [/0/0/3], where *E* is Expected
+      squared error in a typical (scaled) data value, and *U* is Upper
+      bound on weighted sum of squares of deviations from data. Here, *N* is the number of
+      iterations used to converge at solutions for gradients when variable
+      tensions are selected (e.g., |-T| only) [3]
 
 .. _-T:
 

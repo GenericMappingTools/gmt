@@ -60,20 +60,20 @@ Required Arguments
 .. _-D:
 
 **-D**\ *flag*
-    Distance *flag* (0-4) determines how grid (x,y) relates to filter *width*, as follows:
+    Distance *flag* (0-4) determines how grid (*x, y*) relates to filter *width*, as follows:
 
-    - *flag* = 0: grid (x,y) in same units as *width*, Cartesian distances.
-    - *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian distances.
-    - *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
+    - *flag* = 0: grid (*x, y*) in same units as *width*, Cartesian distances.
+    - *flag* = 1: grid (*x, y*) in degrees, *width* in kilometers, Cartesian distances.
+    - *flag* = 2: grid (*x, y*) in degrees, *width* in km, dx scaled by
       cos(middle y), Cartesian distances.
 
     The above options are fastest because they allow weight matrix to be
     computed only once. The next two options are slower because they
     recompute weights for each latitude.
 
-    - *flag* = 3: grid (x,y) in degrees, *width* in km, dx scaled by
+    - *flag* = 3: grid (*x, y*) in degrees, *width* in km, dx scaled by
       cosine(y), Cartesian distance calculation.
-    - *flag* = 4: grid (x,y) in degrees, *width* in km, Spherical distance
+    - *flag* = 4: grid (*x, y*) in degrees, *width* in km, Spherical distance
       calculation.
 
 .. _-F:

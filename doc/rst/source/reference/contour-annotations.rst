@@ -3,10 +3,10 @@ Annotation of Contours and "Quoted Lines"
 
 The GMT programs :doc:`/grdcontour` (for
 data given as 2-dimensional grids) and
-:doc:`/contour` (for *x,y,z* tables) allow
+:doc:`/contour` (for *x, y, z* tables) allow
 for contouring of data sets, while :doc:`/plot`
-and :doc:`/plot3d` can plot lines based on *x,y*-
-and *x,y,z*-tables, respectively. In both cases it may be necessary to
+and :doc:`/plot3d` can plot lines based on *x, y*
+and *x, y, z* tables, respectively. In both cases it may be necessary to
 attach labels to these lines. Clever or optimal placements of labels is
 a very difficult topic, and GMT provides several algorithms for this
 placement as well as complete freedom in specifying the attributes of

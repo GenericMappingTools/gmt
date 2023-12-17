@@ -128,7 +128,7 @@ Optional Arguments
 Examples
 --------
 
-To create a CVA image from the Pacific (x,y,z,r,t) data in the file
+To create a CVA image from the Pacific (*x, y, z, r, t*) data in the file
 seamounts.txt, using the DC85.txt Euler poles, run
 
 ::

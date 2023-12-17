@@ -1110,7 +1110,7 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 	int k, mjd, year, month, day, hour, min;
 	uint32_t row, col, n_columns = 0, n_rows = 0;
 	size_t ij_n = 0, ij_e = 0, ij_u = 0, n_inc = 0, e_inc = 0, u_inc = 0;
-	float *grd_n, *grd_e, *grd_u;
+	gmt_grdfloat *grd_n, *grd_e, *grd_u;
 	double fmjd, xsta[3], rsun[3], etide[3], rmoon[3];
 	double lat, ut, vt, wt, *lons;
 	double west = 0, south = 0, x_inc = 0, y_inc = 0;
@@ -1122,21 +1122,21 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 		e_inc = 1;
 	}
 	else
-		grd_e = (float *)malloc (1 * sizeof (float));
+		grd_e = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	if (Ctrl->G.do_north) {
 		grd_n = Grid[Y_COMP]->data;
 		n_inc = 1;
 	}
 	else
-		grd_n = (float *)malloc (1 * sizeof (float));
+		grd_n = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	if (Ctrl->G.do_up) {
 		grd_u = Grid[Z_COMP]->data;
 		u_inc = 1;
 	}
 	else
-		grd_u = (float *)malloc (1 * sizeof (float));
+		grd_u = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	/* Get header params. Since all three have the same dims we stop when we find the first grid required */
 	for (k = 0; k < N_COMPS; k++) {
@@ -1171,9 +1171,9 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 			earthtide_detide (xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
 			earthtide_rge (lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
-			grd_n[ij_n] = (float)vt;
-			grd_e[ij_e] = (float)ut;
-			grd_u[ij_u] = (float)wt;
+			grd_n[ij_n] = (gmt_grdfloat)vt;
+			grd_e[ij_e] = (gmt_grdfloat)ut;
+			grd_u[ij_u] = (gmt_grdfloat)wt;
 			ij_n += n_inc;
 			ij_e += e_inc;
 			ij_u += u_inc;

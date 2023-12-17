@@ -127,8 +127,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If no file(s) is given, standard input is read.");
 	GMT_Usage (API, 1, "\n-A[m][<conf>]|<vector>");
 	GMT_Usage (API, -2, "Single primary vector, given as lon/lat, r/theta, or x/y[/z].  No tables will be read. "
-		"Alternatively, give -Am to compute a single primary vector as the mean of the input vectors. "
-		"The confidence ellipse for the mean vector is determined (95%% level); "
+		"Alternatively, give -Am to compute the single primary vector as the mean of the input vectors. "
+		"The confidence ellipse for the mean vector will be determined (95%% level); "
 		"optionally append a different confidence level in percent.");
 	GMT_Usage (API, 1, "\n-C[i|o]");
 	GMT_Usage (API, -2, "Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta. "
@@ -153,7 +153,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "t: Translate input vectors to points a distance <dist> away in the azimuth <azim>. "
 		"Append <azim>/<dist> for a fixed set of azimuth and distance for all points, "
 		"otherwise we expect to read <azim>, <dist> from the input file; append a unit [e]. "
-		"A negative distance implies a flip of 180 degrees.;");
+		"A negative distance implies a flip of 180 degrees.");
 	GMT_Usage (API, 3, "x: Compute cross-product(s) with secondary vector (see -S).");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 2 [or 3; see -C, -fg] input columns.");

@@ -199,7 +199,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPLIT_CTRL *Ctrl, struct GMT_O
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, n_errors = 0, n_outputs = 0;
+	unsigned int j, n_errors = 0;
 	char txt_a[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -281,7 +281,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPLIT_CTRL *Ctrl, struct GMT_O
 							n_errors++;
 						}
 						if (opt->arg[j] == 'z') Ctrl->Q.z_selected = true;
-						n_outputs++;
 					}
 					else {
 						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Too many output columns selected: Choose from -Qxyzdg\n");

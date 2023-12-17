@@ -102,7 +102,7 @@ struct PSCOUPE_CTRL {
 		bool zerotrace;
 		int symbol;
 	} S;
-	struct PSCOUPE_T {	/* -T<nplane>[/<pen>] */
+	struct PSCOUPE_T {	/* -T[<plane>][+p<pen>] */
 		bool active;
 		unsigned int n_plane;
 		struct GMT_PEN pen;
@@ -441,7 +441,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"%s %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] "
 		"[-C<cpt>] [-D[+c]%s] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
 		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-N] %s%s "
-		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-Q] [-T[<nplane>][+p<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, SEIS_LINE_SYNTAX, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT,
 		API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -532,9 +532,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-T<plane>[/<pen>]");
 	GMT_Usage (API, -2, "Draw specified nodal <plane>(s) and circumference only to provide a transparent beach ball "
 		"using the current pen (see -W; or append alternative pen):");
+	GMT_Usage (API, 3, "0: Both nodal planes are plotted [Default].");
 	GMT_Usage (API, 3, "1: Only the first nodal plane is plotted.");
 	GMT_Usage (API, 3, "2: Only the second nodal plane is plotted.");
-	GMT_Usage (API, 3, "0: Both nodal planes are plotted.");
 	GMT_Usage (API, -2, "Note: If moment tensor is required, nodal planes overlay moment tensor.");
 	GMT_Option (API, "U,V");
 	GMT_Usage (API, 1, "\n-W<pen>");
@@ -989,11 +989,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
-				if (strlen (opt->arg) > 2 && gmt_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
+				if (opt->arg[0] == '\0') continue;	/* Default plane and pen implied; move on */
+				if ((p = strstr (opt->arg, "+p")) && gmt_getpen (GMT, &p[2], &Ctrl->T.pen)) {	/* Modern modifier for pen but failed parsing the pen */
 					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
 				}
+				else if ((p = strchr (opt->arg, '/')) && gmt_getpen (GMT, &p[1], &Ctrl->T.pen)) {
+					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
+					n_errors++;
+				}
+				if (strchr ("012", opt->arg[0])) Ctrl->T.n_plane = opt->arg[0] - '0';
 				break;
 			case 'W':	/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);

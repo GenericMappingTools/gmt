@@ -778,7 +778,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) {
-		if (error == NOT_REALLY_AN_ERROR) Return (0);
+		if (error == NOT_REALLY_AN_ERROR) Return (GMT_NOERROR);
 		Return (error);
 	}
 

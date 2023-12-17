@@ -178,8 +178,8 @@
 #define GMT_ITEM_GRID		3
 #define GMT_N_AXIS_ITEMS	4
 
-/* Used by gmtinit_find_argument */
-#define GMT_FINDARG_COLON	0
+/* Used by gmtinit_find_longoptmatch */
+#define GMT_FINDLOM_COLON	0
 
 /* Special command option to trigger a long-options to short-options translation test */
 #define GMT_L2STRANSTEST	"l2stranstest"
@@ -615,6 +615,7 @@ GMT_LOCAL char * gmtinit_colon_digexcl (char *string) {
 	return NULL;
 }
 
+#if 0	/* Not in use yet, Roger, or this is my old abandoned stuff? */
 /*! . */
 GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predexcl) {
 	/* Version of strchr() that will ignore any instance of target
@@ -626,6 +627,7 @@ GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predex
 		if ((*c == target) && ((c == string) || (*(c-1) != predexcl))) return c;
 	return NULL;
 }
+#endif
 
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
@@ -656,49 +658,221 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *A
 }
 
 /*! . */
-GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, char *shortlist, char *textin, int sepcode, char *argout) {
-	/* Examine textin for a long-option directive or modifier string which is an
-	 * element of longlist, a single comma-subdivided string which concatenates
-	 * a sequence of long-option string tokens, returning up to two values, namely
-	 * (i) the short-option character (from the similarly comma-subdivided shortlist
-	 * argument string) corresponding to the long-option string found within textin
-	 * (or 0 if none found) which is returned as the return value of the function,
-	 * and (ii) any directive or modifier argument following the long-option string
-	 * found within textin (or the empty null-terminated string if none is found)
-	 * which is copied into the caller-preallocated argout. The sepcode argument is
-	 * constrained to be GMT_FINDARG_COLON to indicate that ':' is being used as a
-	 * token separator between the long-option string found within textin and any
-	 * argument which follows it, e.g., "filterlen:12". (Note that earlier versions
-	 * of this code utilized alternate separators, e.g., GMT_FINDARG_EQUAL, as well
-	 * as multi-character separators, e.g., GMT_FINDARG_COLONEQUAL, and the code
-	 * structure facilitating this variety of separators has been preserved here
-	 * for the time being.) */
-	unsigned int k = 0, longlistpos, aliaslistpos;
-	char *c, m;
+GMT_LOCAL int gmtinit_find_longoptmatch (struct GMTAPI_CTRL *API, char *longlist, char *shortlist, char *textin, int sepcode, unsigned int multidir, char *codechars, unsigned int codecharsbufsz, char *argout) {
+	/* Attempt to match the leading portion of textin with a long-option
+	 * directive or modifier string which is an element of longlist, a
+	 * single comma-subdivided string which concatenates a sequence of
+	 * long-option string tokens. An attempt to match multiple sequential
+	 * comma-separated substrings of textin with multiple distinct
+	 * long-option string tokens within longlist will be made when multidir
+	 * is not GMT_MULTIDIR_DISABLE.
+	 *
+	 * textin is presumed to be a string in one of the following forms:
+	 *
+	 *   miscstring
+	 *   llelementN[:miscstring]
+	 *   llelementJ,[llelementK,...,]llelementN[:miscstring]
+	 *
+	 * where llelementJ, llelementK, ... and llelementN are elements (in
+	 * no particular ordering) of longlist, and miscstring is some
+	 * miscellaneous string which is either by itself (the first form) or
+	 * follows one or more longlist elements from which it is separated by
+	 * a colon. (The latter character is actually passed as a configurable
+	 * sepcode argument which, as of this writing, is always a colon.) Note
+	 * that the first form is merely a miscellaneous string which matches
+	 * no element of longlist, while the second and third forms have one or
+	 * more matches with longlist optionally followed by a colon and an
+	 * arbitrary string. The third form is processable only when multidir
+	 * is not GMT_MULTIDIR_DISABLE.
+	 *
+	 * Sample longlist and shortlist arguments might, for example, be
+	 *
+	 *   longlist:  "red,green,blue,yellow,indigo"
+	 *   shortlist: "r,g,b,y,i"
+	 *
+	 * Note that each of the comma-separated elements of any shortlist
+	 * must always be a single character. Whenever a match with an element
+	 * of longlist is found, the corresponding single-character element of
+	 * shortlist is appended to the initially empty codechars array. Commas
+	 * will be inserted between any such characters written to codechars in
+	 * the case that multidir is GMT_MULTIDIR_COMMA. The return value of
+	 * the routine itself will be either -1 (in case of error) or the
+	 * number of characters copied into codechars (including any commas but
+	 * not including the null terminator character which will always be
+	 * present). Thus, assuming the example longlist and shortlist provided
+	 * above, the following textin examples will result in function return
+	 * values and codechars output as follows:
+	 *
+	 *   textin		retval	codechars
+	 *   ------		------	---------
+	 *   jibberjabber	0	[ null string ]
+	 *   red		1	r
+	 *   blue:23skidoo	1	b
+	 *   blue,green:666	2	bg (if multidir is GMT_MULTIDIR_NOCOMMA)
+	 *   blue,green:666	3	b,g (if multidir is GMT_MULTIDIR_COMMA)
+	 *
+	 * The routine will also return into its argout argument (i) the full
+	 * contents of textin if no long-option string match is found (or there
+	 * is an error), or (ii) any trailing portion of textin following the
+	 * colon sepcode character after the entirety of the preceding portion
+	 * of textin has been matched to one or more elements of longlist.
+	 * Thus, the same textin examples above will result in argout contents
+	 * as follows:
+	 *
+	 *   textin		argout
+	 *   ------		------
+	 *   jibberjabber	jibberjabber
+	 *   red		[ null string ]
+	 *   blue:23skidoo	23skidoo
+	 *   blue,green:666	666 (if multidir is not GMT_MULTIDIR_DISABLE)
+	 *
+	 */
+
+	unsigned int k, nllmatches, titokenmatch;
+	int ncodechars, charsneeded;
+	unsigned int textinpos, longlistpos, aliaslistpos;
+	char *c;
+	char textinitem[GMT_LEN256] = {""};
 	char longlistitem[GMT_LEN256] = {""};
 	char aliaslistitem[GMT_LEN256] = {""};
 	gmt_M_unused (API);
+
+	/* output buffer arguments sanity check */
+	if ((codechars == 0) || (codecharsbufsz < 2) || (argout == 0)) {
+		strcpy (argout, textin);
+		return -1;
+	}
+
+	ncodechars = 0;
+	for (k = 0; k < codecharsbufsz; k++) codechars[k] = '\0';
+	argout[0] = '\0';
+
+	/* multi-directive argument sanity check */
+	switch (multidir) {
+	case GMT_MULTIDIR_DISABLE:
+	case GMT_MULTIDIR_NOCOMMA:
+	case GMT_MULTIDIR_COMMA:
+		break;
+	default:
+		strcpy (argout, textin);
+		return -1;
+	}
+
+	/* Previous versions of this code used more than one separator type,
+	   including two-character separators (e.g., ':='). This has been
+	   simplified to use only a single colon as a separator as of this
+	   writing, but we retain the sepcode argument for now to allow for
+	   the possibility of a return to multiple separator types. */
 	switch (sepcode) {
-	case GMT_FINDARG_COLON:
+	case GMT_FINDLOM_COLON:
 		if ((c = gmtinit_colon_digexcl (textin))) c[0] = '\0';	/* null out the ':' to hide what follows for now */
 		break;
 	default:				/* should never happen per normal caller invocation */
 		strcpy (argout, textin);
-		return 0;
+		return -1;
 	}
 
-	/* Search textin for a long-option string, setting m to that string's
-	   short-option character equivalent if found and 0 otherwise. */
-	longlistpos = m = 0;
-	while ((m == 0) && (gmt_strtok (longlist, ",", &longlistpos, longlistitem))) {	/* While unprocessed directives/modifiers to examine... */
-		aliaslistpos = 0;
-		while (gmt_strtok (longlistitem, " |", &aliaslistpos, aliaslistitem)) {
-			if (!strcmp (textin, aliaslistitem)) {	/* Match was found */
-				m = shortlist[k];	/* Assign the corresponding short directive/modifier to m and this stops the outer while loop */
-				break;
+	/* nllmatches is the number of matches we find with the one or more
+	   distinct long-option strings contained within textin and the elements
+	   of longlist. Note there can be multiple longoption strings within
+	   textin (and thus more than one match with elements of longlist) only
+	   when multidir is not GMT_MULTIDIR_DISABLE. Although this routine is
+	   called when looking for either a directive or modifier match, (i) in
+	   the former case the caller will set multidir to a value other than
+	   GMT_MULTIDIR_DISABLE only when the longoption translation entry
+	   declares support for multi-directives, while (ii) in the latter case
+	   the caller will always set multidir to GMT_MULTIDIR_DISABLE as there
+	   is no such thing as a multi-modifier. */
+	nllmatches = 0;
+
+	/* Try to match the leading part of textin (prior to any occurrence of
+	   sepcode) with a long-option string, incrementing nllmatches and
+	   setting an element of codechars to that string's short-option
+	   character equivalent if found. */
+
+	if (multidir == GMT_MULTIDIR_DISABLE) {
+		longlistpos = k = 0;
+		while ((nllmatches == 0) && gmt_strtok (longlist, ",", &longlistpos, longlistitem)) {	/* While remaining long-option strings in longlist to examine... */
+			aliaslistpos = 0;
+			while (gmt_strtok (longlistitem, " |", &aliaslistpos, aliaslistitem)) {
+				if (!strcmp (textin, aliaslistitem)) {	/* Match was found */
+					/* Indicate that a match was found by incrementing
+					   nllmatches (which will break the longlist
+					   tokenization loop), and copy the short-option
+					   character to codechars. (Note codechars buffer
+					   overrun not a concern here as only a single
+					   character will be added.) */
+					nllmatches++;
+					codechars[ncodechars++] = shortlist[k];
+					break;
+				}
+			}
+			k += 2;	/* Go to next char in comma-separated list of single characters (2 since we skip the commas) */
+		}
+	}
+
+	/* Here for multi-directive processing. This is essentially the same as
+	   the non-multi-directive processing case above except that (i) we now
+	   have an added outer loop that steps through the comma-separated
+	   multi-directive list of long-option strings in textin, and (ii)
+	   output buffer overrun is theoretically possible if exceedingly
+	   unlikely. Discovery of any unmatching comma-separated substring
+	   component of textin (prior to sepcode) will cause an error return
+	   even if an initial matched substring is found. */
+	else {
+		textinpos = 0;
+		while (gmt_strtok (textin, ",", &textinpos, textinitem)) {
+			titokenmatch = 0;
+			longlistpos = k = 0;
+			while (!titokenmatch && gmt_strtok (longlist, ",", &longlistpos, longlistitem)) {	/* While remaining long-option strings in longlist to examine... */
+				aliaslistpos = 0;
+				while (gmt_strtok (longlistitem, " |", &aliaslistpos, aliaslistitem)) {
+					if (!strcmp (textinitem, aliaslistitem)) {	/* Match was found */
+						/* Indicate that a match was found by incrementing
+						   nllmatches and setting titokenmatch (which will
+						   break the longlist tokenization loop), and copy
+						   the short-option character (possibly preceded by
+						   a comma) to codechars being careful to check for
+						   buffer overrun. */
+						titokenmatch = 1;
+						nllmatches++;
+						charsneeded = 1;
+						if ((nllmatches > 1) && (multidir == GMT_MULTIDIR_COMMA))
+							charsneeded++;
+						if (ncodechars < codecharsbufsz-charsneeded) {
+							if (charsneeded == 2) codechars[ncodechars++] = ',';
+							codechars[ncodechars++] = shortlist[k];
+						}
+						else {	/* highly unlikely buffer overrun */
+							if (c) {
+								switch (sepcode) {
+								case GMT_FINDLOM_COLON:
+									c[0] = ':';
+									break;
+								}
+							}
+							strcpy (argout, textin);
+							codechars[0] = '\0';
+							return -1;
+						}
+						break;
+					}
+				}
+				k += 2;	/* Go to next char in comma-separated list of single characters (2 since we skip the commas) */
+			}
+			if (!titokenmatch) { /* Error return for any textinitem match failure. */
+				if (c) {
+					switch (sepcode) {
+					case GMT_FINDLOM_COLON:
+						c[0] = ':';
+						break;
+					}
+				}
+				strcpy (argout, textin);
+				codechars[0] = '\0';
+				return -1;
 			}
 		}
-		k += 2;	/* Go to next char in comma-separated list of single characters (2 since we skip the commas) */
 	}
 
 	/* Note that if we found a sepcode within textin above (i.e., c is
@@ -707,13 +881,13 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	if (c) {
 
 		/* If we have located a directive or modifier via a
-		   long-options string match (i.e., m is non-null) then
-		   we copy the contents of textin which follow sepcode
+		   long-options string match (i.e., nllmatches is non-zero)
+		   then we copy the contents of textin which follow sepcode
 		   to argout and then restore the zeroed-out sepcode ... */
-		if (m) {
+		if (nllmatches > 0) {
 			strcpy (argout, &c[1]);
 			switch (sepcode) {
-			case GMT_FINDARG_COLON:
+			case GMT_FINDLOM_COLON:
 				c[0] = ':';
 				break;
 			}
@@ -724,7 +898,7 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 		   copy the entire original textin to argout. */
 		else {
 			switch (sepcode) {
-			case GMT_FINDARG_COLON:
+			case GMT_FINDLOM_COLON:
 				c[0] = ':';
 				break;
 			}
@@ -733,9 +907,9 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	}
 
 	/* If we have located a directive or modifier via a long-options
-	   string match (i.e., m is non-null) but there was no sepcode,
-	   then there is no post-directive/-modifier argument. */
-	else if (m)
+	   string match (i.e., nllmatches is non-zero) but there was no
+	   sepcode, then there is no post-directive/-modifier argument. */
+	else if (nllmatches > 0)
 		argout[0] = '\0';
 
 	/* If there was no directive, modifier or sepcode located
@@ -743,8 +917,13 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	else
 		strcpy (argout, textin);
 
-	/* Returns 0 if no directive/modifier was found, else the short-option directive/modifier character */
-	return m;
+	/* The function return value is the number of characters stored into
+	   codechars. This should always be one of (i) 0 if no directive or
+	   modifier long-option translation match was found, (ii) 1 if a
+	   single-directive or any modifier long-option translation match
+	   was found, or (iii) some value greater than 0 if a multi-directive
+	   long-option translation match was found. */
+	return ncodechars;
 }
 
 GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char separator, int k, int *sx) {
@@ -842,7 +1021,7 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 	/* Loop over given options and replace any recognized long-form --parameter[=value] arguments
 	 * with the corresponding classic short-format version -<code>[value]. Specifically, long-format is defined as
 	 *
-	 * --longoption[=<directive>[:<arg>]][+<mod1>[:<arg1>]][+<mod2>[:<arg2>]][...]
+	 * --longoption[=<<directive>[:<arg>]>|<value>][+<mod1>[:<arg1>]][+<mod2>[:<arg2>]][...]
 	 *
 	 * For options that take more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
 	 * the section
@@ -855,11 +1034,15 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_KEYWORD_DICTIONARY *kw = NULL;
-	char new_arg[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""}, copy[GMT_BUFSIZ] = {""};
-	char *directive = NULL, *modifier = NULL, code = 0, rstchar, sep[2] = {'\0', '\0'};
+	char new_arg[GMT_LEN512] = {""}, add[GMT_LEN128] = {""}, codechars[GMT_LEN64] = {""};
+	char argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""}, copy[GMT_BUFSIZ] = {""};
+	char *directive = NULL, *modifier = NULL, rstchar, sep[2] = {'\0', '\0'};
+	int ncodechars = 0;
+	unsigned int codecharsbufsz = GMT_LEN64;
 	int k, n_sections, section, sect_start = 0, sect_end = 0;
 	bool transtest = false, modified = false;
 	bool got_directive = false, got_modifier = false;
+	unsigned int multidir;
 
 	if (options == NULL) return;	/* Nothing to process */
 
@@ -882,20 +1065,20 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 		strcpy (orig, opt->arg);			/* Retain a copy of current option arguments */
 		strcpy (copy, opt->arg);			/* Retain another copy of current option arguments */
 		gmtinit_handle_escape_text (copy, '+', +1);	/* Hide any escaped +? sequences */
-		directive = strchr (copy, '=');			/* Get location of equal sign preceding directive if present */
+		directive = strchr (copy, '=');			/* Get location of equal sign preceding directive or value if present */
 		modifier = gmtinit_getfirstmodifier (copy);	/* Get location of first modifier if present */
 		got_directive = got_modifier = false;		/* Reset these to be false for this option */
 
-		/* Check for the case where the = is part of a modifier, hence not a value or directive */
+		/* Check for the case where the first = follows a modifier, hence not a trigger for a directive or value */
 		if (directive && modifier && ((directive - copy) > (modifier - copy)))
-			directive = NULL;			/* The = is part of a modifier and not the directive, so we ignore it for now */
+			directive = NULL;			/* The = follows a modifier, so we ignore it for now */
 		if (directive) directive[0] = '\0', got_directive = true;	/* Zero out any pre-directive = and remember if directive was found */
 		if (modifier) modifier[0] = '\0', got_modifier = true;	/* Zero out any first pre-modifier + and remember if modifier was found */
 
-		/* At this point both the = preceding a directive (if any)
-		   and the + preceding the first modifier (if any) have been
-		   zeroed out and we can thus guarantee that the leading
-		   longoption string (if any) is null-terminated.
+		/* At this point both the = preceding a directive or value
+		   (if any) and the + preceding the first modifier (if any)
+		   have been zeroed out and we can thus guarantee that the
+		   leading longoption string (if any) is null-terminated.
 		   Note as well that as the leading + of any first
 		   modifier has been zeroed out it is also guaranteed
 		   that the directive, if any, is also null-terminated. */
@@ -908,6 +1091,19 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 		}
 
 		/* Here we found a matching long-format option name, returned as the kw[k] struct element. */
+
+		/* Set variables to control particular aspects of the translation as dictated
+		   by the bitflags of kw[k].transproc_mask. Note that multi-directive support
+		   is disallowed for multi-section options. */
+		if ((kw[k].transproc_mask & GMT_TP_MULTIDIR) && !kw[k].separator) {
+			if (kw[k].transproc_mask & GMT_TP_MDCOMMA)
+				multidir = GMT_MULTIDIR_COMMA;
+			else
+				multidir = GMT_MULTIDIR_NOCOMMA;
+		}
+		else
+			multidir = GMT_MULTIDIR_DISABLE;
+
 		/* We now do the long to short option substitution */
 
 		rstchar = '=';	/* When we remove the '=' we will restore it, but in multi-sections we will instead restore the separator character after the first section */
@@ -935,9 +1131,9 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 			}
 
 			if (got_directive) {	/* Process a <directive>[:<arg>] */
-				if ((code = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &directive[1], GMT_FINDARG_COLON, argument)))	/* Get the directive, or return 0 if it is an argument instead */
-					sprintf (add, "%c%s", code, argument);	/* Prepend the directive code before the argument */
-				else	/* Just got an argument; no directive code */
+				if ((ncodechars = gmtinit_find_longoptmatch (API, kw[k].long_directives, kw[k].short_directives, &directive[1], GMT_FINDLOM_COLON, multidir, codechars, codecharsbufsz, argument)) > 0)	/* Get the directive(s); returns 0 if argument only, or -1 on error */
+					sprintf (add, "%s%s", codechars, argument);	/* Prepend the directive code(s) before the argument */
+				else	/* Just got an argument (no directive code(s)) or an error */
 					sprintf (add, "%s", argument);
 				strcat (new_arg, add);	/* Add the string to the growing short-format option argument */
 				directive[0] = rstchar;	/* Put back the zeroed-out = or section-separator character */
@@ -947,8 +1143,8 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 				char item[GMT_LEN256] = {""};
 				modifier[0] = '+';	/* Put back the plus sign for the first modifier */
 				while ((gmtinit_copynextmodifier (modifier, &pos, item))) {	/* Process each +<modifier>[:<arg>] */
-					if ((code = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, GMT_FINDARG_COLON, argument)))	/* Get the modifier, or return 0 if unrecognized */
-						sprintf (add, "+%c%s", code, argument);	/* Append modifier with argument next to it (it may be empty) */
+					if ((ncodechars = gmtinit_find_longoptmatch (API, kw[k].long_modifiers, kw[k].short_modifiers, item, GMT_FINDLOM_COLON, GMT_MULTIDIR_DISABLE, codechars, codecharsbufsz, argument)) > 0)	/* Get the modifier; returns 0 if unrecognized or -1 on error */
+						sprintf (add, "+%s%s", codechars, argument);	/* Append modifier with argument next to it (it may be empty) */
 					else {	/* Well, something does not align */
 						GMT_Report (API, GMT_MSG_WARNING, "Long-modifier form %s for option -%c not recognized!\n", item, opt->option);
 						add[0] = '\0';	/* Pass nothing */
@@ -2623,8 +2819,6 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 
 	if (!GMT->common.J.active) {
 		gmt_set_missing_options (GMT, "J");	/* If mode is modern and -J exist in the history, and if an overlay we may add these from history automatically */
-		if (!GMT->common.J.active)
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "The -p option works best in consort with -J (and -R or a grid)\n");
 	}
 	switch (item[0]) {
 		case 'x': GMT->current.proj.z_project.view_plane = GMT_X + GMT_ZW; l++; break;
@@ -2680,6 +2874,8 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 	else
 		GMT->common.p.z_rotation = az;
 
+	if (!GMT->common.J.active && el < 90.0)
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "The -p option works best in consort with -J (and -R or a grid)\n");
 	return (error);
 }
 
@@ -3008,7 +3204,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 	char fmt[GMT_LEN64] = {""};
 	strncpy (GMT->current.setting.format_float_out_orig, value, GMT_LEN256-1);
 	if (strchr (value, ',')) {
-		unsigned int start = 0, stop = 0, error = 0;
+		unsigned int start = 0, stop = 0;
 		char *p = NULL;
 		/* Look for multiple comma-separated format statements of type [<cols>:]<format>.
 		 * Last format also becomes the default for unspecified columns */
@@ -3020,7 +3216,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 				else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
 					start = stop = atoi (fmt);
 				else				/* Something bad */
-					error++;
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad column specification: %s - expect trouble\n", fmt);
 				p++;	/* Move to format */
 				for (k = start; k <= stop; k++)
 					GMT->current.io.o_format[k] = strdup (p);
@@ -8396,7 +8592,8 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	}
 	else {
 		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
-			"Or, specify +an (line-normal) or +ap (line-parallel) [Default].", feature[kind]);
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. If p<angle> is appended then "
+			"<angle> is used as a fixed deviation from the line orientation", feature[kind]);
 	}
 	if (kind < 2) GMT_Usage (API, indent, "+c Set clearance <dx>[/<dy>] between label and text box [15%%].");
 	GMT_Usage (API, indent, "+d Debug mode which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
@@ -8677,7 +8874,7 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 			"or the mirror opposite of <refpoint> (with -J), or %s (otherwise).", type[kind], just[kind]);
 		GMT_Usage (API, 3+shift, "+o Offset %s from <refpoint> by <dx>[/<dy>] in direction implied by <justify> [0/0].", type[kind]);
 	}
-	else
+	else if ((part & 5) == 0)
 		GMT_Usage (API, -(2+shift), "All systems except x require the -R and -J options to be set. ");
 }
 
@@ -8864,18 +9061,19 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
 	char *syntax = (mode) ? GMT_SEGMENTIZE3 : GMT_SEGMENTIZE4;
+	char *module = (GMT->current.setting.run_mode == GMT_MODERN) ? "plot" : "psxy";
 	GMT_Usage (API, 1, "\n-%c%s", option, syntax);
 	GMT_Usage (API, -2, "Alter the way points are connected and the data are segmented. "
 		"Append one of %s line connection schemes: ", count[mode]);
 	GMT_Usage (API, 3, "c: %s continuous line segments for each group [Default].", verb[mode]);
-	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
 	GMT_Usage (API, 3, "n: %s networks of line segments between all points in each group.", verb[mode]);
-	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
+	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
+	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for the %s -Sv|=<size>+s option", module);
 	GMT_Usage (API, 2, "Optionally, append one of five ways to define a \"group\":");
 	GMT_Usage (API, 3, "a: Data set is considered a single group; reference point is first point in the group.");
-	GMT_Usage (API, 3, "f: Each file is a separate group; reference point is reset to first point in the group.");
-	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
 	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group.");
+	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
+	GMT_Usage (API, 3, "t: Each table is a separate group; reference point is reset to first point in the group.");
 	GMT_Usage (API, 3, "Alternatively, append a fixed external reference point instead.");
 }
 
@@ -9270,10 +9468,12 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		gmt_DCW_free (GMT, &info);
 		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
-		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+		if (GMT->current.setting.format_geo_out[0] == 'D')			/* [-180 180]*/
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
-		else
+		else if (GMT->current.setting.format_geo_out[0] == '+')		/* [0 360]*/
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		else if (GMT->current.setting.format_geo_out[0] == '-')		/* [-360 0]*/
+			GMT->current.io.geo.range = GMT_IS_M360_TO_0_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.R.via_polygon = true;
 		return (GMT_NOERROR);
@@ -9976,7 +10176,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S) {
 	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|t|s|r] or -Fp<origin>
+	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|r|s|t] or -Fp<origin>
 	 * where <scheme> is c = continuous [Default], n = network, r = reference point, and v = vectors.
 	 * and impact is a = all tables, t = per table, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
@@ -9997,8 +10197,8 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
 	 *   file, or the first point in each segment to update the actual reference point.
 	 * 4) -Fv: Vectorize.  Here, consecutive points are turned into vector segments such as used
-	 *   by psxy -Sv+s or external applications.  Again, appending a|t|s controls if we should
-	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|t|s is allowed.
+	 *   by gmt plot -Sv+s or external applications.  Again, appending a|s|t controls if we should
+	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|t|s is allowed in plot.
 	 */
 
 	unsigned int k, errors = 0;
@@ -10034,8 +10234,10 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Only -Fp may accept refpoint = r\n", option);
 		errors++;
 	}
-	if (mode == 1 && S->method == SEGM_VECTOR)	/* Only available for gmtconvert */
+	if (mode == 1 && S->method == SEGM_VECTOR) {	/* Only available for gmtconvert */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Method v is only available in gmt select\n", option);
 		errors++;
+	}
 	return (errors);
 }
 
@@ -13780,7 +13982,7 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 			strcat (text, add_mods);
 		}
 	}
-	else if (F->rgb[0] < -0.5)
+	else if (F->rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, F->rgb)) >= 0)
 		snprintf (text, PATH_MAX+GMT_LEN256, "%s", gmt_M_color_name[i]);
@@ -13800,7 +14002,7 @@ char *gmt_putcolor (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	int i;
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, rgb)) >= 0)
 		snprintf (text, GMT_LEN256, "%s", gmt_M_color_name[i]);
@@ -13818,10 +14020,28 @@ char *gmt_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(rgb,0), gmt_M_t255(rgb,1), gmt_M_t255(rgb,2));
+	gmtinit_append_trans (text, rgb[3]);
+	return (text);
+}
+
+/*! Creates t the string shade corresponding to the RGB triplet */
+char *gmt_putgray (struct GMT_CTRL *GMT, double *rgb) {
+
+	static char text[GMT_LEN256] = {""};
+	gmt_M_unused(GMT);
+
+	if (rgb[0] < -0.5)	/* Skip it */
+		strcpy (text, "-");
+	else if (gmt_M_is_gray(rgb))
+		snprintf (text, GMT_LEN256, "%.5g", gmt_M_t255(rgb,0));
+	else {	/* Must convert to gray */
+		double gray = gmt_M_yiq (rgb);
+		snprintf (text, GMT_LEN256, "%.5g", gray);
+	}
 	gmtinit_append_trans (text, rgb[3]);
 	return (text);
 }
@@ -13832,7 +14052,7 @@ char *gmt_puthex (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "#%02x%02x%02x", urint (gmt_M_t255(rgb,0)), urint (gmt_M_t255(rgb,1)), urint (gmt_M_t255(rgb,2)));
@@ -13846,7 +14066,7 @@ char *gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (cmyk[0] < -0.5)
+	if (cmyk[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g/%.5g", 100.0*gmt_M_q(cmyk[0]), 100.0*gmt_M_q(cmyk[1]), 100.0*gmt_M_q(cmyk[2]), 100.0*gmt_M_q(cmyk[3]));
@@ -13860,7 +14080,7 @@ char *gmtlib_puthsv (struct GMT_CTRL *GMT, double *hsv) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (hsv[0] < -0.5)
+	if (hsv[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g-%.5g-%.5g", gmt_M_q(hsv[0]), gmt_M_q(hsv[1]), gmt_M_q(hsv[2]));
@@ -14133,7 +14353,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	gmtlib_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
+	gmtlib_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
 	gmtinit_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
@@ -16438,7 +16658,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->current.io.col[GMT_OUT][i].col = GMT->current.io.col[GMT_OUT][i].order = i;	/* Default order */
 
 	for (i = 0; i < 2; i++) GMT->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
-	for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
+	if (GMT->hidden.func_level == 0)	/* Only when top-level module ends. Doesn't affect CLI but useful for externals */
+		for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
 	gmt_M_memset (GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
 	gmt_M_memset (GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */
