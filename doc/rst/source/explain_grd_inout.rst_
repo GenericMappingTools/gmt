@@ -46,13 +46,11 @@ double quotes.
 *ingrid*\ [=\ *ID*\|\ ?\ *varname*][**+b**\ *band*][**+d**\ *divisor*][**+n**\ *invalid*]\
 [**+o**\ *offset*][**+s**\ *scale*]
 
-    |Add_ingrid| Optionally, append =\ *ID* for reading a specific file
+    Optionally, append =\ *ID* for reading a specific file
     format [Default is =\ *nf*] or ?\ *varname* for a specific netCDF variable
-    [Default is the first 2-D grid found by GMT]
-    (:ref:`See full description <grd_inout_full>`). The following modifiers are
-    supported:
+    [Default is the first 2-D grid found by GMT]. The following modifiers are supported:
 
-       - **+b** - Select a *band* (for images only) [Default is 0].
+       - **+b** - Select a *band* [Default is 0].
        - **+d** - Divide data values by the given *divisor* [Default is 1].
        - **+n** - Replace data values matching *invalid* with NaN.
        - **+o** - Offset data values by the given *offset* [Default is 0].
@@ -67,9 +65,7 @@ double quotes.
 [**+o**\ *offset*\|\ **a**][**+s**\ *scale*\|\ **a**]\
 [:*driver*\ [*dataType*][**+c**\ *options*]]
 
-    |Add_outgrid| Optionally, append =\ *ID* for writing a specific file format
-    (:ref:`See full description <grd_inout_full>`). The following modifiers are
-    supported:
+    Optionally, append =\ *ID* for writing a specific file format. The following modifiers are supported:
 
         - **+d** - Divide data values by given *divisor* [Default is 1].
         - **+n** - Replace data values matching *invalid* with a NaN.
