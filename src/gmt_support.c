@@ -391,6 +391,20 @@ static char *GMT_CPT_master[GMT_N_CPT_MASTERS] = {
 
 /* Local functions needed for public functions below */
 
+GMT_LOCAL void sincosdegree (double angle, double *sa, double *ca) {
+	/* A careful sincosd on an angle that checks if we are at a
+	 * multiple of 90 and hen makes sure we get ±1 or 0 there */
+	int i_angle = rint (angle);
+	double delta = fabs (angle - (double)i_angle);
+	sincosd (angle, sa, ca);	/* Trig on the direction */
+	if (delta > GMT_CONV4_LIMIT) return;	/* Too far from quarter circles */
+	/* Now check which quarters */
+	if (i_angle == 0 || i_angle == 360) *sa = 0.0, *ca = 1.0;
+	else if (i_angle == 90 || i_angle == -270) *sa = 1.0, *ca = 0.0;
+	else if (i_angle == 180 || i_angle == -180) *sa = 0.0, *ca = -1.0;
+	else if (i_angle == 270 || i_angle == -90) *sa = -1.0, *ca = 0.0;
+}
+
 GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	/* Parse the fill pattern syntax: p|P<pattern>[+r<dpi>][+b<color>|-][+f<color>|-] */
 	char *c = NULL;
@@ -2122,13 +2136,13 @@ GMT_LOCAL int gmtsupport_code_to_lonlat (struct GMT_CTRL *GMT, char *code, doubl
 GMT_LOCAL double gmtsupport_determine_endpoint (struct GMT_CTRL *GMT, double x0, double y0, double length, double az, double *x1, double *y1) {
 	/* compute point a distance length from origin along azimuth, return point separation */
 	double s_az, c_az;
-	sincosd (az, &s_az, &c_az);
+	sincosdegree (az, &s_az, &c_az);
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Spherical solution */
 		double s0, c0, s_d, c_d;
 		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
 		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) d /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
-		sincosd (y0, &s0, &c0);
-		sincosd (d, &s_d, &c_d);
+		sincosdegree (y0, &s0, &c0);
+		sincosdegree (d, &s_d, &c_d);
 		*x1 = x0 + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
 		*y1 = d_asind (s0 * c_d + c0 * s_d * c_az);
 	}
@@ -2142,18 +2156,18 @@ GMT_LOCAL double gmtsupport_determine_endpoint (struct GMT_CTRL *GMT, double x0,
 /*! . */
 GMT_LOCAL double gmtsupport_determine_endpoints (struct GMT_CTRL *GMT, double x[], double y[], double length, double az) {
 	double s_az, c_az;
-	sincosd (az, &s_az, &c_az);
+	sincosdegree (az, &s_az, &c_az);
 	length /= 2.0;	/* Going half-way in each direction */
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Spherical solution */
 		double s0, c0, s_d, c_d;
 		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
 		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) d /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
-		sincosd (y[0], &s0, &c0);
-		sincosd (d, &s_d, &c_d);
+		sincosdegree (y[0], &s0, &c0);
+		sincosdegree (d, &s_d, &c_d);
 		x[1] = x[0] + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
 		y[1] = d_asind (s0 * c_d + c0 * s_d * c_az);
 		/* Then redo start point by going in the opposite direction */
-		sincosd (az+180.0, &s_az, &c_az);
+		sincosdegree (az+180.0, &s_az, &c_az);
 		x[0] = x[0] + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
 		y[0] = d_asind (s0 * c_d + c0 * s_d * c_az);
 	}
@@ -2190,7 +2204,7 @@ GMT_LOCAL uint64_t gmtsupport_determine_circle (struct GMT_CTRL *GMT, double x0,
 	else {	/* Cartesian solution */
 		double s_az, c_az;
 		for (k = 0; k < n; k++) {
-			sincosd (d_angle * k, &s_az, &c_az);
+			sincosdegree (d_angle * k, &s_az, &c_az);
 			x[k] = x0 + r * s_az;
 			y[k] = y0 + r * c_az;
 		}
@@ -2443,7 +2457,7 @@ GMT_LOCAL void gmtsupport_contlabel_addpath (struct GMT_CTRL *GMT, double x[], d
 			L->L[i].y = G->L[i]->y;
 			L->L[i].line_angle = G->L[i]->line_angle;
 			if (G->nudge_flag) {	/* Must adjust point a bit */
-				if (G->nudge_flag == 2) sincosd (L->L[i].line_angle, &s, &c);
+				if (G->nudge_flag == 2) sincosdegree (L->L[i].line_angle, &s, &c);
 				/* If N+1 or N-1 is used we want positive x nudge to extend away from end point */
 				sign = (G->number_placement) ? (double)L->L[i].end : 1.0;
 				L->L[i].x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
@@ -3408,7 +3422,7 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
 		double s = 0.0, c = 1.0, sign = 1.0;
-		if (G->nudge_flag == 2) sincosd (L->line_angle, &s, &c);
+		if (G->nudge_flag == 2) sincosdegree (L->line_angle, &s, &c);
 		/* If N+1 or N-1 is used we want positive x nudge to extend away from end point */
 		sign = (G->number_placement) ? (double)L->end : 1.0;
 		L->x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
@@ -5178,7 +5192,7 @@ GMT_LOCAL int gmtsupport_gnomonic_adjust (struct GMT_CTRL *GMT, double angle, do
 
 	/* Create a point a small step away from (x,y) along the angle baseline
 	 * If it is inside the circle the we want right-justify, else left-justify. */
-	sincosd (angle, &yp, &xp);
+	sincosdegree (angle, &yp, &xp);
 	xp = xp * GMT->current.setting.map_line_step + x;
 	yp = yp * GMT->current.setting.map_line_step + y;
 	r = hypot (xp - GMT->current.proj.r, yp - GMT->current.proj.r);
@@ -6340,7 +6354,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 				else if (mode & GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
-				sincosd (90.0 - az_cross - deviation, &sa, &ca);	/* Trig on the direction */
+				sincosdegree (90.0 - az_cross - deviation, &sa, &ca);	/* Trig on the direction */
 				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
 					dist_across_seg = sign * k * across_ds;		/* The current distance along this profile */
 					S->data[GMT_X][ii] = x + dist_across_seg * ca;
@@ -14894,7 +14908,7 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	double s, c, xx, yy, f;
 	gmt_M_unused(GMT);
 	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
-	sincosd (angle, &s, &c);
+	sincosdegree (angle, &s, &c);
 	xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
 	yy = (1 - (just/4)) * dy * f;	/* Smart shift in x */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
@@ -15008,7 +15022,7 @@ void gmtlib_rotate2D (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, 
 	double s, c;
 	gmt_M_unused(GMT);
 
-	sincosd (angle, &s, &c);
+	sincosdegree (angle, &s, &c);
 	for (i = 0; i < n; i++) {	/* Coordinate transformation: Rotate and add new (x0, y0) offset */
 		xp[i] = x0 + x[i] * c - y[i] * s;
 		yp[i] = y0 + x[i] * s + y[i] * c;
@@ -15028,7 +15042,7 @@ unsigned int gmtlib_get_arc (struct GMT_CTRL *GMT, double x0, double y0, double 
 	yy = gmt_M_memory (GMT, NULL, n, double);
 	da = (dir2 - dir1) / (n - 1);
 	for (i = 0; i < n; i++) {
-		sincosd (dir1 + i * da, &s, &c);
+		sincosdegree (dir1 + i * da, &s, &c);
 		xx[i] = x0 + r * c;
 		yy[i] = y0 + r * s;
 	}
