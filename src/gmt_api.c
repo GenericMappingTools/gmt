@@ -14440,7 +14440,7 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	 */
 	const char *argv = "GMT_F77_readgrdinfo";
 	char *file = NULL;
-	struct GMT_GRID_HEADER header;
+	struct GMT_GRID_HEADER *header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
 	if (name == NULL) {
@@ -14451,9 +14451,8 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	file = strndup (name, lname);
 
 	/* Read the grid header */
-
-	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
-	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
+	header = gmt_get_header (API->GMT);
+	if (gmtlib_read_grd_info (API->GMT, file, header)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening file %s\n", file);
 		gmt_M_str_free (file);
 		GMT_Destroy_Session (API);
@@ -14462,14 +14461,15 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	gmt_M_str_free (file);
 
 	/* Assign variables from header structure items */
-	dim[GMT_X] = header.n_columns;	dim[GMT_Y] = header.n_rows;
-	gmt_M_memcpy (limit, header.wesn, 4U, double);
-	gmt_M_memcpy (inc, header.inc, 2U, double);
-	limit[ZLO] = header.z_min;
-	limit[ZHI] = header.z_max;
-	dim[GMT_Z] = header.registration;
-	if (title) F_STRNCPY (title, header.title, ltitle, GMT_GRID_TITLE_LEN80);
-	if (remark) F_STRNCPY (remark, header.remark, lremark, GMT_GRID_REMARK_LEN160);
+	dim[GMT_X] = header->n_columns;	dim[GMT_Y] = header->n_rows;
+	gmt_M_memcpy (limit, header->wesn, 4U, double);
+	gmt_M_memcpy (inc, header->inc, 2U, double);
+	limit[ZLO] = header->z_min;
+	limit[ZHI] = header->z_max;
+	dim[GMT_Z] = header->registration;
+	if (title) F_STRNCPY (title, header->title, ltitle, GMT_GRID_TITLE_LEN80);
+	if (remark) F_STRNCPY (remark, header->remark, lremark, GMT_GRID_REMARK_LEN160);
+	gmt_free_header (API->GMT, &header);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
@@ -14527,9 +14527,7 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	dim[GMT_Z] = header->registration;
 	if (title) F_STRNCPY (title, header->title, ltitle, GMT_GRID_TITLE_LEN80);
 	if (remark) F_STRNCPY (remark, header->remark, lremark, GMT_GRID_REMARK_LEN160);
-
-	gmt_M_free (API->GMT, header->hidden);
-	gmt_M_free (API->GMT, header);
+	gmt_free_header (API->GMT, &header);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
@@ -14541,7 +14539,7 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 	const char *argv = "GMT_F77_writegrd";
 	char *file = NULL;
 	double no_wesn[4] = {0.0, 0.0, 0.0, 0.0};
-	struct GMT_GRID_HEADER header;
+	struct GMT_GRID_HEADER *header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
 	/* Initialize with default values */
@@ -14553,8 +14551,8 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
 	file = strndup (name, lname);
 
-	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
-	gmt_grd_init (API->GMT, &header, NULL, false);
+	header = gmt_get_header (API->GMT);
+	gmt_grd_init (API->GMT, header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_ERROR, "Grid domain not specified for %s\n", file);
 		gmt_M_str_free (file);
@@ -14570,25 +14568,26 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 
 	/* Set header parameters */
 
-	gmt_M_memcpy (header.wesn, limit, 4U, double);
-	gmt_M_memcpy (header.inc, inc, 2U, double);
-	header.n_columns = dim[GMT_X];	header.n_rows = dim[GMT_Y];
-	header.registration = dim[GMT_Z];
-	gmt_set_grddim (API->GMT, &header);
-	if (title) F_STRNCPY (header.title, title, GMT_GRID_TITLE_LEN80, ltitle);
-	if (remark) F_STRNCPY (header.remark, remark, GMT_GRID_REMARK_LEN160, lremark);
+	gmt_M_memcpy (header->wesn, limit, 4U, double);
+	gmt_M_memcpy (header->inc, inc, 2U, double);
+	header->n_columns = dim[GMT_X];	header->n_rows = dim[GMT_Y];
+	header->registration = dim[GMT_Z];
+	gmt_set_grddim (API->GMT, header);
+	if (title) F_STRNCPY (header->title, title, GMT_GRID_TITLE_LEN80, ltitle);
+	if (remark) F_STRNCPY (header->remark, remark, GMT_GRID_REMARK_LEN160, lremark);
 
-	if (dim[3] == 1) gmtlib_inplace_transpose (array, header.n_rows, header.n_columns);
+	if (dim[3] == 1) gmtlib_inplace_transpose (array, header->n_rows, header->n_columns);
 
 	/* Write the file */
 
-	if (gmtlib_write_grd (API->GMT, file, &header, array, no_wesn, GMT_no_pad, 0)) {
+	if (gmtlib_write_grd (API->GMT, file, header, array, no_wesn, GMT_no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing file %s\n", file);
 		gmt_M_str_free (file);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_WRITE_ERROR;
 	}
 	gmt_M_str_free (file);
+	gmt_free_header (API->GMT, &header);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_MEMORY_ERROR;
 	return GMT_NOERROR;
