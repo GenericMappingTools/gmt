@@ -58,7 +58,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "a,c",               "annotated,regular",
 	          "c",                 "color",
 		  GMT_TP_STANDARD },
-	{ 0, 'Z', "modify",
+	{ 0, 'Z', "modify|scale",
 	          "",                  "",
 	          "o,p,s",             "offset,periodic,scale",
 		  GMT_TP_STANDARD },
