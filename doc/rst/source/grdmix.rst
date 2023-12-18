@@ -80,6 +80,8 @@ Optional Arguments
 **-A**\ *alpha*
     Get a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
     The final image will have a transparency layer add based on these values.
+    If an alpha node contains NaN then that node will be 100% transparent.
+    At the other end of the scale, 0 means no transparency and hence 100% opacity.
 
 .. _-C1:
 
