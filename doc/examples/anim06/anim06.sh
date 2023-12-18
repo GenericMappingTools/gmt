@@ -11,15 +11,13 @@
 # https://youtu.be/3vB53hoLsls
 # The movie took ~3 minutes to render on a 24-core MacPro 2013.
 
-rate=24			# Frames per seconds
-frames=$(gmt math -Q 60 $rate MUL =)
 # 0. Initial parameters
-cat << EOF > init.sh
+cat << 'EOF' > inc.sh
 R=-R-7.5/2.5/-1.5/2	# Fixed plot domain window
 J=-JX22c/11.5c		# Frame size after removing margin space
 f=2			# Frequency of chirp in Hz at end time
-rate=$rate
-frames=$frames
+rate=24			# Frames per seconds
+frames=$(gmt math -Q 60 $rate MUL =)
 EOF
 # 1. Make a title slide explaining things
 cat << 'EOF' > title.sh
@@ -95,4 +93,5 @@ gmt begin
 gmt end
 EOF
 # 4. Run the movie
-gmt movie main.sh -Sbpre.sh -CHD -Iinit.sh -Tframe_times.txt -D$rate -Etitle.sh+d6s+fo1s+gwhite -Nanim06 -H8 -Zs -Fmp4 -W -V
+source inc.sh
+gmt movie main.sh -Sbpre.sh -CHD -Iinc.sh -Tframe_times.txt -D$rate -Etitle.sh+d6s+fo1s+gwhite -Nanim06 -H8 -Zs -Fmp4 -W -V
