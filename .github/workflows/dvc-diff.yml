@@ -33,7 +33,7 @@ jobs:
       uses: iterative/setup-cml@v2.0.1
 
     - name: Setup Micromamba
-      uses: mamba-org/setup-micromamba@v1.7.0
+      uses: mamba-org/setup-micromamba@v1.7.3
       with:
         environment-name: gmt
         condarc: |
