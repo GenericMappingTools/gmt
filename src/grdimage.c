@@ -100,6 +100,7 @@ struct GRDIMAGE_CTRL {
 		bool active;
 		bool transp_color;	/* true if a color was given */
 		bool z_given;		/* true if a z-value was given */
+		bool mask_color;	/* true if NaN color for grid or image -Qcolor set */
 		bool invert;		/* If true we turn transparency = 1 - transparency [i.e., opacity] */
 		double rgb[4];		/* Pixel value for transparency in images */
 		double value;		/* If +z is used this z-value will give us the r/g/b via CPT */
@@ -441,6 +442,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 						if (txt[0]) {
 							Ctrl->Q.value = atof (txt);
 							Ctrl->Q.z_given = true;
+							Ctrl->Q.mask_color = true;
 						}
 						else {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: The +z modifier requires a valid z-value\n");
@@ -455,7 +457,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 						n_errors++;
 					}
 					else
-						Ctrl->Q.transp_color = true;
+						Ctrl->Q.transp_color = Ctrl->Q.mask_color = true;
 				}
 				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
@@ -967,8 +969,8 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 }
 
 GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIMAGE_CONF *Conf, unsigned char pix4, double *rgb) {
-	/* JL: Here we assume background color is white, hence t * 1.
-	   But what would it take to have a user selected background color? */
+	/* JL: Here we assume Conf->tr_rgb background color is white, hence t * 1.
+	   If user selected background color with -Q<rgb> that that is what Conf->tr_rgb contains */
 	double o, t;		/* o - opacity, t = transparency */
 	o = pix4 / 255.0;	t = 1 - o;
 	rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];
@@ -1181,11 +1183,11 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 }
 
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
-	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
+	/* Function that fills out the image in the special case of 1) image, 2) color, 3) no intensity */
 	int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t n_bands = Conf->Image->header->n_bands;
+	bool transparency = (n_bands == 4);
 	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
@@ -1203,13 +1205,14 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
-			rgb[3] = Conf->Image->data[node_s];
+			//rgb[3] = Conf->Image->data[node_s];
 		}
 	}
 }
 
 GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
-	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
+	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity.
+	 * If -Q is in effect then we leave pixels of that color unchanged so they an be transparent. */
 	bool transparency = (Conf->Image->header->n_bands == 4);
 	int k;
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
@@ -1230,12 +1233,14 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
-			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
-				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
-				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
+			if (!gmt_M_same_rgb (rgb, Conf->tr_rgb)) {
+				if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
+					node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
+					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
+				}
+				else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
+					gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 			}
-			else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
-				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 		}
 	}
@@ -1293,7 +1298,8 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			/* Get pixel color */
-			for (k = 0; k < n_bands; k++) fill.rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
+			for (k = 0; k < bt; k++) fill.rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
+			grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], fill.rgb);
 			if (Conf->invert) fill.rgb[bt] = 1.0 - fill.rgb[bt];
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
@@ -1572,7 +1578,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					break;
 			}
 			Conf->Transp = &Transp;
-			plot_squares = (Transp.n_transp > 2);	/* Plot tiny squares is selected */
+			plot_squares = (Transp.mode == 2 && !Ctrl->Q.active);	/* Plot tiny squares is selected */
 		}
 
 		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
@@ -1583,9 +1589,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
 			GMT_Report(API, GMT_MSG_INFORMATION, "The image memory layout (%s) may be of the wrong type. It should be BRPa.\n", I->header->mem_layout);
-		if (HH->has_NaN_rgb) {	/* Got NaN-color via indexed image, simulate -Q<color> */
+		if (HH->has_NaN_rgb && !Ctrl->Q.transp_color) {	/* Got NaN-color via indexed image, simulate -Q<color> */
 			Ctrl->Q.active = Ctrl->Q.transp_color = true;
-			gmt_M_rgb_copy (Ctrl->Q.rgb, HH->nan_rgb);
+			gmt_M_cp_rgb_normalize (Ctrl->Q.rgb, HH->nan_rgb);
 		}
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I were set. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -2107,11 +2113,11 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 		else	/* Need 3-byte array for a 24-bit image */
 			bitimage_24 = Out->data;
 	}
-	else {	/* Produce a PostScript image layer */
+	else if (!plot_squares) {	/* Produce a PostScript image layer */
 		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
 			bitimage_8 = gmt_M_memory (GMT, NULL, header_work->nm, unsigned char);
 		else {	/* Need 3-byte array for a 24-bit image, plus possibly 3 bytes for the NaN mask color */
-			if (Ctrl->Q.active) Conf->colormask_offset = 3;
+			if (Ctrl->Q.mask_color) Conf->colormask_offset = 3;
 			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm + Conf->colormask_offset, unsigned char);
 			if (Ctrl->Q.transp_color)
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the specific rgb up to 0-255 range */
