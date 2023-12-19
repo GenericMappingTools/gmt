@@ -387,6 +387,11 @@ file coastline.txt, run::
 
   gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
 
+Given a file pos.txt with use Cartesian coordinates (say in meters or miles), compute
+accumulated distance along track with::
+
+  gmt mapproject pos.txt -G+uc > cum_distances.txt
+
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times
 assuming a fixed speed of 12 knots.  We do this with::
