@@ -154,6 +154,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->I.azimuth = strdup ("-45.0");	/* Default azimuth for shading when -I+d is used */
 	C->I.method  = strdup ("t1");		/* Default normalization for shading when -I+d is used */
 	C->I.ambient = strdup ("0");		/* Default ambient light for shading when -I+d is used */
+	C->Q.value = GMT->session.f_NaN;	/* If -Q is used with a grid then NaNs are made transparent by default. */
 
 	return (C);
 }
@@ -236,7 +237,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Use color-masking to make grid nodes with z = NaN or white image pixels transparent. "
 		"Append an alternate <color> to change the transparent pixel for images [white]. "
 		"By default we simulate image transparency by blending pixel colors with <color> according to transparency, "
-		"yielding an opaque image nonetheless due to PostScript limitations.  Tow modifiers are available:");
+		"yielding an opaque image nonetheless due to PostScript limitations.  Two modifiers are available:");
 	GMT_Usage (API, 3, "+i Invert presumed opacities to transparencies (i.e., 1 - opacity).");
 	GMT_Usage (API, 3, "+z Specify grid <value> to set transparent pixel color via CPT lookup.");
 	GMT_Option (API, "R");
@@ -527,7 +528,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[GMT_FGD][0] < 0 && Ctrl->G.rgb[GMT_BGD][0] < 0,
 	                                   "Option -G: Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
-	                                   "SOption -Q: Cannot use -M when doing colormasking\n");
+	                                   "Option -Q: Cannot use -M when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.device_dpi && Ctrl->Q.active,
 	                                   "Option -Q: Cannot use -Ei when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
@@ -1233,16 +1234,17 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
-			if (!gmt_M_same_rgb (rgb, Conf->tr_rgb)) {
+			//if (!gmt_M_same_rgb (rgb, Conf->tr_rgb)) {
 				if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 					node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
 					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 				}
-				else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
+				//else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
+				else	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 			}
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
-		}
+		//}
 	}
 }
 
@@ -1507,6 +1509,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* The input file is an ordinary image instead of a grid and -R may be required to use it */
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET] && !strstr (Ctrl->In.file, "earth_")) Ctrl->D.mode = true;
+		if (Ctrl->Q.z_given) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +z<value> with an image\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+	else if (Ctrl->Q.invert) {	/* Cannot invert color for grid-derived images */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +i with a grid\n");
+			Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (!Ctrl->D.active && ftype == GMT_IS_GRID) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
@@ -1877,9 +1887,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
 			Conf->P = P;
 			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
-			if (Ctrl->Q.z_given) {	/* Obtain the transparent color based on P and value */
+			//if (Ctrl->Q.z_given) {	/* Obtain the transparent color based on P and value */
+			if (Ctrl->Q.active) {	/* Obtain the transparent color based on P and value */
 				(void)gmt_get_rgb_from_z (GMT, Conf->P, Ctrl->Q.value, Ctrl->Q.rgb);
 				Ctrl->Q.transp_color = true;
+				Ctrl->Q.mask_color = Ctrl->Q.z_given = true;
 			}
 		}
 		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */

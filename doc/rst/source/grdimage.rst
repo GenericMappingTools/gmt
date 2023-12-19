@@ -161,8 +161,8 @@ Optional Arguments
 **-Q**\ [*color*][**+i**][**+z**\ *value*]
     Handle transparency or opacity for grids or images. There are four general schemes:
 
-    - Grid - Make grid nodes with NaN values transparent in the image, using the color-masking
-      feature in PostScript Level 3 (the PS device must support PS Level 3).
+    - Grid - Plain |-Q| will turn grid nodes with NaN values transparent in the image, using
+      the color-masking feature in PostScript Level 3 (the PS device must support PS Level 3).
       Use modifier **+z**\ *value* to specify another grid value than NaN. Each pixel is now
       either opaque color or fully transparent.
     - RGB image - Append a *color* to identify pixels that should be turned transparent
@@ -178,6 +178,7 @@ Optional Arguments
       be approximated by *n_columns* times *n_rows* of tiny squares with variable color and
       transparency.  If *A* reflects opacity instead of transparency then you can use modifier
       **+i** to invert these numbers first. See `Limitations on transparency`_ for more discussion.
+      **Note**: The **+i** modifier is not available for grids.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
