@@ -5,18 +5,18 @@
     Level 2 (lakes) contains regular lakes and wide river bodies which
     we normally include as lakes. Several modifiers provide further control:
 
-    - **+a** Control special aspects of the Antarctica coastline.  Append one
+    - **+a** - Control special aspects of the Antarctica coastline.  Append one
       of **g**\|\ **s**\|\ **s**\|\ **S**:
 
-      - **g** selects the Antarctica ice grounding line as the coastline.
-      - **i** selects the ice shelf boundary as the coastline for Antarctica [Default].
-      - **s** Skip all GSHHG features below 60S (For users who wish to utilize their
+      - **g** - Selects the Antarctica ice grounding line as the coastline.
+      - **i** - Selects the ice shelf boundary as the coastline for Antarctica [Default].
+      - **s** - Skip all GSHHG features below 60S (For users who wish to utilize their
         own Antarctica (with islands) coastline). 
-      - **S** Like **s** but skip instead all features *north* of 60S.
+      - **S** - Like **s** but skip instead all features *north* of 60S.
 
-    - **+l** Only regular lakes and exclude river-lakes.
-    - **+p** Append *percent* to exclude polygons whose percentage area of the
+    - **+l** - Only regular lakes and exclude river-lakes.
+    - **+p** - Append *percent* to exclude polygons whose percentage area of the
       corresponding full-resolution feature is less than *percent*.
-    - **+r** Only select river-lakes and exclude regular lakes.
+    - **+r** - Only select river-lakes and exclude regular lakes.
 
     See :ref:`GSHHG Information <gshhg-information>` below for more details. |Add_-A|

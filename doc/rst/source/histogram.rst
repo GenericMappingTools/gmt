@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt histogram** [ *table* ]
-|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \| |-T|\ *file*\|\ *list*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] | |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*\ [**+b**] ]
@@ -111,10 +111,12 @@ Optional Arguments
 
 **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**]
     Annotate each bar with the count it represents.  Append any of the
-    following modifiers: Use **+b** to place the labels beneath the bars
-    instead of above; use **+f** to change to another font than the default
-    annotation font; use **+o** to change the offset between bar and label [6p];
-    use **+r** to rotate the labels from horizontal to vertical.
+    following modifiers:
+
+    - **+b** - Place the labels beneath the bars instead of above.
+    - **+f** - Change to another font than the default annotation font.
+    - **+o** - Change the offset between bar and label [6p].
+    - **+r** - Rotate the labels from horizontal to vertical.
 
 .. _-E:
 
@@ -155,11 +157,11 @@ Optional Arguments
 
 **-Ll**\|\ **h**\|\ **b**
     The directives specify the handling of extreme values that fall outside the range
-    set by |-T|.  By default these values are ignored.  Append **b** to let
-    these values be included in the first or last bins.  To only include
-    extreme values below first bin into the first bin, use **l**, and to
-    only include extreme values above the last bin into that last bin, use
-    **h**.
+    set by |-T|.  By default these values are ignored.  Choose among these:
+
+    - **b** - Let these values be included in the first or last bins.
+    - **l** - Only include extreme values below first bin into the first bin.
+    - **h** - Only include extreme values above the last bin into that last bin.
 
 .. _-N:
 

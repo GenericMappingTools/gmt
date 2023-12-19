@@ -44,12 +44,12 @@ gmt select @GCMT_1976-2017_meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_I.gmt
 gmt select @GCMT_1976-2017_meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_O.gmt -Il
 # Calculate variables (profile length, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).
 KM=$(echo $Long1 $Lat1 | gmt mapproject -G$Long2/$Lat2+uk -o2)
-DepthMax=$(gmt info coupe_I.gmt -C2 -o5 | gmt math -Q STDIN 10 ADD =)
+DepthMax=$(gmt info coupe_I.gmt -C -o5 | gmt math -Q STDIN 10 ADD =)
 VE=$(gmt math -Q $KM $H MUL $W DIV $DepthMax DIV = --FORMAT_FLOAT_OUT=%.2g)
 gmt math -T$Angles T SIND -o0,1,0 = | gmt math STDIN -T -C0 COSD = | gawk '$0=$0"@."' > angles.txt
 Ha=$(gmt math -Q $H 0.7c SUB =) # Height of inset with angles
 Wa=$(gmt math -Q $Ha $VE DIV =) # Width of inset with angles (calculated from vertical exaggeration to have same deformation as the profile)
-#       -----------------------------------------------------------------------------------------------------------
+# 1. Create background plot and data files needed in the loop
 cat << EOF > pre.sh
 	gmt set FONT_LABEL 10p FONT_ANNOT_PRIMARY 7p MAP_FRAME_PEN thin,black MAP_GRID_PEN faint,gray
 gmt begin

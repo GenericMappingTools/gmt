@@ -442,7 +442,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		return (GMT->parent->error);
 	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file (unless -Vd) */
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Leave the symbol def and txt files in the temp directory */
-		char tmp_file2[GMT_LEN64] = {""};
+		char tmp_file2[GMT_LEN128] = {""};
 		bool was = GMT->current.setting.io_header[GMT_OUT];	/* Save current setting */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary symbol file for decorated lines saved: %s\n", tmp_file);
 		if (GMT->parent->tmp_dir)	/* Make unique file in tmp dir */

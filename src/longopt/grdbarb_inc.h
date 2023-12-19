@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *
+*
  *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
@@ -25,38 +25,15 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'C', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'Q', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'Z', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
+	{ 0, 'A', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'G', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Q', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Z', "",       "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDBARB_INC_H */

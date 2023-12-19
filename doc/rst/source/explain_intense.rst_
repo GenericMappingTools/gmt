@@ -1,7 +1,7 @@
-**-I**\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]
+**-I**\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*]
     Apply illumination for the input grid. Several methods are available:
 
-    - Give *ifile*. the name of a co-registered grid file with intensities in the ±1 range.
+    - Give the *file* name of a co-registered grid with intensities in the ±1 range.
     - Give a constant *intens* to apply everywhere (affects the ambient light).
     
     Alternatively, derive intensities from the main input data grid via a call
@@ -10,7 +10,7 @@
     give **+d** to select the default [**+a**\ -45\ **+nt**\ 1\ **+m**\ 0].
     For more specific intensity scenarios run :doc:`grdgradient`
     separately first. If we should derive intensities from another file
-    than the main grid, specify that file as the *ifile* and add suitable
+    than the main grid, specify that file as the *file* and add suitable
     modifiers [Default is no illumination]. **Note**: If the input grid
-    actually is an image then *ifile* or constant *intens* must be provided
+    actually is an image then *file* or constant *intens* must be provided
     since derivatives are not available.

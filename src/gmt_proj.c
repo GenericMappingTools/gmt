@@ -487,7 +487,7 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 			phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: %2d P %12.7f phig %12.7f\n", niter, P, phig);
 		}
-		while (fabs (phig - phig_last) > 1e-9);
+		while (fabs (phig - phig_last) > GMT_PROJ_CONV_LIMIT);
 		sincosd (phig, &sphig, &cphig);
 		P = (cphi1/cphig)*(H + N1 + h0)/a;
 	}
@@ -767,7 +767,7 @@ GMT_LOCAL void gmtproj_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *la
  * triangle.  Doing all for quadrants results in a square map with radial
  * meridians and lots of distortion along the boundaries.  This was used to
  * build a 3-D cube of the world with this triangle projection being used to
- * map the top (N polar to 34N) and bottom (S pole to 45S) sides, with the
+ * map the top (N polar to 45N) and bottom (S pole to 45S) sides, with the
  * remaining 4 sides just being -JQ maps.  I left it here since I may want
  * to mess with this in the future.  P. Wessel, Dec. 2016.
  */
@@ -786,7 +786,6 @@ GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0, double slat) 
 
 GMT_LOCAL void gmtproj_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Cylindrical equidistant x/y */
-
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (lat > 0.0) {
 		*x = (0.5 + lon * (90.0 - lat) / 4050.0) * GMT->current.proj.j_x;
@@ -811,9 +810,9 @@ GMT_LOCAL void gmtproj_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, 
 	}
 }
 #else
-GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0) {
+GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0, double unused) {
 	/* Set up a Miller Cylindrical transformation */
-
+	gmt_M_unused (unused);
 	gmtproj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.j_x = D2R * GMT->current.proj.EQ_RAD;

@@ -204,7 +204,7 @@ FORMAT Parameters
         Formatting template that indicates how an output clock string is to
         be plotted. This template is then used to guide the formatting of
         clock strings in plot annotations. See :term:`FORMAT_CLOCK_OUT` for
-        details. [default is **hh:mm:ss**].
+        details [default is **hh:mm:ss**].
 
     **FORMAT_CLOCK_OUT**
         See :term:`FORMAT_CLOCK_IN`.
@@ -239,7 +239,7 @@ FORMAT Parameters
         and **u** instead of W[-]ww to plot "Week ##". Both of these text
         strings will be affected by the :term:`GMT_LANGUAGE`,
         :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
-        setting. [default is **yyyy-mm-dd**].
+        setting [default is **yyyy-mm-dd**].
 
     **FORMAT_DATE_OUT**
         Formatting template that indicates how an output date string is to
@@ -266,7 +266,7 @@ FORMAT Parameters
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
         which plots the absolute value of the coordinate. Not all items may be
-        plotted as this depends on the annotation interval. [default is
+        plotted as this depends on the annotation interval [default is
         :doc:`theme dependent <theme-settings>`].
 
     **FORMAT_GEO_OUT**
@@ -1175,7 +1175,7 @@ PostScript Parameters
         Sets the threshold angle in degrees (integer in range [0,180]) used
         for mitered joins only. When the angle between joining line segments
         is smaller than the threshold the corner will be bevelled instead of
-        mitered. [default is **35**]. Setting the threshold
+        mitered [default is **35**]. Setting the threshold
         angle to **0** implies the PostScript default of about 11 degrees.
         Setting the threshold angle to **180** causes all joins to be beveled.
 
@@ -1286,7 +1286,7 @@ Calendar/Time Parameters
         year in a 100-year sequence. For example, if
         :term:`TIME_Y2K_OFFSET_YEAR` is 1729, then numbers 29 through 99
         correspond to 1729 through 1799, while numbers 00 through 28
-        correspond to 1800 through 1828. [default is **1950**].
+        correspond to 1800 through 1828 [default is **1950**].
 
 See Also
 --------

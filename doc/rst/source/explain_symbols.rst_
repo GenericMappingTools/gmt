@@ -616,7 +616,8 @@
 
             **+a**\ *angle*
                 Force symbols at a fixed angle, **+an** for line-normal, or
-                **+ap** for line-parallel [Default].
+                **+ap** for line-parallel [Default]. Use **p**\ *angle* to set a
+                constant deviation from line-parallel.
 
             **+d**\ [*pen*]
                 Turn on debug, which will draw helper points and lines to illustrate

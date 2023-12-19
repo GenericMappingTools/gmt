@@ -54,6 +54,8 @@
  *	gmt_contour_edge_init
  *	gmt_contour_first_pos
  *	gmt_contours
+ *  gmt_explain_cpt_input
+ *  gmt_explain_cpt_output
  *	gmt_cpt_default
  *	gmt_cpt_interval_modifier
  *	gmt_cpt_transparency
@@ -388,6 +390,20 @@ static char *GMT_CPT_master[GMT_N_CPT_MASTERS] = {
 };
 
 /* Local functions needed for public functions below */
+
+GMT_LOCAL void sincosdegree (double angle, double *sa, double *ca) {
+	/* A careful sincosd on an angle that checks if we are at a
+	 * multiple of 90 and hen makes sure we get ±1 or 0 there */
+	int i_angle = rint (angle);
+	double delta = fabs (angle - (double)i_angle);
+	sincosd (angle, sa, ca);	/* Trig on the direction */
+	if (delta > GMT_CONV4_LIMIT) return;	/* Too far from quarter circles */
+	/* Now check which quarters */
+	if (i_angle == 0 || i_angle == 360) *sa = 0.0, *ca = 1.0;
+	else if (i_angle == 90 || i_angle == -270) *sa = 1.0, *ca = 0.0;
+	else if (i_angle == 180 || i_angle == -180) *sa = 0.0, *ca = -1.0;
+	else if (i_angle == 270 || i_angle == -90) *sa = -1.0, *ca = 0.0;
+}
 
 GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	/* Parse the fill pattern syntax: p|P<pattern>[+r<dpi>][+b<color>|-][+f<color>|-] */
@@ -1468,7 +1484,8 @@ GMT_LOCAL int gmtsupport_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETT
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found CPT hinge at z' = 0 for slice k = %u!\n", k);
 		return (int)k;
 	}
-	return GMT_NOTSET;
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Hinge requested but no hinge at z' = 0 was found in this CPT\n");
+	return GMT_PARSE_ERROR;
 }
 
 /*! . */
@@ -1550,6 +1567,86 @@ GMT_LOCAL void gmtsupport_truncate_cpt_slice (struct GMT_LUT *S, bool do_hsv, do
 	for (k = 0; k < 4; k++) S->hsv_diff[k] = S->hsv_high[k] - S->hsv_low[k];
 	/* Recompute inverse stepsize */
 	S->i_dz = 1.0 / (S->z_high - S->z_low);
+}
+
+void gmt_explain_cpt_output (struct GMTAPI_CTRL *API, char option) {
+	/* Display usage synopsis for -F cpt output/categorical option in makecpt/grd2cpt */
+
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_COLORMODES_OPT);
+	GMT_Usage (API, -2, "Select the color model for output [Default uses the input model]:");
+	GMT_Usage (API, 3, "R: Output r/g/b or colornames.");
+	GMT_Usage (API, 3, "c: Output c/m/y/k.");
+	GMT_Usage (API, 3, "g: Output gray value (Will apply the YIQ if not a gray value).");
+	GMT_Usage (API, 3, "h: Output h-s-v.");
+	GMT_Usage (API, 3, "r: Output r/g/b only.");
+	GMT_Usage (API, 3, "x: Output hex #rrggbb only.");
+	GMT_Usage (API, -2, "Two modifiers control generation of categorical labels:");
+	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
+		"The <label>, if appended, sets the labels for each category. It may be a "
+		"comma-separated list of category names, or <start>[-] where we automatically build "
+		"labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.");
+	GMT_Usage (API, 3, "+k Set categorical keys rather than numerical values. "
+		"<keys> may be a file with one key per line or a comma-separated list of keys. "
+		"If <keys> is a single letter then we build sequential alphabetical keys from that letter. "
+		"If number of categories is 12 and label is M then we auto-create month name labels, and "
+		"if it is 7 and label is D then we auto-create weekday name labels.");
+}
+
+void gmt_explain_cpt_input (struct GMTAPI_CTRL *API, char option) {
+	/* Display CPT usage for grd* plotters */
+
+	GMT_Usage (API, 1, "\n-%c%s", option, CPT_OPT_ARGS);
+	GMT_Usage (API, -2, "Color palette file to convert grid values to colors, provided by one of three ways:");
+	GMT_Usage (API, 3, "%s Name one of the master CPTs (no extension) [%s].", GMT_LINE_BULLET, API->GMT->current.setting.cpt);
+	GMT_Usage (API, 3, "%s Name a local regular CPTs (with extension).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Specify <color1>,<color2>[,<color3>,...] to build a linear continuous "
+		"CPT to automatically assign continuous colors over the grid data range.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "A few modifiers control generation of the active CPT:");
+	GMT_Usage (API, 3, "+h Enable a soft hinge in your master CPT. Append <hinge> to change its value.");
+	GMT_Usage (API, 3, "+i Append <dz> to quantize the grid range [Default uses the exact grid range].");
+	GMT_Usage (API, 3, "+u Scale CPT z-values from another <unit> to meters.");
+	GMT_Usage (API, 3, "+U Scale CPT z-values from meters to another <unit>.");
+	GMT_Usage (API, 3, "+s Append <fname> to save the generated CPT to file.");
+	GMT_Usage (API, -2, "Note: For converting units with +u|U, see units %s.", GMT_LEN_UNITS2_DISPLAY);
+}
+
+int gmt_prepare_categorical_cpt (struct GMT_CTRL *GMT, char *label, char *key, struct GMT_PALETTE *Pout) {
+		bool got_key_file = (key && !gmt_access (GMT, key, R_OK));	/* Want categorical labels read from file */
+		unsigned int ns = 0;
+		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
+		if (label || (key && !got_key_file)) {	/* Want auto-categorical labels appended to each CPT record */
+			char **Plabel = gmt_cat_cpt_strings (GMT, (label) ? label : key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
+				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+				if (Plabel[k]) Pout->data[k].label = Plabel[k];	/* Now the job of the CPT to free these strings */
+			}
+			gmt_M_free (GMT, Plabel);	/* But the master array can go */
+		}
+		if (key) {	/* Want categorical labels */
+			char **keys = NULL;
+			if (got_key_file) {	/* Got a file with category keys */
+				ns = gmt_read_list (GMT, key, &keys);
+				if (ns < Pout->n_colors) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "The categorical keys file %s had %d entries but CPT has %d categories\n", key, ns, Pout->n_colors);
+					return (GMT_RUNTIME_ERROR);
+				}
+				else if (ns > Pout->n_colors)
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but only %d are needed - skipping the extra keys\n", key, ns, Pout->n_colors);
+			}
+			else	/* Got comma-separated keys */
+				keys = gmt_cat_cpt_strings (GMT, key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
+				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
+				if (k < ns && keys[k]) {
+					Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+					if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+					Pout->data[k].label = strdup (keys[k]);
+				}
+			}
+			gmt_M_free (GMT, keys);	/* But the master array can go */
+			Pout->categorical = GMT_CPT_CATEGORICAL_KEY;
+		}
+		return (GMT_NOERROR);
 }
 
 bool gmt_consider_current_cpt (struct GMTAPI_CTRL *API, bool *active, char **arg) {
@@ -2039,13 +2136,13 @@ GMT_LOCAL int gmtsupport_code_to_lonlat (struct GMT_CTRL *GMT, char *code, doubl
 GMT_LOCAL double gmtsupport_determine_endpoint (struct GMT_CTRL *GMT, double x0, double y0, double length, double az, double *x1, double *y1) {
 	/* compute point a distance length from origin along azimuth, return point separation */
 	double s_az, c_az;
-	sincosd (az, &s_az, &c_az);
+	sincosdegree (az, &s_az, &c_az);
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Spherical solution */
 		double s0, c0, s_d, c_d;
 		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
 		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) d /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
-		sincosd (y0, &s0, &c0);
-		sincosd (d, &s_d, &c_d);
+		sincosdegree (y0, &s0, &c0);
+		sincosdegree (d, &s_d, &c_d);
 		*x1 = x0 + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
 		*y1 = d_asind (s0 * c_d + c0 * s_d * c_az);
 	}
@@ -2059,18 +2156,18 @@ GMT_LOCAL double gmtsupport_determine_endpoint (struct GMT_CTRL *GMT, double x0,
 /*! . */
 GMT_LOCAL double gmtsupport_determine_endpoints (struct GMT_CTRL *GMT, double x[], double y[], double length, double az) {
 	double s_az, c_az;
-	sincosd (az, &s_az, &c_az);
+	sincosdegree (az, &s_az, &c_az);
 	length /= 2.0;	/* Going half-way in each direction */
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Spherical solution */
 		double s0, c0, s_d, c_d;
 		double d = (length / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Convert from chosen unit to meter or degree */
 		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) d /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert meter to spherical degrees */
-		sincosd (y[0], &s0, &c0);
-		sincosd (d, &s_d, &c_d);
+		sincosdegree (y[0], &s0, &c0);
+		sincosdegree (d, &s_d, &c_d);
 		x[1] = x[0] + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
 		y[1] = d_asind (s0 * c_d + c0 * s_d * c_az);
 		/* Then redo start point by going in the opposite direction */
-		sincosd (az+180.0, &s_az, &c_az);
+		sincosdegree (az+180.0, &s_az, &c_az);
 		x[0] = x[0] + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
 		y[0] = d_asind (s0 * c_d + c0 * s_d * c_az);
 	}
@@ -2107,7 +2204,7 @@ GMT_LOCAL uint64_t gmtsupport_determine_circle (struct GMT_CTRL *GMT, double x0,
 	else {	/* Cartesian solution */
 		double s_az, c_az;
 		for (k = 0; k < n; k++) {
-			sincosd (d_angle * k, &s_az, &c_az);
+			sincosdegree (d_angle * k, &s_az, &c_az);
 			x[k] = x0 + r * s_az;
 			y[k] = y0 + r * c_az;
 		}
@@ -2149,6 +2246,12 @@ GMT_LOCAL void gmtsupport_line_angle_ave (struct GMT_CTRL *GMT, double x[], doub
 			double angle = d_atan2d (sum_y, sum_x);
 			if (fabs (L->line_angle - angle) > 145.0) L->line_angle += 180.0;
 		}
+	}
+	if (angle_type == GMT_ANGLE_LINE_DELTA) {	/* Add delta angle to line angle */
+		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
+			angle_type = GMT_ANGLE_LINE_PARALLEL;
+		else
+			L->angle = L->line_angle + cangle;
 	}
 	if (angle_type == GMT_ANGLE_LINE_FIXED) {	/* Just return the fixed angle given (unless NaN) */
 		if (gmt_M_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
@@ -2354,7 +2457,7 @@ GMT_LOCAL void gmtsupport_contlabel_addpath (struct GMT_CTRL *GMT, double x[], d
 			L->L[i].y = G->L[i]->y;
 			L->L[i].line_angle = G->L[i]->line_angle;
 			if (G->nudge_flag) {	/* Must adjust point a bit */
-				if (G->nudge_flag == 2) sincosd (L->L[i].line_angle, &s, &c);
+				if (G->nudge_flag == 2) sincosdegree (L->L[i].line_angle, &s, &c);
 				/* If N+1 or N-1 is used we want positive x nudge to extend away from end point */
 				sign = (G->number_placement) ? (double)L->L[i].end : 1.0;
 				L->L[i].x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
@@ -3304,6 +3407,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 /*! . */
 GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
 	/* Add a symbol location to the growing segment */
+	double angle;
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	if (S->n_rows == SH->n_alloc) {	/* Need more memory for the segment */
 		uint64_t col;
@@ -3318,7 +3422,7 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
 		double s = 0.0, c = 1.0, sign = 1.0;
-		if (G->nudge_flag == 2) sincosd (L->line_angle, &s, &c);
+		if (G->nudge_flag == 2) sincosdegree (L->line_angle, &s, &c);
 		/* If N+1 or N-1 is used we want positive x nudge to extend away from end point */
 		sign = (G->number_placement) ? (double)L->end : 1.0;
 		L->x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
@@ -3328,7 +3432,10 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	S->data[GMT_X][S->n_rows] = L->x;
 	S->data[GMT_Y][S->n_rows] = L->y;
 	S->data[GMT_Z][S->n_rows] = gmt_M_to_inch (GMT, G->size);
-	S->data[3][S->n_rows] = L->line_angle;	/* Change this in inches internally instead of string */
+	if (G->angle_type == GMT_ANGLE_LINE_DELTA) angle = G->symbol_angle + L->line_angle;
+	else if (G->angle_type == GMT_ANGLE_LINE_FIXED) angle = G->symbol_angle;
+	else angle = L->line_angle;
+	S->data[3][S->n_rows] = angle;
 	S->text[S->n_rows++] = strdup (G->symbol_code);
 }
 
@@ -5085,7 +5192,7 @@ GMT_LOCAL int gmtsupport_gnomonic_adjust (struct GMT_CTRL *GMT, double angle, do
 
 	/* Create a point a small step away from (x,y) along the angle baseline
 	 * If it is inside the circle the we want right-justify, else left-justify. */
-	sincosd (angle, &yp, &xp);
+	sincosdegree (angle, &yp, &xp);
 	xp = xp * GMT->current.setting.map_line_step + x;
 	yp = yp * GMT->current.setting.map_line_step + y;
 	r = hypot (xp - GMT->current.proj.r, yp - GMT->current.proj.r);
@@ -6247,7 +6354,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 				else if (mode & GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
-				sincosd (90.0 - az_cross - deviation, &sa, &ca);	/* Trig on the direction */
+				sincosdegree (90.0 - az_cross - deviation, &sa, &ca);	/* Trig on the direction */
 				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
 					dist_across_seg = sign * k * across_ds;		/* The current distance along this profile */
 					S->data[GMT_X][ii] = x + dist_across_seg * ca;
@@ -8330,6 +8437,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				X->model = GMT_RGB | GMT_COLORINT;
 			else if (strstr (line, "RGB"))
 				X->model = GMT_RGB;
+			else if (strstr (line, "+GRAY") || strstr (line, "gray"))
+				X->model = GMT_GRAY | GMT_COLORINT;
 			else if (strstr (line, "+HSV") || strstr (line, "hsv"))
 				X->model = GMT_HSV | GMT_COLORINT;
 			else if (strstr (line, "HSV"))
@@ -8976,7 +9085,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		}
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
-		gmt_stretch_cpt (GMT, P, zmin, zmax);
+		if ((gmt_stretch_cpt (GMT, P, zmin, zmax)) == GMT_PARSE_ERROR) return (NULL);
 	}
 	else if (file) {	/* Gave a CPT file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
@@ -9033,6 +9142,7 @@ GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	if (!P->has_hinge) return GMT_NOTSET;	/* Not our concern here */
 	/* Claims to have a hinge */
 	ks = gmtsupport_find_cpt_hinge (GMT, P);	/* Get hinge slice (or -1 if no hinge found) */
+	if (ks == GMT_PARSE_ERROR) return (GMT_PARSE_ERROR);
 	if (ks == GMT_NOTSET) {	/* Must be a rogue CPT - ignore the hinge setting */
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_stretch_cpt: CPT says it has a hinge but none is actually found? - ignored.\n");
 		P->has_hinge = 0;
@@ -9058,7 +9168,7 @@ GMT_LOCAL int gmtsupport_validate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 }
 
 /*! . */
-void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
+unsigned int gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Replace CPT z-values with new ones linearly scaled from z_low to z_high.  If these are
 	 * zero then we substitute the CPT's default range instead (if available).
 	 * Note: If P has a hinge then its value is expected to be in the final user data values.
@@ -9073,11 +9183,11 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	if (z_low == z_high) {	/* Range information not given, rely on CPT RANGE setting */
 		if (P->has_range == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_stretch_cpt: Passed z_low == z_high but CPT has no explicit range.  No changes made\n");
-			return;
+			return GMT_NOERROR;
 		}
 		z_low = P->minmax[0];	z_high = P->minmax[1];
 	}
-	ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high);	/* Deal with any issure related to hinges */
+	if ((ks = gmtsupport_validate_cpt (GMT, P, &z_low, &z_high)) == GMT_PARSE_ERROR) return (GMT_PARSE_ERROR);	/* Deal with any issue related to hinges */
 
 	z_min = P->data[0].z_low;
 	z_start = z_low;
@@ -9095,6 +9205,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 		P->data[is].z_high = z_start + (P->data[is].z_high - z_min) * scale;
 		P->data[is].i_dz /= scale;
 	}
+	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -9473,6 +9584,9 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
+	if (cpt_flags & GMT_CPT_GRAY_SET && !P->is_gray)
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Colors in the CPT file %s were converted to gray via the YIQ-translation.\n", &cpt_file[append]);
+
 	/* When writing the CPT to file it is no longer a normalized CPT with a hinge */
 	P->has_range = P->has_hinge = 0;
 
@@ -9537,6 +9651,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	gmtlib_write_newheaders (GMT, fp, 0);	/* Write general header block */
 
 	if (!(P->model & GMT_COLORINT)) {}	/* Write nothing when color interpolation is not forced */
+	else if (P->model & GMT_GRAY)
+		fprintf (fp, "# COLOR_MODEL = gray\n");
 	else if (P->model & GMT_HSV)
 		fprintf (fp, "# COLOR_MODEL = hsv\n");
 	else if (P->model & GMT_CMYK)
@@ -9562,6 +9678,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 
 		if (P->categorical) {
 			if (P->categorical & GMT_CPT_CATEGORICAL_KEY) strncpy (lo, P->data[i].key, GMT_LEN64-1);
+			if (P->model & GMT_GRAY)
+				fprintf (fp, format, lo, gmt_putgray (GMT, P->data[i].hsv_low), '\t');
 			if (P->model & GMT_HSV)
 				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
 			else if (P->model & GMT_CMYK) {
@@ -9574,6 +9692,10 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 				fprintf (fp, format, lo, gmt_puthex (GMT, P->data[i].rgb_low), '\t');
 			else
 				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
+		}
+		else if (P->model & GMT_GRAY) {
+			fprintf (fp, format, lo, gmt_putgray (GMT, P->data[i].rgb_low), '\t');
+			fprintf (fp, format, hi, gmt_putgray (GMT, P->data[i].rgb_high), '\t');
 		}
 		else if (P->model & GMT_HSV) {
 			fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
@@ -9615,6 +9737,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		if (!use[i]) continue;	/* This BNF entry does not apply to this CPT */
 		if (P->bfn[i].skip)
 			fprintf (fp, "%c\t-\n", code[i]);
+		else if (P->model & GMT_GRAY)
+			fprintf (fp, "%c\t%s\n", code[i], gmt_putgray (GMT, P->bfn[i].rgb));
 		else if (P->model & GMT_HSV)
 			fprintf (fp, "%c\t%s\n", code[i], gmtlib_puthsv (GMT, P->bfn[i].hsv));
 		else if (P->model & GMT_CMYK) {
@@ -9665,7 +9789,7 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 	 * expand it to its natural z-range before we can truncate since z_low/z_high are in user units */
 
 	if (P->has_range) {
-		gmt_stretch_cpt (GMT, P, 0.0, 0.0);	/* Stretch to its natural range first */
+		if ((gmt_stretch_cpt (GMT, P, 0.0, 0.0)) == GMT_PARSE_ERROR) return NULL;	/* Stretch to its natural range first */
 		P->has_range = 0;
 	}
 
@@ -10859,8 +10983,16 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 	while ((gmt_strtok (specs, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
-				if (p[1] == 'p' || p[1] == 'P')	/* Line-parallel label */
-					G->angle_type = GMT_ANGLE_LINE_PARALLEL;
+				if (p[1] == 'p' || p[1] == 'P')	{ /* Line-parallel label */
+					if (p[2]) {	/* Gave optional fixed angle deviation from line-parallel */
+						G->angle_type = GMT_ANGLE_LINE_DELTA;
+						G->symbol_angle = atof (&p[2]);
+						gmt_lon_range_adjust (GMT_IS_M180_TO_P180_RANGE, &G->symbol_angle);	/* Now -180/+180 */
+						while (fabs (G->symbol_angle) > 90.0) G->symbol_angle -= copysign (180.0, G->symbol_angle);
+					}
+					else
+						G->angle_type = GMT_ANGLE_LINE_PARALLEL;
+				}
 				else if (p[1] == 'n' || p[1] == 'N')	/* Line-normal label */
 					G->angle_type = GMT_ANGLE_LINE_NORMAL;
 				else {					/* Label at a fixed angle */
@@ -14776,7 +14908,7 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	double s, c, xx, yy, f;
 	gmt_M_unused(GMT);
 	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
-	sincosd (angle, &s, &c);
+	sincosdegree (angle, &s, &c);
 	xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
 	yy = (1 - (just/4)) * dy * f;	/* Smart shift in x */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
@@ -14890,7 +15022,7 @@ void gmtlib_rotate2D (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, 
 	double s, c;
 	gmt_M_unused(GMT);
 
-	sincosd (angle, &s, &c);
+	sincosdegree (angle, &s, &c);
 	for (i = 0; i < n; i++) {	/* Coordinate transformation: Rotate and add new (x0, y0) offset */
 		xp[i] = x0 + x[i] * c - y[i] * s;
 		yp[i] = y0 + x[i] * s + y[i] * c;
@@ -14910,7 +15042,7 @@ unsigned int gmtlib_get_arc (struct GMT_CTRL *GMT, double x0, double y0, double 
 	yy = gmt_M_memory (GMT, NULL, n, double);
 	da = (dir2 - dir1) / (n - 1);
 	for (i = 0; i < n; i++) {
-		sincosd (dir1 + i * da, &s, &c);
+		sincosdegree (dir1 + i * da, &s, &c);
 		xx[i] = x0 + r * c;
 		yy[i] = y0 + r * s;
 	}
@@ -15318,7 +15450,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 
 							tx_a = ta_start + fabs (xc - xa[ta_start]) * i_del_xa;
 							tx_b = tb_start + fabs (xc - xb[tb_start]) * i_del_xb;
-							if (tx_a < ta_stop && tx_b < tb_stop) {
+							if (tx_a < ta_stop && tx_b <= tb_stop) {	/* Equality means the crossing occurred on the second data node */
 								X->x[nx] = xc;
 								X->y[nx] = ya[xa_start] + (xc - xa[xa_start]) * slp_a;
 								X->xnode[0][nx] = tx_a;
@@ -15602,10 +15734,10 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	 * an array with coordinates and labels, and set interval to true if applicable.
 	 */
 	int nc, error;
-	unsigned int save_coltype, save_max_cols_to_read;
+	unsigned int k = 0, save_coltype, save_max_cols_to_read;
 	uint64_t row;
 	bool text, found, save_trailing;
-	unsigned int k = 0, n_annot = 0, n_int = 0;
+	//unsigned int n_annot = 0, n_int = 0;
 	double *x = NULL, limit[2] = {-DBL_MAX, +DBL_MAX};
 	char **L = NULL, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
 	struct GMT_DATASET *D = NULL;
@@ -15649,8 +15781,10 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 			}
 		}
 		else if (S->data[GMT_X][row] < limit[0] || S->data[GMT_X][row] > limit[1]) continue;	/* Cartesian check */
+#if 0	/* Old degguging things left commented */
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
+#endif
 		x[k] = S->data[GMT_X][row];
 		if (text && nc == 2) {
 			gmtlib_enforce_rgb_triplets (GMT, txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */

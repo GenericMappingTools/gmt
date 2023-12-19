@@ -74,9 +74,9 @@ struct GMT_KEYWORD_DICTIONARY {	/* Used for keyword-value lookup */
 	char separator;			/* Single character separating 2 or more identical specifications [0 for no repeat] */
 	char short_option;		/* Single character GMT option code */
 	char long_option[GMT_LEN256-1];		/* Name of corresponding long option */
-	char short_directives[GMT_LEN32];	/* Single character directives, comma-separated */
+	char short_directives[GMT_LEN64];	/* Single character directives, comma-separated */
 	char long_directives[GMT_LEN256];	/* Long name directives, comma-separated */
-	char short_modifiers[GMT_LEN32];	/* Single character modifiers, comma-separated */
+	char short_modifiers[GMT_LEN64];	/* Single character modifiers, comma-separated */
 	char long_modifiers[GMT_LEN256];	/* Long name modifiers, comma-separated */
 	unsigned int transproc_mask;	/* Translation processing mask indicating special
                                            behavior, e.g., multi-directive, etc., support */

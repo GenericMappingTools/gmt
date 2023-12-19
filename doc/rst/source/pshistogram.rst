@@ -14,7 +14,7 @@ Synopsis
 
 **gmt pshistogram** [ *table* ]
 |-J|\ **x**\|\ **X**\ *parameters*
-|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] | |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*\ [**+b**] ]

@@ -73,11 +73,12 @@ struct GRD2CPT_CTRL {
 		char *file;
 		unsigned int levels;
 	} E;
-	struct GRD2CPT_F {	 /* -F[r|R|h|c|x][+c[<label>]] */
+	struct GRD2CPT_F {	 /* -F[R|c|g|h|r|x][+c[<label>]][+k<keys>] */
 		bool active;
 		bool cat;
 		unsigned int model;
 		char *label;
+		char *key;
 	} F;
 	struct GRD2CPT_G {	/* -Glow/high for input CPT truncation */
 		bool active;
@@ -151,9 +152,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s [-A<transparency>[+a]] [-C<cpt>] [-D[i|o]] [-E[<nlevels>][+c][+f<file>]] "
-		"[-F[R|r|h|c|x][+c[<label>]]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] "
+		"[-F%s] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] "
 		"[%s] [-Sh|l|m|u] [-T<start>/<stop>/<inc>|<n>] [%s] [-W[w]] [-Z] [%s] [%s] [%s] [%s]\n",
-		name, GMT_INGRID, H_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+		name, GMT_INGRID, GMT_COLORMODES_OPT, H_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -172,18 +173,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Alternatively, append <nlevels> to sample equidistant color levels from zmin to zmax. "
 		"Instead, append +c to use the cumulative density function (cdf) to set color bounds. "
 		"Append +f<file> to save the CDF table to a file.");
-	GMT_Usage (API, 1, "\n-F[R|r|h|c][+c[<label>]]");
-	GMT_Usage (API, -2, "Select the color model for output [Default uses the input model]:");
-	GMT_Usage (API, 3, "R: Output r/g/b or grayscale or colorname.");
-	GMT_Usage (API, 3, "r: Output r/g/b only.");
-	GMT_Usage (API, 3, "h: Output h-s-v.");
-	GMT_Usage (API, 3, "c: Output c/m/y/k.");
-	GMT_Usage (API, 3, "x: Output hex #rrggbb only.");
-	GMT_Usage (API, -2, "One modifier controls generation of categorical labels:");
-	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
-		"The <label>, if appended, sets the labels for each category. It may be a "
-		"comma-separated list of category names, or <start>[-] where we automatically build "
-		"labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.");
+	gmt_explain_cpt_output (API, 'F');
 	GMT_Usage (API, 1, "\n-G<zlo>/<zhi>");
 	GMT_Usage (API, -2, "Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>. "
 		"To accept one of the incoming limits, set that limit to NaN.");
@@ -305,17 +295,26 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Set color model for output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "ck", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
 					if (txt_a[0]) Ctrl->F.label = strdup (txt_a);
 				}
+				if (gmt_get_modifier (opt->arg, 'k', txt_a)) {
+					Ctrl->F.cat = true;
+					if (txt_a[0]) Ctrl->F.key = strdup (txt_a);
+				}
 				switch (opt->arg[0]) {
+					case '\0': case '+': case 'R': Ctrl->F.model = GMT_RGB; break;
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
+					case 'g': Ctrl->F.model = GMT_GRAY; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
 					case 'c': Ctrl->F.model = GMT_CMYK; break;
 					case 'x': Ctrl->F.model = GMT_RGB + GMT_HEX_COLOR; break;
-					default:  Ctrl->F.model = GMT_RGB; break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized directive %c\n", opt->arg[0]);
+						n_errors++;
+						break;
 				}
 				break;
 			case 'G':	/* truncate incoming CPT */
@@ -711,7 +710,8 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active && Ctrl->E.levels == 0) {	/* Use existing CPT structure, just linearly change z */
 		if ((Pout = GMT_Duplicate_Data (API, GMT_IS_PALETTE, GMT_DUPLICATE_ALLOC, Pin)) == NULL) return (API->error);
-		gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max);
+		if ((gmt_stretch_cpt (GMT, Pout, Ctrl->L.min, Ctrl->L.max)) == GMT_PARSE_ERROR)
+			Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)
 			gmt_invert_cpt (GMT, Pout);	/* Also flip the colors */
 		cpt_flags = 0;
@@ -876,20 +876,14 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
-	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
-		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
-		if (Ctrl->F.label) {	/* Want categorical labels */
-			unsigned int ns = 0;
-			char **label = gmt_cat_cpt_strings (GMT, Ctrl->F.label, Pout->n_colors, &ns);
-			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
-				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
-				Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
-			}
-			gmt_M_free (GMT, label);
-		}
-	}
 
 	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
+	if (Ctrl->F.model & GMT_GRAY) cpt_flags = GMT_CPT_GRAY_SET;	/* Controls if final CPT should be converted to gray via YIQ */
+
+	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
+		if ((API->error = gmt_prepare_categorical_cpt (GMT, Ctrl->F.label, Ctrl->F.key, Pout)))
+			Return (API->error);
+	}
 
 	if (write && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_NOERROR)
 		error = API->error;

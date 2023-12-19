@@ -14,9 +14,9 @@ Synopsis
 
 **gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
-[ |-C|\ [*cpt*]]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
-[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
@@ -161,19 +161,21 @@ Optional Arguments
 .. _-W:
 
 **-W**\ **c**\|\ **m**\|\ **f**\ *pen*
+    Sets pen for contours, mesh, and facade lines.  Choose among
+    these directives:
 
-    **-Wc**
-        Draw contour lines on top of surface or mesh (not image). Append pen
-        attributes used for the contours. [Default: width = 0.75p, color =
-        black, style = solid].
-    **-Wm**
-        Sets the pen attributes used for the mesh. [Default: width = 0.25p,
-        color = black, style = solid]. You must also select **-Qm** or
-        **-Qsm** for meshlines to be drawn.
-    **-Wf**
-        Sets the pen attributes used for the facade. [Default: width =
-        0.25p, color = black, style = solid]. You must also select |-N|
-        for the facade outline to be drawn.
+    - **c**: Append the desired contour pen.
+      Draw contour lines on top of surface or mesh (not image). Append pen
+      attributes used for the contours. [Default: width = 0.75p, color =
+      black, style = solid].
+    - **f**: Append the desired facade pen.
+      Sets the pen attributes used for the facade. [Default: width =
+      0.25p, color = black, style = solid]. You must also select |-N|
+      for the facade outline to be drawn.
+    - **m**: Append the desired mesh pen.
+      Sets the pen attributes used for the mesh. [Default: width = 0.25p,
+      color = black, style = solid]. You must also select **-Qm** or
+      **-Qsm** for meshlines to be drawn.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
@@ -191,6 +193,8 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_grdresample.rst_
 
