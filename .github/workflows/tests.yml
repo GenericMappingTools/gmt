@@ -177,7 +177,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Upload build directory if failed
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: BuildDirectory-${{ runner.os }}
           path: build/
