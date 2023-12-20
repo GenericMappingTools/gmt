@@ -2051,7 +2051,7 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 	/* Set the blend color for image transparency */
 	//gmt_M_rgb_copy (Conf->tr_rgb, (Ctrl->Q.transp_color) ? Ctrl->Q.rgb : GMT->current.map.frame.fill[GMT_Z].rgb);
 	gmt_M_rgb_copy (Conf->tr_rgb, GMT->current.map.frame.fill[GMT_Z].rgb);
-	if (!got_z_grid) Ctrl->Q.mask_color = true;
+	if (!got_z_grid && Conf->Image && header_work->n_bands == 4) Ctrl->Q.mask_color = true;
 	if (byte_image_no_cmap) {	/* Check if we have a nan_value (No data pixel) */
 		if (gmt_M_is_dnan (Conf->Image->header->nan_value) || irint (Conf->Image->header->nan_value) == 0 || irint (Conf->P->data[0].z_low) == 1) { /* Nodata given as 0 */
 			Ctrl->Q.active = true;
@@ -2198,7 +2198,8 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 					grdimage_img_color_with_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
 			else {	/* No intensity */
-				Ctrl->Q.active = true;
+				//Ctrl->Q.active = true;
+				Ctrl->Q.active = Ctrl->Q.mask_color;
 				if (gray_only)	/* Image, grayscale, no intensity */
 					grdimage_img_gray_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (Ctrl->M.active) 	/* Image, color converted to gray, with intensity */
