@@ -171,9 +171,6 @@ Optional Arguments
 **-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "dry" areas. Append the shade, color,
     or pattern; or give no argument for clipping [Default is no fill].
-    **Note**: If you select a pattern fill and no |-S| then the background (ocean)
-    will be covered up. Workaround is to set up a clip path first (with |-G|)
-    then overlay your pattern and finally use |-C| to turn off the clipping.
 
 .. _-I:
 
