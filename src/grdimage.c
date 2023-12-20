@@ -1891,10 +1891,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (cpt) gmt_M_str_free (cpt);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
 			Conf->P = P;
+			if (Ctrl->Q.z_given)
+				(void)gmt_get_rgb_from_z (GMT, Conf->P, Ctrl->Q.value, Ctrl->Q.rgb);
+			else
+				(void)gmt_get_rgb_from_z (GMT, Conf->P, GMT->session.d_NaN, Ctrl->Q.rgb);
 			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
 			if (Ctrl->Q.active) {	/* Obtain the transparent color based on P and z-value or given color */
-				if (Ctrl->Q.z_given)
-					(void)gmt_get_rgb_from_z (GMT, Conf->P, Ctrl->Q.value, Ctrl->Q.rgb);
 				Ctrl->Q.transp_color = true;
 				Ctrl->Q.mask_color = true;
 			}
