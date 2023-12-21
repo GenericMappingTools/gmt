@@ -1185,7 +1185,9 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 }
 
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
-	/* Function that fills out the image in the special case of 1) image, 2) color, 3) no intensity */
+	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
+	bool transparency = (Conf->Image->header->n_bands == 4);
+	bool pixel_layout = strncmp (Conf->Image->header->mem_layout, "BRP", 3U);
 	int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t n_bands = Conf->Image->header->n_bands;
@@ -1195,19 +1197,37 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
+	if (pixel_layout) {
+		uint64_t size = H_s->size;
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,Ctrl,H_s,image)
 #endif
-	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
-		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
-		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
-		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
-			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
-			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
-			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
-			//rgb[3] = Conf->Image->data[node_s];
+		for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
+			byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+			kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+			for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
+				node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
+				for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s + k * size]);
+				if (transparency && Conf->Image->data[node_s + k * size] < 255)	/* Dealing with an image with transparency values less than 255 */
+					grdimage_img_set_transparency (GMT, Conf->Image->data[node_s + k * size], rgb);
+				for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
+			}
+		}
+	}
+	else {
+#ifdef _OPENMP
+#pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,Ctrl,H_s,image)
+#endif
+		for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
+			byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
+			kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+			for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
+				node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
+				for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
+				if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+					grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+				for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
+			}
 		}
 	}
 }
