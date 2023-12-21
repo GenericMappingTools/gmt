@@ -78,13 +78,12 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *alpha*\ [**+o**]
-    Get a constant alpha (0-1), or a grid (0-1) or image (0-255, which we normalize
-    to 0-1 with alphas. The alphas are considered to be transparencies, meaning 0
-    represents opaque and 1 means 100% transparency. The final image will have a
-    transparency layer add based on these values. If a grid is given then NaN nodes
-    are assumed to be transparent. Fully opaque nodes have zero values. If your
-    constant or grid values are opacities instead transparencies, append modifier **+o**
-    and assume a NaN or 1 means 100% opacity.
+    Get a constant alpha (0-1), or a grid (0-1 or NaN) or image (0-255, which we normalize
+    to 0-1). The alphas are considered to be transparencies, so that 0 means opaque pixels
+    and 1 (or NaN) means 100% transparency *t*. The output image will have a transparency layer
+    added based on these values. Fully opaque nodes must be zero. If your constant or grid
+    represent opacity (*o*) instead of transparency, append modifier **+o** and we assume a
+    NaN or 1 means 100% opacity, and of course *t* = 1 - *o*.
 
 .. _-C1:
 
