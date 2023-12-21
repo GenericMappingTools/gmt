@@ -127,9 +127,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify file name for output %s file. "
 		"Note: With -D the name is a template and must contain %%c to be used for the layer code.", type[API->external]);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A<transp>");
+	GMT_Usage (API, 1, "\n-A<transp>[+o]");
 	GMT_Usage (API, -2, "Specify a transparency grid or image, or set a constant transparency value [no transparency]. "
-		"An image must have 0-255 values (which we normalize to 0-1), while a grid or constant must be in the 0-1 range.");
+		"An image must have values in the 0-255 range (which we normalize to 0-1), while a grid or a constant must be in the 0-1 range. "
+		"Normalized transparency of unity is 100% transparent pixel. Add modifier +o to instead consider 1 100% opacity");
 	GMT_Usage (API, 1, "\n-C With no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
 		"You may optionally supply transparency (-A) and/or intensity (-I).  With CPT arguments we expect a "
 		"single grid and we convert it to a color image via the CPT information.");
@@ -164,7 +165,7 @@ GMT_LOCAL char *grdmix_parseitem (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Bad value or a file that was not found: %s\n", opt->option, opt->arg);
 		X->mode = 2;
 	}
-	else {
+	else {	/* Got a valid float */
 		X->value = atof (opt->arg);
 		X->mode = 1;
 	}
@@ -199,8 +200,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				if ((f = strchr (opt->arg, "+o"))) {
+					Ctrl->A.opacity = true;
+					f[0] = '\0';	/* Hide modifier */
+				}
 				Ctrl->In.file[ALPHA] = grdmix_parseitem (GMT, opt, &(Ctrl->A));
 				if (Ctrl->A.mode == 2) n_errors++;
+				if (f) f[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'C':
