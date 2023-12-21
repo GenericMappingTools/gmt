@@ -129,8 +129,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<transp>");
 	GMT_Usage (API, -2, "Specify a transparency grid or image, or set a constant transparency value [no transparency]. "
-		"An image must have 0-255 values, while a grid or constant must be in the 0-1 range.");
-	GMT_Usage (API, 1, "\n-C ith no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
+		"An image must have 0-255 values (which we normalize to 0-1), while a grid or constant must be in the 0-1 range.");
+	GMT_Usage (API, 1, "\n-C With no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
 		"You may optionally supply transparency (-A) and/or intensity (-I).  With CPT arguments we expect a "
 		"single grid and we convert it to a color image via the CPT information.");
 	GMT_Usage (API, 1, "\n-D Deconstruct an image into 1 or 3 output component grids, plus any transparency. "
