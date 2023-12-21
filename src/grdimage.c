@@ -1195,7 +1195,6 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
-	fprintf (stderr, "mem_layout = %s\n", Conf->Image->header->mem_layout);
 	if (!pixel_layout) {	/* Expect TRP and 3 bands */
 		uint64_t size = H_s->size;
 #ifdef _OPENMP
