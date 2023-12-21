@@ -1089,8 +1089,8 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	transparency = (tr_band) ? &(I->data[tr_band*H->size]) : I->alpha;
 	gmt_M_memset (T, 1, struct GRDIMAGE_TRANSP);	/* Start with nuthin' */
 	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
-		node = gmt_M_ijpgi (H, row, 0);	/* Start pixel of this image row */
-		for (col = 0; col < H->n_columns; col++, node++) {	/* March along this scanline */
+		node = gmt_M_ijpgi (H, row, 0) + tr_band;	/* Start pixel of this image row */
+		for (col = 0; col < H->n_columns; col++, node += H->n_bands) {	/* March along this scanline */
 			tr = (unsigned int)transparency[node];	/* Get transparency values */
 			if (opacity) tr = 255 - tr;
 			T->alpha[tr]++;	/* Count frequency of transparency values */
@@ -1186,7 +1186,6 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
 	bool pixel_layout = strncmp (Conf->Image->header->mem_layout, "BRP", 3U);
 	int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
@@ -1196,8 +1195,8 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
-
-	if (pixel_layout) {
+	fprintf (stderr, "mem_layout = %s\n", Conf->Image->header->mem_layout);
+	if (!pixel_layout) {	/* Expect TRP and 3 bands */
 		uint64_t size = H_s->size;
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,Ctrl,H_s,image)
@@ -1209,23 +1208,23 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 				node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 				for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s + k * size]);
 				if (transparency && Conf->Image->data[node_s + k * size] < 255)	/* Dealing with an image with transparency values less than 255 */
-					grdimage_img_set_transparency (GMT, Conf->Image->data[node_s + k * size], rgb);
+					grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s + k * size], rgb);
 				for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 			}
 		}
 	}
-	else {
+	else {	/* Expect BRPA and 4 bands */
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,Ctrl,H_s,image)
 #endif
 		for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 			byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
-			kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
+			kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row in the image */
 			for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 				node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 				for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 				if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-					grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+					grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 				for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 			}
 		}
@@ -1535,7 +1534,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	else if (Ctrl->Q.invert) {	/* Cannot invert color for grid-derived images */
+	else if (ftype == GMT_IS_GRID && Ctrl->Q.invert) {	/* Cannot invert color for grid-derived images */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +i with a grid\n");
 			Return (GMT_RUNTIME_ERROR);
 	}

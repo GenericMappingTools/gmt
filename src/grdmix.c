@@ -47,6 +47,7 @@
 
 struct GRDMIX_AIW {	/* For various grid, image, or constant arguments */
 	bool active;
+	bool opacity;	/* true if we hvae opacity instead of transparency [Default] */
 	unsigned int mode;	/* 0 a file, 1 a constant */
 	char *file;
 	double value;
@@ -130,7 +131,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-A<transp>[+o]");
 	GMT_Usage (API, -2, "Specify a transparency grid or image, or set a constant transparency value [no transparency]. "
 		"An image must have values in the 0-255 range (which we normalize to 0-1), while a grid or a constant must be in the 0-1 range. "
-		"Normalized transparency of unity is 100% transparent pixel. Add modifier +o to instead consider 1 100% opacity");
+		"Normalized transparency of unity is 100% transparent pixel. Add modifier +o to instead consider NaN or 1 100% opacity");
 	GMT_Usage (API, 1, "\n-C With no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
 		"You may optionally supply transparency (-A) and/or intensity (-I).  With CPT arguments we expect a "
 		"single grid and we convert it to a color image via the CPT information.");
@@ -200,7 +201,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				if ((f = strchr (opt->arg, "+o"))) {
+				if ((f = strstr (opt->arg, "+o"))) {
 					Ctrl->A.opacity = true;
 					f[0] = '\0';	/* Hide modifier */
 				}
@@ -381,7 +382,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 
-	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0}, transparency;
 
 	struct GMT_GRID *G_in[N_ITEMS], *G = NULL;
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
@@ -769,8 +770,11 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(node) shared(H,I,alpha)
 #endif
-		for (node = 0; node < (int64_t)H->size; node++)	/* Scale to 0-255 range */
-			I->alpha[node] = gmt_M_is_dnan (alpha[node]) ? 255 : gmt_M_u255 (alpha[node]);
+		for (node = 0; node < (int64_t)H->size; node++)	{	/* Scale to 0-255 range */
+			transparency = gmt_M_is_dnan (alpha[node]) ? 1.0 : alpha[node];	/* NaN means full transparency */
+			if (Ctrl->A.opacity) transparency = 1.0 - alpha[node];	/* Turns out we got opacities */
+			I->alpha[node] = gmt_M_u255 (transparency);
+		}
 		gmt_M_free (GMT, alpha);
 	}
 

@@ -59,7 +59,7 @@ replaced by constant values instead.
 Required Arguments
 ------------------
 
-*raster?*
+*raster1* [ *raster2* [ *raster3*]]
     If only one is given and |-C| is not set then *raster1* must be an image.
     If two are given then *raster1* and *raster2* must both be either
     images or grids.  If three are given then they must all be grids and
@@ -83,7 +83,8 @@ Optional Arguments
     represents opaque and 1 means 100% transparency. The final image will have a
     transparency layer add based on these values. If a grid is given then NaN nodes
     are assumed to be transparent. Fully opaque nodes have zero values. If your
-    constant or grid values are opacities instead transparencies, append modifier **+o**.
+    constant or grid values are opacities instead transparencies, append modifier **+o**
+    and assume a NaN or 1 means 100% opacity.
 
 .. _-C1:
 
