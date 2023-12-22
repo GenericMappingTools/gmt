@@ -10215,8 +10215,19 @@ unsigned int gmtlib_is_string (struct GMT_CTRL *GMT, char *string) {
 	if (n_specials) return (GMT_IS_STRING);			/* Cannot be coordinates */
 	n_periods = gmt_count_char (GMT, p, '.');		/* How many periods. No valid coordinate has more than one */
 	if (n_periods == 2 && n_digits) {	/* Might be dd.mm.yyyy section */
-		if (n_text == 0 || (n_text == 1 && strchr (string, 'T')))	/* Valid dd.mm.yyyy[T][hh:mm:ss.xxx...] string */
+		if (n_text == 0 || (n_text == 1 && strchr (string, 'T'))) {	/* Valid dd.mm.yyyy[T][hh:mm:ss.xxx...] string */
+			char *text = strdup (string), *c = NULL;
+			int d, m, y, k = 0;
+			if ((c = strchr (text, 'T'))) c[0] = '\0';	/* Truncate at the possible T, so no must be dd.mm.yyyy */
+			gmt_strrepc (text, '.', ' ');	/* Replace the 2 periods with spaces */
+			if (sscanf (text, "%d %d %d", &d, &m, &y) != 3) {
+				gmt_M_str_free (text);
+				return (GMT_IS_STRING);
+			}
+			gmt_M_str_free (text);
+			if ((d < 1 || d > 31) || (m < 1 || m > 12)) return (GMT_IS_STRING);
 			return (GMT_IS_ABSTIME);
+		}
 		else
 			return (GMT_IS_STRING);
 	}
