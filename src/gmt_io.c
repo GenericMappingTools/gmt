@@ -10214,6 +10214,12 @@ unsigned int gmtlib_is_string (struct GMT_CTRL *GMT, char *string) {
 	n_specials = gmtio_count_special (GMT, p);			/* Non-printables, hashtags, semi-columns, parentheses, etc. */
 	if (n_specials) return (GMT_IS_STRING);			/* Cannot be coordinates */
 	n_periods = gmt_count_char (GMT, p, '.');		/* How many periods. No valid coordinate has more than one */
+	if (n_periods == 2 && n_digits) {	/* Might be dd.mm.yyyy section */
+		if (n_text == 0 || (n_text == 1 && strchr (string, 'T')))	/* Valid dd.mm.yyyy[T][hh:mm:ss.xxx...] string */
+			return (GMT_IS_ABSTIME);
+		else
+			return (GMT_IS_STRING);
+	}
 	if (n_periods > 1) return (GMT_IS_STRING);		/* Cannot be coordinates */
 	n_colons = gmt_count_char (GMT, p, ':');		/* Number of colons.  Max is 2 for hh:mm:ss */
 	if (n_colons > 2) return (GMT_IS_STRING);		/* Cannot be coordinates */
@@ -10229,6 +10235,7 @@ unsigned int gmtlib_determine_datatype (struct GMT_CTRL *GMT, char *text) {
 
 	unsigned int code = gmtlib_is_string (GMT, text);
 	if (code == GMT_IS_STRING) return (code);	/* Detect junk first */
+	if (code == GMT_IS_ABSTIME) return (code);	/* Detect Non-ISO European dates dd.mm.yyyy[T] */
 	if (gmtio_is_float (GMT, text, true, 0.0))	/* Found a plain float */
 		return (GMT_IS_FLOAT);
 	code = gmtio_is_dimension (GMT, text);		/* Check for dimensions and intervals */
@@ -10243,20 +10250,27 @@ unsigned int gmtlib_determine_datatype (struct GMT_CTRL *GMT, char *text) {
 }
 
 
-void gmtlib_string_parser (struct GMT_CTRL *GMT, char *file)
-{	/* Debug function for testing string parser gmtlib_determine_datatype on input list */
+unsigned int gmtlib_string_parser (struct GMT_CTRL *GMT, char *file)
+{	/* Debug function for testing string parser gmtlib_determine_datatype on input list.
+	 * Expects input records to be <whateverarg>|NAME, e.g.
+	 * 	2001-12-24T20:01:02.333|ABSTIME
+	 * and it will then echo out that and the name it detected examining <wateverarg> */
 	int k, c;
 	unsigned int kind;
 	FILE *fp = fopen (file, "r");
 	char line[GMT_LEN256] = {""};
 	if (fp == NULL) {	/* Not good, wrong filename? */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -/: File %s not found\n", file);
-		return;
+		return (GMT_RUNTIME_ERROR);
 	}
 	while (gmt_fgets (GMT, line, GMT_LEN256, fp)) {
 		if (line[0] == '#') {	/* Just a header; echo it out */
 			printf ("%s", line);
 			continue;
+		}
+		if (strchr (line, '|') == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Data file for -/ testing does not have format <string>|<NAME>\n");
+			return (GMT_RUNTIME_ERROR);
 		}
 		gmt_chop (line);		/* Remove trailing newline/CR */
 		k = strlen (line) - 1;		/* Last position in line */
@@ -10270,4 +10284,5 @@ void gmtlib_string_parser (struct GMT_CTRL *GMT, char *file)
 		printf ("%14s\n", gmtio_type_name(kind));	/* Print data type detected */
 	}
 	fclose (fp);
+	return (GMT_NOERROR);
 }
