@@ -1253,17 +1253,14 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
-			//if (!gmt_M_same_rgb (rgb, Conf->tr_rgb)) {
-				if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
-					node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
-					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
-				}
-				//else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
-				else	/* A constant (ambient) intensity was given via -I */
-					gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
+			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
+				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
+				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
+			else	/* A constant (ambient) intensity was given via -I */
+				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
-		//}
+		}
 	}
 }
 
