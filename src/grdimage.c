@@ -1186,7 +1186,7 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool pixel_layout = !strncmp (Conf->Image->header->mem_layout, "BRP", 3U);
+	bool pixel_layout = !strncmp (Conf->Image->header->mem_layout, "TRP", 3U);
 	int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t n_bands = Conf->Image->header->n_bands;
@@ -1195,7 +1195,7 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
-	if (!pixel_layout) {	/* Expect TRP and 3 bands */
+	if (pixel_layout) {	/* Expect TRP and 3 bands */
 		uint64_t size = H_s->size;
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,rgb) shared(GMT,Conf,Ctrl,H_s,image)
@@ -1259,8 +1259,8 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 			}
 			else	/* A constant (ambient) intensity was given via -I */
 				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
-			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 		}
+			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 	}
 }
 
