@@ -3527,7 +3527,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 				code = GMT_IS_IMAGE;
 			else if (I->type == GMT_SHORT && I->header->n_bands == 1)	/* No so sure here but a Int16 is most likely a grid */
 				code = GMT_IS_GRID;
-			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
+			else if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
 				code = GMT_IS_GRID;
 			else	/* Here we only have one band so it is a grid */
 				code = GMT_IS_GRID;
