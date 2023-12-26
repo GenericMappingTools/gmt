@@ -45,17 +45,18 @@ jobs:
       matrix:
         image:
           # Ubuntu: https://en.wikipedia.org/wiki/Ubuntu_version_history#Table_of_versions
-          - ubuntu:20.04    # CMake 3.16.3 + GNU 9.3.0;  EOL: 2025-04-23
-          - ubuntu:22.04    # CMake 3.22.1 + GNU 11.2.0; EOL: 2027-04-21
-          - ubuntu:23.04    # CMake 3.25.1 + GNU 12.2.0; EOL: 2024-01-20
+          - ubuntu:20.04    # CMake 3.16.3 + GNU 9.3.0;  EOL: 2025-05-29
+          - ubuntu:22.04    # CMake 3.22.1 + GNU 11.2.0; EOL: 2027-06-01
+          - ubuntu:23.04    # CMake 3.25.1 + GNU 12.2.0; EOL: 2024-01-25
+          - ubuntu:23.10    # CMake 3.27.4 + GNU 11.2.0; EOL: 2024-07-01
           # Debian: https://en.wikipedia.org/wiki/Debian_version_history#Release_table
           - debian:10       # CMake 3.13.4 + GNU 8.3.0;  EOL: 2024-06-01
           - debian:11       # CMake 3.18.4 + GNU 10.2.1; EOL: 2026-06-01
           - debian:12       # CMake 3.25.1 + GNU 12.2.0; EOL: 2028-06-01
           - debian:sid      # rolling release with latest versions
           # Fedora: https://en.wikipedia.org/wiki/Fedora_Linux_release_history
-          - fedora:37       # CMake 3.24.1 + GNU 12.2.1; EOL: 2023-11-14
           - fedora:38       # CMake 3.26.2 + GNU 13.0.1; EOL: 2024-05-14
+          - fedora:39       # CMake 3.27.7 + GNU 13.2.1; EOL: 2024-11-12
           - fedora:rawhide  # rolling release with latest versions
 
     steps:
