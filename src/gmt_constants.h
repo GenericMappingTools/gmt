@@ -71,6 +71,7 @@
 
 #define GMT_CONV15_LIMIT 1.0e-15	/* Very tight convergence limit or "close to zero" limit */
 #define GMT_CONV12_LIMIT 1.0e-12	/* Tight limit for gaps/overlaps in CPT z-values */
+#define GMT_CONV9_LIMIT	 1.0e-9		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_CONV8_LIMIT	 1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_CONV6_LIMIT	 1.0e-6		/* 1 ppm */
 #define GMT_CONV5_LIMIT	 1.0e-5		/* 10 ppm */

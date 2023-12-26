@@ -2054,7 +2054,7 @@ GMT_LOCAL void gmtproj_vmollweide (struct GMT_CTRL *GMT, double lon0, double sca
 
 	gmtproj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.w_x = GMT->current.proj.EQ_RAD * D2R * d_sqrt (8.0) / M_PI;
+	GMT->current.proj.w_x = GMT->current.proj.EQ_RAD * D2R * 2.0 * M_SQRT2 / M_PI;
 	GMT->current.proj.w_y = GMT->current.proj.EQ_RAD * M_SQRT2;
 	GMT->current.proj.w_iy = 1.0 / GMT->current.proj.w_y;
 	GMT->current.proj.w_r = 0.25 * (scale * GMT->current.proj.M_PR_DEG * 360.0);	/* = Half the minor axis */
@@ -2097,7 +2097,9 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 
 	phi = asin (y * GMT->current.proj.w_iy);
 	*lon = x / (GMT->current.proj.w_x * cos(phi));
-	if (fabs (*lon) > 180.0) {	/* Horizon */
+	if ((fabs (*lon) - 180.0) < GMT_CONV9_LIMIT)
+        *lon = copysign (180.0, *lon);
+    if (fabs (*lon) > 180.0) {   /* Beyond Horizon */
 		*lat = *lon = GMT->session.d_NaN;
 		return;
 	}
