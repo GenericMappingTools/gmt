@@ -2098,8 +2098,8 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 	phi = asin (y * GMT->current.proj.w_iy);
 	*lon = x / (GMT->current.proj.w_x * cos(phi));
 	if ((fabs (*lon) - 180.0) < GMT_CONV9_LIMIT)
-        *lon = copysign (180.0, *lon);
-    if (fabs (*lon) > 180.0) {   /* Beyond Horizon */
+	*lon = copysign (180.0, *lon);
+	if (fabs (*lon) > 180.0) {   /* Beyond Horizon */
 		*lat = *lon = GMT->session.d_NaN;
 		return;
 	}
