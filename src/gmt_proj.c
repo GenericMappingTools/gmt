@@ -2105,9 +2105,9 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 	*lon += GMT->current.proj.central_meridian;
 	phi2 = 2.0 * phi;
 	*lat = asind ((phi2 + sin (phi2)) / M_PI);
-	if (fabs (*lat) > 90.0)
+	if (fabs (*lat) > 90.0)	/* Sanity check */
 		*lat = copysign (90.0, *lat);
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
+	else if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
 
 /* -JH HAMMER-AITOFF EQUAL AREA PROJECTION */
