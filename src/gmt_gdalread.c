@@ -1454,3 +1454,4 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	return (GMT_NOERROR);
 }
+
