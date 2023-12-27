@@ -152,54 +152,57 @@ struct GMT_GRID_HEADER_HIDDEN {
 	/* ---- Variables "hidden" from the API ----
 	 * This section is flexible.  It is not copied to any grid or image header
 	 * or stored in any file.  It is considered private */
-	unsigned int trendmode;          /* Holds status for detrending of grids.  0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
-	unsigned int arrangement;        /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */
-	unsigned int BC[4];              /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
-	unsigned int grdtype;            /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype in gmt_grd.h] */
-	unsigned int reset_pad;          /* true in cases where we need a subset from a memory grid and must compute node index separately */
-	char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
-	char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
-	char *title;					 /* Title string not limited to GMT_GRID_TITLE_LEN80 characters */
-	char *cpt; 						 /* Name of default CPT for a remote grid subset written via grdcut */
-	char *command;					 /* Command/history string not limited to GMT_GRID_TITLE_LEN80 characters */
-	char *remark;					 /* Remark/description string not limited to GMT_GRID_REMARK_LEN160 characters */
-	int row_order;                   /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
-	int z_id;                        /* NetCDF: id of z field */
-	int ncid;                        /* NetCDF: file ID */
-	int xy_dim[2];                   /* NetCDF: dimension order of x and y; normally {1, 0} */
-	int xyz_id[3];                   /* NetCDF: id of x, y, and z (if cube) field */
-	size_t t_index[3];               /* NetCDF: index of higher coordinates */
-	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
-	size_t n_alloc;                  /* Bytes allocated for this grid */
-	unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
-	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
-	char   flags[4];                 /* Flags used for ESRI grids */
-	char  *pocket;                   /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
-	double bcr_threshold;            /* sum of cardinals must >= threshold in bilinear; else NaN */
-	unsigned int has_NaNs;           /* Is 2 if the grid contains any NaNs, 1 if it does not, and 0 if no check has yet happened */
-	unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
-	unsigned int bcr_n;              /* Width of the interpolation function */
-	unsigned int nxp;                /* if X periodic, nxp > 0 is the period in pixels  */
-	unsigned int nyp;                /* if Y periodic, nxp > 0 is the period in pixels  */
-	unsigned int no_BC;              /* If true we skip BC stuff entirely */
-	unsigned int gn;                 /* true if top    edge will be set as N pole  */
-	unsigned int gs;                 /* true if bottom edge will be set as S pole  */
-	unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
-	unsigned int var_spacing[2];     /* true if a netcdf grid has non-equidistant x and/or y arrays */
-	enum GMT_enum_type orig_datatype; /* GMT_FLOAT, GMT_SHORT, etc how the source grid was represented */
-	size_t z_chunksize[2];           /* chunk size (lat,lon) */
-	unsigned int z_scale_given;	 /* 1 if +s was specified */
-	unsigned int z_offset_given;	 /* 1 if +o was specified */
-	unsigned int z_shuffle;          /* if shuffle filter is turned on */
-	unsigned int z_deflate_level;    /* if deflate filter is in use */
-	unsigned int z_scale_autoadjust; /* if z_scale_factor should be auto-detected */
-	unsigned int z_offset_autoadjust;/* if z_add_offset should be auto-detected */
-					 /* xy_*[] is separate settings for GMT_IN and GMT_OUT */
-	unsigned int xy_adjust[2];	 /* 1 if +u<unit> was parsed and scale set, 3 if xy has been adjusted, 0 otherwise */
-	unsigned int xy_mode[2];	 /* 1 if +U<unit> was parsed, 0 otherwise */
-	unsigned int xy_unit[2];	 /* Unit enum specified via +u<unit> */
-	double xy_unit_to_meter[2];	 /* Scale, given xy_unit, to convert xy from <unit> to meters */
-	uint64_t (*index_function) (struct GMT_GRID_HEADER *, uint64_t, uint64_t, uint64_t);	/* Pointer to index function (for images only) */
+	unsigned int trendmode;               /* Holds status for detrending of grids.  0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
+	unsigned int arrangement;             /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */
+	unsigned int BC[4];                   /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
+	unsigned int grdtype;                 /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype in gmt_grd.h] */
+	unsigned int reset_pad;               /* true in cases where we need a subset from a memory grid and must compute node index separately */
+	char name[GMT_GRID_NAME_LEN256];      /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
+	char varname[GMT_GRID_VARNAME_LEN80]; /* NetCDF: variable name */
+	char *title;					      /* Title string not limited to GMT_GRID_TITLE_LEN80 characters */
+	char *cpt; 						      /* Name of default CPT for a remote grid subset written via grdcut */
+	char *command;					      /* Command/history string not limited to GMT_GRID_TITLE_LEN80 characters */
+	char *remark;					      /* Remark/description string not limited to GMT_GRID_REMARK_LEN160 characters */
+	int row_order;                        /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
+	int z_id;                             /* NetCDF: id of z field */
+	int ncid;                             /* NetCDF: file ID */
+	int xy_dim[2];                        /* NetCDF: dimension order of x and y; normally {1, 0} */
+	int xyz_id[3];                        /* NetCDF: id of x, y, and z (if cube) field */
+	size_t t_index[3];                    /* NetCDF: index of higher coordinates */
+	size_t data_offset;                   /* NetCDF: distance from the beginning of the in-memory grid */
+	size_t n_alloc;                       /* Bytes allocated for this grid */
+	unsigned int stride;                  /* NetCDF: distance between two rows in the in-memory grid */
+	double r_inc[2];                      /* Reciprocal incs, i.e. 1/inc */
+	double nan_rgb[4];                    /* Transparent NaN color in an indexed RGB image, with nan_value as that index */
+	char flags[4];                        /* Flags used for ESRI grids */
+	char *pocket;                         /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+	double bcr_threshold;                 /* sum of cardinals must >= threshold in bilinear; else NaN */
+	unsigned int has_NaN_rgb;             /* Is 1 if an indexed RGB image had a specific NaN color for transparency */
+	unsigned int has_NaNs;                /* Is 2 if the grid contains any NaNs, 1 if it does not, and 0 if no check has yet happened */
+	unsigned int bcr_interpolant;         /* Interpolation function used (0, 1, 2, 3) */
+	unsigned int bcr_n;                   /* Width of the interpolation function */
+	unsigned int nxp;                     /* if X periodic, nxp > 0 is the period in pixels  */
+	unsigned int nyp;                     /* if Y periodic, nxp > 0 is the period in pixels  */
+	unsigned int no_BC;                   /* If true we skip BC stuff entirely */
+	unsigned int gn;                      /* true if top    edge will be set as N pole  */
+	unsigned int gs;                      /* true if bottom edge will be set as S pole  */
+	unsigned int is_netcdf4;              /* true if netCDF-4/HDF5 format */
+	unsigned int var_spacing[2];          /* true if a netcdf grid has non-equidistant x and/or y arrays */
+	enum GMT_enum_type orig_datatype;     /* GMT_FLOAT, GMT_SHORT, etc how the source grid was represented */
+	size_t z_chunksize[2];                /* chunk size (lat,lon) */
+	unsigned int z_scale_given;           /* 1 if +s was specified */
+	unsigned int z_offset_given;          /* 1 if +o was specified */
+	unsigned int z_shuffle;               /* if shuffle filter is turned on */
+	unsigned int z_deflate_level;         /* if deflate filter is in use */
+	unsigned int z_scale_autoadjust;      /* if z_scale_factor should be auto-detected */
+	unsigned int z_offset_autoadjust;     /* if z_add_offset should be auto-detected */
+                                          /* xy_*[] is separate settings for GMT_IN and GMT_OUT */
+	unsigned int xy_adjust[2];	          /* 1 if +u<unit> was parsed and scale set, 3 if xy has been adjusted, 0 otherwise */
+	unsigned int xy_mode[2];	          /* 1 if +U<unit> was parsed, 0 otherwise */
+	unsigned int xy_unit[2];	          /* Unit enum specified via +u<unit> */
+	double xy_unit_to_meter[2];	          /* Scale, given xy_unit, to convert xy from <unit> to meters */
+                                          /* Pointer to index function (for images only) */
+	uint64_t (*index_function) (struct GMT_GRID_HEADER *, uint64_t, uint64_t, uint64_t);
 };
 
 struct GMT_GRID_HIDDEN {	/* Supporting information hidden from the API */
