@@ -42,8 +42,6 @@ static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "
 
 #define GRDIMAGE_NAN_INDEX	(GMT_NAN - 3)
 
-#define SS_SCALE	M_SQRT2		/* Scale to get symbol -Ss1m to actually be 1 cm wide */
-
 /* Control structure for grdimage */
 
 struct GRDIMAGE_CTRL {
