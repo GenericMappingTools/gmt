@@ -3519,16 +3519,16 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 		struct GMT_IMAGE *I = NULL;
 		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
 			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
-			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
+			if (I->type == GMT_FLOAT)		/* No doubt in this case */
 				code = GMT_IS_GRID;
-			else if (I->type == GMT_FLOAT)		/* No doubt in this case */
-				code = GMT_IS_GRID;
-			else if (I->type == GMT_SHORT && I->header->n_bands == 1)	/* No so sure here but a Int16 is much likely a grid */
-				code = GMT_IS_GRID;
-			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
-				code = GMT_IS_IMAGE;
 			else if (I->header->n_bands > 1)	/* Whatever it is we must return multiband as an image */
 				code = GMT_IS_IMAGE;
+			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
+				code = GMT_IS_IMAGE;
+			else if (I->type == GMT_SHORT && I->header->n_bands == 1)	/* No so sure here but a Int16 is most likely a grid */
+				code = GMT_IS_GRID;
+			else if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
+				code = GMT_IS_GRID;
 			else	/* Here we only have one band so it is a grid */
 				code = GMT_IS_GRID;
 			GMT_Destroy_Data (GMT->parent, &I);
