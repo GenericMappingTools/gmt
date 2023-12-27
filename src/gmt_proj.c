@@ -2097,16 +2097,17 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 
 	phi = asin (y * GMT->current.proj.w_iy);
 	*lon = x / (GMT->current.proj.w_x * cos(phi));
-	if ((fabs (*lon) - 180.0) < GMT_CONV9_LIMIT)
-	*lon = copysign (180.0, *lon);
-	if (fabs (*lon) > 180.0) {   /* Beyond Horizon */
-		*lat = *lon = GMT->session.d_NaN;
+	if (fabs (*lon) > 180.0) {   /* Beyond horizon by a whisker so set to 180/0 depending on signs */
+		*lat = 0.0;
+		*lon = copysign (180.0, *lon) + GMT->current.proj.central_meridian;
 		return;
 	}
 	*lon += GMT->current.proj.central_meridian;
 	phi2 = 2.0 * phi;
 	*lat = asind ((phi2 + sin (phi2)) / M_PI);
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
+	if (fabs (*lat) > 90.0)	/* Sanity check */
+		*lat = copysign (90.0, *lat);
+	else if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
 
 /* -JH HAMMER-AITOFF EQUAL AREA PROJECTION */
