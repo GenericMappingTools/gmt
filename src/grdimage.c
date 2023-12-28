@@ -985,6 +985,7 @@ GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIM
 	if (Conf->Transp->n_transp == 2)
 		gmt_M_rgb_only_copy (rgb, Conf->tr_rgb);
 	else {	/* Blend */
+		if (Conf->invert) t = o, o = 1 - t;
 		rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];
 		rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];
 		rgb[2] = o * rgb[2] + t * Conf->tr_rgb[2];
@@ -1426,7 +1427,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true, plot_squares = false;
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0, pad_mode = 0;
 	uint64_t node, k, kk, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
-	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
+	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET, ftype2 = GMT_NOTSET;
 
 	char *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_VF_LEN] = {""}, *e = NULL;
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL;
@@ -1527,13 +1528,15 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* The input file is an ordinary image instead of a grid and -R may be required to use it */
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET] && !strstr (Ctrl->In.file, "earth_")) Ctrl->D.mode = true;
+	}
+	if (!Ctrl->D.active && (ftype2 = gmt_raster_type (GMT, Ctrl->In.file, true)) == GMT_IS_IMAGE) {
 		if (Ctrl->Q.z_given) {
-			GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +z<value> with an image\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option Q: Cannot use +z<value> with an image\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
 	else if (ftype == GMT_IS_GRID && Ctrl->Q.invert) {	/* Cannot invert color for grid-derived images */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +i with a grid\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option Q: Cannot use +i with a grid\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -1597,6 +1600,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					break;
 				case 2:
 					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Transp.value);
+					Conf->invert = Ctrl->Q.invert;	/* Flag that -Q+i was used on the image */
 					break;
 				case 3:
 					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
