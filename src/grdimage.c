@@ -1089,59 +1089,60 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	 *   T->mode == 4: T->value is dominant transparency 255
 	 */
 
-	int64_t row, col, node, n_0 = 0, n_255 = 0;
-	unsigned int k, tr, tr_max = 0, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
-	unsigned char *transparency;	/* Pointer to memory where transparency resides */
 	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
-	unsigned int rgba[4];
+	unsigned char *transparency;	/* Pointer to memory where transparency resides */
+	int64_t row, col, node, n_0 = 0, n_255 = 0;
+	unsigned int k, tr, tr_max = 0, tr_min = 255, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
+	unsigned int rgba[4], n_bands = H->n_bands;
 
-	if (H->n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies as band 1 or 4 nor in alpha */
+	if (n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies either in band 1 or 4 nor in alpha */
 
-	tr_band = (I->alpha) ? 0 : H->n_bands - 1;
-	transparency = (tr_band) ? &(I->data[tr_band*H->size]) : I->alpha;
+	tr_band = (I->alpha) ? 0 : n_bands - 1;
+	transparency = (tr_band) ? I->data : I->alpha;	/* Points to the data array with A */
 	gmt_M_memset (T, 1, struct GRDIMAGE_TRANSP);	/* Start with nuthin' */
 	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
-		node = gmt_M_ijpgi (H, row, 0) + tr_band;	/* Start pixel of this image row */
-		for (col = 0; col < H->n_columns; col++, node += H->n_bands) {	/* March along this scanline */
-	if (row == 90 && col == 180)
-		k = 0;
+		node = gmt_M_ijp (H, row, 0) + tr_band;	/* Start pixel with 4 bytes of this image row */
+		for (col = 0; col < H->n_columns; col++, node += n_bands) {	/* March along this scanline in steps of 2 (gA) or 4 (RGBA) */
 			tr = (unsigned int)transparency[node];	/* Get transparency values */
-			if (opacity) tr = 255 - tr;
+			if (opacity) tr = 255 - tr;	/* Must flip from opacity to transparency */
 			T->alpha[tr]++;	/* Count frequency of transparency values */
 		}
 	}
 	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
 		if (T->alpha[k]) {	/* Used at least once */
 			T->n_transp++;
-			if (T->alpha[k] > tr_max) tr_max = k;
+			if (T->alpha[k] < tr_min) tr_min = k;	/* Keep track of smallest value */
+			if (T->alpha[k] > tr_max) tr_max = k;	/* Keep track of largest value */
 		}
 	}
-	if (T->n_transp == 1) {		/* Constant transparency? */
+	if (T->n_transp == 1) {		/* Case 1: Constant transparency */
 		T->mode = 1;
 		T->value = tr_max;
 		T->n_dominant = T->n_transp;
 	}
-	else if (T->n_transp > 2) {	/* Cannot handle per-pixel transparency variation */
+	else if (T->n_transp > 2) {	/* Case 2: Variable transparency, not just on|off */
 		T->value = tr_max;
 		T->mode = 2;
 		T->n_dominant = T->alpha[tr_max];
 	}
-	else if (T->alpha[0] > T->alpha[255]) {	/* 0 most used of two transparencies */
+	else if (T->alpha[0] > T->alpha[255]) {	/* Case 3: 0 most used of only two transparency values */
 		T->value = 0;
 		T->mode = 3;
 		T->n_dominant = T->alpha[0];
+		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha[tr_min], tr_max, T->alpha[tr_max]);
 	}
 	else {
-		T->value = 255;	/* 255 most used of two transparencies */
+		T->value = 255;	/* Case 4: Like 3 but 255 most used of two transparency values */
 		T->n_dominant = T->alpha[255];
 		T->mode = 4;
+		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha[tr_min], tr_max, T->alpha[tr_max]);
 	}
 	return (true);
 }
 
 GMT_LOCAL bool grdimage_is_transparent (struct GRDIMAGE_CONF *Conf, uint64_t node) {
 	unsigned int transp;
-	if (Conf->Transp->n_transp > 2) return true;
+	if (Conf->Transp && Conf->Transp->n_transp > 2) return true;
 	transp = Conf->Image->data[node];
 	if (Conf->Transp->n_transp == 2 && transp == Conf->Transp->value) return true;
 	return (false);
