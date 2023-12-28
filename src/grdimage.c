@@ -1165,7 +1165,7 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+			if (transparency && grdimage_is_transparent (Conf, node_s))
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
@@ -1180,13 +1180,13 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 
 GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
-	int k;
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
+	bool transparency = (H_s->n_bands == 4);
+	unsigned int k;
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t n_bands = Conf->Image->header->n_bands;
+	uint64_t n_bands = H_s->n_bands;
 	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
-	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
@@ -1198,7 +1198,7 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+			if (transparency && grdimage_is_transparent (Conf, node_s))
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			image[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
@@ -1207,13 +1207,13 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
-	int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
+	bool transparency = (H_s->n_bands == 4);
+	unsigned int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t n_bands = Conf->Image->header->n_bands;
+	uint64_t n_bands = H_s->n_bands;
 	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
-	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
@@ -1225,7 +1225,7 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+			if (transparency && grdimage_is_transparent (Conf, node_s))
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 		}
@@ -1234,25 +1234,25 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 
 GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
-	int k;
-	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t n_bands = Conf->Image->header->n_bands;
-	uint64_t byte, kk_s, node_s, node_i;
-	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
 	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool transparency = (H_s->n_bands == 4);
+	unsigned int k;
+	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
+	uint64_t n_bands = H_s->n_bands;
+	uint64_t byte, kk_s, node_s, node_i;
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
-		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
+			if (transparency && grdimage_is_transparent (Conf, node_s))
 				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
