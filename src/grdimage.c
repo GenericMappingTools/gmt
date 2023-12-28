@@ -432,25 +432,33 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'Q':	/* PS3 colormasking -Q[<color>][+i][+z<value>] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				if ((c = strstr (opt->arg, "+z"))) {	/* Gave a z-value */
-					if (c[2]) {
-						Ctrl->Q.value = atof (&c[2]);
-						Ctrl->Q.z_given = true;
-					}
-					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: The +z modifier requires a valid z-value\n");
-						n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'Q', "iz", GMT_MSG_ERROR)) n_errors++;
+				if ((c = gmt_first_modifier (GMT, opt->arg, "iz"))) {	/* Got at least one modifier */
+					char txt[GMT_LEN256] = {""};
+					if (gmt_get_modifier (c, 'i', txt))
+						Ctrl->Q.invert = true;
+					if (gmt_get_modifier (c, 'z', txt)) {
+						if (txt[0]) {
+							Ctrl->Q.value = atof (txt);
+							Ctrl->Q.z_given = true;
+						}
+						else {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: The +z modifier requires a valid z-value\n");
+							n_errors++;
+						}
 					}
 					c[0] = '\0';	/* Chop off modifiers */
 				}
-				if (opt->arg[0]) {	/* Change input image transparency pixel color */
+				if (opt->arg[0]) {	/* Change input image transparency pixel color from default white */
 					if (gmt_getrgb (GMT, opt->arg, Ctrl->Q.rgb)) {	/* Change input image transparency pixel color */
 						gmt_rgb_syntax (GMT, 'Q', " ");
 						n_errors++;
 					}
 					else
-						Ctrl->Q.transp_color = true;
+						Ctrl->Q.transp_color = Ctrl->Q.mask_color = true;
 				}
+				else	/* Default white transparency color */
+					Ctrl->Q.mask_color = true;
 				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
@@ -960,14 +968,27 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 	}
 }
 
-GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, unsigned char pix4, double *rgb) {
-	/* JL: Here we assume background color is white, hence t * 1.
-	   But what would it take to have a user selected background color? */
+GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIMAGE_CONF *Conf, unsigned char pix4, double *rgb) {
+	/* JL: Here we assume Conf->tr_rgb background color is white, hence t * 1.
+	   If user selected background color with -Q<rgb> that that is what Conf->tr_rgb contains */
+
+	/* PW Dec 2023: There are several situations we must handle:
+	 * 1. There is no transparency, in which case this function is not called.
+	 * 2. There are only two levels of transparency 0 or 255.  In that case
+	 *    we let t = 1 and effectively select the -Q<rgb> color for transparency
+	 *    By default that is white.
+	 * 3. If more than 2 transparencies we expect we have full variable transparency
+	 *    and most of the time we will get a blended color output.
+	 */
 	double o, t;		/* o - opacity, t = transparency */
 	o = pix4 / 255.0;	t = 1 - o;
-	rgb[0] = o * rgb[0] + t * GMT->current.map.frame.fill[GMT_Z].rgb[0];
-	rgb[1] = o * rgb[1] + t * GMT->current.map.frame.fill[GMT_Z].rgb[1];
-	rgb[2] = o * rgb[2] + t * GMT->current.map.frame.fill[GMT_Z].rgb[2];
+	if (Conf->Transp->n_transp == 2)
+		gmt_M_rgb_only_copy (rgb, Conf->tr_rgb);
+	else {	/* Blend */
+		rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];
+		rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];
+		rgb[2] = o * rgb[2] + t * Conf->tr_rgb[2];
+	}
 }
 
 GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
@@ -1055,6 +1076,76 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 	}
 }
 
+GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool opacity, struct GRDIMAGE_TRANSP *T) {
+	/* Determine if we have a transparency channel and if a fixed or variable (per-pixel) situation.
+	 * We return false if no alpha channel present, T is left untouched, else return true.
+	 * Return values via T are: T->n_transp is the number of different transparencies found.
+	 * For modes 3 & 4, T->n_dominant is how many in the majority
+	 *
+	 *   T->mode == 1: T->value is the constant transparency k
+	 *   T->mode == 2: T->value is dominant transparency k when >2 are found
+	 *   T->mode == 3: T->value is dominant transparency 0
+	 *   T->mode == 4: T->value is dominant transparency 255
+	 */
+
+	int64_t row, col, node, n_0 = 0, n_255 = 0;
+	unsigned int k, tr, tr_max = 0, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
+	unsigned char *transparency;	/* Pointer to memory where transparency resides */
+	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
+	unsigned int rgba[4];
+
+	if (H->n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies as band 1 or 4 nor in alpha */
+
+	tr_band = (I->alpha) ? 0 : H->n_bands - 1;
+	transparency = (tr_band) ? &(I->data[tr_band*H->size]) : I->alpha;
+	gmt_M_memset (T, 1, struct GRDIMAGE_TRANSP);	/* Start with nuthin' */
+	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
+		node = gmt_M_ijpgi (H, row, 0) + tr_band;	/* Start pixel of this image row */
+		for (col = 0; col < H->n_columns; col++, node += H->n_bands) {	/* March along this scanline */
+	if (row == 90 && col == 180)
+		k = 0;
+			tr = (unsigned int)transparency[node];	/* Get transparency values */
+			if (opacity) tr = 255 - tr;
+			T->alpha[tr]++;	/* Count frequency of transparency values */
+		}
+	}
+	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
+		if (T->alpha[k]) {	/* Used at least once */
+			T->n_transp++;
+			if (T->alpha[k] > tr_max) tr_max = k;
+		}
+	}
+	if (T->n_transp == 1) {		/* Constant transparency? */
+		T->mode = 1;
+		T->value = tr_max;
+		T->n_dominant = T->n_transp;
+	}
+	else if (T->n_transp > 2) {	/* Cannot handle per-pixel transparency variation */
+		T->value = tr_max;
+		T->mode = 2;
+		T->n_dominant = T->alpha[tr_max];
+	}
+	else if (T->alpha[0] > T->alpha[255]) {	/* 0 most used of two transparencies */
+		T->value = 0;
+		T->mode = 3;
+		T->n_dominant = T->alpha[0];
+	}
+	else {
+		T->value = 255;	/* 255 most used of two transparencies */
+		T->n_dominant = T->alpha[255];
+		T->mode = 4;
+	}
+	return (true);
+}
+
+GMT_LOCAL bool grdimage_is_transparent (struct GRDIMAGE_CONF *Conf, uint64_t node) {
+	unsigned int transp;
+	if (Conf->Transp->n_transp > 2) return true;
+	transp = Conf->Image->data[node];
+	if (Conf->Transp->n_transp == 2 && transp == Conf->Transp->value) return true;
+	return (false);
+}
+
 GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
 	bool transparency = (Conf->Image->header->n_bands == 4);
@@ -1075,7 +1166,7 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
 				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
@@ -1108,7 +1199,7 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			image[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
 	}
@@ -1135,7 +1226,7 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 		}
 	}
@@ -1162,7 +1253,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
 			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
 				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
