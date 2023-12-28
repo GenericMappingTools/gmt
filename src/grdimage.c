@@ -1928,10 +1928,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->T.active) {	/* Plot colored graticules instead */
 		need_to_project = false;	/* Since we are not doing reprojection of the grid */
-		gmt_plot_grid_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, false);
+		if (Grid_orig)
+			gmt_plot_grid_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, false);
 		goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 	}
 
+	if (Transp.mode == 2) {	/* Must do variable transparency via squares and projection */
+		goto tr_image;
+	}
 	if (need_to_project) {	/* Need to resample the grid or image [and intensity grid] using the specified map projection */
 		int nx_proj = 0, ny_proj = 0;
 		double inc[2] = {0.0, 0.0};
@@ -1951,7 +1955,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			ny_proj = Conf->n_rows;
 		}
 		if (Ctrl->D.active) { /* Must project the input image instead */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
+tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
@@ -2060,6 +2064,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	Conf->int_mode  = (use_intensity_grid) ? 2 : ((Ctrl->I.constant) ? 1 : 0);	/* 2 is variable grid intensity, 1 is constant intensity, 0 no intensity */
 	Conf->nm        = header_work->nm;
 
+	/* Set the blend color for image transparency */
+	//gmt_M_rgb_copy (Conf->tr_rgb, (Ctrl->Q.transp_color) ? Ctrl->Q.rgb : GMT->current.map.frame.fill[GMT_Z].rgb);
+	gmt_M_rgb_copy (Conf->tr_rgb, GMT->current.map.frame.fill[GMT_Z].rgb);
+	if (!got_z_grid && Conf->Image && header_work->n_bands == 4) Ctrl->Q.mask_color = true;
 	if (byte_image_no_cmap) {	/* Check if we have a nan_value (No data pixel) */
 		if (gmt_M_is_dnan (Conf->Image->header->nan_value) || irint (Conf->Image->header->nan_value) == 0 || irint (Conf->P->data[0].z_low) == 1) { /* Nodata given as 0 */
 			Ctrl->Q.active = true;
@@ -2145,12 +2153,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
 			bitimage_8 = gmt_M_memory (GMT, NULL, header_work->nm, unsigned char);
 		else {	/* Need 3-byte array for a 24-bit image, plus possibly 3 bytes for the NaN mask color */
-			if (Ctrl->Q.active) Conf->colormask_offset = 3;
+			if (Ctrl->Q.mask_color || Ctrl->Q.transp_color) Conf->colormask_offset = 3;
 			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm + Conf->colormask_offset, unsigned char);
 			if (Ctrl->Q.transp_color)
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the specific rgb up to 0-255 range */
 			else if (P && Ctrl->Q.active)	/* Use the CPT NaN color */
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
+			else if (Ctrl->Q.active)	/* Use the CPT NaN color */
+				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
 			/* else we default to 0 0 0 of course */
 		}
 	}
@@ -2204,6 +2214,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					grdimage_img_color_with_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
 			else {	/* No intensity */
+				Ctrl->Q.active = Ctrl->Q.mask_color;
 				if (gray_only)	/* Image, grayscale, no intensity */
 					grdimage_img_gray_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (Ctrl->M.active) 	/* Image, color converted to gray, with intensity */
@@ -2256,6 +2267,9 @@ ready:
 		x0 -= 0.5 * dx;
 		y0 -= 0.5 * dy;
 	}
+	Conf->orig[GMT_X] = x0;	Conf->orig[GMT_Y] = y0;
+	Conf->dim[GMT_X]  = dx;	Conf->dim[GMT_Y]  = dy;
+	Conf->invert = Ctrl->Q.invert;
 
 	/* Full rectangular dimension of the projected image in inches */
 	x_side = dx * Conf->n_columns;
