@@ -98,7 +98,7 @@ struct GRDIMAGE_CTRL {
 		bool active;
 		bool transp_color;	/* true if a color was given */
 		bool z_given;		/* true if a z-value was given */
-		bool mask_color;	/* true if a z-value was given */
+		bool mask_color;	/* true if NaN color for image -Qcolor was set */
 		bool invert;		/* If true we turn transparency = 1 - transparency [i.e., opacity] */
 		double rgb[4];		/* Pixel value for transparency in images */
 		double value;		/* If +z is used this z-value will give us the r/g/b via CPT */
@@ -114,18 +114,31 @@ struct GRDIMAGE_CTRL {
 	} W;
 };
 
+struct GRDIMAGE_TRANSP {
+	unsigned int alpha[256];	/* Transparency distribution for RGBA image */
+	unsigned int mode;		/* value is transparency (mode == 0) or count (mode == 1) */
+	unsigned int value;		/* Either chosen transparency (mode == 0) */
+	uint64_t n_transp;		/* Number of different transparencies found */
+	uint64_t n_dominant;		/* Number of top transparencies found */
+};
+
 struct GRDIMAGE_CONF {
 	/* Configuration structure for things to pass around to sub-functions */
+	bool invert;			/* true if we should interpret transparencies as opacities */
 	unsigned int colormask_offset;	/* Either 0 or 3 depending on -Q */
 	unsigned int int_mode;		/* 2 if we are to apply illumination (grid) or 1 (constant) */
 	unsigned int *actual_row;	/* Array with actual rows as a function of pseudo row */
 	unsigned int *actual_col;	/* Array of actual columns as a function of pseudo col */
 	int64_t n_columns, n_rows;	/* Signed dimensions for use in OpenMP loops (if implemented) */
 	uint64_t nm;			/* Number of pixels in the image */
+	double dim[2];			/* Dimension of each pixel in plot units */
+	double orig[2];			/* Lower left image origin */
+	double tr_rgb[4];		/* Background color used to simulate image transparency [black] */
 	struct GMT_PALETTE *P;		/* Pointer to the active palette [NULL if image] */
 	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
 	struct GMT_GRID *Intens;	/* Pointer to the active intensity grid [NULL if no intensity] */
 	struct GMT_IMAGE *Image;	/* Pointer to the active image [NULL if grid] */
+	struct GRDIMAGE_TRANSP *Transp;	/* Pointer to the transparency structure [NULL if grid or RGB image] */
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -139,7 +152,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->I.azimuth = strdup ("-45.0");	/* Default azimuth for shading when -I+d is used */
 	C->I.method  = strdup ("t1");		/* Default normalization for shading when -I+d is used */
 	C->I.ambient = strdup ("0");		/* Default ambient light for shading when -I+d is used */
-
+	C->Q.value = GMT->session.f_NaN;	/* If -Q is used with a grid then NaNs are made transparent by default. */
+	C->Q.rgb[0] = C->Q.rgb[1] = C->Q.rgb[2] = 1.0;	/* White transparent pixel is default if -Q is given without a color */
 	return (C);
 }
 
@@ -163,7 +177,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *extra[2] = {A, " [-A]"};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s%s [%s] [-C%s] [-D[r]] [-Ei|<dpi>] "
-		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+z<value>]] "
+		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+i][+z<value>]] "
 		"[%s] [-T[+o[<pen>]][+s]] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s[%s]\n",
 		name, GMT_INGRID, GMT_J_OPT, extra[API->external], GMT_B_OPT, CPT_OPT_ARGS, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_x_OPT, GMT_PAR_OPT);
@@ -217,10 +231,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-M Force a monochrome (gray-scale) image.");
 	GMT_Usage (API, 1, "\n-N Do Not clip image at the map boundary.");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-Q[<color>]");
-	GMT_Usage (API, -2, "Use color-masking to make grid nodes with z = NaN or black image pixels transparent. "
-		"Append an alternate <color> to change the transparent pixel for images [black], or alternatively");
-	GMT_Usage (API, 3, "+z Specify <value> to set transparent pixel color via CPT lookup.");
+	GMT_Usage (API, 1, "\n-Q[<color>][+i][+z<value>]");
+	GMT_Usage (API, -2, "Use color-masking to make grid nodes with z = NaN or white image pixels transparent. "
+		"Append an alternate <color> to change the transparent pixel for images [white]. "
+		"By default we simulate image transparency by blending pixel colors with <color> according to transparency, "
+		"yielding an opaque image nonetheless due to PostScript limitations.  Two modifiers are available:");
+	GMT_Usage (API, 3, "+i Invert presumed opacities to transparencies (i.e., 1 - opacity).");
+	GMT_Usage (API, 3, "+z Specify grid <value> to set transparent pixel color via CPT lookup.");
 	GMT_Option (API, "R");
 	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
 	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
