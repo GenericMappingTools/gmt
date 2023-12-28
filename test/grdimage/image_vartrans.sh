@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # For variable transparency TIF we plot pixels as squares with individual transparency
 # Must add -Q to revert to original opaque blended image (color match the transparent
 # colors but the pixels remain opaque).
