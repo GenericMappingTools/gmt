@@ -2,7 +2,7 @@
 #
 # Testing gmt grdmix on adding A to RGB image and plot via grdimage
 
-gmt begin transp_mix pdf
+gmt begin transp_mix
 	gmt set MAP_GRID_PEN 2p FONT_TAG 9p PS_MEDIA letter PS_PAGE_ORIENTATION portrait
 	gmt grdmath -Rd -I01d -rp X 360 DIV 0.5 ADD Y 180 DIV 0.5 ADD MUL = transparency.nc
 	gmt subplot begin 3x2 -Rd -Fs9c/4.5c -JQ9c -Scb -Srl -A+gwhite+p0.25p -Bafg30 -X2c
