@@ -99,6 +99,7 @@ struct GRDIMAGE_CTRL {
 		bool transp_color;	/* true if a color was given */
 		bool z_given;		/* true if a z-value was given */
 		bool mask_color;	/* true if NaN color for image -Qcolor was set */
+		bool got_color;		/* true if -Qcolor was set on an image */
 		bool invert;		/* If true we turn transparency = 1 - transparency [i.e., opacity] */
 		double rgb[4];		/* Pixel value for transparency in images */
 		double value;		/* If +z is used this z-value will give us the r/g/b via CPT */
@@ -455,7 +456,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 						n_errors++;
 					}
 					else
-						Ctrl->Q.transp_color = Ctrl->Q.mask_color = true;
+						Ctrl->Q.transp_color = Ctrl->Q.got_color = Ctrl->Q.mask_color = true;
 				}
 				else	/* Default white transparency color */
 					Ctrl->Q.mask_color = true;
@@ -1917,7 +1918,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			Conf->P = P;
 			if (Ctrl->Q.z_given)
 				(void)gmt_get_rgb_from_z (GMT, Conf->P, Ctrl->Q.value, Ctrl->Q.rgb);
-			else
+			else if (!Ctrl->Q.got_color)	/* No Q-color set; default to NaN color */
 				(void)gmt_get_rgb_from_z (GMT, Conf->P, GMT->session.d_NaN, Ctrl->Q.rgb);
 			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
 			if (Ctrl->Q.active) {	/* Obtain the transparent color based on P and z-value or given color */
@@ -2167,6 +2168,8 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the specific rgb up to 0-255 range */
 			else if (P && Ctrl->Q.active)	/* Use the CPT NaN color */
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
+			else if (Ctrl->Q.got_color)
+				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
 			else if (Ctrl->Q.active)	/* Use the CPT NaN color */
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
 			/* else we default to 0 0 0 of course */
