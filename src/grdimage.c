@@ -1619,7 +1619,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
 			GMT_Report(API, GMT_MSG_INFORMATION, "The image memory layout (%s) may be of the wrong type. It should be BRPa.\n", I->header->mem_layout);
-
+		//if (HH->has_NaN_rgb && !Ctrl->Q.transp_color) {	/* Got NaN-color via indexed image, simulate -Q<color> */
+		//	Ctrl->Q.active = Ctrl->Q.transp_color = true;
+		//	gmt_M_cp_rgb_normalize (Ctrl->Q.rgb, HH->nan_rgb);
+		//}
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I were set. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
 
@@ -1682,6 +1685,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		if (!Ctrl->C.active)	/* Set no specific CPT so we turn -C on to use current or default CPT */
 			Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and autostretch or under modern reuse current CPT */
+		if (got_z_grid && Ctrl->Q.mask_color && use_intensity_grid) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Cannot specify a transparent color for grids when intensities are also used\n");
+			Return (API->error);
+		}
 	}
 
 	if (got_z_grid) header_work = Grid_orig->header;	/* OK, we are in GRID mode and this was not set previously. Do it now. */
@@ -1903,10 +1910,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (cpt) gmt_M_str_free (cpt);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
 			Conf->P = P;
-			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
-			if (Ctrl->Q.z_given) {	/* Obtain the transparent color based on P and value */
+			if (Ctrl->Q.z_given)
 				(void)gmt_get_rgb_from_z (GMT, Conf->P, Ctrl->Q.value, Ctrl->Q.rgb);
+			else
+				(void)gmt_get_rgb_from_z (GMT, Conf->P, GMT->session.d_NaN, Ctrl->Q.rgb);
+			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
+			if (Ctrl->Q.active) {	/* Obtain the transparent color based on P and z-value or given color */
 				Ctrl->Q.transp_color = true;
+				Ctrl->Q.mask_color = true;
 			}
 		}
 		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
