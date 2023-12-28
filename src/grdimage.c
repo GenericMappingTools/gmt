@@ -1139,10 +1139,10 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 }
 
 GMT_LOCAL bool grdimage_is_transparent (struct GRDIMAGE_CONF *Conf, uint64_t node) {
-	unsigned int transp = Conf->Image->data[node];
-	//if (Conf->Transp->n_transp == 2 && transp == Conf->Transp->value) return true;
-	if (Conf->Transp->n_transp == 2 && transp == 255) return true;
+	unsigned int transp;
 	if (Conf->Transp->n_transp > 2) return true;
+	transp = Conf->Image->data[node];
+	if (Conf->Transp->n_transp == 2 && transp == Conf->Transp->value) return true;
 	return (false);
 }
 
