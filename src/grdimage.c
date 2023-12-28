@@ -1310,7 +1310,7 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 	for (scol = 0; scol <= Conf->n_columns; scol++) ix[scol] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_X] * scol));
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,kk_s,k,idim,scol,node_s,node_i,fill,idim) shared(GMT,Conf,iy,ix,Ctrl,H_s,H_i,image)
+#pragma omp parallel for private(srow,kk_s,k,idim,scol,node_s,node_i,fill) shared(GMT,Conf,iy,ix,Ctrl,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
