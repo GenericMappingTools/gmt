@@ -1527,6 +1527,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		/* The input file is an ordinary image instead of a grid and -R may be required to use it */
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET] && !strstr (Ctrl->In.file, "earth_")) Ctrl->D.mode = true;
+		if (Ctrl->Q.z_given) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +z<value> with an image\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+	else if (ftype == GMT_IS_GRID && Ctrl->Q.invert) {	/* Cannot invert color for grid-derived images */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +i with a grid\n");
+			Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (!Ctrl->D.active && ftype == GMT_IS_GRID) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
