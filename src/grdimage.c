@@ -1533,8 +1533,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (ftype == GMT_IS_GRID && Ctrl->Q.invert) {	/* Cannot invert color for grid-derived images */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +i with a grid\n");
-			Return (GMT_RUNTIME_ERROR);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Option Q: Cannot use +i with a grid\n");
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (!Ctrl->D.active && ftype == GMT_IS_GRID) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
@@ -1957,6 +1957,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) { /* Must project the input image instead */
 tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
+			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
+				nx_proj = Conf->n_columns;
+				ny_proj = Conf->n_rows;	
+			}
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
 			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
@@ -2065,7 +2069,6 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 	Conf->nm        = header_work->nm;
 
 	/* Set the blend color for image transparency */
-	//gmt_M_rgb_copy (Conf->tr_rgb, (Ctrl->Q.transp_color) ? Ctrl->Q.rgb : GMT->current.map.frame.fill[GMT_Z].rgb);
 	gmt_M_rgb_copy (Conf->tr_rgb, GMT->current.map.frame.fill[GMT_Z].rgb);
 	if (!got_z_grid && Conf->Image && header_work->n_bands == 4) Ctrl->Q.mask_color = true;
 	if (byte_image_no_cmap) {	/* Check if we have a nan_value (No data pixel) */
@@ -2267,8 +2270,8 @@ ready:
 		x0 -= 0.5 * dx;
 		y0 -= 0.5 * dy;
 	}
-	Conf->orig[GMT_X] = x0;	Conf->orig[GMT_Y] = y0;
-	Conf->dim[GMT_X]  = dx;	Conf->dim[GMT_Y]  = dy;
+	Conf->orig[GMT_X] = x0;	Conf->orig[GMT_Y] = y0;	/* Lower left corner in plot coordinates */
+	Conf->dim[GMT_X]  = dx;	Conf->dim[GMT_Y]  = dy;	/* Pixel dimension in plot coordinates */
 	Conf->invert = Ctrl->Q.invert;
 
 	/* Full rectangular dimension of the projected image in inches */
@@ -2277,7 +2280,7 @@ ready:
 
 	if (plot_squares) { 	/* Variable transparency image must be done via individual squares */
 		grdimage_img_variable_transparency (GMT, Ctrl, Conf, Img_proj);
-		goto basemap_and_free;
+		goto basemap_and_free;	/* Jump to basemap since not building an image */
 	}
 
 	if (P && gray_only && !Ctrl->A.active) /* Determine if the gray image in fact is just black & white since the PostScript can then simplify */
@@ -2383,7 +2386,7 @@ basemap_and_free:
 	gmt_M_free (GMT, Conf->actual_col);
 	gmt_M_free (GMT, Conf);
 
-	/* May return a flag that the image/PS had no data (see -W), or just NO_ERROR */
+	/* May return a flag that the image/PS had no data (see -W), or just NO_ERROR [for grd2kml] */
 	ret_val = (Ctrl->W.active && !has_content) ? GMT_IMAGE_NO_DATA : GMT_NOERROR;
 	Return (ret_val);
 }
