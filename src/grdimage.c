@@ -29,12 +29,12 @@
 #include "longopt/grdimage_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdimage"
-#define THIS_MODULE_MODERN_NAME	"grdimage"
-#define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Project and plot grids or images"
-#define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID"
-#define THIS_MODULE_NEEDS	"Jg"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
+#define THIS_MODULE_MODERN_NAME		"grdimage"
+#define THIS_MODULE_LIB			"core"
+#define THIS_MODULE_PURPOSE		"Project and plot grids or images"
+#define THIS_MODULE_KEYS		"<G{+,CC(,IG(,>X},>IA,<ID"
+#define THIS_MODULE_NEEDS		"Jg"
+#define THIS_MODULE_OPTIONS		"->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
 
 /* These are images that GDAL knows how to read for us. */
 #define N_IMG_EXTENSIONS 7
@@ -1625,10 +1625,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
 			GMT_Report(API, GMT_MSG_INFORMATION, "The image memory layout (%s) may be of the wrong type. It should be BRPa.\n", I->header->mem_layout);
-		//if (HH->has_NaN_rgb && !Ctrl->Q.transp_color) {	/* Got NaN-color via indexed image, simulate -Q<color> */
-		//	Ctrl->Q.active = Ctrl->Q.transp_color = true;
-		//	gmt_M_cp_rgb_normalize (Ctrl->Q.rgb, HH->nan_rgb);
-		//}
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I were set. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
 
