@@ -1100,7 +1100,6 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 
 	tr_band = (I->alpha) ? 0 : n_bands - 1;
 	transparency = (tr_band) ? I->data : I->alpha;	/* Points to the data array with A */
-	gmt_M_memset (T, 1, struct GRDIMAGE_TRANSP);	/* Start with nuthin' */
 	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
 		node = gmt_M_ijp (H, row, 0) + tr_band;	/* Start pixel with 4 bytes of this image row */
 		for (col = 0; col < H->n_columns; col++, node += n_bands) {	/* March along this scanline in steps of 2 (gA) or 4 (RGBA) */
@@ -1477,7 +1476,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to allocate Conf structure\n");
 		Return (GMT_MEMORY_ERROR);
 	}
-
+	gmt_M_memset (&Transp, 1, struct GRDIMAGE_TRANSP);	/* Make sure it is initialized to nothing */
 	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use an intensity grid */
