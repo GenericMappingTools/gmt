@@ -4648,13 +4648,14 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
     bool new = false;
     unsigned char *data = NULL;
     uint64_t node, off[3];
-    size_t n_colors;
+    size_t n_colors, n_len;
     unsigned int c, index;
     struct GMT_IMAGE *I = NULL;
     struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
     struct GMT_GRID_HEADER *h = I_in->header;
     struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-
+    char *layout = (h->n_bands == 4 || I_in->alpha) ? "TRBa" : "TRB";
+    n_len = strlen (layout);    /* 3 or 4 */
     if (I_in->n_indexed_colors == 0) {  /* Regular gray or r/g/b image - use as is */
         (*I_out) = I_in;
         return (false);
@@ -4682,9 +4683,8 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
     n_colors = I->n_indexed_colors;
     if (n_colors > 2000)            /* If colormap is Mx4 or has encoded the alpha color */
         n_colors = (uint64_t)(floor(n_colors / 1000.0));
-
     if (GMT->parent->GMT->current.gdal_read_in.O.mem_layout[0] && strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {  /* Band interleave */
-        strncpy (h->mem_layout, "TRB ", 4); /* Fill out red, green, and blue bands */
+        strncpy (h->mem_layout, layout, n_len); /* Fill out red, green, and blue bands */
         for (c = 0; c < 3; c++) off[c] = c * h->size;
         for (node = 0; node < h->size; node++) {    /* For all pixels, including the pad */
             index = I->data[node];  /* Pixel index into color table */
@@ -4693,7 +4693,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
     }
     else {  /* Pixel interleave */
         uint64_t k;
-        strncpy (h->mem_layout, "TRP ", 4); /* Fill out red, green, and blue pixels */
+        strncpy (h->mem_layout, layout, n_len); /* Fill out red, green, and blue pixels */
         for (node = k = 0; node < h->size; node++) {    /* For all pixels, including the pad */
             index = I->data[node];  /* Pixel index into color table */
             for (c = 0; c < 3; c++, k++) data[k] = gmt_M_get_rgba (I->colormap, index, c, n_colors);    /* Place r,g,b in separate bands */
