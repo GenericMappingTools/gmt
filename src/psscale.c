@@ -106,9 +106,9 @@ struct PSSCALE_CTRL {
 		unsigned int mode;
 		double dpi;
 	} N;
-	struct PSSCALE_L {	/* -L[i][<gap>] */
+	struct PSSCALE_L {	/* -L[i|I][<gap>] */
 		bool active;
-		bool interval;
+		unsigned int interval;
 		double spacing;
 	} L;
 	struct PSSCALE_Q {	/* -Q */
@@ -166,7 +166,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s[+r]] "
-		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
+		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
 		"[-S[+a<angle>][+c|n][+r][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
 			name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT,
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -208,9 +208,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0]. "
 		"Alternatively, specify <lower>/<upper> intensity values.");
 	GMT_Option (API, "J-Z,K");
-	GMT_Usage (API, 1, "\n-L[i][<gap>]");
+	GMT_Usage (API, 1, "\n-L[i|I][<gap>]");
 	GMT_Usage (API, -2, "Select equal-sized color rectangles. The -B option cannot be used. "
-		"Append i to annotate the interval range instead of lower/upper. "
+		"Append i to annotate the interval range instead of lower/upper, or use I instead "
+		" to label first and last rectangle to include < <min> and > <max>"
 		"If <gap> is appended, we separate each rectangle by <gap> units and center each "
 		"lower (z0) annotation on the rectangle.  Ignored if not a discrete CPT. "
 		"If -I is used then each rectangle will have the illuminated constant color. "
@@ -376,7 +377,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				j = 0;
-				if (opt->arg[0] == 'i') Ctrl->L.interval = true, j = 1;
+				if (opt->arg[0] == 'i') Ctrl->L.interval = 1, j = 1;
+				else if (opt->arg[0] == 'I') Ctrl->L.interval = 2, j = 1;
 				if (opt->arg[j]) Ctrl->L.spacing = gmt_M_to_inch (GMT, &opt->arg[j]);
 				if (c) c[0] = '+';	/* Restore option string */
 				break;
@@ -779,7 +781,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	int this_just, p_val, center = 0, outline = 0;
 	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	bool B_set = GMT->current.map.frame.set[GMT_X], skip_lines = Ctrl->S.skip, need_image;
-	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
+	char format[GMT_LEN256] = {""}, format2[GMT_LEN256] = {""}, one_format[GMT_LEN256], text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
 	double hor_annot_width, annot_off, label_off = 0.0, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
@@ -890,6 +892,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		strncpy (format, GMT->current.setting.format_float_map, GMT_LEN256-1);
 		psscale_fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
 	}
+	strncpy (one_format, format, GMT_LEN256-1);
 
 	len = GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];	/* +ve means draw on the outside of bar */
 	len2 = GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
@@ -1006,7 +1009,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 	if (Ctrl->F.active) {	/* Place rectangle behind the color bar */
 		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, h_off = 0.0, v_sup_adjust = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
-
+		gmt_M_memset (text, 256U, char);
+		gmt_M_memset (test, 256U, char);
 		/* Must guesstimate the width of the largest horizontal annotation */
 		if (Ctrl->Q.active) {	/* Need to estimate width of 10^x instead */
 			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
@@ -1016,12 +1020,17 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			hor_annot_width *= GMT_DEC_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Convert to points then inches */
 			v_sup_adjust = 0.35 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Vertical increase in annotation height due to placing superscript */
 		}
+		else if (Ctrl->L.interval && center) {	/* Use of categorical values AAA - BBB */
+			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
+			sprintf (test, "%ld", lrint (floor (P->data[P->n_colors-1].z_high)));
+			hor_annot_width = ((strlen (text) + strlen (test) + 1) * GMT_DEC_WIDTH + ((ndec > 0) ? GMT_PER_WIDTH : 0.0)) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+		}
 		else {	/* Regular linear use of values */
 			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
 			sprintf (test, "%ld", lrint (ceil (center ? P->data[P->n_colors-1].z_low : P->data[P->n_colors-1].z_high)));
 			hor_annot_width = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
-			((ndec > 0) ? GMT_PER_WIDTH : 0.0))
-			* GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+				((ndec > 0) ? GMT_PER_WIDTH : 0.0))
+				* GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 		}
 		bar_tick_len = fabs (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Length of tickmarks */
 		if (Ctrl->D.horizontal) {	/* Determine center and dimensions of horizontal background rectangle */
@@ -1083,6 +1092,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			annot_off += bar_tick_len;
 			/* Extend x clearance by annotation width */
 			annot_off += hor_annot_width;
+			if (Ctrl->L.interval) annot_off += 0.4 * hor_annot_width;
 			/* Increase width if there is a label */
 			if (label[0])
 				label_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]) + GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
@@ -1400,8 +1410,18 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
 						this_just = psscale_set_custom_annot (GMT, P, i, justify, l_justify, text);
 					}
-					else if (center && Ctrl->L.interval)
-						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
+					else if (center && Ctrl->L.interval) {
+						if (Ctrl->L.interval == 2 && i == 0) {
+							sprintf (format2, "< %s", one_format);
+							sprintf (text, format2, P->data[i].z_high);
+						}
+						else if (Ctrl->L.interval == 2 && i == (P->n_colors - 1)) {
+							sprintf (format2, "> %s", one_format);
+							sprintf (text, format2, P->data[i].z_low);
+						}
+						else
+							sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
+					}
 					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_low);
 						if (doubleAlmostEqualZero (P->data[i].z_low, (double)p_val))
@@ -1561,12 +1581,13 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			}
 		}
 
+		gmt_M_memset (text, 256U, char);
+		gmt_M_memset (test, 256U, char);
 		if (center && Ctrl->L.interval) {
-			sprintf (text, "%ld - %ld", lrint (floor (P->data[0].z_low)), lrint (ceil (P->data[0].z_high)));
-			sprintf (test, "%ld - %ld", lrint (floor (P->data[P->n_colors-1].z_low)), lrint (ceil (P->data[P->n_colors-1].z_high)));
-			hor_annot_width = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_WIDTH - 0.4 +
-				((ndec > 0) ? 2*GMT_PER_WIDTH : 0.0))
-				* GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+			sprintf (format2, "%s%c%s", one_format, endash, one_format);
+			sprintf (text, format2, P->data[0].z_low, P->data[0].z_high);
+			sprintf (test, format2, P->data[P->n_colors-1].z_low, P->data[P->n_colors-1].z_high);
+			hor_annot_width = ((strlen (text) + strlen (test) + 1) * GMT_DEC_WIDTH + ((ndec > 0) ? GMT_PER_WIDTH : 0.0)) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 		}
 		else {
 			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
@@ -1585,6 +1606,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			y_annot = y_base + dir * (((len > 0.0) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] * cosd (Ctrl->S.angle));
 			justify = l_justify = (dir == -1) ? PSL_ML : PSL_MR;
 		}
+		else if (Ctrl->L.interval)
+			y_annot = y_base + dir * annot_off * 0.65;
 		else
 			y_annot = y_base + dir * annot_off;
 		if ((flip & PSSCALE_FLIP_ANNOT) == (flip & PSSCALE_FLIP_LABEL) / 2) y_label = y_base + dir * label_off;
@@ -1749,8 +1772,18 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					do_annot = true;
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
 						this_just = psscale_set_custom_annot (GMT, P, i, justify, l_justify, text);
-					else if (center && Ctrl->L.interval)
-						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
+					else if (center && Ctrl->L.interval) {
+						if (Ctrl->L.interval == 2 && i == 0) {
+							sprintf (format2, "< %s", one_format);
+							sprintf (text, format2, P->data[i].z_high);
+						}
+						else if (Ctrl->L.interval == 2 && i == (P->n_colors - 1)) {
+							sprintf (format2, "> %s", one_format);
+							sprintf (text, format2, P->data[i].z_low);
+						}
+						else
+							sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
+					}
 					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_low);
 						if (doubleAlmostEqualZero (P->data[i].z_low, (double)p_val))
