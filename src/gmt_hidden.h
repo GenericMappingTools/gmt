@@ -177,6 +177,7 @@ struct GMT_GRID_HEADER_HIDDEN {
 	char flags[4];                        /* Flags used for ESRI grids */
 	char *pocket;                         /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 	double bcr_threshold;                 /* sum of cardinals must >= threshold in bilinear; else NaN */
+	unsigned int used_indexed_rgb;        /* 1 if originally an indexed RGB, 0 otherwise */
 	unsigned int has_NaN_rgb;             /* Is 1 if an indexed RGB image had a specific NaN color for transparency */
 	unsigned int has_NaNs;                /* Is 2 if the grid contains any NaNs, 1 if it does not, and 0 if no check has yet happened */
 	unsigned int bcr_interpolant;         /* Interpolation function used (0, 1, 2, 3) */
