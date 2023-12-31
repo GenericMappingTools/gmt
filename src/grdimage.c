@@ -1309,9 +1309,6 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 	for (srow = 0; srow <= Conf->n_rows; srow++)    iy[srow] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * (Conf->n_rows - 1 - srow)));
 	for (scol = 0; scol <= Conf->n_columns; scol++) ix[scol] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_X] * scol));
 
-//#ifdef _OPENMP
-//#pragma omp parallel for private(srow,kk_s,k,idim,scol,node_s,node_i,rgb) shared(GMT,Conf,iy,ix,Ctrl,H_s,H_i,n_bands,bt,image)
-//#endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
 		idim[GMT_Y] = iy[Conf->actual_row[srow]] - iy[Conf->actual_row[srow]+1];	/* Constant height of square in 1/12000 inches integer units for this row */
