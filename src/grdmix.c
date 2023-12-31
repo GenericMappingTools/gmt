@@ -47,7 +47,8 @@
 
 struct GRDMIX_AIW {	/* For various grid, image, or constant arguments */
 	bool active;
-	bool opacity;	/* true if we hvae opacity instead of transparency [Default] */
+	/* Our implementation is a bit backwards, so to get expected results we turn opacity on by default and let +o reverse that */
+	bool opacity;	/* true if we have opacity instead of transparency [Default] */
 	unsigned int mode;	/* 0 a file, 1 a constant */
 	char *file;
 	double value;
@@ -773,7 +774,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #endif
 		for (node = 0; node < (int64_t)H->size; node++)	{	/* Scale to 0-255 range */
 			transparency = gmt_M_is_dnan (alpha[node]) ? 1.0 : alpha[node];	/* NaN means full transparency */
-			if (Ctrl->A.opacity) transparency = 1.0 - alpha[node];	/* Turns out we got opacities */
+			if (!Ctrl->A.opacity) transparency = 1.0 - alpha[node];	/* Turns out we got opacities */
 			I->alpha[node] = gmt_M_u255 (transparency);
 		}
 		gmt_M_free (GMT, alpha);
