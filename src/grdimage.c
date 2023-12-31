@@ -991,6 +991,7 @@ GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIM
 		rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];
 		rgb[2] = o * rgb[2] + t * Conf->tr_rgb[2];
 	}
+	rgb[3] = 0;
 }
 
 GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
@@ -1294,7 +1295,6 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, transp[2] = {0.0, 0.0};	/* None selected */
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
 	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
-	struct GMT_FILL fill;
 
 	PSL_command (GMT->PSL, "/SS {M dup 0 D exch 0 exch D neg 0 D P FO}!\n");	/* Special PSL macro added for 10*integer squares */
 	if ((ix = gmt_M_memory (GMT, NULL, Conf->n_columns + 1, int)) == NULL) {	/* Add 1 so we can get width without special test*/
@@ -1309,26 +1309,25 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 	for (srow = 0; srow <= Conf->n_rows; srow++)    iy[srow] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * (Conf->n_rows - 1 - srow)));
 	for (scol = 0; scol <= Conf->n_columns; scol++) ix[scol] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_X] * scol));
 
-#ifdef _OPENMP
-#pragma omp parallel for private(srow,kk_s,k,idim,scol,node_s,node_i,fill) shared(GMT,Conf,iy,ix,Ctrl,H_s,H_i,n_bands,bt,image)
-#endif
+//#ifdef _OPENMP
+//#pragma omp parallel for private(srow,kk_s,k,idim,scol,node_s,node_i,rgb) shared(GMT,Conf,iy,ix,Ctrl,H_s,H_i,n_bands,bt,image)
+//#endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
 		idim[GMT_Y] = iy[Conf->actual_row[srow]] - iy[Conf->actual_row[srow]+1];	/* Constant height of square in 1/12000 inches integer units for this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			/* Get pixel color */
-			gmt_M_memset (&fill, 1, struct GMT_FILL);	/* Wipe completely first */
-			for (k = 0; k < bt; k++) fill.rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
-			grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], fill.rgb);
-			if (Conf->invert) fill.rgb[bt] = 1.0 - fill.rgb[bt];
+			for (k = 0; k < bt; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
+			grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
+			if (Conf->invert) rgb[bt] = 1.0 - rgb[bt];
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
-				gmt_illuminate (GMT, Conf->Intens->data[node_i], fill.rgb);	/* Apply illumination to this color */
+				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
 			else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
-				gmt_illuminate (GMT, Ctrl->I.value, fill.rgb);	/* Apply constant illumination to this color */
-			gmt_setfill (GMT, &fill, 0);	/* Set current square pixel color w/ no outline */
+				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
+			gmt_setrgb (GMT, rgb);	/* Set current square pixel color w/ no outline */
 			idim[GMT_X] = ix[scol+1] - ix[scol];	/* Constant width of square in 1/12000 inches integer units for this column */
 			grdimage_plotsquare (GMT->PSL, ix[scol], iy[srow], idim);
 		}
