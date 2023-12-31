@@ -1270,7 +1270,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isize[]) {
 	/* Plotting a high-resolution square with coordinate in 10*PS units as integers.
 	 * We will write x, y, dims using one decimal by dividing by 10 to get exact matches
-	 * at square boundaries.
+	 * at square boundaries. Command is "dy dx x y SS".
 	 */
 	bool xneg = (ix < 0) ? true : false, yneg = (iy < 0) ? true : false;
 	ix = abs (ix);	iy = abs (iy);
@@ -1278,7 +1278,7 @@ GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isi
 	int yy = (int)floor (iy * 0.1), dy = iy - yy * 10;	if (yneg) yy = -yy;
 	int sx = (int)floor (isize[0] * 0.1), sdx = isize[0] - sx * 10;
 	int sy = (int)floor (isize[1] * 0.1), sdy = isize[1] - sy * 10;
-	PSL_command (PSL, "%d.%d %d.%d %d.%d %d.%d SS\n", sx, sdx, sy, sdy, xx, dx, yy, dy);
+	PSL_command (PSL, "%d.%d %d.%d %d.%d %d.%d SS\n", sy, sdy, sx, sdx, xx, dx, yy, dy);
 	return (PSL_NO_ERROR);
 }
 
@@ -1287,7 +1287,7 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 	 * as a square of the right color and set transparency before rendering that square. Because we cannot
 	 * have tiny gaps or overlaps between neighboring squares we up the resolution by a factor of 10 and
 	 * use integer calculations to ensure of no gaps. */
-	int k, *ix = NULL, *iy = NULL, idim[2];
+	int k, *ix = NULL, *iy = NULL, idim[2] = {0, 0};
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t n_bands = Conf->Image->header->n_bands, bt = n_bands - 1;
 	uint64_t kk_s, node_s, node_i;
@@ -1296,7 +1296,6 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
 	struct GMT_FILL fill;
 
-	gmt_M_memset (&fill, 1, struct GMT_FILL);	/* Wipe completely first */
 	PSL_command (GMT->PSL, "/SS {M dup 0 D exch 0 exch D neg 0 D P FO}!\n");	/* Special PSL macro added for 10*integer squares */
 	if ((ix = gmt_M_memory (GMT, NULL, Conf->n_columns + 1, int)) == NULL) {	/* Add 1 so we can get width without special test*/
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdimage_img_variable_transparency: Allocation failure for %d integers\n", Conf->n_columns);
@@ -1307,18 +1306,19 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 		return;
 	}
 	/* Precompute BL square coordinates in PostSCript units times 10, yielding 1/12000 inches precision */
-	for (srow = 0; srow <= Conf->n_rows; srow++) iy[srow]    = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * (Conf->n_rows - 1 - srow)));
+	for (srow = 0; srow <= Conf->n_rows; srow++)    iy[srow] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * (Conf->n_rows - 1 - srow)));
 	for (scol = 0; scol <= Conf->n_columns; scol++) ix[scol] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_X] * scol));
 
 #ifdef _OPENMP
-#pragma omp parallel for private(srow,kk_s,k,idim,scol,node_s,node_i,fill) shared(GMT,Conf,iy,ix,Ctrl,H_s,H_i,image)
+#pragma omp parallel for private(srow,kk_s,k,idim,scol,node_s,node_i,fill) shared(GMT,Conf,iy,ix,Ctrl,H_s,H_i,n_bands,bt,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
-		idim[GMT_Y] = iy[srow+1] - iy[srow];	/* Constant height of square in 1/12000 inches integer units for this row */
+		idim[GMT_Y] = iy[Conf->actual_row[srow]] - iy[Conf->actual_row[srow]+1];	/* Constant height of square in 1/12000 inches integer units for this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			/* Get pixel color */
+			gmt_M_memset (&fill, 1, struct GMT_FILL);	/* Wipe completely first */
 			for (k = 0; k < bt; k++) fill.rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
 			grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], fill.rgb);
 			if (Conf->invert) fill.rgb[bt] = 1.0 - fill.rgb[bt];

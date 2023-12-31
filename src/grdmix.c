@@ -580,7 +580,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 			else {
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,node) shared(GMT,G,off,scale,I_in)
+#pragma omp parallel for private(row,col,node) shared(GMT,G,off,I_in)
 #endif
 				gmt_M_grd_loop (GMT, G, row, col, node)
 					G->data[node] = I_in[0]->data[node+off];
@@ -627,9 +627,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
 			}
 			if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
-	#ifdef _OPENMP
-	#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
-	#endif
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,P,G_in,H,intens)
+#endif
 				gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
 					if (P)	/* Get r/g/b from grid z-value via CPT lookup */
 						(void)gmt_get_rgb_from_z (GMT, P, G_in[0]->data[node], rgb);
@@ -769,7 +769,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 #ifdef _OPENMP
-#pragma omp parallel for private(node) shared(H,I,alpha)
+#pragma omp parallel for private(node,transparency) shared(H,I,alpha,Ctrl)
 #endif
 		for (node = 0; node < (int64_t)H->size; node++)	{	/* Scale to 0-255 range */
 			transparency = gmt_M_is_dnan (alpha[node]) ? 1.0 : alpha[node];	/* NaN means full transparency */
