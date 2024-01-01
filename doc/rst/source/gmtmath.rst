@@ -89,13 +89,13 @@ Optional Arguments
     that defines the linear model you are trying to fit. If used with operators
     **LSQFIT** and **SVDFIT** you can optionally append some modifiers:
 
-    - **+e**: Evaluate the solution and write a data set with four columns:
+    - **+e** - Evaluate the solution and write a data set with four columns:
       *t*, *f(t)*, the model solution and residuals at *t*, respectively
       [Default writes one column with model coefficients **x**].
-    - **+r**: Only place f(t) (i.e., **b**) and leave the **A** part of the
+    - **+r** - Only place f(t) (i.e., **b**) and leave the **A** part of the
       augmented matrix equation alone.
-    - **+s** Your *t_f(t)* has a third column with 1-sigma uncertainties, or
-    - **+w** Your *t_f(t* table has a third column with weights.
+    - **+s** - Your *t_f(t)* has a third column with 1-sigma uncertainties, or
+    - **+w** - Your *t_f(t* table has a third column with weights.
 
     **Note**: If either **+s** or **+w** are used we find the weighted solution. The weights
     (or sigmas) will be output as the last column if **+e** is in effect.

@@ -14,18 +14,18 @@
 
     Choose among several modifiers to create profiles:
 
-    - **+a**: Set the *azimuth* of a profile of given *length* (see **+l**) starting at the given *origin*.
-    - **+c**: Connect multiple profile segments with shared joints into a single segment.
-    - **+d**: Compute the along-track distances of the profiles.
-    - **+g**: Report degrees of longitude or latitude instead of great circle distances starting at zero [Default].
-    - **+i**: Append *inc* to set the sampling interval; if not given then we default to half the minimum grid interval.
-    - **+l**: Append the total *length* of the profile if **+a** or **+o** are used with an *origin*.
-    - **+n**: Append the desired number of points along profile (which determines the sampling interval). 
-    - **+o**: Like **+a**, but centers the profile on the given *origin* in the *azimuth* direction.
-    - **+p**: Force sampling along the parallel if your *line* starts and ends at the same latitude [Great circle].
-    - **+r**: Append *radius* for circular sampling along small circle of given radius centered on the *origin*.
+    - **+a** - Set the *azimuth* of a profile of given *length* (see **+l**) starting at the given *origin*.
+    - **+c** - Connect multiple profile segments with shared joints into a single segment.
+    - **+d** - Compute the along-track distances of the profiles.
+    - **+g** - Report degrees of longitude or latitude instead of great circle distances starting at zero [Default].
+    - **+i** - Append *inc* to set the sampling interval; if not given then we default to half the minimum grid interval.
+    - **+l** - Append the total *length* of the profile if **+a** or **+o** are used with an *origin*.
+    - **+n** - Append the desired number of points along profile (which determines the sampling interval). 
+    - **+o** - Like **+a**, but centers the profile on the given *origin* in the *azimuth* direction.
+    - **+p** - Force sampling along the parallel if your *line* starts and ends at the same latitude [Great circle].
+    - **+r** - Append *radius* for circular sampling along small circle of given radius centered on the *origin*.
       Requires either **+n** or **+i**.
-    - **+x**: Compute distances along a loxodrome (i.e., rhumbline) instead of along the great circle.
+    - **+x** - Compute distances along a loxodrome (i.e., rhumbline) instead of along the great circle.
 
     **Notes**: (1) Only one distance unit can be chosen.  Giving different units
     will result in an error.  If no units are specified we default to

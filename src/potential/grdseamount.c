@@ -150,10 +150,10 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct GRDSEAMOUNT_H {	/* -H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>] */
+	struct GRDSEAMOUNT_H {	/* -H<H>/<rho_l>/<rho_h>[+b<boost>][+d<densify>][+p<power>] */
 		bool active;
 		double H, rho_l, rho_h;
-		double p, densify;
+		double p, densify, boost;
 		double del_rho;	/* Computed as rho_h - rho_l */
 		double p1;	/* Will be p + 1 to avoid addition in loops */
 	} H;
@@ -217,6 +217,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.mode = SHAPE_GAUS;
 	C->C.code = 'g';
 	C->H.p = 1.0;	/* Linear density increase */
+	C->H.boost = 1.0;	/* No boost */
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
 	C->Q.c0 = erf (3.0 / M_SQRT2);
@@ -245,7 +246,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>][+s<scale>]] [-C[c|d|g|o|p]] "
-		"[-D%s] [-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] "
+		"[-D%s] [-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>+b<boost>][+d<densify>][+p<power>]] "
 		"[-K<densmodel>] [-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode>[/<fmode>][+d]] "
 		"[-S[+a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] "
 		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -285,9 +286,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Read lon, lat, azimuth, major, minor, height (m) for each seamount.");
 	GMT_Usage (API, 1, "\n-F[<flattening>]");
 	GMT_Usage (API, -2, "Seamounts are truncated. Append flattening or expect it in an extra input column [no truncation]. ");
-	GMT_Usage (API, 1, "\n-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]");
+	GMT_Usage (API, 1, "\n-H<H>/<rho_l>/<rho_h>+b<boost>][+d<densify>][+p<power>]");
 	GMT_Usage (API, -2, "Set parameters for the reference seamount height (in m), flank and deep core densities (kg/m^3 or g/cm^3). "
 		"Control the density function by these modifiers:");
+	GMT_Usage (API, 3, "+b To simulate guyot truncation effect, boost seamount height used in density calculation by <boost> [1].");
 	GMT_Usage (API, 3, "+d Density increase (kg/m^3 or g/cm^3) due to water pressure over full depth implied by <H> [0].");
 	GMT_Usage (API, 3, "+p Exponential <power> coefficient (> 0) for density change with burial depth [1 (linear)].");
 	GMT_Usage (API, 1, "\n-K<densmodel>");
@@ -827,7 +829,6 @@ GMT_LOCAL double grdseamount_para_solver (struct SEAMOUNT *S, double f, double v
 
 GMT_LOCAL double grdseamount_gauss_solver (struct SEAMOUNT *S, double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction for a Gaussian seamount */
-	int n = 0;
 	double A, B, V0, phi, phi0, r02, h0;
 	r02 = (elliptical) ? S->major * S->minor : S->radius * S->radius;
 	h0  = S->height;
@@ -838,8 +839,7 @@ GMT_LOCAL double grdseamount_gauss_solver (struct SEAMOUNT *S, double f, double 
 	do {
 		phi0 = phi;
 		phi = M_SQRT2 * sqrt (-log (B/(1 + 4.5 * phi0*phi0))) / 3.0;
-		n++;
-	} while (fabs (phi-phi0) > 1e-6);
+	} while (fabs (phi-phi0) > GMT_CONV6_LIMIT);
 	return (phi);
 }
 
@@ -871,10 +871,11 @@ GMT_LOCAL double grdseamount_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, d
 	return (rho);
 }
 
-GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double h, double z1, double z2) {
+GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double h_orig, double z1, double z2) {
 	/* Passing in the current seamounts height h(r) and the two depths z1(r) and z2(r) defining a layer.
 	 * When doing the whole seamount we pass z2 = 0 and z1 = h(r).
 	 * The vertically averaged density for this radial position is returned */
+	double h = h_orig * Ctrl->H.boost;	/* Simulate flattening */
 	double u1 = (h - z1) / Ctrl->H.H;
 	double u2 = (h - z2) / Ctrl->H.H;
 	double q = (Ctrl->H.H - h) / Ctrl->H.H;

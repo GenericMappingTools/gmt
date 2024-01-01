@@ -4638,78 +4638,84 @@ GMT_LOCAL int gmtapi_import_ppm (struct GMT_CTRL *GMT, char *fname, struct GMT_I
 }
 
 GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I_in, struct GMT_IMAGE **I_out) {
-	/* In most situations we can use an input image given to a module as the dataset to
-	 * plot.  However, if the image is indexed then we must expand it to rgb since we may
-	 * need to interpolate the r/g/b planes due to projections. If the image is read-only
-	 * then we cannot reallocate the array and must duplicate, otherwise we reallocate the
-	 * image array and expand to rgb.  This function is called at the end of gmtapi_import_image
-	 * if the GMT_IMAGE_NO_INDEX bitflag is passed. The image layout honors the current setting
-	 * of API_IMAGE_LAYOUT. */
-	bool new = false;
-	unsigned char *data = NULL;
-	uint64_t node, off[3];
-	size_t n_colors;
-	unsigned int c, index;
-	struct GMT_IMAGE *I = NULL;
-	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
-	struct GMT_GRID_HEADER *h = I_in->header;
+    /* In most situations we can use an input image given to a module as the dataset to
+     * plot.  However, if the image is indexed then we must expand it to rgb since we may
+     * need to interpolate the r/g/b planes due to projections. If the image is read-only
+     * then we cannot reallocate the array and must duplicate, otherwise we reallocate the
+     * image array and expand to rgb.  This function is called at the end of gmtapi_import_image
+     * if the GMT_IMAGE_NO_INDEX bitflag is passed. The image layout honors the current setting
+     * of API_IMAGE_LAYOUT. */
+    bool new = false;
+    unsigned char *data = NULL;
+    uint64_t node, off[3];
+    size_t n_colors, n_len;
+    unsigned int c, index;
+    struct GMT_IMAGE *I = NULL;
+    struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
+    struct GMT_GRID_HEADER *h = I_in->header;
+    struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+    char *layout = (h->n_bands == 4 || I_in->alpha) ? "TRBa" : "TRB";
+    n_len = strlen (layout);    /* 3 or 4 */
+    if (I_in->n_indexed_colors == 0) {  /* Regular gray or r/g/b image - use as is */
+        (*I_out) = I_in;
+        return (false);
+    }
+    /* Here we have an indexed image */
+    if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) {   /* Cannot reallocate a non-GMT read-only input array */
+        if ((I = GMT_Duplicate_Data (GMT->parent, GMT_IS_IMAGE, GMT_DUPLICATE_DATA, I_in)) == NULL) {
+            GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate external image! - this is not a good thing and may crash this module\n");
+            (*I_out) = I_in;
+        }
+        else {
+            struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I);
+            IH->alloc_mode = GMT_ALLOC_INTERNALLY;
+        }
+        new = true;
+    }
+    else    /* Here we may overwrite the input image and just pass the pointer back */
+        I = I_in;
 
-	if (I_in->n_indexed_colors == 0) {	/* Regular gray or r/g/b image - use as is */
-		(*I_out) = I_in;
-		return (false);
-	}
-	/* Here we have an indexed image */
-	if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot reallocate a non-GMT read-only input array */
-		if ((I = GMT_Duplicate_Data (GMT->parent, GMT_IS_IMAGE, GMT_DUPLICATE_DATA, I_in)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to duplicate image! - this is not a good thing and may crash this module\n");
-			(*I_out) = I_in;
-		}
-		else {
-			struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I);
-			IH->alloc_mode = GMT_ALLOC_INTERNALLY;
-		}
-		new = true;
-	}
-	else	/* Here we may overwrite the input image and just pass the pointer back */
-		I = I_in;
+    /* Here, I is an image we can reallocate the array when expanding the colors */
 
-	/* Here, I is an image we can reallocate the array when expanding the colors */
+    h = I->header;
+    if ((data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char)) == NULL) return false;    /* The new r,g,b image */
 
-	h = I->header;
-	if ((data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char)) == NULL) return false;	/* The new r,g,b image */
+    n_colors = I->n_indexed_colors;
+    if (n_colors > 2000)            /* If colormap is Mx4 or has encoded the alpha color */
+        n_colors = (uint64_t)(floor(n_colors / 1000.0));
+    if (GMT->parent->GMT->current.gdal_read_in.O.mem_layout[0] && strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {  /* Band interleave */
+        strncpy (h->mem_layout, layout, n_len); /* Fill out red, green, and blue bands */
+        for (c = 0; c < 3; c++) off[c] = c * h->size;
+        for (node = 0; node < h->size; node++) {    /* For all pixels, including the pad */
+            index = I->data[node];  /* Pixel index into color table */
+            for (c = 0; c < 3; c++) data[node+off[c]] = gmt_M_get_rgba (I->colormap, index, c, n_colors);   /* Place r,g,b in separate bands */
+        }
+    }
+    else {  /* Pixel interleave */
+        uint64_t k;
+        strncpy (h->mem_layout, layout, n_len); /* Fill out red, green, and blue pixels */
+        for (node = k = 0; node < h->size; node++) {    /* For all pixels, including the pad */
+            index = I->data[node];  /* Pixel index into color table */
+            for (c = 0; c < 3; c++, k++) data[k] = gmt_M_get_rgba (I->colormap, index, c, n_colors);    /* Place r,g,b in separate bands */
+        }
+        /* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
+        GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);
+    }
+    gmt_M_free_aligned (GMT, I->data);  /* Free previous aligned image memory */
+    I->data = data; /* Pass the reallocated rgb TRB image back */
+    /* Reset meta data to reflect a regular 3-band r,g,b image */
+    h->n_bands = 3;
+    I->n_indexed_colors = 0;
+    if (!gmt_M_is_fnan (h->nan_value)) { /* Preserve the NaN color index */
+        unsigned int k = rint (h->nan_value);
+        for (c = 0; c < 3; c++) HH->nan_rgb[c] = gmt_M_get_rgba (I->colormap, k, c, n_colors);  /* Save NaN r,g,b */
+        HH->has_NaN_rgb = 1;
+    }
+    gmt_M_free (GMT, I->colormap);  /* Free the colormap */
+    I->color_interp = NULL;
 
-	n_colors = I->n_indexed_colors;
-	if (n_colors > 2000)			/* If colormap is Mx4 or has encoded the alpha color */
-		n_colors = (uint64_t)(floor(n_colors / 1000.0));
-
-	if (GMT->parent->GMT->current.gdal_read_in.O.mem_layout[0] && strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {	/* Band interleave */
-		strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
-		for (c = 0; c < 3; c++) off[c] = c * h->size;
-		for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
-			index = I->data[node];	/* Pixel index into color table */
-			for (c = 0; c < 3; c++) data[node+off[c]] = gmt_M_get_rgba (I->colormap, index, c, n_colors);	/* Place r,g,b in separate bands */
-		}
-	}
-	else {	/* Pixel interleave */
-		uint64_t k;
-		strncpy (h->mem_layout, "TRP ", 4);	/* Fill out red, green, and blue pixels */
-		for (node = k = 0; node < h->size; node++) {	/* For all pixels, including the pad */
-			index = I->data[node];	/* Pixel index into color table */
-			for (c = 0; c < 3; c++, k++) data[k] = gmt_M_get_rgba (I->colormap, index, c, n_colors);	/* Place r,g,b in separate bands */
-		}
-		/* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
-		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);
-	}
-	gmt_M_free_aligned (GMT, I->data);	/* Free previous aligned image memory */
-	I->data = data;	/* Pass the reallocated rgb TRB image back */
-	/* Reset meta data to reflect a regular 3-band r,g,b image */
-	h->n_bands = 3;
-	I->n_indexed_colors = 0;
-	gmt_M_free (GMT, I->colormap);	/* Free the colormap */
-	I->color_interp = NULL;
-
-	(*I_out) = I;
-	return (new);
+    (*I_out) = I;
+    return (new);
 }
 
 int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
@@ -14434,7 +14440,7 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	 */
 	const char *argv = "GMT_F77_readgrdinfo";
 	char *file = NULL;
-	struct GMT_GRID_HEADER header;
+	struct GMT_GRID_HEADER *header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
 	if (name == NULL) {
@@ -14445,9 +14451,8 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	file = strndup (name, lname);
 
 	/* Read the grid header */
-
-	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
-	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
+	header = gmt_get_header (API->GMT);
+	if (gmtlib_read_grd_info (API->GMT, file, header)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while opening file %s\n", file);
 		gmt_M_str_free (file);
 		GMT_Destroy_Session (API);
@@ -14456,14 +14461,15 @@ int gmt_f77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	gmt_M_str_free (file);
 
 	/* Assign variables from header structure items */
-	dim[GMT_X] = header.n_columns;	dim[GMT_Y] = header.n_rows;
-	gmt_M_memcpy (limit, header.wesn, 4U, double);
-	gmt_M_memcpy (inc, header.inc, 2U, double);
-	limit[ZLO] = header.z_min;
-	limit[ZHI] = header.z_max;
-	dim[GMT_Z] = header.registration;
-	if (title) F_STRNCPY (title, header.title, ltitle, GMT_GRID_TITLE_LEN80);
-	if (remark) F_STRNCPY (remark, header.remark, lremark, GMT_GRID_REMARK_LEN160);
+	dim[GMT_X] = header->n_columns;	dim[GMT_Y] = header->n_rows;
+	gmt_M_memcpy (limit, header->wesn, 4U, double);
+	gmt_M_memcpy (inc, header->inc, 2U, double);
+	limit[ZLO] = header->z_min;
+	limit[ZHI] = header->z_max;
+	dim[GMT_Z] = header->registration;
+	if (title) F_STRNCPY (title, header->title, ltitle, GMT_GRID_TITLE_LEN80);
+	if (remark) F_STRNCPY (remark, header->remark, lremark, GMT_GRID_REMARK_LEN160);
+	gmt_free_header (API->GMT, &header);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
@@ -14521,9 +14527,7 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	dim[GMT_Z] = header->registration;
 	if (title) F_STRNCPY (title, header->title, ltitle, GMT_GRID_TITLE_LEN80);
 	if (remark) F_STRNCPY (remark, header->remark, lremark, GMT_GRID_REMARK_LEN160);
-
-	gmt_M_free (API->GMT, header->hidden);
-	gmt_M_free (API->GMT, header);
+	gmt_free_header (API->GMT, &header);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
@@ -14535,7 +14539,7 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 	const char *argv = "GMT_F77_writegrd";
 	char *file = NULL;
 	double no_wesn[4] = {0.0, 0.0, 0.0, 0.0};
-	struct GMT_GRID_HEADER header;
+	struct GMT_GRID_HEADER *header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
 	/* Initialize with default values */
@@ -14547,8 +14551,8 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
 	file = strndup (name, lname);
 
-	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
-	gmt_grd_init (API->GMT, &header, NULL, false);
+	header = gmt_get_header (API->GMT);
+	gmt_grd_init (API->GMT, header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_ERROR, "Grid domain not specified for %s\n", file);
 		gmt_M_str_free (file);
@@ -14564,25 +14568,26 @@ int gmt_f77_writegrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], 
 
 	/* Set header parameters */
 
-	gmt_M_memcpy (header.wesn, limit, 4U, double);
-	gmt_M_memcpy (header.inc, inc, 2U, double);
-	header.n_columns = dim[GMT_X];	header.n_rows = dim[GMT_Y];
-	header.registration = dim[GMT_Z];
-	gmt_set_grddim (API->GMT, &header);
-	if (title) F_STRNCPY (header.title, title, GMT_GRID_TITLE_LEN80, ltitle);
-	if (remark) F_STRNCPY (header.remark, remark, GMT_GRID_REMARK_LEN160, lremark);
+	gmt_M_memcpy (header->wesn, limit, 4U, double);
+	gmt_M_memcpy (header->inc, inc, 2U, double);
+	header->n_columns = dim[GMT_X];	header->n_rows = dim[GMT_Y];
+	header->registration = dim[GMT_Z];
+	gmt_set_grddim (API->GMT, header);
+	if (title) F_STRNCPY (header->title, title, GMT_GRID_TITLE_LEN80, ltitle);
+	if (remark) F_STRNCPY (header->remark, remark, GMT_GRID_REMARK_LEN160, lremark);
 
-	if (dim[3] == 1) gmtlib_inplace_transpose (array, header.n_rows, header.n_columns);
+	if (dim[3] == 1) gmtlib_inplace_transpose (array, header->n_rows, header->n_columns);
 
 	/* Write the file */
 
-	if (gmtlib_write_grd (API->GMT, file, &header, array, no_wesn, GMT_no_pad, 0)) {
+	if (gmtlib_write_grd (API->GMT, file, header, array, no_wesn, GMT_no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing file %s\n", file);
 		gmt_M_str_free (file);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_WRITE_ERROR;
 	}
 	gmt_M_str_free (file);
+	gmt_free_header (API->GMT, &header);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_MEMORY_ERROR;
 	return GMT_NOERROR;

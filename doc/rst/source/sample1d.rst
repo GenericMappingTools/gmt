@@ -14,6 +14,7 @@ Synopsis
 
 **gmt sample1d** [ *table* ]
 [ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**] ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-E| ]
 [ |-F|\ **a**\|\ **c**\|\ **e**\|\ **l**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
@@ -49,7 +50,8 @@ Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
 schemes are available, in addition to a *smoothing* spline which trades off misfit
 for curvature. Extrapolation outside the range of the input data
-is not supported.
+is not supported. By giving a CPT via |-C| we will add *r*, *g*, *b*, *a* columns to the output
+based on the last input data column.
 
 Required Arguments
 ------------------
@@ -68,19 +70,28 @@ Optional Arguments
 
 **-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**]
     For track resampling (if |-T|...\ *unit* is set) we can select how
-    this is to be performed. Append **f** to keep original points, but
-    add intermediate points if needed; note this selection does not
-    necessarily yield equidistant points [Default], **m** as **f**, but
-    first follow meridian (along y) then parallel (along x), **p** as
-    **f**, but first follow parallel (along y) then meridian (along x),
-    **r** to resample at equidistant locations; input points are not
-    necessarily included in the output, and **R** as **r**, but adjust
-    given spacing to fit the track length exactly. Finally, append
-    **+d** to delete duplicate input records (identified by having
-    no change in the time column, and
-    **+l** if distances should be measured along rhumb lines (loxodromes).
+    this is to be performed via these directives:
+
+    - **f** - Keep original points, but add intermediate points if needed;
+      note this selection does not necessarily yield equidistant points [Default].
+    - **m** - Same as **+f**, but first follow meridian (along *y*) then parallel (along *x*).
+    - **p** - Same as **+f**, but first follow parallel (along *x*) then meridian (along *y*).
+    - **r** - Resample at equidistant locations; input points are not
+      necessarily included in the output.
+    - **R** - Same as **r**, but adjust given spacing to fit the track length exactly.
+
+    A few modifiers can also be used:
+
+    - **+d** - Delete duplicate input records (identified by having
+      no change in the time column, and
+    - **+l** - If distances should be measured along rhumb lines (loxodromes).
+    
     **Note**: Calculation mode for loxodromes is spherical, hence **-je**
     cannot be used in combination with **+l**.
+
+.. _-C:
+
+.. include:: dump_rgb.rst_
 
 .. _-E:
 

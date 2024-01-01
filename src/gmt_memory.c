@@ -143,7 +143,7 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 	M->active = ( env && strcasecmp (env, "off") != 0 ); /* Track if GMT_TRACK_MEMORY is set and is not OFF */
 	M->do_log = ( env && strcasecmp (env, "log") == 0 ); /* Write a log if GMT_TRACK_MEMORY is LOG */
 	if (M->active && isdigit (env[0]))	/* Got a specific ID to track; see gmtmemory_memtrack_add */
-		 M->find = atoi (env);
+		 M->find = atol (env);
 	M->search = true;
 	if (M->active) M->fp = stderr;
 	if (!M->do_log) /* Logging not requested */ {
@@ -317,6 +317,7 @@ static inline void gmtmemory_memtrack_add (struct GMT_CTRL *GMT, const char *whe
 		/* The item you are looking for is being allocated now */
 		int found = 1;	/* Add a debug stop point here and then examine where you are */
 		found ++;	/* Just to keep compiler happy */
+		if (found) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Memory tracker found ID = %" PRIu64 "\n", M->find);
 	}
 	entry->ID = M->n_ID++;
 

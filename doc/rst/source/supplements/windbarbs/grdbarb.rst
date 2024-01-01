@@ -69,8 +69,8 @@ Optional Arguments
 .. _-A:
 
 **-A**
-    The grid files contain (speed, theta) wind components instead of
-    (u, v) components [Default is (u, v)].
+    The grid files contain polar (speed, theta) wind components instead of
+    Cartesian (u, v) components [Default is (u, v)].
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: ../../explain_-B.rst_

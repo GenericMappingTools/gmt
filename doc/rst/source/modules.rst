@@ -160,8 +160,8 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/seis/meca
    supplements/seis/polar
    supplements/seis/sac
-   supplements/seis/shake
-   supplements/seis/vs30
+   supplements/seis/grdshake
+   supplements/seis/grdvs30
    supplements/spotter/backtracker
    supplements/spotter/gmtpmodeler
    supplements/spotter/grdpmodeler
@@ -304,6 +304,13 @@ Supplemental Modules
     - :doc:`/supplements/geodesy/earthtide`
     - :doc:`/supplements/geodesy/gpsgridder`
     - :doc:`/supplements/geodesy/velo`
+    - :doc:`/supplements/gsfml/fzanalyzer`
+    - :doc:`/supplements/gsfml/fzblender`
+    - :doc:`/supplements/gsfml/fzinformer`
+    - :doc:`/supplements/gsfml/fzmapper`
+    - :doc:`/supplements/gsfml/fzmodeler`
+    - :doc:`/supplements/gsfml/fzprofiler`
+    - :doc:`/supplements/gsfml/mlconverter`
     - :doc:`/supplements/gshhg/gshhg`
     - :doc:`/supplements/img/img2grd`
     - :doc:`/supplements/mgd77/mgd77convert`
@@ -638,6 +645,25 @@ geodesy
 | :doc:`/supplements/geodesy/velo`           | |velo_purpose|       |
 +--------------------------------------------+----------------------+
 
+GSFML
+-----
+
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzanalyzer`  | |fzanalyzer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzblender`   | |fzblender_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzinformer`  | |fzinformer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmapper`    | |fzmapper_purpose|    |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmodeler`   | |fzmodeler_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzprofiler`  | |fzprofiler_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/mlconverter` | |mlconverter_purpose| |
++---------------------------------------+-----------------------+
+
 GSHHG
 -----
 
@@ -714,19 +740,19 @@ SEGY
 seis
 ----
 
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/coupe` | |coupe_purpose|  |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/meca`  | |meca_purpose|   |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/polar` | |polar_purpose|  |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/sac`   | |sac_purpose|    |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/shake` | |shake_purpose|  |
-+--------------------------------+------------------+
-| :doc:`/supplements/seis/vs30`  | |vs30_purpose|   |
-+--------------------------------+------------------+
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/coupe`    | |coupe_purpose|    |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/meca`     | |meca_purpose|     |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/polar`    | |polar_purpose|    |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/sac`      | |sac_purpose|      |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/grdshake` | |grdshake_purpose| |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/grdvs30`  | |grdvs30_purpose|  |
++-----------------------------------+--------------------+
 
 spotter
 -------

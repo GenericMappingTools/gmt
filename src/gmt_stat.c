@@ -1727,7 +1727,7 @@ double gmt_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *st
 		sum2 += dx * (x[k] - mean);
 	}
 	*std = (m > 1) ? sqrt (sum2 / (m-1.0)) : GMT->session.d_NaN;
-	return ((m) ? mean : GMT->session.d_NaN);
+	return (mean);
 }
 
 double gmt_std_weighted (struct GMT_CTRL *GMT, double *x, double *w, double wmean, uint64_t n) {
@@ -1871,6 +1871,7 @@ double gmt_quantile_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data
 	double weight_half = 0.0, weight_count;
 
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mode */
+	else if (n == 1) return (data[0].value);	/* Single point, so also the mode */
 
 	/* First sort data on z */
 
@@ -1904,6 +1905,7 @@ double gmt_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, ui
 	uint64_t i, j;
 
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mode */
+	else if (n == 1) return (data[0].value);	/* Single point is its own mode */
 
 	/* First sort data on z */
 	qsort (data, n, sizeof (struct GMT_OBSERVATION), gmtlib_compare_observation);
@@ -2247,7 +2249,8 @@ double gmt_quantile (struct GMT_CTRL *GMT, double *x, double q, uint64_t n) {
 	double p, f, df;
 
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
-	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
+	else if (n == 1) return (x[0]);			/* Single point so is also any quantile */
+	else if (q == 0.0) return (x[0]);		/* 0% quantile == min(x) */
 	while (n > 1 && gmt_M_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (q == 100.0) return (x[n-1]);		/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
@@ -2268,7 +2271,8 @@ double gmt_quantile_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, double q, uint64_t
 	double p, f, df;
 
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
-	if (q == 0.0) return ((double)x[0]);		/* 0% quantile == min(x) */
+	else if (n == 1) return (x[0]);			/* Single point so is also any quantile */
+	else if (q == 0.0) return ((double)x[0]);	/* 0% quantile == min(x) */
 	while (n > 1 && gmt_M_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (q == 100.0) return ((double)x[n-1]);	/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;

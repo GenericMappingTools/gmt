@@ -90,6 +90,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
                        OGRFeatureDefnH hFeatureDefn, OGRGeometryH hGeom, int iLayer, int nFeature, int nLayers,
 					   int nAttribs, int nMaxGeoms, int recursionLevel) {
 
+	char sid [10];		/* To store the Feature ID in the field 'name' (apparently Features have no names). */
 	int	is3D, i, j, jj, k, np = 0, nPtsBase, nRings = 0, indStruct, nGeoms, do_recursion;
 	int   *ptr_i = NULL;
 	double *x = NULL, *y = NULL, *z = NULL;
@@ -251,6 +252,9 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			out[indStruct].att_number = 0;
 
 		out[0].n_filled++;				/* Increment the filled nodes counter */
+
+		sprintf(sid, "%lld", OGR_F_GetFID(hFeature)+1);
+		out[indStruct].name = strdup(sid);		/* Set the ID of the feature */
 	}
 
 	return 0;
@@ -375,7 +379,6 @@ struct OGR_FEATURES *gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctr
 		OGR_L_ResetReading(hLayer);
 		hFeatureDefn = OGR_L_GetLayerDefn(hLayer);
 
-		out[ind].name = strdup((char *)OGR_FD_GetName(hFeatureDefn));
 		hSRS = OGR_L_GetSpatialRef(hLayer);	/* Do not free it later */
 		if (hSRS) {				/* Get Layer's SRS. */
 			char *pszWKT = NULL, *pszProj4 = NULL;

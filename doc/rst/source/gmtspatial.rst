@@ -92,15 +92,15 @@ Optional Arguments
     features is less than a threshold). We also consider that some features
     may have been reversed. By default, we compute the mean line separation.
 
-    - **+c**: Set threshold of a pair's closeness (defined as the average distance
+    - **+c** - Set threshold of a pair's closeness (defined as the average distance
       between the features divided by their average length) [0.01].
-    - **+C**: Use **+C**\ *cmin* to instead compute the median line separation
+    - **+C** - Use **+C**\ *cmin* to instead compute the median line separation
       and therefore a robust closeness value.
-    - **+d**: Features are considered approximate matches if their
+    - **+d** - Features are considered approximate matches if their
       minimum distance is less than *dmax* [0] (see `Units`_) and their
       closeness (**+c**) is less than *cmax*.
-    - **+f**: Check if the input features already exist among the features in *file*. 
-    - **+p**: Limit the comparison to points that project perpendicularly to points
+    - **+f** - Check if the input features already exist among the features in *file*. 
+    - **+p** - Limit the comparison to points that project perpendicularly to points
       on the other line (and not its extension) [Default considers all distances
       between points on one line and another.
 
@@ -153,13 +153,13 @@ Optional Arguments
     encoded in the segment header as **-Z**\ *ID*. Modifiers can be used
     to adjust the process:
 
-    - **+a**: All the points of a feature must be inside the polygon.
-    - **+i**: Point clouds, determine the polygon ID for every individual input point
+    - **+a** - All the points of a feature must be inside the polygon.
+    - **+i** - Point clouds, determine the polygon ID for every individual input point
       and add it as the last output column.
-    - **+p**: Instead of segment headers, assign a running ID number
+    - **+p** - Instead of segment headers, assign a running ID number
       that is initialized to begin from *start* [0].
-    - **+r**: Just report which polygon contains a feature.
-    - **+z**: Add the IDs as an extra data column on output.
+    - **+r** - Just report which polygon contains a feature.
+    - **+z** - Add the IDs as an extra data column on output.
 
     Segments that fail to be inside a polygon are not written out. If
     more than one polygon contains the same segment we skip the second
@@ -181,14 +181,14 @@ Optional Arguments
     consider open polygons as lines and closed polygons as polygons.
     Use modifiers to change the above behavior:
 
-    - **+c**: Restrict processing to those features whose length (or area
+    - **+c** - Restrict processing to those features whose length (or area
       for polygons) fall inside the specified range set by *min* and *max*.
       If *max* is not set it defaults to infinity.
-    - **+h**: Append the area to each polygonʻs segment header [Default
+    - **+h** - Append the area to each polygonʻs segment header [Default
       simply writes the area to standard output]. 
-    - **+l**: Consider all input features as lines, even if closed.
-    - **+p**: Close open polygons and thus consider all input as polygons.
-    - **+s**: Sort the segments based on their lengths or area. Append **a**
+    - **+l** - Consider all input features as lines, even if closed.
+    - **+p** - Close open polygons and thus consider all input as polygons.
+    - **+s** - Sort the segments based on their lengths or area. Append **a**
       for ascending [Default] and **d** for descending order.
 
 .. _-R:
@@ -199,16 +199,16 @@ Optional Arguments
 .. include:: explain_-Rgeo.rst_
 
 .. _-S:
-    **i**: Returns the intersection of input polygons (closed).
-    **u**: Returns the union of input polygons (closed).
-    **j**: Join polygons that were split by the Dateline.
+    **i** - Returns the intersection of input polygons (closed).
+    **u** - Returns the union of input polygons (closed).
+    **j** - Join polygons that were split by the Dateline.
 
 **-S**\ **b**\ *width*\|\ **h**\|\ **s**
     Spatial processing of polygons. Choose from several directives:
 
-    - **b**: Append *width* which computes a buffer polygon around lines.
-    - **h**: Identifies perimeter and hole polygons (and flags/reverses them).
-    - **s**: Split polygons that straddle the Dateline.
+    - **b** - Append *width* which computes a buffer polygon around lines.
+    - **h** - Identifies perimeter and hole polygons (and flags/reverses them).
+    - **s** - Split polygons that straddle the Dateline.
 
     **Note**: **-Sb** is a purely Cartesian operation so *width* must be in data units.
     That is, for geographical coordinates *width* must be provided in degrees or,

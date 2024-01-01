@@ -92,16 +92,16 @@ Optional Arguments
     its own 1-std dev error estimate, hence the output is 17 columns wide.
     Select your spectrum by choosing one of these directives:
 
-    - **r**: Choose a radial spectrum [Default].
-    - **x**: Compute the spectrum in the *x*-direction instead. 
-    - **y**: Compute the spectrum in the *y*-direction instead. 
+    - **r** - Choose a radial spectrum [Default].
+    - **x** - Compute the spectrum in the *x*-direction instead. 
+    - **y** - Compute the spectrum in the *y*-direction instead. 
     
     Two modifiers are available the adjust the output further:
 
-    - **+w**: Write wavelength *w* instead of frequency *f*, and if your grid
+    - **+w** - Write wavelength *w* instead of frequency *f*, and if your grid
       is geographic you may further append **k** to scale wavelengths from
       meter [Default] to km.
-    - **+n**: Normalize spectrum so that the mean spectral values per
+    - **+n** - Normalize spectrum so that the mean spectral values per
       frequency are reported [By default the spectrum is obtained by summing
       over several frequencies.
 

@@ -1,5 +1,5 @@
 outs:
-- md5: bc1d12935b63c0b9af730837de41c4ea.dir
-  size: 6428161
+- md5: 34b0b0973f0a4411e27cab348b313578.dir
   nfiles: 7
   path: grdfilter
+  hash: md5

@@ -29,6 +29,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 	          "",                  "",
 		  GMT_TP_STANDARD },
+	GMT_C_CPT_KW,
 	{ 0, 'E', "",
 	          "",                  "",
 	          "",                  "",

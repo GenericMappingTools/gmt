@@ -2,17 +2,17 @@
     Control names and units of netCDF grid and cube meta-data.  For dimensions with units,
     add the unit in square bracket (e.g., "distance [km]"). Select one or more of these modifiers:
 
-    - **+c**: Append *cpt* to set a default CPT for this grid [turbo] or give - to remove any default CPT already set.
-    - **+d**: Set *dname*, the data value name.
-    - **+n**: Set the *invalid* number used to indicate a NaN or missing value.
-    - **+o**: Set the *offset* to add to data after first scaling the data [0].
-    - **+r**: Set a *remark* used for this grid (any sentence you prefer).
-    - **+s**: Set the *scale* used fto multiply data values after they are read [1].
-    - **+t**: Set a *title* used for this grid (any sentence you prefer).
-    - **+v**: Append *varname*, the variable name of the data set.
-    - **+x**: Append *xname*, the name of the x-coordinate (and optional unit in brackets).
-    - **+y**: Append *yname*, the name of the y-coordinate (and optional unit in brackets).
-    - **+z**: For 3-D cubes; append *zname*, the name of the z-coordinate (and optional unit in brackets).
+    - **+c** - Append *cpt* to set a default CPT for this grid [turbo] or give - to remove any default CPT already set.
+    - **+d** - Set *dname*, the data value name.
+    - **+n** - Set the *invalid* number used to indicate a NaN or missing value.
+    - **+o** - Set the *offset* to add to data after first scaling the data [0].
+    - **+r** - Set a *remark* used for this grid (any sentence you prefer).
+    - **+s** - Set the *scale* used fto multiply data values after they are read [1].
+    - **+t** - Set a *title* used for this grid (any sentence you prefer).
+    - **+v** - Append *varname*, the variable name of the data set.
+    - **+x** - Append *xname*, the name of the x-coordinate (and optional unit in brackets).
+    - **+y** - Append *yname*, the name of the y-coordinate (and optional unit in brackets).
+    - **+z** - For 3-D cubes; append *zname*, the name of the z-coordinate (and optional unit in brackets).
   
     Give a blank name to completely reset a particular string.
     Use quotes to group texts with more than one word.  If any

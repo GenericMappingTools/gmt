@@ -41,7 +41,8 @@ enum GMT_enum_contline {
 enum GMT_enum_contangle {
 	GMT_ANGLE_LINE_PARALLEL = 0,	/* Angles follows the line locally */
 	GMT_ANGLE_LINE_NORMAL,	/* Angles is normal to the line locally */
-	GMT_ANGLE_LINE_FIXED};	/* Angle is fixed regardless of line direction */
+	GMT_ANGLE_LINE_FIXED,	/* Angle is fixed regardless of line direction */
+	GMT_ANGLE_LINE_DELTA};	/* Angle is a fixed offset from line direction */
 
 
 /*! Various settings for quoted line/contour label types */

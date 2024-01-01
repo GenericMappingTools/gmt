@@ -110,7 +110,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<gridx> <gridy> are grid files with the two wind components.");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A Grids have (speed, theta) components [Default is (u, v) components].");
+	GMT_Usage (API, 1, "\n-A Grids have polar (speed, theta) components [Default is Cartesian (u, v) components].");
 	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-C[<cpt>]");
 	GMT_Usage (API, -2, "Color palette file to convert wind speed to colors. Optionally, name a master cpt "
@@ -263,7 +263,7 @@ EXTERN_MSC int GMT_grdbarb (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

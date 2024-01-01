@@ -117,25 +117,25 @@ Optional Arguments
     output columns. If only one increment is given we also use it for the second
     column. Several directives are available:
 
-    - **b**: Write the bounding box of the data table or segments (see |-A|)
+    - **b** - Write the bounding box of the data table or segments (see |-A|)
       as a closed polygon segment. 
-    - **e**: The exact *min*\ /*max* of the input is given in the **-R** string.
+    - **e** - The exact *min*\ /*max* of the input is given in the **-R** string.
       If you only want either the *x-* or *y-*\ range to be exact and the other
       range rounded, give one of the increments as zero.
-    - **f**: Append *dx*\ [/*dy*] to report an extended region optimized
+    - **f** - Append *dx*\ [/*dy*] to report an extended region optimized
       to give grid dimensions for fastest results in programs using FFTs.
-    - **p**: Append *dx*. This directive overrides use of a single *dx* for two columns.
-    - **s**: Append *dx*\ [/*dy*] to report an extended region optimized to
+    - **p** - Append *dx*. This directive overrides use of a single *dx* for two columns.
+    - **s** - Append *dx*\ [/*dy*] to report an extended region optimized to
       give grid dimensions for fastest results in programs like :doc:`surface`.
 
     A few modifiers can adjust the determined region further:
 
-    - **+e**: Similar to **+r**, but ensures that the bounding box extends by at
+    - **+e** - Similar to **+r**, but ensures that the bounding box extends by at
       least 0.25 times the increment(s) [no extension].
-    - **+r**: Modify the *min*\ /*max* of the first *n* columns further:
+    - **+r** - Modify the *min*\ /*max* of the first *n* columns further:
       Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
       region to be a multiple of these steps [no adjustment].
-    - **+R**: Extend the region outward by adding and subtracting these increments instead.
+    - **+R** - Extend the region outward by adding and subtracting these increments instead.
 
     **Note**: If the input *x*- and *y*-coordinates all have the
     same phase shift relative to the *dx* and *dy* increments then we

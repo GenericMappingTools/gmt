@@ -615,6 +615,7 @@ GMT_LOCAL char * gmtinit_colon_digexcl (char *string) {
 	return NULL;
 }
 
+#if 0	/* Not in use yet, Roger, or this is my old abandoned stuff? */
 /*! . */
 GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predexcl) {
 	/* Version of strchr() that will ignore any instance of target
@@ -626,6 +627,7 @@ GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predex
 		if ((*c == target) && ((c == string) || (*(c-1) != predexcl))) return c;
 	return NULL;
 }
+#endif
 
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
@@ -3202,7 +3204,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 	char fmt[GMT_LEN64] = {""};
 	strncpy (GMT->current.setting.format_float_out_orig, value, GMT_LEN256-1);
 	if (strchr (value, ',')) {
-		unsigned int start = 0, stop = 0, error = 0;
+		unsigned int start = 0, stop = 0;
 		char *p = NULL;
 		/* Look for multiple comma-separated format statements of type [<cols>:]<format>.
 		 * Last format also becomes the default for unspecified columns */
@@ -3214,7 +3216,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 				else if (isdigit ((int)fmt[0]))	/* Just a single column, e.g., 3 */
 					start = stop = atoi (fmt);
 				else				/* Something bad */
-					error++;
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad column specification: %s - expect trouble\n", fmt);
 				p++;	/* Move to format */
 				for (k = start; k <= stop; k++)
 					GMT->current.io.o_format[k] = strdup (p);
@@ -8590,7 +8592,8 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	}
 	else {
 		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
-			"Or, specify +an (line-normal) or +ap (line-parallel) [Default].", feature[kind]);
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. If p<angle> is appended then "
+			"<angle> is used as a fixed deviation from the line orientation", feature[kind]);
 	}
 	if (kind < 2) GMT_Usage (API, indent, "+c Set clearance <dx>[/<dy>] between label and text box [15%%].");
 	GMT_Usage (API, indent, "+d Debug mode which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
@@ -9465,10 +9468,12 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		gmt_DCW_free (GMT, &info);
 		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
-		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+		if (GMT->current.setting.format_geo_out[0] == 'D')			/* [-180 180]*/
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
-		else
+		else if (GMT->current.setting.format_geo_out[0] == '+')		/* [0 360]*/
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		else if (GMT->current.setting.format_geo_out[0] == '-')		/* [-360 0]*/
+			GMT->current.io.geo.range = GMT_IS_M360_TO_0_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.R.via_polygon = true;
 		return (GMT_NOERROR);
@@ -13977,7 +13982,7 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 			strcat (text, add_mods);
 		}
 	}
-	else if (F->rgb[0] < -0.5)
+	else if (F->rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, F->rgb)) >= 0)
 		snprintf (text, PATH_MAX+GMT_LEN256, "%s", gmt_M_color_name[i]);
@@ -13997,7 +14002,7 @@ char *gmt_putcolor (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	int i;
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, rgb)) >= 0)
 		snprintf (text, GMT_LEN256, "%s", gmt_M_color_name[i]);
@@ -14015,10 +14020,28 @@ char *gmt_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(rgb,0), gmt_M_t255(rgb,1), gmt_M_t255(rgb,2));
+	gmtinit_append_trans (text, rgb[3]);
+	return (text);
+}
+
+/*! Creates t the string shade corresponding to the RGB triplet */
+char *gmt_putgray (struct GMT_CTRL *GMT, double *rgb) {
+
+	static char text[GMT_LEN256] = {""};
+	gmt_M_unused(GMT);
+
+	if (rgb[0] < -0.5)	/* Skip it */
+		strcpy (text, "-");
+	else if (gmt_M_is_gray(rgb))
+		snprintf (text, GMT_LEN256, "%.5g", gmt_M_t255(rgb,0));
+	else {	/* Must convert to gray */
+		double gray = gmt_M_yiq (rgb);
+		snprintf (text, GMT_LEN256, "%.5g", gray);
+	}
 	gmtinit_append_trans (text, rgb[3]);
 	return (text);
 }
@@ -14029,7 +14052,7 @@ char *gmt_puthex (struct GMT_CTRL *GMT, double *rgb) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (rgb[0] < -0.5)
+	if (rgb[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "#%02x%02x%02x", urint (gmt_M_t255(rgb,0)), urint (gmt_M_t255(rgb,1)), urint (gmt_M_t255(rgb,2)));
@@ -14043,7 +14066,7 @@ char *gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (cmyk[0] < -0.5)
+	if (cmyk[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g/%.5g", 100.0*gmt_M_q(cmyk[0]), 100.0*gmt_M_q(cmyk[1]), 100.0*gmt_M_q(cmyk[2]), 100.0*gmt_M_q(cmyk[3]));
@@ -14057,7 +14080,7 @@ char *gmtlib_puthsv (struct GMT_CTRL *GMT, double *hsv) {
 	static char text[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	if (hsv[0] < -0.5)
+	if (hsv[0] < -0.5)	/* Skip it */
 		strcpy (text, "-");
 	else
 		snprintf (text, GMT_LEN256, "%.5g-%.5g-%.5g", gmt_M_q(hsv[0]), gmt_M_q(hsv[1]), gmt_M_q(hsv[2]));
@@ -16635,7 +16658,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->current.io.col[GMT_OUT][i].col = GMT->current.io.col[GMT_OUT][i].order = i;	/* Default order */
 
 	for (i = 0; i < 2; i++) GMT->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
-	for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
+	if (GMT->hidden.func_level == 0)	/* Only when top-level module ends. Doesn't affect CLI but useful for externals */
+		for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
 	gmt_M_memset (GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
 	gmt_M_memset (GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */

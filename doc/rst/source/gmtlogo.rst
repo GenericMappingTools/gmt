@@ -54,20 +54,20 @@ Optional Arguments
 
     Sets reference point on the map for the image using one of four coordinate systems:
 
-    - **g**: Set *refpoint* in map (user) coordinates.
-    - **j**: Set *refpoint* via a 2-char justification code that refers to the (invisible) map domain rectangle (see :doc:`text`).
+    - **g** - Set *refpoint* in map (user) coordinates.
+    - **j** - Set *refpoint* via a 2-char justification code that refers to the (invisible) map domain rectangle (see :doc:`text`).
       The logo is justified to fit on the inside of the map domain rectangle.
-    - **J**: Same as **j**, but instead justifies the logo on the outside of the map domain rectangle.
-    - **n**: Set *refpoint* using normalized (0-1) coordinates.
-    - **x**: Set *refpoint* using plot coordinates (inches, cm, etc.).
+    - **J** - Same as **j**, but instead justifies the logo on the outside of the map domain rectangle.
+    - **n** - Set *refpoint* using normalized (0-1) coordinates.
+    - **x** - Set *refpoint* using plot coordinates (inches, cm, etc.).
 
     All but **-Dx** requires both |-R| and |-J| to be specified. Modifiers control size and adjustments:
 
-    - **+w**: Append *width* to set the width of the GMT logo in plot coordinates (inches, cm, etc.).
-    - **+h**: Append *height* to instead specify the logo height.
-    - **+j**: By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
+    - **+w** - Append *width* to set the width of the GMT logo in plot coordinates (inches, cm, etc.).
+    - **+h** - Append *height* to instead specify the logo height.
+    - **+j** - By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
       can be changed by appending the 2-char justification code *justify* (see :doc:`text`).
-    - **+o**: Offset the GMT logo by *dx*/*dy* away from the *refpoint* point in
+    - **+o** - Offset the GMT logo by *dx*/*dy* away from the *refpoint* point in
       the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
    
     **Note**: (1) If **-Dj** is used then *justify* defaults to the same as *refpoint*, while

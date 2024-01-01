@@ -234,7 +234,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	EXTERN_MSC void gmtlib_string_parser (struct GMT_CTRL *GMT, char *file);	/* For debug only */
+	EXTERN_MSC unsigned int gmtlib_string_parser (struct GMT_CTRL *GMT, char *file);	/* For debug only */
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -243,7 +243,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				/* Hidden test of string parsing for developers */
 				if (Ctrl->debug.active) {
-					gmtlib_string_parser (API->GMT, opt->arg);
+					if (gmtlib_string_parser (API->GMT, opt->arg)) return (GMT_RUNTIME_ERROR);
 					return (NOT_REALLY_AN_ERROR);
 				}
 				break;

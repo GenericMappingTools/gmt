@@ -54,7 +54,7 @@ struct GMT_DECORATE {
 	unsigned int nx;		/* Number of crossovers at any time */
 	unsigned int f_n;		/* Number of such points */
 	unsigned int nudge_flag;	/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
-	unsigned int angle_type;	/* 0 = line-parallel (GMT_ANGLE_LINE_PARALLEL), 1 = line-normal (GMT_ANGLE_LINE_NORMAL), 2 = fixed angle (GMT_ANGLE_LINE_FIXED) */
+	unsigned int angle_type;	/* 0 = line-parallel (GMT_ANGLE_LINE_PARALLEL), 1 = line-normal (GMT_ANGLE_LINE_NORMAL), 2 = fixed angle (GMT_ANGLE_LINE_FIXED), 3 = fixed delta angle (GMT_ANGLE_LINE_DELTA) */
 	int number_placement;		/* How the n_cont symbols are distributed [-1/0/+1]*/
 	bool isolate;			/* true if we have a limit on how close symbols may appear (see below) */
 	bool segmentize;		/* true if we should segmentize input lines before plotting */

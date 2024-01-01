@@ -22,6 +22,15 @@ Hierarchical High-resolution Shorelines (GSHHG) available separately
 from or the (GSHHG is the polygon data base from which the
 GMT coastlines derive). The package is maintained by Paul Wessel.
 
+gsfml: Global seafloor fabric and magnetic lineations analysis
+--------------------------------------------------------------
+
+This package contains three modules and five bash scripts used to model
+the vertical gravity gradient signal across oceanic fracture zones. The
+various tools allow modeling of the signal as a blend of the typical
+"Atlantic"-FZ and "Pacific-FZ" shapes, modeled by Gaussian-derived
+building blocks [29]. The package is maintained by Paul Wessel.
+
 img: gridded altimetry extractor
 --------------------------------
 
@@ -89,8 +98,8 @@ This package contains the programs
 :doc:`meca </supplements/seis/meca>`,
 :doc:`polar </supplements/seis/polar>`,
 :doc:`sac </supplements/seis/sac>`,
-:doc:`sac </supplements/seis/vs30>`, and
-:doc:`sac </supplements/seis/shake>`, which are used by seismologists
+:doc:`grdvs30 </supplements/seis/grdvs30>`, and
+:doc:`grdshake </supplements/seis/grdshake>`, which are used by seismologists
 for plotting focal mechanisms (including cross-sections
 and polarities), compute Vs30 velocities, intensity maps and SAC files.
 The coupe, meca, and polar were developed by Kurt Feigl and Genevieve
@@ -178,3 +187,8 @@ Footnotes
 .. [28]
    `Timothy J. Henstock <http://www.southampton.ac.uk/oes/research/staff/then.page>`_,
    University of Southampton
+
+.. [29]
+   Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+   2015, "Semiautomatic fracture zone tracking", *Geochem. Geophys. Geosyst.*, 16 (7), 2462–2472.
+   https://doi.org/10.1002/2015GC005853.

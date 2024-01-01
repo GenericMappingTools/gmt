@@ -16,15 +16,15 @@
 # The script took ~20 minutes to render on a 24-core MacPro 2013, with most of the
 # time being used to solve for the cumulative and incremental grid components.
 
-# A few common variables to include
-cat << EOF > inc.sh
+# 0. A few common variables to include
+cat << 'EOF' > inc.sh
 INC=5m	# Desired grid spacing
 DEC=2	# Let grdvector only plot every other node
 R=-R122.5W/115W/32.5N/38N	# Area of interest
 RATE_CUM=50 # This is in mm/yr or km/Myr - change to use another scalebar
 RATE_INC=5 # This is in mm/yr or km/Myr - change to use another scalebar
 EOF
-# Background script doing the hard work plus making background map
+# 1. Background script doing the hard work plus making background map
 cat << 'EOF' > pre.sh
 gmt begin
 	# Prepare the GPS data set for use with a 1x1 arc minute grid
@@ -69,7 +69,7 @@ gmt begin
 	echo 121.5W 33N ${RATE_INC} mm/yr | gmt text -F+f8p+jCB -D0/0.07i
 gmt end
 EOF
-# Main script for the frames
+# 2. Main script for the frames
 cat << 'EOF' > main.sh
 gmt begin
 	# Prepare the masked cumulative u,v grids
@@ -88,6 +88,6 @@ gmt begin
 	gmt plot misfit.txt -i0,3 -qi0:${MOVIE_FRAME} -W1p,red
 gmt end
 EOF
-# Run the movie
+# 3. Run the movie
 gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Nanim15 -H8 -M210,png -Tmisfit.txt -Lf+jTC+t"Cumulative and Incremental Vector Contributions for Eigenvalue %4.4d" \
 	-Ls"rms@-u@-"+f12p,Helvetica,green+jTR+o0.5i/0.4i -Ls"rms@-v@-"+f12p,Helvetica,blue+jTR+o0.5i/0.55i -Ls"rms@-c@-"+f12p,Helvetica,red+jTR+o0.5i/0.7i -Fmp4 -V -Zs

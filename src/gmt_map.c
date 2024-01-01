@@ -384,8 +384,8 @@ GMT_LOCAL int gmtmap_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode)
 		}
 	}
 	else if (!GMT->common.R.oblique) {	/* For regional (<360) areas we cannot have clon > 180 away from either boundary */
-		double dw = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]);
-		double de = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]);
+		double dw = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]);	if (dw >= 360) dw -= 360.0;
+		double de = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]);	if (de >= 360) de -= 360.0;
 		if (dw > 180.0 || de > 180.0) {
 			if (mode == 2) {	/* Yield an error if fixed central longitude, range < 360, and exceed 180 to the border from central longitude */
 				static char *border[2] = {"Western", "Eastern"};
@@ -3062,7 +3062,7 @@ GMT_LOCAL int gmtmap_init_miller (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (gmtmap_cyl_validate_clon (GMT, 1))	/* Make sure the central longitude is valid */
 		return GMT_PROJECTION_ERROR;
-	gmtproj_vmiller (GMT, GMT->current.proj.pars[0]);
+	gmtproj_vmiller (GMT, GMT->current.proj.pars[0], 0.0);
 	gmtproj_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 #ifdef CHRISTMAS
 	if (GMT->common.R.wesn[YLO] > 0.0) {
@@ -8608,6 +8608,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 						rgb[b] = ((double)nz[ij_out] * O->data[nb*ij_out+b] + I->data[nb*ij_in+b])/(nz[ij_out] + 1.0);	/* Update the mean pix values inside this rect... */
 						O->data[nb*ij_out+b] = (unsigned char) lrint (gmt_M_0_255_truncate (rgb[b]));
 					}
+					if (O->alpha) O->alpha[ij_out] = ((double)nz[ij_out] * O->alpha[ij_out] + I->alpha[ij_in]) / (nz[ij_out] + 1.0);	/* Update the mean alpha value for this rect... */
 					nz[ij_out]++;		/* ..and how many points there were */
 				}
 			}

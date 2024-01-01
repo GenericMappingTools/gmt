@@ -746,7 +746,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					gmt_sort_array (GMT, zp[kk], k, GMT_FLOAT);
-					Grid->data[ij] = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][rowu/2]);
+					Grid->data[ij] = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][k/2]);
 					gmt_M_free (GMT, zp[kk]);
 					n++;
 				}
@@ -787,6 +787,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 		case GMTBINSTATS_QUANT:	/* Compute plain quantile */
 			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
+					gmt_sort_array (GMT, zp[kk], k, GMT_FLOAT);
 					Grid->data[ij] = (gmt_grdfloat) gmt_quantile_f (GMT, zp[kk], Ctrl->C.quant, k);
 					gmt_M_free (GMT, zp[kk]);
 					n++;
@@ -882,7 +883,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					gmt_sort_array (GMT, zp[kk], k, GMT_FLOAT);
-					median = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][rowu/2]);
+					median = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][k/2]);
 					gmt_getmad_f (GMT, zp[kk], k, median, &mad);
 					Grid->data[ij] = mad;
 					gmt_M_free (GMT, zp[kk]);

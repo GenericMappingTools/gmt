@@ -740,8 +740,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	int i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
 	int level_to_be_painted[2] = {0, 0}, lp, direction, start_direction, stop_direction, last_pen_level;
 
-	bool shift = false, need_coast_base, recursive;
-	bool greenwich = false, possibly_donut_hell = false, fill_in_use = false;
+	bool shift = false, need_coast_base, recursive, greenwich = false, possibly_donut_hell = false;
 	bool clobber_background = false, paint_polygons = false, donut, double_recursive = false;
 	bool donut_hell = false, world_map_save, clipping;
 	bool clip_to_extend_lines = false;
@@ -934,14 +933,6 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_set_basemap_orders (GMT, clipping ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_BEFORE);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		gmt_map_basemap (GMT);
-	}
-
-	for (i = 0; i < PSCOAST_NFILL; i++) if (fill[i].use_pattern) fill_in_use = true;
-
-	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Pattern fill requires oceans to be painted first\n");
-		clobber_background = true;
-		recursive = false;
 	}
 
 	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
