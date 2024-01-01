@@ -184,7 +184,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+m[a|c|l|u]][+n[<txt>]]%s[+r]]", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Usage (API, -2, "Specify position and dimensions of the scale bar [JBC]. ");
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_COLORBAR, 3);
-	//gmt_refpoint_syntax (API->GMT, "  ", "  Specify position and dimensions of the scale bar [JBC].", GMT_ANCHOR_COLORBAR, 1);
 	GMT_Usage (API, -2, "For -DJ|j w/TC|BC|ML|MR the values for +w (%d%% of map width), +h|v,+j,+o,+m have defaults. "
 		"You can override any of these settings with these explicit modifiers:", PSSCALE_L_SCALE);
 	GMT_Usage (API, 3, "+h Select a horizontal scale.");
@@ -1092,7 +1091,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			annot_off += bar_tick_len;
 			/* Extend x clearance by annotation width */
 			annot_off += hor_annot_width;
-			if (Ctrl->L.interval) annot_off += 0.4 * hor_annot_width;
+			if (Ctrl->L.interval) annot_off += 0.50 * hor_annot_width;
 			/* Increase width if there is a label */
 			if (label[0])
 				label_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]) + GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
@@ -1584,6 +1583,13 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		gmt_M_memset (text, 256U, char);
 		gmt_M_memset (test, 256U, char);
 		if (center && Ctrl->L.interval) {
+			sprintf (text, "%ld - %ld", lrint (floor (P->data[0].z_low)), lrint (ceil (P->data[0].z_high)));
+			sprintf (test, "%ld - %ld", lrint (floor (P->data[P->n_colors-1].z_low)), lrint (ceil (P->data[P->n_colors-1].z_high)));
+			hor_annot_width = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_WIDTH - 0.4 +
+				((ndec > 0) ? 2*GMT_PER_WIDTH : 0.0))
+				* GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+		}
+		else if (center && Ctrl->L.interval && Ctrl->F.active) {
 			sprintf (format2, "%s%c%s", one_format, endash, one_format);
 			sprintf (text, format2, P->data[0].z_low, P->data[0].z_high);
 			sprintf (test, format2, P->data[P->n_colors-1].z_low, P->data[P->n_colors-1].z_high);
@@ -1606,8 +1612,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			y_annot = y_base + dir * (((len > 0.0) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] * cosd (Ctrl->S.angle));
 			justify = l_justify = (dir == -1) ? PSL_ML : PSL_MR;
 		}
-		else if (Ctrl->L.interval)
-			y_annot = y_base + dir * annot_off * 0.65;
+		else if (Ctrl->L.interval && Ctrl->F.active)
+			y_annot = y_base + dir * annot_off * 0.9;
 		else
 			y_annot = y_base + dir * annot_off;
 		if ((flip & PSSCALE_FLIP_ANNOT) == (flip & PSSCALE_FLIP_LABEL) / 2) y_label = y_base + dir * label_off;
@@ -1773,6 +1779,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
 						this_just = psscale_set_custom_annot (GMT, P, i, justify, l_justify, text);
 					else if (center && Ctrl->L.interval) {
+						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
 						if (Ctrl->L.interval == 2 && i == 0) {
 							sprintf (format2, "< %s", one_format);
 							sprintf (text, format2, P->data[i].z_high);
