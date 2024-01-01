@@ -116,7 +116,7 @@ struct GRDIMAGE_CTRL {
 };
 
 struct GRDIMAGE_TRANSP {
-	unsigned int alpha[256];	/* Transparency distribution for RGBA image */
+	unsigned int alpha_count[256];	/* Transparency distribution for RGBA image */
 	unsigned int mode;		/* value is transparency (mode == 0) or count (mode == 1) */
 	unsigned int value;		/* Either chosen transparency (mode == 0) */
 	uint64_t n_transp;		/* Number of different transparencies found */
@@ -1106,14 +1106,14 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 		for (col = 0; col < H->n_columns; col++, node += n_bands) {	/* March along this scanline in steps of 2 (gA) or 4 (RGBA) */
 			tr = (unsigned int)transparency[node];	/* Get transparency values */
 			if (opacity) tr = 255 - tr;	/* Must flip from opacity to transparency */
-			T->alpha[tr]++;	/* Count frequency of transparency values */
+			T->alpha_count[tr]++;	/* Count frequency of transparency values */
 		}
 	}
 	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
-		if (T->alpha[k]) {	/* Used at least once */
+		if (T->alpha_count[k]) {	/* Used at least once */
 			T->n_transp++;
-			if (T->alpha[k] < tr_min) tr_min = k;	/* Keep track of smallest value */
-			if (T->alpha[k] > tr_max) tr_max = k;	/* Keep track of largest value */
+			if (T->alpha_count[k] < tr_min) tr_min = k;	/* Keep track of smallest value */
+			if (T->alpha_count[k] > tr_max) tr_max = k;	/* Keep track of largest value */
 		}
 	}
 	if (T->n_transp == 1) {		/* Case 1: Constant transparency */
@@ -1124,19 +1124,19 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	else if (T->n_transp > 2) {	/* Case 2: Variable transparency, not just on|off */
 		T->value = tr_max;
 		T->mode = 2;
-		T->n_dominant = T->alpha[tr_max];
+		T->n_dominant = T->alpha_count[tr_max];
 	}
-	else if (T->alpha[0] > T->alpha[255]) {	/* Case 3: 0 most used of only two transparency values */
+	else if (T->alpha_count[0] > T->alpha_count[255]) {	/* Case 3: 0 most used of only two transparency values */
 		T->value = 0;
 		T->mode = 3;
-		T->n_dominant = T->alpha[0];
-		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha[tr_min], tr_max, T->alpha[tr_max]);
+		T->n_dominant = T->alpha_count[0];
+		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	else {
 		T->value = 255;	/* Case 4: Like 3 but 255 most used of two transparency values */
-		T->n_dominant = T->alpha[255];
+		T->n_dominant = T->alpha_count[255];
 		T->mode = 4;
-		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha[tr_min], tr_max, T->alpha[tr_max]);
+		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	return (true);
 }
