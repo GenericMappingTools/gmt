@@ -1,5 +1,5 @@
 /*
- *	Copyright (c) 2015-2021 by P. Wessel and J. Luis
+ *	Copyright (c) 2015-2024 by P. Wessel and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify

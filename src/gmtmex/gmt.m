@@ -2,8 +2,8 @@ function varargout = gmt(cmd, varargin)
 % Helper function to call the gmtmex MEX function
 
 	if (nargin == 0)
-		fprintf(sprintf('\n\t\tGMT - The Generic Mapping Tools, Version 6.2 API\n'))
-		fprintf(sprintf('Copyright 1991-2020 The GMT Team (https://www.generic-mapping-tools.org/team.html\n\n'))
+		fprintf(sprintf('\n\t\tGMT - The Generic Mapping Tools, Version 6.5 API\n'))
+		fprintf(sprintf('Copyright 1991-2024 The GMT Team (https://www.generic-mapping-tools.org/team.html\n\n'))
 	
 		fprintf(sprintf('Usage:\tTo call a GMT module:\n\t    output = gmt (''module_name'', ''options'', numeric_input)\n\n'))
 		fprintf(sprintf(['\tTo create a Grid structure from a 2-D Z array and a 1x9 header vector:\n\t' ...
