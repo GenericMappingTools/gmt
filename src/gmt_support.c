@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -18836,7 +18836,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 
 	qsort (M, n, sizeof (struct GMT_MODULEINFO), gmtsupport_sort_moduleinfo);
 
-	printf ("/*\n * Copyright (c) 2012-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)\n");
+	printf ("/*\n * Copyright (c) 2012-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)\n");
 	printf (" * See LICENSE.TXT file for copying and redistribution conditions.\n */\n");
 	printf ("/* gmt_%s_glue.c populates the external array of this shared lib with\n", library);
 	printf (" * module parameters such as name, group, purpose and keys strings.\n");

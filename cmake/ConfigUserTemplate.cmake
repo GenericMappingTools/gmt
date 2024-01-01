@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # ============================================================================
