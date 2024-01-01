@@ -110,7 +110,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<gridx> <gridy> are grid files with the two wind components.");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A Grids have (speed, theta) components [Default is (u, v) components].");
+	GMT_Usage (API, 1, "\n-A Grids have polar (speed, theta) components [Default is Cartesian (u, v) components].");
 	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-C[<cpt>]");
 	GMT_Usage (API, -2, "Color palette file to convert wind speed to colors. Optionally, name a master cpt "
