@@ -56,6 +56,7 @@ foreach (p
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		CMP0115 # CMake 3.20: Source file extensions must be explicit.
+		CMP0153 # CMake 3.28: The exec_program() command should not be called.
 		)
 	if (POLICY ${p})
 		cmake_policy (SET ${p} NEW)
