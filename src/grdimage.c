@@ -982,6 +982,7 @@ GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIM
 	 *    and most of the time we will get a blended color output.
 	 */
 	double o, t;		/* o - opacity, t = transparency */
+	gmt_M_unused (GMT);
 	o = pix4 / 255.0;	t = 1 - o;
 	if (Conf->Transp->n_transp == 2)
 		gmt_M_rgb_only_copy (rgb, Conf->tr_rgb);
@@ -1093,9 +1094,9 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 
 	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
 	unsigned char *transparency;	/* Pointer to memory where transparency resides */
-	int64_t row, col, node, n_0 = 0, n_255 = 0;
+	int64_t row, col, node;
 	unsigned int k, tr, tr_max = 0, tr_min = 255, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
-	unsigned int rgba[4], n_bands = H->n_bands;
+	unsigned int n_bands = H->n_bands;
 
 	if (n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies either in band 1 or 4 nor in alpha */
 
@@ -1283,15 +1284,14 @@ GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isi
 	return (PSL_NO_ERROR);
 }
 
-GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, struct GMT_IMAGE *image) {
+GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf) {
 	/* Because of variable transparency we cannot use the PostScript image operator but must plot each pixel
 	 * as a square of the right color and set transparency before rendering that square. Because we cannot
 	 * have tiny gaps or overlaps between neighboring squares we up the resolution by a factor of 10 and
 	 * use integer calculations to ensure of no gaps. */
-	int k, *ix = NULL, *iy = NULL, idim[2] = {0, 0};
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t n_bands = Conf->Image->header->n_bands, bt = n_bands - 1;
-	uint64_t kk_s, node_s, node_i;
+	uint64_t n_bands = Conf->Image->header->n_bands, kk_s, node_s, node_i;
+	int k, *ix = NULL, *iy = NULL, idim[2] = {0, 0}, bt = n_bands - 1;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, transp[2] = {0.0, 0.0};	/* None selected */
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
 	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
@@ -2277,7 +2277,7 @@ ready:
 	y_side = dy * Conf->n_rows;
 
 	if (plot_squares) { 	/* Variable transparency image must be done via individual squares */
-		grdimage_img_variable_transparency (GMT, Ctrl, Conf, Img_proj);
+		grdimage_img_variable_transparency (GMT, Ctrl, Conf);
 		goto basemap_and_free;	/* Jump to basemap since not building an image */
 	}
 
