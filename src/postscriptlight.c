@@ -4982,6 +4982,22 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	return (PSL_NO_ERROR);
 }
 
+int PSL_setrgb (struct PSL_CTRL *PSL, double rgb[]) {
+	/* Set the fill (PSL_IS_FILL) r/g/b color
+	 * rgb[0] >= 0: rgb is the color with R G B in 0-1 range.
+	 */
+	if (!rgb) return (PSL_NO_ERROR);	/* NULL args to be ignored */
+	if (PSL_same_rgb (rgb, PSL->current.rgb[PSL_IS_FILL])) return (PSL_NO_ERROR);	/* Same color as already set */
+
+	/* Then, finally, set the color using psl_putcolor */
+	PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb, 0));
+
+	/* Update the current stroke/fill color information */
+
+	PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
+	return (PSL_NO_ERROR);
+}
+
 char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset) {
 	/* Creates a text string with the corresponding PS command to set the pen */
 	static char buffer[PSL_BUFSIZ];
