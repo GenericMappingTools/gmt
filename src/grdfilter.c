@@ -1666,6 +1666,7 @@ GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Processing output line %d\n", row_out);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found %d NaNs\n", n_nan);
 
 	if (slow) {
 		if (slower) gmt_M_free (GMT, work_data);

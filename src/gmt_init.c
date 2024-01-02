@@ -839,7 +839,7 @@ GMT_LOCAL int gmtinit_find_longoptmatch (struct GMTAPI_CTRL *API, char *longlist
 						charsneeded = 1;
 						if ((nllmatches > 1) && (multidir == GMT_MULTIDIR_COMMA))
 							charsneeded++;
-						if (ncodechars < codecharsbufsz-charsneeded) {
+						if (ncodechars < (int)codecharsbufsz-charsneeded) {
 							if (charsneeded == 2) codechars[ncodechars++] = ',';
 							codechars[ncodechars++] = shortlist[k];
 						}

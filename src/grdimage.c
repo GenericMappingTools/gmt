@@ -1097,6 +1097,7 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	int64_t row, col, node;
 	unsigned int k, tr, tr_max = 0, tr_min = 255, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
 	unsigned int n_bands = H->n_bands;
+	gmt_M_unused (GMT);
 
 	if (n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies either in band 1 or 4 nor in alpha */
 
@@ -1274,7 +1275,9 @@ GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isi
 	 * We will write x, y, dims using one decimal by dividing by 10 to get exact matches
 	 * at square boundaries. Command is "dy dx x y SS".
 	 */
-	bool xneg = (ix < 0) ? true : false, yneg = (iy < 0) ? true : false;
+	bool xneg, yneg;
+	xneg = (ix < 0) ? true : false;
+	yneg = (iy < 0) ? true : false;
 	ix = abs (ix);	iy = abs (iy);
 	int xx = (int)floor (ix * 0.1), dx = ix - xx * 10;	if (xneg) xx = -xx;
 	int yy = (int)floor (iy * 0.1), dy = iy - yy * 10;	if (yneg) yy = -yy;
