@@ -1276,13 +1276,14 @@ GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isi
 	 * at square boundaries. Command is "dy dx x y SS".
 	 */
 	bool xneg, yneg;
+	int xx, sx, yy, sy, dx, dy, sdx, sdy;
 	xneg = (ix < 0) ? true : false;
 	yneg = (iy < 0) ? true : false;
 	ix = abs (ix);	iy = abs (iy);
-	int xx = (int)floor (ix * 0.1), dx = ix - xx * 10;	if (xneg) xx = -xx;
-	int yy = (int)floor (iy * 0.1), dy = iy - yy * 10;	if (yneg) yy = -yy;
-	int sx = (int)floor (isize[0] * 0.1), sdx = isize[0] - sx * 10;
-	int sy = (int)floor (isize[1] * 0.1), sdy = isize[1] - sy * 10;
+	xx = (int)floor (ix * 0.1), dx = ix - xx * 10;	if (xneg) xx = -xx;
+	yy = (int)floor (iy * 0.1), dy = iy - yy * 10;	if (yneg) yy = -yy;
+	sx = (int)floor (isize[0] * 0.1), sdx = isize[0] - sx * 10;
+	sy = (int)floor (isize[1] * 0.1), sdy = isize[1] - sy * 10;
 	PSL_command (PSL, "%d.%d %d.%d %d.%d %d.%d SS\n", sy, sdy, sx, sdx, xx, dx, yy, dy);
 	return (PSL_NO_ERROR);
 }
