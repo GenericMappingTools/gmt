@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 2009-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 2009-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -4979,6 +4979,22 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	/* Update the current stroke/fill color information */
 
 	PSL_rgb_copy (PSL->current.rgb[mode], rgb);
+	return (PSL_NO_ERROR);
+}
+
+int PSL_setrgb (struct PSL_CTRL *PSL, double rgb[]) {
+	/* Set the fill (PSL_IS_FILL) r/g/b color
+	 * rgb[0] >= 0: rgb is the color with R G B in 0-1 range.
+	 */
+	if (!rgb) return (PSL_NO_ERROR);	/* NULL args to be ignored */
+	if (PSL_same_rgb (rgb, PSL->current.rgb[PSL_IS_FILL])) return (PSL_NO_ERROR);	/* Same color as already set */
+
+	/* Then, finally, set the color using psl_putcolor */
+	PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb, 0));
+
+	/* Update the current stroke/fill color information */
+
+	PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	return (PSL_NO_ERROR);
 }
 

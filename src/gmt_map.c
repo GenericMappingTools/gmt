@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -384,8 +384,9 @@ GMT_LOCAL int gmtmap_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode)
 		}
 	}
 	else if (!GMT->common.R.oblique) {	/* For regional (<360) areas we cannot have clon > 180 away from either boundary */
-		double dw = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]);	if (dw >= 360) dw -= 360.0;
-		double de = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]);	if (de >= 360) de -= 360.0;
+		double de, dw;
+		dw = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]);	if (dw >= 360) dw -= 360.0;
+		de = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]);	if (de >= 360) de -= 360.0;
 		if (dw > 180.0 || de > 180.0) {
 			if (mode == 2) {	/* Yield an error if fixed central longitude, range < 360, and exceed 180 to the border from central longitude */
 				static char *border[2] = {"Western", "Eastern"};

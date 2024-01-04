@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -10217,7 +10217,7 @@ unsigned int gmtlib_is_string (struct GMT_CTRL *GMT, char *string) {
 	if (n_periods == 2 && n_digits) {	/* Might be dd.mm.yyyy section */
 		if (n_text == 0 || (n_text == 1 && strchr (string, 'T'))) {	/* Valid dd.mm.yyyy[T][hh:mm:ss.xxx...] string */
 			char *text = strdup (string), *c = NULL;
-			int d, m, y, k = 0;
+			int d, m, y;
 			if ((c = strchr (text, 'T'))) c[0] = '\0';	/* Truncate at the possible T, so no must be dd.mm.yyyy */
 			gmt_strrepc (text, '.', ' ');	/* Replace the 2 periods with spaces */
 			if (sscanf (text, "%d %d %d", &d, &m, &y) != 3) {
