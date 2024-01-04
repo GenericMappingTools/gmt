@@ -34,7 +34,7 @@
 #define THIS_MODULE_PURPOSE		"Project and plot grids or images"
 #define THIS_MODULE_KEYS		"<G{+,CC(,IG(,>X},>IA,<ID"
 #define THIS_MODULE_NEEDS		"Jg"
-#define THIS_MODULE_OPTIONS		"->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS		"->BJKOPRUVXYfnpt" GMT_OPT("Sc") GMT_ADD_x_OPT
 
 /* These are images that GDAL knows how to read for us. */
 #define N_IMG_EXTENSIONS 7

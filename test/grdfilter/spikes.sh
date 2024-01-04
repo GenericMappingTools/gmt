@@ -5,7 +5,7 @@
 ps=spikes.ps
 
 if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then
-  _thread_opt=-x+a
+	_thread_opt=-x+a
 fi
 
 filter () {

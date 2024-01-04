@@ -1118,8 +1118,8 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 		if (strchr (critical_opt_order, given_options[i])) continue;	/* Skip critical option */
 		list[0] = given_options[i];	/* Just look for this particular option */
 		for (opt = options; opt; opt = opt->next) {
-			n_errors += gmt_parse_common_options (API->GMT, list, opt->option, opt->arg);
 			if (opt->option != list[0]) continue;
+			n_errors += gmt_parse_common_options (API->GMT, list, opt->option, opt->arg);
 		}
 	}
 	if (GMT_Destroy_Options (API, &options)) {
