@@ -10,7 +10,7 @@ fi
 
 ps=filtertest.ps
 
-if [ "X$(gmt-config --has-gthreads)" = "Xyes" ]; then
+if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then
   _thread_opt=-x+a
 fi
 
