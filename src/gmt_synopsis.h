@@ -55,8 +55,8 @@
 #define GMT_qo_OPT	"-qo[~]<rows>|<limits>[,...][+c<col>][+a|t|s]"
 #define GMT_PAR_OPT	"--PAR=<value>"
 
-#ifdef GMT_MP_ENABLED
-/* Means we want to enable multi-processors if either _OPENMP or _HAVE_GLIB_GTHREAD are defined */
+#if defined(_OPENMP)
+/* Use these constants in modules only serviced by OpenMP; see gmt_glib.h for equivalent constants for Glib threads modules */
 #define GMT_x_OPT	" [-x[[-]<n>]] "	/* Must add spaces and brackets here and place via %s since it may be blank */
 #define GMT_ADD_x_OPT	"x"
 #else	/* No Open-MP support */
