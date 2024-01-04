@@ -8,8 +8,9 @@ The **-x** option
 
 **Description**
 
-The **-x** option limits the number of cores to be used in any OpenMP-enabled multi-threaded algorithms [default is to
-use all available cores]. Append *n* to only use *n* cores (if too large it will be truncated to the maximum cores
-available).  Finally, give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
-The **-x** option is only available to GMT modules compiled with OpenMP support, with the exception of :doc:`/movie`
-and :doc:`/batch` which handle their own parallel execution. **Note**: OpenMP (or for a few modules Glib threads) are required to use **-x**). See the module synopsis for what your installation offers.
+The **-x** option limits the number of cores to be used in any multi-threaded algorithms [default is to
+use all available cores]. Append *n* to only use *n* cores (if too large it will be truncated to the
+maximum cores available).  Finally, give a negative *n* to select (all - *n*) cores (or at least 1 if *n*
+equals or exceeds all). **Note**: The **-x** option is only available to GMT modules compiled with OpenMP
+or Glib threads support, with the exception of :doc:`/movie` and :doc:`/batch` which handle their own
+parallel execution separately.
