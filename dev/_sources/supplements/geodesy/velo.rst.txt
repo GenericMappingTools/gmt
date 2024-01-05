@@ -245,7 +245,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *intens*
-    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    Use the supplied *intens* value (nominally in the ±1 range) to
     modulate the symbol fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
     data column after the required input columns determined by |-S|.
@@ -264,7 +264,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do **NOT** skip symbols that fall outside the frame boundary
+    Do **not** skip symbols that fall outside the frame boundary
     specified by |-R|. [Default plots symbols inside frame only].
 
 .. |Add_-U| replace:: |Add_-U_links|
@@ -281,7 +281,7 @@ Optional Arguments
 
 **-W**\ [*pen*][**+c**\ [**f**\|\ **l**]]
     Set pen attributes for velocity arrows, ellipse circumference and
-    fault plane edges. [Defaults: width = default, color = black, style = solid].
+    fault plane edges. [Defaults: width = 0.25p, color = black, style = solid].
     If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
     |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill only [Default].  Use just **+c** to set both

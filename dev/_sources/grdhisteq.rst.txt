@@ -42,7 +42,7 @@ of gray occurring equally. Alternatively, see :doc:`grd2cpt`.
 The second common use of **grdhisteq** is in writing a grid with
 statistics based on some kind of cumulative distribution function. In
 this application, the output has relative highs and lows in the same
-(x,y) locations as the input file, but the values are changed to reflect
+(*x, y*) locations as the input file, but the values are changed to reflect
 their place in some cumulative distribution. One example would be to
 find the lowest 10% of the data: Take a grid, run **grdhisteq** and make
 a grid using *n_cells* = 10, and then contour the result to trace the 1
@@ -54,7 +54,7 @@ output from :doc:`grdgradient` and make a grid file output with the
 Gaussian option, you will have a grid whose values are distributed
 according to a Gaussian distribution with zero mean and unit variance.
 The locations of these values will correspond to the locations of the
-input; that is, the most negative output value will be in the (x,y)
+input; that is, the most negative output value will be in the (*x, y*)
 location of the most negative input value, and so on.
 
 Required Arguments
@@ -126,9 +126,9 @@ earth_relief_05m into 16 divisions of equal area::
 To make the poorly distributed intensities in the file raw_intens.nc
 suitable for use with :doc:`grdimage` or :doc:`grdview`, run
 
-   ::
+::
 
-    gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
+  gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
 
 Notes
 ------

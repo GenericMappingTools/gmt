@@ -66,7 +66,7 @@ Required Arguments
     **d** will fit f(**p**) = *a* + *b* \* *d* (linear
     drift; *d* is distance along track; records must contain d1, d2, COE, ID1, ID2.
 
-    **g** will fit f(**p**) = *a* + *b* sin(y)^2
+    **g** will fit f(**p**) = *a* + *b* sin(y)\ :sup:`2`
     (1980-1930 gravity correction); records must contain crossing latitude y, COE, ID1, ID2.
 
     **h** will fit f(**p**) = *a* + *b* cos(h) + *c*

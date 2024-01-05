@@ -18,7 +18,7 @@ Synopsis
 |-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]
-|-S|\ *<symbol><size>*
+|-S|\ **a**\|\ **c**\|\ **d**\|\ **h**\|\ **i**\|\ **p**\|\ **s**\|\ **t**\|\ **x**\ *size*
 [ |SYN_OPT-B| ]
 [ |-E|\ *fill* ]
 [ |-F|\ *fill* ]

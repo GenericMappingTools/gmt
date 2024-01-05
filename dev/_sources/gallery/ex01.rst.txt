@@ -20,7 +20,7 @@ the size of what map can fit so we use ? when specifying map widths in the
 commands below.  This initial setup is followed by
 two sequences of :doc:`coast </coast>`, :doc:`grdcontour </grdcontour>`,
 :doc:`grdcontour </grdcontour>`. They differ in that the
-first is centered on Greenwich; the second on the dateline. We use the
+first is centered on the dateline, while the second on Greenwich. We use the
 limit option (**-L**) in :doc:`grdcontour </grdcontour>`
 to select negative contours only and plot those with a dashed pen, then
 positive contours only and draw with a solid pen [Default]. The **-T**

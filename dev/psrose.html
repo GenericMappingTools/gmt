@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>psrose &mdash; GMT 6.4.0 documentation</title>
+  <title>psrose &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -50,14 +53,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -66,35 +73,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -120,6 +121,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -136,9 +139,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules-classic.html">Modules (Classic Mode)</a> &raquo;</li>
-      <li>psrose</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules-classic.html">Modules (Classic Mode)</a></li>
+      <li class="breadcrumb-item active">psrose</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/psrose.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -149,10 +152,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="psrose">
-<h1>psrose<a class="headerlink" href="#psrose" title="Permalink to this heading">¶</a></h1>
+<h1>psrose<a class="headerlink" href="#psrose" title="Link to this heading"></a></h1>
 <p>Plot a polar histogram (rose, sector, windrose diagrams)</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt psrose</strong> [ <em>table</em> ] [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>sector_width</em>[<strong>+r</strong>] ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><strong>m</strong>|[<strong>+w</strong>]<em>mode_file</em> ]
@@ -188,7 +191,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong>rose</strong> reads (length, azimuth) pairs from <em>file</em> [or standard input]
 and plot a windrose diagram.  Add <strong>-i</strong>0 if your file only has azimuth values.
 Optionally (with <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>), polar histograms may be drawn (sector diagram
@@ -196,7 +199,7 @@ or rose diagram). Options include full circle and half circle plots. The
 outline of the windrose is drawn with the same color as <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -208,7 +211,7 @@ actual lengths to unity as well).</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>sector_width</em>[<strong>+r</strong>]</dt><dd><p>Gives the sector width in degrees for sector and rose diagram.
 [Default 0 means windrose diagram]. Append <strong>+r</strong> to draw rose
@@ -216,8 +219,8 @@ diagram instead of sector diagram.</p>
 </dd>
 </dl>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>. Remember that “x” here is radial distance
-and “y” is azimuth. The ylabel may be used to plot a figure caption. The
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>. Remember that “x” here is radial distance
+and “y” is azimuth. The y label may be used to plot a figure caption. The
 scale bar length is determined by the radial gridline spacing.</p>
 </dd>
 </dl>
@@ -250,7 +253,7 @@ label it with <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Selects shade, color or pattern for filling the sectors [Default is no fill].</p>
+<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Selects shade, color or pattern for filling the sectors [Default is no fill].</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -276,8 +279,8 @@ Note that the <a class="reference internal" href="gmt.conf.html#term-GMT_LANGUAG
 </dl>
 <dl class="simple" id="m">
 <dt><strong>-M</strong><em>parameters</em></dt><dd><p>Used with <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> to modify vector parameters. For vector heads,
-append vector head <em>size</em> [Default is 0, i.e., a line]. See VECTOR
-ATTRIBUTES for specifying additional attributes.  If <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> is not
+append vector head <em>size</em> [Default is 0, i.e., a line]. See <a class="reference internal" href="#vector-attributes">Vector Attributes</a>
+for specifying additional attributes.  If <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> is not
 given and the current plot mode is to draw a windrose diagram then
 using <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> will add vector heads to all individual directions
 using the supplied attributes.</p>
@@ -285,7 +288,7 @@ using the supplied attributes.</p>
 </dl>
 <dl id="n">
 <dt><strong>-N</strong><em>mode</em>[<strong>+p</strong><em>pen</em>]</dt><dd><p>Draw the equivalent circular normal distribution, i.e., the <em>von Mises</em>
-distribution; append desired pen [0.25p,black].
+distribution; optionally append desired pen via the <strong>+p</strong> modifier [0.25p,black].
 The <em>mode</em> selects which central location and scale to use:</p>
 <ul class="simple">
 <li><p>0 = mean and standard deviation;</p></li>
@@ -298,7 +301,7 @@ The <em>mode</em> selects which central location and scale to use:</p>
 <dl class="simple" id="q">
 <dt><strong>-Q</strong>[<em>alpha</em>]</dt><dd><p>Sets the confidence level used to determine if the mean resultant
 is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
-<strong>Note</strong>: The critical values are approximated [Berens, 2009] and
+<strong>Note</strong>: The critical values are approximated [<em>Berens</em>, 2009] and
 requires at least 10 points; the critical resultants are accurate
 to at least 3 significant digits.  For smaller data sets you
 should consult exact statistical tables.</p>
@@ -313,8 +316,8 @@ for half circle plot or 0/360 for full circle.</p>
 <dl class="simple" id="s">
 <dt><strong>-S</strong>[<strong>+a</strong>]</dt><dd><p>Normalize input radii (or bin counts if <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> is used) by the largest
 value so all radii (or bin counts) range from 0 to 1.  Optionally,
-further normalize rose plots for area (i.e., take <span class="math notranslate nohighlight">\(sqrt(r)\)</span> before
-plotting [Default is no normalizations].</p>
+further normalize rose plots for area via modifier <strong>+a</strong> (i.e., take
+<span class="math notranslate nohighlight">\(sqrt(r)\)</span> before plotting [Default is no normalizations].</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
@@ -325,11 +328,11 @@ as <em>azimuth + 180</em>.  Ignored if range is given as -90/90 or 0/180.</p>
 </dd>
 </dl>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -339,11 +342,11 @@ outline]. Use <strong>-Wv</strong><em>pen</em> to change pen used to draw vector
 </dd>
 </dl>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
@@ -377,7 +380,7 @@ scaling].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+<dt><strong>-o</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -413,7 +416,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="vector-attributes">
-<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this heading">¶</a></h2>
+<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Link to this heading"></a></h2>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/GMT_vector.png"><img alt="_images/GMT_vector.png" src="_images/GMT_vector.png" style="width: 600px;" /></a>
 <figcaption>
@@ -421,7 +424,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 this figure and the labels therein when introducing the corresponding modifiers.
 All vectors require you to specify the <strong>b</strong>egin point <span class="math notranslate nohighlight">\(x_b, y_b\)</span> and
 the <strong>e</strong>nd point <span class="math notranslate nohighlight">\(x_e, y_e\)</span>, or alternatively the direction <em>d</em> and length
-<em>L</em>, while for map projections we usually specify the azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<em>L</em>, while for map projections we usually specify the azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Several modifiers may be appended to vector-producing options for
@@ -430,86 +433,92 @@ justification of the vector. Below, left and right refers to the
 side of the vector line when viewed from the beginning point (<strong>b</strong>) to the
 end point (<strong>e</strong>) of a line segment:</p>
 <blockquote>
-<div><p><strong>+a</strong><em>angle</em> sets the angle <span class="math notranslate nohighlight">\(\theta\)</span> of the vector head apex [30].</p>
-<p><strong>+b</strong> places a vector head at the <strong>b</strong>eginning of the vector path [none].
-Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<div><ul class="simple">
+<li><p><strong>+a</strong> - Append <em>argument</em> to set the angle <span class="math notranslate nohighlight">\(\theta\)</span> of the vector head apex [30].</p></li>
+<li><p><strong>+b</strong> - Place a vector head at the <strong>b</strong>eginning of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle, <strong>s</strong> for a square,
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
 and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
 Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
-half-sides of this head [both sides].</p>
-<p><strong>+c</strong> selects the vector data quantity <em>magnitude</em> for use with CPT color look-up [Default
+half-sides of this head [both sides].</p></li>
+<li><p><strong>+c</strong> - Select the vector data quantity <em>magnitude</em> for use with CPT color look-up [Default
 requires a separate data column following the 2 or 3 coordinates]. Requires that data
-quantity scaling (with unit <strong>q</strong> via <strong>+v</strong> or <strong>+z</strong>) and a CPT have been selected.</p>
-<p><strong>+e</strong> places a vector head at the <strong>e</strong>nd of the vector path [none].
-Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+quantity scaling (with unit <strong>q</strong> via <strong>+v</strong> or <strong>+z</strong>) and a CPT have been selected.</p></li>
+<li><p><strong>+e</strong> - Place a vector head at the <strong>e</strong>nd of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle, <strong>s</strong> for a square,
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
 and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
 Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
-half-sides of this head [both sides].</p>
-<p><strong>+g</strong>[<em>fill</em>] sets the vector head fill [Default fill is used, which may be no fill].
+half-sides of this head [both sides].</p></li>
+<li><p><strong>+g</strong> - Append [<em>fill</em>] sets the vector head fill [Default fill is used, which may be no fill].
 Turn off vector head fill by not appending a <em>fill</em>.  Some modules have a separate
-<strong>-G</strong><em>fill</em> option and if used will select the fill as well.</p>
-<p><strong>+h</strong><em>shape</em> sets the shape of the vector head (range -2/2). Default
+<strong>-G</strong><em>fill</em> option and if used will select the fill as well.</p></li>
+<li><p><strong>+h</strong> Append <em>shape</em> of the vector head (range -2/2). Default
 is controlled by <a class="reference internal" href="gmt.conf.html#term-MAP_VECTOR_SHAPE"><span class="xref std std-term">MAP_VECTOR_SHAPE</span></a> [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].
 A zero value produces no notch. Positive values moves the notch toward the head apex while a
-negative value moves it away. The example above uses <strong>+h</strong>0.5.</p>
-<p><strong>+m</strong> places a vector head at the mid-point the vector path [none].
+negative value moves it away. The example above uses <strong>+h</strong>0.5.</p></li>
+<li><p><strong>+m</strong> - Places a vector head at the mid-point the vector path [none].
 Append <strong>f</strong> or <strong>r</strong> for forward or reverse direction of the vector [forward].
 Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
 and <strong>I</strong> for plain open tail. Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
-half-sides of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p>
-<p><strong>+n</strong>[<em>norm</em>[/<em>min</em>]] scales down vector attributes (pen thickness, head size)
+half-sides of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p></li>
+<li><p><strong>+n</strong> - Give [<em>norm</em>[/<em>min</em>]] to scale down vector attributes (pen thickness, head size)
 with decreasing length, where vector plot lengths shorter than <em>norm</em> will have
 their attributes scaled by length/<em>norm</em> [other arrow attributes remain
 invariant to length]. Optionally, append /<em>min</em> for the minimum shrink factor (in the
 0-1 range) that we will shrink to [0.25]. For Cartesian vectors, please specify a <em>norm</em>
-in plot units, while for geovectors specify a <em>norm</em> in map units (see <a class="reference internal" href="cookbook/features.html#distance-units"><span class="std std-ref">Distance units</span></a>) [k].
+in plot units, while for geovectors specify a <em>norm</em> in map units (see <a class="reference internal" href="reference/features.html#distance-units"><span class="std std-ref">Distance units</span></a>) [k].
 Alternatively, append unit <strong>q</strong> to indicate we should use user quantity units in making the
-decision; this means the user also must select user quantity input via <strong>+v</strong> or <strong>+z</strong>.</p>
-<p>If no argument is given then <strong>+n</strong> ensures vector heads are not shrunk and always
-plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].</p>
-<p><strong>+o</strong>[<em>plon</em>/<em>plat</em>] specifies the oblique pole for the great or
+decision; this means the user also must select user quantity input via <strong>+v</strong> or <strong>+z</strong>.
+If no argument is given then <strong>+n</strong> ensures vector heads are not shrunk and always
+plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].</p></li>
+<li><p><strong>+o</strong> - Specify the oblique pole [<em>plon</em>/<em>plat</em>] for the great or
 small circles.  Only needed for great circles if <strong>+q</strong> is given. If no
 pole is appended then we default to the north pole. Input arguments are then
-<em>lon lat arclength</em> with the latter in map distance units; see <strong>+q</strong> of angular limits instead.</p>
-<p><strong>+p</strong>[<em>pen</em>] sets the vector pen attributes. If no <em>pen</em> is appended
+<em>lon lat arclength</em> with the latter in map distance units; see <strong>+q</strong> of angular limits instead.</p></li>
+<li><p><strong>+p</strong> - Sets the vector pen attributes [<em>pen</em>]. If no <em>pen</em> is appended
 then the head outline is not drawn. [Default pen is half the width of stem pen, and
 head outline is drawn]. Above, we used <strong>+p</strong>2p,orange.  The vector stem attributes are
-controlled by <strong>-W</strong>.</p>
-<p><strong>+q</strong> means the input <em>direction</em>, <em>length</em> data instead represent the <em>start</em> and <em>stop</em>
+controlled by <strong>-W</strong>.</p></li>
+<li><p><strong>+q</strong> - Means the input <em>direction</em>, <em>length</em> data instead represent the <em>start</em> and <em>stop</em>
 opening angles of the arc segment relative to the given point. See <strong>+o</strong> to specify
-a specific pole for the arc [north pole].</p>
-<p><strong>+t</strong>[<strong>b</strong>|<strong>e</strong>]<em>trim</em> will shift the beginning or end point (or both)
+a specific pole for the arc [north pole].</p></li>
+<li><p><strong>+t</strong>[<strong>b</strong>|<strong>e</strong>]<em>trim</em> - Shift the beginning or end point (or both)
 along the vector segment by the given <em>trim</em>; append suitable unit (<strong>c</strong>, <strong>i</strong>, or <strong>p</strong>). If the modifiers
 <strong>b</strong>|<strong>e</strong> are not used then <em>trim</em> may be two values separated by a slash,
 which is used to specify different trims for the beginning and end.  Positive trims
-will shorted the vector while negative trims will lengthen it [no trim].</p>
+will shorted the vector while negative trims will lengthen it [no trim].</p></li>
+</ul>
 </div></blockquote>
 <p>In addition, all but circular vectors may take these modifiers:</p>
 <blockquote>
-<div><p><strong>+j</strong><em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
-vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or <strong>c</strong>enter.</p>
-<p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> are instead the <span class="math notranslate nohighlight">\(x_e, y_e\)</span>
-coordinates of the vector end point.</p>
+<div><ul class="simple">
+<li><p><strong>+j</strong> - The <em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
+vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or <strong>c</strong>enter.</p></li>
+<li><p><strong>+s</strong> - The input <em>angle</em>, <em>length</em> are instead the <span class="math notranslate nohighlight">\(x_e, y_e\)</span>
+coordinates of the vector end point.</p></li>
+</ul>
 </div></blockquote>
 <p>Finally, Cartesian vectors and geovectors may take these modifiers (except in <a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a>)
 which can be used to convert vector components to polar form or magnify user quantity magnitudes
-into plot lengths.</p>
+into plot lengths:</p>
 <blockquote>
-<div><p><strong>+v</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em> expects a <em>scale</em> to magnify the polar length in the given
+<div><ul class="simple">
+<li><p><strong>+v</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em> - Expects a <em>scale</em> to magnify the polar length in the given
 unit.  If <strong>i</strong> is prepended we use the inverse scale while if <strong>l</strong> is prepended then it is
 taken as a fixed length to override input lengths. Append unit <strong>q</strong> if input magnitudes are
 given in user quantity units and we will scale them to current plot unit for Cartesian vectors
 (see <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to km for geovectors.  In addition,
 if <strong>+c</strong> is selected then the vector magnitudes may be used for CPT color-lookup (and no extra data
-column is required by <strong>-C</strong>).</p>
-<p><strong>+z</strong>[<em>scale</em>] expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
+column is required by <strong>-C</strong>).</p></li>
+<li><p><strong>+z</strong>[<em>scale</em>] - Expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
 uses the <em>scale</em> [1] to convert to polar coordinates with length in given unit.
 Append unit <strong>q</strong> if input components are given in user quantity units and we will scale to current plot unit
 for Cartesian vectors (see <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to
 km for geovectors.  In addition, if <strong>+c</strong> is selected then the vector magnitudes may be used
-for CPT color-lookup (and no extra data column is required by <strong>-C</strong>).</p>
+for CPT color-lookup (and no extra data column is required by <strong>-C</strong>).</p></li>
+</ul>
 </div></blockquote>
 <p><strong>Note</strong>: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
@@ -532,12 +541,12 @@ You may optionally fill and draw its outline.  The modifiers listed above genera
 not apply.  <strong>Note</strong>: While the <em>tailwidth</em> (<span class="math notranslate nohighlight">\(t_w\)</span>) and <em>headlength</em> (<span class="math notranslate nohighlight">\(h_l\)</span>)
 parameters are given as indicated, the <em>halfheadwidth</em> (<span class="math notranslate nohighlight">\(h_w\)</span>) is oddly given as the
 half-width in GMT 4 so we retain that convention here (but have updated the documentation;
-blue lines indicate these three parameters).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+blue lines indicate these three parameters).</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Link to this heading"></a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -554,7 +563,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -568,41 +577,41 @@ interval, radial direction annotated every 50 km, using a light blue
 shading outlined by a solid red pen (width = 0.75 points), draw the mean
 azimuth, and shown in Portrait orientation, use:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l<span class="s2">&quot;Fault length&quot;</span>
-           -Byg30 -B+t<span class="s2">&quot;Rose diagram&quot;</span> -JX6i -A10+r -Glightblue
-           -W0.75p,red -Z0.001 -Cm -P -T -: &gt; half_rose.ps
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>psrose<span class="w"> </span>fault_segments.az_r<span class="w"> </span>-R0/150/-90/90<span class="w"> </span>-Bx50g25+l<span class="s2">&quot;Fault length&quot;</span>
+<span class="w">           </span>-Byg30<span class="w"> </span>-B+t<span class="s2">&quot;Rose diagram&quot;</span><span class="w"> </span>-JX6i<span class="w"> </span>-A10+r<span class="w"> </span>-Glightblue
+<span class="w">           </span>-W0.75p,red<span class="w"> </span>-Z0.001<span class="w"> </span>-Cm<span class="w"> </span>-P<span class="w"> </span>-T<span class="w"> </span>-:<span class="w"> </span>&gt;<span class="w"> </span>half_rose.ps
 </pre></div>
 </div>
 </div></blockquote>
 <p>To plot a full circle wind rose diagram of the data in the file
 lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =
 500 units in steps of 100 with a 45 degree sector interval, using a
-solid pen (width = 0.5 point, and shown in landscape [Default]
+solid pen (width = 0.5 point), and shown in landscape [Default]
 orientation with UNIX timestamp and command line plotted, use:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t<span class="s2">&quot;Windrose diagram&quot;</span> -W0.5p -U+c <span class="p">|</span> lpr
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>psrose<span class="w"> </span>lines.az_r<span class="w"> </span>-R0/500/0/360<span class="w"> </span>-JX10c<span class="w"> </span>-Bxg100<span class="w"> </span>-Byg45<span class="w"> </span>-B+t<span class="s2">&quot;Windrose diagram&quot;</span><span class="w"> </span>-W0.5p<span class="w"> </span>-U+c<span class="w"> </span><span class="p">|</span><span class="w"> </span>lpr
 </pre></div>
 </div>
 </div></blockquote>
 <p>Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t<span class="s2">&quot;Windrose diagram&quot;</span> -M0.5c+e+gorange+n1c -W0.5p -U+c &gt; rose.ps
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>psrose<span class="w"> </span>lines.az_r<span class="w"> </span>-R0/500/0/360<span class="w"> </span>-JX10c<span class="w"> </span>-Bxg100<span class="w"> </span>-Byg45<span class="w"> </span>-B+t<span class="s2">&quot;Windrose diagram&quot;</span><span class="w"> </span>-M0.5c+e+gorange+n1c<span class="w"> </span>-W0.5p<span class="w"> </span>-U+c<span class="w"> </span>&gt;<span class="w"> </span>rose.ps
 </pre></div>
 </div>
 </div></blockquote>
 </section>
 <section id="bugs">
-<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">¶</a></h2>
+<h2>Bugs<a class="headerlink" href="#bugs" title="Link to this heading"></a></h2>
 <p>No default radial scale and grid settings for polar histograms. Users
 must run the module with <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> to find max length in binned data set.</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <p>Berens, P., 2009, CircStat: A MATLAB Toolbox for Circular Statistics, <em>J. Stat. Software, 31(10)</em>, 1-21.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="pshistogram.html"><span class="doc">pshistogram</span></a></p>
 </section>
@@ -619,8 +628,8 @@ must run the module with <a class="reference internal" href="#i"><span><strong>-
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

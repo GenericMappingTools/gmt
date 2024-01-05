@@ -5,32 +5,36 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pshistogram &mdash; GMT 6.4.0 documentation</title>
+  <title>pshistogram &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,14 +53,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +73,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +121,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +139,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules-classic.html">Modules (Classic Mode)</a> &raquo;</li>
-      <li>pshistogram</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules-classic.html">Modules (Classic Mode)</a></li>
+      <li class="breadcrumb-item active">pshistogram</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/pshistogram.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,13 +152,13 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="pshistogram">
-<h1>pshistogram<a class="headerlink" href="#pshistogram" title="Permalink to this heading">¶</a></h1>
+<h1>pshistogram<a class="headerlink" href="#pshistogram" title="Link to this heading"></a></h1>
 <p>Calculate and plot histograms</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt pshistogram</strong> [ <em>table</em> ]
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><strong>x</strong>|<strong>X</strong><em>parameters</em>
-<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em>
+<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] | <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em>[<strong>+b</strong>] ]
@@ -189,14 +193,14 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p>Reads <em>file</em> [or standard input] and examines the first
 data column (or one set by <strong>-i</strong>) to calculate histogram parameters based on
 the bin-width provided. Using these parameters, scaling, and optional
 range parameters it will plot the histogram. A cumulative histogram may also be specified.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -205,13 +209,13 @@ then we read from standard input.  </p>
 </dl>
 <dl class="simple" id="j">
 <dt><strong>-Jx</strong></dt><dd><p><em>xscale</em>[/<em>yscale</em>] (Linear scale(s) in distance unit/data unit), or
-<strong>-JX</strong> with <em>width</em>[/<em>height</em>] dimensions.</p>
+<strong>-JX</strong> with <em>width</em>[/<em>height</em>] dimensions.  <strong>Note</strong>: Optional in modern mode.</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
 <dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+n</strong>] |<strong>-T</strong><em>file</em>|<em>list</em></dt><dd><p>Make evenly spaced array of bin boundaries from <em>min</em> to <em>max</em> by <em>inc</em>.
 If <em>min/max</em> are not given then we default to the range in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.
-For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>. <strong>Note</strong>: If
+For details on array creation, see <a class="reference internal" href="#generate-1-d-array">Generate 1-D Array</a>. <strong>Note</strong>: If
 <em>inc</em> is given with a trailing time unit then it takes precedence over
 the current setting of <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>; otherwise that setting determines
 the units used for the bin widths.</p>
@@ -219,7 +223,7 @@ the units used for the bin widths.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>Plot the histogram horizontally from x = 0 [Default is vertically
 from y = 0].  The plot dimensions remain the same, but the two
@@ -227,7 +231,7 @@ axes are flipped.</p>
 </dd>
 </dl>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -241,10 +245,13 @@ current CPT.</p>
 </dl>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<strong>+b</strong>][<strong>+f</strong><em>font</em>][<strong>+o</strong><em>off</em>][<strong>+r</strong>]</dt><dd><p>Annotate each bar with the count it represents.  Append any of the
-following modifiers: Use <strong>+b</strong> to place the labels beneath the bars
-instead of above; use <strong>+f</strong> to change to another font than the default
-annotation font; use <strong>+o</strong> to change the offset between bar and label [6p];
-use <strong>+r</strong> to rotate the labels from horizontal to vertical.</p>
+following modifiers:</p>
+<ul class="simple">
+<li><p><strong>+b</strong> - Place the labels beneath the bars instead of above.</p></li>
+<li><p><strong>+f</strong> - Change to another font than the default annotation font.</p></li>
+<li><p><strong>+o</strong> - Change the offset between bar and label [6p].</p></li>
+<li><p><strong>+r</strong> - Rotate the labels from horizontal to vertical.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="e">
@@ -258,18 +265,19 @@ the relevant unit.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong></dt><dd><p>Center bin on each value. [Default is left edge].</p>
+<dt><strong>-F</strong></dt><dd><p>Center bin on each node created via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> [Default uses the nodes to define the
+left edge of each bin].</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select filling of bars [Default is no fill].</p>
+<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select filling of bars [Default is no fill].</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
-<dt><strong>-I</strong>[<strong>o</strong>|<strong>O</strong>]</dt><dd><p>Inquire about min/max x and y after binning. The <em>xmin xmax ymin
-ymax</em> is output; no plotting is done. Append <strong>o</strong> to output an
-ASCII table of the resulting x,y data instead. Upper case <strong>O</strong> will
-output all x,y bin data even when y == 0. <strong>Note</strong>: You may use <strong>-o</strong>
+<dt><strong>-I</strong>[<strong>o</strong>|<strong>O</strong>]</dt><dd><p>Inquire about min/max <em>x</em> and <em>y</em> after binning. The <em>xmin xmax ymin
+ymax</em> is output; no plotting is done. Append directive <strong>o</strong> to output an
+ASCII table of the resulting <em>x, y</em> data instead. Upper case directive <strong>O</strong> will
+output all <em>x, y</em> bin data even when <em>y</em> == 0. <strong>Note</strong>: You may use <strong>-o</strong>
 to select a subset from this record.</p>
 </dd>
 </dl>
@@ -278,17 +286,18 @@ to select a subset from this record.</p>
 </dd>
 </dl>
 <dl class="simple" id="l">
-<dt><strong>-Ll</strong>|<strong>h</strong>|<strong>b</strong></dt><dd><p>The modifiers specify the handling of extreme values that fall outside the range
-set by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  By default these values are ignored.  Append <strong>b</strong> to let
-these values be included in the first or last bins.  To only include
-extreme values below first bin into the first bin, use <strong>l</strong>, and to
-only include extreme values above the last bin into that last bin, use
-<strong>h</strong>.</p>
+<dt><strong>-Ll</strong>|<strong>h</strong>|<strong>b</strong></dt><dd><p>The directives specify the handling of extreme values that fall outside the range
+set by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  By default these values are ignored.  Choose among these:</p>
+<ul class="simple">
+<li><p><strong>b</strong> - Let these values be included in the first or last bins.</p></li>
+<li><p><strong>l</strong> - Only include extreme values below first bin into the first bin.</p></li>
+<li><p><strong>h</strong> - Only include extreme values above the last bin into that last bin.</p></li>
+</ul>
 </dd>
 </dl>
 <dl id="n">
 <dt><strong>-N</strong>[<em>mode</em>][<strong>+p</strong><em>pen</em>]</dt><dd><p>Draw the equivalent normal distribution; append desired pen [0.25p,black].
-The <em>mode</em> selects which central location and scale to use:</p>
+The <em>mode</em> directive selects which central location and scale to use:</p>
 <ul class="simple">
 <li><p>0 = mean and standard deviation [Default];</p></li>
 <li><p>1 = median and L1 scale (1.4826 * median absolute deviation; MAD);</p></li>
@@ -305,7 +314,7 @@ reverse cumulative histogram.  Cannot be used with <strong>-w</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <blockquote>
@@ -317,11 +326,11 @@ of the default histogram.</p>
 </dd>
 </dl>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -329,11 +338,11 @@ of the default histogram.</p>
 </dd>
 </dl>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl id="z">
@@ -343,8 +352,8 @@ of the default histogram.</p>
 <li><p>1 = frequency_percent</p></li>
 <li><p>2 = log (1.0 + count)</p></li>
 <li><p>3 = log (1.0 + frequency_percent)</p></li>
-<li><p>4 = log10 (1.0 + count)</p></li>
-<li><p>5 = log10 (1.0 + frequency_percent).</p></li>
+<li><p>4 = <span class="math notranslate nohighlight">\(\log_{10}\)</span> (1.0 + count)</p></li>
+<li><p>5 = <span class="math notranslate nohighlight">\(\log_{10}\)</span> (1.0 + frequency_percent).</p></li>
 </ul>
 <p>To use weights provided as a second data column instead of pure counts,
 append <strong>+w</strong>.</p>
@@ -379,7 +388,7 @@ append <strong>+w</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+<dt><strong>-o</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -414,11 +423,11 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dd>
 </dl>
 </section>
-<section id="generate-1d-array">
-<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
+<section id="generate-1-d-array">
+<h2>Generate 1-D Array<a class="headerlink" href="#generate-1-d-array" title="Link to this heading"></a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.
-Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
+Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3.1/4.2/0.1<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">3</span>.1
 <span class="m">3</span>.2
 <span class="m">3</span>.3
@@ -426,21 +435,22 @@ Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in step
 <span class="m">3</span>.5
 <span class="m">3</span>.6
 <span class="m">3</span>.7
+...
 </pre></div>
 </div>
-<p>Append <strong>+b</strong> if we should take log2 of <em>min</em> and <em>max</em>, get their nearest integers,
-build an equidistant log2-array using <em>inc</em> integer increments in log2, then undo
-the log2 conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3/20/1+b <span class="nv">T</span> <span class="o">=</span>
+<p>Append <strong>+b</strong> if we should take <span class="math notranslate nohighlight">\(\log_2\)</span> of <em>min</em> and <em>max</em>, get their nearest integers,
+build an equidistant <span class="math notranslate nohighlight">\(\log_2\)</span>-array using <em>inc</em> integer increments in <span class="math notranslate nohighlight">\(\log_2\)</span>, then undo
+the <span class="math notranslate nohighlight">\(\log_2\)</span> conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3/20/1+b<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">4</span>
 <span class="m">8</span>
 <span class="m">16</span>
 </pre></div>
 </div>
-<p>Append <strong>+l</strong> if we should take log10 of <em>min</em> and <em>max</em> and build an
+<p>Append <strong>+l</strong> if we should take <span class="math notranslate nohighlight">\(\log_{10}\)</span> of <em>min</em> and <em>max</em> and build an
 array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
 (1-9 times magnitude).  E.g., <strong>-T</strong>7/135/2<strong>+l</strong> will produce this sequence:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T7/135/2+l <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T7/135/2+l<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">10</span>
 <span class="m">20</span>
 <span class="m">50</span>
@@ -448,7 +458,7 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 </pre></div>
 </div>
 <p>For output values less frequently than every magnitude, use a negative integer <em>inc</em>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T1e-4/1e4/-2+l <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T1e-4/1e4/-2+l<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>.0001
 <span class="m">0</span>.01
 <span class="m">1</span>
@@ -458,7 +468,7 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 </div>
 <p>Append <strong>+i</strong> if <em>inc</em> is a fractional number and it is cleaner to give its reciprocal
 value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0/60/24+i <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T0/60/24+i<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>
 <span class="m">0</span>.0416666666667
 <span class="m">0</span>.0833333333333
@@ -469,7 +479,7 @@ value instead.  To set up times for a 24-frames per second animation lasting 1 m
 </div>
 <p>Append <strong>+n</strong> if <em>inc</em> is meant to indicate the <em>number</em> of equidistant coordinates
 instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.44/7.82/5+n <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3.44/7.82/5+n<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">3</span>.44
 <span class="m">4</span>.535
 <span class="m">5</span>.63
@@ -480,7 +490,7 @@ instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
 <p>Alternatively, let <em>inc</em> be a <em>file</em> with output coordinates in the first column,
 or provide a comma-separated <em>list</em> of specific coordinates, such as the first 6
 Fibonacci numbers:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0,1,1,2,3,5 <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T0,1,1,2,3,5<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>
 <span class="m">1</span>
 <span class="m">1</span>
@@ -489,7 +499,9 @@ Fibonacci numbers:</p>
 <span class="m">5</span>
 </pre></div>
 </div>
-<p><strong>Note</strong>: Should you need to ensure that the coordinates are unique and sorted (in case the
+<p><strong>Notes</strong>: (1) If you need to pass the list nodes via a dataset file yet be understood
+as a list (i.e., no interpolation), then you must set the file header to contain the string “LIST”. (2) Should
+you need to ensure that the coordinates are unique and sorted (in case the
 <em>file</em> or <em>list</em> are not sorted or have duplicates) then supply the <strong>+u</strong> modifier.</p>
 <p>If you only want a <em>single</em> value
 then you must append a comma to distinguish the list from the setting of an increment.</p>
@@ -497,7 +509,7 @@ then you must append a comma to distinguish the list from the setting of an incr
 <strong>y</strong>ear, m<strong>o</strong>nth, <strong>d</strong>ay, <strong>h</strong>our, <strong>m</strong>inute, and <strong>s</strong>econd
 to the given increment; add <strong>+t</strong> to ensure time column (or use <strong>-f</strong>). <strong>Note</strong>: The internal time
 unit is still controlled independently by <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>.  The first 7 days of March 2020:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T2020-03-01T/2020-03-07T/1d <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T2020-03-01T/2020-03-07T/1d<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">2020</span>-03-01T00:00:00
 <span class="m">2020</span>-03-02T00:00:00
 <span class="m">2020</span>-03-03T00:00:00
@@ -518,7 +530,7 @@ possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as requir
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Link to this heading"></a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -535,7 +547,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -544,7 +556,7 @@ of uses that are common but cannot be run verbatim as written.</p>
 <p>To draw a histogram of the data v3206.t containing seafloor depths,
 using a 250 meter bin width, center bars, and draw bar outline, use:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt pshistogram v3206.t -JXh -T250 -F -W0.5p -V &gt; plot.ps
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>pshistogram<span class="w"> </span>v3206.t<span class="w"> </span>-JXh<span class="w"> </span>-T250<span class="w"> </span>-F<span class="w"> </span>-W0.5p<span class="w"> </span>-V<span class="w"> </span>&gt;<span class="w"> </span>plot.ps
 </pre></div>
 </div>
 </div></blockquote>
@@ -554,8 +566,8 @@ in the file errors.xy using a 1 meter bin width, plot from -10 to +10
 meters &#64; 0.75 cm/m and 0.01c/count in y, annotate every 2 m and 100 counts,
 and use black bars, run:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt pshistogram errors.xy -T1 -R-10/10/0/0 -Jx0.75c/0.01c <span class="se">\</span>
-                -Bx2+lError -By100+lCounts -Gblack -i1 -V &gt; plot.ps
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>pshistogram<span class="w"> </span>errors.xy<span class="w"> </span>-T1<span class="w"> </span>-R-10/10/0/0<span class="w"> </span>-Jx0.75c/0.01c<span class="w"> </span><span class="se">\</span>
+<span class="w">                </span>-Bx2+lError<span class="w"> </span>-By100+lCounts<span class="w"> </span>-Gblack<span class="w"> </span>-i1<span class="w"> </span>-V<span class="w"> </span>&gt;<span class="w"> </span>plot.ps
 </pre></div>
 </div>
 </div></blockquote>
@@ -563,7 +575,7 @@ and use black bars, run:</p>
 increments of 100.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="psbasemap.html"><span class="doc">psbasemap</span></a>, <a class="reference internal" href="psrose.html"><span class="doc">psrose</span></a>,
 <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
@@ -581,8 +593,8 @@ increments of 100.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

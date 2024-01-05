@@ -64,7 +64,7 @@ alternative modes.
 #. Temporary mode
 
 The permanent mode makes use of the free executable program `EditPath
-<http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`_
+<https://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`_
 to change the user path in the registry. It's called permanent because the changes
 remains until ... next change.
 Off course the editpath.exe binary must be in your system's path as well.

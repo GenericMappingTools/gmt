@@ -31,7 +31,7 @@ record of information about each cruise specified. The information
 includes beginning and end times, total track distances in km, longitude
 and latitude range, and the total number of geophysical observations.
 Optionally, choose instead to see the original MGD77 header meta-data
-section or its individual members.
+section or its individual members [*Wessel and Chandler*, 2007].
 
 If you need to know which tracks are crossing through a given region and
 what kinds of geophysical observations are available, consider using the
@@ -117,40 +117,40 @@ Examples
 To get one-line summary information about the cruises 01010047.mgd77 and
 01010008.mgd77, try
 
-   ::
+::
 
-    gmt mgd77info 01010047 01010008 -E > listing.lis
+  gmt mgd77info 01010047 01010008 -E > listing.lis
 
 To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -Mr
+  gmt mgd77info 01010047 -Mr
 
 To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -Mf | grep Gravity
+  gmt mgd77info 01010047 -Mf | grep Gravity
 
 To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -MfMagnetics_Sampling_Rate
+  gmt mgd77info 01010047 -MfMagnetics_Sampling_Rate
 
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 
-   ::
+::
 
-    gmt mgd77info 01010047 -C
+  gmt mgd77info 01010047 -C
 
 To see the E77 status of all MGD77+ cruises collected by the University
 of Hawaii (institution 08), run
 
-   ::
+::
 
-    gmt mgd77info 08 -Ia -Me
+  gmt mgd77info 08 -Ia -Me
 
 See Also
 --------
@@ -168,4 +168,4 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 `http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

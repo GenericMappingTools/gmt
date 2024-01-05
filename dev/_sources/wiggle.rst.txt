@@ -46,7 +46,7 @@ Description
 -----------
 
 Reads (*x*,\ *y*,\ *z*) triplets from files [or standard
-input] and plots z as a function of distance along track. This means
+input] and plots *z* as a function of distance along track. This means
 that two consecutive (*x*,\ *y*) points define the local distance axis,
 and the local *z* axis is then perpendicular to the distance axis,
 forming a right-handed coordinate system. The
@@ -90,7 +90,7 @@ Optional Arguments
     Sets the preferred positive azimuth. Positive wiggles will
     "gravitate" towards that direction, i.e., azimuths of the
     normal direction to the track will be flipped into the
-    -90/+90 degree window centered on *azimuth* and that defines
+    ±90 degree window centered on *azimuth* and that defines
     the positive wiggle side.  If no azimuth is given the no
     preferred azimuth is enforced.  Default is **-A**\ 0.
 
@@ -148,7 +148,7 @@ Optional Arguments
 **-I**\ *fix_az*
     Set a fixed azimuth projection for wiggles [Default uses track
     azimuth, but see |-A|]. With this option, the calculated
-    track-normal azimuths are overridden by *fixed_az*.
+    track-normal azimuths are overridden by *fix_az*.
 
 .. _-T:
 
@@ -231,37 +231,37 @@ To plot the magnetic anomaly stored in the file track.xym along track @
 mode, with positive anomalies in red on a blue track of width 0.25
 points, use
 
-   ::
+::
 
-    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
-                 -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
+  gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
+               -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 and the positive anomalies will in general point in the north direction.
 We used |-D| to place a vertical scale bar indicating a 1000 nT anomaly.
 To instead enforce a fixed azimuth of 45 for the positive wiggles, we add |-I|
 and obtain
 
-   ::
+::
 
-    gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
-              -C32000 -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
+  gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
+            -C32000 -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 Bugs
 ----
 
-Sometimes the (x,y) coordinates are not printed with enough significant
+Sometimes the (*x, y*) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 
-   ::
+::
 
-    gmt mapproject -Af yourdata.xyz | more
+  gmt mapproject -Af yourdata.xyz | more
 
 Then if these numbers jump around a lot, you may do this:
 
-   ::
+::
 
-    awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
+  awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
 which performs a 5-point boxcar filter, and plot this data set instead.
 

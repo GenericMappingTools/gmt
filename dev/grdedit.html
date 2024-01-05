@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdedit &mdash; GMT 6.4.0 documentation</title>
+  <title>grdedit &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">Modules</a> &raquo;</li>
-      <li>grdedit</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">grdedit</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdedit.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,10 +151,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdedit">
-<h1>grdedit<a class="headerlink" href="#grdedit" title="Permalink to this heading">¶</a></h1>
+<h1>grdedit<a class="headerlink" href="#grdedit" title="Link to this heading"></a></h1>
 <p>Modify header or content of a grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt grdedit</strong> <em>ingrid</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><strong>b</strong>|<strong>c</strong>|<strong>n</strong>|<strong>p</strong> ]
@@ -173,10 +176,10 @@
 [ <strong>-w</strong><a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
-<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong>grdedit</strong> reads the header information in a binary 2-D grid file and
 replaces the information with values provided on the command line [if
 any]. As an option, global, geographical grids (with 360 degrees
@@ -187,28 +190,26 @@ If it is important to retain the original data you should use <a class="referenc
 to save the modified grid to a new file.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
-<div><p>Name of the 2-D grid file to modify. Optionally, append =<em>ID</em> for reading a specific file
+<div><p>Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
-[Default is the first 2-D grid found by GMT]
-(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
-supported:</p>
+[Default is the first 2-D grid found by GMT]. The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>+b</strong> - Select a <em>band</em> (for images only) [Default is 0].</p></li>
+<li><p><strong>+b</strong> - Select a <em>band</em> [Default is 0].</p></li>
 <li><p><strong>+d</strong> - Divide data values by the given <em>divisor</em> [Default is 1].</p></li>
 <li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with NaN.</p></li>
 <li><p><strong>+o</strong> - Offset data values by the given <em>offset</em> [Default is 0].</p></li>
 <li><p><strong>+s</strong> - Scale data values by the given <em>scale</em> [Default is 1].</p></li>
 </ul>
 </div></blockquote>
-<p>Note: Any offset is added after any scaling.</p>
+<p><strong>Note</strong>: Any offset is added after any scaling.</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>If necessary, adjust the file’s <em>x_inc</em>, <em>y_inc</em> to be compatible
 with its domain (or a new domain set with <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>). Older grid files
@@ -226,23 +227,35 @@ history, <strong>n</strong> to save no history whatsoever [Default], or select <
 to instead save only the previous command history.</p>
 </dd>
 </dl>
-<dl class="simple" id="d">
-<dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+c</strong>[-|<em>cpt</em>]][<strong>+d</strong><em>dname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>]</dt><dd><p>Give one or more combinations for values <em>xname</em>, <em>yname</em>, <em>zname</em> (3rd dimension in cube),
-and <em>dname</em> (data value name) and give the names of those variables
-and in square bracket their units, e.g., “distance [km]”), <em>cpt</em> to set a default CPT for
-this grid [turbo] or give - to remove any default CPT already set, <em>scale</em> (to multiply data values after
-read [normally 1]), <em>offset</em> (to add to data after scaling [normally 0]),
-<em>invalid</em> (a value to represent missing data [NaN]), <em>title</em> (anything you
-like), and <em>remark</em> (anything you like). Items not listed will remain untouched.
-Give a blank name to completely reset a particular string.
-Use quotes to group texts with more than one word.  If any of your text contains plus symbols
-you need to escape them (place a backslash before each plus-sign) so they are not confused with the
-option modifiers.  Alternatively, you can place the entire double-quoted string inside single
-quotes.  If you have shell variables that contain plus symbols you cannot use single quotes but
-you can escape the plus symbols in a variable using constructs like ${variable/+/\+}.
-Note that for geographic grids and cubes (<strong>-fg</strong>) <em>xname</em> and <em>yname</em> are set automatically.
-Normally, the data netCDF variable is called “z” (grid) or “cube” (data cube). You can name this
-netCDF variable via <strong>+v</strong><em>varname</em>.</p>
+<dl id="d">
+<dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+c</strong>[-|<em>cpt</em>]][<strong>+d</strong><em>dname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>]</dt><dd><p>Control names and units of netCDF grid and cube meta-data.  For dimensions with units,
+add the unit in square bracket (e.g., “distance [km]”). Select one or more of these modifiers:</p>
+<ul class="simple">
+<li><p><strong>+c</strong> - Append <em>cpt</em> to set a default CPT for this grid [turbo] or give - to remove any default CPT already set.</p></li>
+<li><p><strong>+d</strong> - Set <em>dname</em>, the data value name.</p></li>
+<li><p><strong>+n</strong> - Set the <em>invalid</em> number used to indicate a NaN or missing value.</p></li>
+<li><p><strong>+o</strong> - Set the <em>offset</em> to add to data after first scaling the data [0].</p></li>
+<li><p><strong>+r</strong> - Set a <em>remark</em> used for this grid (any sentence you prefer).</p></li>
+<li><p><strong>+s</strong> - Set the <em>scale</em> used fto multiply data values after they are read [1].</p></li>
+<li><p><strong>+t</strong> - Set a <em>title</em> used for this grid (any sentence you prefer).</p></li>
+<li><p><strong>+v</strong> - Append <em>varname</em>, the variable name of the data set.</p></li>
+<li><p><strong>+x</strong> - Append <em>xname</em>, the name of the x-coordinate (and optional unit in brackets).</p></li>
+<li><p><strong>+y</strong> - Append <em>yname</em>, the name of the y-coordinate (and optional unit in brackets).</p></li>
+<li><p><strong>+z</strong> - For 3-D cubes; append <em>zname</em>, the name of the z-coordinate (and optional unit in brackets).</p></li>
+</ul>
+<p>Give a blank name to completely reset a particular string.
+Use quotes to group texts with more than one word.  If any
+of your text contains plus symbols you need to escape them
+(place a backslash before each plus-sign) so they are not
+confused with the option modifiers.  Alternatively, you can
+place the entire double-quoted string inside single quotes.
+If you have shell variables that contain plus symbols you
+cannot use single quotes but you can escape the plus symbols
+in a variable using constructs like ${variable/+/\+}. Note
+that for geographic grids and cubes (<strong>-fg</strong>), <em>xname</em> and
+<em>yname</em> are set automatically. Normally, the data netCDF
+variable is called “z” (grid) or “cube” (data cube). You can
+rename this netCDF variable via <strong>+v</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
@@ -260,10 +273,7 @@ Incompatible with the other options (except <a class="reference internal" href="
 </dl>
 <span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
-<div><p>Normally, <strong>grdedit</strong> will overwrite the existing grid with the modified grid.
-Use <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> to write the modified grid to the file <em>outgrid</em> instead. Optionally, append =<em>ID</em> for writing a specific file format
-(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
-supported:</p>
+<div><p>Optionally, append =<em>ID</em> for writing a specific file format. The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
@@ -276,11 +286,11 @@ automatic scaling to preserve precision for integer grids [Default
 is 1].</p></li>
 </ul>
 </div></blockquote>
-<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+<p><strong>Note</strong>: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
 (unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
-the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+the <a class="reference internal" href="reference/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
 for more details.</p>
 </div></blockquote>
 <dl class="simple" id="j">
@@ -302,8 +312,9 @@ these <em>x</em>,<em>y</em>,<em>z</em> values.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. The new w/e/s/n values will replace those in the grid, and the <em>x_inc</em>, <em>y_inc</em> values are
-adjusted, if necessary. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. The new limits will replace those in the grid, and the <em>x_inc</em>, <em>y_inc</em> values are
+adjusted, if necessary. <strong>Note</strong>: Here, <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> does not select a sub-region of the input grid but
+instead simply replaces the domain of the grid. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -317,11 +328,11 @@ gridline-registered grid to a pixel-registered grid, or vice-versa.
 Basically, gridline-registered grids will have their domain extended
 by half the x- and y-increments whereas pixel-registered grids will
 have their domain shrunk by the same amount.
-This is a <em>non-destructive</em> grid change; see <a class="reference internal" href="cookbook/options.html#switch-registrations"><span class="std std-ref">Switching registrations</span></a>.</p>
+This is a <em>non-destructive</em> grid change; see <a class="reference internal" href="reference/options.html#switch-registrations"><span class="std std-ref">Switching registrations</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -365,7 +376,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="geographical-and-time-coordinates">
-<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this heading">¶</a></h2>
+<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Link to this heading"></a></h2>
 <p>When the output grid type is netCDF, the coordinates will be labeled
 “longitude”, “latitude”, or “time” based on the attributes of the input
 data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
@@ -378,7 +389,7 @@ command line. In addition, the <strong>unit</strong> attribute of the time varia
 will indicate both this unit and epoch.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -387,42 +398,42 @@ of uses that are common but cannot be run verbatim as written.</p>
 <p>Let us assume the file data.nc covers the area 300/310/10/30. We want to
 change the boundaries from geodetic longitudes to geographic and put a
 new title in the header. We accomplish this by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit data.nc -R-60/-50/10/30 -D+t<span class="s2">&quot;Gravity Anomalies&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdedit<span class="w"> </span>data.nc<span class="w"> </span>-R-60/-50/10/30<span class="w"> </span>-D+t<span class="s2">&quot;Gravity Anomalies&quot;</span>
 </pre></div>
 </div>
 <p>The grid world.nc has the limits 0/360/-72/72. To shift the data so that
 the limits would be -180/180/-72/72, use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit world.nc -R-180/180/-72/72 -S
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdedit<span class="w"> </span>world.nc<span class="w"> </span>-R-180/180/-72/72<span class="w"> </span>-S
 </pre></div>
 </div>
 <p>The file junk.nc was created prior to GMT 3.1 with incompatible
 <strong>-R</strong> and <strong>-I</strong> arguments. To reset the x- and y-increments we run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit junk.nc -A
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdedit<span class="w"> </span>junk.nc<span class="w"> </span>-A
 </pre></div>
 </div>
 <p>The file junk.nc was created prior to GMT 4.1.3 and does not contain
 the required information to indicate that the grid is geographic. To add
 this information, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit junk.nc -fg
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdedit<span class="w"> </span>junk.nc<span class="w"> </span>-fg
 </pre></div>
 </div>
 <p>To rotate the grid oblique.nc 90 degrees counter-clockwise and write out
 the rotated grid to a new file, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit oblique.nc -El -Goblique_rot.nc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdedit<span class="w"> </span>oblique.nc<span class="w"> </span>-El<span class="w"> </span>-Goblique_rot.nc
 </pre></div>
 </div>
 <p>To ensure that the grid depths.nc only has positive longitude values, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit depths.nc -L+p
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdedit<span class="w"> </span>depths.nc<span class="w"> </span>-L+p
 </pre></div>
 </div>
 <p>The grid bad.nc has latitude as x-coordinates an longitude as y-coordinates.
 We can exchange the two dimension by running:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdedit bad.nc -Ee -Gnew.nc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdedit<span class="w"> </span>bad.nc<span class="w"> </span>-Ee<span class="w"> </span>-Gnew.nc
 </pre></div>
 </div>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>This module is not a general editor for netCDF files.  If your netCDF file
 contains more than one 2-D (or higher dimension) data layer, then only the
 selected layer will be written out if changes are requested.  Likewise,
@@ -430,7 +441,7 @@ if you have additional netCDF attributes then those will also be lost in
 any revised output.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>,
 <a class="reference internal" href="grdfill.html"><span class="doc">grdfill</span></a>,
@@ -450,8 +461,8 @@ any revised output.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

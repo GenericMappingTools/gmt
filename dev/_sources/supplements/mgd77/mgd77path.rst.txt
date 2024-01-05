@@ -66,22 +66,22 @@ Examples
 
 To obtain pathnames for cruises 01010008 and 01010007, run
 
-   ::
+::
 
-    gmt mgd77path 01010008 01010007
+  gmt mgd77path 01010008 01010007
 
 To obtain pathnames for cruises 01010008 and 01010007, but only if there
 are MGD77+ version in netCDF, run
 
-   ::
+::
 
-    gmt mgd77path 01010008 01010007 -Ia -It
+  gmt mgd77path 01010008 01010007 -Ia -It
 
 To see the list of active directories where MGD77 files might be stored, run
 
-   ::
+::
 
-    gmt mgd77path -D
+  gmt mgd77path -D
 
 See Also
 --------
@@ -98,4 +98,4 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 `http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

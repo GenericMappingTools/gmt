@@ -81,21 +81,21 @@ Examples
 To switch to GMT version 4.5.18 (assuming it was installed as such and not
 via a package manager), try
 
-  ::
+::
 
-    gmtswitch gmt-4.5.18
+  gmtswitch gmt-4.5.18
 
 To switch to the default (your top choice), do
 
-  ::
+::
 
-    gmtswitch D
+  gmtswitch D
 
 Finally, to select from the menu, just run
 
-  ::
+::
 
-    gmtswitch
+  gmtswitch
 
 and pick the one you want.
 
@@ -123,7 +123,7 @@ The permanent mode makes use of the free executable program "EditPath"
 to change the user path in the registry. It's called permanent because
 the changes remains until ... next change. See
 
-`http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml <http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`_
+`https://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml <https://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml>`_
 
 Of course the editpath.exe binary must be in your system's path as well.
 WARNING: The path change will not be visible on the shell cmd where it

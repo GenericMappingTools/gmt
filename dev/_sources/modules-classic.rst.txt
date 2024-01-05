@@ -127,6 +127,13 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/geodesy/earthtide
     supplements/geodesy/gpsgridder
     supplements/geodesy/psvelo
+    supplements/gsfml/fzanalyzer
+    supplements/gsfml/fzblender
+    supplements/gsfml/fzinformer
+    supplements/gsfml/fzmapper
+    supplements/gsfml/fzmodeler
+    supplements/gsfml/fzprofile
+    supplements/gsfml/mlconverter
     supplements/gshhg/gshhg
     supplements/img/img2grd
     supplements/mgd77/mgd77convert
@@ -165,6 +172,8 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/spotter/polespotter
     supplements/spotter/rotconverter
     supplements/spotter/rotsmoother
+    supplements/windbarbs/psbarb
+    supplements/windbarbs/grdbarb
     supplements/x2sys/x2sys_binlist
     supplements/x2sys/x2sys_cross
     supplements/x2sys/x2sys_datalist
@@ -288,6 +297,13 @@ Supplemental Modules
     - :doc:`/supplements/geodesy/earthtide`
     - :doc:`/supplements/geodesy/gpsgridder`
     - :doc:`/supplements/geodesy/psvelo`
+    - :doc:`/supplements/gsfml/fzanalyzer`
+    - :doc:`/supplements/gsfml/fzblender`
+    - :doc:`/supplements/gsfml/fzinformer`
+    - :doc:`/supplements/gsfml/fzmapper`
+    - :doc:`/supplements/gsfml/fzmodeler`
+    - :doc:`/supplements/gsfml/fzprofiler`
+    - :doc:`/supplements/gsfml/mlconverter`
     - :doc:`/supplements/gshhg/gshhg`
     - :doc:`/supplements/img/img2grd`
     - :doc:`/supplements/mgd77/mgd77convert`
@@ -326,6 +342,8 @@ Supplemental Modules
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
+    - :doc:`/supplements/windbarbs/grdbarb`
+    - :doc:`/supplements/windbarbs/psbarb`
     - :doc:`/supplements/x2sys/x2sys_binlist`
     - :doc:`/supplements/x2sys/x2sys_cross`
     - :doc:`/supplements/x2sys/x2sys_datalist`
@@ -585,8 +603,6 @@ Miscellaneous
 +-----------------------+-----------------------+
 | :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+
-| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
-+-----------------------+-----------------------+
 | :doc:`kml2gmt`        | |kml2gmt_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`psconvert`      | |psconvert_purpose|   |
@@ -602,6 +618,25 @@ geodesy
 +--------------------------------------------+----------------------+
 | :doc:`/supplements/geodesy/psvelo`         | |psvelo_purpose|     |
 +--------------------------------------------+----------------------+
+
+GSFML
+-----
+
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzanalyzer`  | |fzanalyzer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzblender`   | |fzblender_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzinformer`  | |fzinformer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmapper`    | |fzmapper_purpose|    |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmodeler`   | |fzmodeler_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzprofiler`  | |fzprofiler_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/mlconverter` | |mlconverter_purpose| |
++---------------------------------------+-----------------------+
 
 GSHHG
 -----
@@ -679,15 +714,19 @@ SEGY
 seis
 ----
 
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pscoupe` | |pscoupe_purpose|  |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/psmeca`  | |psmeca_purpose|   |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pspolar` | |pspolar_purpose|  |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pssac`   | |pssac_purpose|    |
-+----------------------------------+--------------------+
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pscoupe`  | |pscoupe_purpose|  |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/psmeca`   | |psmeca_purpose|   |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pspolar`  | |pspolar_purpose|  |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pssac`    | |pssac_purpose|    |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/grdshake` | |grdshake_purpose| |
++---------------------------------+----------------------+
+| :doc:`/supplements/seis/grdvs30`  | |grdvs30_purpose|  |
++---------------------------------+----------------------+
 
 spotter
 -------
@@ -713,6 +752,15 @@ spotter
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/rotsmoother`  | |rotsmoother_purpose|  |
 +------------------------------------------+------------------------+
+
+windbarbs
+---------
+
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/psbarb`   | |psbarb_purpose|  |
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/grdbarb`  | |grdbarb_purpose| |
++----------------------------------------+-------------------+
 
 x2sys
 -----

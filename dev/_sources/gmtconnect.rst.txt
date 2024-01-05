@@ -71,7 +71,8 @@ Optional Arguments
     For multiple segment data, dump each segment to a separate output
     file [Default writes a single multiple segment file]. Append a
     format template for the individual file names; this template
-    **must** contain a C format specifier that can format an integer
+    **must** contain a C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_
+    format specifier that can format an integer
     argument (the segment number); this is usually %d but could be %08d
     for leading zeros, etc. Optionally, it may also contain the
     format %c *before* the integer; this will then be replaced by C
@@ -169,7 +170,7 @@ the end points' digitization error could be up to 0.1 mm, run::
     gmt connect segment_*.txt -T0.1 > new_segments.txt
 
 To combine the digitized segments in the multisegment file my_lines.txt
-(whose coordinates are in lon,lat) into as few complete lines as
+(whose coordinates are in *lon, lat*) into as few complete lines as
 possible, assuming the end points digitization error could be up to 150 m, and write
 the complete segments to individual files called Map_segment_0001.txt,
 Map_segment_0002.txt, etc., run::

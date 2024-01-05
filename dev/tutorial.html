@@ -5,36 +5,39 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial in Bash &mdash; GMT 6.4.0 documentation</title>
+  <title>Tutorials &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction" href="tutorial/intro.html" />
+    <link rel="next" title="Tutorial in Bash" href="tutorial/bash/index.html" />
     <link rel="prev" title="(15) Animating 2-D coupled gridding via SVD" href="animations/anim15.html" />
 
 
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,42 +72,35 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial in Bash</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/intro.html">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/session-1.html">Session One</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/session-2.html">Session Two</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/session-3.html">Session Three</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/session-4.html">Session Four</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/bash/index.html">Tutorial in Bash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/julia/index.html">Tutorial in Julia</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials for PyGMT</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://doi.org/10.1002/2016GC006723">Tutorials for GMT/Mex</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -126,6 +126,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -142,8 +144,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Tutorial in Bash</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorials</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/tutorial.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -153,44 +155,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="tutorial-in-bash">
-<h1>Tutorial in Bash<a class="headerlink" href="#tutorial-in-bash" title="Permalink to this heading">¶</a></h1>
-<p><strong>Pål (Paul) Wessel</strong><sup>1</sup>,
-<strong>Walter H. F. Smith</strong><sup>2</sup>,
-<strong>Remko Scharroo</strong><sup>3</sup>,
-<strong>Joaquim F. Luis</strong><sup>4</sup>, <strong>Leonardo Uieda</strong><sup>5</sup>,
-<strong>Florian Wobbe</strong><sup>6</sup>,
-<strong>Dongdong Tian</strong><sup>7</sup></p>
-<ol class="arabic simple">
-<li><p>SOEST, University of Hawai’i at Manoa</p></li>
-<li><p>Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR</p></li>
-<li><p>EUMETSAT, Darmstadt, Germany</p></li>
-<li><p>Universidade do Algarve, Faro, Portugal</p></li>
-<li><p>University of Liverpool, UK</p></li>
-<li><p>Sea and Sun Technology, Germany</p></li>
-<li><p>China University of Geosciences, Wuhan, China</p></li>
-</ol>
-<p>The purpose of this tutorial is to introduce new users to GMT,
-outline the GMT environment, and enable you to make several
-forms of graphics without having to know too much about UNIX
-and UNIX tools.  We will not be able to cover all aspects of
-GMT nor will we necessarily cover the selected topics in
-sufficient detail.  Nevertheless, it is hoped that the exposure
-will prompt the users to improve their GMT and UNIX skills
-after completion of this short tutorial.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This tutorial is for GMT 6 modern mode only. Looking for the classic mode tutorial?
-Since classic mode commands haven’t changed since GMT 5, please visit
-the <a class="reference external" href="https://docs.generic-mapping-tools.org/5.4/GMT_Tutorial.html">GMT 5 tutorial page</a> instead.</p>
-</div>
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h1>
+<p>GMT itself is a command-line tool that can be directly used in scripting languages
+like Bash or Batch. The GMT community has also developed wrappers for GMT that
+allow users to access GMT functionality from within other programming languages
+such as Python, Matlab, and Julia.</p>
+<p>This section provide tutorials cover different programming languages, including
+Bash, Python, Matlab, and Julia, serving as a starting point for users who want
+to learn how to use GMT and/or its wrappers effectively for their specific needs.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/session-1.html">Session One</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/session-2.html">Session Two</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/session-3.html">Session Three</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial/session-4.html">Session Four</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/bash/index.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/julia/index.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials for PyGMT</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://doi.org/10.1002/2016GC006723">Tutorials for GMT/Mex</a></li>
 </ul>
 </div>
 </section>
@@ -200,14 +179,14 @@ the <a class="reference external" href="https://docs.generic-mapping-tools.org/5
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="animations/anim15.html" class="btn btn-neutral float-left" title="(15) Animating 2-D coupled gridding via SVD" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="tutorial/intro.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorial/bash/index.html" class="btn btn-neutral float-right" title="Tutorial in Bash" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

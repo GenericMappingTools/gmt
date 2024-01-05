@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdcut &mdash; GMT 6.4.0 documentation</title>
+  <title>grdcut &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">Modules</a> &raquo;</li>
-      <li>grdcut</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">grdcut</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdcut.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,15 +151,16 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdcut">
-<h1>grdcut<a class="headerlink" href="#grdcut" title="Permalink to this heading">¶</a></h1>
-<p>Extract subregion from a grid or image</p>
+<h1>grdcut<a class="headerlink" href="#grdcut" title="Link to this heading"></a></h1>
+<p>Extract subregion from a grid or image or a slice from a cube</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt grdcut</strong>
 <em>ingrid</em>
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>+t</strong>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><strong>x</strong>|<strong>y</strong><em>coord</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>polygonfile</em>[<strong>+c</strong>][<strong>+i</strong>] ]
 [ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>nodata</em>] ]
@@ -165,18 +169,21 @@
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<em>min/max</em>][<strong>+n</strong>|<strong>N</strong>|<strong>r</strong>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
-<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
-<p><strong>grdcut</strong> will produce a new <em>outgrid</em> file which is a subregion of
-<em>ingrid</em>. The subregion may be specified with <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> as in other programs;
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p><strong>grdcut</strong> will produce a new <em>outgrid</em> file which is a sub-region of
+<em>ingrid</em>. The sub-region may be specified with <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> as in other programs;
 the specified range must not exceed the range of <em>ingrid</em> (but see <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>).
-If in doubt, run <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> to check range. Alternatively, define the subregion
-indirectly via a range check on the node values or via distances from a
-fixed point. Finally, you can use <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> for oblique projections to determine
-the corresponding rectangular <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> setting that will give a subregion that fully
-covers the oblique domain.  <strong>Note</strong>: If the input grid is actually an image (gray-scale,
+If in doubt, run <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> to check range. Alternatively, define the
+sub-region indirectly via a range check on the node values or via distances from
+a fixed point. Furthermore, you can use <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> for oblique projections to determine
+the corresponding rectangular <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> setting that will give a sub-region that fully
+covers the oblique domain.  You can use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to specify a polygon and either use
+its bounding box for sub-region or set grid nodes inside or outside the polygon
+to NaN. Finally, if the input is a 3-D netCDF cube then you can make a vertical
+slice through existing nodes. <strong>Note</strong>: If the input grid is actually an image (gray-scale,
 RGB, or RGBA), then options <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> and <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> are unavailable, while for multi-layer
 Geotiff files only options <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> and <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> are supported, i.e., you can cut out
 a sub-region only (which we do via <em>gdal_translate</em> if you have multiple bands).
@@ -184,30 +191,26 @@ Complementary to <strong>grdcut</strong> there is <a class="reference internal" 
 two grid files (not images) along a common edge.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
-<div><p>Input grid file. Optionally, append =<em>ID</em> for reading a specific file
+<div><p>Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
-[Default is the first 2-D grid found by GMT]
-(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
-supported:</p>
+[Default is the first 2-D grid found by GMT]. The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>+b</strong> - Select a <em>band</em> (for images only) [Default is 0].</p></li>
+<li><p><strong>+b</strong> - Select a <em>band</em> [Default is 0].</p></li>
 <li><p><strong>+d</strong> - Divide data values by the given <em>divisor</em> [Default is 1].</p></li>
 <li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with NaN.</p></li>
 <li><p><strong>+o</strong> - Offset data values by the given <em>offset</em> [Default is 0].</p></li>
 <li><p><strong>+s</strong> - Scale data values by the given <em>scale</em> [Default is 1].</p></li>
 </ul>
 </div></blockquote>
-<p>Note: Any offset is added after any scaling.</p>
+<p><strong>Note</strong>: Any offset is added after any scaling.</p>
 </div></blockquote>
 <span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
-<div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
-(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
-supported:</p>
+<div><p>Optionally, append =<em>ID</em> for writing a specific file format. The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
@@ -220,20 +223,20 @@ automatic scaling to preserve precision for integer grids [Default
 is 1].</p></li>
 </ul>
 </div></blockquote>
-<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+<p><strong>Note</strong>: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
 (unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
-the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+the <a class="reference internal" href="reference/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
 for more details.</p>
 </div></blockquote>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. This defines the subregion to be cut out. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. This defines the subregion to be cut out. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<strong>+t</strong>]</dt><dd><p>A “dry run”: Simply report the region and increment of what would be the
 extracted grid given the selected options.  No grid is created (<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is disallowed)
@@ -241,6 +244,14 @@ and instead we write a single data record with <em>west east south north xinc yi
 to standard output. The increments will reflect the input grid unless it is a
 remote gridded data set without implied resolution. Append <strong>+t</strong> to instead receive
 the information as the trailing string “-Rwest/east/south/north -Ixinc/yinc”.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong><strong>x</strong>|<strong>y</strong><em>coord</em></dt><dd><p>We extract a vertical slice going along the <strong>x</strong>-column <em>coord</em> or along the
+<strong>y</strong>-row <em>coord</em>, depending on the given directive.
+<strong>Note</strong>: (1) Input file must be a 3-D netCDF cube, and <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> can only be used with
+option <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>. (2) <em>coord</em> must exactly match the coordinates given by th cube. We are
+not interpolating between nodes and only do a clean slice through existing cube nodes.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
@@ -251,8 +262,8 @@ crop the grid region to reflect the bounding box of the polygon.</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
-<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -268,7 +279,7 @@ nodes on or inside the circle are contained in the subset. If
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
@@ -303,7 +314,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Link to this heading"></a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
 minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
@@ -315,7 +326,7 @@ exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 </section>
 <section id="geographical-and-time-coordinates">
-<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this heading">¶</a></h2>
+<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Link to this heading"></a></h2>
 <p>When the output grid type is netCDF, the coordinates will be labeled
 “longitude”, “latitude”, or “time” based on the attributes of the input
 data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
@@ -328,7 +339,7 @@ command line. In addition, the <strong>unit</strong> attribute of the time varia
 will indicate both this unit and epoch.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -340,45 +351,50 @@ more data that is actually used. This is necessary because the output of
 oblique map in general does not. Hence, to get all the data from the
 ETOPO2 data needed to make a contour map for the region defined by its
 lower left and upper right corners and the desired projection, use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut @earth_relief_02m -R160/20/220/30+r -Joc190/25.5/292/69/1 -Gdata.nc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>@earth_relief_02m<span class="w"> </span>-R160/20/220/30+r<span class="w"> </span>-Joc190/25.5/292/69/1<span class="w"> </span>-Gdata.nc
 </pre></div>
 </div>
 <p>Suppose you have used <a class="reference internal" href="surface.html"><span class="doc">surface</span></a> to grid ship gravity in the region
 between 148E - 162E and 8N - 32N, and you do not trust the gridding near
 the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut grav_148_162_8_32.nc -Ggrav_150_160_10_30.nc -R150/160/10/30 -V
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>grav_148_162_8_32.nc<span class="w"> </span>-Ggrav_150_160_10_30.nc<span class="w"> </span>-R150/160/10/30<span class="w"> </span>-V
 </pre></div>
 </div>
 <p>To return the subregion of a grid such that any boundary strips where
 all values are entirely above 0 are excluded, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut bathy.nc -Gtrimmed_bathy.nc -Z-/0 -V
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>bathy.nc<span class="w"> </span>-Gtrimmed_bathy.nc<span class="w"> </span>-Z-/0<span class="w"> </span>-V
 </pre></div>
 </div>
 <p>To return the subregion of a grid such that any boundary rows or columns
 that are all NaNs, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut bathy.nc -Gtrimmed_bathy.nc -Z+N -V
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>bathy.nc<span class="w"> </span>-Gtrimmed_bathy.nc<span class="w"> </span>-Z+N<span class="w"> </span>-V
 </pre></div>
 </div>
 <p>To return the subregion of a grid that contains all nodes within a
 distance of 500 km from the point 45,30 try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>bathy.nc<span class="w"> </span>-Gsubset_bathy.nc<span class="w"> </span>-S45/30/500k<span class="w"> </span>-V
 </pre></div>
 </div>
 <p>To create a topography grid with data only inside France and set it
 to NaN outside France, based on the 10x10 minute DEM, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -EFR -M &gt; FR.txt
-gmt grdcut @earth_relief_10m -FFR.txt+c -GFR_only.grd
-gmt grdimage FR_only.grd -B -pdf map
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>coast<span class="w"> </span>-EFR<span class="w"> </span>-M<span class="w"> </span>&gt;<span class="w"> </span>FR.txt
+gmt<span class="w"> </span>grdcut<span class="w"> </span>@earth_relief_10m<span class="w"> </span>-FFR.txt+c<span class="w"> </span>-GFR_only.grd
+gmt<span class="w"> </span>grdimage<span class="w"> </span>FR_only.grd<span class="w"> </span>-B<span class="w"> </span>-pdf<span class="w"> </span>map
 </pre></div>
 </div>
 <p>To determine what grid region and resolution (in text format) most suitable for a 24 cm wide map
 that is using an oblique projection to display the remote Earth Relief data grid, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D+t -V
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>@earth_relief<span class="w"> </span>-R270/20/305/25+r<span class="w"> </span>-JOc280/25.5/22/69/24c<span class="w"> </span>-D+t<span class="w"> </span>-V
+</pre></div>
+</div>
+<p>To extract a vertical grid slice at <em>x = 35</em> and parallel to the <em>y-z</em> plane
+from the 3-D model seis3D.nc, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>seis3D.nc<span class="w"> </span>-Gslice_x35.nc<span class="w"> </span>-Ex35<span class="w"> </span>-V
 </pre></div>
 </div>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>If the input file is a geotiff with multiple data bands then the output format will
 depend on your selection (if any) of the bands to keep: If you do not specify
 any bands (which means we consider all the available bands) or you select more
@@ -391,7 +407,7 @@ a .tif[f] extension then we will instead write it as a one-band geotiff.
 All geotiff output operations are done via GDAL’s <em>gdal_translate</em>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a>,
 <a class="reference internal" href="grdfill.html"><span class="doc">grdfill</span></a>,
@@ -412,8 +428,8 @@ All geotiff output operations are done via GDAL’s <em>gdal_translate</em>.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

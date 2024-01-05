@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmtregress &mdash; GMT 6.4.0 documentation</title>
+  <title>gmtregress &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -50,14 +53,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -66,35 +73,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -120,6 +121,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -136,9 +139,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">Modules</a> &raquo;</li>
-      <li>gmtregress</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">gmtregress</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gmtregress.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -149,10 +152,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="gmtregress">
-<h1>gmtregress<a class="headerlink" href="#gmtregress" title="Permalink to this heading">¶</a></h1>
+<h1>gmtregress<a class="headerlink" href="#gmtregress" title="Link to this heading"></a></h1>
 <p>Linear regression of 1-D data sets</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt regress</strong> [ <em>table</em> ] [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<em>min</em>/<em>max</em>/<em>inc</em>][<strong>+f</strong>[<strong>n</strong>|<strong>p</strong>]] ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>level</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><strong>x</strong>|<strong>y</strong>|<strong>o</strong>|<strong>r</strong> ]
@@ -162,7 +165,7 @@
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>w</strong>][<strong>x</strong>][<strong>y</strong>][<strong>r</strong>] ]
-[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[±]<em>limit</em> ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<strong>+</strong>|<strong>-</strong>]<em>limit</em> ]
 [ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
@@ -176,10 +179,10 @@
 [ <strong>-s</strong><a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-w</strong><a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
-<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong>regress</strong> reads one or more data tables [or standard input]
 and determines the best linear [weighted] regression model <span class="math notranslate nohighlight">\(y(x) = a + b x\)</span> for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
@@ -192,7 +195,7 @@ actually need to work with <span class="math notranslate nohighlight">\(\log_{10
 the read phase by using the <strong>-i</strong> option.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -203,7 +206,7 @@ of one of both of the data coordinates, and even their correlation (see <a class
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<em>min</em>/<em>max</em>/<em>inc</em>][<strong>+f</strong>[<strong>n</strong>|<strong>p</strong>]]</dt><dd><p>There are two uses for this setting: (1) Instead of determining a best-fit regression
 we explore the full range of regressions. Examine all possible regression lines with slope
@@ -222,7 +225,7 @@ or positive slopes, just use <strong>+fn</strong> or <strong>+fp</strong>, respe
 <figcaption>
 <p><span class="caption-text">Scanning slopes (<a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>) to see how the misfit for an fully orthogonal regression using the LMS (<strong>-Nr</strong>) criterion
 varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
-but there is another local minimum for an angle of 78.6 degrees that is almost as good.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+but there is another local minimum for an angle of 78.6 degrees that is almost as good.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <dl class="simple" id="c">
@@ -242,7 +245,7 @@ Axis regression; i.e., the misfit is the product of both vertical and horizontal
 <a class="reference internal image-reference" href="_images/GMT_misfit.png"><img alt="_images/GMT_misfit.png" src="_images/GMT_misfit.png" style="width: 600px;" /></a>
 <figcaption>
 <p><span class="caption-text">The four types of misfit.  The sum of the squared lengths of <span class="math notranslate nohighlight">\(e_k\)</span> is minimized, for k = x, y, or o.
-For <strong>-Er</strong> the sum of the green areas is minimized instead.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+For <strong>-Er</strong> the sum of the green areas is minimized instead.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <dl class="simple" id="f">
@@ -276,11 +279,11 @@ use <strong>-Sr</strong> to reverse this and only output the outlier records.</p
 <dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em></dt><dd><p>Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
 <strong>-T</strong><em>inc</em> is given instead we will reset <em>min</em> and <em>max</em> to the extreme <em>x</em>-values for each segment.
 To skip the model evaluation entirely, simply provide <strong>-T</strong>0.
-For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.</p>
+For details on array creation, see <a class="reference internal" href="#generate-1-d-array">Generate 1-D Array</a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -338,7 +341,7 @@ be flagged as outliers.  To only consider negative or positive <em>z-scores</em>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+<dt><strong>-o</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -366,7 +369,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="ascii-format-precision">
-<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Link to this heading"></a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
 in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
 according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
@@ -378,11 +381,11 @@ problems downstream. If you find the output is not written with enough
 precision, consider switching to binary output (<strong>-bo</strong> if available) or
 specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
 </section>
-<section id="generate-1d-array">
-<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
+<section id="generate-1-d-array">
+<h2>Generate 1-D Array<a class="headerlink" href="#generate-1-d-array" title="Link to this heading"></a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.
-Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
+Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3.1/4.2/0.1<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">3</span>.1
 <span class="m">3</span>.2
 <span class="m">3</span>.3
@@ -390,21 +393,22 @@ Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in step
 <span class="m">3</span>.5
 <span class="m">3</span>.6
 <span class="m">3</span>.7
+...
 </pre></div>
 </div>
-<p>Append <strong>+b</strong> if we should take log2 of <em>min</em> and <em>max</em>, get their nearest integers,
-build an equidistant log2-array using <em>inc</em> integer increments in log2, then undo
-the log2 conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3/20/1+b <span class="nv">T</span> <span class="o">=</span>
+<p>Append <strong>+b</strong> if we should take <span class="math notranslate nohighlight">\(\log_2\)</span> of <em>min</em> and <em>max</em>, get their nearest integers,
+build an equidistant <span class="math notranslate nohighlight">\(\log_2\)</span>-array using <em>inc</em> integer increments in <span class="math notranslate nohighlight">\(\log_2\)</span>, then undo
+the <span class="math notranslate nohighlight">\(\log_2\)</span> conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3/20/1+b<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">4</span>
 <span class="m">8</span>
 <span class="m">16</span>
 </pre></div>
 </div>
-<p>Append <strong>+l</strong> if we should take log10 of <em>min</em> and <em>max</em> and build an
+<p>Append <strong>+l</strong> if we should take <span class="math notranslate nohighlight">\(\log_{10}\)</span> of <em>min</em> and <em>max</em> and build an
 array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
 (1-9 times magnitude).  E.g., <strong>-T</strong>7/135/2<strong>+l</strong> will produce this sequence:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T7/135/2+l <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T7/135/2+l<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">10</span>
 <span class="m">20</span>
 <span class="m">50</span>
@@ -412,7 +416,7 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 </pre></div>
 </div>
 <p>For output values less frequently than every magnitude, use a negative integer <em>inc</em>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T1e-4/1e4/-2+l <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T1e-4/1e4/-2+l<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>.0001
 <span class="m">0</span>.01
 <span class="m">1</span>
@@ -422,7 +426,7 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 </div>
 <p>Append <strong>+i</strong> if <em>inc</em> is a fractional number and it is cleaner to give its reciprocal
 value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0/60/24+i <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T0/60/24+i<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>
 <span class="m">0</span>.0416666666667
 <span class="m">0</span>.0833333333333
@@ -433,7 +437,7 @@ value instead.  To set up times for a 24-frames per second animation lasting 1 m
 </div>
 <p>Append <strong>+n</strong> if <em>inc</em> is meant to indicate the <em>number</em> of equidistant coordinates
 instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.44/7.82/5+n <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3.44/7.82/5+n<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">3</span>.44
 <span class="m">4</span>.535
 <span class="m">5</span>.63
@@ -444,7 +448,7 @@ instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
 <p>Alternatively, let <em>inc</em> be a <em>file</em> with output coordinates in the first column,
 or provide a comma-separated <em>list</em> of specific coordinates, such as the first 6
 Fibonacci numbers:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0,1,1,2,3,5 <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T0,1,1,2,3,5<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>
 <span class="m">1</span>
 <span class="m">1</span>
@@ -453,7 +457,9 @@ Fibonacci numbers:</p>
 <span class="m">5</span>
 </pre></div>
 </div>
-<p><strong>Note</strong>: Should you need to ensure that the coordinates are unique and sorted (in case the
+<p><strong>Notes</strong>: (1) If you need to pass the list nodes via a dataset file yet be understood
+as a list (i.e., no interpolation), then you must set the file header to contain the string “LIST”. (2) Should
+you need to ensure that the coordinates are unique and sorted (in case the
 <em>file</em> or <em>list</em> are not sorted or have duplicates) then supply the <strong>+u</strong> modifier.</p>
 <p>If you only want a <em>single</em> value
 then you must append a comma to distinguish the list from the setting of an increment.</p>
@@ -461,7 +467,7 @@ then you must append a comma to distinguish the list from the setting of an incr
 <strong>y</strong>ear, m<strong>o</strong>nth, <strong>d</strong>ay, <strong>h</strong>our, <strong>m</strong>inute, and <strong>s</strong>econd
 to the given increment; add <strong>+t</strong> to ensure time column (or use <strong>-f</strong>). <strong>Note</strong>: The internal time
 unit is still controlled independently by <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>.  The first 7 days of March 2020:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T2020-03-01T/2020-03-07T/1d <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T2020-03-01T/2020-03-07T/1d<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">2020</span>-03-01T00:00:00
 <span class="m">2020</span>-03-02T00:00:00
 <span class="m">2020</span>-03-03T00:00:00
@@ -482,7 +488,7 @@ possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as requir
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
 </section>
 <section id="notes">
-<h2>Notes:<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<h2>Notes:<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>The output segment header will contain all the various statistics we compute for each segment.
 These are in order: <em>N</em> (number of points), <em>x0</em> (weighted mean x), <em>y0</em> (weighted mean y),
 <em>angle</em> (of line), <em>E</em> (misfit), <em>slope</em>, <em>intercept</em>, <em>sigma_slope</em>, and <em>sigma_intercept</em>.  For the
@@ -497,7 +503,7 @@ coefficient of determination (<em>R</em>). We end with the effective number of m
 <p>and hence <span class="math notranslate nohighlight">\(\nu = n_{eff} - 2\)</span> are the effective degrees of freedom.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -505,53 +511,46 @@ Other commands requiring input files are just dummy examples of the types
 of uses that are common but cannot be run verbatim as written.</p>
 <p>To return the coordinates on the best-fit orthogonal regression line through the data in the
 remote file hertzsprung-russell.txt, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress @hertzsprung-russell.txt -Eo -Fxm
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>regress<span class="w"> </span>@hertzsprung-russell.txt<span class="w"> </span>-Eo<span class="w"> </span>-Fxm
 </pre></div>
 </div>
 <p>To do a standard least-squares regression on the <em>x-y</em> data in points.txt and return
 x, y, and model prediction with 99% confidence intervals, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress points.txt -Fxymc -C99 &gt; points_regressed.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>regress<span class="w"> </span>points.txt<span class="w"> </span>-Fxymc<span class="w"> </span>-C99<span class="w"> </span>&gt;<span class="w"> </span>points_regressed.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To just get the slope for the above regression, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">slope</span><span class="o">=</span><span class="sb">`</span>gmt regress points.txt -Fp -o5<span class="sb">`</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">slope</span><span class="o">=</span><span class="sb">`</span>gmt<span class="w"> </span>regress<span class="w"> </span>points.txt<span class="w"> </span>-Fp<span class="w"> </span>-o5<span class="sb">`</span>
 </pre></div>
 </div>
-</div></blockquote>
 <p>To do a reweighted least-squares regression on the data rough.txt and return
 x, y, model prediction and the RLS weights, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress rough.txt -Fxymw &gt; points_regressed.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>regress<span class="w"> </span>rough.txt<span class="w"> </span>-Fxymw<span class="w"> </span>&gt;<span class="w"> </span>points_regressed.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To do an orthogonal least-squares regression on the data crazy.txt but first take
 the logarithm of both x and y, then return x, y, model prediction and the normalized
 residuals (z-scores), try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress crazy.txt -Eo -Fxymz -i0-1l &gt; points_regressed.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>regress<span class="w"> </span>crazy.txt<span class="w"> </span>-Eo<span class="w"> </span>-Fxymz<span class="w"> </span>-i0-1l<span class="w"> </span>&gt;<span class="w"> </span>points_regressed.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To examine how the orthogonal LMS misfits vary with angle between 0 and 90
 in steps of 0.2 degrees for the same file, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress points.txt -A0/90/0.2 -Eo -Nr &gt; points_analysis.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>regress<span class="w"> </span>points.txt<span class="w"> </span>-A0/90/0.2<span class="w"> </span>-Eo<span class="w"> </span>-Nr<span class="w"> </span>&gt;<span class="w"> </span>points_analysis.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To force an orthogonal LMS to pick the best solution with a positive slope, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt regress points.txt -A+fp -Eo -Nr &gt; best_pos_slope.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>regress<span class="w"> </span>points.txt<span class="w"> </span>-A+fp<span class="w"> </span>-Eo<span class="w"> </span>-Nr<span class="w"> </span>&gt;<span class="w"> </span>best_pos_slope.txt
 </pre></div>
 </div>
-</div></blockquote>
+</section>
+<section id="note">
+<h2>Note<a class="headerlink" href="#note" title="Link to this heading"></a></h2>
+<p>For regressions involving more general linear models beyond a straight line fit,
+see <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> <strong>-A</strong> and the operators <strong>LSQFIT</strong> or <strong>SVDFIT</strong>.</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <p>Bevington, P. R., 1969, <em>Data reduction and error analysis for the physical sciences</em>,
 336 pp., McGraw-Hill, New York.</p>
 <p>Draper, N. R., and H. Smith, 1998, <em>Applied regression analysis</em>, 3rd ed., 736 pp.,
@@ -563,8 +562,9 @@ equations for the slope, intercept, and standard errors of the best straight lin
 <em>Am. J. Phys.</em>, 72(3), 367-375.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
 <a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a>,
 <a class="reference internal" href="trend2d.html"><span class="doc">trend2d</span></a></p>
 </section>
@@ -581,8 +581,8 @@ equations for the slope, intercept, and standard errors of the best straight lin
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

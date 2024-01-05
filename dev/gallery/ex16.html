@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(16) Gridding of data, continued &mdash; GMT 6.4.0 documentation</title>
+  <title>(16) Gridding of data, continued &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
-      <li>(16) Gridding of data, continued</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(16) Gridding of data, continued</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex16.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,7 +151,7 @@
            <div itemprop="articleBody">
              
   <section id="gridding-of-data-continued">
-<span id="example-16"></span><h1>(16) Gridding of data, continued<a class="headerlink" href="#gridding-of-data-continued" title="Permalink to this heading">¶</a></h1>
+<span id="example-16"></span><h1>(16) Gridding of data, continued<a class="headerlink" href="#gridding-of-data-continued" title="Link to this heading"></a></h1>
 <p><a class="reference internal" href="../contour.html"><span class="doc">contour</span></a> (for contouring) and
 <a class="reference internal" href="../triangulate.html"><span class="doc">triangulate</span></a> (for gridding) use the
 simplest method of interpolating data: a Delaunay triangulation (see
@@ -205,29 +208,29 @@ and place the four panels, and place the colorbar beneath the subplot.</p>
 <span class="c1"># GMT modules:	gmtset, grdview, grdfilter, contour, colorbar, surface, triangulate</span>
 <span class="c1"># Unix progs:	rm</span>
 <span class="c1">#</span>
-gmt begin ex16
-	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -R-0.2/6.6/-0.2/6.6 -Jx1c -Scb -Srl+t -Bwesn -T<span class="s2">&quot;Gridding of Data&quot;</span>
-		gmt surface @Table_5_11.txt -I0.2 -Graws0.nc
-		gmt contour @Table_5_11.txt -C@ex_16.cpt -I -B+t<span class="s2">&quot;contour (triangulate)&quot;</span> -c0,0
-		<span class="c1">#</span>
-		gmt grdview raws0.nc -C@ex_16.cpt -Qs -B+t<span class="s2">&quot;surface (tension = 0)&quot;</span> -c0,1
-		<span class="c1">#</span>
-		gmt surface @Table_5_11.txt -Graws5.nc -T0.5
-		gmt grdview raws5.nc -C@ex_16.cpt -Qs -B+t<span class="s2">&quot;surface (tension = 0.5)&quot;</span> -c1,0
-		<span class="c1">#</span>
-		gmt triangulate @Table_5_11.txt -Grawt.nc
-		gmt grdfilter rawt.nc -Gfiltered.nc -D0 -Fc1
-		gmt grdview filtered.nc -C@ex_16.cpt -Qs -B+t<span class="s2">&quot;triangulate @~\256@~ grdfilter&quot;</span> -c1,1
-	gmt subplot end
-	gmt colorbar -DJBC -C@ex_16.cpt
-gmt end show
-rm -f raws0.nc raws5.nc rawt.nc filtered.nc
+gmt<span class="w"> </span>begin<span class="w"> </span>ex16
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-M0.1c<span class="w"> </span>-Fs8c/0<span class="w"> </span>-R-0.2/6.6/-0.2/6.6<span class="w"> </span>-Jx1c<span class="w"> </span>-Scb<span class="w"> </span>-Srl+t<span class="w"> </span>-Bwesn<span class="w"> </span>-T<span class="s2">&quot;Gridding of Data&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>surface<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-I0.2<span class="w"> </span>-Graws0.nc
+<span class="w">		</span>gmt<span class="w"> </span>contour<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-C@ex_16.cpt<span class="w"> </span>-I<span class="w"> </span>-B+t<span class="s2">&quot;contour (triangulate)&quot;</span><span class="w"> </span>-c0,0
+<span class="w">		</span><span class="c1">#</span>
+<span class="w">		</span>gmt<span class="w"> </span>grdview<span class="w"> </span>raws0.nc<span class="w"> </span>-C@ex_16.cpt<span class="w"> </span>-Qs<span class="w"> </span>-B+t<span class="s2">&quot;surface (tension = 0)&quot;</span><span class="w"> </span>-c0,1
+<span class="w">		</span><span class="c1">#</span>
+<span class="w">		</span>gmt<span class="w"> </span>surface<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-Graws5.nc<span class="w"> </span>-T0.5
+<span class="w">		</span>gmt<span class="w"> </span>grdview<span class="w"> </span>raws5.nc<span class="w"> </span>-C@ex_16.cpt<span class="w"> </span>-Qs<span class="w"> </span>-B+t<span class="s2">&quot;surface (tension = 0.5)&quot;</span><span class="w"> </span>-c1,0
+<span class="w">		</span><span class="c1">#</span>
+<span class="w">		</span>gmt<span class="w"> </span>triangulate<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-Grawt.nc
+<span class="w">		</span>gmt<span class="w"> </span>grdfilter<span class="w"> </span>rawt.nc<span class="w"> </span>-Gfiltered.nc<span class="w"> </span>-D0<span class="w"> </span>-Fc1
+<span class="w">		</span>gmt<span class="w"> </span>grdview<span class="w"> </span>filtered.nc<span class="w"> </span>-C@ex_16.cpt<span class="w"> </span>-Qs<span class="w"> </span>-B+t<span class="s2">&quot;triangulate @~\256@~ grdfilter&quot;</span><span class="w"> </span>-c1,1
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
+<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJBC<span class="w"> </span>-C@ex_16.cpt
+gmt<span class="w"> </span>end<span class="w"> </span>show
+rm<span class="w"> </span>-f<span class="w"> </span>raws0.nc<span class="w"> </span>raws5.nc<span class="w"> </span>rawt.nc<span class="w"> </span>filtered.nc
 </pre></div>
 </div>
 <figure class="align-center" id="id1">
 <span id="fig-ex16"></span><a class="reference internal image-reference" href="../_images/ex16.png"><img alt="../_images/ex16.png" src="../_images/ex16.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">More ways to grid data</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">More ways to grid data</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -243,8 +246,8 @@ rm -f raws0.nc raws5.nc rawt.nc filtered.nc
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(24) Data selection based on geospatial criteria &mdash; GMT 6.4.0 documentation</title>
+  <title>(24) Data selection based on geospatial criteria &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
-      <li>(24) Data selection based on geospatial criteria</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(24) Data selection based on geospatial criteria</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex24.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,7 +151,7 @@
            <div itemprop="articleBody">
              
   <section id="data-selection-based-on-geospatial-criteria">
-<span id="example-24"></span><h1>(24) Data selection based on geospatial criteria<a class="headerlink" href="#data-selection-based-on-geospatial-criteria" title="Permalink to this heading">¶</a></h1>
+<span id="example-24"></span><h1>(24) Data selection based on geospatial criteria<a class="headerlink" href="#data-selection-based-on-geospatial-criteria" title="Link to this heading"></a></h1>
 <p>Although we are not seismologists, we have yet another example involving
 seismicity. We use seismicity data for the Australia/New Zealand region
 to demonstrate how we can extract subsets of data using geospatial
@@ -179,30 +182,30 @@ distortion) and not the actual distance which remains constant at 1000 km.</p>
 <span class="c1"># Unix progs:	echo, cat, rm</span>
 <span class="c1">#</span>
 <span class="c1"># Highlight oceanic earthquakes within 3000 km of Hobart and &gt; 1000 km from dateline</span>
-gmt begin ex24
-	<span class="nb">echo</span> <span class="s2">&quot;147:13 -42:48 6000&quot;</span> &gt; point.txt
-	cat <span class="s">&lt;&lt;- END &gt; dateline.txt</span>
+gmt<span class="w"> </span>begin<span class="w"> </span>ex24
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;147:13 -42:48 6000&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>point.txt
+<span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;- END &gt; dateline.txt</span>
 <span class="s">	&gt; Our proxy for the dateline</span>
 <span class="s">	180	0</span>
 <span class="s">	180	-90</span>
 <span class="s">	END</span>
-	<span class="nv">R</span><span class="o">=</span><span class="k">$(</span>gmt info -I10 @oz_quakes_24.txt<span class="k">)</span>
-	gmt coast <span class="nv">$R</span> -JM22c -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn
-	gmt plot @oz_quakes_24.txt -Sc0.1c -Gred
-	gmt <span class="k">select</span> @oz_quakes_24.txt -Ldateline.txt+d1000k -Nk/s -Cpoint.txt+d3000k -fg -Il <span class="se">\</span>
-		<span class="p">|</span> gmt plot -Sc0.1c -Ggreen
-	gmt plot point.txt -SE- -Wfat,white
-	gmt text point.txt -F+f14p,Helvetica-Bold,white+jLT+tHobart -Dj7p
-	gmt plot point.txt -Wfat,white -S+0.5c
-	gmt plot dateline.txt -Wfat,white -A
-	rm -f point.txt dateline.txt
-gmt end show
+<span class="w">	</span><span class="nv">R</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>info<span class="w"> </span>-I10<span class="w"> </span>@oz_quakes_24.txt<span class="k">)</span>
+<span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span><span class="nv">$R</span><span class="w"> </span>-JM22c<span class="w"> </span>-Gtan<span class="w"> </span>-Sdarkblue<span class="w"> </span>-Wthin,white<span class="w"> </span>-Dl<span class="w"> </span>-A500<span class="w"> </span>-Ba20f10g10<span class="w"> </span>-BWeSn
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@oz_quakes_24.txt<span class="w"> </span>-Sc0.1c<span class="w"> </span>-Gred
+<span class="w">	</span>gmt<span class="w"> </span><span class="k">select</span><span class="w"> </span>@oz_quakes_24.txt<span class="w"> </span>-Ldateline.txt+d1000k<span class="w"> </span>-Nk/s<span class="w"> </span>-Cpoint.txt+d3000k<span class="w"> </span>-fg<span class="w"> </span>-Il<span class="w"> </span><span class="se">\</span>
+<span class="w">		</span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.1c<span class="w"> </span>-Ggreen
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>point.txt<span class="w"> </span>-SE-<span class="w"> </span>-Wfat,white
+<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>point.txt<span class="w"> </span>-F+f14p,Helvetica-Bold,white+jLT+tHobart<span class="w"> </span>-Dj7p
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>point.txt<span class="w"> </span>-Wfat,white<span class="w"> </span>-S+0.5c
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>dateline.txt<span class="w"> </span>-Wfat,white<span class="w"> </span>-A
+<span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>point.txt<span class="w"> </span>dateline.txt
+gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/ex24.png"><img alt="../_images/ex24.png" src="../_images/ex24.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">Data selection based on geospatial criteria.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Data selection based on geospatial criteria.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -218,8 +221,8 @@ gmt end show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

@@ -23,6 +23,10 @@ Synopsis
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ **-fg**]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -100,7 +104,7 @@ Required Arguments (not all)
     assumed constant (controlled by |-C| or |-H|). Following cases are: 4 columns -> 4rth col magnetization intensity;
     5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
     When n columns > 3 the third argument of the |-H| option is ignored. A *raw* format (selected by the **-Tr** option)
-    is a file with N rows (one per triangle) and 9 columns corresponding to the x,y,x coordinates of each of the three
+    is a file with N rows (one per triangle) and 9 columns corresponding to the *x, y, z* coordinates of each of the three
     vertex of each triangle. Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL
     (Stereo Lithographic) format. These two type of files are used to provide a closed surface.
 
@@ -145,6 +149,16 @@ Optional Arguments
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
+.. |Add_-h| replace:: Not used with binary data.
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-icols.rst_
+
+.. include:: ../../explain_-ocols.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
+
 .. include:: ../../explain_help.rst_
 
 Grid Distance Units
@@ -166,6 +180,7 @@ See Also
 --------
 
 :doc:`gmt </gmt>`, :doc:`grdgravmag3d`,
+:doc:`gravprisms </supplements/potential/gravprisms>`,
 :doc:`talwani2d </supplements/potential/talwani2d>`,
 :doc:`talwani3d </supplements/potential/talwani3d>`
 

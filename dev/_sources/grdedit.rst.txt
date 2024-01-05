@@ -125,8 +125,9 @@ Optional Arguments
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
 
-.. |Add_-R| replace:: The new w/e/s/n values will replace those in the grid, and the *x_inc*, *y_inc* values are
-    adjusted, if necessary. |Add_-R_links|
+.. |Add_-R| replace:: The new limits will replace those in the grid, and the *x_inc*, *y_inc* values are
+    adjusted, if necessary. **Note**: Here, |-R| does not select a sub-region of the input grid but
+    instead simply replaces the domain of the grid. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**

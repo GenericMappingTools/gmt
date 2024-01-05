@@ -47,7 +47,7 @@ We can compute anomalies on an equidistant grid (by specifying a new grid with
 **-R** and |-I| or provide an observation grid with desired elevations) or at arbitrary
 output points specified via |-N|.  Choose between free-air anomalies, vertical
 gravity gradient anomalies, or geoid anomalies.  Options are available to control
-axes units and direction.
+axes units and direction.  For theory, see *Kim and Wessel* [2016] and *Talwani and Ewing* [1960].
 
 
 Required Arguments

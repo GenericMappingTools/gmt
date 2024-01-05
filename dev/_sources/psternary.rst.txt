@@ -53,13 +53,13 @@ Examples
 
 .. include:: explain_example.rst_
 
-To plot circles (diameter = 0.1 cm) on a 6-inch-wide ternary diagram at the positions listed
+To plot circles (diameter = 0.1 cm) on a 15-centimeter-wide ternary diagram at the positions listed
 in the file ternary.txt, with default annotations and gridline spacings, using the
 specified labeling, try::
 
     gmt makecpt -Cturbo -T0/80/10 > t.cpt
-    gmt psternary @ternary.txt -R0/100/0/100/0/100 -JX6i -P -Sc0.1c -Ct.cpt -LWater/Air/Limestone \
-        -Baafg+l"Water component"+u" %" -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %" \
+    gmt psternary @ternary.txt -R0/100/0/100/0/100 -JX15c -P -Sc0.1c -Ct.cpt -LLimestone/Water/Air \
+        -Baafg+l"Limestone component"+u" %" -Bbafg+l"Water component"+u" %" -Bcagf+l"Air component"+u" %" \
         -B+givory+t"Example data from MATLAB Central" > map.ps
 
 See Also

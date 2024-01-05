@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>contour &mdash; GMT 6.4.0 documentation</title>
+  <title>contour &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">Modules</a> &raquo;</li>
-      <li>contour</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">contour</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/contour.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,10 +151,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="contour">
-<h1>contour<a class="headerlink" href="#contour" title="Permalink to this heading">¶</a></h1>
+<h1>contour<a class="headerlink" href="#contour" title="Link to this heading"></a></h1>
 <p>Contour table data by direct triangulation</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt contour</strong> [ <em>table</em> ]
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
@@ -165,7 +168,7 @@
 [ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>pen</em> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<em>n</em>][<strong>+z</strong>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<em>n</em>|<em>length</em>[<em>unit</em>]][<strong>+z</strong>] ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<em>p</em>|<em>t</em>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>h</strong>|<strong>l</strong>][<strong>+a</strong>][<strong>+d</strong><em>gap</em>[/<em>length</em>]][<strong>+l</strong>[<em>labels</em>]] ]
 [ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
@@ -188,7 +191,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p>Reads an ASCII [or binary] <em>table</em> and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
 triangulation is performed (using either Shewchuk’s [1996] or Watson’s
@@ -201,7 +204,7 @@ Alternatively, the <em>x, y, z</em> positions of the contour lines may be saved 
 one or more output files (or standard output) and no plot is produced.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -209,16 +212,16 @@ then we read from standard input.  </p>
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
-<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <strong>Note</strong>: If using modern mode and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not provided, the region
 will be set based on previous plotting commands. If this is the first plotting command in the
-<a class="reference internal" href="cookbook/features.html#gmt-modern-mode-hierarchical-levels"><span class="std std-ref">modern mode levels</span></a> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not
+<a class="reference internal" href="reference/features.html#gmt-modern-mode-hierarchical-levels"><span class="std std-ref">modern mode levels</span></a> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not
 provided, the region will be automatically determined based on the data in <em>table</em>
-(equivalent to using <strong>-Ra</strong>). <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+(equivalent to using <strong>-Ra</strong>). <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <blockquote>
@@ -226,7 +229,7 @@ provided, the region will be automatically determined based on the data in <em>t
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<strong>n</strong>|<em>contours</em>][<em>labelinfo</em>]</dt><dd><p><em>contours</em> is annotation interval in data units; it is ignored if
 contour levels are given in a file via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>. [Default is no annotations]. Prepend
@@ -234,7 +237,7 @@ contour levels are given in a file via <a class="reference internal" href="#c"><
 contours give them as a comma-separated string; if only a single contour please add
 a trailing comma so it is seen as a list and not a contour interval. The optional
 <em>labelinfo</em> controls the specifics of the label formatting and consists
-of a concatenated string made up of any of the following control arguments:</p>
+of a concatenated string made up of any of the following modifiers:</p>
 </dd>
 </dl>
 <blockquote>
@@ -252,8 +255,11 @@ the workings of the contour line setup.</p>
 </dd>
 <dt><strong>+e</strong></dt><dd><p>Delay the plotting of the text. This is used to build a clip path
 based on the text, then lay down other overlays while that clip path
-is in effect, then turning off clipping with clip <strong>-Cs</strong> which
-finally plots the original text.</p>
+is in effect, then turning off clipping with <a class="reference internal" href="clip.html"><span class="doc">clip</span></a> <strong>-C</strong> which
+finally plots the original text. Note that the clip path may
+truncate other regions where there is no text overlap. Double check
+to ensure the correct result is obtained as expected. Carefully selecting
+the right place to run <a class="reference internal" href="clip.html"><span class="doc">clip</span></a> manually after each use of <strong>+e</strong> is recommended.</p>
 </dd>
 <dt><strong>+f</strong><em>font</em></dt><dd><p>Sets the desired font [Default <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a> with its
 size changed to 9p].</p>
@@ -264,7 +270,7 @@ specify the color [Default is <a class="reference internal" href="gmt.conf.html#
 <dt><strong>+i</strong></dt><dd><p>Invisible lines (i.e., hide the lines) [Default draws the lines]. This may be useful if all you want
 is to see annotations and labels and not the lines that guides them.</p>
 </dd>
-<dt><strong>+j</strong><em>just</em></dt><dd><p>Sets label justification relative to the line center point [Default is MC].</p>
+<dt><strong>+j</strong><em>just</em></dt><dd><p>Sets label justification relative to the line center point [Default is <strong>MC</strong>].</p>
 </dd>
 <dt><strong>+n</strong><em>dx</em>[/<em>dy</em>]</dt><dd><p>Nudges the placement of labels by the specified amount (append
 <strong>c</strong>|<strong>i</strong>|<strong>p</strong> to specify the units). Increments
@@ -304,11 +310,11 @@ start and stop of a line (the default adds a prime to the end label).</p>
 </dl>
 </div></blockquote>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl id="c">
-<dt><strong>-C</strong><em>contours</em></dt><dd><p>The contours to be drawn may be specified in one of four possible ways:</p>
+<dt><strong>-C</strong><em>contours</em></dt><dd><p>The contours to be drawn may be specified in one of five possible ways:</p>
 <ol class="arabic simple">
 <li><p>If <em>contours</em> is a string with suffix “.cpt” and can be opened as a
 file, it is assumed to be a CPT. The color
@@ -344,9 +350,10 @@ intervals from the data range, yielding approximately 10-20 contours.</p>
 </dl>
 <p id="d"><strong>-D</strong>[<em>template</em>]</p>
 <blockquote>
-<div><p>Dump the (x,y,z) coordinates of each contour to one or more output files
+<div><p>Dump the (<em>x, y, z</em>) coordinates of each contour to one or more output files
 (or standard output if <em>template</em> is not given). No plotting will take place.
-If <em>template</em> contains one or more of the C-format specifiers %d, %f, %c
+If <em>template</em> contains one or more of the C language <a class="reference external" href="https://en.wikipedia.org/wiki/Printf_format_string">printf</a>
+format specifiers %d, %f, %c
 then line segments will be written to different files; otherwise all
 lines are written to the specified file (<em>template</em>). The use of the
 C-format specifiers controls how many files are created and how the
@@ -375,7 +382,7 @@ The files are ASCII unless <strong>-bo</strong> is used.</p>
 triplets of node numbers for a triangle [Default computes these
 using Delaunay triangulation (see <a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a>)]. If the
 <em>indexfile</em> is binary and can be read the same way as the binary
-input <em>table</em> then you can append <strong>+b</strong> to spead up the reading
+input <em>table</em> then you can append <strong>+b</strong> to speed up the reading
 [Default reads nodes as ASCII].</p>
 </dd>
 </dl>
@@ -395,7 +402,7 @@ option, you can append /<em>fraction</em> which is used to place the
 very first label for each contour when the cumulative
 along-contour distance equals <em>fraction * dist</em> [0.25].</p>
 </dd>
-<dt><strong>f</strong><em>ffile.d</em></dt><dd><p>Reads the ASCII file <em>ffile.d</em> and places labels at locations in
+<dt><strong>f</strong><em>ffile</em></dt><dd><p>Reads the ASCII file <em>ffile</em> and places labels at locations in
 the file that matches locations along the quoted lines. Inexact
 matches and points outside the region are skipped.</p>
 </dd>
@@ -405,8 +412,8 @@ where these lines intersect the quoted lines. The format of each
 <em>line</em> specification is <em>start/stop</em>, where <em>start</em> and <em>stop</em>
 are either a specified point <em>lon/lat</em> or a 2-character <strong>XY</strong>
 key that uses the justification format employed in <a class="reference internal" href="text.html"><span class="doc">text</span></a> to
-indicate a point on the map, given as [LCR][BMT].
-In addition, you can use Z-, Z+ to mean the global minimum and
+indicate a point on the map, given as [<strong>LCR</strong>][<strong>BMT</strong>].
+In addition, you can use <strong>Z-</strong>, <strong>Z+</strong> to mean the global minimum and
 maximum locations in the grid. <strong>L</strong> will interpret the point pairs
 as defining great circles [Default is straight line].</p>
 </dd>
@@ -419,9 +426,9 @@ justified label at the end of quoted lines. Optionally, append
 minimum distance separation between successive labels is
 enforced.</p>
 </dd>
-<dt><strong>x|X</strong><em>xfile.d</em></dt><dd><p>Reads the multisegment file <em>xfile.d</em> and places labels at the
+<dt><strong>x|X</strong><em>xfile</em></dt><dd><p>Reads the multisegment file <em>xfile</em> and places labels at the
 intersections between the quoted lines and the lines in
-<em>xfile.d</em>. <strong>X</strong> will resample the lines first along
+<em>xfile</em>. <strong>X</strong> will resample the lines first along
 great-circle arcs.</p>
 </dd>
 </dl>
@@ -435,53 +442,59 @@ label separation in the x-y plane [no limitation].</p>
 </dl>
 <dl class="simple" id="l">
 <dt><strong>-L</strong><em>pen</em> <a class="reference internal" href="gmt.html#set-pens"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw the underlying triangular mesh using the specified pen
-attributes [Default is no mesh].</p>
+attributes [Default draws no mesh].</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
-<dt><strong>-N</strong></dt><dd><p>Do NOT clip contours or image at the boundaries [Default will clip
+<dt><strong>-N</strong></dt><dd><p>Do <strong>not</strong> clip contours or image at the boundaries [Default will clip
 to fit inside region <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>].</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong>[<em>n</em>][<strong>+z</strong>]</dt><dd><p>Do not draw contours with less than <em>n</em> number of points [Draw all contours].
-Alternatively, give instead a minimum contour length in distance units
+<dt><strong>-Q</strong>[<em>n</em>|<em>length</em>[<em>unit</em>]][<strong>+z</strong>]</dt><dd><p>Do not draw contours with less than <em>n</em> number of points [Draw all contours].
+Alternatively, give instead a minimum contour <em>length</em> in distance units
 (see <a class="reference internal" href="#units">Units</a> for available units and how distances are computed),
 including <strong>c</strong> (Cartesian distances using user coordinates) or <strong>C</strong> for plot
 length units in current plot units after projecting the coordinates.
-Optionally, append <strong>z</strong> to exclude the zero contour.</p>
+Optionally, append <strong>+z</strong> to exclude the zero contour.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong>[<strong>p</strong>|<strong>t</strong>]</dt><dd><p>Skip all input <em>xyz</em> points that fall outside the region [Default
+<dt><strong>-S</strong>[<strong>p</strong>|<strong>t</strong>]</dt><dd><p>Skip all input <em>x, y, z</em> points that fall outside the region [Default
 uses all the data in the triangulation].  Alternatively, use <strong>-St</strong>
 to skip triangles whose three vertices are all outside the region.
 <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> with no modifier is interpreted as <strong>-Sp</strong>.</p>
 </dd>
 </dl>
-<dl class="simple" id="t">
-<dt><strong>-T</strong>[<strong>h</strong>|<strong>l</strong>][<strong>+a</strong>][<strong>+d</strong><em>gap</em>[/<em>length</em>]][<strong>+l</strong>[<em>labels</em>]]</dt><dd><p>Will draw tick marks pointing in the downward direction every <em>gap</em>
-along the innermost closed contours only; append <strong>+a</strong> to tick all closed
-contours. Append <strong>+d</strong><em>gap</em> and optionally tick
+<p id="t"><strong>-T</strong>[<strong>h</strong>|<strong>l</strong>][<strong>+a</strong>][<strong>+d</strong><em>gap</em>[/<em>length</em>]][<strong>+l</strong>[<em>labels</em>]]</p>
+<blockquote>
+<div><p>Will draw tick marks pointing in the downward direction every <em>gap</em> distance
+along the innermost closed contours only. User may choose to tick only local
+highs or local lows by appending the directives <strong>h</strong> or <strong>l</strong>, respectively.
+This behavior can be further changed with these modifiers:</p>
+<ul class="simple">
+<li><p><strong>+a</strong> - Tick all closed contours, not just the innermost.</p></li>
+<li><p><strong>+d</strong> - Append <em>gap</em>[/<em>length</em>] to set the gap between ticks and optionally the tick
 mark <em>length</em> (append units as <strong>c</strong>, <strong>i</strong>, or <strong>p</strong>) or use defaults
-[15<strong>p</strong>/3<strong>p</strong>]. User may choose to tick only local highs or local
-lows by specifying <strong>-Th</strong> or <strong>-Tl</strong>, respectively. Append
-<strong>+l</strong><em>labels</em> to annotate the centers of closed innermost contours
-(i.e., the local lows and highs). If no <em>labels</em> is appended we use -
-and + as the labels. Appending exactly two characters, e.g., <strong>+l</strong><em>LH</em>,
+[15<strong>p</strong>/3<strong>p</strong>].</p></li>
+<li><p><strong>+l</strong> - Append <em>labels</em> to set how to annotate the centers of closed innermost contours
+(i.e., the local lows and highs). If no <em>labels</em> is appended we use <strong>-</strong>
+and <strong>+</strong> as the labels. Appending exactly two characters, e.g., <strong>+l</strong><em>LH</em>,
 will plot the two characters (here, L and H) as labels. For more elaborate
 labels, separate the low and high label strings with a comma (e.g.,
 <strong>+l</strong><em>lo</em>,<em>hi</em>). If a file is given by <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is set,
 then only contours marked with upper case C or A will have tick marks
-[and annotations].</p>
-</dd>
-</dl>
+[and annotations]. <strong>Note</strong>: The labeling of local highs and lows may plot sometimes
+outside the innermost contour since only the mean value of the contour coordinates
+is used to position the label.</p></li>
+</ul>
+</div></blockquote>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -490,21 +503,21 @@ regular contours [Default]. The <em>pen</em> sets the attributes for the
 particular line. Default pen for annotated contours: 0.75p,black.
 Regular contours use pen 0.25p,black. Normally, all contours are drawn
 with a fixed color determined by the pen setting. If the modifier <strong>+cl</strong> is appended
-then the color of the contour lines are taken from the CPT (see
-<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). If instead modifier <strong>+cf</strong> is appended then the color from the cpt
-file is applied to the contour annotations.  Select <strong>+c</strong> for both effects.</p>
+then the colors of the contour lines are taken from the CPT (see
+<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). If instead modifier <strong>+cf</strong> is appended then the colors from the cpt
+file are applied to the contour annotations.  Select <strong>+c</strong> for both effects.</p>
 </dd>
 </dl>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 3 input columns]. Use 4-byte integer triplets for node ids (<a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>).</p>
+<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 3 input columns]. To use binary 4-byte integer triplets for node ids append <strong>+b</strong> to <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -532,7 +545,7 @@ file is applied to the contour annotations.  Select <strong>+c</strong> for both
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted. Normally, the annotated contour is selected for the legend. You can select the regular contour instead, or both of them, by considering the <em>label</em> to be of the format [<em>annotcontlabel</em>][/<em>contlabel</em>].  If either label contains a slash (/) character then use | as the separator for the two labels instead.</p>
+<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted. Normally, the annotated contour is selected for the legend. You can select the plain contour instead, or both of them, by considering the <em>label</em> to be of the format [<em>annotcontlabel</em>][/<em>contlabel</em>].  If either label contains a slash (/) character then use | instead as the separator for the two labels.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -568,7 +581,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Link to this heading"></a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
 minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
@@ -580,7 +593,7 @@ exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -588,39 +601,31 @@ Other commands requiring input files are just dummy examples of the types
 of uses that are common but cannot be run verbatim as written.</p>
 <p><strong>Note</strong>: Since many GMT plot examples are very short (i.e., one module call between the
 <strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
-modern mode <a class="reference internal" href="cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
+modern mode <a class="reference internal" href="reference/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
 <p>To make a raw contour plot from the remote file Table_5.11.txt and draw the
 contours every 25 and annotate every 50, using the default Cartesian projection, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt contour @Table_5_11.txt -Wthin -C25 -A50 -B -pdf map
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>contour<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-Wthin<span class="w"> </span>-C25<span class="w"> </span>-A50<span class="w"> </span>-B<span class="w"> </span>-pdf<span class="w"> </span>map
 </pre></div>
 </div>
-</div></blockquote>
 <p>To use the same data but only contour the values 750 and 800, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt contour @Table_5_11.txt -A750,800 -W0.5p -B -pdf map
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>contour<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-A750,800<span class="w"> </span>-W0.5p<span class="w"> </span>-B<span class="w"> </span>-pdf<span class="w"> </span>map
 </pre></div>
 </div>
-</div></blockquote>
 <p>To create a color plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and
 temperatures are stored in temp.xyz and mesh arrangement is given by the
 file mesh.ijk, using the colors in temp.cpt, run</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt contour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p -pdf temp
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>contour<span class="w"> </span>temp.xyz<span class="w"> </span>-R0/150/0/100<span class="w"> </span>-Jx0.1i<span class="w"> </span>-Ctemp.cpt<span class="w"> </span>-G<span class="w"> </span>-W0.25p<span class="w"> </span>-pdf<span class="w"> </span>temp
 </pre></div>
 </div>
-</div></blockquote>
 <p>To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt contour topo.txt -C100 -Dcontours_%.0f.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>contour<span class="w"> </span>topo.txt<span class="w"> </span>-C100<span class="w"> </span>-Dcontours_%.0f.txt
 </pre></div>
 </div>
-</div></blockquote>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <p>Watson, D. F., 1982, Acord: Automatic contouring of raw data, <em>Comp. &amp;
 Geosci.</em>, <strong>8</strong>, 97-101.</p>
 <p>Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
@@ -629,7 +634,7 @@ Geometry (Philadelphia, PA), 124-133, ACM, May 1996.</p>
 <p><a class="reference external" href="http://www.cs.cmu.edu/~quake/triangle.html">http://www.cs.cmu.edu/~quake/triangle.html</a></p>
 </section>
 <section id="auto-legend-entries">
-<h2>Auto-legend entries<a class="headerlink" href="#auto-legend-entries" title="Permalink to this heading">¶</a></h2>
+<h2>Auto-legend entries<a class="headerlink" href="#auto-legend-entries" title="Link to this heading"></a></h2>
 <p>This module allows you to use the <strong>-l</strong> option to specify an automatic legend entry.
 This option is available for lines or symbols only.  If the symbol size is variable
 and computed from other information (which may be true for some symbols deriving their
@@ -637,7 +642,7 @@ size from other input columns), then you need to supply a representative legend 
 via the <strong>+S</strong> modifier.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>,
@@ -660,8 +665,8 @@ via the <strong>+S</strong> modifier.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

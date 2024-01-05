@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sphinterpolate &mdash; GMT 6.4.0 documentation</title>
+  <title>sphinterpolate &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">Modules</a> &raquo;</li>
-      <li>sphinterpolate</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">sphinterpolate</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/sphinterpolate.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,16 +151,16 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="sphinterpolate">
-<h1>sphinterpolate<a class="headerlink" href="#sphinterpolate" title="Permalink to this heading">¶</a></h1>
+<h1>sphinterpolate<a class="headerlink" href="#sphinterpolate" title="Link to this heading"></a></h1>
 <p>Spherical gridding in tension of data on a sphere</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt sphinterpolate</strong> [ <em>table</em> ]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grdfile</em>
 <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<em>east</em>] ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>mode</em>[<em>options</em>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>g</strong>|<strong>l</strong>|<strong>p</strong>|<strong>s</strong>[<em>args</em>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
@@ -171,20 +174,21 @@
 [ <strong>-s</strong><a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
-<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong>sphinterpolate</strong> reads one or more ASCII [or binary] files (or
 standard input) containing <em>lon, lat, z</em> and performs a Delaunay
 triangulation to set up a spherical interpolation in tension. The final
 grid is saved to the specified file. Several options may be used to
 affect the outcome, such as choosing local versus global gradient
 estimation or optimize the tension selection to satisfy one of four
-criteria.</p>
+criteria. The algorithms used are STRIPACK [<em>Renka</em>, 1997a] and
+SSRFPACK [<em>Renka</em>, 1997b].</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -193,9 +197,7 @@ then we read from standard input.  </p>
 </dl>
 <span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
-<div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
-(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
-supported:</p>
+<div><p>Optionally, append =<em>ID</em> for writing a specific file format. The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
@@ -208,11 +210,11 @@ automatic scaling to preserve precision for integer grids [Default
 is 1].</p></li>
 </ul>
 </div></blockquote>
-<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+<p><strong>Note</strong>: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
 (unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
-the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+the <a class="reference internal" href="reference/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
 for more details.</p>
 </div></blockquote>
 <dl id="i">
@@ -221,25 +223,26 @@ for more details.</p>
 Choose among:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>m</strong> to indicate arc minutes</p></li>
-<li><p><strong>s</strong> to indicate arc seconds</p></li>
-<li><p><strong>e</strong> (meter), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical
-mile) or <strong>u</strong> (US survey foot), in which case the increment will be
+<li><p><strong>d</strong> - Indicate arc degrees</p></li>
+<li><p><strong>m</strong> - Indicate arc minutes</p></li>
+<li><p><strong>s</strong> - Indicate arc seconds</p></li>
+</ul>
+<p>If one of <strong>e</strong> (meter), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical
+mile) or <strong>u</strong> (US survey foot), the the increment will be
 converted to the equivalent degrees longitude at the middle latitude
 of the region  (the conversion depends on <a class="reference internal" href="gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If
-<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
-otherwise it will be converted to degrees latitude.</p></li>
-</ul>
+<em>y_inc</em> is not given or given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude.</p>
 </div></blockquote>
 <p><strong>All coordinates</strong>: The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>+e</strong> to slightly adjust the max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) to fit
+<li><p><strong>+e</strong> - Slightly adjust the max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) to fit
 exactly the given increment if needed [Default is to slightly adjust
 the increment to fit the given domain].</p></li>
-<li><p><strong>+n</strong> to define the <em>number of nodes</em> rather than the increment, in
+<li><p><strong>+n</strong> - Define the <em>number of nodes</em> rather than the increment, in
 which case the increment is recalculated from the number of nodes,
-the <em>registration</em> (see <a class="reference internal" href="cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a>), and the domain.
+the <em>registration</em> (see <a class="reference internal" href="reference/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a>), and the domain.
 <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing and
 the registration have already been initialized; use <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>
 to override these values.</p></li>
@@ -264,10 +267,10 @@ and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).<
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
 countries given by the codes. Simply append one or more comma-separated countries using either the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
 country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
 or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
-Finally, append any <a class="reference internal" href="coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+Finally, append any <a class="reference internal" href="coast.html#dcw-collections"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
 the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
@@ -287,7 +290,7 @@ the region.</p></li>
 </li>
 <li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
 where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
-(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="reference/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
 actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
 <strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
 This short-hand requires the <strong>+u</strong> modifier.</p></li>
@@ -299,7 +302,7 @@ given via <strong>-I</strong> to create the corresponding region. This method ca
 <strong>-RCM</strong><em>25</em>/<em>25</em>/<em>50</em>/<em>50</em> specifies a <em>50</em>x<em>50</em> grid centered on <em>25</em>,<em>25</em>.</p></li>
 <li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending
 on the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration
-(see <a class="reference internal" href="cookbook/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
+(see <a class="reference internal" href="reference/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
 <li><p><strong>-Ra</strong>[<strong>uto</strong>] or <strong>-Re</strong>[<strong>xact</strong>]. Under modern mode, and for <em>plotting</em> modules only, you can automatically
 determine the region from the data used. You can either get the exact area using <strong>-Re</strong> [Default if no <strong>-R</strong>
 is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
@@ -308,7 +311,7 @@ the data range using <strong>-Ra</strong>.</p></li>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<em>east</em>]</dt><dd><p>Skip duplicate points since the spherical gridding algorithm cannot handle them.
 [Default assumes there are no duplicates, except possibly at the poles].
@@ -317,27 +320,24 @@ of the full (slow) search for duplicates.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong><em>mode</em>[<em>options</em>]</dt><dd><p>Specify one of four ways to calculate tension factors to preserve
+<dt><strong>-Q</strong><strong>g</strong>|<strong>l</strong>|<strong>p</strong>|<strong>s</strong>[<em>args</em>]</dt><dd><p>Specify one of four ways to calculate tension factors to preserve
 local shape properties or satisfy arc constraints [Default is no
-tension].</p>
-</dd>
-<dt><strong>-Qp</strong></dt><dd><p>Use <strong>p</strong>iecewise linear interpolation; no tension is applied.</p>
-</dd>
-<dt><strong>-Ql</strong></dt><dd><p>Smooth interpolation with <strong>l</strong>ocal gradient estimates.</p>
-</dd>
-<dt><strong>-Qg</strong>[<em>N</em>/<em>M</em>/<em>U</em>]</dt><dd><p>Smooth interpolation with <strong>g</strong>lobal gradient estimates. You may
+tension].  Choose among these directives:</p>
+<ul class="simple">
+<li><p><strong>g</strong>: Smooth interpolation with global gradient estimates. You may
 optionally append <em>N</em>/<em>M</em>/<em>U</em>, where <em>N</em> is the number of
 iterations used to converge at solutions for gradients when variable
 tensions are selected (e.g., <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> only) [3], <em>M</em> is the number of
 Gauss-Seidel iterations used when determining the global gradients
-[10], and <em>U</em> is the maximum change in a gradient at the last
-iteration [0.01].</p>
-</dd>
-<dt><strong>-Qs</strong>[<em>E</em>/<em>U</em>/<em>N</em>]</dt><dd><p>Use <strong>s</strong>moothing. Optionally append <em>E</em>/<em>U</em>/<em>N</em> [/0/0/3], where <em>E</em> is Expected
+[10], and <em>U</em> is the maximum change in a gradient at the last iteration [0.01].</p></li>
+<li><p><strong>l</strong>: Select smooth interpolation with local gradient estimates.</p></li>
+<li><p><strong>p</strong>: Use piecewise linear interpolation; no tension is applied.</p></li>
+<li><p><strong>s</strong>: Use smoothing. Optionally append <em>E</em>/<em>U</em>/<em>N</em> [/0/0/3], where <em>E</em> is Expected
 squared error in a typical (scaled) data value, and <em>U</em> is Upper
 bound on weighted sum of squares of deviations from data. Here, <em>N</em> is the number of
 iterations used to converge at solutions for gradients when variable
-tensions are selected (e.g., <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> only) [3]</p>
+tensions are selected (e.g., <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> only) [3]</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="t">
@@ -345,7 +345,7 @@ tensions are selected (e.g., <a class="reference internal" href="#t"><span><stro
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
@@ -402,7 +402,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="ascii-format-precision">
-<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Link to this heading"></a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
 in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
 according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
@@ -415,7 +415,7 @@ precision, consider switching to binary output (<strong>-bo</strong> if availabl
 specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -423,20 +423,20 @@ Other commands requiring input files are just dummy examples of the types
 of uses that are common but cannot be run verbatim as written.</p>
 <p>To interpolate data from the remote file mars370d.txt using the piecewise
 method for a 1x1 global grid, then plot it, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin mars
-  gmt sphinterpolate @mars370d.txt -Rg -I1 -Qp -Gmars.nc
-  gmt grdimage mars.nc -JH0/4.5i -B30g30
-gmt end
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>mars
+<span class="w">  </span>gmt<span class="w"> </span>sphinterpolate<span class="w"> </span>@mars370d.txt<span class="w"> </span>-Rg<span class="w"> </span>-I1<span class="w"> </span>-Qp<span class="w"> </span>-Gmars.nc
+<span class="w">  </span>gmt<span class="w"> </span>grdimage<span class="w"> </span>mars.nc<span class="w"> </span>-JH0/4.5i<span class="w"> </span>-B30g30
+gmt<span class="w"> </span>end
 </pre></div>
 </div>
 <p>To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>sphinterpolate<span class="w"> </span>testdata.txt<span class="w"> </span>-Rg<span class="w"> </span>-I1<span class="w"> </span>-Gsolution.nc
 </pre></div>
 </div>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
 <p>The STRIPACK algorithm and implementation expect that there are no duplicate points
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as <a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a> and others, to combine close points into single entries.
@@ -446,7 +446,7 @@ A much quicker check involves appending a specific repeating longitude value.
 Detection of duplicates in the STRIPACK library will exit the module.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>,
 <a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a>,
@@ -456,11 +456,11 @@ Detection of duplicates in the STRIPACK library will exit the module.</p>
 <a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a></p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
-<p>Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<p>Renka, R, J., 1997a, Algorithm 772: STRIPACK: Delaunay Triangulation and
 Voronoi Diagram on the Surface of a Sphere, <em>AMC Trans. Math. Software</em>,
 <strong>23</strong>(3), 416-434.</p>
-<p>Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of scattered
+<p>Renka, R, J,, 1997b, Algorithm 773: SSRFPACK: Interpolation of scattered
 data on the Surface of a Sphere with a surface under tension, <em>AMC
 Trans. Math. Software</em>, <strong>23</strong>(3), 435-442.</p>
 </section>
@@ -477,8 +477,8 @@ Trans. Math. Software</em>, <strong>23</strong>(3), 435-442.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

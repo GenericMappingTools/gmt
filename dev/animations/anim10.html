@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(10) The effect of sub-pixeling &mdash; GMT 6.4.0 documentation</title>
+  <title>(10) The effect of sub-pixeling &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../animations.html">Animation Gallery</a> &raquo;</li>
-      <li>(10) The effect of sub-pixeling</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../animations.html">Animation Gallery</a></li>
+      <li class="breadcrumb-item active">(10) The effect of sub-pixeling</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/animations/anim10.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,7 +151,7 @@
            <div itemprop="articleBody">
              
   <section id="the-effect-of-sub-pixeling">
-<span id="anim10"></span><h1>(10) The effect of sub-pixeling<a class="headerlink" href="#the-effect-of-sub-pixeling" title="Permalink to this heading">¶</a></h1>
+<span id="anim10"></span><h1>(10) The effect of sub-pixeling<a class="headerlink" href="#the-effect-of-sub-pixeling" title="Link to this heading"></a></h1>
 <p>GMT animations all start with designing plots that are created using the
 PostScript language.  It is therefore vector graphics with no limitations
 imposed by pixel resolutions.  However, to make an animation we must render
@@ -188,13 +191,13 @@ Demonstrate the effect of sub-pixeling</p>
 <span class="c1"># The movie took ~2 minutes to render on a 24-core MacPro 2013.</span>
 <span class="c1"># Demonstrate the effect of sub-pixeling</span>
 <span class="c1"># 1. Create the angle file</span>
-cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt math -T0/30/0.05 T 15 ADD = angles.txt</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	echo &quot;BELL&quot; | gmt text -R-26/-12/63/67 -JM6i -F+f144p+cCM -Bafg \</span>
 <span class="s">		-X2i -Y1.25i -p${MOVIE_COL0}/${MOVIE_COL1}+w20W/65N+v3i/1.5i</span>
@@ -202,19 +205,20 @@ cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">	echo -25 66.5 -20 66.5  | gmt plot -SV0.5i+s+e+h0.5 -Gblue -W3p -p</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
-gmt movie main.sh -C540p -Njitter_H0 -Tangles.txt -Sbpre.sh -D24 -Fmp4 -G+p2p -Z -W -Lc0+jTL+t%05.1f+o1c -Ls<span class="s2">&quot;0 sub-pixels&quot;</span>+jBR+o1c
-<span class="k">for</span> H in <span class="m">2</span> <span class="m">4</span> <span class="m">8</span><span class="p">;</span> <span class="k">do</span>
-	gmt movie main.sh -C540p -Njitter_H<span class="si">${</span><span class="nv">H</span><span class="si">}</span> -Tangles.txt -Sbpre.sh -D24 -Fmp4 -G+p2p -H<span class="si">${</span><span class="nv">H</span><span class="si">}</span> -Z -W -Lc0+jTL+t%05.1f+o1c -Ls<span class="s2">&quot;</span><span class="si">${</span><span class="nv">H</span><span class="si">}</span><span class="s2"> sub-pixels&quot;</span>+jBR+o1c
+<span class="c1"># 3. Run the movie without and with scale</span>
+gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-C540p<span class="w"> </span>-Njitter_H0<span class="w"> </span>-Tangles.txt<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-D24<span class="w"> </span>-Fmp4<span class="w"> </span>-G+p2p<span class="w"> </span>-Z<span class="w"> </span>-W<span class="w"> </span>-Lc0+jTL+t%05.1f+o1c<span class="w"> </span>-Ls<span class="s2">&quot;0 sub-pixels&quot;</span>+jBR+o1c
+<span class="k">for</span><span class="w"> </span>H<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">	</span>gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-C540p<span class="w"> </span>-Njitter_H<span class="si">${</span><span class="nv">H</span><span class="si">}</span><span class="w"> </span>-Tangles.txt<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-D24<span class="w"> </span>-Fmp4<span class="w"> </span>-G+p2p<span class="w"> </span>-H<span class="si">${</span><span class="nv">H</span><span class="si">}</span><span class="w"> </span>-Z<span class="w"> </span>-W<span class="w"> </span>-Lc0+jTL+t%05.1f+o1c<span class="w"> </span>-Ls<span class="s2">&quot;</span><span class="si">${</span><span class="nv">H</span><span class="si">}</span><span class="s2"> sub-pixels&quot;</span>+jBR+o1c
 <span class="k">done</span>
 <span class="c1"># 4. Assemble the four movie frames into a 2x2 HD layout via ffmpeg</span>
-ffmpeg -loglevel warning -i jitter_H0.mp4 -i jitter_H2.mp4 -filter_complex <span class="nv">hstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span> top.mp4
-ffmpeg -loglevel warning -i jitter_H4.mp4 -i jitter_H8.mp4 -filter_complex <span class="nv">hstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span> bot.mp4
-ffmpeg -loglevel warning -i top.mp4 -i bot.mp4 -filter_complex <span class="nv">vstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span> anim10.mp4
-rm -f top.mp4 bot.mp4 jitter_H?.mp4 main.sh pre.sh angles.txt
+ffmpeg<span class="w"> </span>-loglevel<span class="w"> </span>warning<span class="w"> </span>-i<span class="w"> </span>jitter_H0.mp4<span class="w"> </span>-i<span class="w"> </span>jitter_H2.mp4<span class="w"> </span>-filter_complex<span class="w"> </span><span class="nv">hstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span><span class="w"> </span>top.mp4
+ffmpeg<span class="w"> </span>-loglevel<span class="w"> </span>warning<span class="w"> </span>-i<span class="w"> </span>jitter_H4.mp4<span class="w"> </span>-i<span class="w"> </span>jitter_H8.mp4<span class="w"> </span>-filter_complex<span class="w"> </span><span class="nv">hstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span><span class="w"> </span>bot.mp4
+ffmpeg<span class="w"> </span>-loglevel<span class="w"> </span>warning<span class="w"> </span>-i<span class="w"> </span>top.mp4<span class="w"> </span>-i<span class="w"> </span>bot.mp4<span class="w"> </span>-filter_complex<span class="w"> </span><span class="nv">vstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span><span class="w"> </span>anim10.mp4
+rm<span class="w"> </span>-f<span class="w"> </span>top.mp4<span class="w"> </span>bot.mp4<span class="w"> </span>jitter_H?.mp4<span class="w"> </span>main.sh<span class="w"> </span>pre.sh<span class="w"> </span>angles.txt
 </pre></div>
 </div>
-<div class="youtube_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
-<iframe allowfullscreen="true" src="https://www.youtube.com/embed/FLzYVo7wXAg?autoplay=1" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+<div class="video_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/FLzYVo7wXAg" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
 </iframe></div></section>
 
 
@@ -228,8 +232,8 @@ rm -f top.mp4 bot.mp4 jitter_H?.mp4 main.sh pre.sh angles.txt
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

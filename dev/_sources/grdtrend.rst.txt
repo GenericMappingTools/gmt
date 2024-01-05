@@ -127,9 +127,9 @@ To do a robust fit of a bicubic surface to hawaii_topo.nc, writing the
 result in hawaii_trend.nc and the weights used in hawaii_weight.nc,
 and reporting the progress:
 
-   ::
+::
 
-    gmt grdtrend hawaii_topo.nc -N10+r -Thawaii_trend.nc -Whawaii_weight.nc -V
+  gmt grdtrend hawaii_topo.nc -N10+r -Thawaii_trend.nc -Whawaii_weight.nc -V
 
 See Also
 --------

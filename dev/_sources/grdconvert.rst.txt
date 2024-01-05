@@ -17,7 +17,7 @@ Synopsis
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [**+s**\ *factor*][**+o**\ *offset*] ]
+[ |-Z|\ [**+o**\ *offset*][**+s**\ *factor*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -53,7 +53,7 @@ Optional Arguments
 **-Cb**\|\ **c**\|\ **n**\|\ **p**
     Normally, output grids store the current module's command-line history.
     Use |-C| to specify what the output grid's command history should be:
-    Append directive **b** to write both the previous and the current module's 
+    Append directive **b** to write both the previous and the current module's
     command histories, **c** to only write the current module's command
     history, **n** to save no history whatsoever [Default], or select **p**
     to instead save only the previous command history.
@@ -78,7 +78,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**+s**\ *factor*][**+o**\ *offset*]
+**-Z**\ [**+o**\ *offset*][**+s**\ *factor*]
     Use to subtract *offset* from the data and then multiply the results by
     *factor* before writing the output file [1/0]. **Note**: This
     *changes* the values in the grid.  In contrast, while options to supply
@@ -160,7 +160,7 @@ fails you may append the =\ *ID* suffix to the filename *ingrid*.
 | **gd**   | Import/export through GDAL                                    |
 +----------+---------------------------------------------------------------+
 
-GMT Standard Netcdf Files
+GMT Standard netCDF Files
 -------------------------
 
 The standard format used for grdfiles is based on netCDF and conforms to
@@ -226,30 +226,30 @@ Examples
 To extract the second layer from a 3-dimensional grid named temp from a
 COARDS-compliant netCDF file climate.nc:
 
-   ::
+::
 
-    gmt grdconvert climate.nc?temp[1] -Gtemp.nc -V
+  gmt grdconvert climate.nc?temp[1] -Gtemp.nc -V
 
 To create a 4-byte native floating point grid from the COARDS-compliant
 remote netCDF file AFR.nc:
 
-   ::
+::
 
-    gmt grdconvert @AFR.nc -GAFR_bin.b4=bf -V
+  gmt grdconvert @AFR.nc -GAFR_bin.b4=bf -V
 
 To make a 2-byte short integer file, scale it by 10, subtract 32000,
 setting NaNs to -9999, do
 
-   ::
+::
 
-    gmt grdconvert values.nc -Gshorts.i2=bs+s10+o-32000+n-9999 -V
+  gmt grdconvert values.nc -Gshorts.i2=bs+s10+o-32000+n-9999 -V
 
 To create a Sun standard 8-bit rasterfile for a subset of the data file
 image.nc, assuming the range in image.nc is 0-1 and we need 0-255, run
 
-   ::
+::
 
-    gmt grdconvert image.nc -R-60/-40/-40/-30 -Gimage.ras8=rb+s255 -V
+  gmt grdconvert image.nc -R-60/-40/-40/-30 -Gimage.ras8=rb+s255 -V
 
 See Also
 --------

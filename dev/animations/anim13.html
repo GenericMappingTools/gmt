@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(13) Animating time-series (seismograms) &mdash; GMT 6.4.0 documentation</title>
+  <title>(13) Animating time-series (seismograms) &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../animations.html">Animation Gallery</a> &raquo;</li>
-      <li>(13) Animating time-series (seismograms)</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../animations.html">Animation Gallery</a></li>
+      <li class="breadcrumb-item active">(13) Animating time-series (seismograms)</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/animations/anim13.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,7 +151,7 @@
            <div itemprop="articleBody">
              
   <section id="animating-time-series-seismograms">
-<span id="anim13"></span><h1>(13) Animating time-series (seismograms)<a class="headerlink" href="#animating-time-series-seismograms" title="Permalink to this heading">¶</a></h1>
+<span id="anim13"></span><h1>(13) Animating time-series (seismograms)<a class="headerlink" href="#animating-time-series-seismograms" title="Link to this heading"></a></h1>
 <p>Here we demonstrate how one can animate a time-series so that the line grows in length and the
 pen thickness and color/intensity changes as it is being written.  The trick we use is to convert the
 line into a series of densely-spaced points, using the dpi of the desired movie to determine the point
@@ -177,14 +180,14 @@ includes a source map and some metadata, plus a timer and progress indicator.</p
 <span class="c1"># The 66-sec, 1561 frame movie took ~15 minutes to render on a 24-core MacPro 2013.</span>
 
 <span class="c1"># 0. Create an include file with key parameters</span>
-cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; inc.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; inc.sh</span>
 <span class="s">TIME_RANGE=2020-10-06T05:55:10/2020-10-06T05:56:15</span>
 <span class="s">PLOT_DOMAIN=2020-10-06T05:55:10/2020-10-06T05:56:15/-2.6/2.8</span>
 <span class="s">DPI=200i</span>
 <span class="s">SPLINE=linear</span>
 <span class="s">EOF</span>
 <span class="c1"># 1. Create a dense point-file from the waveform data</span>
-cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# 1a. Create dense point-files from the waveform data components so we can animate the lines</span>
 <span class="s">	gmt events @waveform_AV.DOL.txt -R${PLOT_DOMAIN} -JX20cT/3.5c -Ar${DPI} -i0,1+s1e-6,0 -f2T --GMT_INTERPOLANT=${SPLINE} &gt; E.txt</span>
@@ -203,22 +206,22 @@ cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">	gmt subplot end</span>
 <span class="s">	# 1d. Create location map and metadata</span>
 <span class="s">	gmt text -R0/4.5/0/13 -Jx1c -F+j+f -B0 -X-5.25c -Y-0.5c &lt;&lt;- EOF</span>
-	<span class="m">2</span>.25 <span class="m">12</span>.5 CM 18p <span class="m">2020</span>-10-06
-	<span class="m">2</span>.25 <span class="m">11</span>.7 CM 9p SE of Sand Point, Alaska
-	<span class="m">2</span>.25 <span class="m">11</span> CM 10p <span class="m">54</span>.851@.N, <span class="m">159</span>.851@.W
-	<span class="m">2</span>.25 <span class="m">10</span>.5 CM 10p <span class="m">31</span>.0 km, Mw <span class="m">5</span>.9
-	<span class="m">2</span>.25 <span class="m">10</span>.0 CM 10p <span class="m">2020</span>-10-06 <span class="m">05</span>:54:50 UTC
-	EOF
-	gmt grdimage -R190W/130W/30/75 @earth_relief_06m -Ba30+f -JM3.5c -I+d -Cterra --MAP_FRAME_TYPE<span class="o">=</span>plain -X0.75c -Y0.5c -BWNbr --MAP_ANNOT_OBLIQUE<span class="o">=</span>lat_parallel --FONT_ANNOT_PRIMARY<span class="o">=</span>9p
-	<span class="nb">echo</span> <span class="m">161</span>.86W <span class="m">55</span>.15N <span class="p">|</span> gmt plot -St0.2c -GBlack
-	<span class="nb">echo</span> <span class="m">159</span>.851W <span class="m">54</span>.851N <span class="p">|</span> gmt plot -Sa0.25c -Gred -Wfaint
-	gmt meca -Sc2.5c -M -G110/168/255 -W0.5p -Yh+0.5c <span class="s">&lt;&lt;- EOF</span>
+<span class="w">	</span><span class="m">2</span>.25<span class="w"> </span><span class="m">12</span>.5<span class="w"> </span>CM<span class="w"> </span>18p<span class="w"> </span><span class="m">2020</span>-10-06
+<span class="w">	</span><span class="m">2</span>.25<span class="w"> </span><span class="m">11</span>.7<span class="w"> </span>CM<span class="w"> </span>9p<span class="w"> </span>SE<span class="w"> </span>of<span class="w"> </span>Sand<span class="w"> </span>Point,<span class="w"> </span>Alaska
+<span class="w">	</span><span class="m">2</span>.25<span class="w"> </span><span class="m">11</span><span class="w"> </span>CM<span class="w"> </span>10p<span class="w"> </span><span class="m">54</span>.851@.N,<span class="w"> </span><span class="m">159</span>.851@.W
+<span class="w">	</span><span class="m">2</span>.25<span class="w"> </span><span class="m">10</span>.5<span class="w"> </span>CM<span class="w"> </span>10p<span class="w"> </span><span class="m">31</span>.0<span class="w"> </span>km,<span class="w"> </span>Mw<span class="w"> </span><span class="m">5</span>.9
+<span class="w">	</span><span class="m">2</span>.25<span class="w"> </span><span class="m">10</span>.0<span class="w"> </span>CM<span class="w"> </span>10p<span class="w"> </span><span class="m">2020</span>-10-06<span class="w"> </span><span class="m">05</span>:54:50<span class="w"> </span>UTC
+<span class="w">	</span>EOF
+<span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>-R190W/130W/30/75<span class="w"> </span>@earth_relief_06m<span class="w"> </span>-Ba30+f<span class="w"> </span>-JM3.5c<span class="w"> </span>-I+d<span class="w"> </span>-Cterra<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>plain<span class="w"> </span>-X0.75c<span class="w"> </span>-Y0.5c<span class="w"> </span>-BWNbr<span class="w"> </span>--MAP_ANNOT_OBLIQUE<span class="o">=</span>lat_parallel<span class="w"> </span>--FONT_ANNOT_PRIMARY<span class="o">=</span>9p
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="m">161</span>.86W<span class="w"> </span><span class="m">55</span>.15N<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-GBlack
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="m">159</span>.851W<span class="w"> </span><span class="m">54</span>.851N<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sa0.25c<span class="w"> </span>-Gred<span class="w"> </span>-Wfaint
+<span class="w">	</span>gmt<span class="w"> </span>meca<span class="w"> </span>-Sc2.5c<span class="w"> </span>-M<span class="w"> </span>-G110/168/255<span class="w"> </span>-W0.5p<span class="w"> </span>-Yh+0.5c<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
 <span class="s">	-159.851 54.851 40.5 245 29 93 61 61 88 1.048 18</span>
 <span class="s">	EOF</span>
-gmt end
+gmt<span class="w"> </span>end
 EOF
 <span class="c1"># 2. Set up main movie script</span>
-cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+cat<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt set FORMAT_DATE_MAP &quot;o dd yyyy&quot; FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p TIME_INTERVAL_FRACTION 0.01 FORMAT_CLOCK_MAP hh:mm:ss</span>
 <span class="s">	gmt subplot begin 3x1 -Fs18.25c/3.5c -D -M0 -R${PLOT_DOMAIN} -X5.5c -Y0.75c</span>
@@ -232,11 +235,11 @@ cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
-gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0+jTR+o0.25/0.25c -Ls<span class="s2">&quot;Station: Dolgoi Island, Mount Dutton, Alaska&quot;</span>+jTL+o5.5c/0.25c -H8 -Pb+w0.4c+jBR -Fmp4 -V -W -Zs -M500,png --FORMAT_DATE_MAP<span class="o">=</span>-
+gmt<span class="w"> </span>movie<span class="w"> </span>main.sh<span class="w"> </span>-Iinc.sh<span class="w"> </span>-Sbpre.sh<span class="w"> </span>-CHD<span class="w"> </span>-Ttimes.txt<span class="w"> </span>-Nanim13<span class="w"> </span>-Lc0+jTR+o0.25/0.25c<span class="w"> </span>-Ls<span class="s2">&quot;Station: Dolgoi Island, Mount Dutton, Alaska&quot;</span>+jTL+o5.5c/0.25c<span class="w"> </span>-H8<span class="w"> </span>-Pb+w0.4c+jBR<span class="w"> </span>-Fmp4<span class="w"> </span>-V<span class="w"> </span>-W<span class="w"> </span>-Zs<span class="w"> </span>-M500,png<span class="w"> </span>--FORMAT_DATE_MAP<span class="o">=</span>-
 </pre></div>
 </div>
-<div class="youtube_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
-<iframe allowfullscreen="true" src="https://www.youtube.com/embed/S-kRGxwOGJw?autoplay=1" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+<div class="video_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/S-kRGxwOGJw" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
 </iframe></div></section>
 
 
@@ -250,8 +253,8 @@ gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0+jTR+o0.25/0.
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

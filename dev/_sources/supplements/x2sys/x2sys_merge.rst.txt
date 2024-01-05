@@ -23,8 +23,8 @@ Description
 **x2sys_merge** will read two crossovers data base and output the
 contents of the main one updated with the COEs in the second one. The
 second file should only contain updated COEs relatively to the first
-one. That is, it MUST NOT contain any new two tracks intersections (This
-point is NOT checked in the code). This program is useful when, for any
+one. That is, it **must not** contain any new two tracks intersections (This
+point is **not** checked in the code). This program is useful when, for any
 good reason like file editing NAV correction or whatever, one had to
 recompute only the COEs between the edited files and the rest of the
 database.  The complete data base is written to standard output.

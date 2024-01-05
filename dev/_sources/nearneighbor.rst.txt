@@ -39,10 +39,10 @@ Synopsis
 Description
 -----------
 
-**nearneighbor** reads arbitrarily located (*x,y,z*\ [,\ *w*]) triples
+**nearneighbor** reads arbitrarily located (*x, y, z*\ [, *w*]) triplets
 [quadruplets] from standard input [or *table*] and uses a nearest
 neighbor algorithm to assign a weighted average value to each node that
-has one or more data points within a search radius (*R*) centered on the
+has one or more data points within a search radius (*R*, see |-S|) centered on the
 node with adequate coverage across a subset of the chosen sectors. The
 node value is computed as a weighted mean of the nearest point from each
 sector inside the search radius. The weighting function and the averaging
@@ -61,8 +61,8 @@ weights are supplied then :math:`w_i = 1`.
    :width: 300 px
    :align: center
 
-   Search geometry includes the search radius (R) which limits the points
-   considered and the number of sectors (here 4), which restricts how points inside
+   Search geometry includes the search radius (*R*, see |-S|) which limits the points
+   considered and the number of sectors (here 4, see |-N|), which restricts how points inside
    the search radius contribute to the value at the node.  Only the closest point
    in each sector (red circles) contribute to the weighted estimate.
 
@@ -71,7 +71,7 @@ Required Arguments
 
 *table*
     3 [or 4, see |-W|] column ASCII file(s) [or binary, see
-    **-bi**] holding (*x,y,z*\ [,\ *w*]) data values. If
+    **-bi**] holding (*x, y, z*\ [, *w*]) data values. If
     no file is specified, **nearneighbor** will read from standard input.
 
 .. _-G:
@@ -112,11 +112,12 @@ Optional Arguments
 .. _-N:
 
 **-N**\ *sectors*\ [**+m**\ *min_sectors*]\|\ **n**
-    The circular search area centered on each node is divided into *sectors*
-    sectors. Average values will only be computed if there is *at least*
-    one value inside each of at least *min_sectors* of the sectors for a given
-    node. Nodes that fail this test are assigned the value NaN (but see
-    |-E|). If **+m** is omitted then *min_sectors* is set to be at least 50%
+    The circular search area centered on each node is divided into a specific
+    number of sectors (defined by *sectors*). Average values will only be 
+    computed if there is *at least* one value inside each of at least 
+    *min_sectors* of the sectors for a given node. Nodes that fail this test 
+    are assigned the value NaN (but see |-E|). 
+    If **+m** is omitted then *min_sectors* is set to be at least 50%
     of *sectors* (i.e., rounded up to next integer) [Default is a quadrant
     search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
     that only the nearest value per sector enters into the averaging; the

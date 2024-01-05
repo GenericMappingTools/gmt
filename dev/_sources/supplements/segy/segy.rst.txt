@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ *clip* ]
 [ |-E|\ *error* ] [ |-I| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ] [ |-N| ]
-[ |-Q|\ *<mode><value>* ]
+[ |-Q|\ **b**\|\ **i**\|\ **u**\|\ **x**\|\ **y**\ *value* ]
 [ |-S|\ *header* ]
 [ |-T|\ *filename* ]
 [ |SYN_OPT-U| ]
@@ -140,9 +140,9 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *<mode><value>*
-    Can be used to change 5 different settings depending on *mode*:
-       **-Qb**\ *bias* to bias scaled traces (-Qb-0.1 subtracts 0.1 from values).
+**-Q**\ **b**\|\ **i**\|\ **u**\|\ **x**\|\ **y**\ *value*
+    Can be used to change 5 different settings depending on the directive (repeatable):
+       **-Qb**\ *bias* to bias scaled traces (-**Qb**\ -0.1 subtracts 0.1 from values).
 
        **-Qi**\ *dpi* sets the dots-per-inch resolution of the image [300].
 
@@ -204,16 +204,16 @@ To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at ±3 and with wiggle trace and positive
 variable area shading in black, use
 
-   ::
+::
 
-    gmt segy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack -pdf segy
+  gmt segy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack -pdf segy
 
 To plot the SEGY file wa1.segy with traces plotted at true cdp\*0.1,
 clipped at ±3, with bias -1 and negative variable area shaded red, use
 
-   ::
+::
 
-    gmt segy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -Qx0.1 -Fred -Qb-1 -I -pdf segy
+  gmt segy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -Qx0.1 -Fred -Qb-1 -I -pdf segy
 
 See Also
 --------

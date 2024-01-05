@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtlogo** [ |-D|\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
+**gmtlogo** [ |-D|\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+h**\ *height*\|\ **+w**\ *width*\ ][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ |-F|\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]] ]
 [ |-J|\ *parameters* ]
 [ |-K| ]
@@ -47,7 +47,7 @@ scaled up to be 6 cm wide and offset by 0.25 cm from the border, try::
 Notes
 -----
 
-To instead plot the GMT QR code that links to www.generic-mapping-tools.org, just plot the
+To instead plot the GMT QR code that links to https://www.generic-mapping-tools.org/, just plot the
 custom symbols **QR** or **QR_transparent** in :doc:`psxy`.
 
 See Also

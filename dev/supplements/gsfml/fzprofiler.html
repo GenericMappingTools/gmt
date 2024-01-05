@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fzprofiler &mdash; GMT 6.5.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">fzprofiler</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/gsfml/fzprofiler.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="fzprofiler">
+<h1>fzprofiler<a class="headerlink" href="#fzprofiler" title="Link to this heading"></a></h1>
+<p>Bash script to plot fracture zone cross-profiles</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<p><strong>fzprofiler</strong> [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>height</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>profile</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>inc</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>ncols</em> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>prefix</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>width</em>,[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] ]</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p><strong>fzprofiler</strong> is a script developed as part of the Global Seafloor Fabric
+and Magnetic Lineation Project [see <a class="reference external" href="https://www.soest.hawaii.edu/PT/GSFML">GSFML</a> for a full
+description of the project].  It plots the cross-profiles and the information produced by <a class="reference internal" href="fzanalyzer.html"><span class="doc">fzanalyzer</span></a>.
+All plots are combined into one plot using whatever custom page size is needed to fit the individual plots given
+their specifications.</p>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
+<dl class="simple" id="h">
+<dt><strong>-H</strong><em>width</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>]</dt><dd><p>Sets the plot height of an individual profile. Unless the measure unit is appended the
+unit is assumed to be whatever the GMT default <a class="reference internal" href="../../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> is currently set to.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong><em>profile</em></dt><dd><p>By default we plot all the cross-profiles in one stack.  To select a single
+profile only, append the running number of the profile, where 0 is the first profile.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong><em>inc</em></dt><dd><p>Determines which profiles to plot.  By default we plot every profile (<em>inc</em> = 1).
+Use <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> to plot every <em>inc</em> profile instead [1].</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>ncols</em></dt><dd><p>Spread profiles across <em>ncols</em> columns.  If <em>ncols</em> = 1
+then all profiles are stacked vertically in one long panel; if <em>ncols</em> = 2
+then we split the profiles evenly between two columns, etc.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-T</strong><em>prefix</em></dt><dd><p>Sets the file name <em>prefix</em> used for all input files as produced by
+<a class="reference internal" href="fzanalyzer.html"><span class="doc">fzanalyzer</span></a> [default is fztrack]. The files are <em>prefix</em>_cross.txt, <em>prefix</em>_analysis.txt,
+<em>prefix</em>_par.txt as well as the resampled output from <span class="xref std std-doc">grdtrack</span> which
+should be called <em>prefix</em>_resampled.txt.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>width</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>]</dt><dd><p>Similarly sets the plot width of an individual profile.  For units, see <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>.</p>
+</dd>
+</dl>
+</section>
+<section id="plot-features">
+<h2>Plot Features<a class="headerlink" href="#plot-features" title="Link to this heading"></a></h2>
+<p><strong>fzprofiler</strong> packs much information into each plot by using different symbols and
+colors.  The cross-profile VGG data are plotted as red circles connected by a faint
+red dotted line.  The central corridor set with <a class="reference internal" href="fzanalyzer.html"><span class="doc">fzanalyzer</span></a> <strong>-D</strong> is shown in light
+blue.  Black line is the best symmetric
+trough model; inverted triangle indicates the best location of the FZ (trough) and
+its error bars reflect the half-width.  Blue line is the best asymmetric blend model;
+circle shows the best location of the maximum VGG slope.  Finally, the inverted
+red triangle and half-width error bar shows the best empirical trough location.  Dashed
+orange line shows the crustal age variations.  Profile orientation is
+indicated by the W-E or S-N letters, with vertical scale shown on the left (VGG) and
+right (age).  Finally, each panel prints the best blend parameters.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>To look at the cross-profiles and the best-fit models and optimal FZ locations on
+a per-profiles basis, with the prefix used previously as “traces”, and placing the
+profiles into two columns, each 6 inches wide with individual plots 2 inches tall,
+try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fzprofiler<span class="w"> </span>-Ttraces<span class="w"> </span>-W6i<span class="w"> </span>-H2i<span class="w"> </span>-N2<span class="w"> </span>-V
+</pre></div>
+</div>
+<p>The final plot will be named <em>prefix</em>_cross.pdf.  To see the same profiles in map
+view, use <a class="reference internal" href="fzmapper.html"><span class="doc">fzmapper</span></a>.  To plot a synthetic profile, see <a class="reference internal" href="fzmodeler.html"><span class="doc">fzmodeler</span></a>.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>
+<a class="reference internal" href="fzanalyzer.html"><span class="doc">fzanalyzer</span></a>,
+<a class="reference internal" href="fzblender.html"><span class="doc">fzblender</span></a>,
+<a class="reference internal" href="mlconverter.html"><span class="doc">mlconverter</span></a>,
+<a class="reference internal" href="fzinformer.html"><span class="doc">fzinformer</span></a>,
+<a class="reference internal" href="fzmodeler.html"><span class="doc">fzmodeler</span></a>,
+<a class="reference internal" href="fzmapper.html"><span class="doc">fzmapper</span></a>,
+<a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a></p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<p>Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, “Semiautomatic fracture zone tracking”, <em>Geochem. Geophys. Geosyst.</em>, 16 (7), 2462–2472.
+<a class="reference external" href="https://doi.org/10.1002/2015GC005853">https://doi.org/10.1002/2015GC005853</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

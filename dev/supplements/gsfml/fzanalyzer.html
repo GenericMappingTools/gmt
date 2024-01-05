@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fzanalyzer &mdash; GMT 6.5.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="fzblender" href="fzblender.html" />
+    <link rel="prev" title="psvelo" href="../geodesy/psvelo.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+      <li class="breadcrumb-item active">fzanalyzer</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/gsfml/fzanalyzer.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="fzanalyzer">
+<h1>fzanalyzer<a class="headerlink" href="#fzanalyzer" title="Link to this heading"></a></h1>
+<p>Analysis of fracture zones using crossing profiles</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<p><strong>gmt fzanalyzer</strong> <em>crossprofiles</em>
+<a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>fzlines</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>min</em>/<em>max</em>/<em>inc</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>min</em>/<em>max</em>/<em>inc</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>corrwidth</em> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>FZ</em>[/<em>profile</em>] ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>b</strong>|<strong>c</strong>]]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>prefix</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>min</em>/<em>max</em>/<em>inc</em> ]
+[ <strong>-bo</strong><a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-do</strong><a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p><strong>fzanalyzer</strong> is a tool developed as part of the Global Seafloor Fabric
+and Magnetic Lineation Project [see <a class="reference external" href="https://www.soest.hawaii.edu/PT/GSFML">GSFML</a> for a full
+description of the project].  It reads processed fracture zone (FZ) traces and cross-profiles as
+produced by <a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a>.  It then analyzes the trace of each FZ
+by examining cross-sections orthogonal to the FZ trend and modeling these profiles
+using a blend model of “Atlantic”-style symmetric troughs and “Pacific”-style asymmetric,
+dipole-like anomalies, modulated with some peripheral bulges (“compression”).
+We also fit just the symmetric trough model and
+examine the empirical data minimum and trough width.  Estimates are made
+of the width of the data trough and 1-sigma uncertainties on the best FZ locations
+given by the various models.  We also compute several statistical measures and return
+all the model parameters as a function of distances along each FZ.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><em>crossprofiles</em></dt><dd><p>This file is a table with cross-profiles as produced by <a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a> <strong>-C</strong>
+from an approximate digitized trace (with <em>lon</em>, <em>lat</em>) of one or more FZs.
+This is an ASCII (or binary, see <strong>-bi</strong>) file that must contain 7 data columns:
+<em>lon, lat, dist, azimuth, vgg, age, fzdist</em>.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong><em>fzlines</em></dt><dd><p>Here, <em>fzlines</em> is a file with resampled track lines obtained by running <a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a> <strong>-D</strong>.
+As for <em>crossprofiles</em> the file must contain the same 7 data columns <em>lon, lat, dist, azimuth, vgg, age, fzdist</em>.
+See Input Files for more details.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong><em>min</em>/<em>max</em>/<em>inc</em></dt><dd><p>Specifies one or three parameters that control how the blending of the model signals will be done.
+Here, <em>min</em> is the minimum asymmetry value [0, i.e., “Atlantic” symmetric trough],
+<em>max</em> is the maximum asymmetry [1], i.e., “Pacific” dipole signal], and <em>inc</em> is the
+increment used for the search [0.05].  To specify just a single asymmetry value (no search),
+just provide the single desired asymmetry.</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><em>min</em>/<em>max</em>/<em>inc</em></dt><dd><p>Specifies one or three parameters that control how the search for the “compression” model signal will be done.
+Here, <em>min</em> is the minimum compression value [0], <em>max</em> is the maximum compression [1, i.e.,
+“Mexican Hat” end-member], and <em>inc</em> is the increment used for the search [0.05].
+To specify just a single compression value (no search), just provide the single desired compression value..</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>corrwidth</em></dt><dd><p>Specifies a <em>corrwidth</em> (in km) that sets the width of the central corridor [25].  The purpose
+of this corridor is to constrain how far off center we may seek to relocate the location of the FZ trough.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong><em>FZ</em>[/<em>profile</em>]</dt><dd><p>By default, we will analyze the cross-profiles generated for all FZs.  However,
+you can use <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> to specify a particular FZ <em>id</em> id (first <em>id</em> is 0).
+Optionally, you can select that only one <em>profile</em> from that FZ be processed [Default is all].
+Note that the output files will still contain all profiles but derived quantities will be
+zero except for the chosen profiles.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong>[<strong>b</strong>|<strong>c</strong>]</dt><dd><p>Output the parameters set by the command-line options in a format suitable for inclusion
+in a Bourne/bash shell script.  Alternatively, append <strong>c</strong> for csh/tcsh syntax.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>prefix</em></dt><dd><p>Sets the file name prefix used for all output files [fztrack].</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>min</em>/<em>max</em>/<em>inc</em></dt><dd><p>Specifies three parameters that control how the modeling of the cross-FZ signal will be done.
+Here, <em>min</em> is the minimum FZ signal width (in km) for a nonlinear width search [1],
+<em>max</em> is the maximum width [50], and <em>inc</em> is the increment used for the width search [1].
+It is recommended to determine suitable limits of a particular region and tune <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> accordingly.
+Selecting too wide a range might lead to spurious fits driven by data features not associated with
+the FZ trough.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-do</strong><em>nodata</em>[<strong>+c</strong><em>col</em>] <a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace output columns that equal NaN with <em>nodata</em>.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="input-files">
+<h2>Input Files<a class="headerlink" href="#input-files" title="Link to this heading"></a></h2>
+<p>The two input files are themselves generated by running <a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a> first.  This step
+requires a set of digitized FZ tracks (<em>lon</em>, <em>lat</em>) and three data grids: (a) a
+VGG vertical gravity gradient file, (b) a 2 minute crustal age grid, and (c)
+a grid with distance to the nearest FZ in km, listed in that order.  The critical file is the
+VGG grid.  If you don’t have or care about ages and distances you can make dummy grids that
+are all NaNs.  You design your cross-profile layout and resampled FZ trackes using <a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a>
+options <strong>-C</strong> and <strong>-D</strong>..</p>
+</section>
+<section id="nearest-fracture-zone-distances">
+<h2>Nearest Fracture Zone Distances<a class="headerlink" href="#nearest-fracture-zone-distances" title="Link to this heading"></a></h2>
+<p>You can use <span class="xref std std-doc">grdmath</span> to create the nearest fracture zone distance grid (in km) required
+to prepare the profiles. A typical command suitable for the Nazca plate area might be:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-R-120/-65/-50/5<span class="w"> </span>-I5m<span class="w"> </span>-fg<span class="w"> </span>digitize.txt<span class="w"> </span>LDIST<span class="w"> </span><span class="nv">DEG2KM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>dist2fz.nc
+</pre></div>
+</div>
+<p>Since this is a very slow calculation for numerous FZs it is not necessary to use a very high resolution
+in <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> since the distances change smoothly and interpolation will be approximately correct.  Consider
+making a global grid but do it in quadrants (or smaller region chunks) and run concurrently on a multi-core
+computer. For example, to make a global grid from quadrants, one may run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-R0/180/0/90<span class="w"> </span>-I2m<span class="w"> </span>-fg<span class="w"> </span>-V3<span class="w"> </span>global_FZ.txt<span class="w"> </span>LDIST<span class="w"> </span><span class="nv">DEG2KM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WN.nc
+gmt<span class="w"> </span>grdmath<span class="w"> </span>-R180/360/0/90<span class="w"> </span>-I2m<span class="w"> </span>-fg<span class="w"> </span>-V3<span class="w"> </span>FZ_KM.txt<span class="w"> </span>LDIST<span class="w"> </span><span class="nv">DEG2KM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>EN.nc
+gmt<span class="w"> </span>grdmath<span class="w"> </span>-R0/180/-90/0<span class="w"> </span>-I2m<span class="w"> </span>-fg<span class="w"> </span>-V3<span class="w"> </span>FZ_KM.txt<span class="w"> </span>LDIST<span class="w"> </span><span class="nv">DEG2KM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WS.nc
+gmt<span class="w"> </span>grdmath<span class="w"> </span>-R180/360/-90/0<span class="w"> </span>-I2m<span class="w"> </span>-fg<span class="w"> </span>-V3<span class="w"> </span>FZ_KM.txt<span class="w"> </span>LDIST<span class="w"> </span><span class="nv">DEG2KM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ES.nc
+</pre></div>
+</div>
+<p>then blend these together into a global grid with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdblend<span class="w"> </span>-Rg<span class="w"> </span>-I2<span class="w"> </span>-fg<span class="w"> </span>EN.nc<span class="w"> </span>WN.nc<span class="w"> </span>ES.nc<span class="w"> </span>WS.nc<span class="w"> </span>-Gdist2FZ.nc<span class="w"> </span>-V
+rm<span class="w"> </span>-f<span class="w"> </span>WN.nc<span class="w"> </span>EN.nc<span class="w"> </span>WS.nc<span class="w"> </span>ES.nc
+</pre></div>
+</div>
+<p>To make NaN grids for ages and/or distances for the Nazca area, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-R-120/-65/-50/5<span class="w"> </span>-I5m<span class="w"> </span>-fg<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="nv">NaN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>ages.nc
+</pre></div>
+</div>
+</section>
+<section id="output-files">
+<h2>Output Files<a class="headerlink" href="#output-files" title="Link to this heading"></a></h2>
+<p><strong>fzanalyzer</strong> can produce up to three output files; these are described below:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>File <em>prefix</em>_analysis.txt contains the results of the analysis for each cross
+profile.  There 61 output columns containing the fitted or observed values (see
+Determined Parameters).  This file is used by <a class="reference internal" href="fzblender.html"><span class="doc">fzblender</span></a> to produce a smooth
+and optimal fit to the fracture zone.</p></li>
+<li><p>File <em>prefix</em>_cross.txt contains both observed and predicted best-fitting models
+for each cross profile.  It can be used for plotting and visual analysis of the
+results on a profile-by-profile basis.</p></li>
+<li><p>The <em>prefix</em>_par.[c]sh is either a Bourne (<a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>) or cshell (<a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>c</strong>) script
+that contains all parameters specified by the command line as shell variables. You
+can include this script in custom mapping or analysis scripts and use the variables
+as you see fit.</p></li>
+<li><p>Finally, while not an output file from <strong>fzanalyzer</strong>, you should use the name
+<em>prefix</em>_resampled.txt for the output of <a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a> <strong>-D</strong> as that is what the
+scripts for plotting expect.</p></li>
+</ol>
+</div></blockquote>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>To analyze digitized FZs we use the Sandwell/Smith VGG (1 minute vertical gravity gradient
+&#64;earth_vgg_01m), a 1-minute age grid (&#64;earth_ages_01m), and a nearest-FZ distance grid
+(in km). Given the potential FZ locations in the multi-segment file fz_digitized.txt, we
+specify a 40 km cross-profile length, with profiles spaced every 5 km, and use an
+along-cross-profile sampling interval of 2 km, by running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdtrack<span class="w"> </span>fz_digitized.txt<span class="w"> </span>-C40k/2k/5k<span class="w"> </span>-G@earth_vgg_01m<span class="w"> </span>-G@earth_ages_01m<span class="w"> </span>-Gdist.nc<span class="w"> </span>-Dtraces_resampled.txt<span class="w"> </span>-fg<span class="w"> </span>--FORMAT_GEO_OUT<span class="o">=</span>ddd.xxxx<span class="w"> </span>--FORMAT_FLOAT_OUT<span class="o">=</span>%.1f<span class="w"> </span>&gt;<span class="w"> </span>xprofiles.txt
+</pre></div>
+</div>
+<p>These two data tables can now be used with <strong>fzanalyzer</strong> to analyze the traces.  Here,
+we specify a 20 km central corridor and accept default values for most settings:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>fzanalyzer<span class="w"> </span>xprofiles.txt<span class="w"> </span>-D20<span class="w"> </span>-Ftraces_resampled.txt<span class="w"> </span>-Ttraces<span class="w"> </span>-S<span class="w"> </span>--FORMAT_GEO_OUT<span class="o">=</span>ddd.xxxx<span class="w"> </span>--FORMAT_FLOAT_OUT<span class="o">=</span>%.1f
+</pre></div>
+</div>
+<p>You can then make plots of these cross-profiles with best-fitting curves and parameters
+indicated by using:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fzprofiler<span class="w"> </span>traces<span class="w"> </span>-W6i<span class="w"> </span>-H2i<span class="w"> </span>-N2
+</pre></div>
+</div>
+<p>which will plot all cross-profiles in separate 6x2 inch cross-sections stacked in one vertical panel.
+You can show this information in map view via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fzmapper<span class="w"> </span>traces<span class="w"> </span>-W9i<span class="w"> </span>-L1<span class="w"> </span>-Ffz_digitized.txt
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="fzprofiler.html"><span class="doc">fzprofiler</span></a> and <a class="reference internal" href="fzmapper.html"><span class="doc">fzmapper</span></a> documentation for further details.</p>
+</section>
+<section id="determined-parameters">
+<h2>Determined Parameters<a class="headerlink" href="#determined-parameters" title="Link to this heading"></a></h2>
+<p>Here are the header codes for each of the 61 output columns and what they represent:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>XR</strong>: Longitude of raw digitized trace.</p></li>
+<li><p><strong>YR</strong>: Latitude of raw digitized trace.</p></li>
+<li><p><strong>DR</strong>: Distance at digitized points along raw digitized trace.</p></li>
+<li><p><strong>AR</strong>: Azimuth at digitized points along raw digitized trace.</p></li>
+<li><p><strong>ZR</strong>: Data value at digitizing locations</p></li>
+<li><p><strong>TL</strong>: Crustal age estimate at left side of FZ (negative distances).</p></li>
+<li><p><strong>TR</strong>: Crustal age estimate at right side of FZ (positive distances).</p></li>
+<li><p><strong>SD</strong>: Shift of data minimum (in km) from raw line origin.</p></li>
+<li><p><strong>ST</strong>: Shift of trough model minimum (in km) from raw line origin.</p></li>
+<li><p><strong>SB</strong>: Shift of blend model minimum (in km) from raw line origin.</p></li>
+<li><p><strong>SE</strong>: Shift of blend model maximum slope (in km) from raw line origin.</p></li>
+<li><p><strong>BL</strong>: Best blend value [0-1].</p></li>
+<li><p><strong>OR</strong>: Orientation of blend model profile (-1 means left side is old, +1 means left side is young).</p></li>
+<li><p><strong>WD</strong>: Width of data trough.</p></li>
+<li><p><strong>WT</strong>: Width of model trough (for trough model).</p></li>
+<li><p><strong>WB</strong>: Width of model trough (for blend model).</p></li>
+<li><p><strong>AD</strong>: Peak-to-trough amplitude from data.</p></li>
+<li><p><strong>AT</strong>: Peak-to-trough amplitude from model (for trough model).</p></li>
+<li><p><strong>AB</strong>: Peak-to-trough amplitude from model (blend).</p></li>
+<li><p><strong>UT</strong>: Compression indicator (for trough model).</p></li>
+<li><p><strong>UB</strong>: Compression indicator (for blend model).</p></li>
+<li><p><strong>VT</strong>: Variance reduction (%) from model (for trough model).</p></li>
+<li><p><strong>VB</strong>: Variance reduction (%) from model (for blend model).</p></li>
+<li><p><strong>FT</strong>: F-statistic (for trough model).</p></li>
+<li><p><strong>FB</strong>: F-statistic (for blend model).</p></li>
+<li><p><strong>XDL</strong>: Longitude of data minimum left bounds.</p></li>
+<li><p><strong>XD0</strong>: Longitude of data minimum.</p></li>
+<li><p><strong>XDR</strong>: Longitude of data minimum right bounds.</p></li>
+<li><p><strong>YDL</strong>: Latitude of data minimum left bounds.</p></li>
+<li><p><strong>YD0</strong>: Latitude of data minimum.</p></li>
+<li><p><strong>YDR</strong>: Latitude of data minimum right bounds.</p></li>
+<li><p><strong>ZDL</strong>: Value of data minimum left bounds.</p></li>
+<li><p><strong>ZD0</strong>: Value of data minimum.</p></li>
+<li><p><strong>ZDR</strong>: Value of data minimum right bounds.</p></li>
+<li><p><strong>XTL</strong>: Longitude of minimum (for trough model) left bounds.</p></li>
+<li><p><strong>XT0</strong>: Longitude of minimum (for trough model).</p></li>
+<li><p><strong>XTR</strong>: Longitude of minimum (for trough model) right bounds.</p></li>
+<li><p><strong>YTL</strong>: Latitude of minimum (for trough model) left bounds.</p></li>
+<li><p><strong>YT0</strong>: Latitude of minimum (for trough model).</p></li>
+<li><p><strong>YTR</strong>: Latitude of minimum (for trough model) right bounds.</p></li>
+<li><p><strong>ZTL</strong>: Model prediction (for trough model) at left bounds.</p></li>
+<li><p><strong>ZT0</strong>: Model prediction minimum (for trough model).</p></li>
+<li><p><strong>ZTR</strong>: Model prediction (for trough model) at right bounds.</p></li>
+<li><p><strong>XBL</strong>: Longitude of minimum (for blend model) left bounds.</p></li>
+<li><p><strong>XB0</strong>: Longitude of minimum (for blend model).</p></li>
+<li><p><strong>XBR</strong>: Longitude of minimum (for blend model) right bounds.</p></li>
+<li><p><strong>YBL</strong>: Latitude of minimum (for blend model) left bounds.</p></li>
+<li><p><strong>YB0</strong>: Latitude of minimum (for blend model).</p></li>
+<li><p><strong>YBR</strong>: Latitude of minimum (for blend model) right bounds.</p></li>
+<li><p><strong>ZBL</strong>: Model prediction (for blend model) at left bounds.</p></li>
+<li><p><strong>ZB0</strong>: Model prediction minimum (for blend model).</p></li>
+<li><p><strong>ZBR</strong>: Model prediction (for blend model) at right bounds.</p></li>
+<li><p><strong>XEL</strong>: Longitude of maximum slope (for blend model) left bounds.</p></li>
+<li><p><strong>XE0</strong>: Longitude of maximum slope (for blend model).</p></li>
+<li><p><strong>XER</strong>: Longitude of maximum slope (for blend model) right bounds.</p></li>
+<li><p><strong>YEL</strong>: Latitude of maximum slope (for blend model) left bounds.</p></li>
+<li><p><strong>YE0</strong>: Latitude of maximum slope (for blend model).</p></li>
+<li><p><strong>YER</strong>: Latitude of maximum slope (for blend model) right bounds.</p></li>
+<li><p><strong>ZEL</strong>: Model prediction at maximum slope (for blend model) at left bounds.</p></li>
+<li><p><strong>ZE0</strong>: Model prediction at maximum slope (for blend model).</p></li>
+<li><p><strong>ZER</strong>: Model prediction at maximum slope (for blend model) at right bounds.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>
+<a class="reference internal" href="fzblender.html"><span class="doc">fzblender</span></a>,
+<a class="reference internal" href="fzinformer.html"><span class="doc">fzinformer</span></a>,
+<a class="reference internal" href="fzmapper.html"><span class="doc">fzmapper</span></a>,
+<a class="reference internal" href="fzmodeler.html"><span class="doc">fzmodeler</span></a>,
+<a class="reference internal" href="fzprofiler.html"><span class="doc">fzprofiler</span></a>,
+<a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a>,
+<a class="reference internal" href="mlconverter.html"><span class="doc">mlconverter</span></a></p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<p>Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
+2015, “Semiautomatic fracture zone tracking”, <em>Geochem. Geophys. Geosyst.</em>, 16 (7), 2462–2472.
+<a class="reference external" href="https://doi.org/10.1002/2015GC005853">https://doi.org/10.1002/2015GC005853</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../geodesy/psvelo.html" class="btn btn-neutral float-left" title="psvelo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fzblender.html" class="btn btn-neutral float-right" title="fzblender" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -39,7 +39,7 @@ Consider the common option **-i** that is used to specify which input columns th
 can it select *which* columns (e.g., **-i**\ 3,2,7-9), it allows optional modifiers that may be
 repeated for each column (or column group) that handles basic data transformations.  For instance,
 let us imagine that the above example needs column 3 to be used as is, but column 2 needs
-to be converted by the log10 operator and columns 7-9 must be scaled by 10 and offset by -5.  In
+to be converted by the :math:`\log_{10}` operator and columns 7-9 must be scaled by 10 and offset by -5.  In
 standard (short) GMT syntax we would write
 
 ::
@@ -51,7 +51,7 @@ long-format syntax it will instead be
 
 ::
 
-    --read-columns=3,2+log10,7-9+scale=10+offset=-5
+    --read-columns=3,2+:math:`\log_{10}`,7-9+scale=10+offset=-5
 
 which most users might be able to decipher.
 

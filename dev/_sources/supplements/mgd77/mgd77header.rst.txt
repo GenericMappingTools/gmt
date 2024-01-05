@@ -234,9 +234,9 @@ Examples
 
 To generate an MGD77 header from A77 input, try
 
-   ::
+::
 
-    gmt mgd77header km0201 -Hkmheaderitems.txt -Mf > km0201.h77
+  gmt mgd77header km0201 -Hkmheaderitems.txt -Mf > km0201.h77
 
 See Also
 --------
@@ -255,4 +255,4 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 `http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

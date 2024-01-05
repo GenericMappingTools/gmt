@@ -5,32 +5,36 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdinterpolate &mdash; GMT 6.4.0 documentation</title>
+  <title>grdinterpolate &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js"></script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,14 +53,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +73,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +121,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +139,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="modules.html">Modules</a> &raquo;</li>
-      <li>grdinterpolate</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">grdinterpolate</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdinterpolate.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,15 +152,15 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdinterpolate">
-<h1>grdinterpolate<a class="headerlink" href="#grdinterpolate" title="Permalink to this heading">¶</a></h1>
+<h1>grdinterpolate<a class="headerlink" href="#grdinterpolate" title="Link to this heading"></a></h1>
 <p>Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt grdinterpolate</strong> <em>cube</em> | <em>grd1 grd2 …</em>
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outfile</em>
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+v</strong><em>vname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>] ]
-[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>table</em>|<em>line</em> ]
-[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>l</strong>|<strong>a</strong>|<strong>c</strong>|<strong>n</strong>[<strong>+1</strong>|<strong>2</strong>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>line</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>a</strong>|<strong>c</strong>|<strong>e</strong>|<strong>l</strong>|<strong>n</strong>|<strong>s</strong><em>p</em>[<strong>+d1</strong>|<strong>2</strong>] ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>x/y</em>|<em>pointfile</em>[<strong>+h</strong><em>header</em>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em> ]
@@ -175,10 +179,10 @@
 [ <strong>-s</strong><a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
-<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong>grdinterpolate</strong> reads a single 3-D netCDF data cube (or a set of 2-D layers)
 and interpolates along the 3rd dimension for one or more output levels.  The data cube must
 be organized with one or more layers representing the (common) <em>x</em> and <em>y</em> dimensions
@@ -190,14 +194,14 @@ more level-series, or we slice the 3-D cube along an arbitrary vertical slice an
 2-D slice to a grid file (<a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>).</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>cube</em></dt><dd><p>Name of a 3-D netCDF data cube to be interpolated. Alternatively, with <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>,
 you can specify a set of 2-D grid layers instead.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>outfile</em></dt><dd><p>This is the output 3D data cube file.  If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> only selects a
+<dt><strong>-G</strong><em>outfile</em></dt><dd><p>This is the output 3-D data cube file.  If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> only selects a
 single layer then the data cube collapses to a regular 2-D grid file.
 If <em>outfile</em> contains a C-language format statement for a floating
 point number (e.g., layer_%6.6f.grd) then we write a series of 2-D
@@ -208,64 +212,92 @@ Also see <a class="reference internal" href="#s"><span><strong>-S</strong></span
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
-<dl class="simple" id="d">
-<dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+c</strong>[-|<em>cpt</em>]][<strong>+d</strong><em>dname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>]</dt><dd><p>Give one or more combinations for values <em>xname</em>, <em>yname</em>, <em>zname</em> (3rd dimension in cube),
-and <em>dname</em> (data value name) and give the names of those variables
-and in square bracket their units, e.g., “distance [km]”), <em>cpt</em> to set a default CPT for
-this grid [turbo] or give - to remove any default CPT already set, <em>scale</em> (to multiply data values after
-read [normally 1]), <em>offset</em> (to add to data after scaling [normally 0]),
-<em>invalid</em> (a value to represent missing data [NaN]), <em>title</em> (anything you
-like), and <em>remark</em> (anything you like). Items not listed will remain untouched.
-Give a blank name to completely reset a particular string.
-Use quotes to group texts with more than one word.  If any of your text contains plus symbols
-you need to escape them (place a backslash before each plus-sign) so they are not confused with the
-option modifiers.  Alternatively, you can place the entire double-quoted string inside single
-quotes.  If you have shell variables that contain plus symbols you cannot use single quotes but
-you can escape the plus symbols in a variable using constructs like ${variable/+/\+}.
-Note that for geographic grids and cubes (<strong>-fg</strong>) <em>xname</em> and <em>yname</em> are set automatically.
-Normally, the data netCDF variable is called “z” (grid) or “cube” (data cube). You can name this
-netCDF variable via <strong>+v</strong><em>varname</em>.</p>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
+<dl id="d">
+<dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+c</strong>[-|<em>cpt</em>]][<strong>+d</strong><em>dname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>]</dt><dd><p>Control names and units of netCDF grid and cube meta-data.  For dimensions with units,
+add the unit in square bracket (e.g., “distance [km]”). Select one or more of these modifiers:</p>
+<ul class="simple">
+<li><p><strong>+c</strong> - Append <em>cpt</em> to set a default CPT for this grid [turbo] or give - to remove any default CPT already set.</p></li>
+<li><p><strong>+d</strong> - Set <em>dname</em>, the data value name.</p></li>
+<li><p><strong>+n</strong> - Set the <em>invalid</em> number used to indicate a NaN or missing value.</p></li>
+<li><p><strong>+o</strong> - Set the <em>offset</em> to add to data after first scaling the data [0].</p></li>
+<li><p><strong>+r</strong> - Set a <em>remark</em> used for this grid (any sentence you prefer).</p></li>
+<li><p><strong>+s</strong> - Set the <em>scale</em> used fto multiply data values after they are read [1].</p></li>
+<li><p><strong>+t</strong> - Set a <em>title</em> used for this grid (any sentence you prefer).</p></li>
+<li><p><strong>+v</strong> - Append <em>varname</em>, the variable name of the data set.</p></li>
+<li><p><strong>+x</strong> - Append <em>xname</em>, the name of the x-coordinate (and optional unit in brackets).</p></li>
+<li><p><strong>+y</strong> - Append <em>yname</em>, the name of the y-coordinate (and optional unit in brackets).</p></li>
+<li><p><strong>+z</strong> - For 3-D cubes; append <em>zname</em>, the name of the z-coordinate (and optional unit in brackets).</p></li>
+</ul>
+<p>Give a blank name to completely reset a particular string.
+Use quotes to group texts with more than one word.  If any
+of your text contains plus symbols you need to escape them
+(place a backslash before each plus-sign) so they are not
+confused with the option modifiers.  Alternatively, you can
+place the entire double-quoted string inside single quotes.
+If you have shell variables that contain plus symbols you
+cannot use single quotes but you can escape the plus symbols
+in a variable using constructs like ${variable/+/\+}. Note
+that for geographic grids and cubes (<strong>-fg</strong>), <em>xname</em> and
+<em>yname</em> are set automatically. Normally, the data netCDF
+variable is called “z” (grid) or “cube” (data cube). You can
+rename this netCDF variable via <strong>+v</strong>.</p>
 </dd>
 </dl>
-<dl class="simple" id="e">
-<dt><strong>-E</strong><em>table</em>|<em>line</em>[,<em>line</em>,…][<strong>+a</strong><em>az</em>][<strong>+g</strong>][<strong>+i</strong><em>inc</em>][<strong>+l</strong><em>length</em>][<strong>+n</strong><em>np</em>][<strong>+o</strong><em>az</em>][<strong>+p</strong>][<strong>+r</strong><em>radius</em>][<strong>+x</strong>]</dt><dd><p>Specify a crossectinonal profile via a <em>file</em> or from specified <em>line</em> coordinates and modifiers.
-If a <em>file</em>, it must be contain a single segment with either <em>lon lat</em> or <em>lon lat dist</em> records.
-These must be equidistant.  Alternatively, the format of each <em>line</em> is
-<em>start</em>/<em>stop</em>, where <em>start</em> or <em>stop</em> are <em>lon</em>/<em>lat</em> (<em>x</em>/<em>y</em> for
-Cartesian data). You may append <strong>+i</strong><em>inc</em> to set the sampling interval;
-if not given then we default to half the minimum grid interval.  If your <em>line</em> starts and
-ends at the same latitude you can force sampling along the parallel with <strong>+p</strong> [great circle].
-For a <em>line</em> along parallels or meridians you can add <strong>+g</strong> to report degrees of longitude or latitude
-instead of great circle distances starting at zero.  Append <strong>+x</strong> to compute distances
-along a loxodrome (rhumbline) instead of great circle. Instead of two coordinates
-you can specify an origin and one of <strong>+a</strong>, <strong>+o</strong>, or <strong>+r</strong>.
-The <strong>+a</strong> sets the azimuth of a profile of given
-length starting at the given origin, while <strong>+o</strong> centers the profile
-on the origin; both require <strong>+l</strong>. For circular sampling specify
-<strong>+r</strong> to define a circle of given radius centered on the origin;
-this option requires either <strong>+n</strong> or <strong>+i</strong>.  The <strong>+n</strong><em>np</em> modifier sets
-the desired number of points, while <strong>+l</strong><em>length</em> gives the
-total length of the profile.
-Also note that only one distance unit can be chosen.  Giving different units
+<dl id="e">
+<dt><strong>-E</strong><em>table</em>|<em>origin</em><a href="#id1"><span class="problematic" id="id2">|</span></a><em>line</em>[,<em>line</em>,…][<strong>+a</strong><em>az</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+g</strong>][<strong>+i</strong><em>inc</em>][<strong>+l</strong><em>length</em>][<strong>+n</strong><em>np</em>][<strong>+o</strong><em>az</em>][<strong>+p</strong>][<strong>+r</strong><em>radius</em>][<strong>+x</strong>]</dt><dd><p>Specify one or more profiles along which we will sample the grid (or cube).
+There are several way to supply or create the profiles:</p>
+<ul class="simple">
+<li><p>Give your custom profiles via a <em>table</em> containing <em>lon lat</em> points.</p></li>
+<li><p>Given an <em>origin</em> (and <em>azimuth</em> and <em>length</em> and relevant modifiers below).</p></li>
+<li><p>Give one or more lines. The format of each <em>line</em> is <em>start</em>/<em>stop</em>, where
+<em>start</em> or <em>stop</em> are either <em>lon</em>/<em>lat</em> (<em>x</em>/<em>y</em> for Cartesian data) or a
+2-character key that uses the <a class="reference internal" href="text.html"><span class="doc">text</span></a>-style justification format to
+specify a point on the map as [LCR][BMT]. In addition to line coordinates,
+you can use Z-, Z+ to mean the global minimum and maximum locations in the
+grid (only available if a single input grid is given) or top layer in a cube
+(only for doc:<cite>grdinterpolate</cite>).</p></li>
+</ul>
+<p>Choose among several modifiers to create profiles:</p>
+<ul class="simple">
+<li><p><strong>+a</strong> - Set the <em>azimuth</em> of a profile of given <em>length</em> (see <strong>+l</strong>) starting at the given <em>origin</em>.</p></li>
+<li><p><strong>+c</strong> - Connect multiple profile segments with shared joints into a single segment.</p></li>
+<li><p><strong>+d</strong> - Compute the along-track distances of the profiles.</p></li>
+<li><p><strong>+g</strong> - Report degrees of longitude or latitude instead of great circle distances starting at zero [Default].</p></li>
+<li><p><strong>+i</strong> - Append <em>inc</em> to set the sampling interval; if not given then we default to half the minimum grid interval.</p></li>
+<li><p><strong>+l</strong> - Append the total <em>length</em> of the profile if <strong>+a</strong> or <strong>+o</strong> are used with an <em>origin</em>.</p></li>
+<li><p><strong>+n</strong> - Append the desired number of points along profile (which determines the sampling interval).</p></li>
+<li><p><strong>+o</strong> - Like <strong>+a</strong>, but centers the profile on the given <em>origin</em> in the <em>azimuth</em> direction.</p></li>
+<li><p><strong>+p</strong> - Force sampling along the parallel if your <em>line</em> starts and ends at the same latitude [Great circle].</p></li>
+<li><p><strong>+r</strong> - Append <em>radius</em> for circular sampling along small circle of given radius centered on the <em>origin</em>.
+Requires either <strong>+n</strong> or <strong>+i</strong>.</p></li>
+<li><p><strong>+x</strong> - Compute distances along a loxodrome (i.e., rhumbline) instead of along the great circle.</p></li>
+</ul>
+<p><strong>Notes</strong>: (1) Only one distance unit can be chosen.  Giving different units
 will result in an error.  If no units are specified we default to
-great circle distances in km (if geographic).  If working with geographic
-data you can use <strong>-j</strong> to control distance calculation mode [Great Circle].
-Use <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> to set the output grid file name.</p>
+great circle distances in km (if geographic). (2) If working with geographic
+data you can use <strong>-j</strong> to control the distance calculation mode [Great Circle].</p>
 </dd>
 </dl>
-<dl class="simple" id="f">
-<dt><strong>-Fl</strong>|<strong>a</strong>|<strong>c</strong>|<strong>n</strong>[<strong>+1</strong>|<strong>2</strong>]</dt><dd><p>Choose from <strong>l</strong> (Linear), <strong>a</strong> (Akima spline), <strong>c</strong> (natural
-cubic spline), and <strong>n</strong> (no interpolation: nearest point) [Default
-is <strong>-Fa</strong>]. You may change the default interpolant; see
-<a class="reference internal" href="gmt.conf.html#term-GMT_INTERPOLANT"><span class="xref std std-term">GMT_INTERPOLANT</span></a> in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file.
+<dl id="f">
+<dt><strong>-Fl</strong>|<strong>a</strong>|<strong>c</strong>|<strong>e</strong>|<strong>l</strong>|<strong>n</strong>|<strong>s</strong><em>p</em>[<strong>+d1</strong>|<strong>2</strong>]</dt><dd><p>Choose the desired 1-D spline interpolant from one of these directives:</p>
+<ul class="simple">
+<li><p><strong>a</strong> - Akima spline [Default].</p></li>
+<li><p><strong>e</strong> - Step curve.</p></li>
+<li><p><strong>c</strong> - Natural cubic spline.</p></li>
+<li><p><strong>l</strong> - Linear interpolant.</p></li>
+<li><p><strong>n</strong> - No interpolation, just select nearest point.</p></li>
+<li><p><strong>s</strong> - Smoothing cubic spline; append fit parameter <em>p</em> for an approximate fit.</p></li>
+</ul>
+<p>You may change the GMT default interpolant; see <a class="reference internal" href="gmt.conf.html#term-GMT_INTERPOLANT"><span class="xref std std-term">GMT_INTERPOLANT</span></a> in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file.
 You may optionally evaluate the first or second derivative of the spline
-by appending <strong>+1</strong> or <strong>+2</strong>, respectively.</p>
+by appending <strong>+d1</strong> or <strong>+d2</strong>, respectively. <strong>Note</strong>: If you use derivatives
+with directives <strong>e</strong> or <strong>n</strong> then the result is always zero.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option will select a subsection of the grid. If this subsection exceeds the
-boundaries of the grid, only the common region will be output. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+boundaries of the grid, only the common region will be output. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -286,16 +318,16 @@ will use the running point number to create unique file names.</p>
 </dl>
 <dl class="simple" id="t">
 <dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em></dt><dd><p>Make evenly spaced time-steps from <em>min</em> to <em>max</em> by <em>inc</em> [Default uses input times].
-For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.  <strong>Note</strong>: If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is set
+For details on array creation, see <a class="reference internal" href="#generate-1-d-array">Generate 1-D Array</a>.  <strong>Note</strong>: If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is set
 and no output times are set with <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> we simply rewrite the grid-produced cube as
 a 3-D data cube file and exit. Also, for <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> and <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> you may also just give
-a range via -T**<em>min/max</em> to limit the layers considered, with no interpolation
+a range via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>min/max</em> to limit the layers considered, with no interpolation
 between the selected layers.  If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is not given and neither <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> nor <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> are
 set, then we simply extract all layers within the bounds set by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
@@ -346,7 +378,7 @@ input/output in <strong>-S</strong><em>table</em>. [Default is (longitude,latitu
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+<dt><strong>-o</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -369,11 +401,11 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dd>
 </dl>
 </section>
-<section id="generate-1d-array">
-<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
+<section id="generate-1-d-array">
+<h2>Generate 1-D Array<a class="headerlink" href="#generate-1-d-array" title="Link to this heading"></a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.
-Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
+Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3.1/4.2/0.1<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">3</span>.1
 <span class="m">3</span>.2
 <span class="m">3</span>.3
@@ -381,21 +413,22 @@ Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in step
 <span class="m">3</span>.5
 <span class="m">3</span>.6
 <span class="m">3</span>.7
+...
 </pre></div>
 </div>
-<p>Append <strong>+b</strong> if we should take log2 of <em>min</em> and <em>max</em>, get their nearest integers,
-build an equidistant log2-array using <em>inc</em> integer increments in log2, then undo
-the log2 conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3/20/1+b <span class="nv">T</span> <span class="o">=</span>
+<p>Append <strong>+b</strong> if we should take <span class="math notranslate nohighlight">\(\log_2\)</span> of <em>min</em> and <em>max</em>, get their nearest integers,
+build an equidistant <span class="math notranslate nohighlight">\(\log_2\)</span>-array using <em>inc</em> integer increments in <span class="math notranslate nohighlight">\(\log_2\)</span>, then undo
+the <span class="math notranslate nohighlight">\(\log_2\)</span> conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3/20/1+b<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">4</span>
 <span class="m">8</span>
 <span class="m">16</span>
 </pre></div>
 </div>
-<p>Append <strong>+l</strong> if we should take log10 of <em>min</em> and <em>max</em> and build an
+<p>Append <strong>+l</strong> if we should take <span class="math notranslate nohighlight">\(\log_{10}\)</span> of <em>min</em> and <em>max</em> and build an
 array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
 (1-9 times magnitude).  E.g., <strong>-T</strong>7/135/2<strong>+l</strong> will produce this sequence:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T7/135/2+l <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T7/135/2+l<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">10</span>
 <span class="m">20</span>
 <span class="m">50</span>
@@ -403,7 +436,7 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 </pre></div>
 </div>
 <p>For output values less frequently than every magnitude, use a negative integer <em>inc</em>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T1e-4/1e4/-2+l <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T1e-4/1e4/-2+l<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>.0001
 <span class="m">0</span>.01
 <span class="m">1</span>
@@ -413,7 +446,7 @@ array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude
 </div>
 <p>Append <strong>+i</strong> if <em>inc</em> is a fractional number and it is cleaner to give its reciprocal
 value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0/60/24+i <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T0/60/24+i<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>
 <span class="m">0</span>.0416666666667
 <span class="m">0</span>.0833333333333
@@ -424,7 +457,7 @@ value instead.  To set up times for a 24-frames per second animation lasting 1 m
 </div>
 <p>Append <strong>+n</strong> if <em>inc</em> is meant to indicate the <em>number</em> of equidistant coordinates
 instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.44/7.82/5+n <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T3.44/7.82/5+n<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">3</span>.44
 <span class="m">4</span>.535
 <span class="m">5</span>.63
@@ -435,7 +468,7 @@ instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
 <p>Alternatively, let <em>inc</em> be a <em>file</em> with output coordinates in the first column,
 or provide a comma-separated <em>list</em> of specific coordinates, such as the first 6
 Fibonacci numbers:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0,1,1,2,3,5 <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T0,1,1,2,3,5<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">0</span>
 <span class="m">1</span>
 <span class="m">1</span>
@@ -444,7 +477,9 @@ Fibonacci numbers:</p>
 <span class="m">5</span>
 </pre></div>
 </div>
-<p><strong>Note</strong>: Should you need to ensure that the coordinates are unique and sorted (in case the
+<p><strong>Notes</strong>: (1) If you need to pass the list nodes via a dataset file yet be understood
+as a list (i.e., no interpolation), then you must set the file header to contain the string “LIST”. (2) Should
+you need to ensure that the coordinates are unique and sorted (in case the
 <em>file</em> or <em>list</em> are not sorted or have duplicates) then supply the <strong>+u</strong> modifier.</p>
 <p>If you only want a <em>single</em> value
 then you must append a comma to distinguish the list from the setting of an increment.</p>
@@ -452,7 +487,7 @@ then you must append a comma to distinguish the list from the setting of an incr
 <strong>y</strong>ear, m<strong>o</strong>nth, <strong>d</strong>ay, <strong>h</strong>our, <strong>m</strong>inute, and <strong>s</strong>econd
 to the given increment; add <strong>+t</strong> to ensure time column (or use <strong>-f</strong>). <strong>Note</strong>: The internal time
 unit is still controlled independently by <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>.  The first 7 days of March 2020:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T2020-03-01T/2020-03-07T/1d <span class="nv">T</span> <span class="o">=</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-o0<span class="w"> </span>-T2020-03-01T/2020-03-07T/1d<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span>
 <span class="m">2020</span>-03-01T00:00:00
 <span class="m">2020</span>-03-02T00:00:00
 <span class="m">2020</span>-03-03T00:00:00
@@ -473,7 +508,7 @@ possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as requir
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
 </section>
 <section id="file-order">
-<h2>File Order<a class="headerlink" href="#file-order" title="Permalink to this heading">¶</a></h2>
+<h2>File Order<a class="headerlink" href="#file-order" title="Link to this heading"></a></h2>
 <p>If you provide a series of 2-D files and thus separately assigning the
 level via <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>, then you must make sure that the order the grids are given
 on the command line matches the levels you provide via <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>.  Unless your
@@ -481,7 +516,7 @@ files are named in lexical order you must be careful with using wildcards
 to list all the grids (e.g., *.nc).</p>
 </section>
 <section id="time-coordinates">
-<h2>Time Coordinates<a class="headerlink" href="#time-coordinates" title="Permalink to this heading">¶</a></h2>
+<h2>Time Coordinates<a class="headerlink" href="#time-coordinates" title="Link to this heading"></a></h2>
 <p>Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable’s <strong>unit</strong> attribute is parsed to
 determine the unit and epoch of the time coordinate in the grid. Values
@@ -493,7 +528,7 @@ or absolute time when using the option <strong>-f0T</strong>, <strong>-f1T</stro
 for x, y, or z coordinate, respectively.</p>
 </section>
 <section id="series-creation">
-<h2>Series creation<a class="headerlink" href="#series-creation" title="Permalink to this heading">¶</a></h2>
+<h2>Series creation<a class="headerlink" href="#series-creation" title="Link to this heading"></a></h2>
 <p>The (optional) table-reading and table-producing <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> option may require some
 of the standard common options associated with table i/o, such as <strong>-b</strong>, <strong>-i</strong>,
 <strong>o</strong>, etc., thus these options are available to <strong>grdinterpolate</strong> as well.
@@ -502,42 +537,42 @@ of the grid nodes, we are resampling each 2-D layer at the given points via
 <a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a>, hence the availability of the <strong>-n</strong> option.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p>To extract a single, new 2-D layer from the temperature.nc 3-D cube for level 3400
 using a cubic spline, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate temperature.nc -T3400 -Fc -Gtemp_3400.nc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>temperature.nc<span class="w"> </span>-T3400<span class="w"> </span>-Fc<span class="w"> </span>-Gtemp_3400.nc
 </pre></div>
 </div>
 <p>To extract a single, new 2-D layer from the 3-D cube implied by the individual grids
 layers_*.nc, with individual layer values given via z.txt, for level 3400
 using a linear spline, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate layers_*.nc -Zz.txt -T3400 -Fl -Gtemp_3400.nc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>layers_*.nc<span class="w"> </span>-Zz.txt<span class="w"> </span>-T3400<span class="w"> </span>-Fl<span class="w"> </span>-Gtemp_3400.nc
 </pre></div>
 </div>
 <p>To resample the temperature.nc 3-D cube for all levels from
 1500 to 2500 in steps of 50, using an Akima spline, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate temperature.nc -T1500/2500/50 -Gtemperature_1500_2500.nc -Fa
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>temperature.nc<span class="w"> </span>-T1500/2500/50<span class="w"> </span>-Gtemperature_1500_2500.nc<span class="w"> </span>-Fa
 </pre></div>
 </div>
 <p>The same, but this time write individual 2-D grids per layer, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate temperature.nc -T1500/2500/50 -Gtemperature_%4.0f.nc -Fa
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>temperature.nc<span class="w"> </span>-T1500/2500/50<span class="w"> </span>-Gtemperature_%4.0f.nc<span class="w"> </span>-Fa
 </pre></div>
 </div>
 <p>To extract a time-series through the grids deformation_*.nc at the location (115W, 33N),
 with the times of each grid provided by the file dates.txt, and append the string
 “Some like it hot” to the segment header for the series, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate deformation_*.nc -Zdates.txt -S115W/33N+h<span class="s2">&quot;Some like it hot&quot;</span> &gt; record.txt
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>deformation_*.nc<span class="w"> </span>-Zdates.txt<span class="w"> </span>-S115W/33N+h<span class="s2">&quot;Some like it hot&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>record.txt
 </pre></div>
 </div>
 <p>To extract a vertical slice of the 3-D grid S362ANI_kmps.nc with seismic velocities that goes
 through the Hawaii hotspot, selecting cube vs (Isotropic Shear Velocity) and letting the
 distances be longitude degrees along the parallel, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate S362ANI_kmps.nc?vs -E180/20/220/20+i1d+g+p -T25/500/25 -Gslice.nc
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdinterpolate<span class="w"> </span>S362ANI_kmps.nc?vs<span class="w"> </span>-E180/20/220/20+i1d+g+p<span class="w"> </span>-T25/500/25<span class="w"> </span>-Gslice.nc
 </pre></div>
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>,
@@ -557,8 +592,8 @@ distances be longitude degrees along the parallel, try:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

@@ -5,31 +5,34 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>x2sys_init &mdash; GMT 6.4.0 documentation</title>
+  <title>x2sys_init &mdash; GMT 6.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../../_static/togglebutton.js"></script>
+        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -49,14 +52,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> GMT
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GMT
           </a>
               <div class="version">
-                6.4
+                6.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -65,35 +72,29 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Technical Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
-</ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
@@ -119,6 +120,8 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
         </ul>
     
 
@@ -135,9 +138,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../modules.html">Modules</a> &raquo;</li>
-      <li>x2sys_init</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">x2sys_init</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/x2sys/x2sys_init.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -148,10 +151,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="x2sys-init">
-<h1>x2sys_init<a class="headerlink" href="#x2sys-init" title="Permalink to this heading">¶</a></h1>
+<h1>x2sys_init<a class="headerlink" href="#x2sys-init" title="Link to this heading"></a></h1>
 <p>Initialize a new x2sys track database</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt x2sys_init</strong> <em>TAG</em> <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>fmtfile</em>
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>suffix</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> ]
@@ -163,10 +166,10 @@
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><strong>t</strong>|<strong>d</strong><em>gap</em> ]
 [ <strong>-j</strong><a class="reference internal" href="../../gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
-<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong>x2sys_init</strong> is the starting point for anyone wishing to use x2sys;
 it initializes a set of data bases that are particular to one kind of
 track data. These data, their associated data bases, and key parameters
@@ -190,7 +193,7 @@ X2SYS_HOME to a directory where you have write permission, which  is
 where x2sys can keep track of your settings.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>TAG</em></dt><dd><p>The unique name of this data type x2sys TAG.</p>
 </dd>
@@ -204,7 +207,7 @@ current directory. If <a class="reference internal" href="#d"><span><strong>-D</
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="e">
 <dt><strong>-E</strong><em>suffix</em></dt><dd><p>Specifies the file extension (suffix) for these data files. If not
 given we use the format definition file prefix as the suffix (see <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>).</p>
@@ -259,10 +262,10 @@ and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).<
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
 countries given by the codes. Simply append one or more comma-separated countries using either the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
 country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
 or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
-Finally, append any <a class="reference internal" href="../../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+Finally, append any <a class="reference internal" href="../../coast.html#dcw-collections"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
 the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
@@ -282,7 +285,7 @@ the region.</p></li>
 </li>
 <li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
 where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
-(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../reference/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
 actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
 <strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
 This short-hand requires the <strong>+u</strong> modifier.</p></li>
@@ -294,7 +297,7 @@ given via <strong>-I</strong> to create the corresponding region. This method ca
 <strong>-RCM</strong><em>25</em>/<em>25</em>/<em>50</em>/<em>50</em> specifies a <em>50</em>x<em>50</em> grid centered on <em>25</em>,<em>25</em>.</p></li>
 <li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending
 on the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration
-(see <a class="reference internal" href="../../cookbook/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
+(see <a class="reference internal" href="../../reference/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
 <li><p><strong>-Ra</strong>[<strong>uto</strong>] or <strong>-Re</strong>[<strong>xact</strong>]. Under modern mode, and for <em>plotting</em> modules only, you can automatically
 determine the region from the data used. You can either get the exact area using <strong>-Re</strong> [Default if no <strong>-R</strong>
 is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
@@ -302,7 +305,7 @@ the data range using <strong>-Ra</strong>.</p></li>
 </ol>
 </div></blockquote>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -314,7 +317,7 @@ are exceeded then a data gap is assumed and no COE will be determined.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong> <a class="reference internal" href="../../gmt.html#distcalc-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Determine how spherical distances are calculated.</p>
+<dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong> <a class="reference internal" href="../../gmt.html#distcalc-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Determine how spherical distances or coordinate transformations are calculated.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -330,7 +333,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="format-definition-files">
-<h2>Format Definition Files<a class="headerlink" href="#format-definition-files" title="Permalink to this heading">¶</a></h2>
+<h2>Format Definition Files<a class="headerlink" href="#format-definition-files" title="Link to this heading"></a></h2>
 <p>These *.fmt files contain information about the data file format and
 have two sections: (1) header information and (2) column
 information. All header information starts with the character # in the
@@ -380,7 +383,7 @@ ASCII x, y tables), xyz (same, with one z-column), geo (for plain ASCII
 longitude, latitude files), and geoz (same, with one z-column).</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <p>If you have a large set of track data files you can organize them using
 the x2sys tools. Here we will outline the steps. Let us assume that your
 track data file format consist of 2 header records with text information
@@ -463,11 +466,9 @@ these line track files. Assuming these contain geographic data and that
 we want to keep track of the data distribution at a 1 x 1 degree
 resolution, with distances in km calculated along geodesics and with
 speeds given in knots, we may run</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_init LINE -V -G -Dline -Rg -je -Ndk -Nsn -I1/1 -Etrk
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>x2sys_init<span class="w"> </span>LINE<span class="w"> </span>-V<span class="w"> </span>-G<span class="w"> </span>-Dline<span class="w"> </span>-Rg<span class="w"> </span>-je<span class="w"> </span>-Ndk<span class="w"> </span>-Nsn<span class="w"> </span>-I1/1<span class="w"> </span>-Etrk
 </pre></div>
 </div>
-</div></blockquote>
 <p>where we have selected LINE to be our x2sys tag. When x2sys tools try to
 read your line data files they will first look in the current directory
 and second look in the file <em>TAG</em>_paths.txt for a list of additional
@@ -491,7 +492,7 @@ actually observed (not all tracks may have all three kinds of
 observations everywhere). For instance, if your tracks are listed in
 the file tracks.lis we may run this command:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_binlist -V -TLINE <span class="o">=</span>tracks.lis &gt; tracks.tbf
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>x2sys_binlist<span class="w"> </span>-V<span class="w"> </span>-TLINE<span class="w"> </span><span class="o">=</span>tracks.lis<span class="w"> </span>&gt;<span class="w"> </span>tracks.tbf
 </pre></div>
 </div>
 </div></blockquote>
@@ -499,7 +500,7 @@ the file tracks.lis we may run this command:</p>
 <dt><strong>Update index data base:</strong></dt><dd><p>Next, the track bin-index files are fed to <a class="reference internal" href="x2sys_put.html"><span class="doc">x2sys_put</span></a> which will
 insert the information into the TAG databases:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_put -V -TLINE tracks.tbf
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>x2sys_put<span class="w"> </span>-V<span class="w"> </span>-TLINE<span class="w"> </span>tracks.tbf
 </pre></div>
 </div>
 </div></blockquote>
@@ -509,7 +510,7 @@ certain sub-region, and optionally limit the search to those tracks
 that have a particular combination of observables. E.g., to find all
 the tracks which has both obs1 and obs3 inside the specified region, run</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_get -V -TLINE -R20/40/-40/-20 -Fobs1,obs3 &gt; tracks.tbf
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>x2sys_get<span class="w"> </span>-V<span class="w"> </span>-TLINE<span class="w"> </span>-R20/40/-40/-20<span class="w"> </span>-Fobs1,obs3<span class="w"> </span>&gt;<span class="w"> </span>tracks.tbf
 </pre></div>
 </div>
 </div></blockquote>
@@ -518,11 +519,11 @@ the tracks which has both obs1 and obs3 inside the specified region, run</p>
 and enhanced netCDF-based MGD77+ files) and the old *.gmt files
 manipulated by the mgg supplements; for these data sets the <strong>-j</strong>
 and <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> will default to great circle distance calculation in km
-and speed in m/s. There are also format definition files for plain x,y[,z]
-and lon,lat[,z] tracks. To initiate new track databases to be used
+and speed in m/s. There are also format definition files for plain (<em>x, y</em>[<em>, z</em>])
+and (<em>lon, lat</em>[<em>, z</em>]) tracks. To initiate new track databases to be used
 with MGD77 data from NCEI, try</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_init MGD77 -V -Dmgd77 -Emgd77 -Rd -Gd -Nsn -I1/1 -Wt900 -Wd5
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>x2sys_init<span class="w"> </span>MGD77<span class="w"> </span>-V<span class="w"> </span>-Dmgd77<span class="w"> </span>-Emgd77<span class="w"> </span>-Rd<span class="w"> </span>-Gd<span class="w"> </span>-Nsn<span class="w"> </span>-I1/1<span class="w"> </span>-Wt900<span class="w"> </span>-Wd5
 </pre></div>
 </div>
 </div></blockquote>
@@ -692,20 +693,20 @@ handled internally in the netCDF format description.</p>
 </dl>
 </section>
 <section id="deprecated-behavior">
-<h2>Deprecated behavior<a class="headerlink" href="#deprecated-behavior" title="Permalink to this heading">¶</a></h2>
+<h2>Deprecated behavior<a class="headerlink" href="#deprecated-behavior" title="Link to this heading"></a></h2>
 <p>The Format Definition Files used to have extension .def but since that is also used
 by GMT’s symbol macro files we have deprecated that extension and now use .fmt.
 However, old .def files are still being read.</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <p>Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
 package. <em>Computers and Geosciences</em>, <strong>36</strong>, 348-354, <a class="reference external" href="https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package">https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package</a>.</p>
 <p>Wessel, P. (1989), XOVER: A cross-over error detector for track data,
 <em>Computers and Geosciences</em>, <strong>15</strong>(3), 333-346, <a class="reference external" href="https://doi.org/10.1016/0098-3004(89)90044-7">https://doi.org/10.1016/0098-3004(89)90044-7</a>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="x2sys_binlist.html"><span class="doc">x2sys_binlist</span></a>,
 <a class="reference internal" href="x2sys_datalist.html"><span class="doc">x2sys_datalist</span></a>,
 <a class="reference internal" href="x2sys_get.html"><span class="doc">x2sys_get</span></a>,
@@ -728,8 +729,8 @@ package. <em>Computers and Geosciences</em>, <strong>36</strong>, 348-354, <a cl
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, The GMT Team.
-      <span class="lastupdated">Last updated on Jun 14, 2022.
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 05, 2024.
       </span></p>
   </div>
 

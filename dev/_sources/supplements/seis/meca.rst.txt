@@ -16,7 +16,7 @@ Synopsis
 |-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
-[ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
+[ |-A|\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *depmin*/*depmax* ]
@@ -27,7 +27,7 @@ Synopsis
 [ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*] ]
 [ |-N| ]
-[ |-T|\ *nplane*\ [/*pen*] ]
+[ |-T|\ [*plane*]\ [**+p**\ *pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -76,12 +76,18 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+p**\ *pen*][**+s**\ *size*]
+**-A**\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
     Offsets focal mechanisms to the alternate longitudes, latitudes given
     in the last two columns of the input file before the (optional) text
-    string. We will draw a line connecting the original and relocated
-    beachball positions and optionally place a small circle at the original
-    location.  Use **+s**\ *size* to set the diameter of the circle [no circle].
+    string. Alternatively, use **+o** to interpret the contents of the two
+    columns as plot offsets instead, or append fixed offset *dx/dy* for all events.
+    We will draw a line connecting the original and relocated
+    beachball positions and optionally place a small symbol [circle] at the original
+    location.  Use **+s**\ *size* to set the size of the symbol [no symbol].
+    Change from circle to any of the standard geometric symbols in :doc:`plot </plot>`,
+    i.e., **a**\|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **i**\|\ **n**\|\ **p**\|\ **s**\|\ **t**\|\ **x** [**c**].
+    The symbol will be filled with the beachball color, but a fixed color (**+g**\ *fill*)
+    or no fill (**+g**) can be selected.
     The line pen defaults to that given via |-W| but can be overridden
     by using **+p**\ *pen* [0.25p].
 
@@ -153,7 +159,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *intens*
-    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    Use the supplied *intens* value (nominally in the ±1 range) to
     modulate the compressional fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
     data column after the required input columns determined by |-S|.
@@ -167,23 +173,23 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Does **NOT** skip symbols that fall outside frame boundary specified
+    Does **not** skip symbols that fall outside frame boundary specified
     by |-R| [Default plots symbols inside frame only].
 
 .. _-T:
 
-**-T**\ [*nplane*][**/**\ *pen*]
+**-T**\ [*plane*]\ [**+p**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
-    If *nplane* is
+    If *plane* is
 
-    *0*: both nodal planes are plotted;
+    *0*: both nodal planes are plotted [Default];
 
     *1*: only the first nodal plane is plotted;
 
     *2*: only the second nodal plane is plotted.
 
-    Append **/**\ *pen* to set the pen attributes for this feature.
-    Default pen is as set by |-W|. [Default: 0].
+    Append **+p**\ *pen* to set alternative pen attributes for this feature 
+    [Default pen is as set by |-W|].
 
     For double couple mechanisms, the |-T| option renders the beach ball transparent
     by drawing only the nodal planes and the circumference.
@@ -203,7 +209,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes for all lines and the outline of symbols
-    [Defaults: default,black,solid]. This
+    [Defaults: 0.25p,black,solid]. This
     setting applies to |-A|, |-L|, |-T|, **-Fp**, **-Ft**, and
     **-Fz**, unless overruled by options to those arguments.
 

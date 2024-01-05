@@ -20,6 +20,7 @@ Synopsis
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
+[ |-D|\ [**+c**][**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
 [ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill* ]
@@ -28,7 +29,7 @@ Synopsis
 [ |-L|\ [*pen*] ]
 [ |-N| ]
 [ |-Q| ]
-[ |-T|\ *nplane*\ [/*pen*] ]
+[ |-T|\ [*plane*]\ [**+p**\ *pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -54,7 +55,7 @@ will plot a cross-section of focal mechanisms.
 The name "coupe" comes from the French
 verb “to cut”.  The best translation is a (vertical) cross section.
 
-Unless |-Q| is used, new file is created with the new coordinates
+Unless |-Q| is used, a new file is created with the new coordinates
 (**x**, **y**) and the mechanism (from lower focal half-sphere for
 horizontal plane, to half-sphere behind a vertical plane). When the
 plane is not horizontal,
@@ -136,6 +137,27 @@ Optional Arguments
     Give a CPT and let compressive part color be
     determined by the z-value in the third column.
 
+.. _-D:
+
+**-D**\ [**+c**][**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
+    Offsets projected focal mechanisms to the alternate distance, depth given
+    in the last two columns of the input file before the (optional) text
+    string. Instead, if alternate geographical coordinates are given in the two columns then use **+c** to first
+    convert them to *distance, depth* coordinates in the crossectional plane, and after projection to
+    plot locations you can further adjust them via a fixed plot offset **+o**\ *dx/dy* .
+    Alternatively, use **+o** to interpret the contents of the two
+    columns as plot offsets instead, or append fixed offset *dx/dy* for all adjusted events plot locations.
+    We will draw a line connecting the original and relocated
+    beachball positions and optionally place a small symbol [circle] at the original
+    location.  Use **+s**\ *size* to set the diameter of the symbol [no symbol].
+    Change from circle to any of the standard geometric symbols in :doc:`plot </plot>`,
+    i.e., **a**\|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **i**\|\ **n**\|\ **p**\|\ **s**\|\ **t**\|\ **x** [**c**].
+    The symbol will be filled with the beachball color, but a fixed color (**+g**\ *fill*)
+    or no fill (**+g**) can be selected.
+    The line pen defaults to that given via |-W| but can be overridden
+    by using **+p**\ *pen* [0.25p]. **Note**: If the cross symbol (**x**) is selected there is no fill since it is
+    just two stroked lines. Use |-W| to set line thickness and append **+c** to color the crosses as other symbols.
+
 .. _-E:
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -202,7 +224,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *intens*
-    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    Use the supplied *intens* value (nominally in the ±1 range) to
     modulate the compressional fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
     data column after the required input columns determined by |-S|.
@@ -216,7 +238,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Does **NOT** skip symbols that fall outside map border [Default plots points inside border only].
+    Does **not** skip symbols that fall outside map border [Default plots points inside border only].
 
 .. _-Q:
 
@@ -225,18 +247,18 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*nplane*][**/**\ *pen*]
+**-T**\ [*plane*]\ [**+p**\ *pen*]
     Plot the nodal planes and outlines the bubble which is transparent.
-    If *nplane* is
+    If *plane* is
 
-    *0*: both nodal planes are plotted;
+    *0*: both nodal planes are plotted [Default];
 
     *1*: only the first nodal plane is plotted;
 
     *2*: only the second nodal plane is plotted.
 
-    Append **/**\ *pen* to set the pen attributes for this feature.
-    Default pen is as set by |-W|. [Default: 0].
+    Append **+p**\ *pen* to set alternative pen attributes for this feature 
+    [Default pen is as set by |-W|].
 
     For double couple mechanisms, the |-T| option renders the beach ball transparent
     by drawing only the nodal planes and the circumference.
@@ -256,7 +278,7 @@ Optional Arguments
 
 **-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for text string or default pen attributes for
-    fault plane edges. [Defaults: default,black,solid].
+    fault plane edges. [Defaults: 0.25p,black,solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
