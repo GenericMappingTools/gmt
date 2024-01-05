@@ -229,7 +229,11 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->F.quantile = 0.5;	/* Default is median */
 	C->F.span = 0.5;	/* Default LMS span is half the data */
 	C->F.mode = GRDFILTER_MODE_KIND_AVE;
-	C->z.n_threads = 1;	/* Default number of threads (for the case of no multi-threading) */
+#ifdef HAVE_GLIB_GTHREAD
+	C->z.n_threads = API->n_cores;	/* Default uses all available threads */
+#else
+	C->z.n_threads = 1;	/* Default number of threads when no multi-threading */
+#endif
 	return (C);
 }
 

@@ -93,7 +93,7 @@ extern "C" {
 #include "gmt_config.h"
 
 #if defined(HAVE_GLIB_GTHREAD) || defined(_OPENMP)
-/* This means we should enable the -x+a|[-]<ncores> common option */
+/* This means we should enable the -x[-]<ncores> common option */
 #define GMT_MP_ENABLED
 #endif
 

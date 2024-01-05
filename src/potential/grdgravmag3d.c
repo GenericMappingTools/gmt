@@ -179,6 +179,11 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->D.z_dir = -1;		/* -1 because Z was positive down for Okabe */
 	C->S.radius = 30000;
 	C->T.year = 2000;
+#ifdef HAVE_GLIB_GTHREAD
+	GMT->common.x.n_threads = API->n_cores;	/* Default uses all available threads */
+#else
+	GMT->common.x.n_threads = 1;	/* Default number of threads when no multi-threading */
+#endif
 	return (C);
 }
 
@@ -509,7 +514,6 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
