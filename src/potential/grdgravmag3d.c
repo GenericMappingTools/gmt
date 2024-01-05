@@ -180,7 +180,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.radius = 30000;
 	C->T.year = 2000;
 #ifdef HAVE_GLIB_GTHREAD
-	GMT->common.x.n_threads = API->n_cores;	/* Default uses all available threads */
+	GMT->common.x.n_threads = GMT->parent->n_cores;	/* Default uses all available threads */
 #else
 	GMT->common.x.n_threads = 1;	/* Default number of threads when no multi-threading */
 #endif
