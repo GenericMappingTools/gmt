@@ -12,3 +12,4 @@ src/newsuppl*
 doc/examples/**/*.mp4
 doc/examples/**/*.png
 doc/examples/**/*.gif
+.vscode
