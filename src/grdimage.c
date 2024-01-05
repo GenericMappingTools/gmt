@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,12 +29,12 @@
 #include "longopt/grdimage_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdimage"
-#define THIS_MODULE_MODERN_NAME	"grdimage"
-#define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Project and plot grids or images"
-#define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID"
-#define THIS_MODULE_NEEDS	"Jg"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
+#define THIS_MODULE_MODERN_NAME		"grdimage"
+#define THIS_MODULE_LIB			"core"
+#define THIS_MODULE_PURPOSE		"Project and plot grids or images"
+#define THIS_MODULE_KEYS		"<G{+,CC(,IG(,>X},>IA,<ID"
+#define THIS_MODULE_NEEDS		"Jg"
+#define THIS_MODULE_OPTIONS		"->BJKOPRUVXYfnpt" GMT_OPT("Sc") GMT_ADD_x_OPT
 
 /* These are images that GDAL knows how to read for us. */
 #define N_IMG_EXTENSIONS 7
@@ -94,12 +94,15 @@ struct GRDIMAGE_CTRL {
 	struct GRDIMAGE_N {	/* -N */
 		bool active;
 	} N;
-	struct GRDIMAGE_Q {	/* -Q[r/g/b][+z<value>] */
+	struct GRDIMAGE_Q {	/* -Q[r/g/b][+i][+z<value>] */
 		bool active;
 		bool transp_color;	/* true if a color was given */
-		bool z_given;	/* true if a z-value was given */
-		double rgb[4];	/* Pixel value for transparency in images */
-		double value;	/* If +z is used this z-value will give us the r/g/b via CPT */
+		bool z_given;		/* true if a z-value was given */
+		bool mask_color;	/* true if NaN color for image -Qcolor was set */
+		bool got_color;		/* true if -Qcolor was set on an image */
+		bool invert;		/* If true we turn transparency = 1 - transparency [i.e., opacity] */
+		double rgb[4];		/* Pixel value for transparency in images */
+		double value;		/* If +z is used this z-value will give us the r/g/b via CPT */
 	} Q;
 	struct GRDIMAGE_T {	/* -T[s][o[<pen>]] */
 		bool active;
@@ -112,18 +115,31 @@ struct GRDIMAGE_CTRL {
 	} W;
 };
 
+struct GRDIMAGE_TRANSP {
+	unsigned int alpha_count[256];	/* Transparency distribution for RGBA image */
+	unsigned int mode;		/* value is transparency (mode == 0) or count (mode == 1) */
+	unsigned int value;		/* Either chosen transparency (mode == 0) */
+	uint64_t n_transp;		/* Number of different transparencies found */
+	uint64_t n_dominant;		/* Number of top transparencies found */
+};
+
 struct GRDIMAGE_CONF {
 	/* Configuration structure for things to pass around to sub-functions */
+	bool invert;			/* true if we should interpret transparencies as opacities */
 	unsigned int colormask_offset;	/* Either 0 or 3 depending on -Q */
-	bool int_mode;				/* true if we are to apply illumination */
+	unsigned int int_mode;		/* 2 if we are to apply illumination (grid) or 1 (constant) */
 	unsigned int *actual_row;	/* Array with actual rows as a function of pseudo row */
 	unsigned int *actual_col;	/* Array of actual columns as a function of pseudo col */
-	int64_t n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops (if implemented) */
-	uint64_t nm;				/* Number of pixels in the image */
+	int64_t n_columns, n_rows;	/* Signed dimensions for use in OpenMP loops (if implemented) */
+	uint64_t nm;			/* Number of pixels in the image */
+	double dim[2];			/* Dimension of each pixel in plot units */
+	double orig[2];			/* Lower left image origin */
+	double tr_rgb[4];		/* Background color used to simulate image transparency [black] */
 	struct GMT_PALETTE *P;		/* Pointer to the active palette [NULL if image] */
 	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
 	struct GMT_GRID *Intens;	/* Pointer to the active intensity grid [NULL if no intensity] */
-	struct GMT_IMAGE *Image;	/* Pointer to the active image [NUYLL if grid] */
+	struct GMT_IMAGE *Image;	/* Pointer to the active image [NULL if grid] */
+	struct GRDIMAGE_TRANSP *Transp;	/* Pointer to the transparency structure [NULL if grid or RGB image] */
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -137,7 +153,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->I.azimuth = strdup ("-45.0");	/* Default azimuth for shading when -I+d is used */
 	C->I.method  = strdup ("t1");		/* Default normalization for shading when -I+d is used */
 	C->I.ambient = strdup ("0");		/* Default ambient light for shading when -I+d is used */
-
+	C->Q.value = GMT->session.f_NaN;	/* If -Q is used with a grid then NaNs are made transparent by default. */
+	C->Q.rgb[0] = C->Q.rgb[1] = C->Q.rgb[2] = 1.0;	/* White transparent pixel is default if -Q is given without a color */
 	return (C);
 }
 
@@ -146,6 +163,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deall
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->C.savecpt);
 	gmt_M_str_free (C->I.file);
 	gmt_M_str_free (C->I.azimuth);
 	gmt_M_str_free (C->I.ambient);
@@ -159,10 +177,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *extra[2] = {A, " [-A]"};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s %s%s [%s] [-C<cpt>] [-D[r]] [-Ei|<dpi>] "
-		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+z<value>]] "
+	GMT_Usage (API, 0, "usage: %s %s %s%s [%s] [-C%s] [-D[r]] [-Ei|<dpi>] "
+		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+i][+z<value>]] "
 		"[%s] [-T[+o[<pen>]][+s]] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s[%s]\n",
-		name, GMT_INGRID, GMT_J_OPT, extra[API->external], GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
+		name, GMT_INGRID, GMT_J_OPT, extra[API->external], GMT_B_OPT, CPT_OPT_ARGS, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -186,13 +204,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 			"See GDAL documentation for available drivers. Note: any vector elements are lost.");
 	}
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-C<cpt>");
-	GMT_Usage (API, -2, "Color palette file to convert grid values to colors. Optionally, name a master cpt "
-		"to automatically assign continuous colors over the data range [%s]; if so, "
-		"optionally append +i<dz> to quantize the range [the exact grid range]. "
-		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
-		"linear continuous cpt from those colors automatically. Append +s<fname> to save the generated cpt ",
-		"in a disk file.", API->GMT->current.setting.cpt);
+	gmt_explain_cpt_input (API, 'C');
 	GMT_Usage (API, 1, "\n-D[r]");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, -2, "Input is an image instead of a grid. Append r to equate image region to -R region.");
@@ -220,10 +232,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-M Force a monochrome (gray-scale) image.");
 	GMT_Usage (API, 1, "\n-N Do Not clip image at the map boundary.");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-Q[<color>]");
-	GMT_Usage (API, -2, "Use color-masking to make grid nodes with z = NaN or black image pixels transparent. "
-		"Append an alternate <color> to change the transparent pixel for images [black], or alternatively");
-	GMT_Usage (API, 3, "+z Specify <value> to set transparent pixel color via CPT lookup.");
+	GMT_Usage (API, 1, "\n-Q[<color>][+i][+z<value>]");
+	GMT_Usage (API, -2, "Use color-masking to make grid nodes with z = NaN or white image pixels transparent. "
+		"Append an alternate <color> to change the transparent pixel for images [white]. "
+		"By default we simulate image transparency by blending pixel colors with <color> according to transparency, "
+		"yielding an opaque image nonetheless due to PostScript limitations.  Two modifiers are available:");
+	GMT_Usage (API, 3, "+i Invert presumed opacities to transparencies (i.e., 1 - opacity).");
+	GMT_Usage (API, 3, "+z Specify grid <value> to set transparent pixel color via CPT lookup.");
 	GMT_Option (API, "R");
 	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
 	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
@@ -416,27 +431,35 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-			case 'Q':	/* PS3 colormasking */
+			case 'Q':	/* PS3 colormasking -Q[<color>][+i][+z<value>] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				if ((c = strstr (opt->arg, "+z"))) {	/* Gave a z-value */
-					if (c[2]) {
-						Ctrl->Q.value = atof (&c[2]);
-						Ctrl->Q.z_given = true;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'Q', "iz", GMT_MSG_ERROR)) n_errors++;
+				if ((c = gmt_first_modifier (GMT, opt->arg, "iz"))) {	/* Got at least one modifier */
+					char txt[GMT_LEN256] = {""};
+					if (gmt_get_modifier (c, 'i', txt))
+						Ctrl->Q.invert = true;
+					if (gmt_get_modifier (c, 'z', txt)) {
+						if (txt[0]) {
+							Ctrl->Q.value = atof (txt);
+							Ctrl->Q.z_given = true;
+						}
+						else {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: The +z modifier requires a valid z-value\n");
+							n_errors++;
+						}
 					}
-					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: The +z modifier requires a valid z-value\n");
-						n_errors++;
-					}
-					c[0] = '\0';	/* Chop off modifier */
+					c[0] = '\0';	/* Chop off modifiers */
 				}
-				if (opt->arg[0]) {	/* Change input image transparency pixel color */
+				if (opt->arg[0]) {	/* Change input image transparency pixel color from default white */
 					if (gmt_getrgb (GMT, opt->arg, Ctrl->Q.rgb)) {	/* Change input image transparency pixel color */
 						gmt_rgb_syntax (GMT, 'Q', " ");
 						n_errors++;
 					}
 					else
-						Ctrl->Q.transp_color = true;
+						Ctrl->Q.transp_color = Ctrl->Q.got_color = Ctrl->Q.mask_color = true;
 				}
+				else	/* Default white transparency color */
+					Ctrl->Q.mask_color = true;
 				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
@@ -505,7 +528,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[GMT_FGD][0] < 0 && Ctrl->G.rgb[GMT_BGD][0] < 0,
 	                                   "Option -G: Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
-	                                   "SOption -Q: Cannot use -M when doing colormasking\n");
+	                                   "Option -Q: Cannot use -M when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.device_dpi && Ctrl->Q.active,
 	                                   "Option -Q: Cannot use -Ei when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
@@ -515,7 +538,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]),
 								       "Option -A: Cannot draw base frame (-B) when creating just a raster image\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.transp_color && Ctrl->Q.z_given,
-								       "Option Q: Cannot both specify a r/g/b and a z-value\n");
+								       "Option Q: Cannot both specify a r/g/b and a grid z-value\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -737,8 +760,8 @@ GMT_LOCAL void grdimage_grd_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
-	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode == 2 && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> gray image with illumination.\n");
 #ifdef _OPENMP
@@ -752,11 +775,11 @@ GMT_LOCAL void grdimage_grd_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
 			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Add in the effect of illumination */
-				if (Conf->int_mode) {	/* Intensity value comes from a co-registered grid */
+				if (Conf->int_mode == 2) {	/* Intensity value comes from a co-registered grid */
 					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity node */
 					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
 				}
-				else	/* A constant (ambient) intensity was given via -I */
+				else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 			}
 			image[byte++] = gmt_M_u255 (rgb[0]);	/* Color table only has grays, just use r since r = g = b here */
@@ -794,8 +817,8 @@ GMT_LOCAL void grdimage_grd_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
-	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode == 2 && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
@@ -809,11 +832,11 @@ GMT_LOCAL void grdimage_grd_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 			node_s = kk_s + Conf->actual_col[scol];	/* Current data grid node */
 			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Deal with illumination */
-				if (Conf->int_mode) {	/* Intensity value comes from the grid */
+				if (Conf->int_mode == 2) {	/* Intensity value comes from the grid */
 					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity grid node */
 					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
 				}
-				else	/* A constant (ambient) intensity was given via -I */
+				else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 			}
 			image[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
@@ -878,8 +901,8 @@ GMT_LOCAL void grdimage_grd_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
-	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode == 2 && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));	/* True of they differ in padding */
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 #ifdef _OPENMP
@@ -893,11 +916,11 @@ GMT_LOCAL void grdimage_grd_color_with_intensity (struct GMT_CTRL *GMT, struct G
 			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
 			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Deal with illumination */
-				if (Conf->int_mode) {	/* Intensity value comes from the grid */
+				if (Conf->int_mode == 2) {	/* Intensity value comes from the grid */
 					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity node */
 					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
 				}
-				else	/* A constant (ambient) intensity was given via -I */
+				else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 			}
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);
@@ -913,8 +936,8 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 	uint64_t byte, kk_s, kk_i, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Grid->header;	/* Pointer to the active data header */
-	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
-	bool different = (Conf->int_mode && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool different = (Conf->int_mode == 2 && !gmt_M_grd_same_region (GMT,Conf->Grid,Conf->Intens));
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Basic z(x,y) -> color image with no illumination.\n");
 	/* Determine NaN rgb 0-255 triple ones */
@@ -932,11 +955,11 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 				for (k = 0; k < 3; k++) image[byte++] = n_rgb[k];
 			}
 			else {	/* Deal with illumination for non-NaN nodes */
-				if (Conf->int_mode) {	/* Intensity value comes from the grid */
+				if (Conf->int_mode == 2) {	/* Intensity value comes from the grid */
 					node_i = kk_i + Conf->actual_col[scol];	/* Current intensity node */
 					gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);
 				}
-				else	/* A constant (ambient) intensity was given via -I */
+				else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
 				for (k = 0; k < 3; k++) i_rgb[k] = image[byte++] = gmt_M_u255 (rgb[k]);
 				index = (i_rgb[0]*256 + i_rgb[1])*256 + i_rgb[2];	/* The index into the cube for the selected NaN color */
@@ -946,14 +969,30 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 	}
 }
 
-GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, unsigned char pix4, double *rgb) {
-	/* JL: Here we assume background color is white, hence t * 1.
-	   But what would it take to have a user selected background color? */
+GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIMAGE_CONF *Conf, unsigned char pix4, double *rgb) {
+	/* JL: Here we assume Conf->tr_rgb background color is white, hence t * 1.
+	   If user selected background color with -Q<rgb> that that is what Conf->tr_rgb contains */
+
+	/* PW Dec 2023: There are several situations we must handle:
+	 * 1. There is no transparency, in which case this function is not called.
+	 * 2. There are only two levels of transparency 0 or 255.  In that case
+	 *    we let t = 1 and effectively select the -Q<rgb> color for transparency
+	 *    By default that is white.
+	 * 3. If more than 2 transparencies we expect we have full variable transparency
+	 *    and most of the time we will get a blended color output.
+	 */
 	double o, t;		/* o - opacity, t = transparency */
+	gmt_M_unused (GMT);
 	o = pix4 / 255.0;	t = 1 - o;
-	rgb[0] = o * rgb[0] + t * GMT->current.map.frame.fill[GMT_Z].rgb[0];
-	rgb[1] = o * rgb[1] + t * GMT->current.map.frame.fill[GMT_Z].rgb[1];
-	rgb[2] = o * rgb[2] + t * GMT->current.map.frame.fill[GMT_Z].rgb[2];
+	if (Conf->Transp->n_transp == 2)
+		gmt_M_rgb_only_copy (rgb, Conf->tr_rgb);
+	else {	/* Blend */
+		if (Conf->invert) t = o, o = 1 - t;
+		rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];
+		rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];
+		rgb[2] = o * rgb[2] + t * Conf->tr_rgb[2];
+	}
+	rgb[3] = 0;
 }
 
 GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
@@ -962,7 +1001,7 @@ GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
-	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
@@ -973,11 +1012,11 @@ GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol];	/* Start of current pixel node */
 			rgb[0] = rgb[1] = rgb[2] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (Conf->int_mode) {	/* Intensity value comes from the grid, so update node */
+			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
 				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
-			else	/* A constant (ambient) intensity was given via -I */
+			else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 			image[byte++] = gmt_M_u255 (rgb[0]);
 		}
@@ -1028,7 +1067,7 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol];	/* Start of current pixel node */
 			index = (int)Conf->Image->data[node_s];
-			if (index < start) {	/* E.g., data is 0 for Nodata */
+			if (index < (int64_t)start) {	/* E.g., data is 0 for Nodata */
 				for (k = 0; k < 3; k++)
 					image[byte++] = (unsigned char)gmt_M_s255 (Conf->P->bfn[GMT_NAN].rgb[k]);
 			}
@@ -1041,6 +1080,77 @@ GMT_LOCAL void grdimage_img_byte_index (struct GMT_CTRL *GMT, struct GRDIMAGE_CT
 	}
 }
 
+GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool opacity, struct GRDIMAGE_TRANSP *T) {
+	/* Determine if we have a transparency channel and if a fixed or variable (per-pixel) situation.
+	 * We return false if no alpha channel present, T is left untouched, else return true.
+	 * Return values via T are: T->n_transp is the number of different transparencies found.
+	 * For modes 3 & 4, T->n_dominant is how many in the majority
+	 *
+	 *   T->mode == 1: T->value is the constant transparency k
+	 *   T->mode == 2: T->value is dominant transparency k when >2 are found
+	 *   T->mode == 3: T->value is dominant transparency 0
+	 *   T->mode == 4: T->value is dominant transparency 255
+	 */
+
+	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
+	unsigned char *transparency;	/* Pointer to memory where transparency resides */
+	int64_t row, col, node;
+	unsigned int k, tr, tr_max = 0, tr_min = 255, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
+	unsigned int n_bands = H->n_bands;
+	gmt_M_unused (GMT);
+
+	if (n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies either in band 1 or 4 nor in alpha */
+
+	tr_band = (I->alpha) ? 0 : n_bands - 1;
+	transparency = (tr_band) ? I->data : I->alpha;	/* Points to the data array with A */
+	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
+		node = gmt_M_ijp (H, row, 0) + tr_band;	/* Start pixel with 4 bytes of this image row */
+		for (col = 0; col < H->n_columns; col++, node += n_bands) {	/* March along this scanline in steps of 2 (gA) or 4 (RGBA) */
+			tr = (unsigned int)transparency[node];	/* Get transparency values */
+			if (opacity) tr = 255 - tr;	/* Must flip from opacity to transparency */
+			T->alpha_count[tr]++;	/* Count frequency of transparency values */
+		}
+	}
+	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
+		if (T->alpha_count[k]) {	/* Used at least once */
+			T->n_transp++;
+			if (T->alpha_count[k] < tr_min) tr_min = k;	/* Keep track of smallest value */
+			if (T->alpha_count[k] > tr_max) tr_max = k;	/* Keep track of largest value */
+		}
+	}
+	if (T->n_transp == 1) {		/* Case 1: Constant transparency */
+		T->mode = 1;
+		T->value = tr_max;
+		T->n_dominant = T->n_transp;
+	}
+	else if (T->n_transp > 2) {	/* Case 2: Variable transparency, not just on|off */
+		T->value = tr_max;
+		T->mode = 2;
+		T->n_dominant = T->alpha_count[tr_max];
+	}
+	else if (T->alpha_count[0] > T->alpha_count[255]) {	/* Case 3: 0 most used of only two transparency values */
+		T->value = 0;
+		T->mode = 3;
+		T->n_dominant = T->alpha_count[0];
+		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
+	}
+	else {
+		T->value = 255;	/* Case 4: Like 3 but 255 most used of two transparency values */
+		T->n_dominant = T->alpha_count[255];
+		T->mode = 4;
+		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
+	}
+	return (true);
+}
+
+GMT_LOCAL bool grdimage_is_transparent (struct GRDIMAGE_CONF *Conf, uint64_t node) {
+	unsigned int transp;
+	if (Conf->Transp && Conf->Transp->n_transp > 2) return true;
+	transp = Conf->Image->data[node];
+	if (Conf->Transp->n_transp == 2 && transp == Conf->Transp->value) return true;
+	return (false);
+}
+
 GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
 	bool transparency = (Conf->Image->header->n_bands == 4);
@@ -1049,7 +1159,7 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
-	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
@@ -1060,13 +1170,13 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
-			if (Conf->int_mode) {	/* Intensity value comes from the grid, so update node */
+			if (transparency && grdimage_is_transparent (Conf, node_s))
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
+			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
 				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
-			else	/* A constant (ambient) intensity was given via -I */
+			else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 			image[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
@@ -1075,13 +1185,13 @@ GMT_LOCAL void grdimage_img_c2s_with_intensity (struct GMT_CTRL *GMT, struct GRD
 
 GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color -> gray via YIQ, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
-	int k;
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
+	bool transparency = (H_s->n_bands == 4);
+	unsigned int k;
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t n_bands = Conf->Image->header->n_bands;
+	uint64_t n_bands = H_s->n_bands;
 	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
-	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
@@ -1093,8 +1203,8 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+			if (transparency && grdimage_is_transparent (Conf, node_s))
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			image[byte++] = gmt_M_u255 (gmt_M_yiq (rgb));
 		}
 	}
@@ -1102,13 +1212,13 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
-	int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
+	bool transparency = (H_s->n_bands == 4);
+	unsigned int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t n_bands = Conf->Image->header->n_bands;
+	uint64_t n_bands = H_s->n_bands;
 	uint64_t byte, kk_s, node_s;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
-	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
@@ -1120,8 +1230,8 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
+			if (transparency && grdimage_is_transparent (Conf, node_s))
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 		}
 	}
@@ -1129,35 +1239,102 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 
 GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
-	bool transparency = (Conf->Image->header->n_bands == 4);
-	int k;
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+	bool transparency = (H_s->n_bands == 4);
+	unsigned int k;
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	uint64_t n_bands = Conf->Image->header->n_bands;
+	uint64_t n_bands = H_s->n_bands;
 	uint64_t byte, kk_s, node_s, node_i;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
-	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
-	struct GMT_GRID_HEADER *H_i = (Conf->int_mode) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,k,scol,node_s,node_i,rgb) shared(GMT,Conf,Ctrl,H_s,H_i,image)
 #endif
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		byte = (uint64_t)Conf->colormask_offset + 3 * srow * Conf->n_columns;	/* Start of output color image row */
-		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this row */
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			for (k = 0; k < 3; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);
-			if (transparency && Conf->Image->data[node_s] < 255)	/* Dealing with an image with transparency values less than 255 */
-				grdimage_img_set_transparency (GMT, Conf->Image->data[node_s], rgb);
-			if (Conf->int_mode) {	/* Intensity value comes from the grid, so update node */
+			if (transparency && grdimage_is_transparent (Conf, node_s))
+				grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
+			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
 				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
-			else	/* A constant (ambient) intensity was given via -I */
+			else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
 			for (k = 0; k < 3; k++) image[byte++] = gmt_M_u255 (rgb[k]);	/* Scale up to integer 0-255 range */
 		}
 	}
+}
+
+GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isize[]) {
+	/* Plotting a high-resolution square with coordinate in 10*PS units as integers.
+	 * We will write x, y, dims using one decimal by dividing by 10 to get exact matches
+	 * at square boundaries. Command is "dy dx x y SS".
+	 */
+	bool xneg, yneg;
+	int xx, sx, yy, sy, dx, dy, sdx, sdy;
+	xneg = (ix < 0) ? true : false;
+	yneg = (iy < 0) ? true : false;
+	ix = abs (ix);	iy = abs (iy);
+	xx = (int)floor (ix * 0.1), dx = ix - xx * 10;	if (xneg) xx = -xx;
+	yy = (int)floor (iy * 0.1), dy = iy - yy * 10;	if (yneg) yy = -yy;
+	sx = (int)floor (isize[0] * 0.1), sdx = isize[0] - sx * 10;
+	sy = (int)floor (isize[1] * 0.1), sdy = isize[1] - sy * 10;
+	PSL_command (PSL, "%d.%d %d.%d %d.%d %d.%d SS\n", sy, sdy, sx, sdx, xx, dx, yy, dy);
+	return (PSL_NO_ERROR);
+}
+
+GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf) {
+	/* Because of variable transparency we cannot use the PostScript image operator but must plot each pixel
+	 * as a square of the right color and set transparency before rendering that square. Because we cannot
+	 * have tiny gaps or overlaps between neighboring squares we up the resolution by a factor of 10 and
+	 * use integer calculations to ensure of no gaps. */
+	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
+	uint64_t n_bands = Conf->Image->header->n_bands, kk_s, node_s, node_i;
+	int k, *ix = NULL, *iy = NULL, idim[2] = {0, 0}, bt = n_bands - 1;
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, transp[2] = {0.0, 0.0};	/* None selected */
+	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
+	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
+
+	PSL_command (GMT->PSL, "/SS {M dup 0 D exch 0 exch D neg 0 D P FO}!\n");	/* Special PSL macro added for 10*integer squares */
+	if ((ix = gmt_M_memory (GMT, NULL, Conf->n_columns + 1, int)) == NULL) {	/* Add 1 so we can get width without special test*/
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdimage_img_variable_transparency: Allocation failure for %d integers\n", Conf->n_columns);
+		return;
+	}
+	if ((iy = gmt_M_memory (GMT, NULL, Conf->n_rows + 1, int)) == NULL) {	/* Same for height: add 1 */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdimage_img_variable_transparency: Allocation failure for %d integers\n", Conf->n_rows);
+		return;
+	}
+	/* Precompute BL square coordinates in PostSCript units times 10, yielding 1/12000 inches precision */
+	for (srow = 0; srow <= Conf->n_rows; srow++)    iy[srow] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * (Conf->n_rows - 1 - srow)));
+	for (scol = 0; scol <= Conf->n_columns; scol++) ix[scol] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_X] * scol));
+	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
+		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
+		idim[GMT_Y] = iy[Conf->actual_row[srow]] - iy[Conf->actual_row[srow]+1];	/* Constant height of square in 1/12000 inches integer units for this row */
+		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
+			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
+			/* Get pixel color */
+			for (k = 0; k < bt; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
+			grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
+			if (Conf->invert) rgb[bt] = 1.0 - rgb[bt];
+			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
+				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
+				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
+			}
+			else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
+				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
+			gmt_setrgb (GMT, rgb);	/* Set current square pixel color w/ no outline */
+			idim[GMT_X] = ix[scol+1] - ix[scol];	/* Constant width of square in 1/12000 inches integer units for this column */
+			grdimage_plotsquare (GMT->PSL, ix[scol], iy[srow], idim);
+		}
+	}
+	gmt_M_free (GMT, ix);
+	gmt_M_free (GMT, iy);
+	PSL_settransparencies (GMT->PSL, transp);
 }
 
 GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
@@ -1247,10 +1424,10 @@ EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
 EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, byte_image_no_cmap;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
-	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true;
+	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true, plot_squares = false;
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0, pad_mode = 0;
 	uint64_t node, k, kk, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
-	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
+	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET, ftype2 = GMT_NOTSET;
 
 	char *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_VF_LEN] = {""}, *e = NULL;
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL;
@@ -1275,6 +1452,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_IMAGE *Out = NULL;	/* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
 	struct GRDIMAGE_CONF *Conf = NULL;
+	struct GRDIMAGE_TRANSP Transp;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -1297,7 +1475,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to allocate Conf structure\n");
 		Return (GMT_MEMORY_ERROR);
 	}
-
+	gmt_M_memset (&Transp, 1, struct GRDIMAGE_TRANSP);	/* Make sure it is initialized to nothing */
 	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use an intensity grid */
@@ -1351,6 +1529,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET] && !strstr (Ctrl->In.file, "earth_")) Ctrl->D.mode = true;
 	}
+	if (!Ctrl->D.active && (ftype2 = gmt_raster_type (GMT, Ctrl->In.file, true)) == GMT_IS_IMAGE) {
+		if (Ctrl->Q.z_given) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option Q: Cannot use +z<value> with an image\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+	else if (ftype == GMT_IS_GRID && Ctrl->Q.invert) {	/* Cannot invert color for grid-derived images */
+		GMT_Report (API, GMT_MSG_ERROR, "Option Q: Cannot use +i with a grid\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
 
 	if (!Ctrl->D.active && ftype == GMT_IS_GRID) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE|pad_mode, NULL, Ctrl->In.file, NULL)) != NULL) {
@@ -1396,13 +1584,37 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.mode && GMT->common.R.active[RSET]) {
 			/* Need to assign given -R as the image's -R, so cannot pass -R in when reading */
 			GMT->common.R.active[RSET] = false;	/* Temporarily turn off -R if given */
-            I_wesn = NULL;
+			I_wesn = NULL;
 		}
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX | pad_mode, I_wesn, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+
+		if (grdimage_transparencies (GMT, I, Ctrl->Q.invert, &Transp)) {	/* What if any transparency situation do we have in the image? */
+			double percent = 100.0 * (double)Transp.n_dominant / (double) I->header->nm;
+			switch (Transp.mode) {
+				case 1:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Constant transparency is %d.\n", Transp.value);
+					break;
+				case 2:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: Variable, but dominant transparency (%.1lf%%) is %d.\n", percent, Transp.value);
+					Conf->invert = Ctrl->Q.invert;	/* Flag that -Q+i was used on the image */
+					break;
+				case 3:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 0.\n", percent);
+					Ctrl->Q.active = Ctrl->Q.transp_color = Conf->invert = true;
+					break;
+				case 4:
+					GMT_Report(API, GMT_MSG_INFORMATION, "Image alpha channel: 0 or 255, mostly (%.1lf%%) were 255.\n", percent);
+					Ctrl->Q.active = Ctrl->Q.transp_color = Conf->invert = true;
+					break;
+			}
+			Conf->Transp = &Transp;
+			plot_squares = (Transp.mode == 2 && !Ctrl->Q.active);	/* Plot tiny squares is selected */
+		}
+
 		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
 		if (grid_registration != GMT_GRID_PIXEL_REG)
@@ -1411,7 +1623,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		HH = gmt_get_H_hidden (I->header);
 		if ((I->header->n_bands > 1 && strncmp (I->header->mem_layout, "BRP", 3)) || strncmp (I->header->mem_layout, "BR", 2))
 			GMT_Report(API, GMT_MSG_INFORMATION, "The image memory layout (%s) may be of the wrong type. It should be BRPa.\n", I->header->mem_layout);
-
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I were set. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
 
@@ -1474,6 +1685,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		if (!Ctrl->C.active)	/* Set no specific CPT so we turn -C on to use current or default CPT */
 			Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and autostretch or under modern reuse current CPT */
+		if (got_z_grid && Ctrl->Q.mask_color && use_intensity_grid) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Cannot specify a transparent color for grids when intensities are also used\n");
+			Return (API->error);
+		}
 	}
 
 	if (got_z_grid) header_work = Grid_orig->header;	/* OK, we are in GRID mode and this was not set previously. Do it now. */
@@ -1695,10 +1910,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (cpt) gmt_M_str_free (cpt);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a gray scale image below */
 			Conf->P = P;
-			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
-			if (Ctrl->Q.z_given) {	/* Obtain the transparent color based on P and value */
+			if (Ctrl->Q.z_given)
 				(void)gmt_get_rgb_from_z (GMT, Conf->P, Ctrl->Q.value, Ctrl->Q.rgb);
+			else if (!Ctrl->Q.got_color)	/* No Q-color set; default to NaN color */
+				(void)gmt_get_rgb_from_z (GMT, Conf->P, GMT->session.d_NaN, Ctrl->Q.rgb);
+			if (P && P->has_pattern) GMT_Report (API, GMT_MSG_WARNING, "Patterns in CPTs will be ignored\n");
+			if (Ctrl->Q.active) {	/* Obtain the transparent color based on P and z-value or given color */
 				Ctrl->Q.transp_color = true;
+				Ctrl->Q.mask_color = true;
 			}
 		}
 		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
@@ -1709,10 +1928,14 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->T.active) {	/* Plot colored graticules instead */
 		need_to_project = false;	/* Since we are not doing reprojection of the grid */
-		gmt_plot_image_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL);
+		if (Grid_orig)
+			gmt_plot_grid_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, false);
 		goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 	}
 
+	if (Transp.mode == 2) {	/* Must do variable transparency via squares and projection */
+		goto tr_image;
+	}
 	if (need_to_project) {	/* Need to resample the grid or image [and intensity grid] using the specified map projection */
 		int nx_proj = 0, ny_proj = 0;
 		double inc[2] = {0.0, 0.0};
@@ -1732,8 +1955,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			ny_proj = Conf->n_rows;
 		}
 		if (Ctrl->D.active) { /* Must project the input image instead */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
+tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
+			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
+				nx_proj = Conf->n_columns;
+				ny_proj = Conf->n_rows;	
+			}
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
 			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
@@ -1743,7 +1970,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmt_set_grddim (GMT, Img_proj->header);	/* Recalculate projected image dimensions */
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected image */
-			if (gmt_img_project (GMT, I, Img_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the image onto the projected rectangle */
+			if (need_to_project && gmt_img_project (GMT, I, Img_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the image onto the projected rectangle */
 			if (!API->external && (GMT_Destroy_Data (API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected.  Use Img_proj from now on */
 				Return (API->error);	/* Failed to free the image */
 			}
@@ -1838,9 +2065,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	Conf->Intens    = Intens_proj;
 	Conf->n_columns = header_work->n_columns;
 	Conf->n_rows    = header_work->n_rows;
-	Conf->int_mode  = use_intensity_grid;
+	Conf->int_mode  = (use_intensity_grid) ? 2 : ((Ctrl->I.constant) ? 1 : 0);	/* 2 is variable grid intensity, 1 is constant intensity, 0 no intensity */
 	Conf->nm        = header_work->nm;
 
+	/* Set the blend color for image transparency */
+	gmt_M_rgb_copy (Conf->tr_rgb, GMT->current.map.frame.fill[GMT_Z].rgb);
+	if (!got_z_grid && Conf->Image && header_work->n_bands == 4) Ctrl->Q.mask_color = true;
 	if (byte_image_no_cmap) {	/* Check if we have a nan_value (No data pixel) */
 		if (gmt_M_is_dnan (Conf->Image->header->nan_value) || irint (Conf->Image->header->nan_value) == 0 || irint (Conf->P->data[0].z_low) == 1) { /* Nodata given as 0 */
 			Ctrl->Q.active = true;
@@ -1922,16 +2152,20 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		else	/* Need 3-byte array for a 24-bit image */
 			bitimage_24 = Out->data;
 	}
-	else {	/* Produce a PostScript image layer */
+	else if (!plot_squares) {	/* Produce a PostScript image layer */
 		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
 			bitimage_8 = gmt_M_memory (GMT, NULL, header_work->nm, unsigned char);
 		else {	/* Need 3-byte array for a 24-bit image, plus possibly 3 bytes for the NaN mask color */
-			if (Ctrl->Q.active) Conf->colormask_offset = 3;
+			if (Ctrl->Q.mask_color || Ctrl->Q.transp_color) Conf->colormask_offset = 3;
 			bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm + Conf->colormask_offset, unsigned char);
 			if (Ctrl->Q.transp_color)
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the specific rgb up to 0-255 range */
 			else if (P && Ctrl->Q.active)	/* Use the CPT NaN color */
 				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (P->bfn[GMT_NAN].rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
+			else if (Ctrl->Q.got_color)
+				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
+			else if (Ctrl->Q.active)	/* Use the CPT NaN color */
+				for (k = 0; k < 3; k++) bitimage_24[k] = gmt_M_u255 (Ctrl->Q.rgb[k]);	/* Scale the NaN rgb up to 0-255 range */
 			/* else we default to 0 0 0 of course */
 		}
 	}
@@ -1946,6 +2180,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	for (row = 0; row < (unsigned int)Conf->n_rows; row++) Conf->actual_row[row] = (normal_y) ? row : Conf->n_rows - row - 1;
 	Conf->actual_col = gmt_M_memory (GMT, NULL, Conf->n_columns, unsigned int);	/* Deal with any reversal of the x-axis due to -J */
 	for (col = 0; col < (unsigned int)Conf->n_columns; col++) Conf->actual_col[col] = (normal_x) ? col : Conf->n_columns - col - 1;
+
+	if (plot_squares) goto ready;
 
 	rgb_cube_scan = (P && Ctrl->Q.active && !Ctrl->A.active);	/* Need to look for unique rgb for PostScript masking */
 
@@ -1983,6 +2219,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					grdimage_img_color_with_intensity (GMT, Ctrl, Conf, bitimage_24);
 			}
 			else {	/* No intensity */
+				Ctrl->Q.active = Ctrl->Q.mask_color;
 				if (gray_only)	/* Image, grayscale, no intensity */
 					grdimage_img_gray_no_intensity (GMT, Ctrl, Conf, bitimage_8);
 				else if (Ctrl->M.active) 	/* Image, color converted to gray, with intensity */
@@ -2021,15 +2258,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	if (rgb_used) gmt_M_free (GMT, rgb_used);	/* Done using the r/g/b cube */
-	gmt_M_free (GMT, Conf->actual_row);
-	gmt_M_free (GMT, Conf->actual_col);
 
-	if (use_intensity_grid) {	/* Also done with the intensity grid */
-		if (need_to_project || !got_z_grid) {
-			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_NOERROR)
-				GMT_Report (API, GMT_MSG_ERROR, "Failed to free Intens_proj\n");
-		}
-	}
+ready:
 
 	/* Get actual plot size of each pixel */
 	dx = gmt_M_get_inc (GMT, header_work->wesn[XLO], header_work->wesn[XHI], Conf->n_columns, header_work->registration);
@@ -2042,10 +2272,18 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		x0 -= 0.5 * dx;
 		y0 -= 0.5 * dy;
 	}
+	Conf->orig[GMT_X] = x0;	Conf->orig[GMT_Y] = y0;	/* Lower left corner in plot coordinates */
+	Conf->dim[GMT_X]  = dx;	Conf->dim[GMT_Y]  = dy;	/* Pixel dimension in plot coordinates */
+	Conf->invert = Ctrl->Q.invert;
 
 	/* Full rectangular dimension of the projected image in inches */
 	x_side = dx * Conf->n_columns;
 	y_side = dy * Conf->n_rows;
+
+	if (plot_squares) { 	/* Variable transparency image must be done via individual squares */
+		grdimage_img_variable_transparency (GMT, Ctrl, Conf);
+		goto basemap_and_free;	/* Jump to basemap since not building an image */
+	}
 
 	if (P && gray_only && !Ctrl->A.active) /* Determine if the gray image in fact is just black & white since the PostScript can then simplify */
 		for (kk = 0, P->is_bw = true; P->is_bw && kk < header_work->nm; kk++)
@@ -2087,6 +2325,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 basemap_and_free:
+
+	if (use_intensity_grid) {	/* Also done with the intensity grid */
+		if (need_to_project || !got_z_grid) {
+			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_NOERROR)
+				GMT_Report (API, GMT_MSG_ERROR, "Failed to free Intens_proj\n");
+		}
+	}
 
 	if (!Ctrl->A.active) {	/* Finalize PostScript plot, possibly including basemap */
 		if (!Ctrl->N.active) gmt_map_clip_off (GMT);
@@ -2139,9 +2384,11 @@ basemap_and_free:
 		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {Return (API->error);}
 	}
 		
+	gmt_M_free (GMT, Conf->actual_row);
+	gmt_M_free (GMT, Conf->actual_col);
 	gmt_M_free (GMT, Conf);
 
-	/* May return a flag that the image/PS had no data (see -W), or just NO_ERROR */
+	/* May return a flag that the image/PS had no data (see -W), or just NO_ERROR [for grd2kml] */
 	ret_val = (Ctrl->W.active && !has_content) ? GMT_IMAGE_NO_DATA : GMT_NOERROR;
 	Return (ret_val);
 }

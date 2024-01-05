@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
-[ |-M|\ [*items*] ]
+[ |-M|\ [**h**\|\ **e**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *scale* ]
 [ |-T|\ *file* ]
@@ -115,14 +115,18 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*items*]
-    Modern mode only and pertains the situation where there are **h**\ idden, auto-generated legend
-    information created by prior plotting-modules' **-l** option and **e**\ xplicitly given information
-    from input file(s) given on the command line (or via standard input).  Use |-M| to set which of
-    these should be used and in what order via directives **h** and **e** [Default is **he**, meaning
-    we will first place any hidden auto-generated legend items (if any) and then we append the explicitly
-    given information (if present).  **Note**: For classic mode an input file must be given or else we
-    will attempt read from standard input.
+**-M**\ [**h**\|\ **e**]
+    Modern mode only and pertains the situation where there are two ways to provide legend info:
+    Specify one or two schemes in the order you desire via directives:
+
+    - **h**: Hidden, auto-generated legend information created by prior plotting-modules' **-l**
+      option
+    - **e**: Explicitly given information from input file(s) given on the command line (or via
+      standard input).
+
+    Default is **he**, meaning we will first place any hidden auto-generated legend items (if any)
+    and then we append the explicitly given information (if present).  **Note**: For classic
+    mode an input file must be given or else we will attempt read from standard input.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

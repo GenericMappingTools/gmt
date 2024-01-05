@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -490,6 +490,7 @@ EXTERN_MSC int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double 
 EXTERN_MSC int PSL_setdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 EXTERN_MSC int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline);
 EXTERN_MSC int PSL_setfont (struct PSL_CTRL *PSL, int font_no);
+EXTERN_MSC int PSL_setrgb (struct PSL_CTRL *PSL, double rgb[]);
 EXTERN_MSC int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double sup_lc, double sup_uc, double sdown);
 EXTERN_MSC int PSL_setformat (struct PSL_CTRL *PSL, int n_decimals);
 EXTERN_MSC int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, int image_dpi, unsigned int dim[], double f_rgb[], double b_rgb[]);

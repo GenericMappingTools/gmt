@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -810,7 +810,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		/* Extract the pieces into separate segments */
 		k = seg = 0;
 		done = false;
-	        while (!done) {
+		while (!done) {
 			first = GMT_NOTSET;
 			while (first == GMT_NOTSET && k < np) {	/* Look for next start of segment marker */
 				if (gmt_M_is_dnan (lon[k])) {

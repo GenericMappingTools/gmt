@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,38 +22,32 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "mode",
+	          "a,g,s",             "absolute,ground,seafloor",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+		  GMT_TP_STANDARD },
+	GMT_C_CPT_KW,
+	{ 0, 'E', "url",               "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "filter",
+	          "b,c,g,m",           "boxcar,cosarch,gaussian,median",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'H', "subpixel",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "illumination|intensity|shading",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+	          "a,d,m,n",           "azimuth,default,ambient,nargs",
+		  GMT_TP_STANDARD },
+	{ 0, 'L', "tilesize|tile_size", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "prefix",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "extra|extralayers|extra_layers", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "title",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "pen|contours",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'H', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "s",                 "scale",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRD2KML_INC_H */

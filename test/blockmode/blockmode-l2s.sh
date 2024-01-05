@@ -10,6 +10,7 @@ rm -f $a $b ; touch $b
 
 cat << EOF > $a
 --l2stranstest -Azslhw
+--l2stranstest -Ashw
 --l2stranstest -C
 --l2stranstest -D+a -D40+c -D+h -D+l
 --l2stranstest -E -Er+l -Es+h
@@ -19,7 +20,8 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --fields=zslhw >> $b
+gmt $m $l2s --fields=mode,L1_scale,low,high,weight >> $b
+gmt $m $l2s --fields=l1_scale,high,weight >> $b
 gmt $m $l2s --center >> $b
 gmt $m $l2s --histogram+average --histogram=40+center --histogram+high --histogram+low >> $b
 gmt $m $l2s --extend --extend=record+lower --extend=source+higher >> $b

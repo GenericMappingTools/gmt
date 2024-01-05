@@ -14,7 +14,7 @@ grid and overlay a few labels for named features.
 - Path:   MOR_PAC_twist_path.txt
 - Labels: MOR_names.txt
 
-We create a global intensity grid using shading from East and a CPT file; these are
+We create a global intensity grid using shading from East, a global relief grid and a CPT file; these are
 created by the preflight script.
 We add a 1 second fade in and a 1 second fade out for the animation
 The resulting movie was presented at the Fall 2019 AGU meeting in an eLighting talk:

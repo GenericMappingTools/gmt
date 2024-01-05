@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1641,7 +1641,7 @@ size_t gmtlib_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdf
 			return (sizeof (int32_t));
 			break;
 		case 'f':
-			return (sizeof (float));
+			return (sizeof (gmt_grdfloat));
 			break;
 		case 'd':
 			return (sizeof (double));
@@ -3519,14 +3519,16 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 		struct GMT_IMAGE *I = NULL;
 		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
 			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
-			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
+			if (I->type == GMT_FLOAT)		/* No doubt in this case */
 				code = GMT_IS_GRID;
-			else if (I->type == GMT_FLOAT)		/* No doubt in this case */
-				code = GMT_IS_GRID;
-			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
-				code = GMT_IS_IMAGE;
 			else if (I->header->n_bands > 1)	/* Whatever it is we must return multiband as an image */
 				code = GMT_IS_IMAGE;
+			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
+				code = GMT_IS_IMAGE;
+			else if (I->type == GMT_SHORT && I->header->n_bands == 1)	/* No so sure here but a Int16 is most likely a grid */
+				code = GMT_IS_GRID;
+			else if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
+				code = GMT_IS_GRID;
 			else	/* Here we only have one band so it is a grid */
 				code = GMT_IS_GRID;
 			GMT_Destroy_Data (GMT->parent, &I);
@@ -3970,7 +3972,7 @@ struct GMT_GRID * gmt_vertical_cube_cut (struct GMT_CTRL *GMT, struct GMT_CUBE *
 	 * or y-coordinate and that defines the vertical plan to be at that constant
 	 * coordinate and parallel to the z-axis and the other axis (y or x).
 	 */
-	uint64_t row, col, xrow, xcol, layer, ijg, ijc;
+	uint64_t col, xrow, xcol, layer, ijg, ijc;
 	double pos = 0.0;
 	struct GMT_GRID *G = NULL;
 	struct GMT_GRID_HIDDEN *GH = NULL;

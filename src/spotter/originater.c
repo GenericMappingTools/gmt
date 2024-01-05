@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1999-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1999-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -696,6 +696,8 @@ EXTERN_MSC int GMT_originater (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, c);
 		smt++;
 	} while (true);
+
+	if (n_skipped) GMT_Report (API, GMT_MSG_INFORMATION, "%u seamount skipped as flagged by negative ages\n", n_skipped);
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,38 +22,39 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
+
 	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+	          short_modifiers,     long_modifiers,
+
+		  transproc_mask */
+	{ 0, 'A', "min_area|area",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+            "a,l,r,p",           "antarctica,lakes,river_lakes,percent",
+            GMT_TP_STANDARD },
+	{ 0, 'C', "distance|dist2pt",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+	          "d",                 "distance",
+            GMT_TP_STANDARD },
+	{ 0, 'D', "resolution",
+	          "f,h,i,l,c",         "full,high,intermediate,low,crude",
+	          "f",                 "lower",
+            GMT_TP_STANDARD },
+	{ 0, 'E', "boundary",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "polygon",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'G', "gridmask",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "invert|reverse",
+	          "c,f,g,l,r,s,z",     "circle,polygons,zero,line,rectangle,gridmask,zrange",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+            GMT_TP_MULTIDIR },
+	{ 0, 'L', "dist2line",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
+	          "d,p",               "distance,project",
+            GMT_TP_STANDARD },
+	{ 0, 'N', "mask|maskvalues",   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Z', "in_range",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Z', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "a,c,h,i",           "any,column,header,invert",
+            GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTSELECT_INC_H */

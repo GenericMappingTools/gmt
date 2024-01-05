@@ -12,13 +12,17 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdgradient** *ingrid* |-G|\ *outgrid*
-[ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
+**gmt grdgradient** *ingrid*
+|-G|\ *outgrid*
+[ |-A|\ *azim*\ [/*azim2*] ]
+[ |-D|\ [**a**][**c**][**n**][**o**] ]
 [ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
 [ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
 [ |-Q|\ **c**\|\ **r**\|\ **R**\ [**+f**\ *file*]]
-[ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
-[ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
+[ |SYN_OPT-R| ]
+[ |-S|\ *slopefile* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT--| ]
 
@@ -76,18 +80,18 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**a**][**c**][**o**][**n**]
+**-D**\ [**a**][**c**][**n**][**o**]
     Instead of finding the gradient in a given direction (|-A|), find the
     direction of the positive (up-slope) gradient of the data. The
-    following modifiers are supported:
+    following directives are supported:
 
-    - **a** - Find the aspect (i.e., the down-slope direction).
-    - **c** - Use the conventional Cartesian angles measured counterclockwise
+    - **a**: Find the aspect (i.e., the down-slope direction).
+    - **c**: Use the conventional Cartesian angles measured counterclockwise
       from the positive x (east direction) [Default measures directions
       clockwise from north, as *azim* in |-A|].
-    - **o** - Report orientations (0-180) rather than directions (0-360).
-    - **n** - Add 90 degrees to all angles (e.g., to give local strikes of the
+    - **n**: Add 90 degrees to all angles (e.g., to give local strikes of the
       surface).
+    - **o**: Report orientations (0-180) rather than directions (0-360).
 
 .. _-E:
 
@@ -144,7 +148,7 @@ Optional Arguments
     **-Qr** to read these values.  Using **-QR** will read then delete the
     statistics file. See :ref:`Tiles <grdgradient:Tiles>` for more information.
     Optionally, append **+f**\ *file* to write/read the statistics to/from the
-    specified *file*.
+    specified *file* [Default is grdgradient.stat in the current TMP directory].
 
 .. |Add_-R| replace:: Using the |-R| option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|

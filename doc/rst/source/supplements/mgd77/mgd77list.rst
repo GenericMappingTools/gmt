@@ -635,4 +635,4 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 IGRF, see `<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
 
 Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
-*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

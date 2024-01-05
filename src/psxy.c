@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ struct PSXY_CTRL {
 		double cap;		/* Width of error bar cap or whisker [7p] */
 		struct GMT_PEN pen;
 	} E;
-	struct PSXY_F {	/* -F<mode> */
+	struct PSXY_F {	/* -F[c|n|p][a|r|s|t|<refpoint>] */
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;
@@ -442,7 +442,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		return (GMT->parent->error);
 	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file (unless -Vd) */
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Leave the symbol def and txt files in the temp directory */
-		char tmp_file2[GMT_LEN64] = {""};
+		char tmp_file2[GMT_LEN128] = {""};
 		bool was = GMT->current.setting.io_header[GMT_OUT];	/* Save current setting */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary symbol file for decorated lines saved: %s\n", tmp_file);
 		if (GMT->parent->tmp_dir)	/* Make unique file in tmp dir */
@@ -807,7 +807,7 @@ GMT_LOCAL unsigned int psxy_old_E_parser (struct GMTAPI_CTRL *API, struct PSXY_C
 			n_errors++;
 		}
 	}
-	return (n_errors);
+	return  (n_errors);
 }
 
 static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S) {
@@ -818,7 +818,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ztype, k, n_files = 0;
+	unsigned int n_errors = 0, ztype, n_files = 0;
 	int j;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -934,7 +934,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				n_errors += gmt_parse_segmentize (GMT, opt->option, opt->arg, 0, &(Ctrl->F.S));
+				n_errors += gmt_parse_segmentize (GMT, opt->option, opt->arg, 1, &(Ctrl->F.S));
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);

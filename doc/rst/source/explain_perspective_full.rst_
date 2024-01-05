@@ -10,7 +10,7 @@ The **-p** option
 
 All plotting programs that normally produce a flat, two-dimensional illustration can be told to view this flat
 illustration from a particular vantage point, resulting in a perspective view. You can select perspective view with
-the **-p** option by setting the azimuth (*azim*) of the viewpoint [Default is 180]. The following modifiers are
+the **-p** option by setting the azimuth (*azim*) of the viewpoint [Default is 180]. The following directives are
 supported:
 
 - **x**\|\ **y**\|\ **z** to plot against the "wall" x = level (using **x**) or y = level (using **y**) or the
@@ -22,8 +22,8 @@ supported:
 For frames used for animation, we fix the center of your data domain. Specify another center using one of the following
 modifiers:
 
-- **+w** to project *lon0*/*lat0* (and *z0* if applicable) to the center of the page size.
-- **+v** to specify the coordinates of the projected 2-D view point as *x0*/*y0*.
+- **+w** - Project *lon0*/*lat0* (and *z0* if applicable) to the center of the page size.
+- **+v** - Specify the coordinates of the projected 2-D view point as *x0*/*y0*.
 
 When **-p** is used without any further arguments, the values from the last use of **-p** in a previous GMT command
 will be used (in modern mode this also supplies the previous **-Jz** or **-JZ** if doing a 3-D region). Alternatively,

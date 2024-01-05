@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*] ]
+[ |-F|\ [**R**\|\ **c**\|\ **g**\|\ **h**\|\ **r**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -62,7 +62,7 @@ and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
 behavior can be overruled using the options |-D|, |-M| or |-N|.
 
-The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
+The color model (GRAY, RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master CPT. When
 there is no :term:`COLOR_MODEL` entry in the master CPT, the
 :term:`COLOR_MODEL` specified in the :doc:`gmt.conf` file or on the command
@@ -110,27 +110,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]
-    Force output CPT to be written with r/g/b codes, gray-scale values
-    or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
-    codes (**h**), or c/m/y/k codes (**c**), or #rrggbb hex codes (**x**).
-    Optionally or alternatively,
-    append **+c** to write discrete palettes in categorical format.
-    If *label* is appended then we create labels for each category to be used
-    when the CPT is plotted. The *label* may be a comma-separated list of
-    category names (you can skip a category by not giving a name), or give
-    *start*\ [-], where we automatically build monotonically increasing labels
-    from *start* (a single letter or an integer). Append - to build ranges
-    *start*\ -*start+1* instead.  If the categorical CPT should have string
-    keys instead of numerical entries then append **+k**\ *keys*, where
-    *keys* is either a file with one key per record or a single letter (e.g., D),
-    then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
-    For comma-separated lists of keys, use |-T| instead.  **Note**: If **+cM** is given and the number
-    of categories is 12, then we automatically create a list of month names.
-    Likewise, if **+cD** is given and the number of categories is 7 then we
-    make a list of weekday names.  The format of these labels will depend on the
-    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
-    :term:`TIME_WEEK_START` settings.
+.. include:: explain_cpt_output.rst_
 
 .. _-G:
 

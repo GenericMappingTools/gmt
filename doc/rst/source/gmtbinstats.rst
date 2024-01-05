@@ -63,15 +63,24 @@ Required Arguments
 
 **-C**\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
     Choose the statistic that will be computed per node based on the points that
-    are within *radius* distance of the node.  Select one of **a** for mean (average),
-    **d** for median absolute deviation (MAD), **g** for full (max-min) range,
-    **i** for 25-75% interquartile range, **l** for minimum (low),
-    **L** for minimum of positive values only, **m** for median,
-    **n** the number of values, **o** for least median square (LMS) scale,
-    **p** for mode (maximum likelihood), **q** for selected quantile
-    (append desired quantile in 0-100% range [50]), **r** for root mean square (RMS),
-    **s** for standard deviation, **u** for maximum (upper),
-    **U** for maximum of negative values only, or **z** for the sum.
+    are within *radius* distance of the node.  Append one directive among these candidates:
+
+    - **a**: Mean (i.e., average).
+    - **d**: Median absolute deviation (MAD).
+    - **g**: The full (max-min) range.
+    - **i**: The 25-75% interquartile range.
+    - **l**: Minimum (lowest value).
+    - **L**: Minimum of positive values only.
+    - **m**: Median value.
+    - **n**: The number of values per bin.
+    - **o**: Least median square (LMS) scale.
+    - **p**: Mode (maximum likelihood estimate).
+    - **q**: Selected quantile (append desired *quantile* in 0-100% range [50]).
+    - **r**: Root mean square (RMS).
+    - **s**: Standard deviation.
+    - **u**: Maximum (highest value).
+    - **U**: Maximum of negative values only.
+    - **z**: The sum of the values.
 
 .. _-G:
 

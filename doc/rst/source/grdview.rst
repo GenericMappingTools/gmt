@@ -14,9 +14,9 @@ Synopsis
 
 **gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
-[ |-C|\ [*cpt*]]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
-[ |-I|\ [*intensgrid*\|\ *intensity*\|\ *modifiers*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
@@ -86,17 +86,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*intensgrid*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the ±1 range,
-    or a constant intensity to apply everywhere (affects the ambient light).
-    Alternatively, derive an intensity grid from the input data grid *reliefgrid*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,
-    and **+m**\ *ambient* to specify azimuth, intensity, and ambient arguments
-    for that module, or just give **+d** to select the
-    default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
-    specific intensity scenario then run :doc:`grdgradient` separately first.
-    If we should derive intensities from another file than *reliefgrid*, specify the file
-    [Default is no illumination].
+.. include:: explain_intense.rst_
 
 .. _-Jz:
 
@@ -171,19 +161,21 @@ Optional Arguments
 .. _-W:
 
 **-W**\ **c**\|\ **m**\|\ **f**\ *pen*
+    Sets pen for contours, mesh, and facade lines.  Choose among
+    these directives:
 
-    **-Wc**
-        Draw contour lines on top of surface or mesh (not image). Append pen
-        attributes used for the contours. [Default: width = 0.75p, color =
-        black, style = solid].
-    **-Wm**
-        Sets the pen attributes used for the mesh. [Default: width = 0.25p,
-        color = black, style = solid]. You must also select **-Qm** or
-        **-Qsm** for meshlines to be drawn.
-    **-Wf**
-        Sets the pen attributes used for the facade. [Default: width =
-        0.25p, color = black, style = solid]. You must also select |-N|
-        for the facade outline to be drawn.
+    - **c**: Append the desired contour pen.
+      Draw contour lines on top of surface or mesh (not image). Append pen
+      attributes used for the contours. [Default: width = 0.75p, color =
+      black, style = solid].
+    - **f**: Append the desired facade pen.
+      Sets the pen attributes used for the facade. [Default: width =
+      0.25p, color = black, style = solid]. You must also select |-N|
+      for the facade outline to be drawn.
+    - **m**: Append the desired mesh pen.
+      Sets the pen attributes used for the mesh. [Default: width = 0.25p,
+      color = black, style = solid]. You must also select **-Qm** or
+      **-Qsm** for meshlines to be drawn.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
@@ -201,6 +193,8 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_grdresample.rst_
 

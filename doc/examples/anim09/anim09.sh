@@ -16,34 +16,35 @@
 # P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.
 # The finished movie is available in our YouTube channel as well (without fading):
 # https://youtu.be/LTxlR5LuJ8g
-# The movie took ~6 hours to render on a 24-core MacPro 2013.
+# The movie took ~2 hours to render on a 10-core M1 MacBook Pro 2021.
 
-cat << 'EOF' > pre.sh
-#!/usr/bin/env bash
-# Pre-script: Runs once to produce files needed for all frames
-gmt begin
-	gmt grdgradient @earth_relief_30s -A90 -Nt2.5 -Gearth_relief_30s+2.5_int.nc
-	gmt makecpt -Cgeo -H > MOR_topo.cpt
-gmt end
-EOF
-cat << 'EOF' > include.sh
-# A set of parameters needed by all frames
+# 0. A set of parameters needed by all frames
+cat << 'EOF' > inc.sh
 ALTITUDE=1000
 TILT=55
 WIDTH=36
 HEIGHT=34
 EOF
+# 1. Pre-script: Runs once to produce files needed for all frames
+cat << 'EOF' > pre.sh
+#!/usr/bin/env bash
+gmt begin
+	gmt grdcut -Rd @earth_relief_30s -Gearth_relief_30s.nc
+	gmt grdgradient earth_relief_30s.nc -A90 -Nt2.5 -Gearth_relief_30s+2.5_int.nc
+	gmt makecpt -Cgeo -H > MOR_topo.cpt
+gmt end
+EOF
+# 2. Main frame script that makes a single frame given the location and twist from the data file
+# and the other view parameters from the include file.
 cat << 'EOF' > main.sh
 #!/usr/bin/env bash
-# Main frame script that makes a single frame given the location and twist from the data file
-# and the other view parameters from the include file.
 gmt begin
 	gmt grdimage -Rg -JG${MOVIE_COL0}/${MOVIE_COL1}/${MOVIE_WIDTH}+z${ALTITUDE}+a${MOVIE_COL2}+t${TILT}+w${MOVIE_COL3}+v${WIDTH}/${HEIGHT} \
-	  -Y0 -X0 @earth_relief_30s -Iearth_relief_30s+2.5_int.nc -CMOR_topo.cpt
+	  -Y0 -X0 earth_relief_30s.nc -Iearth_relief_30s+2.5_int.nc -CMOR_topo.cpt
 	gmt events MOR_names.txt -L100 -Et+r6+f6 -T${MOVIE_FRAME} -F+f12p,Helvetica-Bold,yellow
 gmt end
 EOF
 # 3. Run the movie
 gmt set PROJ_LENGTH_UNIT inch FONT_TAG 20p,Helvetica,white
-gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nanim09 -D24 -H4 -K -M2000,png -Fmp4 -Gblack -Le+jTR -Lf -V -W -Zs
+gmt movie main.sh -Iinc.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nanim09 -D24 -H4 -K -M2000,png -Fmp4 -Gblack -Le+jTR -Lf -V -W -Zs
 rm -f gmt.conf

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -959,7 +959,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 				for (i = ij = 0; i < np; i++, ij += 3) {
 					sprintf (record, "Polygon %d-%d-%d ", link[ij], link[ij+1], link[ij+2]);
 					if (Ctrl->S.mode > TRI_POLY) {
-						double z_triangle, z_node[3];
+						double z_triangle = 0.0, z_node[3];
 						for (k = 0; k < 3; k++) z_node[k] = zz[link[ij+k]];	/* Get the three vertices' z-values */
 						switch (Ctrl->S.mode) {
 							case TRI_LOWER:	/* Set z to the lowest of the three nodes */

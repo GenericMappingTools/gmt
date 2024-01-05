@@ -213,16 +213,19 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *wd*\ [**k**]
-    Set reference water depth for the undeformed flexed surface in m.  Must be positive. [0].  Append **k** to indicate
-    km.  If |-W| is used and your load exceeds this depth then we scale the subaerial part of the
-    load to account for the change in surrounding density (air vs water).
+    Specify water depth in m; append **k** for km.  Must be positive [0].
+    Any subaerial topography (i.e., amplitudes in the input relief that
+    exceeds this depth) will be scaled via the densities set in |-D|
+    to compensate for the larger density contrast with air.
 
 .. _-Z:
 
 **-Z**\ *zm*\ [**k**]
-    Specify reference depth to flexed surface (e.g., Moho) in m; append **k** for km.
-    Must be positive. [0].  We subtract this value from the flexed surface before
-    writing the results.
+    Undeformed plate flexure means *z = 0*. Specify the distance between the
+    observation level [*z = 0*] and the undeformed flexed surface in m; append **k** for km.
+    Must be positive [0]. We subtract this value from the flexed surface before output.
+    Thus, if the observation level is at sealevel and you are looking a seafloor deformation
+    in 5 km of water, use -Z5k and the undeformed surface will have *z = -5000* on output.
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to

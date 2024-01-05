@@ -94,18 +94,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
-    By default, geographic line segments are drawn as great circle arcs by resampling
-    coarse input data along such arcs. To disable this sampling and draw them as
-    straight lines, use the |-A| flag.  Alternatively, add **m** to draw
-    the line by first following a meridian, then a parallel. Or append **p**
-    to start following a parallel, then a meridian. (This can be practical
-    to draw a line along parallels, for example).  For Cartesian data, points
-    are simply connected, unless you append **x** or **y** to draw stair-case
-    curves that whose first move is along *x* or *y*, respectively. For polar
-    projection, append **r** or **t** to draw stair-case curves that whose first
-    move is along *r* or *theta*, respectively. **Note**:
-    The |-A| option requires constant *z*-coordinates.
+.. include:: explain_line_draw.rst_
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -167,17 +156,18 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*]
-    Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
-    Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 4.
-    Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 4-5.
-    Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 4-5.
-    Append **+xl**\|\ **r**\|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
-    append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
-    Polygon may be painted (|-G|) and optionally outlined by adding **+p**\ *pen* [no outline].
-    All constructed polygons are assumed to have a constant *z* value.
+**-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*]
+    Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment:
+
+    - **+d** - Build a symmetrical envelope around *y*\ (*x*) using deviations *dy*\ (*x*) given in extra column 3.
+    - **+D** - Build an asymmetrical envelope around *y*\ (*x*) using deviations *dy1*\ (*x*) and *dy2*\ (*x*) from extra columns 3-4.
+    - **+b** - Build an asymmetrical envelope around *y*\ (*x*) using bounds *yl*\ (*x*) and *yh*\ (*x*) from extra columns 3-4.
+    - **+x** - Connect first and last point to anchor points at either *xmin* (append **l**), *xmax* (append **r**), or *x0* (append it).
+    - **+y** - Connect first and last point to anchor points at either *ymin* (append **b**), *xmax* (append **t**), or *y0* (append it).
+
+    Such polygons may be painted (|-G|) and optionally outlined by adding modifier **+p**\ *pen* [no outline].
     **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
-    your segments are interpreted as polygons, else they are seen as lines.
+    your segments are interpreted as polygons, else they will be seen as lines.
 
 .. _-N:
 
@@ -218,14 +208,27 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = 0.25p, color = black, style = solid]. If the modifier **+cl**
-    is appended then the color of the line are taken from the CPT (see
-    |-C|). If instead modifier **+cf** is appended then the color from the cpt
-    file is applied to symbol fill.  Use just **+c** for both effects.
-    If |-Z| is set, then append **+z** to |-W| to assign pen color via **-C**\ *cpt* and the
-    *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
-    we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
-    or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
+    *width* = 0.25p, *color* = black, *style* = solid]. Modifiers can be used to change the
+    appearance of the line:
+
+    - **+c** - Determine how the color from the cpt file lookup is applied to symbol 
+      and|or fill.  Append **l** to have the color of the line to be taken from the CPT (see
+      |-C|). If instead **f** is appended then the color from the cpt file is applied
+      to symbol fill.  If no argument is given the we use the color for both pen and fill.
+    - **+o** - Append *offset*\ [*unit*] and we will start and stop drawing the line at the
+      given distance *offset* from the end point. Append a *unit* from **c**\|\ **i**\|\ **p** to
+      indicate plot distance offsets on the map or append map distance units instead (see Units below)
+      [Cartesian distances]. Give *offset* as *b_offset*/*e_offset* if the beginning and end of the
+      line should have different offsets.
+    - **+s** - Draw the line using a Bezier spline [linear spline].
+    - **+v** - Given [**b**\|\ **e**]\ *vspecs*, we place a vector head at the ends of the lines. Prepend
+      **b** (beginning) or **e** (end) to add a vector at only one end [Default is shared specs for both end of the line].
+      **Note**: Because **+v** may take additional modifiers it must necessarily be given
+      at the end of the pen specification. See the `Vector Attributes`_ for more information or such modifiers.
+    - **+z** - If |-Z| is set, assign pen color via **-C**\ *cpt* and the *z*-values obtained
+      (same if transparency is set via |-Z|).  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
+      we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
+      or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
@@ -235,15 +238,25 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *value*\|\ *file*\ [**+t**\|\ **T**]
+    Control the color and|or transparency of line and polygons.
     Instead of specifying a line or polygon fill and outline color via |-G| and |-W|,
-    give both a *value* via |-Z| and a color lookup table via |-C|.  Alternatively,
-    give the name of a *file* with one z-value (read from the last column) for each polygon
-    or line in the input data. To apply the color obtained to a fill, use **-G+z**; to
-    apply it to the pen color, append **+z** to |-W|.
-    To just modulate the transparency of the polygon or line instead, append **+t** and the
-    *z*-value will be assumed to be transparency in the 0-100 % range.  Finally, append **+T**
-    and supply two columns via *file*: The last column must be the *z*-value while the next
-    to last column must have transparencies (in 0-100 % range).
+    pass a color lookup table via |-C|. Then, select one of two modes:
+
+    1. Append a *value* and the color is looked-up via the CPT.
+    2. Give the name of a *file* with one z-value (read from the last column) for each polygon
+       or line in the input data.
+
+    To apply the color we must use the |-G| or |-W| options in conjunction with |-Z|:
+
+    - **-G+z** - Apply the color to the polygon fill.
+    - **-W+z** - Apply the color to the pen instead.
+
+    Two modifiers is used to also handle transparency and|or color:
+
+    - **+t** - Modulate the transparency of the polygon or line instead; the
+      *z*-value will be assumed to be transparency in the 0-100 % range.
+    - **+T** - Supply two columns via *file*: The last column must be the *z*-value
+      while the penultimate column must have transparencies (in 0-100 % range).
 
 .. include:: explain_-aspatial.rst_
 
