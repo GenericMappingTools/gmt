@@ -25,7 +25,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-Z|\ *level*\ [**b**\|\ **t**] ]
 [ |SYN_OPT-f| ]
-[ **-x**\ *+a|n|-n* ]
+[ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -153,14 +153,7 @@ Optional Arguments
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
-**-x**\ *+a|n|-n*
-   Choose the number of processors used in multi-threading (Only available with multi-threading builds).
-
-     *+a* Use all available processors.
-
-     *n*  Use n processors (not more than max available off course).
-
-     *-n* Use (all - n) processors.
+.. include:: ../../explain_core.rst_
 
 .. include:: ../../explain_help.rst_
 
@@ -181,7 +174,7 @@ Island" together with its not phantom seamount
   gmt grdgravmag3d sandy_bat.grd -C1700 -Z-4300 -fg -I1m -Gsandy_okb.grd -V
 
 To compute the vertical component due to a magnetization stored in *mag.grd* over a zone defined by
-the surface *bat.grd*, using variable declination and inclination provided the IGRF and using 4
+the surface *bat.grd*, using variable declination and inclination provided the IGRF but using only 4
 processors, do:
 
 ::
