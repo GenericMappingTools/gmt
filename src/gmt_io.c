@@ -3914,7 +3914,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */
 	if (gmt_M_rec_is_error (GMT))
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 " in file %s\n",
-					col_no, *n, GMT->current.io.rec_no, GMT->current.io.filename[GMT_IN]);
+					col_no, *n, GMT->current.io.data_record_number_in_tbl[GMT_IN], GMT->current.io.filename[GMT_IN]);
 
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) {
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
