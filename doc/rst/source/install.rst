@@ -82,6 +82,7 @@ chip.
 =============== =========================
 **GMT Version** **Minimum MacOS**
 =============== =========================
+6.5             macOS 12 (Monterey)
 6.4             macOS 12 (Monterey)
 6.3             macOS 10.15 (Catalina)
 6.2             macOS 10.15 (Catalina)
