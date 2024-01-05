@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,7 @@ struct GMTINFO_CTRL {	/* All control options for this program (except common arg
 	struct GMTINFO_L {	/* -L */
 		bool active;
 	} L;
-	struct GMTINFO_S {	/* -S[x|y] */
+	struct GMTINFO_S {	/* -S[x|y] [Deprecated in 6.5] */
 		bool active;
 		bool xbar, ybar;
 	} S;
@@ -128,7 +128,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]]] [-EL|l|H|h[<col>]] "
-		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]] [-L] [-S[x][y]] [-T<dz>[%s][+c<col>]] "
+		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]] [-L] [-T<dz>[%s][+c<col>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]",
 		name, GMT_TIME_FIX_UNITS_DISPLAY, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -153,27 +153,25 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.");
 	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
 	GMT_Usage (API, 1, "\n-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]");
-	GMT_Usage (API, -2, "Return textstring -Rw/e/s/n to nearest multiple of <dx>/<dy> (assumes at least two columns). "
-		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). Give -I<dx>/0 or -I0/<dy> for mixed exact and rounded result. "
-		"If -C is set then no -R string is issued.  Instead, the number of increments "
-		"given determines how many columns are rounded off to the nearest multiple. "
-		"If only one increment is given we also use it for the second column (for backwards compatibility). "
-		"To override this behavior, use -Ip<dx>. "
-		"If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift] "
-		"and allow -r to change from gridline-registration to pixel-registration. "
-		"Use -Ib to report the bounding box polygon for the data files (or segments; see -A). "
-		"Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs. "
-		"Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface. "
-		"Append +r to modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
-		"to round region to these multiples; use +R to extend region by those increments instead, "
-		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
+	GMT_Usage (API, -2, "Return textstring -Rw/e/s/n to nearest multiple of <dx>/<dy> (assumes input has at least two columns). "
+		"Several directives affect the result: ");
+	GMT_Usage (API, 3, "%s b: Report the bounding box polygon for the data files (or segments; see -A).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s e: Report the exact min/max extent in the -Rw/e/s/n string (no multiples). Give -I<dx>/0 or -I0/<dy> for mixed exact and rounded result.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s f: Append <dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s p: If only one increment is given we also use it for the second column (for backwards compatibility). "
+		"To override this behavior, use -Ip<dx>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s s: Append <dx>[/<dy>] to report an extended region optimized for fastest results in surface.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Three modifiers can adjust the determined region further:");
+	GMT_Usage (API, 3, "+r: Modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
+		"to round region to these multiples.");
+	GMT_Usage (API, 3, "+e: Like +r, but makes sure the region extends at least by %g x <inc>.", GMT_REGION_INCFACTOR);
+	GMT_Usage (API, 3, "+R: Like +r but adds and subtracts the given increments to extend the region outwards.");
+	GMT_Usage (API, -2, "Notes: (1) If -C is set then no -R string is issued.  Instead, the number of increments "
+		"given determines how many columns are rounded off to the nearest multiple.");
+	GMT_Usage (API, -2, "Notes: (2) If input data are regularly distributed we use observed phase shifts in determining "
+		"-R [no phase shift] and allow -r to change from gridline-registration to pixel-registration.");
 	GMT_Usage (API, 1, "\n-L Determine limiting region. With -I it rounds inward so bounds are within data range. "
 		"Use -A to find the limiting common bounds of all segments or tables.");
-	GMT_Usage (API, 1, "\n-S[x][y]");
-	GMT_Usage (API, -2, "Add extra space for error bars. Useful together with -I.");
-	GMT_Usage (API, 3, "-Sx: Leaves space for horizontal error bar using value in third (2) column.");
-	GMT_Usage (API, 3, "-Sy: Leaves space for vertical error bar using value in third (2) column.");
-	GMT_Usage (API, 3, "-S or -Sxy: Leaves space for both error bars using values in third&fourth (2&3) columns.");
 	GMT_Usage (API, 1, "\n-T<dz>[%s][+c<col>]", GMT_TIME_FIX_UNITS_DISPLAY);
 	GMT_Usage (API, -2, "Return textstring -Tzmin/zmax/dz to nearest multiple of the given <dz>.");
 	GMT_Usage (API, -2, "Note: Calculations are based on the first (0) column; append +c<col> to use another column. "
@@ -325,7 +323,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-			case 'S':	/* Error bar output */
+			case 'S':	/* Error bar output [deprecated in 6.5] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				j = 0;
 				while (opt->arg[j]) {
@@ -411,7 +409,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, lonmin);  gmt_M_free (GMT, lonmax); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_M_free (GMT, Z); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
-	bool got_stuff = false, first_data_record, give_r_string = false, save_t, first_time = true;;
+	bool got_stuff = false, first_data_record, give_r_string = false, save_t, first_time = true;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0;

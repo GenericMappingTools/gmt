@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
-[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
+[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+b**\ *boost*][**+p**\ *power*] ]
 [ |-K|\ [*densitymodel*] ]
 [ |-L|\ [*hn*] ]
 [ |-M|\ [*list*] ]
@@ -164,7 +164,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
+**-H**\ *H*/*rho_l*/*rho_h*\ [**+b**\ *boost*][**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial :ref:`density function <SMT_rho>`
     with depth. Give the low and high seamount densities in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3` and the fixed reference height
     *H* in meters. Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase

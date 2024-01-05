@@ -33,6 +33,7 @@ gmt begin
 	echo -25 66.5 -20 66.5  | gmt plot -SV0.5i+s+e+h0.5 -Gblue -W3p -p
 gmt end
 EOF
+# 3. Run the movie without and with scale
 gmt movie main.sh -C540p -Njitter_H0 -Tangles.txt -Sbpre.sh -D24 -Fmp4 -G+p2p -Z -W -Lc0+jTL+t%05.1f+o1c -Ls"0 sub-pixels"+jBR+o1c
 for H in 2 4 8; do
 	gmt movie main.sh -C540p -Njitter_H${H} -Tangles.txt -Sbpre.sh -D24 -Fmp4 -G+p2p -H${H} -Z -W -Lc0+jTL+t%05.1f+o1c -Ls"${H} sub-pixels"+jBR+o1c

@@ -85,3 +85,13 @@ if (GMTMEX_PATH)
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 endif (GMTMEX_PATH)
+
+install (PROGRAMS
+	${VCRUNTIME_PATH}/vcruntime140.dll
+	${VCRUNTIME_PATH}/vcruntime140_1.dll
+	${VCRUNTIME_PATH}/msvcp140.dll
+	${VCRUNTIME_PATH}/msvcp140_1.dll
+	${VCRUNTIME_PATH}/msvcp140_2.dll
+	${VCRUNTIME_PATH}/msvcp140_codecvt_ids.dll
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)

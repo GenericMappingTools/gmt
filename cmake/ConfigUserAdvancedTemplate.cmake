@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -236,6 +236,11 @@ set (GMT_ENABLE_OPENMP TRUE)
 #	add_definitions(-DDEBUG_MODERN)			# To set PPID == 0 during Xcode test
 #	message("Add Xcode definition for GMT")
 #endif()
+
+# Uncomment if you want to temporarily replace Miller projection with the "Christmas" projection.
+# add_definitions(-DCHRISTMAS)
+# Then, rebuild GMT and try the script share/tools/christmas-cube.sh
+
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking; see gmt_memory .c on MEMDEBUG for information

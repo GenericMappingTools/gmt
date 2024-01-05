@@ -14,11 +14,11 @@ separated by commas [Default reads all columns in order, starting with the first
 be repeated. The chosen data columns will be used as given and columns not listed will be skipped. Optionally, append
 one of the following modifiers to any column or column range to transform the input columns:
 
-- **+l** to take :math:`\log_{10}` of the input values.
-- **+d** to divide the input values by the factor *divisor* [default is 1].
-- **+s** to multiply the input values by the factor *scale* [default is 1]. Alternatively, give **d** to convert
+- **+l** - Take :math:`\log_{10}` of the input values.
+- **+d** - Divide the input values by the factor *divisor* [default is 1].
+- **+s** - Multiply the input values by the factor *scale* [default is 1]. Alternatively, give **d** to convert
   km to degrees or **k** to convert degrees to km using :term:`PROJ_MEAN_RADIUS`.
-- **+o** to add the given *offset* to the input values [default is 0].
+- **+o** - Add the given *offset* to the input values [default is 0].
 
 **Notes**: (1) The order of these optional transformations are (1) take :math:`\log_{10}`, (2) scale or divide, and (3)
 add *offset*. Do not repeat operations: -i+d9+o8+o2+s3+d4 will be treated as -i+o2+d4.

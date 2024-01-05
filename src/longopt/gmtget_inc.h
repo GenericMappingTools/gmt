@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,14 @@
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
 	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'D', "data|dataset",      "", "", "", "" },
-	{ 0, 'G', "gmtconf",           "", "", "", "" },
+	          short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'D', "data|dataset",      "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'G', "gmtconf",           "", "", "", "", GMT_TP_STANDARD },
 	GMT_I_INCREMENT_KW,
-	{ 0, 'L', "lines",             "", "", "", "" },
-	{ 0, 'N', "no_convert",        "", "", "", "" },
-	{ 0, 'Q', "list|no_download",  "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	{ 0, 'L', "lines",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "no_convert",        "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Q', "list|no_download",  "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GMTGET_INC_H */

@@ -10,7 +10,7 @@ int main () {
 	uint64_t dim[2] = {5, 4};
 	char args[1000] = {""};
 	char input[GMT_VF_LEN] = {""};
-	float *data = NULL;
+	gmt_grdfloat *data = NULL;
 
 	API = GMT_Create_Session ("testapi_gmtgrid", 2U, mode, NULL);
 
@@ -18,8 +18,8 @@ int main () {
 	G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 2, NULL);
 
 	/* Allocate memory of the data array in the external program (C or PyGMT) */
-	data = (float *)malloc(sizeof(float) * 9 * 8);
-	for (int i = 0; i < 9 * 8; i++) data[i] = (float)i;
+	data = (gmt_grdfloat *)malloc(sizeof(gmt_grdfloat) * 9 * 8);
+	for (int i = 0; i < 9 * 8; i++) data[i] = (gmt_grdfloat)i;
 
 	/* Assign the user data to the GMT_GRID structure */
 	G->data = data;

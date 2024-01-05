@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -93,8 +93,12 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->ULx = I->header->wesn[XLO];
 		to_GDALW->ULy = I->header->wesn[YHI];
 	}
-	else {
-		to_GDALW->ULx = 1;
+	else if (I->header->wesn[XHI] > I->header->wesn[XLO] && I->header->wesn[YHI] > I->header->wesn[YLO]) {	/* Header has valid -R */
+		to_GDALW->ULx = I->header->wesn[XLO];
+		to_GDALW->ULy = I->header->wesn[YHI];
+	}
+	else {	/* Stuck with dimensions */
+		to_GDALW->ULx = 0;
 		to_GDALW->ULy = I->header->n_rows;
 	}
 

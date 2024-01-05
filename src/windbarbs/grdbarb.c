@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -110,7 +110,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<gridx> <gridy> are grid files with the two wind components.");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A Grids have (speed, theta) components [Default is (u, v) components].");
+	GMT_Usage (API, 1, "\n-A Grids have polar (speed, theta) components [Default is Cartesian (u, v) components].");
 	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-C[<cpt>]");
 	GMT_Usage (API, -2, "Color palette file to convert wind speed to colors. Optionally, name a master cpt "
@@ -147,7 +147,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBARB_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
-	size_t len;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -237,12 +236,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBARB_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdbarb (void *V_API, int mode, void *args) {
-	unsigned int justify, row, col, col_0, row_0, d_col, d_row, k, n_warn[1] = {0}, warn;
+	unsigned int justify, row, col, col_0, row_0, d_col, d_row, k, n_warn[1] = {0};
 	int error = 0;
 	
 	uint64_t ij;
 
-	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
+	double tmp, x, y, plot_x, plot_y, x_off, y_off;
 	double x2, y2, wesn[4], value, vec_length, vec_azim, c, s;
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
@@ -264,7 +263,7 @@ EXTERN_MSC int GMT_grdbarb (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

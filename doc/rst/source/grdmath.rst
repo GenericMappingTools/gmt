@@ -216,13 +216,13 @@ Operator        Args   Returns                                                  
 **CHIPDF**      2 1    Chi-squared probability density function for chi2 = A and nu = B                                Probability
 **COMB**        2 1    Combinations n_C_r, with n = A and r = B                                                        Probability
 **CORRCOEFF**   2 1    Correlation coefficient r(A, B)                                                                 Probability
-**COS**         1 1    Inverse cosine (result in radians)                                                              Calculus
-**COSD**        1 1    Inverse cosine (result in degrees)                                                              Calculus
-**COSH**        1 1    Inverse hyperbolic cosine                                                                       Calculus
-**COT**         1 1    Inverse of cotangent (result in radians)                                                        Calculus
-**COTD**        1 1    Inverse of cotangent (result in degrees)                                                        Calculus
-**CSC**         1 1    Inverse of cosecant (result in radians)                                                         Calculus
-**CSCD**        1 1    Inverse of cosecant (result in degrees)                                                         Calculus
+**COS**         1 1    Cosine of A (A in radians)                                                                      Calculus
+**COSD**        1 1    Cosine of A (A in degrees)                                                                      Calculus
+**COSH**        1 1    Hyperbolic cosine of A                                                                          Calculus
+**COT**         1 1    Cotangent of A (A in radians)                                                                   Calculus
+**COTD**        1 1    Cotangent of A (A in degrees)                                                                   Calculus
+**CSC**         1 1    Cosecant of A (A in radians)                                                                    Calculus
+**CSCD**        1 1    Cosecant of A (A in degrees)                                                                    Calculus
 **CUMSUM**      2 1    Cumulative sum per row (B=±1|3) or column (B=±2|4) in A. Sign of B sets summation direction     Arithmetic
 **CURV**        1 1    Curvature of A (Laplacian)                                                                      Calculus
 **D2DX2**       1 1    d^2(A)/dx^2 2nd derivative                                                                      Calculus
@@ -357,10 +357,10 @@ Operator        Args   Returns                                                  
 **SEC**         1 1    Inverse of secant (result in radians)                                                           Calculus
 **SECD**        1 1    Inverse of secant (result in degrees)                                                           Calculus
 **SIGN**        1 1    Sign (+1 or -1) of A                                                                            Logic
-**SIN**         1 1    Inverse of sine (result in radians)                                                             Calculus
+**SIN**         1 1    Sine of A (A in radians)                                                                        Calculus
 **SINC**        1 1    Normalized sinc function.                                                                       Special Functions
-**SIND**        1 1    Inverse of sine (result in degrees)                                                             Calculus
-**SINH**        1 1    Inverse of hyperbolic sine                                                                      Calculus
+**SIND**        1 1    Sine of A (A in degrees)                                                                        Calculus
+**SINH**        1 1    Hiperbolic sine of A                                                                            Calculus
 **SKEW**        1 1    Skewness of A                                                                                   Probability
 **SQR**         1 1    Square (to the power of 2)                                                                      Arithmetic
 **SQRT**        1 1    Square root                                                                                     Arithmetic
@@ -371,9 +371,9 @@ Operator        Args   Returns                                                  
 **STEPY**       1 1    Heaviside step function in y: H(y-A)                                                            Special Functions
 **SUB**         2 1    A - B (subtraction)                                                                             Arithmetic
 **SUM**         1 1    Cumulative sum of A                                                                             Arithmetic
-**TAN**         1 1    Inverse of tangent (result in radians)                                                          Calculus
-**TAND**        1 1    Inverse of tangent (result in degrees)                                                          Calculus
-**TANH**        1 1    Inverse of hyperbolic tangent                                                                   Calculus
+**TAN**         1 1    Tangent of A (A in radians)                                                                     Calculus
+**TAND**        1 1    Tangent of A (A in degrees)                                                                     Calculus
+**TANH**        1 1    Hyperbolic tangent of A                                                                         Calculus
 **TAPER**       2 1    Unit weights cosine-tapered to zero within A of end margins                                     Special Operators
 **TCDF**        2 1    Student’s t cumulative distribution function for t = A, and nu = B                              Probability
 **TCRIT**       2 1    Student’s t distribution critical value for alpha = A and nu = B                                Probability

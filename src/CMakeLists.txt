@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -221,6 +221,20 @@ else (LAPACK_FOUND)
 		set (GMT_CONFIG_LAPACK_MESSAGE "no" CACHE INTERNAL "LAPACK config message")
 	endif (LAPACK_LIBRARY)
 endif (LAPACK_FOUND)
+
+# Need to know if macOS and kernel is >= 22.4.0 for newLapack syntax
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+	execute_process (COMMAND bash "-c" "echo ${CMAKE_HOST_SYSTEM_VERSION} | awk -F. '{if ($1 > 22 || ($1 == 22 && $2 > 3)) {print 1} else {print 0}}'" 
+		OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE ACCELERATE_NEW_LAPACK)
+else (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+	set (ACCELERATE_NEW_LAPACK 0)
+endif (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+
+if (HAVE_LAPACK AND ACCELERATE_NEW_LAPACK GREATER 0)
+	# Recent macOS with Aarwin kernel > 22.4 needs this compiler flag:
+	add_compile_definitions(ACCELERATE_NEW_LAPACK)
+	message("-- Must add compiler flag -DACCELERATE_NEW_LAPACK definition for macOS kernel version ${CMAKE_HOST_SYSTEM_VERSION}")
+endif (HAVE_LAPACK AND ACCELERATE_NEW_LAPACK GREATER 0)
 
 if (NOT DEFINED GMT_EXCLUDE_BLAS)
 	find_package (BLAS)
@@ -698,7 +712,7 @@ if (BUILD_SUPPLEMENTS)
 	# supplement directories to be built as supplement libraries
 	# SUPPL_EXTRA_DIRS are directories for custom supplements.
 	# See cmake/ConfigUserAdvancedTemplate.cmake for details.
-	set (GMT_SUPPL_DIRS geodesy gshhg img mgd77 potential segy seis spotter x2sys windbarbs ${SUPPL_EXTRA_DIRS})
+	set (GMT_SUPPL_DIRS geodesy gsfml gshhg img mgd77 potential segy seis spotter x2sys windbarbs ${SUPPL_EXTRA_DIRS})
 
 	# process supplement directories and collect information for each supplement libraries
 	set (GMT_SUPPL_LIBRARIES) # empty the library list

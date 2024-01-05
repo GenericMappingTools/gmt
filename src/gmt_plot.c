@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@
  *  gmt_map_title
  *  gmt_plane_perspective
  *  gmt_plot_geo_ellipse
- *  gmt_plot_image_graticules
+ *  gmt_plot_grid_graticules
  *  gmt_plot_line
  *  gmt_plot_timex_grid
  *  gmt_plotcanvas
@@ -6914,6 +6914,12 @@ void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	PSL_beginclipping (PSL, work_x, work_y, 5, rgb, flag);
 }
 
+void gmt_setrgb (struct GMT_CTRL *GMT, double *rgb) {
+	struct PSL_CTRL *PSL= GMT->PSL;
+	/* Fill with a color */
+	PSL_setrgb (PSL, rgb);
+}
+
 void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 	if (!fill) /* NO fill pointer = no fill */
@@ -10829,8 +10835,8 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	return (P);
 }
 
-void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity) {
-	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
+void gmt_plot_grid_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
+	/* Lay down an image from a grid using polygons of the graticules.  This is recoded from grdview
 	 * so it can also be used in grdimage.
 	 * G is the data grid
 	 * I is an optional intensity grid.  If NULL then either intensity points to a
@@ -10874,8 +10880,19 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
 			gmt_illuminate (GMT, *intensity, fill.rgb);
 		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, G->x[col] - inc2[GMT_X], G->x[col] + inc2[GMT_X], G->y[row] - inc2[GMT_Y], G->y[row] + inc2[GMT_Y]);
 		gmt_setfill (GMT, &fill, outline);
-		S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
-		gmt_geo_polygons (GMT, S);
+		if (GMT->current.proj.three_D && grdview) {	/* Deal with grdview */
+			uint64_t k;
+			double xp, yp;
+			for (k = 0; k < n; k++) {
+				gmt_geoz_to_xy (GMT, xx[k], yy[k], G->data[ij], &xp, &yp);
+				xx[k] = xp;	yy[k] = yp;
+			}
+			PSL_plotpolygon (GMT->PSL, xx, yy, n);
+		}
+		else {	/* 2-D, most likely grdimage w/wo -p */
+			S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
+			gmt_geo_polygons (GMT, S);
+		}
 		gmt_M_free (GMT, xx);
 		gmt_M_free (GMT, yy);
 	}
@@ -10957,7 +10974,9 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 	uint64_t k, k0, k1, kk, row, nx, n, n_add, np, first[2] = {0, 0}, last[2] = {0, 0}, start[2] = {0, 0}, stop[2] = {0, 0}, n_alloc;
 	int64_t r;
 	double min_S0, min_S1, max_S0, max_S1, *xp = NULL, *yp = NULL;
+#ifdef FILL_DEBUG
 	char *debug_code = "GCX";
+#endif
 	struct GMT_CURVES_CROSS *X = NULL;
 	struct GMT_XOVER XC;
 	struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
@@ -11040,7 +11059,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					X[np].y0 = S0->data[col_y0][row];	/* Critical point's y0 coordinate */
 					X[np].s0_i0 = row;	/* Set S0 first index inside this section */
 					/* Must interpolate to get the corresponding value at x along S1 */
-					result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+					if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 					kk = 0;
 					while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first x point beyond the NaN gap */
 					X[np].s1_i0 = kk;	/* Set first S1 index inside this section */
@@ -11049,7 +11068,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					X[np].y1 = S0->data[col_y0][row];	/* Critical point's y1 coordinate */
 					X[np].s1_i0 = row;	/* Set S1 first index inside this section */
 					/* Must interpolate to get the corresponding value at x along S0 */
-					result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+					if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 					kk = 0;
 					while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond the NaN gap */
 					X[np].s0_i0 = kk;	/* Set first S0 index inside this section */
@@ -11067,7 +11086,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 						X[np].y0 = S0->data[col_y0][row];	/* Critical point's y0 coordinate */
 						X[np].s0_i0 = row;	/* Set S0 first index inside this section */
 						/* Must interpolate to get the corresponding value at x along S1 */
-						result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+						if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 						kk = 0;
 						while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
 						X[np].s1_i0 = kk;	/* Set S1 first index inside this section */
@@ -11075,7 +11094,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					else {	/* Working on S1 */
 						X[np].y1 = S1->data[col_y1][row];	/* Critical point's y1 coordinate */
 						X[np].s1_i0 = row;	/* Set S1 first index inside this section */
-						result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+						if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 						kk = 0;
 						while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
 						X[np].s0_i0 = kk;	/* Set first S0 index inside this section */
@@ -11106,7 +11125,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		/* Must interpolate to get the corresponding value at x along S1 (y1) */
-		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	else if (S1->data[GMT_X][0] >= S0->data[GMT_X][0]) {	/* S0 has the minimum x */
@@ -11123,7 +11142,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		/* Must interpolate to get the corresponding value at x along S0 (y0) */
-		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	/* If S0 ends before S1 or the other way around we must get the y-value at the smallest end point */
@@ -11141,7 +11160,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].s1_i0 = stop[1];	/* S1 has been wound back to stop[1] */
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
-		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	else if (S1->data[GMT_X][last[1]] <= S0->data[GMT_X][last[0]]) {
@@ -11157,7 +11176,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].s0_i0 = stop[0];	/* S0 has been wound back to stop[0] */
 		X[np].s1_i0 = last[1];	/* Last S1 in overlap is its last point */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
-		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		np++;
 	}
