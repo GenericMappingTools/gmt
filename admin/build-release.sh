@@ -50,20 +50,23 @@ if [ "X${1}" = "X-p" ]; then
 	do_ftp=1
 elif [ "X${1}" = "X-m" ]; then
 	do_ftp=2
+elif [ "X${1}" = "X-s" ]; then
+	signing=0
 elif [ "X${1}" = "X-t" ]; then
 	release=0
 elif [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
-	Usage: build-release.sh [-p|m|t]
+	Usage: build-release.sh [-p|m|s|t]
 	
 	build-release.sh must be run from top-level gmt directory.
 	Will create the release compressed tarballs and (under macOS) the bundle.
 	Requires you have set GMT_PACKAGE_VERSION_* and GMT_PUBLIC_RELEASE in cmake/ConfigDefaults.cmake.
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
-		Passing -p means we copy the files to the SOEST ftp directory
-		Passing -m means only copy the macOS bundle to the SOEST ftp directory
+		Passing -p means we copy the files to the SOEST ftp directory.
+		Passing -m means only copy the macOS bundle to the SOEST ftp directory.
+		Passing -s means an authorized user will try to sign the bundle [no signing].
 		Passing -t means test the build-release script without requiring GMT_PUBLIC_RELEASE
-	[Default places no files in the SOEST ftp directory]
+	[Default places no files in the SOEST ftp directory].
 	EOF
 	exit 1
 fi
@@ -143,13 +146,17 @@ if [ -f cmake/ConfigUserAdvanced.cmake.orig ] || [ -f cmake/ConfigUserAdvanced.c
 	echo 'build-release.sh: Error: Backup CMake Configuration file(s) already exist' >&2
 	exit 1
 fi
-if [ -f cmake/ConfigUser.cmake ]; then
+if [ -f cmake/ConfigUser.cmake ]; then	# Save original file
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
 fi
 if [ -f cmake/ConfigUserAdvanced.cmake ]; then
 	cp cmake/ConfigUserAdvanced.cmake cmake/ConfigUserAdvanced.cmake.orig
 fi
-cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
+if [ $signing -eq 1 ]; then
+	cp -f admin/ConfigReleaseBuildSigning.cmake cmake/ConfigUser.cmake
+else
+	cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
+fi
 # 2a. Make build dir and configure it
 rm -rf build
 mkdir build
