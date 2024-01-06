@@ -13,3 +13,5 @@ doc/examples/**/*.mp4
 doc/examples/**/*.png
 doc/examples/**/*.gif
 .vscode
+cmake/ConfigUser.cmake.orig
+cmake/ConfigUserAdvanced.cmake.orig
