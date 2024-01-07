@@ -60,7 +60,7 @@ assignees: ''
   - [ ] 7 files are attached as release assets (2 source tarballs, 4 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
-- [ ] upload the tarball to zenodo (@PaulWessel)
+- [ ] upload the tarball to [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@PaulWessel, @seisman)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
 - [ ] make announcements on the [GMT twitter](https://twitter.com/gmt_dev)
 - [ ] make announcements on the [GMT Instagram](https://www.instagram.com/genericmappingtools/)
