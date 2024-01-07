@@ -46,30 +46,45 @@ abort_build() {	# Called when we abort this script via Crtl-C
 TOPDIR=$(pwd)
 do_ftp=0
 release=1
-if [ "X${1}" = "X-p" ]; then
-	do_ftp=1
-elif [ "X${1}" = "X-m" ]; then
-	do_ftp=2
-elif [ "X${1}" = "X-s" ]; then
-	signing=1
-elif [ "X${1}" = "X-t" ]; then
-	release=0
-elif [ $# -gt 0 ]; then
-	cat <<- EOF  >&2
-	Usage: build-release.sh [-p|m|s|t]
+for v in $*; do
+	if [ "X${v}" = "X-p" ]; then
+		do_ftp=1
+		echo "	--> Copy installer files to the SOEST ftp directory"
+	elif [ "X${v}" = "X-m" ]; then
+		echo "	--> Only copy macOS installer bundle to the SOEST ftp directory"
+		do_ftp=2
+	elif [ "X${v}" = "X-s" ]; then
+		echo "	--> Authorized user will try to sign the bundle"
+		signing=1
+	elif [ "X${v}" = "X-t" ]; then
+		echo "	--> Test the build-release script without requiring GMT_PUBLIC_RELEASE"
+		release=0
+	elif [ "X${v}" = "X-help" ]; then
+		help=1
+	fi
+done
+
+if [ $help -eq 1 ]; then
+	cat << EOF >&2
+	
+Usage: build-release.sh [-help|p|m|s|t]
 	
 	build-release.sh must be run from top-level gmt directory.
 	Will create the release compressed tarballs and (under macOS) the bundle.
 	Requires you have set GMT_PACKAGE_VERSION_* and GMT_PUBLIC_RELEASE in cmake/ConfigDefaults.cmake.
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
+
+		Passing -help gives this summary, then exits.
 		Passing -p means we copy the files to the SOEST ftp directory.
 		Passing -m means only copy the macOS bundle to the SOEST ftp directory.
-		Passing -s means an authorized user will try to sign the bundle [no signing].
+		Passing -s means an authorized user will try to sign the macOS bundle [no signing].
 		Passing -t means test the build-release script without requiring GMT_PUBLIC_RELEASE
 	[Default places no files in the SOEST ftp directory].
-	EOF
+
+EOF
 	exit 1
 fi
+
 if [ ! -d admin ]; then
 	echo "build-release.sh: Must be run from top-level gmt directory" >&2
 	exit 1
