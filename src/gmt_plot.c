@@ -9704,7 +9704,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	perim_n = gmtlib_lonpath (GMT, start_lon, pole_lat, yc, &x_perim, &y_perim);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Created path from %g/%g to %g/%g [%d points]\n", start_lon, pole_lat, start_lon, yc, perim_n);
 	/* 2. Allocate enough space for new polar cap polygon */
-	n_new = 2 * perim_n + n;
+	n_new = 2 * MAX (perim_n, 1) + n;
 	plon = gmt_M_memory (GMT, NULL, n_new, double);
 	plat = gmt_M_memory (GMT, NULL, n_new, double);
 	/* Start off with the path from the pole to the crossing */
