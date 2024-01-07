@@ -21,7 +21,6 @@ assignees: ''
 	- [ ] PyGMT (@leouieda, @seisman, @weiji14, @maxrjones)
 	- [ ] gmtmex (@PaulWessel, @joa-quim)
 - [ ] reserve a DOI on [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@PaulWessel, @seisman)
-- [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](https://github.com/GenericMappingTools/gmt/blob/master/doc/rst/source/changes.rst)
 - [ ] update the version information in CITATION.cff
