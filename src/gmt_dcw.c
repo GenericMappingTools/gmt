@@ -900,6 +900,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			wesn[XLO] = 0.0;
 			wesn[XHI] = 360.0;
 		}
+		if (wesn[XHI] < wesn[XLO]) {	/* Cannot tolerate that west larger than east */
+			wesn[XLO] -= 360.0;
+		}
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	}
 	gmt_M_free (GMT, order);
