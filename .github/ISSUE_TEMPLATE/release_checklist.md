@@ -69,9 +69,9 @@ assignees: ''
 
 **After release**:
 
-- [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
-- [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
-- [ ] commit changes to GitHub
+- [ ] Reset for the next version
+      - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
+      - [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
 
 **3rd-party update**
 
