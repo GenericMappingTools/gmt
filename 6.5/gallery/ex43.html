@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(43) Robust regression and outlier detection &mdash; GMT 6.5.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(44) Map insets" href="ex44.html" />
+    <link rel="prev" title="(42) Antarctica and stereographic data" href="ex42.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(43) Robust regression and outlier detection</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex43.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="robust-regression-and-outlier-detection">
+<span id="example-43"></span><h1>(43) Robust regression and outlier detection<a class="headerlink" href="#robust-regression-and-outlier-detection" title="Link to this heading"></a></h1>
+<p>In this example show how <a class="reference internal" href="../gmtregress.html"><span class="doc">gmtregress</span></a> can be used to determine a
+robust regression line using <em>reweighted least squares</em> and from
+this fit we are able to identify outliers with respect to the
+main trend.  The result shows dinosaurs were large and dumb,
+humans and some monkeys pretty smart, and the rest of the
+mammals doing alright. Band shows 99% confidence internal on regression.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#               GMT EXAMPLE 43</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate regression and outlier detection</span>
+<span class="c1"># GMT modules:  gmtregress, basemap, legend, text, plot</span>
+<span class="c1"># Unix progs:   grep, awk, sed</span>
+<span class="c1">#</span>
+
+<span class="c1"># set AWK to awk if undefined</span>
+<span class="nv">AWK</span><span class="o">=</span><span class="si">${</span><span class="nv">AWK</span><span class="k">:-</span><span class="nv">awk</span><span class="si">}</span>
+
+<span class="c1"># Data from Table 7 in Rousseeuw and Leroy, 1987.</span>
+gmt<span class="w"> </span>begin<span class="w"> </span>ex43
+
+<span class="w">	</span><span class="nv">file</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>which<span class="w"> </span>-Gc<span class="w"> </span>@bb_weights.txt<span class="k">)</span>
+<span class="w">	</span>gmt<span class="w"> </span>regress<span class="w"> </span>-Ey<span class="w"> </span>-Nw<span class="w"> </span>-i0:1+l<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>&gt;<span class="w"> </span>model.txt
+<span class="w">	</span>gmt<span class="w"> </span>regress<span class="w"> </span>-Ey<span class="w"> </span>-Nw<span class="w"> </span>-i0:1+l<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>-Fxmc<span class="w"> </span>-T-2/6/0.1<span class="w"> </span>-C99<span class="w"> </span>&gt;<span class="w"> </span>rls_line.txt
+<span class="w">	</span>gmt<span class="w"> </span>regress<span class="w"> </span>-Ey<span class="w"> </span>-N2<span class="w"> </span>-i0:1+l<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>-Fxm<span class="w"> </span>-T-2/6/2+n<span class="w"> </span>&gt;<span class="w"> </span>ls_line.txt
+<span class="w">	</span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;^&gt;&#39;</span><span class="w"> </span>model.txt<span class="w"> </span>&gt;<span class="w"> </span>A.txt
+<span class="w">	</span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;^#&#39;</span><span class="w"> </span><span class="nv">$file</span><span class="w"> </span>&gt;<span class="w"> </span>B.txt
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;{if ($7 == 0) printf &quot;%dp\n&quot;, NR}&#39;</span><span class="w"> </span>A.txt<span class="w"> </span>&gt;<span class="w"> </span>sed.txt
+<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Clightred,green<span class="w"> </span>-T0/2/1<span class="w"> </span>-F+c<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0.01/1e6/0.1/1e5<span class="w"> </span>-JX15cl<span class="w"> </span>-Ba1pf3<span class="w"> </span>-Bx+l<span class="s2">&quot;Log@-10@- body weight (kg)&quot;</span><span class="w"> </span>-By+l<span class="s2">&quot;Log@-10@- brain weight (g)&quot;</span><span class="w"> </span>-BWSne+glightblue<span class="w"> </span>-Y10c
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-2/6/-1/5<span class="w"> </span>-JX15c<span class="w"> </span>rls_line.txt<span class="w"> </span>-L+yt<span class="w"> </span>-Glightgoldenrod
+<span class="w">	</span>sed<span class="w"> </span>-n<span class="w"> </span>-f<span class="w"> </span>sed.txt<span class="w"> </span>B.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-R0.01/1e6/0.1/1e5<span class="w"> </span>-JX15cl<span class="w"> </span>-F+f12p+jRM<span class="w"> </span>-Dj10p
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-2/6/-1/5<span class="w"> </span>-JX15c<span class="w"> </span>-L+d+p0.25p,-<span class="w"> </span>-Gcornsilk1<span class="w"> </span>rls_line.txt
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>rls_line.txt<span class="w"> </span>-W3p
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>ls_line.txt<span class="w"> </span>-W1p,-
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc0.4c<span class="w"> </span>-C<span class="w"> </span>-Wfaint<span class="w"> </span>-i0,1,6<span class="w"> </span>model.txt
+<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>A.txt<span class="w"> </span>-F+f8p+jCM+r1<span class="w"> </span>-B0
+<span class="w">	</span><span class="c1"># Build legend</span>
+<span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;- EOF &gt; legend.txt</span>
+<span class="s">	H 18p,Times-Roman Index of Animals</span>
+<span class="s">	D 1p</span>
+<span class="s">	N 7 43 7 43</span>
+<span class="s">	EOF</span>
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span>-F<span class="s1">&#39;\t&#39;</span><span class="w"> </span><span class="s1">&#39;{printf &quot;L - C %d.\nL - L %s\n&quot;, NR, $NF}&#39;</span><span class="w"> </span>B.txt<span class="w"> </span>&gt;&gt;<span class="w"> </span>legend.txt
+<span class="w">	</span>gmt<span class="w"> </span>legend<span class="w"> </span>-DjBR+w6c+o0.4c<span class="w"> </span>-F+p1p+gwhite+s+c3p+r<span class="w"> </span>legend.txt<span class="w"> </span>--FONT_LABEL<span class="o">=</span>8p
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0.5/28.5/-10/4<span class="w"> </span>-JX15c/5c<span class="w"> </span>-Y-7.5c<span class="w"> </span>-B+glightgoldenrod
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Gcornsilk1<span class="w"> </span>-W0.25p,-<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
+<span class="s">	&gt;</span>
+<span class="s">	0	-2.5</span>
+<span class="s">	30	-2.5</span>
+<span class="s">	30	2.5</span>
+<span class="s">	0	2.5</span>
+<span class="s">	&gt; -Glightblue</span>
+<span class="s">	0	-10</span>
+<span class="s">	30	-10</span>
+<span class="s">	30	-2.5</span>
+<span class="s">	0	-2.5</span>
+
+<span class="s">	EOF</span>
+<span class="w">	</span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;{print NR, $6, $7}&#39;</span><span class="w"> </span>A.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sb1q+b0<span class="w"> </span>-W0.25p<span class="w"> </span>-C
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Bafg100<span class="w"> </span>-Bx+l<span class="s2">&quot;Animal index number&quot;</span><span class="w"> </span>-By+l<span class="s2">&quot;z-zcore&quot;</span><span class="w"> </span>-BWSne
+<span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>*.txt
+gmt<span class="w"> </span>end<span class="w"> </span>show
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex43.png"><img alt="../_images/ex43.png" src="../_images/ex43.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Robust Regression and Outlier Detection.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex42.html" class="btn btn-neutral float-left" title="(42) Antarctica and stereographic data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex44.html" class="btn btn-neutral float-right" title="(44) Map insets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 07, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

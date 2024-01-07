@@ -1,0 +1,522 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installing GMT &mdash; GMT 6.5.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Illustration Gallery" href="gallery.html" />
+    <link rel="prev" title="GMT Themes" href="theme-settings.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing GMT</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#windows">Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#macos">macOS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#application-bundles">Application Bundles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-via-homebrew">Install via Homebrew</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-via-macports">Install via MacPorts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#linux">Linux</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fedora">Fedora</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rhel-centos">RHEL/CentOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ubuntu-debian">Ubuntu/Debian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#archlinux">ArchLinux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gentoo">Gentoo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cross-platform-install-instructions">Cross Platform Install Instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-via-conda">Install via conda</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#freebsd">FreeBSD</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-via-ports">Install via Ports</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installing GMT</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/install.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installing-gmt">
+<h1>Installing GMT<a class="headerlink" href="#installing-gmt" title="Link to this heading"></a></h1>
+<a class="reference external image-reference" href="https://github.com/GenericMappingTools/gmt/releases"><img alt="https://img.shields.io/github/release/GenericMappingTools/gmt" src="https://img.shields.io/github/release/GenericMappingTools/gmt" /></a>
+<img alt="https://img.shields.io/ubuntu/v/gmt" src="https://img.shields.io/ubuntu/v/gmt" />
+<img alt="https://img.shields.io/debian/v/gmt" src="https://img.shields.io/debian/v/gmt" />
+<img alt="https://img.shields.io/fedora/v/GMT" src="https://img.shields.io/fedora/v/GMT" />
+<img alt="https://img.shields.io/archlinux/v/extra/x86_64/gmt" src="https://img.shields.io/archlinux/v/extra/x86_64/gmt" />
+<img alt="https://img.shields.io/homebrew/v/gmt" src="https://img.shields.io/homebrew/v/gmt" />
+<img alt="https://img.shields.io/conda/v/conda-forge/gmt" src="https://img.shields.io/conda/v/conda-forge/gmt" />
+<p>GMT is available on Windows, macOS, Linux and FreeBSD. Source and binary
+packages are provided for the latest release, and can be downloaded from
+the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/releases">GitHub repository</a>.</p>
+<p>This section provides instructions for installing GMT binary packages on
+different operating systems. Please refer to the
+<a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md">Building Instructions</a>
+for compiling GMT source package (either stable release or development version).</p>
+<section id="windows">
+<h2>Windows<a class="headerlink" href="#windows" title="Link to this heading"></a></h2>
+<p>We provide 32 and 64 bit standalone installers (e.g.,
+gmt-6.x.x-win64.exe) in the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/releases">GitHub
+repository</a>. The
+installers come with GDAL, FFmpeg, and Ghostscript pre-installed.</p>
+<p>In addition to the GMT installer, you also need to download and install
+<a class="reference external" href="http://www.graphicsmagick.org/">GraphicsMagick</a> if you want to
+create animated GIFs.</p>
+<p><strong>NOTE:</strong> There are several options for using <a class="reference internal" href="reference/non-unix-platforms.html"><span class="doc">GMT on non-UNIX Platforms</span></a>
+such as Windows, including <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/">Windows Subsystem for
+Linux</a>, MinGW/MSYS2,
+Cygwin, or DOS batch scripts. The last option will not provide you with
+any UNIX tools so you will be limited to what you can do with DOS batch
+files. One simple option for accessing a UNIX style bash terminal is
+<em>Git for Windows</em>, which can be downloaded from <a class="reference external" href="https://gitforwindows.org/">their official
+website</a>.</p>
+<p><strong>NOTE:</strong> At the installation step, you may get the warning message:</p>
+<p>&gt;   Warning! Failed to add GMT to PATH. Please add the GMT bin path to
+&gt;   PATH manually.</p>
+<p>Usually it means your system variable <code class="docutils literal notranslate"><span class="pre">PATH</span></code> is already too long and
+the GMT installer can’t add its path to the variable. As it says, you
+need to ignore the warning message, and then manually add the GMT bin
+path (e.g., <code class="docutils literal notranslate"><span class="pre">C:\programs\gmt6\bin</span></code>) to <code class="docutils literal notranslate"><span class="pre">PATH</span></code> after finishing the
+installation. If you don’t know how to manually modify <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, just
+search Google for “How to change windows path variable”.</p>
+</section>
+<section id="macos">
+<h2>macOS<a class="headerlink" href="#macos" title="Link to this heading"></a></h2>
+<section id="application-bundles">
+<h3>Application Bundles<a class="headerlink" href="#application-bundles" title="Link to this heading"></a></h3>
+<p>We provide macOS application bundles for Intel and ARM architectures in
+the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/releases">GitHub
+repository</a>. The
+bundles come with GDAL, FFmpeg, Ghostscript and GraphicsMagick
+pre-installed.</p>
+<p>Download the suitable application bundle (gmt-6.x.x-darwin-x86_64.dmg or
+gmt-6.x.x-darwin-arm64.dmg), double-click to mount it and drag
+GMT-6.x.x.app to the “Applications” folder (or any other folder).</p>
+<p>GMT-6.x.x.app opens a terminal from which you can invoke GMT programs
+and scripts. If you like, you can add the GMT programs contained in the
+application bundle to your search path for executables. For that, just
+run GMT-6.x.x.app once and follow the instructions at the end of the GMT
+splash screen.</p>
+<p><strong>Note</strong>: The installers are always built for the latest macOS version
+only. The table below lists macOS compatibility requirements for the
+bundle. The arm64 version requires a computer with the M1 Apple Silicon
+chip.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>GMT Version</strong></p></th>
+<th class="head"><p><strong>Minimum MacOS</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>6.5</p></td>
+<td><p>macOS 12 (Monterey)</p></td>
+</tr>
+<tr class="row-odd"><td><p>6.4</p></td>
+<td><p>macOS 12 (Monterey)</p></td>
+</tr>
+<tr class="row-even"><td><p>6.3</p></td>
+<td><p>macOS 10.15 (Catalina)</p></td>
+</tr>
+<tr class="row-odd"><td><p>6.2</p></td>
+<td><p>macOS 10.15 (Catalina)</p></td>
+</tr>
+<tr class="row-even"><td><p>6.1</p></td>
+<td><p>macOS 10.15 (Catalina)</p></td>
+</tr>
+<tr class="row-odd"><td><p>6.0</p></td>
+<td><p>macOS 10.13 (High Sierra)</p></td>
+</tr>
+<tr class="row-even"><td><p>5.4</p></td>
+<td><p>macOS 10.12 (Sierra)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="install-via-homebrew">
+<h3>Install via Homebrew<a class="headerlink" href="#install-via-homebrew" title="Link to this heading"></a></h3>
+<p>Installation of GMT through <a class="reference external" href="https://brew.sh/">Homebrew</a> is extremely
+simple. Installing Homebrew itself is a one line command only (see <a class="reference external" href="https://brew.sh/">the
+Homebrew page</a>). You may need to update the
+formulas so for that you will do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>upgrade
+</pre></div>
+</div>
+<p>For the latest stable GMT 6 release, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>gmt
+</pre></div>
+</div>
+<p>For the latest unstable/developing version (i.e. the master branch),
+run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>gmt<span class="w"> </span>--HEAD
+</pre></div>
+</div>
+<p>You also need to install other GMT run-time dependencies separately:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>ghostscript<span class="w"> </span>graphicsmagick<span class="w"> </span>ffmpeg
+</pre></div>
+</div>
+<p>If you want to install GMT 5 and GMT 6 alongside, do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>gmt@5
+</pre></div>
+</div>
+<p>To go from GMT 6 to GMT 5 (but see also the doc about <code class="docutils literal notranslate"><span class="pre">gmtswitch</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>unlink<span class="w"> </span>gmt<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>link<span class="w"> </span>--force<span class="w"> </span>gmt@5
+</pre></div>
+</div>
+<p>And to go from GMT 5 to GMT 6:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>unlink<span class="w"> </span>gmt@5<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>link<span class="w"> </span>gmt
+</pre></div>
+</div>
+</section>
+<section id="install-via-macports">
+<h3>Install via MacPorts<a class="headerlink" href="#install-via-macports" title="Link to this heading"></a></h3>
+<p>Install <a class="reference external" href="https://www.macports.org">MacPorts</a> and then the required
+ports in this order:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>gdal<span class="w"> </span>+hdf5<span class="w"> </span>+netcdf<span class="w"> </span>+openjpeg
+sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>gmt6
+</pre></div>
+</div>
+<p>Optional FFTW-3 support and experimental OpenMP parallel acceleration
+can be enabled with the <code class="docutils literal notranslate"><span class="pre">+fftw3</span></code> and <code class="docutils literal notranslate"><span class="pre">+openmp</span></code> flags.</p>
+<p>GMT is installed in <code class="docutils literal notranslate"><span class="pre">/opt/local/lib/gmt6</span></code>. To use GMT in command line
+or scripts, you need to add <code class="docutils literal notranslate"><span class="pre">/opt/local/lib/gmt6/bin</span></code> to your
+<code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
+<p>You also need to install other GMT run-time dependencies separately:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>graphicsmagick<span class="w"> </span>ffmpeg
+</pre></div>
+</div>
+<p>For the legacy GMT 4 or GMT 5 versions, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>gmt4
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>gmt5
+</pre></div>
+</div>
+</section>
+</section>
+<section id="linux">
+<h2>Linux<a class="headerlink" href="#linux" title="Link to this heading"></a></h2>
+<section id="fedora">
+<h3>Fedora<a class="headerlink" href="#fedora" title="Link to this heading"></a></h3>
+<p><strong>NOTE:</strong> The Fedora official repository may provide an old GMT version.
+If you need the latest GMT version, you can follow the instruction
+<a class="reference external" href="https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-Fedora">“Install latest GMT on
+Fedora”</a>
+in the wiki.</p>
+<p>Install GMT via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>GMT<span class="w"> </span>dcw-gmt<span class="w"> </span>gshhg-gmt-nc4<span class="w"> </span>gshhg-gmt-nc4-full<span class="w"> </span>gshhg-gmt-nc4-high<span class="w"> </span>ghostscript
+</pre></div>
+</div>
+<p>You may also install other optional dependencies for more capabilities
+within GMT:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-<span class="sb">`</span>rpm<span class="w"> </span>-E<span class="w"> </span>%fedora<span class="sb">`</span>.noarch.rpm
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>ffmpeg<span class="w"> </span>GraphicsMagick
+</pre></div>
+</div>
+</section>
+<section id="rhel-centos">
+<h3>RHEL/CentOS<a class="headerlink" href="#rhel-centos" title="Link to this heading"></a></h3>
+<p>GMT binary packages are available from Extra Packages for Enterprise
+Linux (EPEL).</p>
+<p><strong>NOTE:</strong> The EPEL repository may provide an old GMT version. If you
+need the latest GMT version, you can follow the instruction <a class="reference external" href="https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-RHEL-CentOS">“Install
+latest GMT on
+RHEL/CentOS”</a>
+in the wiki.</p>
+<p>Install GMT via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>epel-release
+sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>GMT<span class="w"> </span>dcw-gmt<span class="w"> </span>gshhg-gmt-nc4<span class="w"> </span>gshhg-gmt-nc4-full<span class="w"> </span>gshhg-gmt-nc4-high<span class="w"> </span>ghostscript
+</pre></div>
+</div>
+<p>You may also install other optional dependencies for more capabilities
+within GMT:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>yum<span class="w"> </span>localinstall<span class="w"> </span>--nogpgcheck<span class="w"> </span>https://download1.rpmfusion.org/free/el/rpmfusion-free-release-<span class="sb">`</span>rpm<span class="w"> </span>-E<span class="w"> </span>%rhel<span class="sb">`</span>.noarch.rpm
+sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>ffmpeg<span class="w"> </span>GraphicsMagick
+</pre></div>
+</div>
+</section>
+<section id="ubuntu-debian">
+<h3>Ubuntu/Debian<a class="headerlink" href="#ubuntu-debian" title="Link to this heading"></a></h3>
+<p><strong>NOTE:</strong> The Ubuntu/Debian official repositories may provide old GMT
+versions. If you want the latest GMT 6.x release, your best bet then is
+to <a class="reference external" href="BUILDING.md">build the latest release from source</a>.</p>
+<p>Install GMT via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gmt<span class="w"> </span>gmt-dcw<span class="w"> </span>gmt-gshhg
+</pre></div>
+</div>
+<p>Install other GMT dependencies (some are optional) via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># required</span>
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>ghostscript
+<span class="c1"># optional</span>
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gdal-bin<span class="w"> </span>graphicsmagick<span class="w"> </span>ffmpeg
+</pre></div>
+</div>
+</section>
+<section id="archlinux">
+<h3>ArchLinux<a class="headerlink" href="#archlinux" title="Link to this heading"></a></h3>
+<p>Install GMT via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>gmt
+</pre></div>
+</div>
+<p>ArchLinux official repository doesn’t provide GMT extra data yet, but
+AUR (ArchLinux User Repository) does. You can follow the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-ArchLinux">Install latest
+GMT on
+ArchLinux</a>
+in the wiki for those.</p>
+</section>
+<section id="gentoo">
+<h3>Gentoo<a class="headerlink" href="#gentoo" title="Link to this heading"></a></h3>
+<p><strong>NOTE:</strong> This may provide old GMT versions. Consider <a class="reference external" href="BUILDING.md">building from
+source</a>.</p>
+<p>Install GMT via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>emerge<span class="w"> </span>--verbose<span class="w"> </span>--ask<span class="w"> </span>sci-geosciences/gmt
+</pre></div>
+</div>
+</section>
+</section>
+<section id="cross-platform-install-instructions">
+<h2>Cross Platform Install Instructions<a class="headerlink" href="#cross-platform-install-instructions" title="Link to this heading"></a></h2>
+<section id="install-via-conda">
+<h3>Install via conda<a class="headerlink" href="#install-via-conda" title="Link to this heading"></a></h3>
+<p>You can use the <a class="reference external" href="https://conda.io/">conda package manager</a> that comes with the
+<a class="reference external" href="https://www.anaconda.com/download">Anaconda Python Distribution</a>
+or <a class="reference external" href="https://www.anaconda.com/download">Miniconda</a> (recommended)
+to install GMT.</p>
+<ol class="arabic">
+<li><p>Download and install the <a class="reference external" href="https://conda.io/en/latest/miniconda.html">latest
+Miniconda</a>. This will
+give you access to the conda package manager. <strong>Make sure you select
+to have conda added to your ``PATH`` when asked by the installer</strong>.
+If you have the Anaconda Python distribution installed, you won’t
+need to do this step.</p></li>
+<li><p>Install GMT and its dependencies (including ghostscript and gdal) by
+running the following in a terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>gmt<span class="w"> </span>-c<span class="w"> </span>conda-forge
+</pre></div>
+</div>
+</li>
+<li><p>If you want to install GMT 5, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span><span class="nv">gmt</span><span class="o">=</span><span class="m">5</span><span class="w"> </span>-c<span class="w"> </span>conda-forge
+</pre></div>
+</div>
+</li>
+<li><p>If you want to install the weekly snapshot of the GMT master branch,
+use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>gmt<span class="w"> </span>-c<span class="w"> </span>conda-forge/label/dev
+</pre></div>
+</div>
+</li>
+<li><p>Install other optional dependencies if you want to create animated
+GIFs or MP4:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>ffmpeg<span class="w"> </span>graphicsmagick<span class="w"> </span>-c<span class="w"> </span>conda-forge
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="freebsd">
+<h2>FreeBSD<a class="headerlink" href="#freebsd" title="Link to this heading"></a></h2>
+<p>GMT may be installed on FreeBSD using Ports or from source.</p>
+<p><strong>NOTE:</strong> The Ports Collection may provide old GMT versions. If you want
+the latest GMT release, consider <a class="reference external" href="BUILDING.md">building the latest release from
+source</a>.</p>
+<section id="install-via-ports">
+<h3>Install via Ports<a class="headerlink" href="#install-via-ports" title="Link to this heading"></a></h3>
+<p>The FreeBSD Ports Collection is a diverse collection of utility and
+application software that has been ported to FreeBSD.</p>
+<p><strong>Precompiled</strong></p>
+<p>Install precompiled gmt binaries with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pkg<span class="w"> </span>install<span class="w"> </span>gmt
+</pre></div>
+</div>
+<p><strong>Compile from Ports</strong></p>
+<p>If not done already, set up the <strong>Ports Collection</strong> See
+<a class="reference external" href="https://docs.freebsd.org/en/books/handbook/ports/#ports-using">https://docs.freebsd.org/en/books/handbook/ports/#ports-using</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>portsnap<span class="w"> </span>fetch
+portsnap<span class="w"> </span>extract
+</pre></div>
+</div>
+<p>If already set up, make sure you’re up-to-date:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>portsnap<span class="w"> </span>fetch<span class="w"> </span>update
+</pre></div>
+</div>
+<p>Then change into directory <code class="docutils literal notranslate"><span class="pre">/usr/ports/graphics/gmt</span></code> and build:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install<span class="w"> </span>clean
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="theme-settings.html" class="btn btn-neutral float-left" title="GMT Themes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gallery.html" class="btn btn-neutral float-right" title="Illustration Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, The GMT Team.
+      <span class="lastupdated">Last updated on Jan 07, 2024.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

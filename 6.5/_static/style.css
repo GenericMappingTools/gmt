@@ -1,0 +1,157 @@
+/* Set max width of the content */
+.wy-nav-content {
+	max-width: 1000px;
+}
+
+/* See https://github.com/GenericMappingTools/gmt/pull/1605 */
+.rst-content dl dt {
+	font-weight: normal;
+}
+
+body {
+	font-family: "Atkinson Hyperlegible", sans-serif;
+	font-size: 1.05em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Atkinson Hyperlegible", sans-serif;
+	font-weight: "normal"
+}
+
+/* style for example gallery */
+.gmtgallery li {
+	list-style: none;
+	width: 180px;
+	display: inline-grid;
+	margin-right: 15px;
+}
+
+/* style for gmt movies */
+.gmtmovie li {
+	list-style: none;
+	width: 45%;
+	display: inline-grid;
+	margin: 10px;
+}
+
+/* Set tab-width to 2 spaces */
+.highlight {
+	tab-size: 2;
+}
+
+/* Revert the old behavior of popups */
+.modalDialog {
+	position: fixed;
+	font-family: "Atkinson Hyperlegible", Arial, Helvetica, sans-serif;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 99999;
+	opacity:0;
+	-webkit-transition: opacity 400ms ease-in;
+	-moz-transition: opacity 400ms ease-in;
+	transition: opacity 400ms ease-in;
+	pointer-events: none;
+}
+.modalDialog:target {
+	opacity:1;
+	pointer-events: auto;
+}
+.modalDialog > div {
+	font-size:small;
+	width: 500px;
+	position: relative;
+	margin: 10% auto;
+	padding: 5px 20px 13px 20px;
+	border-radius: 10px;
+	background: #fff;
+	background: -moz-linear-gradient(#fff, #999);
+	background: -webkit-linear-gradient(#fff, #999);
+	background: -o-linear-gradient(#fff, #999);
+}
+.close {
+	background: #606061;
+	color: #FFFFFF;
+	line-height: 25px;
+	position: absolute;
+	right: -12px;
+	text-align: center;
+	top: -10px;
+	width: 24px;
+	text-decoration: none;
+	font-weight: bold;
+	-webkit-border-radius: 12px;
+	-moz-border-radius: 12px;
+	border-radius: 12px;
+	-moz-box-shadow: 1px 1px 3px #000;
+	-webkit-box-shadow: 1px 1px 3px #000;
+	box-shadow: 1px 1px 3px #000;
+}
+.close:hover { background: #00d9ff; }
+
+/* Atkinson Hyperlegible regular */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-Regular-102a.woff2") format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Atkinson Hyperlegible bold */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-Bold-102a.woff2") format('woff2');
+	font-weight: bold;
+	font-style: normal;
+}
+
+/* Atkinson Hyperlegible italic */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-Italic-102a.woff2") format('woff2');
+	font-weight: normal;
+	font-style: italic;
+}
+
+/* Atkinson Hyperlegible bold italic */
+@font-face {
+	font-family: "Atkinson Hyperlegible";
+	src: url("./fonts/Atkinson-Hyperlegible-BoldItalic-102a.woff2") format('woff2');
+	font-weight: bold;
+	font-style: italic;
+}
+
+.team-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.team-card {
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.5rem;
+    margin: 0.25em;
+    flex: 0 1 200px;
+}
+
+.team-img {
+    border-radius: 0.5rem;
+    width: 100%;
+    height: 20vh!important;
+    object-fit: cover;
+}
+
+.team-card-body {
+    padding: 0.65rem;
+    height: 135px;
+}
+
+.team-card-text {
+    display: flex;
+    margin-block-start: 0em;
+    margin-block-end: 0.0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
