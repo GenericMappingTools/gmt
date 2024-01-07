@@ -69,12 +69,6 @@ assignees: ''
 
 **After release**:
 
-- [ ] create branch 6.x for bug-fixes if this is a minor release (i.e. create branch 6.1 after 6.1.0 is released)
-  ```
-  git checkout master
-  git checkout -b 6.1
-  git push --set-upstream origin 6.1
-  ```
 - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
 - [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
 - [ ] commit changes to GitHub
