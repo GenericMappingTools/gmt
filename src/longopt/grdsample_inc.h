@@ -25,18 +25,9 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
+	GMT_G_OUTGRID_KW,
+	GMT_I_INCREMENT_KW,
+	{ 0, 'T', "toggle_registration|toggle", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDSAMPLE_INC_H */
