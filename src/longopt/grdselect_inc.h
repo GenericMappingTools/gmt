@@ -47,7 +47,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'L', "linefile",          "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'M', "margins",           "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'N', "nans",
-	          "l,h",               "lower,higher",
+	          "l,h",               "lower|lower_than,higher|higher_than",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	{ 0, 'W', "range",             "", "", "", "", GMT_TP_STANDARD },
