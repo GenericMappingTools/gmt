@@ -181,7 +181,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "b: Selects the optional trough/edge blend minimum.");
 	GMT_Usage (API, 3, "d: Selects the empirical data minimum.");
 	GMT_Usage (API, 3, "e: Selects the maximum slope blend model location.");
-	GMT_Usage (API, 3, "t: Selects the optional trough model mimimum.");
+	GMT_Usage (API, 3, "t: Selects the optional trough model minimum.");
 	GMT_Usage (API, 3, "u: Selects the user's digitized original locations.");
 	GMT_Usage (API, 1, "\n--T<prefix>");
 	GMT_Usage (API, -2, "Set file prefix for all input/output files [fztrack]. "
