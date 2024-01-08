@@ -25,7 +25,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'A', "speed_theta",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'A', "polar",             "", "", "", "", GMT_TP_STANDARD },
 	GMT_C_CPT_KW,
 	{ 0, 'G', "fill",              "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'I', "increment|inc",
@@ -37,7 +37,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 	          "a,g,p,j,s,w",       "angle,fill,pen,justify,longspeed,width",
 		  GMT_TP_STANDARD },
-	{ 0, 'T', "adjust_azimuths",   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "adjust_azimuth",    "", "", "", "", GMT_TP_STANDARD },
 	GMT_W_PEN_KW,
 	{ 0, 'Z', "theta_azimuths",    "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
