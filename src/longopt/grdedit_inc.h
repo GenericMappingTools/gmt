@@ -36,7 +36,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		                       "cpt,dname,invalid,offset,remark,scale,title,varname,xname,yname,zname",
 		  GMT_TP_STANDARD },
 	{ 0, 'E', "transform",
-	          "a,e,h,l,r,t,v",     "hvflip,xyswap,hflip,rot90counterclock,rot90clock,transpose,vflip",
+	          "a,e,h,l,r,t,v",     "hvflip,xyswap,hflip,rot90ccw,rot90cw,transpose,vflip",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	GMT_G_OUTGRID_KW,
