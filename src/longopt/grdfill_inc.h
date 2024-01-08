@@ -34,7 +34,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "p",                 "polygons",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'N', "no_data",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "hole_value|hole",   "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDFILL_INC_H */
