@@ -29,7 +29,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 	          "f,i",               "one|fortran,indexz",
 		  GMT_TP_STANDARD },
-	{ 0, 'L', "single",
+	{ 0, 'L', "single|hvline|array",
 	          "c,r,x,y",           "col|column,row,x,y",
 	          "",                  "",
 		  GMT_TP_STANDARD },
