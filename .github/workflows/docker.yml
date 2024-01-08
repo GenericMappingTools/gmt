@@ -1,22 +1,20 @@
 #
-# Build GMT on different Linux distros, using dockers
+# Build GMT source codes on different Linux distros using dockers.
 #
 name: Docker
 
 on:
-  # pull_request:
   push:
     branches:
       - master
       - 6.[0-9]+
-    paths-ignore:
-      - 'doc/**'
-      - '!doc/**/CMakeLists.txt'
-
-defaults:
-  run:
-    # default to use bash shell
-    shell: bash
+    paths:
+      - 'src/**'
+      - 'cmake/**'
+      - '**/CMakeLists.txt'
+  pull_request:
+    paths:
+      - '.github/workflows/docker.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -47,7 +45,6 @@ jobs:
           # Ubuntu: https://en.wikipedia.org/wiki/Ubuntu_version_history#Table_of_versions
           - ubuntu:20.04    # CMake 3.16.3 + GNU 9.3.0;  EOL: 2025-05-29
           - ubuntu:22.04    # CMake 3.22.1 + GNU 11.2.0; EOL: 2027-06-01
-          - ubuntu:23.04    # CMake 3.25.1 + GNU 12.2.0; EOL: 2024-01-25
           - ubuntu:23.10    # CMake 3.27.4 + GNU 11.2.0; EOL: 2024-07-01
           # Debian: https://en.wikipedia.org/wiki/Debian_version_history#Release_table
           - debian:10       # CMake 3.13.4 + GNU 8.3.0;  EOL: 2024-06-01
@@ -93,12 +90,15 @@ jobs:
       - name: Configure GMT
         run: bash ci/config-gmt-unix.sh
 
-      - name: Compile GMT
+      - name: Compile and install GMT
         run: |
           mkdir build
           cd build
           cmake -G Ninja ..
           cmake --build .
+          cmake --build . --target install
+          # Add GMT PATH to bin
+          echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Download cached GMT remote data from GitHub Artifacts
         uses: dawidd6/action-download-artifact@v3.0.0
@@ -113,13 +113,6 @@ jobs:
           mkdir -p ~/.gmt
           mv .gmt/* ~/.gmt
           ls -lRh ~/.gmt
-
-      - name: Install GMT
-        run: |
-          cd build
-          cmake --build . --target install
-          # Add GMT PATH to bin
-          echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Check a few simple commands
         run: bash ci/simple-gmt-tests.sh
