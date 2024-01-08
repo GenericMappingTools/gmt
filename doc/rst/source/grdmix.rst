@@ -15,7 +15,7 @@ Synopsis
 **gmt grdmix**
 *raster1* [ *raster2* [ *raster3*]]
 |-G|\ *outfile*
-[ |-A|\ *alpha* ]
+[ |-A|\ *alpha*\ [**+o**] ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-D| ]
 [ |-I|\ *intensity* ]
@@ -59,7 +59,7 @@ replaced by constant values instead.
 Required Arguments
 ------------------
 
-*raster?*
+*raster1* [ *raster2* [ *raster3*]]
     If only one is given and |-C| is not set then *raster1* must be an image.
     If two are given then *raster1* and *raster2* must both be either
     images or grids.  If three are given then they must all be grids and
@@ -77,9 +77,13 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *alpha*
-    Get a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
-    The final image will have a transparency layer add based on these values.
+**-A**\ *alpha*\ [**+o**]
+    Get a constant alpha (0-1), or a grid (0-1 or NaN) or image (0-255, which we normalize
+    to 0-1). The alphas are considered to be transparencies, so that 0 means opaque pixels
+    and 1 (or NaN) means 100% transparency *t*. The output image will have a transparency layer
+    added based on these values. Fully opaque nodes must be zero. If your constant or grid
+    represent opacity (*o*) instead of transparency, append modifier **+o** and we assume a
+    NaN or 1 means 100% opacity, and of course *t* = 1 - *o*.
 
 .. _-C1:
 

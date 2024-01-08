@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ [*max\_intens*\|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
-[ |-L|\ [**i**][*gap*] ]
+[ |-L|\ [**i**\|\ **I**][*gap*] ]
 [ |-M| ]
 [ |-N|\ [**p**\|\ *dpi* ]]
 [ |-Q| ]
@@ -171,18 +171,20 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**i**][*gap*]
+**-L**\ [**i**\|\ **I**][*gap*]
 
     Gives equal-sized color rectangles. Default scales rectangles
     according to the z-range in the CPT (Also see |-Z|). If
     *gap* is appended and the CPT is discrete we will center each
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
-    instead. If |-I| is used then each rectangle will have its
-    constant color modified by the specified intensity.  **Note**: For
-    categorical CPTs we default to activating |-L| with a *gap* such
-    that the sum of all the gaps equal 15% of the bar width.  You may
-    chose no gaps by giving |-L| only or explicitly set *gap = 0*.
+    instead, and if **I** is used instead then we include the background
+    and foreground values in the label (e.g, "< 12"). If |-I| is used
+    then each rectangle will have its constant color modified by the
+    specified intensity.  **Note**: For categorical CPTs we default to
+    activating |-L| with a *gap* such that the sum of all the gaps equal
+    15% of the bar width.  You may chose no gaps by giving |-L| only or
+    explicitly set *gap = 0*.
 
 .. _-M:
 

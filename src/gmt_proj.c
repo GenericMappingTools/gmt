@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -2054,7 +2054,7 @@ GMT_LOCAL void gmtproj_vmollweide (struct GMT_CTRL *GMT, double lon0, double sca
 
 	gmtproj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.w_x = GMT->current.proj.EQ_RAD * D2R * d_sqrt (8.0) / M_PI;
+	GMT->current.proj.w_x = GMT->current.proj.EQ_RAD * D2R * 2.0 * M_SQRT2 / M_PI;
 	GMT->current.proj.w_y = GMT->current.proj.EQ_RAD * M_SQRT2;
 	GMT->current.proj.w_iy = 1.0 / GMT->current.proj.w_y;
 	GMT->current.proj.w_r = 0.25 * (scale * GMT->current.proj.M_PR_DEG * 360.0);	/* = Half the minor axis */
@@ -2097,14 +2097,17 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 
 	phi = asin (y * GMT->current.proj.w_iy);
 	*lon = x / (GMT->current.proj.w_x * cos(phi));
-	if (fabs (*lon) > 180.0) {	/* Horizon */
-		*lat = *lon = GMT->session.d_NaN;
+	if (fabs (*lon) > 180.0) {   /* Beyond horizon by a whisker so set to 180/0 depending on signs */
+		*lat = 0.0;
+		*lon = copysign (180.0, *lon) + GMT->current.proj.central_meridian;
 		return;
 	}
 	*lon += GMT->current.proj.central_meridian;
 	phi2 = 2.0 * phi;
 	*lat = asind ((phi2 + sin (phi2)) / M_PI);
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
+	if (fabs (*lat) > 90.0)	/* Sanity check */
+		*lat = copysign (90.0, *lat);
+	else if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
 
 /* -JH HAMMER-AITOFF EQUAL AREA PROJECTION */

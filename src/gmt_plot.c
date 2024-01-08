@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -6914,6 +6914,12 @@ void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	PSL_beginclipping (PSL, work_x, work_y, 5, rgb, flag);
 }
 
+void gmt_setrgb (struct GMT_CTRL *GMT, double *rgb) {
+	struct PSL_CTRL *PSL= GMT->PSL;
+	/* Fill with a color */
+	PSL_setrgb (PSL, rgb);
+}
+
 void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 	if (!fill) /* NO fill pointer = no fill */
@@ -9698,7 +9704,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	perim_n = gmtlib_lonpath (GMT, start_lon, pole_lat, yc, &x_perim, &y_perim);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Created path from %g/%g to %g/%g [%d points]\n", start_lon, pole_lat, start_lon, yc, perim_n);
 	/* 2. Allocate enough space for new polar cap polygon */
-	n_new = 2 * perim_n + n;
+	n_new = 2 * MAX (perim_n, 1) + n;
 	plon = gmt_M_memory (GMT, NULL, n_new, double);
 	plat = gmt_M_memory (GMT, NULL, n_new, double);
 	/* Start off with the path from the pole to the crossing */
@@ -10830,7 +10836,7 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 }
 
 void gmt_plot_grid_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
-	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
+	/* Lay down an image from a grid using polygons of the graticules.  This is recoded from grdview
 	 * so it can also be used in grdimage.
 	 * G is the data grid
 	 * I is an optional intensity grid.  If NULL then either intensity points to a

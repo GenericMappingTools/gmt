@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -3914,7 +3914,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */
 	if (gmt_M_rec_is_error (GMT))
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 " in file %s\n",
-					col_no, *n, GMT->current.io.rec_no, GMT->current.io.filename[GMT_IN]);
+					col_no, *n, GMT->current.io.data_record_number_in_tbl[GMT_IN], GMT->current.io.filename[GMT_IN]);
 
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) {
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
@@ -10217,7 +10217,7 @@ unsigned int gmtlib_is_string (struct GMT_CTRL *GMT, char *string) {
 	if (n_periods == 2 && n_digits) {	/* Might be dd.mm.yyyy section */
 		if (n_text == 0 || (n_text == 1 && strchr (string, 'T'))) {	/* Valid dd.mm.yyyy[T][hh:mm:ss.xxx...] string */
 			char *text = strdup (string), *c = NULL;
-			int d, m, y, k = 0;
+			int d, m, y;
 			if ((c = strchr (text, 'T'))) c[0] = '\0';	/* Truncate at the possible T, so no must be dd.mm.yyyy */
 			gmt_strrepc (text, '.', ' ');	/* Replace the 2 periods with spaces */
 			if (sscanf (text, "%d %d %d", &d, &m, &y) != 3) {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,8 @@
 
 struct GRDMIX_AIW {	/* For various grid, image, or constant arguments */
 	bool active;
+	/* Our implementation is a bit backwards, so to get expected results we turn opacity on by default and let +o reverse that */
+	bool opacity;	/* true if we have opacity instead of transparency [Default] */
 	unsigned int mode;	/* 0 a file, 1 a constant */
 	char *file;
 	double value;
@@ -127,10 +129,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify file name for output %s file. "
 		"Note: With -D the name is a template and must contain %%c to be used for the layer code.", type[API->external]);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A<transp>");
+	GMT_Usage (API, 1, "\n-A<transp>[+o]");
 	GMT_Usage (API, -2, "Specify a transparency grid or image, or set a constant transparency value [no transparency]. "
-		"An image must have 0-255 values, while a grid or constant must be in the 0-1 range.");
-	GMT_Usage (API, 1, "\n-C ith no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
+		"An image must have values in the 0-255 range (which we normalize to 0-1), while a grid or a constant must be in the 0-1 range. "
+		"Normalized transparency of unity is 100% transparent pixel. Add modifier +o to instead consider NaN or 1 100% opacity");
+	gmt_explain_cpt_input (API, 'C');
+	GMT_Usage (API, 1, "\nWith no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
 		"You may optionally supply transparency (-A) and/or intensity (-I).  With CPT arguments we expect a "
 		"single grid and we convert it to a color image via the CPT information.");
 	GMT_Usage (API, 1, "\n-D Deconstruct an image into 1 or 3 output component grids, plus any transparency. "
@@ -164,7 +168,7 @@ GMT_LOCAL char *grdmix_parseitem (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Bad value or a file that was not found: %s\n", opt->option, opt->arg);
 		X->mode = 2;
 	}
-	else {
+	else {	/* Got a valid float */
 		X->value = atof (opt->arg);
 		X->mode = 1;
 	}
@@ -199,8 +203,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				if ((f = strstr (opt->arg, "+o"))) {
+					Ctrl->A.opacity = true;
+					f[0] = '\0';	/* Hide modifier */
+				}
 				Ctrl->In.file[ALPHA] = grdmix_parseitem (GMT, opt, &(Ctrl->A));
 				if (Ctrl->A.mode == 2) n_errors++;
+				if (f) f[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'C':
@@ -375,7 +384,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 
-	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0}, transparency;
 
 	struct GMT_GRID *G_in[N_ITEMS], *G = NULL;
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
@@ -572,7 +581,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 			else {
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,node) shared(GMT,G,off,scale,I_in)
+#pragma omp parallel for private(row,col,node) shared(GMT,G,off,I_in)
 #endif
 				gmt_M_grd_loop (GMT, G, row, col, node)
 					G->data[node] = I_in[0]->data[node+off];
@@ -619,9 +628,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
 			}
 			if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
-	#ifdef _OPENMP
-	#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
-	#endif
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,P,G_in,H,intens)
+#endif
 				gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel in a band, so stride into additional bands */
 					if (P)	/* Get r/g/b from grid z-value via CPT lookup */
 						(void)gmt_get_rgb_from_z (GMT, P, G_in[0]->data[node], rgb);
@@ -761,10 +770,13 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 #ifdef _OPENMP
-#pragma omp parallel for private(node) shared(H,I,alpha)
+#pragma omp parallel for private(node,transparency) shared(H,I,alpha,Ctrl)
 #endif
-		for (node = 0; node < (int64_t)H->size; node++)	/* Scale to 0-255 range */
-			I->alpha[node] = gmt_M_u255 (alpha[node]);
+		for (node = 0; node < (int64_t)H->size; node++)	{	/* Scale to 0-255 range */
+			transparency = gmt_M_is_dnan (alpha[node]) ? 1.0 : alpha[node];	/* NaN means full transparency */
+			if (!Ctrl->A.opacity) transparency = 1.0 - alpha[node];	/* Turns out we got opacities */
+			I->alpha[node] = gmt_M_u255 (transparency);
+		}
 		gmt_M_free (GMT, alpha);
 	}
 

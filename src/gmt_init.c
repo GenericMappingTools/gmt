@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -839,7 +839,7 @@ GMT_LOCAL int gmtinit_find_longoptmatch (struct GMTAPI_CTRL *API, char *longlist
 						charsneeded = 1;
 						if ((nllmatches > 1) && (multidir == GMT_MULTIDIR_COMMA))
 							charsneeded++;
-						if (ncodechars < codecharsbufsz-charsneeded) {
+						if (ncodechars < (int)codecharsbufsz-charsneeded) {
 							if (charsneeded == 2) codechars[ncodechars++] = ',';
 							codechars[ncodechars++] = shortlist[k];
 						}
@@ -8137,10 +8137,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 #ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
-			cores = gmtlib_get_num_processors();
-			GMT_Usage (API, 1, "\n%s", GMT_x_OPT);
-			GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
-				"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
+			if (strlen (GMT_x_OPT) > 1) {	/* Only print this if it is in fact available */
+				cores = gmtlib_get_num_processors();
+				GMT_Usage (API, 1, "\n%s", GMT_x_OPT);
+				GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
+					"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
+			}
 			break;
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
