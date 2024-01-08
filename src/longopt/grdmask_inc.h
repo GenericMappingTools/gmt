@@ -35,7 +35,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  GMT_TP_STANDARD },
 	GMT_G_OUTGRID_KW,
 	GMT_I_INCREMENT_KW,
-	{ 0, 'N', "outedgein",
+	{ 0, 'N', "out_edge_in",
 	          "z,Z,p,P",           "zin,zinedge,id,idedge",
 	          "",                  "",
 		  GMT_TP_STANDARD },
