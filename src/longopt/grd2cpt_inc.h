@@ -43,7 +43,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "c,k",               "categorical,key",
 		  GMT_TP_STANDARD },
 	{ 0, 'G', "truncate",          "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'H', "savecpt",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'H', "savecpt",           "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'I', "reverse",
 	          "c,z",               "colors,zvalues",
 	          "",                  "",
