@@ -46,6 +46,8 @@ abort_build() {	# Called when we abort this script via Crtl-C
 TOPDIR=$(pwd)
 do_ftp=0
 release=1
+signing=0
+help=0
 for v in $*; do
 	if [ "X${v}" = "X-p" ]; then
 		do_ftp=1
