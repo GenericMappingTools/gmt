@@ -1732,6 +1732,30 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			}
 			PSL_plotline (PSL, xp, yp, nv, p_arg);
 		}
+		if (Ctrl->D.emode & PSSCALE_NAN_RT) {	/* Add NaN rectangle on right (top) side */
+			nan_off += Ctrl->D.elength;
+			xp[0] = xp[1] = xright + gap;	xp[2] = xp[3] = xp[0] + MAX (width, Ctrl->D.elength);
+			for (i = 0; i < 4; i++) xp[i] += nan_off;
+			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
+			if ((f = P->bfn[GMT_NAN].fill) != NULL)
+				gmt_setfill (GMT, f, 1);
+			else {
+				gmt_M_rgb_copy (rgb, P->bfn[GMT_NAN].rgb);
+				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
+				PSL_setfill (PSL, rgb, 1);
+			}
+			if (P->bfn[GMT_NAN].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = P->bfn[GMT_NAN].rgb[3];
+				PSL_settransparencies (PSL, transp);
+			}
+			PSL_plotpolygon (PSL, xp, yp, 4);
+			if (P->bfn[GMT_NAN].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
+			if (Ctrl->D.etext)
+				gmt_map_text (GMT, xp[2] + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, -90.0, PSL_BC, 0);
+		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
 
@@ -1901,10 +1925,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				gmt_map_text (GMT, xright + GMT->current.setting.map_annot_offset[GMT_SECONDARY] + elength[XHI], 0.5 * width, &GMT->current.setting.font_annot[GMT_SECONDARY], unit, -90.0, PSL_BC, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
-			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
-				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
+			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0 && (Ctrl->D.emode & PSSCALE_NAN_RT) == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
+				x0 = xright + 2 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
 			else if ((Ctrl->D.emode & PSSCALE_NAN_LB) == 0)	/* TNo nan so place on left */
-				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
+				x0 = xleft - 2 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place at center */
 				x0 = 0.5 * (xleft + xright);
 			psscale_plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
