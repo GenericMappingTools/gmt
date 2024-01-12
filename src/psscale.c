@@ -77,7 +77,7 @@ struct PSSCALE_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct PSSCALE_D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]][+r] */
+	struct PSSCALE_D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n|N[<text>]][+r] */
 		bool active;
 		bool horizontal;
 		bool move;
@@ -172,7 +172,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<len'D'h_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
+	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n|N[<txt>]]%s[+r]] "
+		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
 		"[-S[+a<angle>][+c|n][+r][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
 			name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT,
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -303,7 +304,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				if (opt->arg[0] == '+' && (gmt_found_modifier (GMT, opt->arg, "enN")) && strstr (opt->arg, "w") == NULL) {
+				if (opt->arg[0] == '+' && (gmt_found_modifier (GMT, opt->arg, "en")) && strstr (opt->arg, "w") == NULL) {
 					/* Only want +e or +n to be added to defaults */
 					sprintf (string, "%s%s", Ctrl->D.opt, opt->arg);
 					gmt_M_str_free (Ctrl->D.opt);
@@ -575,13 +576,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				}
 			}
 		}
-		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {	/* Place NaN rectangle on the left/bottom */
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
 			Ctrl->D.etext = (string[0]) ? strdup (string) : strdup ("NaN");
 			Ctrl->D.emode |= PSSCALE_NAN_LB;
-		}
-		else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'N', string)) {	/* Place NaN rectangle on the right/top */
-			Ctrl->D.etext = (string[0]) ? strdup (string) : strdup ("NaN");
-			Ctrl->D.emode |= PSSCALE_NAN_RT;
 		}
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
@@ -920,8 +917,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	need_image = (P->has_pattern && P->is_continuous);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
 
-	if (Ctrl->D.emode & (reverse + PSSCALE_BACK_B)) elength[XLO] =  Ctrl->D.elength;
-	if (Ctrl->D.emode & (PSSCALE_BACK_F - reverse)) elength[XHI] =  Ctrl->D.elength;
+	if (Ctrl->D.emode & (reverse+PSSCALE_BACK_B)) elength[XLO] =  Ctrl->D.elength;
+	if (Ctrl->D.emode & (PSSCALE_BACK_F-reverse)) elength[XHI] =  Ctrl->D.elength;
 	if (!strncmp (PSL->init.encoding, "Standard", 8U))
 		endash = 0261;	/* endash code in Standard[+] charset */
 	else if (!strncmp (PSL->init.encoding, "ISOLatin1+", 10U))
@@ -1333,7 +1330,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (Ctrl->D.etext)
 				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, 0.0, PSL_MR, 0);
 		}
-		if (Ctrl->D.emode & (2 - PSSCALE_BACK_F)) {	/* Add color triangle on right side */
+		if (Ctrl->D.emode & (PSSCALE_BACK_F - reverse)) {	/* Add color triangle on right side */
 			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
 			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
 			for (i = 0; i < 4; i++) xp[i] -= xd;
@@ -1680,7 +1677,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (Ctrl->D.etext)
 				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, -90.0, PSL_TC, 0);
 		}
-		if (Ctrl->D.emode & (2 - PSSCALE_BACK_F)) {	/* Add color triangle at top */
+		if (Ctrl->D.emode & (PSSCALE_BACK_F - reverse)) {	/* Add color triangle at top */
 			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
 			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
 			for (i = 0; i < 4; i++) xp[i] -= xd;
@@ -1876,7 +1873,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
-			else if ((Ctrl->D.emode & PSSCALE_NAN_LB) == 0)	/* No nan so place on left */
+			else if ((Ctrl->D.emode & PSSCALE_NAN_LB) == 0)	/* TNo nan so place on left */
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place at center */
 				x0 = 0.5 * (xleft + xright);
