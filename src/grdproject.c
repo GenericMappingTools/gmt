@@ -216,7 +216,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 	                                   "Can specify only one of -F and -M\n");
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + Ctrl->E.active) > 1,
 	                                   "Must specify only one of -D or -E\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.J.width_given && !GMT->common.R.active[RSET] , "Option -J: If map width is given you must also specify a region with -R\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
 	                                   GMT->common.R.inc[GMT_Y] < 0.0),
 	                                   "Option -D: Must specify positive increment(s)\n");
