@@ -139,7 +139,7 @@ Optional Arguments
     unit that will be moved to the opposite side. Append **c** if you want to print a
     vertical label as a column of characters (does not work with special characters).
   - **+n** plots a rectangle with the NaN color (via the **N** entry in your cpt (or :term:`COLOR_NAN` if no such entry)
-    at the start of the bar, append *text* to change label from NaN.
+    at the start of the bar, append *text* to change label from NaN. To place it at the end of the bar, use **+N** instead.
   - **+r** will reverse the positive direction of the bar.
 
 .. _-F:

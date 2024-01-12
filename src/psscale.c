@@ -172,7 +172,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s[+r]] "
+	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n|N[<txt>]]%s[+r]] "
 		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
 		"[-S[+a<angle>][+c|n][+r][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
 			name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT,
@@ -205,7 +205,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+m Move selected annotations/labels/units on opposite side of colorscale. "
 		"Append any of a, l, or u to move the annotations, labels, or unit, respectively. "
 		"Append c to plot vertical labels as column text.");
-	GMT_Usage (API, 3, "+n Draw rectangle with NaN color and label with <txt> [NaN].");
+	GMT_Usage (API, 3, "+n Draw rectangle with NaN color and label with <txt> on the left (use +N to place on the right) [NaN].");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale.", 3);
 	GMT_Usage (API, 1, "\n-G<zlo>/<zhi>");
 	GMT_Usage (API, -2, "Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>. "
