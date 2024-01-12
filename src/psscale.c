@@ -172,8 +172,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n|N[<txt>]]%s[+r]] "
-		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
+	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<len'D'h_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
 		"[-S[+a<angle>][+c|n][+r][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
 			name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT,
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -304,7 +303,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				if (opt->arg[0] == '+' && (gmt_found_modifier (GMT, opt->arg, "en")) && strstr (opt->arg, "w") == NULL) {
+				if (opt->arg[0] == '+' && (gmt_found_modifier (GMT, opt->arg, "enN")) && strstr (opt->arg, "w") == NULL) {
 					/* Only want +e or +n to be added to defaults */
 					sprintf (string, "%s%s", Ctrl->D.opt, opt->arg);
 					gmt_M_str_free (Ctrl->D.opt);
@@ -518,7 +517,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 					break;
 			}
 		}
-		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnorvw", GMT_MSG_ERROR)) n_errors++;
+		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnNorvw", GMT_MSG_ERROR)) n_errors++;
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string))
 			Ctrl->D.reverse = true;
 		/* Required modifier +w */
@@ -531,7 +530,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				n_errors++;
 			if (Ctrl->D.reverse) Ctrl->D.R.dim[GMT_X] = -fabs(Ctrl->D.R.dim[GMT_X]);
 		}
-		/* Optional modifiers +e, +h, +j, +m, +n, +o, +v */
+		/* Optional modifiers +e, +h, +j, +m, +n, +N, +o, +v */
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
 			Ctrl->D.extend = true;
 			if (strchr (string, 'b')) Ctrl->D.emode |= PSSCALE_BACK_B;
