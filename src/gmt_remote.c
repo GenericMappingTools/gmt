@@ -1513,7 +1513,7 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (API, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
 			if (curl_err == CURLE_HTTP_RETURNED_ERROR)
-				GMT_Report (API, GMT_MSG_ERROR, "Probably means %s does not exist on the remote server\n", name);
+				GMT_Report (API, GMT_MSG_ERROR, "Probably means %s does not exist on the remote server [%s]\n", name, GMT->session.DATASERVER == NULL ? "not set" : GMT->session.DATASERVER);
 			error = curl_err;
 			if (urlfile.fp != NULL) {
 				fclose (urlfile.fp);
