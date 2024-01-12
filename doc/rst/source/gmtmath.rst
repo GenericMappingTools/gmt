@@ -1,9 +1,9 @@
 .. index:: ! gmtmath
 .. include:: module_core_purpose.rst_
 
-*******
-gmtmath
-*******
+****
+math
+****
 
 |gmtmath_purpose|
 

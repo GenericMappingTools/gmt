@@ -1,9 +1,9 @@
 .. index:: ! gmtselect
 .. include:: module_core_purpose.rst_
 
-*********
-gmtselect
-*********
+******
+select
+******
 
 |gmtselect_purpose|
 

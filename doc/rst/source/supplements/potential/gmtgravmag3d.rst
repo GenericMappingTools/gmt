@@ -1,9 +1,9 @@
 .. index:: ! gmtgravmag3d
 .. include:: ../module_supplements_purpose.rst_
 
-************
-gmtgravmag3d
-************
+*********
+gravmag3d
+*********
 
 |gmtgravmag3d_purpose|
 
