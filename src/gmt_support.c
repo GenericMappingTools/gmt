@@ -12730,8 +12730,8 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid is considered to have a 360-degree longitude range.\n");
 		if (GMT->parent->ignore_BC) xtest = 0.0;	/* To bypass the checks below */
 		/* xtest should be within GMT_CONV4_LIMIT of zero or of one.  */
-		if (xtest > GMT_CONV4_LIMIT && xtest < (1.0 - GMT_CONV4_LIMIT) ) {
-			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
+		if (xtest > GMT_CONV4_LIMIT && xtest < (1.0 - GMT_CONV4_LIMIT) && GMT->current.proj.projection_GMT == 0) {
+			/* Maybe error.  We need it to divide into 180 so we can phase-shift at poles but not if we already projected the grid to Cartesian.  */
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "x_inc does not divide 180; geographic boundary condition changed to natural.\n");
 			HH->nxp = HH->nyp = 0;
 			HH->gn  = HH->gs = false;
