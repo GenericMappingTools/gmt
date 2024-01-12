@@ -1516,7 +1516,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0 && (Ctrl->D.emode & PSSCALE_NAN_RT) == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
 			else if ((Ctrl->D.emode & PSSCALE_NAN_LB) == 0)	/* No nan so place on left */
-				x0 = xleft - 2*GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
+				x0 = xleft - 2 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place in center */
 				x0 = 0.5 * (xleft + xright);
 			psscale_plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
@@ -1926,7 +1926,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0 && (Ctrl->D.emode & PSSCALE_NAN_RT) == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
-				x0 = xright + 2 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
+				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
 			else if ((Ctrl->D.emode & PSSCALE_NAN_LB) == 0)	/* TNo nan so place on left */
 				x0 = xleft - 2 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place at center */
