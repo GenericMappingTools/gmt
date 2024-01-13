@@ -177,7 +177,7 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Level cannot be negative!\n");
 				Ctrl->N.level = sval;
 				break;

@@ -699,7 +699,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':	/* Smoothing of contours */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: smooth value must be positive\n");
 				Ctrl->S.value = sval;
 				break;

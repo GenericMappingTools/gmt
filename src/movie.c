@@ -974,7 +974,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'H':	/* RIP at a higher dpu, then downsample in gs to improve sub-pixeling */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 
 			case 'I':	/* Include file with settings used by all scripts */

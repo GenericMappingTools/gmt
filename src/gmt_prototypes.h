@@ -437,9 +437,10 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 EXTERN_MSC unsigned int gmt_rectangle_dimension (struct GMT_CTRL *GMT, struct GMT_SCALED_RECT_DIM *R, double def_percent_w, double def_percent_h, char *string);
 EXTERN_MSC int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, bool binary, uint64_t n, int **link);
 EXTERN_MSC unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option, char modifier);
+EXTERN_MSC unsigned int gmt_get_required_int64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, int64_t *value);
 EXTERN_MSC unsigned int gmt_get_required_uint64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, uint64_t *value);
 EXTERN_MSC unsigned int gmt_get_required_uint (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int *value);
-EXTERN_MSC unsigned int gmt_get_required_sint (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value);
+EXTERN_MSC unsigned int gmt_get_required_int (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value);
 EXTERN_MSC unsigned int gmt_get_required_float (struct GMT_CTRL *GMT, char *text, char option, char modifier, float *value);
 EXTERN_MSC unsigned int gmt_get_required_double (struct GMT_CTRL *GMT, char *text, char option, char modifier, double *value);
 EXTERN_MSC unsigned int gmt_get_required_char (struct GMT_CTRL *GMT, char *text, char option, char modifier, char *letter);

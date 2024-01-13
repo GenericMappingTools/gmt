@@ -141,7 +141,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_
 
 			case 'C':	/* Get # of cells */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -C: n_cells must be positive\n");
 				Ctrl->C.value = (unsigned int)sval;
 				break;

@@ -113,7 +113,7 @@
  *	gmt_get_required_double
  *	gmt_get_required_file
  *	gmt_get_required_float
- *	gmt_get_required_sint
+ *	gmt_get_required_int
  *	gmt_get_required_string
  *	gmt_get_required_uint
  *	gmt_get_required_uint64
@@ -19420,6 +19420,14 @@ unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option,
 	return (error);
 }
 
+unsigned int gmt_get_required_int64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, int64_t *value) {
+	/* Convert the text arg to an signed 64-bit int and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = (int64_t)atol (text);
+	return (err);
+}
+
 unsigned int gmt_get_required_uint64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, uint64_t *value) {
 	/* Convert the text arg to an unsigned 64-bit int and if no arg given we fuss and return error */
 	unsigned int err;
@@ -19436,7 +19444,7 @@ unsigned int gmt_get_required_uint (struct GMT_CTRL *GMT, char *text, char optio
 	return (err);
 }
 
-unsigned int gmt_get_required_sint (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value) {
+unsigned int gmt_get_required_int (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value) {
 	/* Convert the text arg to a signed int and if no arg given we fuss and return error */
 	unsigned int err;
 	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
