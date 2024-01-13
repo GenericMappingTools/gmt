@@ -263,7 +263,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);

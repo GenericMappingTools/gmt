@@ -198,7 +198,7 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				n_errors += gmt_get_required_sint (GMT, &opt->arg[1], opt->option, 0, &Ctrl->L.value);
+				n_errors += gmt_get_required_int (GMT, &opt->arg[1], opt->option, 0, &Ctrl->L.value);
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
