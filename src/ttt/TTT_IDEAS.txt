@@ -1,0 +1,54 @@
+TTT4 Ideas to pursue: OpenMP
+
+Instead of switch (n_nodes):
+	if (ok_to_use[64]) ss = SS_064, tt_inc[64] = GET_TT_INC (d34y[j0]);
+
+Need to make this into a loop than can be OpenMP'd.  So
+
+build inline functions func_SS_xxx, e.g.
+
+static inline double func_SS_064 (float *s, double *d, TTT_LONG ij, TTT_LONG *p, TTT_LONG j0) {
+	double ss = SS_064;	/* Uses macro to get normalized slowness, needs s[], ij, and p[] */
+	return GET_TT_INC (d[j0]);	/* Uses ss and this distance */
+}
+and create array of function pointers to these, i.e. (build these via awk as include files)
+
+ss_funct[64] = func_SS_064;
+...
+
+will need corresponding array of pointers *d so that
+d[64] = d[65] = d[66] = d[67] = d34y;	/* Etc for all the others */
+
+Then replace loop over nodes with two loops, one using OpenMP
+
+#ifdef _OPENMP
+#pragma omp parallel for private(k) shared(n_nodes,ok_to_use,ss_func,s,d,ij,p,j0,tt_inc)
+#endif 
+for (k = 0; k < n_nodes; k++) {	/* Compute increment in travel times to all surrounding nodes */
+	if (ok_to_use[k]) tt_inc[k] = ss_func[k] (s, d[k], ij, p, j0);
+}
+
+It is possible that we cannot use inline with OpenMP - will need to find out. Otherwise regular function
+for (k = 0; k < n_nodes; k++) {		/* Add increment in travel times to all surrounding nodes */
+	if (!ok_to_use[k]) continue;	/* Node is on land or has NaN - skip */
+	<if periodic etc>
+	<update shortest travel time to this node>
+}
+
+2. Can this instead be written using tt_min[]:
+
+if (TTT_is_fnan(S(u)) || S(u) >= 0.0) nan_bits[bset] |= BIT(u);
+
+3. Replace BIT(u) with array bit[u];
+
+4. Maybe have two huygens_realtime functions: One when grid actually is periodic and one where it isnt to avoid doing the if (h->periodic) again and again.
+
+5. Avoid gratuitous TTT_LONG for things like a percent counter.
+
+6. Don't even use d34y etc but set d[45] = d[46] = .. directly
+
+7. If going to 136 will need another bit set for nodes beyond 256.
+Benefits:
+
+1. Can parallelize the loop over nodes and all the heavy math
+2. Just do comparisons etc in serial mode
