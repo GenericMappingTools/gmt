@@ -1,9 +1,9 @@
 .. index:: ! gmtget
 .. include:: module_core_purpose.rst_
 
-******
-gmtget
-******
+***
+get
+***
 
 |gmtget_purpose|
 

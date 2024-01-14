@@ -1,9 +1,9 @@
 .. index:: ! gmtwhich
 .. include:: module_core_purpose.rst_
 
-********
-gmtwhich
-********
+*****
+which
+*****
 
 |gmtwhich_purpose|
 

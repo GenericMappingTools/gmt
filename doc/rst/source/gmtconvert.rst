@@ -1,9 +1,9 @@
 .. index:: ! gmtconvert
 .. include:: module_core_purpose.rst_
 
-**********
-gmtconvert
-**********
+*******
+convert
+*******
 
 |gmtconvert_purpose|
 

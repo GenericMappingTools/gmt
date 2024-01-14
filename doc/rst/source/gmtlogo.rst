@@ -1,9 +1,9 @@
 .. index:: ! gmtlogo
 .. include:: module_core_purpose.rst_
 
-*******
-gmtlogo
-*******
+****
+logo
+****
 
 |gmtlogo_purpose|
 

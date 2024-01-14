@@ -1,9 +1,9 @@
 .. index:: ! gmtregress
 .. include:: module_core_purpose.rst_
 
-**********
-gmtregress
-**********
+*******
+regress
+*******
 
 |gmtregress_purpose|
 
