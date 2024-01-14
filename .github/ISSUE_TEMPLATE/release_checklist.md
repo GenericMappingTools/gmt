@@ -62,7 +62,6 @@ assignees: ''
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
 - [ ] upload the tarball to [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@PaulWessel, @seisman)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
-- [ ] make announcements on the [GMT twitter](https://twitter.com/gmt_dev)
 - [ ] make announcements on the [GMT Instagram](https://www.instagram.com/genericmappingtools/)
 - [ ] update links on the main site (Download & Documentation)
 - [ ] update install instructions on the wiki if needed
