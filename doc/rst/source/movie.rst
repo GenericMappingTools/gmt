@@ -73,6 +73,8 @@ Required Arguments
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ **x**\ *height*\ **x**\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
+    Alternatively, give dimensions in pixels and add **+c** or **+i** to indicate that *dpu* is
+    per cm or inches.
     
     .. _tbl-presets:
 

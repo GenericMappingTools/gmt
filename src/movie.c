@@ -330,7 +330,7 @@ GMT_LOCAL int movie_parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctr
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
+	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu>[+c|i] -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
 		"-A<audiofile>[+e]] [-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t][+v]] "
 		"[-G[<fill>][+p<pen>]] [-H<scale>] [-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>][+v]] "
 		"[-P<progressinfo>] [-Q[s]] [-Sb<background>] [-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
@@ -341,7 +341,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Usage (API, 1, "\n<mainscript>");
 	GMT_Usage (API, -2, "<mainscript> is the main GMT modern script that builds a single frame image.");
-	GMT_Usage (API, 1, "\n-C<canvas>|<width>x<height>x<dpu>");
+	GMT_Usage (API, 1, "\n-C<canvas>|<width>x<height>x<dpu>[+c|i]");
 	GMT_Usage (API, -2, "Specify canvas. Choose either a known named canvas or set custom dimensions.");
 	GMT_Usage (API, -2, "%s Recognized 16:9-ratio names and associated dimensions:", GMT_LINE_BULLET);
 	/* Using GMT_Message here for verbatim text and alignment since GMT_Usage will eat repeated spaces */
@@ -366,7 +366,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: uhd-2 and 8k can be used for 4320p, uhd and 4k for 2160p, and fhd or hd for 1080p. "
 		"Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions and dpu. "
 		"Alternatively, set a custom canvas with dimensions and dots-per-unit manually by "
-		"providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).");
+		"providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.). Alternatively, give pixel dimension and a modifier:" 
+	GMT_Usage (API, 3, "+c Dimensions are pixels and dpu is pixels per cm.");
+	GMT_Usage (API, 3, "+i Dimensions are pixels and dpu is pixels per imch.");
 	GMT_Usage (API, 1, "\n-N<prefix>");
 	GMT_Usage (API, -2, "Set the <prefix> used for movie files and directory names. "
 		"The directory cannot already exist; see -Z to remove such directories at the end.");
@@ -812,8 +814,21 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				else if (!strcmp (arg, "dvd")) {	/* 480x640 */
 					Ctrl->C.dim[GMT_X] = width;	Ctrl->C.dim[GMT_Y] = height4x3;	Ctrl->C.dim[GMT_Z] = dpu / 6.0;
 				}
-				else {	/* Custom canvas dimensions */
-					if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
+				else {	/* Custom canvas dimensions -C<width>[<unit>]x<height>[<unit>]x<dpu>[+c|i] */
+					if ((c = strstr (arg, "+c")))	/* Got dimensions in dpc units */
+						c[0] = '\0';	/* Chop off modifier */
+					else if ((c = strstr (arg, "+i")))	/* 	/* Got dimensions in dpi units */
+						c[0] = '\0';	/* Chop off modifier */
+					if (c) {	/* Got modifier and sides in dpi or dpc -C<width>x<height>x<dpu>[+c|i] */
+						if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Requires dimensions in pixels and either +c or +i for dots per unit\n");
+							n_errors++;
+						}
+						Ctrl->C.dim[GMT_X] = atof (txt_a) / Ctrl->C.dim[GMT_Z];
+						Ctrl->C.dim[GMT_Y] = atof (txt_b) / Ctrl->C.dim[GMT_Z];
+						Ctrl->C.unit = c[1];	/* Set inch or cm unit */
+					}
+					else if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Requires name of a known format or give width x height x dpu string\n");
 						n_errors++;
 					}
