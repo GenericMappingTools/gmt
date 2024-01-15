@@ -74,8 +74,8 @@ Optional Arguments
 
     - **f** - Keep original points, but add intermediate points if needed;
       note this selection does not necessarily yield equidistant points [Default].
-    - **m** - Same as **+f**, but first follow meridian (along *y*) then parallel (along *x*).
-    - **p** - Same as **+f**, but first follow parallel (along *x*) then meridian (along *y*).
+    - **m** - Same as **f**, but first follow meridian (along *y*) then parallel (along *x*).
+    - **p** - Same as **f**, but first follow parallel (along *x*) then meridian (along *y*).
     - **r** - Resample at equidistant locations; input points are not
       necessarily included in the output.
     - **R** - Same as **r**, but adjust given spacing to fit the track length exactly.
@@ -124,7 +124,8 @@ Optional Arguments
 **-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [**-T**\ *file*\|\ *list*]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     The form **-T**\ *list* means a online list of *time* coordinates like for example: **-T**\ *13,15,16,22.5*.
-    For details on array creation, see `Generate 1-D Array`_. **Note**: For resampling of spatial
+    For details on array creation, see `Generate 1-D Array`_.
+    If |-A| is not set, it defaults to |-A|\ **f**. **Note**: For resampling of spatial
     (*x, y*) or (*lon, lat*) series you must give an increment with a valid distance unit;
     see `Units`_ for map units or use **c** if plain Cartesian coordinates. The first two
     columns must contain the spatial coordinates. From these we calculate distances in the
