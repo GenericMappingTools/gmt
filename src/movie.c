@@ -366,9 +366,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: uhd-2 and 8k can be used for 4320p, uhd and 4k for 2160p, and fhd or hd for 1080p. "
 		"Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions and dpu. "
 		"Alternatively, set a custom canvas with dimensions and dots-per-unit manually by "
-		"providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.). Alternatively, give pixel dimension and a modifier:" 
+		"providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc. Alternatively, give pixel dimensions and a modifier:");
 	GMT_Usage (API, 3, "+c Dimensions are pixels and dpu is pixels per cm.");
-	GMT_Usage (API, 3, "+i Dimensions are pixels and dpu is pixels per imch.");
+	GMT_Usage (API, 3, "+i Dimensions are pixels and dpu is pixels per inch.");
 	GMT_Usage (API, 1, "\n-N<prefix>");
 	GMT_Usage (API, -2, "Set the <prefix> used for movie files and directory names. "
 		"The directory cannot already exist; see -Z to remove such directories at the end.");
@@ -817,7 +817,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				else {	/* Custom canvas dimensions -C<width>[<unit>]x<height>[<unit>]x<dpu>[+c|i] */
 					if ((c = strstr (arg, "+c")))	/* Got dimensions in dpc units */
 						c[0] = '\0';	/* Chop off modifier */
-					else if ((c = strstr (arg, "+i")))	/* 	/* Got dimensions in dpi units */
+					else if ((c = strstr (arg, "+i")))	/* Got dimensions in dpi units */
 						c[0] = '\0';	/* Chop off modifier */
 					if (c) {	/* Got modifier and sides in dpi or dpc -C<width>x<height>x<dpu>[+c|i] */
 						if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
