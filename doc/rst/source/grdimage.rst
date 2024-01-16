@@ -97,7 +97,7 @@ Optional Arguments
     documentation for available drivers. Append a **+c**\ *options* string where *options* is a list of
     one or more concatenated number of GDAL **-co** options. For example, to write a GeoPDF with the
     TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
-    then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
+    then we will write a GeoTIFF image if the GMT projection syntax translates into a PROJ syntax,
     otherwise a plain tiff file is produced. (2) Any vector elements will be lost. **Note**: The **-B**
     option is not compatible with |-A| since no PostScript output is allowed.
 
@@ -113,7 +113,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [**r**]
-    GMT will automatically detect standard image files (Geotiff, TIFF,
+    GMT will automatically detect standard image files (GeoTIFF, TIFF,
     JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
     obscure image formats you may need to explicitly set |-D|, which
     specifies that the grid is in fact an image file to be read via
@@ -291,7 +291,7 @@ Image formats recognized
 ------------------------
 
 We automatically recognize image formats via their magic bytes.  For formats
-that could contain either an image or a data set (e.g., geotiff) we determine
+that could contain either an image or a data set (e.g., GeoTIFF) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.
 
