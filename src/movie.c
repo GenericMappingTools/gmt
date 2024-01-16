@@ -168,7 +168,7 @@ struct MOVIE_CTRL {
 		double duration;	/* Original length of audio track */
 		char *file;
 	} A;
-	struct MOVIE_C {	/* -C<namedcanvas>|<canvas_and_dpu> */
+	struct MOVIE_C {	/* -C<namedcanvas>|<canvas_and_dpu>[+c|i] */
 		bool active;
 		double dim[3];
 		char unit;
@@ -824,9 +824,15 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Requires dimensions in pixels and either +c or +i for dots per unit\n");
 							n_errors++;
 						}
+						Ctrl->C.dim[GMT_X] = atof (txt_a);
+						Ctrl->C.dim[GMT_Y] = atof (txt_b);
+						if (fabs (Ctrl->C.dim[GMT_X] - irint (Ctrl->C.dim[GMT_X])) > 0 || fabs (Ctrl->C.dim[GMT_Y] - irint (Ctrl->C.dim[GMT_Y])) > 0) {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: When either a +c or +i modifier is used, dimensions must be integer pixels\n");
+							n_errors++;
+						}
 						Ctrl->C.dim[GMT_X] = atof (txt_a) / Ctrl->C.dim[GMT_Z];
 						Ctrl->C.dim[GMT_Y] = atof (txt_b) / Ctrl->C.dim[GMT_Z];
-						Ctrl->C.unit = c[1];	/* Set inch or cm unit */
+						Ctrl->C.unit = c[1];	/* Save inch or cm unit */
 					}
 					else if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Requires name of a known format or give width x height x dpu string\n");
@@ -1227,7 +1233,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	if (Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG]) Ctrl->M.exit = true;	/* Only make the master frame */
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Must specify a main script file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify a canvas dimension\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify canvas dimensions\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Option -F: Cannot use none with other selections\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG], "Must select at least one output product (-F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");

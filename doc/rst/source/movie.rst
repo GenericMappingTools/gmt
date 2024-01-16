@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt movie** *mainscript*
-|-C|\ *canvas*
+|-C|\ *canvassize*
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-A|\ *audiofile*\ [**+e**] ]
@@ -73,8 +73,8 @@ Required Arguments
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ **x**\ *height*\ **x**\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
-    Alternatively, give dimensions in pixels and add **+c** or **+i** to indicate that *dpu* is
-    per cm or inches.
+    Alternatively, give dimensions in pixels and append modifiers **+c** or **+i** to indicate that *dpu* is
+    per cm or per inches.
     
     .. _tbl-presets:
 
