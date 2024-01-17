@@ -15,11 +15,11 @@ Synopsis
 **gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
-[ |-G|\ *drapegrid*\|*drapeimage* ]
+[ |-G|\ *drapegrid*\|\ *drapeimage* ]
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
-[ |-Q|\ **c**\ |**i**\ **m**\ [**x**\ |**y**]\ |**s**\[**m**]\ [*color*][**+m**] ]
+[ |-Q|\ **c**\|\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\ [*color*][**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
@@ -72,7 +72,7 @@ Optional Arguments
 
 .. _-G:
 
-|-G|\ *drapegrid*\ |*drapeimage*
+|-G|\ *drapegrid*\|\ *drapeimage*
     Drape the surface in *drapegrid* on top of the relief provided by
     *reliefgrid*. [Default determines colors from *reliefgrid*]. Note that **-Jz** and
     |-N| always refers to the *reliefgrid*. The *drapegrid* only
@@ -101,18 +101,18 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ \ **c**\ |**i**\ **m**\ [**x**\ |**y**]\ |**s**\[**m**]\ [*color*][**+m**]
+**-Q**\ **c**\|\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\ [*color*][**+m**]
     Select one of following directives. For any of these choices:
 
-    **c** - Image plot, but will make nodes with *z* = NaN transparent, using the color-masking
-       feature in PostScript Level 3. Optionally append the effective dots-per-unit resolution
-       for the rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
-    **i** - Image plot. Optionally append the effective dots-per-unit resolution for the
-       rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
-    **m** - Mesh plot [Default]. Optionally append *color* for a different mesh paint [white].
-       For waterfall plots, append **x** for row or **y** for column profiles). Specify color as for plain **m**.
-    **s** - Surface plot. Optionally append **m** to have mesh lines drawn on top of surface. See **-Wm** for
-       setting a specific mesh *pen*.
+    - **c** - Image plot, but will make nodes with *z* = NaN transparent, using the color-masking
+      feature in PostScript Level 3. Optionally append the effective dots-per-unit resolution
+      for the rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
+    - **i** - Image plot. Optionally append the effective dots-per-unit resolution for the
+      rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
+    - **m** - Mesh plot [Default]. Optionally append *color* for a different mesh paint [white].
+      For waterfall plots, append **x** for row or **y** for column profiles). Specify color as for plain **m**.
+    - **s** - Surface plot. Optionally append **m** to have mesh lines drawn on top of surface. See **-Wm** for
+      setting a specific mesh *pen*.
 
     A modifier can adjust the color further:
 

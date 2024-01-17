@@ -535,7 +535,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				}
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
-			case 'z':	/* One image. This is an undocumented fake option but one that lets externals pass both images and grids for draping. */
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
