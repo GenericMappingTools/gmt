@@ -411,7 +411,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallo
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->C.savecpt);
-	for (i = 0; i < 3; i++) gmt_M_str_free (C->G.file[i]);
+	for (i = 0; i < C->G.n; i++) gmt_M_str_free (C->G.file[i]);
 	gmt_M_str_free (C->I.file);
 	gmt_M_str_free (C->I.azimuth);
 	gmt_M_str_free (C->I.method);
@@ -423,8 +423,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] [-G<drapegrid>|<drapeimage> "
-		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Q<args>[+m]] [%s] [-S<smooth>] "
+	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] [-G<drapegrid>|<drapeimage>] "
+		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Qc|i|m[x|y]|s[<color>][+m]] [%s] [-S<smooth>] "
 		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_B_OPT, CPT_OPT_ARGS, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -432,7 +432,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<topogrid> is the grid surface to be plotted.");
+	GMT_Usage (API, 1, "\n<topogrid> is the grid surface shape to be plotted.");
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
@@ -442,7 +442,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Provide an image (<drapeimage>) and it will be draped over the surface.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Notes: 1) -JZ|z and -N always refer to the data in the <topogrid>. "
-		"2) The -G option requires the -Qi[<dpi>] option.");
+		"2) The -G option requires the -Qc|i[<dpu>] option.");
 	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
 	GMT_Usage (API, -2, "Apply directional illumination. Append name of an intensity grid, or "
 		"for a constant intensity (i.e., change the ambient light), just give a scalar. "
@@ -457,17 +457,19 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level> [minimum grid (or -R) value]. For rectangular projections, append +g<fill> "
 		"to paint the facade between the plane and the data perimeter.");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-Q<args>[+m]");
-	GMT_Usage (API, -2, "Set plot type request. Choose one of the following directives:");
+	GMT_Usage (API, 1, "\n-Qc|i|m[x|y]|s[<color>][+m]");
+	GMT_Usage (API, -2, "Set plot type request via on of the following directives:");
+	GMT_Usage (API, 3, "c: Transform polygons to raster-image via scanline conversion. Append effective <dpu> [%lg%c]. "
+		"Set PS Level 3 color-masking for nodes with z = NaN.",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
+	GMT_Usage (API, 3, "i: As c but no color-masking. Append effective <dpu> [%lg%c].",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	GMT_Usage (API, 3, "m: Mesh plot [Default]. Append <color> for mesh paint [%s]. "
-		"Alternatively, append x or -y for row or column \"waterfall\" profiles.",
+		"Alternatively, append x or y for row or column \"waterfall\" profiles.",
 		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
-	GMT_Usage (API, 3, "s: Colored or shaded Surface. Append m to draw mesh-lines on the surface.");
-	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpu [%lg%c].",
-		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
-	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpu [%lg%c].",
-		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
-	GMT_Usage (API, -2, "To force a monochrome image using the YIQ transformation, append +m.");
+	GMT_Usage (API, 3, "s: Colored or shaded surface. Optionally, append m to draw mesh-lines on the surface.");
+	GMT_Usage (API, -2, "Color may be further adjusted by a modifier:");
+	GMT_Usage (API, 3, "+m Force a monochrome image using the YIQ transformation.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<smooth>");
 	GMT_Usage (API, -2, "Smooth contours first (see grdcontour for <smooth> value info) [no smoothing].");

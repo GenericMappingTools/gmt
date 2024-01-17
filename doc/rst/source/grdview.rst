@@ -19,7 +19,7 @@ Synopsis
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
-[ |-Q|\ *args*\ [**+m**] ]
+[ |-Q|\ **c**\ |**i**\ **m**\ [**x**\ |**y**]\ |**s**\[**m**]\ [*color*][**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
@@ -101,17 +101,22 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *args*\ [**+m**]
-    Select one of following settings. For any of these choices, you may force
-    a monochrome image by appending the modifier **+m**. Colors are then
-    converted to shades of gray using the (monochrome television) YIQ transformation
+**-Q**\ \ **c**\ |**i**\ **m**\ [**x**\ |**y**]\ |**s**\[**m**]\ [*color*][**+m**]
+    Select one of following directives. For any of these choices:
 
-    #. Specify **m** for mesh plot [Default], and optionally append *color* for a different mesh paint [white].
-    #. Specify **mx** or **my** for waterfall plots (row or column profiles). Specify color as for plain **m**
-    #. Specify **s** for surface plot, and optionally append **m** to have mesh lines drawn on top of surface.
-    #. Specify **i** for image plot, and optionally append the effective dots-per-unit resolution for the rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
-    #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
-       feature in PostScript Level 3 (the PS device must support PS Level 3).
+    **c** - Image plot, but will make nodes with *z* = NaN transparent, using the color-masking
+       feature in PostScript Level 3. Optionally append the effective dots-per-unit resolution
+       for the rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
+    **i** - Image plot. Optionally append the effective dots-per-unit resolution for the
+       rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
+    **m** - Mesh plot [Default]. Optionally append *color* for a different mesh paint [white].
+       For waterfall plots, append **x** for row or **y** for column profiles). Specify color as for plain **m**.
+    **s** - Surface plot. Optionally append **m** to have mesh lines drawn on top of surface. See **-Wm** for
+       setting a specific mesh *pen*.
+
+    A modifier can adjust the color further:
+
+    - **+m** - Colors are converted to shades of gray using the (monochrome television) YIQ transformation.
 
     **Note**: If the CPT is categorical then only **-Qm** is available (but see |-T|).
 
