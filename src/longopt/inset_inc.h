@@ -32,7 +32,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "inset_frame|box",
 	          "",                  "",
-	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,rounded,shading",
+	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade",
 		  GMT_TP_STANDARD },
 	{ 0, 'N', "noclip|no_clip",    "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
