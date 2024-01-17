@@ -15,7 +15,7 @@ Synopsis
 **gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
-[ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
+[ |-G|\ *drapegrid*\|*drapeimage* ]
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
@@ -72,17 +72,13 @@ Optional Arguments
 
 .. _-G:
 
-|-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
-    Drape the image in *drapegrid* on top of the relief provided by
+|-G|\ *drapegrid*\ |*drapeimage*
+    Drape the surface in *drapegrid* on top of the relief provided by
     *reliefgrid*. [Default determines colors from *reliefgrid*]. Note that **-Jz** and
     |-N| always refers to the *reliefgrid*. The *drapegrid* only
     provides the information pertaining to colors, which (if *drapegrid* is a grid) will be looked-up
-    via the CPT (see |-C|). Instead, you may give three grid files
-    via separate |-G| options in the specified order. These files must contain the red, green, and
-    blue colors directly (in 0-255 range) and no CPT is needed. The
-    *drapegrid* may be of a different resolution than the *reliefgrid*.
-    Finally, *drapegrid* may be an image to be draped over the surface, in which
-    case the |-C| option is not required.
+    via the CPT (see |-C|). Instead, you may give a *drapeimage* to be draped over the surface, in which
+    case the |-C| option is not expected.
 
 .. _-I:
 

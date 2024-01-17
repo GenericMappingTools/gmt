@@ -74,7 +74,8 @@ struct GRDVIEW_CTRL {
 		char *file;
 		char *savecpt;	/* For when we want to save the automatically generated CPT */
 	} C;
-	struct GRDVIEW_G {	/* -G<drapefile> 1 or 3 times*/
+	struct GRDVIEW_G {	/* -G<drapefile>|<drapeimage>  */
+		/* Also handle deprecated triples -Gred.grd -Ggreen.grd -Gblue.grd or -Gred.grd,green.grd,blue.grd */
 		bool active;
 		bool image;
 		unsigned int n;
@@ -422,7 +423,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] [-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>] "
+	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] [-G<drapegrid>|<drapeimage> "
 		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Q<args>[+m]] [%s] [-S<smooth>] "
 		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_B_OPT, CPT_OPT_ARGS, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
@@ -436,11 +437,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
 	gmt_explain_cpt_input (API, 'C');
-	GMT_Usage (API, 1, "\n-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>");
-	GMT_Usage (API, -2, "Specify how to color the 3-D surface defined by <topogrid>:");
+	GMT_Usage (API, 1, "\n-G<drapegrid>|<drapeimage>");
+	GMT_Usage (API, -2, "Specify how to color the 3-D surface geometry defined by <topogrid>:");
 	GMT_Usage (API, 3, "%s Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Provide an image (<drapeimage>) and it will be draped over the surface.", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s Repeat -G for three grid files with separate red, green, and blue components in 0-255 range.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Notes: 1) -JZ|z and -N always refer to the data in the <topogrid>. "
 		"2) The -G option requires the -Qi[<dpi>] option.");
 	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
@@ -537,7 +537,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
-				if (gmt_M_compat_check (GMT, 5) && n_commas == 2) {	/* Old-style -Ga,b,c option */
+				if (n_commas == 2) {	/* Old-style -Ga,b,c option */
 					/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
@@ -552,7 +552,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					Ctrl->G.n++;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<drapegrid|drapeimage>\n");
 					n_errors++;
 				}
 				break;
@@ -783,12 +783,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 	/* Gave both -Q and -T */
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
-	                                   "Option -G: Requires either 1 or 3 grids\n");
+	                                   "Option -G: Requires either 1 or 3 grids (%d)\n",Ctrl->G.n);
 	if (Ctrl->G.active) {	/* Draping was requested */
 		for (k = 0; k < Ctrl->G.n; k++)
 			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
-		                                   "The draping option requires -Qi option\n");
+		                                   "The draping option requires the -Qc|i option\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
 	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
