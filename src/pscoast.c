@@ -216,7 +216,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+l Set lake fill.");
 	GMT_Usage (API, 3, "+r Set river-lake fill.");
 	gmt_GSHHG_resolution_syntax (API->GMT, 'D', "Alternatively, choose (a)uto to automatically select the best "
-		"resolution given the chosen region.");
+		"resolution given the chosen region [Default in modern mode].");
 	gmt_DCW_option (API, 'E', 1U);
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose.", 3);
 	GMT_Usage (API, -2, "Note: If using both -L and -T, use -Fl and -Ft.");

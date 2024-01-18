@@ -8570,7 +8570,7 @@ void gmt_GSHHG_resolution_syntax  (struct GMT_CTRL *GMT, char option, char *stri
 	GMT_Usage (API, 3, "f: Full resolution (may be very slow for large regions).");
 	GMT_Usage (API, 3, "h: High resolution (may be slow for large regions).");
 	GMT_Usage (API, 3, "i: Intermediate resolution.");
-	GMT_Usage (API, 3, "l: Low resolution [Default].");
+	GMT_Usage (API, 3, "l: Low resolution [Default in classic mode].");
 	GMT_Usage (API, 3, "c: Crude resolution, for tasks that need crude continent outlines only.");
 	GMT_Usage (API, -2, "Append +f to use a lower resolution should the chosen one not be available [abort]. %s", string);
 }
@@ -20528,7 +20528,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		c[0] = '\0';  /* Remove = */
 		n_errors += gmtlib_setparameter (GMT, opt->arg, &c[1], false);
 	}
-	if (n_errors) 
+	if (n_errors)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT parameter parsing failures for %d settings\n", n_errors);
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;
