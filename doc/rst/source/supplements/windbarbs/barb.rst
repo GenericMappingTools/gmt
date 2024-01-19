@@ -23,7 +23,7 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-I|\ *intens* ]
 [ |-N| ]
-[ |-Q|\ *parameters* ]
+[ |-Q|\ **+a**\ *angle*][**+g**\ [*fill*|-][**+jb**\|\ **c**\ |**e**][**+p**\ [-|*pen*][**+s**\ *scale*][**+w**\ *width*][**+z**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -132,7 +132,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *parameters*
+**-Q**\**+a**\ *angle*][**+g**\ [*fill*|-][**+jb**\|\ **c**\ |**e**][**+p**\ [-|*pen*][**+s**\ *scale*][**+w**\ *width*][**+z**]
     Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
     See `Wind Barb Attributes`_ for specifying additional attributes.
 
