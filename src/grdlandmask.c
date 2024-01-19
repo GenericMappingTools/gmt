@@ -122,7 +122,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
 	gmt_GSHHG_resolution_syntax (API->GMT, 'D', "Alternatively, choose (a)uto to automatically select the best "
-		"resolution given the chosen region.");
+		"resolution given the chosen region [Default in modern mode].");
 	GMT_Usage (API, 1, "\n-E[<bordervalues>]");
 	GMT_Usage (API, -2, "Indicate that nodes exactly on a polygon boundary are outside [inside]. Optionally append "
 		"<border> or <cborder>/<lborder>/<iborder>/<pborder>. We will then trace lines through the grid and reset the "

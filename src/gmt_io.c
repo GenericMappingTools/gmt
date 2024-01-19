@@ -10202,7 +10202,7 @@ unsigned int gmtlib_is_string (struct GMT_CTRL *GMT, char *string) {
 	unsigned int L = strlen (string), start = 0;
 	unsigned int n_text = 0, n_colons = 0, n_digits = 0, n_dashes = 0, n_slashes = 0, n_specials = 0, n_periods = 0;
 
-	if (L > 24U) return (GMT_IS_STRING);	/* Too long to be an absolute time string */
+	if (L > 35U) return (GMT_IS_STRING);	/* Just too long to be a reasonable absolute time string */
 
 	if (string[start] == '-' || string[start] == '+') start++;	/* Skip any leading signs */
 	p = &string[start];	/* Start of arg after skipping potential signs */

@@ -173,8 +173,8 @@ Optional Arguments
       transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator
       cannot create true variable pixel transparency *t*. Instead, each *r*, *g*, and *b* pixel
       values are converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the
-      transparent color at full transparency [Default is white]. If *color* is given 
-      then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will 
+      transparent color at full transparency [Default is white]. If *color* is given
+      then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will
       be approximated by *n_columns* times *n_rows* of tiny squares with variable color and
       transparency.  If *A* reflects opacity instead of transparency then you can use modifier
       **+i** to invert these numbers first. See `Limitations on transparency`_ for more discussion.
@@ -275,7 +275,7 @@ Limitations on transparency
 ---------------------------
 
 The PostScript imaging model does not support any form of transparency.  However, Adobe added
-`pdfMark <https://opensource.adobe.com/dc-acrobat-sdk-docs/acrobatsdk/pdfs/acrobatsdk_pdfmark.pdf>`_
+`pdfMark <https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/index.html>`_
 which allows PostScript to specify transparency but only if activated when converting PostScript
 or EPS to PDF with Adobe Distiller or GhostScript. Each graphic (e.g., polygon, line, text, image)
 can have a specified transparency. Yet, for images this is very limited: We can choose a particular

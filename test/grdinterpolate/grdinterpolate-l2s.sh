@@ -24,9 +24,9 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --outgrid=/some/file.grd >> $b
-gmt $m $l2s --meta+xname:somexnm[km]+yname:someynm[cm]+zname:someznm[nm]+dname:somednm[km] >> $b
-gmt $m $l2s --meta+cpt:-+scale:2+offset:100+invalid:-999 >> $b
-gmt $m $l2s --meta+title:Title+remark:'This is a remark'+varname:somevar >> $b
+gmt $m $l2s --netcdf+xname:somexnm[km]+yname:someynm[cm]+zname:someznm[nm]+dname:somednm[km] >> $b
+gmt $m $l2s --netCDF+cpt:-+scale:2+offset:100+invalid:-999 >> $b
+gmt $m $l2s --ncheader+title:Title+remark:'This is a remark'+varname:somevar >> $b
 gmt $m $l2s --profile=file+azimuth:-5+degrees+increment:1.5+length:12+npoints:1000 >> $b
 gmt $m $l2s --crosssection=1/2/3/4,5/6/7/8+origin:6+parallel+radius:7+rhumb >> $b
 gmt $m $l2s --interptype=linear --interptype=akima+derivative:1 >> $b
