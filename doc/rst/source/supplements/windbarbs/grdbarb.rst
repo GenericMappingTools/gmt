@@ -23,7 +23,7 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-N| ]
-[ |-Q|\ *parameters* ]
+[ |-Q|\ **+a**\ *angle*][**+g**\ [*fill*|-][**+jb**\|\ **c**\ |**e**][**+p**\ [-|*pen*][**+s**\ *scale*][**+w**\ *width*] ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
@@ -112,9 +112,11 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *parameters*
+**-Q**\ **+a**\ *angle*][**+g**\ [*fill*|-][**+jb**\|\ **c**\ |**e**][**+p**\ [-|*pen*][**+s**\ *scale*][**+w**\ *width*]
     Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
     See `Wind Barb Attributes`_ for specifying additional attributes.
+
+.. include:: explain_windbarbs.rst_
 
 .. _-R:
 
@@ -166,8 +168,6 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_grd_inout.rst_
-
-.. include:: explain_windbarbs.rst_
 
 
 Examples

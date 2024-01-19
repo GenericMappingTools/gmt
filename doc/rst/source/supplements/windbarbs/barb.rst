@@ -134,7 +134,10 @@ Optional Arguments
 
 **-Q**\**+a**\ *angle*][**+g**\ [*fill*|-][**+jb**\|\ **c**\ |**e**][**+p**\ [-|*pen*][**+s**\ *scale*][**+w**\ *width*][**+z**]
     Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
-    See `Wind Barb Attributes`_ for specifying additional attributes.
+    See `Wind Barb Attributes`_ for specifying additional attributes
+.. include:: explain_windbarbs.rst_
+**+z** to input (u,v) wind components instead of (azimuth,speed)
+
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
@@ -187,9 +190,6 @@ Optional Arguments
 .. include:: ../../explain_colon.rst_
 
 .. include:: ../../explain_help.rst_
-
-.. include:: explain_windbarbs.rst_
-**+z** to input (u,v) wind components instead of (azimuth,speed)
 
 .. module_common_ends
 
