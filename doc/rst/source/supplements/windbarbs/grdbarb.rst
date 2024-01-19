@@ -203,4 +203,4 @@ See Also
 --------
 
 :doc:`gmt </gmt>`, :doc:`gmtcolors </gmtcolors>`,
-:doc:`grdvector </grdvector>`, :doc:`psbarb`
+:doc:`grdvector </grdvector>`, :doc:`barb`
