@@ -23,7 +23,7 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-I|\ *intens* ]
 [ |-N| ]
-[ |-Q|\ **+a**\ *angle*][**+g**\ -|*fill*][**+jb**\|\ **c**\|\ **e**][**+p**\ -|*pen*][**+s**\ *scale*][**+w**\ *width*][**+z**] ]
+[ |-Q|\ *length*\ [**+a**\ *angle*][**+g**\ -\|\ *fill*][**+jb**\|\ **c**\|\ **e**][**+p**\ -\|\ *pen*][**+s**\ *scale*][**+w**\ *width*][**+z**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -132,7 +132,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ **+a**\ *angle*][**+g**\ -|*fill*][**+jb**\|\ **c**\|\ **e**][**+p**\ -|*pen*][**+s**\ *scale*][**+w**\ *width*][**+z**]
+**-Q**\ *length*\ [**+a**\ *angle*][**+g**\ -\|\ *fill*][**+jb**\|\ **c**\|\ **e**][**+p**\ -\|\ *pen*][**+s**\ *scale*][**+w**\ *width*][**+z**]
     Modify wind barb parameters. Append wind barb *length* [Default is 0.5c].
     Several modifiers may be appended to specify the placement of barbs, their shapes, and the
     justification of the wind barb. Below, left and right refers to the
@@ -141,12 +141,12 @@ Optional Arguments
 
     - **+a** - Set the angle of the wind barb [120].
     - **+g** - Turn off *fill* (if -) or set the wind
-        barb fill [Default fill is used, which may be no fill].
+      barb fill [Default fill is used, which may be no fill].
     - **+p** - Sets the wind barb pen attributes. If *pen* has a
-        leading - then the outline is not drawn [Default pen is used, and
-        outline is drawn].
+      leading - then the outline is not drawn [Default pen is used, and
+      outline is drawn].
     - **+j** - Determines how the input *x*,\ *y* point relates to the
-        wind barb. Choose from **b**\ eginning [default], **e**\ nd, or **c**\ enter.
+      wind barb. Choose from **b**\ eginning [default], **e**\ nd, or **c**\ enter.
     - **+s** - Set the wind speed which corresponds to a long barb [default 5].
     - **+w** - Set the *width* of wind barbs.
     - **+z** - Input (u,v) wind components instead of (azimuth,speed).

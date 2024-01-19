@@ -18,7 +18,7 @@
 #ifndef _GMT_WINDBARB_H
 #define _GMT_WINDBARB_H
 
-#define GMT_BARG_PARAMS "[+a<angle>][+g[<fill>|-][+jb|c|e][+p[-|<pen>][+s<scale>][+w>width>]"
+#define GMT_BARG_PARAMS "<length>[+a<angle>][+g[<fill>|-][+jb|c|e][+p[-|<pen>][+s<scale>][+w>width>]"
 
 struct GMT_BARB_ATTR {
 	/* Container for common attributes for plot attributes of wind barbs */
