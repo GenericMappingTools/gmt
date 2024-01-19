@@ -56,7 +56,6 @@ interpret the third and fourth columns of the input data as barb length and
 width, respectively.
 Select a fill with |-G|. If |-G| is set, |-W| will control
 whether the outline is drawn or not.
-The PostScript code is written to standard output.
 
 Required Arguments
 ------------------
