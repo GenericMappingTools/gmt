@@ -136,7 +136,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_explain_cpt_input (API, 'C');
 	GMT_Usage (API, 1, "\nWith no argument, construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
 		"You may optionally supply transparency (-A) and/or intensity (-I).  With CPT arguments we expect a "
-		"single grid and we convert it to a color image via the CPT information.");
+		"single grid and we convert it to a color image via the CPT information. For 3 grids and no -C we assume they are r, g, and b grids.");
 	GMT_Usage (API, 1, "\n-D Deconstruct an image into 1 or 3 output component grids, plus any transparency. "
 		"We write the raw layer values (0-255); use -N to normalize the layers (0-1).");
 	GMT_Usage (API, 1, "\n-I<intens>");
@@ -279,12 +279,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	if (Ctrl->C.file) gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
+	if (Ctrl->In.n_in == 3 && !Ctrl->C.active) Ctrl->N.active[GMT_IN] = true;	/* No CPT needed if we normalize and use as r/g/b */
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Must specify at least one input raster file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 1 && !(Ctrl->A.active || Ctrl->C.active || Ctrl->D.active || Ctrl->I.active || Ctrl->M.active || Ctrl->Q.active),
 		"For one input image you must specify one or more of -A, -C, -D, -I, -M, -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 2 && !Ctrl->W.active, "For two input images you must provide weights in -W\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_in == 3 && !Ctrl->C.active, "For three input images you must select -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Option -A: A constant transparency must be in the 0-1 range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Can only use one of -C and -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->A.active, "Option -A: Not used with -D\n");
@@ -614,7 +614,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
+	if (Ctrl->In.n_in == 3 || Ctrl->C.active) {	/* Combine 1 or 3 grids into a new single image, while handling the optional -A -I information */
+		bool as_is = false;
 		uint64_t dim[3] = {0,0,3};
 		if (Ctrl->In.type[0] == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Construct image from %d component grid layers\n", Ctrl->In.n_in);
@@ -624,7 +625,11 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			}
 			H = I->header;
 			for (band = 0; band < H->n_bands; band++) {	/* Check if any of the grids exceed the required 0-1 range */
-				if (n_input_grids > 1 && (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0))	/* Probably not normalized and forgot -Ni */
+				if (n_input_grids > 1 && (G_in[band]->header->z_min >= 0.0 || G_in[band]->header->z_max <= 255.0)) {	/* r, g, b colors in 0-255 range */
+					GMT_Report (API, GMT_MSG_INFORMATION, "Component grid values in %s restricted to 0-255 range, assume r, g, b values\n", Ctrl->In.file[band]);
+					as_is = true;
+				}
+				else if (n_input_grids > 1 && (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0))	/* Probably not normalized and forgot -Ni */
 					GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
 			}
 			if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
@@ -641,7 +646,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 					/* Modify colors based on intensity */
 					gmt_illuminate (GMT, intens[node], rgb);
 					for (band = 0, pix = node; band < 3; band++, pix += H->size)	/* March across the RGB values */
-						I->data[pix] = gmt_M_u255 (rgb[band]);
+						I->data[pix] = (as_is) ? (unsigned char)rgb[band] : gmt_M_u255 (rgb[band]);
 				}
 			}
 			else if (P) {	/* Convert z-values to image colors via CPT */
