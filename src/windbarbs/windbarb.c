@@ -44,7 +44,7 @@ void gmt_barb_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned 
 	 * 1	= Accepts +z (not mathangle)
 	 */
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, 1, "\n-%c%s[+z]", option. GMT_BARG_PARAMS);
+	GMT_Usage (API, 1, "\n-%c%s[+z]", option, GMT_BARG_PARAMS);
 	GMT_Usage (API, -2, "%s Append length of wind barbs, with optional modifiers:", string);
 	GMT_Usage (API, 3, "+a Append angle of wind barb [120]");
 	GMT_Usage (API, 3, "+g Set fill or use - to turn off fill [default fill].");
@@ -191,7 +191,7 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 				B->status |= PSL_VEC_FILL;
 				if (p[1]) {
 					if (gmt_getfill (GMT, &p[1], &B->fill)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad +g-|<fill> modifier %c\n", &p[1]);
 						error++;
 					}
 					B->status |= PSL_VEC_FILL2;
@@ -203,7 +203,7 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 					case 'c': B->status |= PSL_VEC_JUST_C;	break;	/* Input (x,y) refers to center point */
 					case 'e': B->status |= PSL_VEC_JUST_E;	break;	/* Input (x,y) refers to end point */
 					default:  /* Bad justifier code */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +j<just> modifier %c\n", p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad +j<just> modifier %c\n", p[1]);
 						error++;
 						break;
 				}
@@ -218,7 +218,7 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 				}
 				if (p[j]) {	/* Change default pen */
 					if (gmt_getpen (GMT, &p[j], &B->pen)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad +p-|<pen> modifier %c\n", &p[1]);
 						error++;
 					}
 					B->status |= PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
@@ -231,15 +231,15 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 				B->width = (float)gmt_M_to_inch (GMT, &p[1]);
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
-				if (mode == 1) {	/* psbarb can take +z */
+				if (mode == 1)	/* Only psbarb can take +z */
 					B->status |= PSL_VEC_COMPONENTS;
-				else {	/* grdbarb does not have -Q+z */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad modifier +z\n");
+				else {	/* grdbarb does not take -Q+z */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad modifier +z\n");
 					error++;
 				}
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad modifier +%c\n", p[0]);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad modifier +%c\n", p[0]);
 				error++;
 				break;
 		}
