@@ -18,6 +18,8 @@
 #ifndef _GMT_WINDBARB_H
 #define _GMT_WINDBARB_H
 
+#define GMT_BARG_PARAMS "<length>[+a<angle>][+g[<fill>|-][+jb|c|e][+p[-|<pen>][+s<scale>][+w>width>]"
+
 struct GMT_BARB_ATTR {
 	/* Container for common attributes for plot attributes of wind barbs */
 	unsigned int status;	/* Bit flags for barb position information (see GMT_enum_vecattr above) */
@@ -33,6 +35,6 @@ struct GMT_BARB_ATTR {
 EXTERN_MSC void gmt_barb_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode);
 EXTERN_MSC int gmt_draw_barb (struct GMT_CTRL *GMT, double x0, double y0, double lat, double theta, double spd, struct GMT_BARB_ATTR B, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline);
 EXTERN_MSC int gmt_init_barb_param (struct GMT_CTRL *GMT, struct GMT_BARB_ATTR *B, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill);
-EXTERN_MSC int gmt_parse_barb (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B);
+EXTERN_MSC int gmt_parse_barb (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B, unsigned int mode);
 
 #endif /* _GMT_WINDBARB_H */
