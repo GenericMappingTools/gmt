@@ -21,11 +21,11 @@ gmt begin GMT_cap
 	gmt plot -Wfaint butt.txt
 	gmt plot -Sc3p -Gwhite -Wfaint butt.txt
 	# miter
-	gmt plot --PS_LINE_CAP=round -W10p,lightblue,,20_20:0 round.txt
+	gmt plot --PS_LINE_CAP=round -W10p,lightblue,20_20:0 round.txt
 	gmt plot -Wfaint round.txt
 	gmt plot -Sc3p -Gwhite -Wfaint round.txt
 	# bevel
-	gmt plot --PS_LINE_CAP=square -W10p,lightorange,,20_20:0 square.txt
+	gmt plot --PS_LINE_CAP=square -W10p,lightorange,20_20:0 square.txt
 	gmt plot -Wfaint square.txt
 	gmt plot -Sc3p -Gwhite -Wfaint square.txt
 	gmt text -F+f8p,Helvetica-Bold+j -Dj5p <<- EOF
