@@ -9164,9 +9164,12 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
 		case 'w': error += GMT->common.w.active == false; break;
-#ifdef GMT_MP_ENABLED
-		case 'x': error += GMT->common.x.active == false; break;
+		case 'x': error += GMT->common.x.active == false;
+		error--;
+#if !defined(GMT_MP_ENABLED)
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Option -x: GMT is not compiled with parallel support. Only one core is used\n");
 #endif
+		break;
 		case ':': error += GMT->common.colon.active == false; break;
 
 		default:
@@ -18770,10 +18773,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			error += gmt_M_more_than_once (GMT, GMT->common.w.active) || gmtinit_parse_w_option (GMT, item);
 			break;
 
-#ifdef GMT_MP_ENABLED
 		case 'x':
 			error += (gmt_M_more_than_once (GMT, GMT->common.x.active) || gmtinit_parse_x_option (GMT, item));
 			GMT->common.x.active = true;
+#!define(GMT_MP_ENABLED)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -x: GMT is not compiled with parallel support. Only one core is used\n");
 			break;
 #endif
 
