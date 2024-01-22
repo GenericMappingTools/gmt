@@ -26,7 +26,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
 	GMT_C_CPT_KW,
-	{ 0, 'F', "rowcol|col",
+	{ 0, 'F', "rowcol|row_col",
 	          "f,i",               "one|fortran,indexz",
 	          "",                  "",
 		  GMT_TP_STANDARD },
