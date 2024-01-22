@@ -44,7 +44,7 @@ size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
 may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
-recognized as geotiff.  **Note**: If the PostScript file calls on any of
+recognized as GeoTIFF.  **Note**: If the PostScript file calls on any of
 the Adobe PDF transparency extensions *and* PDF is not the selected output
 format, then the file will first be converted to a temporary PDF file
 (for the transparency to take effect) before converting the PDF to the
@@ -219,7 +219,7 @@ Optional Arguments
 
 **-W**\ [**+a**\ *altmode*\ [*alt*]][**+c**][**+f**\ *minfade/maxfade*][**+g**][**+k**][**+l**\ *minLOD/maxLOD*][**+n**\ *layername*][**+o**\ *foldername*][**+t**\ *docname*][**+u**\ *URL*]
     Write an ESRI type world file suitable to make .tif files be
-    recognized as geotiff by software that know how to do it. Be aware,
+    recognized as GeoTIFF by software that know how to do it. Be aware,
     however, that different results are obtained depending on the image
     contents and if the |-B| option has been used or not. The trouble
     with the |-B| option is that it creates a frame and very likely
@@ -236,8 +236,8 @@ Optional Arguments
     Together with |-V| it prints on screen the *gdal_translate*
     (*gdal_translate* is a command line tool from the `GDAL package <https://gdal.org/>`_)
     command that reads the raster + world file and creates a true
-    geotiff file. Append **+g** to do a system call to *gdal_translate*
-    and create a geoTIFF image right away. The output file will have a
+    GeoTIFF file. Append **+g** to do a system call to *gdal_translate*
+    and create a GeoTIFF image right away. The output file will have a
     .tiff extension.
 
     The world file naming follows the convention of jamming a 'w' in the
@@ -277,7 +277,7 @@ Optional Arguments
 
     Further notes on the creation of georeferenced rasters.
     **psconvert** can create a georeferenced raster image with a world
-    file OR uses GDAL to convert the GMT PostScript file to geotiff.
+    file OR uses GDAL to convert the GMT PostScript file to GeoTIFF.
     GDAL uses `PROJ <https://proj.org/>`_ for its projection library. To provide with the
     information it needs to do the georeferencing, GMT embeds a
     comment near the start of the PostScript file defining the
@@ -387,12 +387,12 @@ To create a simple linear map with :doc:`coast` and convert it to tif with a
     gmt psconvert cara.ps -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
-produce a true geotiff file::
+produce a true GeoTIFF file::
 
     gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside -ps cara
     gdalwarp -s_srs +proj=merc cara.tif carageo.tiff
 
-To create a Polar Stereographic geotiff file of Patagonia::
+To create a Polar Stereographic GeoTIFF file of Patagonia::
 
     gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48+r -Di -Gred -Bg2 --MAP_FRAME_TYPE=inside -ps patagonia
     gmt psconvert patagonia.ps -Tt -W+g -V

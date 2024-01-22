@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -112,9 +112,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [%s] [-C<cpt>] [-D<dx>/<dy>] [-G<fill>|+z] "
-		"[-I[<intens>]] %s [-N[c|r]] %s%s [-Q[<params>]] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
+		"[-I[<intens>]] %s [-N[c|r]] %s%s [-Q[%s[+z]] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
 		"[-Z<value>|<file>[+t|T]] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
+		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_BARG_PARAMS,
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT,
 		GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBARB_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'Q':	/* Set wind barb parameters */
-				n_errors += gmt_parse_barb (GMT, opt->arg, &Ctrl->Q.B);
+				n_errors += gmt_parse_barb (GMT, opt->arg, &Ctrl->Q.B, 1);
 				break;
 			case 'T':		/* Skip all input files */
 				Ctrl->T.active = true;

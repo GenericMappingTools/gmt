@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ [*max\_intens*\|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
 [ |-K| ]
-[ |-L|\ [**i**][*gap*] ]
+[ |-L|\ [**i**\|\ **I**][*gap*] ]
 [ |-M| ]
 [ |-N|\ [**p**\|\ *dpi* ]]
 [ |-O| ]

@@ -1,9 +1,9 @@
 .. index:: ! gmtflexure
 .. include:: ../module_supplements_purpose.rst_
 
-**********
-gmtflexure
-**********
+*******
+flexure
+*******
 
 |gmtflexure_purpose|
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -839,7 +839,7 @@ GMT_LOCAL int gmtinit_find_longoptmatch (struct GMTAPI_CTRL *API, char *longlist
 						charsneeded = 1;
 						if ((nllmatches > 1) && (multidir == GMT_MULTIDIR_COMMA))
 							charsneeded++;
-						if (ncodechars < codecharsbufsz-charsneeded) {
+						if (ncodechars < (int)codecharsbufsz-charsneeded) {
 							if (charsneeded == 2) codechars[ncodechars++] = ',';
 							codechars[ncodechars++] = shortlist[k];
 						}
@@ -7684,7 +7684,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = GMT_VERBOSE_CODES;
-#ifdef GMT_MP_ENABLED
+#if defined(GMT_MP_ENABLED)
 	int cores = 0;
 #endif
 	double s;
@@ -8135,12 +8135,14 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
-#ifdef GMT_MP_ENABLED
+#if defined(GMT_MP_ENABLED)
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
-			cores = gmtlib_get_num_processors();
-			GMT_Usage (API, 1, "\n%s", GMT_x_OPT);
-			GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
-				"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
+			if (strlen (GMT_x_OPT) > 1) {	/* Only print this if it is in fact available */
+				cores = gmtlib_get_num_processors();
+				GMT_Usage (API, 1, "\n%s", GMT_x_OPT);
+				GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
+					"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
+			}
 			break;
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
@@ -8568,7 +8570,7 @@ void gmt_GSHHG_resolution_syntax  (struct GMT_CTRL *GMT, char option, char *stri
 	GMT_Usage (API, 3, "f: Full resolution (may be very slow for large regions).");
 	GMT_Usage (API, 3, "h: High resolution (may be slow for large regions).");
 	GMT_Usage (API, 3, "i: Intermediate resolution.");
-	GMT_Usage (API, 3, "l: Low resolution [Default].");
+	GMT_Usage (API, 3, "l: Low resolution [Default in classic mode].");
 	GMT_Usage (API, 3, "c: Crude resolution, for tasks that need crude continent outlines only.");
 	GMT_Usage (API, -2, "Append +f to use a lower resolution should the chosen one not be available [abort]. %s", string);
 }
@@ -8592,7 +8594,8 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	}
 	else {
 		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
-			"Or, specify +an (line-normal) or +ap (line-parallel) [Default].", feature[kind]);
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. If p<angle> is appended then "
+			"<angle> is used as a fixed deviation from the line orientation", feature[kind]);
 	}
 	if (kind < 2) GMT_Usage (API, indent, "+c Set clearance <dx>[/<dy>] between label and text box [15%%].");
 	GMT_Usage (API, indent, "+d Debug mode which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
@@ -9161,7 +9164,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
 		case 'w': error += GMT->common.w.active == false; break;
-#ifdef GMT_MP_ENABLED
+#if !defined(GMT_MP_ENABLED)
 		case 'x': error += GMT->common.x.active == false; break;
 #endif
 		case ':': error += GMT->common.colon.active == false; break;
@@ -9467,10 +9470,12 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		gmt_DCW_free (GMT, &info);
 		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
-		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
+		if (GMT->current.setting.format_geo_out[0] == 'D')			/* [-180 180]*/
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
-		else
+		else if (GMT->current.setting.format_geo_out[0] == '+')		/* [0 360]*/
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		else if (GMT->current.setting.format_geo_out[0] == '-')		/* [-360 0]*/
+			GMT->current.io.geo.range = GMT_IS_M360_TO_0_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.R.via_polygon = true;
 		return (GMT_NOERROR);
@@ -20523,7 +20528,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		c[0] = '\0';  /* Remove = */
 		n_errors += gmtlib_setparameter (GMT, opt->arg, &c[1], false);
 	}
-	if (n_errors) 
+	if (n_errors)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT parameter parsing failures for %d settings\n", n_errors);
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;

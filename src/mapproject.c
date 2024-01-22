@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -812,7 +812,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 	if (n_errors) return GMT_PARSE_ERROR;	/* Might as well return here since otherwise we may get some false warnings from below as well */
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
-	no_JR_needed = (Ctrl->A.active || Ctrl->E.active || Ctrl->G.active || Ctrl->L.active || Ctrl->N.active || Ctrl->T.active || Ctrl->Z.active);
+	no_JR_needed = (Ctrl->A.active || Ctrl->E.active || Ctrl->G.active || Ctrl->L.active || Ctrl->N.active || Ctrl->Z.active);
 	if (GMT->common.J.width_given) will_need_RJ = true;	/* Need -R -J to convert width to scale */
 
 	/* The following lousy hack allows NOT having to specify -R */

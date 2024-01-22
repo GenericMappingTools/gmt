@@ -10,7 +10,7 @@
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5708769.svg)](https://doi.org/10.5281/zenodo.5708769)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3407865.svg)](https://zenodo.org/doi/10.5281/zenodo.3407865)
 
 ## What is GMT?
 
@@ -85,7 +85,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2023 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
+Copyright (c) 1991-2024 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)

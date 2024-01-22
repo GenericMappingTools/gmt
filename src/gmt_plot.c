@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@
  *  gmt_map_title
  *  gmt_plane_perspective
  *  gmt_plot_geo_ellipse
- *  gmt_plot_image_graticules
+ *  gmt_plot_grid_graticules
  *  gmt_plot_line
  *  gmt_plot_timex_grid
  *  gmt_plotcanvas
@@ -6914,6 +6914,12 @@ void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	PSL_beginclipping (PSL, work_x, work_y, 5, rgb, flag);
 }
 
+void gmt_setrgb (struct GMT_CTRL *GMT, double *rgb) {
+	struct PSL_CTRL *PSL= GMT->PSL;
+	/* Fill with a color */
+	PSL_setrgb (PSL, rgb);
+}
+
 void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 	if (!fill) /* NO fill pointer = no fill */
@@ -9251,14 +9257,20 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (strcmp (P->tag, "-")) {	/* Place the panel tag */
 			int form, refpoint, justify;
 
-			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." not supported in tags */
-				/* See branch latex-in-subplot-tags. We get gs error when I tried to implement the standard solution inside the PSL_completion function.
-				 * More work is needed to learn what goes wrong, probably by asking on the ghostscript help/support line. */
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Latex expressions are not (yet) supported as subplot panel tags - use text instead\n");
-				goto no_latex_tags;
-			}
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmtlib_refpoint_to_panel_xy (GMT, refpoint, P, &plot_x, &plot_y);	/* Convert just code to panel location */
+			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." not supported in tags */
+				FILE *fp = NULL;
+				if ((fp = fopen ("/tmp/Crummy_Latex_equation_tmp.txt", "a"))) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to create temporary Latex file to bypass equations in panels\n");
+					/* See branch latex-in-subplot-tags. We get gs error when I tried to implement the standard solution inside the PSL_completion function.
+					 * More work is needed to learn what goes wrong, probably by asking on the ghostscript help/support line. */
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Latex expressions are not (yet) supported as subplot panel tags - use text instead after subplot end\n");
+					fprintf (fp, "%lg\t%lg\t%s\n", P->col * P->w - P->off[GMT_X], (P->nrows - P->row) * P->h - P->off[GMT_Y], P->tag);
+					fclose (fp);
+				}
+				goto no_latex_tags;
+			}
 			/* Undo any offsets above that was required to center the plot on the subplot panel */
 			plot_x -= (P->dx);
 			plot_y -= (P->dy);
@@ -9698,7 +9710,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	perim_n = gmtlib_lonpath (GMT, start_lon, pole_lat, yc, &x_perim, &y_perim);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Created path from %g/%g to %g/%g [%d points]\n", start_lon, pole_lat, start_lon, yc, perim_n);
 	/* 2. Allocate enough space for new polar cap polygon */
-	n_new = 2 * perim_n + n;
+	n_new = 2 * MAX (perim_n, 1) + n;
 	plon = gmt_M_memory (GMT, NULL, n_new, double);
 	plat = gmt_M_memory (GMT, NULL, n_new, double);
 	/* Start off with the path from the pole to the crossing */
@@ -10829,8 +10841,8 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	return (P);
 }
 
-void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
-	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
+void gmt_plot_grid_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
+	/* Lay down an image from a grid using polygons of the graticules.  This is recoded from grdview
 	 * so it can also be used in grdimage.
 	 * G is the data grid
 	 * I is an optional intensity grid.  If NULL then either intensity points to a

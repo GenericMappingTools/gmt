@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -767,7 +767,7 @@ GMT_LOCAL void gmtproj_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *la
  * triangle.  Doing all for quadrants results in a square map with radial
  * meridians and lots of distortion along the boundaries.  This was used to
  * build a 3-D cube of the world with this triangle projection being used to
- * map the top (N polar to 34N) and bottom (S pole to 45S) sides, with the
+ * map the top (N polar to 45N) and bottom (S pole to 45S) sides, with the
  * remaining 4 sides just being -JQ maps.  I left it here since I may want
  * to mess with this in the future.  P. Wessel, Dec. 2016.
  */
@@ -786,7 +786,6 @@ GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0, double slat) 
 
 GMT_LOCAL void gmtproj_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Cylindrical equidistant x/y */
-
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	if (lat > 0.0) {
 		*x = (0.5 + lon * (90.0 - lat) / 4050.0) * GMT->current.proj.j_x;
@@ -811,9 +810,9 @@ GMT_LOCAL void gmtproj_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, 
 	}
 }
 #else
-GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0) {
+GMT_LOCAL void gmtproj_vmiller (struct GMT_CTRL *GMT, double lon0, double unused) {
 	/* Set up a Miller Cylindrical transformation */
-
+	gmt_M_unused (unused);
 	gmtproj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.j_x = D2R * GMT->current.proj.EQ_RAD;
@@ -2055,7 +2054,7 @@ GMT_LOCAL void gmtproj_vmollweide (struct GMT_CTRL *GMT, double lon0, double sca
 
 	gmtproj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.w_x = GMT->current.proj.EQ_RAD * D2R * d_sqrt (8.0) / M_PI;
+	GMT->current.proj.w_x = GMT->current.proj.EQ_RAD * D2R * 2.0 * M_SQRT2 / M_PI;
 	GMT->current.proj.w_y = GMT->current.proj.EQ_RAD * M_SQRT2;
 	GMT->current.proj.w_iy = 1.0 / GMT->current.proj.w_y;
 	GMT->current.proj.w_r = 0.25 * (scale * GMT->current.proj.M_PR_DEG * 360.0);	/* = Half the minor axis */
@@ -2098,14 +2097,17 @@ GMT_LOCAL void gmtproj_imollweide (struct GMT_CTRL *GMT, double *lon, double *la
 
 	phi = asin (y * GMT->current.proj.w_iy);
 	*lon = x / (GMT->current.proj.w_x * cos(phi));
-	if (fabs (*lon) > 180.0) {	/* Horizon */
-		*lat = *lon = GMT->session.d_NaN;
+	if (fabs (*lon) > 180.0) {   /* Beyond horizon by a whisker so set to 180/0 depending on signs */
+		*lat = 0.0;
+		*lon = copysign (180.0, *lon) + GMT->current.proj.central_meridian;
 		return;
 	}
 	*lon += GMT->current.proj.central_meridian;
 	phi2 = 2.0 * phi;
 	*lat = asind ((phi2 + sin (phi2)) / M_PI);
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
+	if (fabs (*lat) > 90.0)	/* Sanity check */
+		*lat = copysign (90.0, *lat);
+	else if (GMT->current.proj.GMT_convert_latitudes) *lat = gmt_M_lata_to_latg (GMT, *lat);
 }
 
 /* -JH HAMMER-AITOFF EQUAL AREA PROJECTION */

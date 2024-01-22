@@ -1,9 +1,9 @@
 .. index:: ! gmtspatial
 .. include:: module_core_purpose.rst_
 
-**********
-gmtspatial
-**********
+*******
+spatial
+*******
 
 |gmtspatial_purpose|
 

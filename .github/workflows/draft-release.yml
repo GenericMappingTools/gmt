@@ -1,8 +1,8 @@
 #
 # Make a draft release when tagging
 #
-# The release assets are automatically downloaded from the GMT FTP server
-# and uploaded to GitHub.
+# The release assets are automatically downloaded from the GMT FTP server and uploaded
+# to GitHub.
 #
 
 on:
@@ -35,6 +35,7 @@ jobs:
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.gz
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.xz
           curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win64.exe
+          curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win64.zip
 
       - name: Checksum
         run: |
@@ -44,6 +45,7 @@ jobs:
                 gmt-${{ env.GMT_VERSION }}-src.tar.gz \
                 gmt-${{ env.GMT_VERSION }}-src.tar.xz \
                 gmt-${{ env.GMT_VERSION }}-win64.exe \
+                gmt-${{ env.GMT_VERSION }}-win64.zip \
                 > gmt-${{ env.GMT_VERSION }}-checksums.txt
           # Display the checksums
           cat gmt-${{ env.GMT_VERSION }}-checksums.txt
@@ -64,6 +66,7 @@ jobs:
             | gmt-${{ env.GMT_VERSION }}-src.tar.gz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-win64.exe         | Windows installer (64bit)               |
+            | gmt-${{ env.GMT_VERSION }}-win64.zip         | Windows portable installer (64bit)      |
           draft: true
           prerelease: false
           files: |
@@ -73,3 +76,4 @@ jobs:
             gmt-${{ env.GMT_VERSION }}-src.tar.gz
             gmt-${{ env.GMT_VERSION }}-src.tar.xz
             gmt-${{ env.GMT_VERSION }}-win64.exe
+            gmt-${{ env.GMT_VERSION }}-win64.zip

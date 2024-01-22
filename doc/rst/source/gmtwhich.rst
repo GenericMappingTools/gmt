@@ -1,9 +1,9 @@
 .. index:: ! gmtwhich
 .. include:: module_core_purpose.rst_
 
-********
-gmtwhich
-********
+*****
+which
+*****
 
 |gmtwhich_purpose|
 
@@ -12,7 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**a**\|\ **c**\|\ **l**\|\ **u**] ] [ |SYN_OPT-V| ] [ |SYN_OPT--| ]
+**gmt which** *files*
+[ |-A| ]
+[ |-C| ]
+[ |-D| ]
+[ |-G|\ [**a**\|\ **c**\|\ **l**\|\ **u**] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -21,11 +27,11 @@ Description
 
 **which** reports the paths to the files given on the command
 line. We look for the file in (1) the current directory,
-(2) in $GMT_USERDIR (if defined), (3) in $GMT_DATADIR (if defined), or
-(4) in $GMT_CACHEDIR (if defined). If
+(2) in **$GMT_USERDIR** (if defined), (3) in **$GMT_DATADIR** (if defined), or
+(4) in **$GMT_CACHEDIR** (if defined). If
 found we print the path name to the file, just the directory (see
-|-D|), or a confirmation (see |-C|). The $GMT_USERDIR and
-$GMT_DATADIR environment variables can be comma-separated list of
+|-D|), or a confirmation (see |-C|). The **$GMT_USERDIR** and
+**$GMT_DATADIR** environment variables can be comma-separated list of
 directories, and we search recursively down any directory that ends with
 / (i.e., /export/data is a single directory whereas /export/data/ will
 be searched recursively.)  If the file is in the current directory then
@@ -62,15 +68,16 @@ Optional Arguments
 .. _-G:
 
 **-G**\ [**a**\|\ **c**\|\ **l**\|\ **u**]
-    If a file argument is a downloadable file (either a complete URL, an @file for
+    If a file is downloadable (either a complete URL, an @file for
     downloading from the GMT data server, or @earth_relief_xxy or any other of the
     remote datasets at https://www.generic-mapping-tools.org/remote-datasets/)
     we will try to download the file if it is not found in your local data or cache dirs.
-    By default [**-Gl**] we download to the current directory. Append **a** to
-    place files in the appropriate folder under the user directory (this is where
-    GMT normally places downloaded files), **c** to place it in the user cache directory,
-    or **u** for the user data directory instead (i.e., ignoring any subdirectory
-    structure).
+
+    - **a** - Place files in the appropriate folder under the user directory (this is where
+      GMT normally places downloaded files).
+    - **c** - Download to the user cache directory.
+    - **l** - Download to the current directory [Default].
+    - **u** - Download to the user data directory (i.e., ignoring any subdirectory structure).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -88,16 +95,16 @@ To see the path to the file myjunk.txt, use::
 
 To download the 10 arc-minute global relief file from the GMT data server, use::
 
-    gmt which -Ga @earth_relief_10m
+    gmt which -Ga @earth_relief_10m_g
 
 which will print the path (after downloading if not already present).  The file will
-be placed in the appropriate folder under the user's GMT_USERDIR.  To obtain a GMT
+be placed in the appropriate folder under the user's **$GMT_USERDIR**.  To obtain a GMT
 example or test file from the GMT data server, try::
 
     gmt which -Gc @hotspots.txt
 
 which will print the path (after downloading if not already present).  The file will
-be placed in the user's GMT_CACHEDIR directory.
+be placed in the user's **$GMT_CACHEDIR** directory.
 
 See Also
 --------

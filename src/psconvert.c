@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -875,7 +875,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 			case 'I':	/* Set margins/scale modifiers [Deprecated -I: Do not use the ICC profile when converting gray shades] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);

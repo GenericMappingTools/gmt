@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,21 +25,15 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'D', "",
+	{ 0, 'D', "diff",              "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "model",
 	          "",                  "",
-	          "",                  "",
+	          "r,x,y",             "robust,x,y",
 		  GMT_TP_STANDARD },
-	{ 0, 'N', "",
+	{ 0, 'T', "trend",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "weights",
 	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "",
+	          "s",                 "sigma",
 		  GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };

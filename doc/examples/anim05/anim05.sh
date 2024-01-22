@@ -18,6 +18,7 @@
 # The script took ~70 minutes to render on a 24-core MacPro 2013, with most of the
 # time being used to solve for the cumulative and incremental grid components.
 
+# 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
 gmt begin
 	# Convert depth positive down to bathymetry positive up and decimate to a 1m lattice
@@ -33,6 +34,7 @@ gmt begin
 	gmt colorbar -Cz.cpt -DjTL+w4c+h+o11p/8p -Bxaf -By+l"km" -F+gwhite+p0.5p -W0.001
 gmt end
 EOF
+# 2. Set up the main frame script
 cat << 'EOF' > main.sh
 gmt begin
 	# Plot current solution with contors in the center panel
@@ -44,5 +46,5 @@ gmt begin
 	gmt colorbar -Cdz.cpt -DjTR+w4c+h+o19p/8p+e -Bxaf -By+l"m" -F+gwhite+p0.5p
 gmt end
 EOF
-# Run the movie and add two updating labels
+# 3. Run the movie and add two updating labels
 gmt movie main.sh -Sbpre.sh -CHD -Nanim05 -Tmisfit.txt -Fmp4 -H8 -Lf+jBR+f12p,Helvetica,white=~2p+t"Eigenvalue %4.4d" -Lc3+jTL+o8.15c/0.15c+gwhite+f12p+p0.25p+t"rms = %6.2lf m" -V -W -Zs
