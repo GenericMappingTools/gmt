@@ -43,7 +43,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 	          "n",                 "set_nan",
 		  GMT_TP_STANDARD },
-	{ 0, 'Z', "z_subregion",
+	{ 0, 'Z', "zrange",
 	          "",                  "",
 	          "n,N,r",             "exclude_nan,include_nan,strip_nan_rowcols",
 		  GMT_TP_STANDARD },
