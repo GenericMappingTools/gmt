@@ -38,7 +38,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	{ 0, 'N', "flat_earth",        "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'Q', "mixed_units",       "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Q', "km",                "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'S', "sort",              "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'T', "pole",              "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'W', "width",             "", "", "", "", GMT_TP_STANDARD },
