@@ -25,7 +25,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'A', "autocrop|crop",
+	{ 0, 'A', "adjust|autocrop|crop",
 	          "",                  "",
 	          "r,u",               "round,no_timestamp",
 		  GMT_TP_STANDARD },
