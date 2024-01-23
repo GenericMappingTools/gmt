@@ -900,6 +900,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			wesn[XLO] = 0.0;
 			wesn[XHI] = 360.0;
 		}
+		/* US DCW can return dumb things like this: -R172.436/-66.9489 */
+		if (wesn[XLO] > 0.0 && wesn[XHI] < 0.0)	/* Crazy US, RU, and Fiji crossing dateline and get backwards limit signs... */
+			wesn[XHI] += 360.0;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	}
 	gmt_M_free (GMT, order);

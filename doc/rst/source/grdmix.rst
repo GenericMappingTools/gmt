@@ -63,7 +63,8 @@ Required Arguments
     If only one is given and |-C| is not set then *raster1* must be an image.
     If two are given then *raster1* and *raster2* must both be either
     images or grids.  If three are given then they must all be grids and
-    |-C| must be set.
+    |-C| must be set, unless the three grids reflect red, green, and blue in
+    0-255 range, in which case |-C| is not needed.
 
 .. _-G:
 

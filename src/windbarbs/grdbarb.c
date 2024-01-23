@@ -100,8 +100,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <gridx> <gridy> %s [-A] [%s] [-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] "
-		"%s[-N] %s%s[-Q<params>] [%s] [-T] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
-		"%s [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
+		"%s[-N] %s%s[-Q%s] [%s] [-T] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
+		"%s [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_BARG_PARAMS,
 		GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -197,7 +197,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBARB_CTRL *Ctrl, struct GMT
 				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* Set wind barb parameters */
-				n_errors += gmt_parse_barb (GMT, opt->arg, &Ctrl->Q.B);
+				n_errors += gmt_parse_barb (GMT, opt->arg, &Ctrl->Q.B, 0);
 				break;
 			case 'T':	/* Rescale Cartesian angles */
 				Ctrl->T.active = true;

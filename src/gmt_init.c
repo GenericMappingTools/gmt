@@ -7684,7 +7684,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = GMT_VERBOSE_CODES;
-#ifdef GMT_MP_ENABLED
+#if defined(GMT_MP_ENABLED)
 	int cores = 0;
 #endif
 	double s;
@@ -8135,7 +8135,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
-#ifdef GMT_MP_ENABLED
+#if defined(GMT_MP_ENABLED)
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
 			if (strlen (GMT_x_OPT) > 1) {	/* Only print this if it is in fact available */
 				cores = gmtlib_get_num_processors();
@@ -9164,7 +9164,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
 		case 'w': error += GMT->common.w.active == false; break;
-#ifdef GMT_MP_ENABLED
+#if !defined(GMT_MP_ENABLED)
 		case 'x': error += GMT->common.x.active == false; break;
 #endif
 		case ':': error += GMT->common.colon.active == false; break;

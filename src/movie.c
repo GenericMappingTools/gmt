@@ -1238,7 +1238,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG], "Must select at least one output product (-F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Option -H: factor must be and integer > 1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Audio is only valid with -Fmp4 or -Fwebm\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Audio is only valid with -Fmp4 or -Fwebm\n");
 
 	
 	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
@@ -1249,7 +1249,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		if (n_used) Ctrl->T.split = true;	/* Necessary setting when labels address individual words */
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.file && gmt_access (GMT, Ctrl->A.file, R_OK),
+	if (Ctrl->A.file) n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK),
 					"Option -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
 					"Option -C: Bad unit given for canvas dimensions\n");
@@ -2684,7 +2684,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation built: %s.gif\n", Ctrl->N.prefix);
 		if (Ctrl->F.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->F.stride);
 	}
-	if (Ctrl->A.active) {	/* Need to include audio track, possibly scaled to fit */
+	if (Ctrl->A.active && Ctrl->A.file) {	/* Need to include audio track, possibly scaled to fit */
 		if (Ctrl->A.exact) {	/* Need to get an exact fit */
 			double video_duration = n_frames / Ctrl->D.framerate;	/* We can easily compute the animation length in seconds */
 			/* Create ffprobe arguments to get duration of audio track in seconds */
@@ -2705,7 +2705,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			/* Create audio options for ffmpeg to include the audiofile but first scale it by adio_stretch so it fits the length of the animation */
 			sprintf (audio_option, " -i %s -af atempo=%lg", Ctrl->A.file, audio_stretch);
 		}
-		else	/* No stretching - just include the audio file as is */
+		else if (Ctrl->A.file)	/* No stretching - just include the audio file as is */
 			sprintf (audio_option, " -i %s", Ctrl->A.file);
 	}
 	if (Ctrl->F.active[MOVIE_MP4]) {
