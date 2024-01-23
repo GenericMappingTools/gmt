@@ -44,7 +44,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "b,f",               "bg|background,fg|foreground",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'N', "show_bbox",
+	{ 0, 'N', "bb_style|show_bbox",
 	          "",                  "",
 	          "f,g,k,p",           "fade,bg|background,fadecolor,pen",
 		  GMT_TP_STANDARD },
