@@ -23,7 +23,7 @@ for instructions to install these dependencies on various operation systems.
 
 To build GMT, you have to install:
 
-- [CMake](https://cmake.org/) (>=2.8.12)
+- [CMake](https://cmake.org/) (>=3.16)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
