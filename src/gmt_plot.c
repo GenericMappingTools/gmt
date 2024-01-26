@@ -9257,14 +9257,20 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (strcmp (P->tag, "-")) {	/* Place the panel tag */
 			int form, refpoint, justify;
 
-			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." not supported in tags */
-				/* See branch latex-in-subplot-tags. We get gs error when I tried to implement the standard solution inside the PSL_completion function.
-				 * More work is needed to learn what goes wrong, probably by asking on the ghostscript help/support line. */
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Latex expressions are not (yet) supported as subplot panel tags - use text instead\n");
-				goto no_latex_tags;
-			}
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmtlib_refpoint_to_panel_xy (GMT, refpoint, P, &plot_x, &plot_y);	/* Convert just code to panel location */
+			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." not supported in tags */
+				FILE *fp = NULL;
+				if ((fp = fopen ("/tmp/Crummy_Latex_equation_tmp.txt", "a"))) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to create temporary Latex file to bypass equations in panels\n");
+					/* See branch latex-in-subplot-tags. We get gs error when I tried to implement the standard solution inside the PSL_completion function.
+					 * More work is needed to learn what goes wrong, probably by asking on the ghostscript help/support line. */
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Latex expressions are not (yet) supported as subplot panel tags - use text instead after subplot end\n");
+					fprintf (fp, "%lg\t%lg\t%s\n", P->col * P->w - P->off[GMT_X], (P->nrows - P->row) * P->h - P->off[GMT_Y], P->tag);
+					fclose (fp);
+				}
+				goto no_latex_tags;
+			}
 			/* Undo any offsets above that was required to center the plot on the subplot panel */
 			plot_x -= (P->dx);
 			plot_y -= (P->dy);

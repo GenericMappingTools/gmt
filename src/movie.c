@@ -729,19 +729,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'A':	/* Audio track (but also backwards compatible Animated GIF [Deprecated]) */
-				if (opt->arg[0] && (c = gmt_first_modifier (GMT, opt->arg, "ls")) == NULL) {	/* New audio syntax option -A<audiofile>[+e] */
-					n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-					if ((c = strstr (opt->arg, "+e"))) {	/* Stretch audio to fit video length */
-						Ctrl->A.exact = true;
-						c[0] = '\0';	/* Remove modifier */
-					}
-					Ctrl->A.file = strdup (opt->arg);	/* Get audio file name */
-					if (c) c[0] = '+';	/* Restore modifier */
-				}
-				else if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows backwards compatible -A[+l<loop>][+s<stride>] for animated GIF */
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -A[+l<loop>][+s<stride>] is deprecated - use -F instead\n");
-					Ctrl->F.active[MOVIE_GIF] = Ctrl->F.active[MOVIE_PNG] = Ctrl->animate = true;	/* Old -A implies -Fpng */
-					if ((c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any modifiers */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows backwards compatible -A[+l<loop>][+s<stride>] for animated GIF */
+					if ((c = strstr (opt->arg, "+e")) == NULL && (c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any deprecated modifiers */
+						GMT_Report (API, GMT_MSG_COMPAT, "Option -A[+l<loop>][+s<stride>] is deprecated - use -F instead\n");
+						Ctrl->F.active[MOVIE_GIF] = Ctrl->F.active[MOVIE_PNG] = Ctrl->animate = true;	/* Old -A implies -Fpng */
 						pos = 0;	/* Reset to start of new word */
 						while (gmt_getmodopt (GMT, 'A', c, "ls", &pos, p, &n_errors) && n_errors == 0) {
 							switch (p[0]) {
@@ -765,6 +757,16 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 						}
 						c[0] = '\0';
 					}
+					if (Ctrl->F.skip || Ctrl->F.loop) break;	/* Processed old deprecated +s or +l modifiers */
+				}
+				/* Here we process modern -A<soundfile>[+e] syntax */
+				if (opt->arg[0]) {	/* Get audio and optionally stretch to fit video length */
+					if ((c = strstr (opt->arg, "+e"))) {
+						Ctrl->A.exact = true;
+						c[0] = '\0';	/* Remove modifier */
+					}
+					Ctrl->A.file = strdup (opt->arg);	/* Get audio file name */
+					if (c) c[0] = '+';	/* Restore modifier */
 				}
 				else
 					n_errors += gmt_default_option_error (GMT, opt);
@@ -1238,7 +1240,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG], "Must select at least one output product (-F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Option -H: factor must be and integer > 1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Audio is only valid with -Fmp4 or -Fwebm\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Audio is only valid with -Fmp4 or -Fwebm\n");
 
 	
 	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
@@ -1249,7 +1251,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		if (n_used) Ctrl->T.split = true;	/* Necessary setting when labels address individual words */
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.file && gmt_access (GMT, Ctrl->A.file, R_OK),
+	if (Ctrl->A.file) n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK),
 					"Option -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += gmt_M_check_condition (GMT, gmt_set_length_unit (GMT, Ctrl->C.unit) == GMT_NOTSET,
 					"Option -C: Bad unit given for canvas dimensions\n");
@@ -2684,7 +2686,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation built: %s.gif\n", Ctrl->N.prefix);
 		if (Ctrl->F.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->F.stride);
 	}
-	if (Ctrl->A.active) {	/* Need to include audio track, possibly scaled to fit */
+	if (Ctrl->A.active && Ctrl->A.file) {	/* Need to include audio track, possibly scaled to fit */
 		if (Ctrl->A.exact) {	/* Need to get an exact fit */
 			double video_duration = n_frames / Ctrl->D.framerate;	/* We can easily compute the animation length in seconds */
 			/* Create ffprobe arguments to get duration of audio track in seconds */
@@ -2705,7 +2707,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			/* Create audio options for ffmpeg to include the audiofile but first scale it by adio_stretch so it fits the length of the animation */
 			sprintf (audio_option, " -i %s -af atempo=%lg", Ctrl->A.file, audio_stretch);
 		}
-		else	/* No stretching - just include the audio file as is */
+		else if (Ctrl->A.file)	/* No stretching - just include the audio file as is */
 			sprintf (audio_option, " -i %s", Ctrl->A.file);
 	}
 	if (Ctrl->F.active[MOVIE_MP4]) {
