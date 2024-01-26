@@ -18776,7 +18776,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'x':
 			error += (gmt_M_more_than_once (GMT, GMT->common.x.active) || gmtinit_parse_x_option (GMT, item));
 			GMT->common.x.active = true;
-#if !define(GMT_MP_ENABLED)
+#if !defined(GMT_MP_ENABLED)
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -x: GMT is not compiled with parallel support. Only one core is used\n");
 			break;
 #endif
