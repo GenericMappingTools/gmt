@@ -9164,7 +9164,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
 		case 'w': error += GMT->common.w.active == false; break;
-#if !defined(GMT_MP_ENABLED)
+#if defined(GMT_MP_ENABLED)
 		case 'x': error += GMT->common.x.active == false; break;
 #endif
 		case ':': error += GMT->common.colon.active == false; break;
