@@ -123,7 +123,7 @@ Optional Arguments
     those percentages are used instead to set the dimensions, where *width* is defined as a
     percentage of the bar *length*.
   - **+e** adds sidebar triangles for back- and/or foreground colors. Append **f** (foreground) or **b** 
-    background) for only one sidebar triangle [Default gives both]. Optionally, append triangle height [Default is half the barwidth].
+    (background) for only one sidebar triangle [Default gives both]. Optionally, append triangle height [Default is half the barwidth].
     The back and/or foreground colors are taken from your **B** and **F** colors in your CPT.  If none then the system default
     colors for **B** and **F** are used instead (:term:`COLOR_BACKGROUND` and :term:`COLOR_FOREGROUND`).
   - **+h** selects a horizontal scale [Default is vertical (**+v**)].
