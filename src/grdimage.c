@@ -1132,13 +1132,13 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 		T->value = 0;
 		T->mode = 3;
 		T->n_dominant = T->alpha_count[0];
-		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
+		//fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	else {
 		T->value = 255;	/* Case 4: Like 3 but 255 most used of two transparency values */
 		T->n_dominant = T->alpha_count[255];
 		T->mode = 4;
-		fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
+		//fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	return (true);
 }
