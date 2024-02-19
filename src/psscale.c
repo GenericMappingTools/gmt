@@ -1314,7 +1314,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		}
 		if (Ctrl->D.emode & PSSCALE_NAN_LB) {	/* Add NaN rectangle on left side */
 			nan_off += Ctrl->D.elength;
-			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - MAX (width, Ctrl->D.elength);
+			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - width;
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
 			if ((f = P->bfn[GMT_NAN].fill) != NULL)
