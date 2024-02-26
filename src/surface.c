@@ -1781,7 +1781,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Typically, 0.25 or more is good for potential field (smooth) data; "
 		"0.5-0.75 or so for topography.  We encourage you to experiment. Optional directives:");
 	GMT_Usage (API, 3, "b: Set tension in boundary conditions only.");
-	GMT_Usage (API, 3, "i: Set tension in interior equations only.n");
+	GMT_Usage (API, 3, "i: Set tension in interior equations only.");
 	GMT_Usage (API, -2, "Note: Without a directive we set tension for both to same value.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W[<logfile>]");
