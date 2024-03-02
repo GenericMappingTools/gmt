@@ -446,6 +446,9 @@ GMT_LOCAL int gmtgdalread_populate_metadata (struct GMT_CTRL *GMT, struct GMT_GD
 
 	Ctrl->RasterCount = raster_count = GDALGetRasterCount(hDataset);
 
+	if (raster_count == 0)
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "No layers found in this file. Likely data is stored in SUBDATASETS\n.Must provide the SUBDATASET name.\n");
+
 	/* ------------------------------------------------------------------------- */
 	/* Get some metadata for each band. */
 	/* ------------------------------------------------------------------------- */
