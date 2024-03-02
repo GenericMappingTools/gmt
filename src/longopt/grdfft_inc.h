@@ -26,9 +26,9 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
 	{ 0, 'A', "azimuth|azim",      "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'C', "zcontinue|upward",  "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "upward",             "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'D', "differentiate|dfdz", "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'E', "power_spectrum",
+	{ 0, 'E', "radial_power|power_spectrum",
 	          "r,x,y",             "radial,x,y",
 	          "w,n",               "wavelength,normalize",
 		  GMT_TP_STANDARD },
