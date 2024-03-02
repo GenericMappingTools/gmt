@@ -32,7 +32,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "g,l,p,s",           "global,local,piecewise,smooth",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'T', "variable|var_tension", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "vartension|var_tension", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'Z', "scale",             "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
