@@ -37,9 +37,9 @@ gmt $m $l2s --approx_fit=largest:10+cumulative+file:/some/file >> $b
 gmt $m $l2s --approx_fit=ratio:6+incremental >> $b
 gmt $m $l2s --approximate=variance:0.5+no_surface >> $b
 gmt $m $l2s --metadata+cpt:mycpt --ncdata+cmap:mycpt >> $b
-gmt $m $l2s --header+dname:baddata+invalid:-999+offset:5 >> $b
+gmt $m $l2s --metadata+dname:baddata+invalid:-999+offset:5 >> $b
 gmt $m $l2s --metadata+remark:'silly comment'+scale:2+title:'Big News' >> $b
-gmt $m $l2s --header+varname:Dataset+xname:MrX+yname:MsY+zname:Zeebo >> $b
+gmt $m $l2s --metadata+varname:Dataset+xname:MrX+yname:MsY+zname:Zeebo >> $b
 gmt $m $l2s --misfit=/some/file+report:/report/file >> $b
 gmt $m $l2s --outgrid=/some/file.grd >> $b
 gmt $m $l2s --inc=4 --increment=2/3 --spacing=1/2/3 >> $b
