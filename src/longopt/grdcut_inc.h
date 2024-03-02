@@ -29,7 +29,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 	          "t",                 "trailer",
 		  GMT_TP_STANDARD },
-	{ 0, 'E', "extract",
+	{ 0, 'E', "colslice|rowslice",
 	          "x,y",               "x,y",
 	          "",                  "",
 		  GMT_TP_STANDARD },
