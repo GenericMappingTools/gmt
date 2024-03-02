@@ -38,7 +38,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "",                  "",
 	          "b",                 "binary",
 		  GMT_TP_STANDARD },
-	{ 0, 'M', network",  "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'M', "network",  "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'N', "ids",               "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'Q', "voronoi",
 	          "n",                 "polygon",
