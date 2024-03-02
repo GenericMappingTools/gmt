@@ -26,7 +26,7 @@ gmt $m $l2s --outgrid=/other/file.grd=nf+offset:6+scale:1.5 >> $b
 gmt $m $l2s --increment=5+exact/10 --spacing=2 --inc=1/2+number >> $b
 gmt $m $l2s --tension=global --tension=local >> $b
 gmt $m $l2s --tension=piecewise --tension=smooth >> $b
-gmt $m $l2s --variable --var_tension >> $b
+gmt $m $l2s --vartension --var_tension >> $b
 gmt $m $l2s --scale >> $b
 
 diff $a $b --strip-trailing-cr > fail
