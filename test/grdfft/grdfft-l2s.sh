@@ -29,7 +29,7 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --azimuth=90 --azim=10 >> $b
-gmt $m $l2s --zcontinue=12 --upward=-8 >> $b
+gmt $m $l2s --upward=12 --upward=-8 >> $b
 gmt $m $l2s --differentiate=5 --dfdz >> $b
 gmt $m $l2s --power_spectrum=radial+normalize >> $b
 gmt $m $l2s --power_spectrum=x+wavelength:k --power_spectrum=y >> $b
