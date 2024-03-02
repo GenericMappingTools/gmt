@@ -34,10 +34,10 @@ gmt $m $l2s --outgrid=/some/file.grd=nf+divide:2+nan:-99 >> $b
 gmt $m $l2s --outgrid=/other/file.grd=nf+offset:6+scale:1.5 >> $b
 gmt $m $l2s --increment=5+exact/10 --spacing=2 --inc=1/2+number >> $b
 gmt $m $l2s --index=/my/index+binary >> $b
-gmt $m $l2s --linesegs --network >> $b
+gmt $m $l2s --network --network >> $b
 gmt $m $l2s --ids >> $b
 gmt $m $l2s --voronoi=polygon >> $b
-gmt $m $l2s --polysegs=10 --triangles+zvalues:a >> $b
+gmt $m $l2s --triangles=10 --triangles+zvalues:a >> $b
 gmt $m $l2s --edges >> $b
 gmt $m $l2s --xyz >> $b
 
