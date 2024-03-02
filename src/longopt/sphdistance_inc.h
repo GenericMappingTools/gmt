@@ -26,7 +26,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
 	{ 0, 'C', "save_mem|single_form", "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'D', "skipdup",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "duplicates|skipdup",   "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'E', "quantity",
 	          "d,n,z",             "distance,polygon,zvalue",
 	          "",                  "",
