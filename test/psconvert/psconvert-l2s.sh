@@ -46,15 +46,15 @@ gmt $m $l2s --resize+margins:1/2/3/4+size:m400+scale:10 >> $b
 gmt $m $l2s --listfile=/my/psfilelist --list_file=/your/psfilelist >> $b
 gmt $m $l2s --pslayer=bg:bg.ps --pslayer=background:bg.ps >> $b
 gmt $m $l2s --pslayer=fg:fg.ps --pslayer=foreground:fg.ps >> $b
-gmt $m $l2s --bb_style+fade:50+bg:green+fadecolor:blue >> $b
-gmt $m $l2s --bb_style+background:orange+pen:1p,red >> $b
+gmt $m $l2s --bgcolor+fade:50+bg:green+fadecolor:blue >> $b
+gmt $m $l2s --bgcolor+background:orange+pen:1p,red >> $b
 gmt $m $l2s --anti_aliasing=graphics:1 --anti_aliasing=geopdf:2 >> $b
 gmt $m $l2s --anti_aliasing=text:4 >> $b
 gmt $m $l2s --gs_command >> $b
 gmt $m $l2s --format=bmp --fmt=eps+mono --format=pageszeps+quality:75 >> $b
 gmt $m $l2s --format=pdf --format=multipdf --format=jpeg --format=png >> $b
 gmt $m $l2s --format=transpng --format=ppm --format=tiff+monochrome >> $b
-gmt $m $l2s --esri+altitude:G+nocrop+fade:0.5/0.8+gdal >> $b
+gmt $m $l2s --world_file+altitude:G+nocrop+fade:0.5/0.8+gdal >> $b
 gmt $m $l2s --world_file+no_crop+kml+lod:1/2+layer:Thick >> $b
 gmt $m $l2s --esri+folder:/dir+doc:MyDoc+url:http://worldly.com/x.html >> $b
 gmt $m $l2s --remove_infile --del_input_ps >> $b
