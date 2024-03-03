@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -112,9 +112,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [%s] [-C<cpt>] [-D<dx>/<dy>] [-G<fill>|+z] "
-		"[-I[<intens>]] %s [-N[c|r]] %s%s [-Q[<params>]] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
+		"[-I[<intens>]] %s [-N[c|r]] %s%s [-Q[%s[+z]] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] "
 		"[-Z<value>|<file>[+t|T]] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
+		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_BARG_PARAMS,
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT,
 		GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBARB_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'Q':	/* Set wind barb parameters */
-				n_errors += gmt_parse_barb (GMT, opt->arg, &Ctrl->Q.B);
+				n_errors += gmt_parse_barb (GMT, opt->arg, &Ctrl->Q.B, 1);
 				break;
 			case 'T':		/* Skip all input files */
 				Ctrl->T.active = true;
@@ -294,9 +294,9 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 	bool penset_OK = true, old_is_world;
 	bool get_rgb, clip_set = false, fill_active;
 	bool default_outline, outline_active;
-	unsigned int k, j, geometry, pos2x, pos2y, set_type;
+	unsigned int k, j, geometry, pos2y, set_type;
 	unsigned int n_cols_start = 3, justify;
-	unsigned int ex1, ex2, ex3, n_needed, read_mode;
+	unsigned int ex1, ex2, n_needed, read_mode;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;
@@ -331,7 +331,7 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 
@@ -363,12 +363,11 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 	/* Extra columns 1, 2, and 3 */
 	ex1 = (get_rgb) ? 4 : 3;
 	ex2 = (get_rgb) ? 5 : 4;
-	ex3 = (get_rgb) ? 6 : 5;
 	if (!GMT->common.J.zactive) {			/* PSBARB */
-		ex1--; ex2--; ex3--; n_cols_start--;
+		ex1--; ex2--; n_cols_start--;
 		for (j = 0; j < S.n_nondim; j++) S.nondim_col[j]--;
 	}
-	pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
+	// pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 	n_needed = n_cols_start + S.n_required;
 

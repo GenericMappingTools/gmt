@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 1999-2023 by T. Henstock
+ *    Copyright (c) 1999-2024 by T. Henstock
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /* pssegyzz program to plot segy files in 3d in postscript with variable trace spacing option
@@ -246,11 +246,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->M.value);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->M.value);
 				break;
 			case 'N':	/* trace norm. */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);

@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*][**+c**][**+f**\ *file*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]] ]
+[ |-F|\ [**R**\|\ **c**\|\ **g**\|\ **h**\|\ **r**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -121,23 +121,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]]
-    Force output CPT to written with r/g/b codes, gray-scale values
-    or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
-    codes (**h**), or c/m/y/k codes (**c**), or #rrggbb hex codes (**x**).
-    Optionally or alternatively,
-    append **+c** to write discrete palettes in categorical format.
-    If *label* is appended then we create labels for each category to be used
-    when the CPT is plotted. The *label* may be a comma-separated list of
-    category names (you can skip a category by not giving a name), or give
-    *start*\ [-], where we automatically build monotonically increasing labels
-    from *start* (a single letter or an integer). Append - to build ranges
-    *start*-*start+1* instead.  **Note**: If **+cM** is given and the number
-    of categories is 12, then we automatically create a list of month names.
-    Likewise, if **+cD** is given and the number of categories is 7 then we
-    make a list of weekday names.  The format of these labels will depend on the
-    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
-    :term:`TIME_WEEK_START` settings.
+.. include:: explain_cpt_output.rst_
 
 .. _-G:
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 261
+#define GMT_N_API_ENUMS 263
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -68,6 +68,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_CONTAINER_ONLY", 1},
 	{"GMT_CPT_COLORLIST", 32},
 	{"GMT_CPT_EXTEND_BNF", 2},
+	{"GMT_CPT_GRAY_SET", 64},
 	{"GMT_CPT_HARD_HINGE", 4},
 	{"GMT_CPT_HINGED", 4},
 	{"GMT_CPT_NO_BNF", 1},
@@ -95,6 +96,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_FILE_LOCAL", 0},
 	{"GMT_FILE_REMOTE", 1},
 	{"GMT_FLOAT", 8},
+	{"GMT_GRAY", 32},
 	{"GMT_GRID_COMMAND_LEN320", 320},
 	{"GMT_GRID_DEFAULT_REG", 1024},
 	{"GMT_GRID_HEADER_SIZE", 892},

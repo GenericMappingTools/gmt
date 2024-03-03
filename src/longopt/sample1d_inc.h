@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,30 +25,22 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'A', "",
-	          "",                  "",
-	          "",                  "",
+	{ 0, 'A', "resample",
+	          "f,p,m,r,R",         "keeporig,pmfollow,mpfollow,equidistant,exactfit",
+	          "d,l",               "delete,rhumb",
 		  GMT_TP_STANDARD },
-	{ 0, 'E', "",
-	          "",                  "",
-	          "",                  "",
+	GMT_C_CPT_KW,
+	{ 0, 'E', "keeptext",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "interptype|interp",
+	          "a,c,e,l,n,s",       "akima,cubic,step,linear,none,smooth",
+	          "d",                 "derivative",
 		  GMT_TP_STANDARD },
-	{ 0, 'F', "",
+	{ 0, 'N', "time_column|time_col|timecol", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "inc|range",
 	          "",                  "",
-	          "",                  "",
+	          "a,i,n,u",           "paste,inverse,numcoords,unique",
 		  GMT_TP_STANDARD },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
+	{ 0, 'W', "weights",           "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !SAMPLE1D_INC_H */

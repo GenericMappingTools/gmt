@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -44,15 +44,15 @@ void gmt_barb_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned 
 	 * 1	= Accepts +z (not mathangle)
 	 */
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, 1, "\n-%c<params>", option);
+	GMT_Usage (API, 1, "\n-%c%s[+z]", option, GMT_BARG_PARAMS);
 	GMT_Usage (API, -2, "%s Append length of wind barbs, with optional modifiers:", string);
-	GMT_Usage (API, 3, "+a<angle> to set angle of wind barb [120]");
-	GMT_Usage (API, 3, "+g<fill> to set fill or use - to turn off fill [default fill].");
-	GMT_Usage (API, 3, "+j<just> to justify wind barb at (b)eginning [default], (e)nd, or (c)enter.");
-	GMT_Usage (API, 3, "+p[-][<pen>] to set pen attributes, prepend - to turn off outlines [default pen and outline].");
-	GMT_Usage (API, 3, "+s[scale] to set the wind speed which corresponds to a long wind barb [default 5]");
-	GMT_Usage (API, 3, "+w[width] to set the width of wind barbs");
-	if (mode & 1) GMT_Usage (API, 3, "+z if (u,v) wind components are given instead of (azimuth,speed) on input.");
+	GMT_Usage (API, 3, "+a Append angle of wind barb [120]");
+	GMT_Usage (API, 3, "+g Set fill or use - to turn off fill [default fill].");
+	GMT_Usage (API, 3, "+j Append b|c|e to justify wind barb at (b)eginning [default], (e)nd, or (c)enter.");
+	GMT_Usage (API, 3, "+p Set pen attributes, or prepend - to turn off outlines [default pen and outline].");
+	GMT_Usage (API, 3, "+s Set the wind speed scale which corresponds to a long wind barb [default 5]");
+	GMT_Usage (API, 3, "+w Set the width of wind barbs");
+	if (mode & 1) GMT_Usage (API, 3, "+z Wind components (u,v) are given instead of (azimuth,speed) on input.");
 }
 
 int gmt_draw_barb (struct GMT_CTRL *GMT, double x0, double y0, double lat, double theta, double spd, struct GMT_BARB_ATTR B, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
@@ -169,7 +169,7 @@ int gmt_init_barb_param (struct GMT_CTRL *GMT, struct GMT_BARB_ATTR *B, bool set
 }
 
 /*! Parser for -Q */
-GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B) {
+GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B, unsigned int mode) {
 
 	unsigned int pos = 0, k, error = 0;
 	bool p_opt = false, g_opt = false;
@@ -191,7 +191,7 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 				B->status |= PSL_VEC_FILL;
 				if (p[1]) {
 					if (gmt_getfill (GMT, &p[1], &B->fill)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad +g-|<fill> modifier %c\n", &p[1]);
 						error++;
 					}
 					B->status |= PSL_VEC_FILL2;
@@ -203,7 +203,7 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 					case 'c': B->status |= PSL_VEC_JUST_C;	break;	/* Input (x,y) refers to center point */
 					case 'e': B->status |= PSL_VEC_JUST_E;	break;	/* Input (x,y) refers to end point */
 					default:  /* Bad justifier code */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +j<just> modifier %c\n", p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad +j<just> modifier %c\n", p[1]);
 						error++;
 						break;
 				}
@@ -218,7 +218,7 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 				}
 				if (p[j]) {	/* Change default pen */
 					if (gmt_getpen (GMT, &p[j], &B->pen)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad +p-|<pen> modifier %c\n", &p[1]);
 						error++;
 					}
 					B->status |= PSL_VEC_OUTLINE2;	/* Flag that a pen specification was given */
@@ -231,10 +231,15 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 				B->width = (float)gmt_M_to_inch (GMT, &p[1]);
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
-				B->status |= PSL_VEC_COMPONENTS;
+				if (mode == 1)	/* Only psbarb can take +z */
+					B->status |= PSL_VEC_COMPONENTS;
+				else {	/* grdbarb does not take -Q+z */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad modifier +z\n");
+					error++;
+				}
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad modifier +%c\n", p[0]);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Q: Bad modifier +%c\n", p[0]);
 				error++;
 				break;
 		}
@@ -252,7 +257,7 @@ GMT_LOCAL int gmt_parse_barb_v5 (struct GMT_CTRL *GMT, char *text, struct GMT_BA
 }
 
 /*! Parser for -Q */
-int gmt_parse_barb (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B) {
+int gmt_parse_barb (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B, unsigned int mode) {
 
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	unsigned int error = 0;
@@ -276,13 +281,13 @@ int gmt_parse_barb (struct GMT_CTRL *GMT, char *text, struct GMT_BARB_ATTR *B) {
 	}
 	else {
 		if (text[0] == '+') {	/* No size (use default), just attributes */
-			error += gmt_parse_barb_v5 (GMT, text, B);
+			error += gmt_parse_barb_v5 (GMT, text, B, mode);
 		}
 		else {	/* Size, plus possible attributes */
 			j = sscanf (text, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 			if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 			if (j >= 1) B->length = gmt_M_to_inch (GMT, txt_a);	/* Length of barb */
-			error += gmt_parse_barb_v5 (GMT, txt_b, B);
+			error += gmt_parse_barb_v5 (GMT, txt_b, B, mode);
 		}
 	}
 

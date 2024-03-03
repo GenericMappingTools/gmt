@@ -108,10 +108,10 @@ Optional Arguments
     Clobber mode: Instead of blending, simply pick the value of one of
     the grids that covers a node. Select from the following directives:
 
-    - **f**: Select the first grid to visit a node.
-    - **l**: Select the grid with the lowest value.
-    - **o**: Select the last grid to visit a node.
-    - **u**: Select the grid with the uppermost value.
+    - **f** - Select the first grid to visit a node.
+    - **l** - Select the grid with the lowest value.
+    - **o** - Select the last grid to visit a node.
+    - **u** - Select the grid with the uppermost value.
 
     For directives **f** and **o** the ordering of grids in the *blendfile*
     will dictate which grid contributes to the final result. Weights and
@@ -120,8 +120,8 @@ Optional Arguments
     to equal the first grid but then for subsequent grids we only consider them
     per node accordingly:
 
-    - **+n**: Only consider a grid where the values are :math:`z \le 0` (i.e., negative).
-    - **+p**: Only consider a grid where the values are :math:`z \ge 0` (i.e., positive).
+    - **+n** - Only consider a grid where the values are :math:`z \le 0` (i.e., negative).
+    - **+p** - Only consider a grid where the values are :math:`z \ge 0` (i.e., positive).
 
 
 .. figure:: /_images/GMT_blendtype.*

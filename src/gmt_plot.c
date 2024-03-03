@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@
  *  gmt_map_title
  *  gmt_plane_perspective
  *  gmt_plot_geo_ellipse
- *  gmt_plot_image_graticules
+ *  gmt_plot_grid_graticules
  *  gmt_plot_line
  *  gmt_plot_timex_grid
  *  gmt_plotcanvas
@@ -6914,6 +6914,12 @@ void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	PSL_beginclipping (PSL, work_x, work_y, 5, rgb, flag);
 }
 
+void gmt_setrgb (struct GMT_CTRL *GMT, double *rgb) {
+	struct PSL_CTRL *PSL= GMT->PSL;
+	/* Fill with a color */
+	PSL_setrgb (PSL, rgb);
+}
+
 void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
 	struct PSL_CTRL *PSL= GMT->PSL;
 	if (!fill) /* NO fill pointer = no fill */
@@ -9251,14 +9257,20 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		if (strcmp (P->tag, "-")) {	/* Place the panel tag */
 			int form, refpoint, justify;
 
-			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." not supported in tags */
-				/* See branch latex-in-subplot-tags. We get gs error when I tried to implement the standard solution inside the PSL_completion function.
-				 * More work is needed to learn what goes wrong, probably by asking on the ghostscript help/support line. */
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Latex expressions are not (yet) supported as subplot panel tags - use text instead\n");
-				goto no_latex_tags;
-			}
 			refpoint = gmt_just_decode (GMT, P->refpoint, PSL_NO_DEF);	/* Convert XX refpoint code to PSL number */
 			gmtlib_refpoint_to_panel_xy (GMT, refpoint, P, &plot_x, &plot_y);	/* Convert just code to panel location */
+			if (gmt_text_is_latex (GMT, P->tag)) {	/* LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." not supported in tags */
+				FILE *fp = NULL;
+				if ((fp = fopen ("/tmp/Crummy_Latex_equation_tmp.txt", "a"))) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Unable to create temporary Latex file to bypass equations in panels\n");
+					/* See branch latex-in-subplot-tags. We get gs error when I tried to implement the standard solution inside the PSL_completion function.
+					 * More work is needed to learn what goes wrong, probably by asking on the ghostscript help/support line. */
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Latex expressions are not (yet) supported as subplot panel tags - use text instead after subplot end\n");
+					fprintf (fp, "%lg\t%lg\t%s\n", P->col * P->w - P->off[GMT_X], (P->nrows - P->row) * P->h - P->off[GMT_Y], P->tag);
+					fclose (fp);
+				}
+				goto no_latex_tags;
+			}
 			/* Undo any offsets above that was required to center the plot on the subplot panel */
 			plot_x -= (P->dx);
 			plot_y -= (P->dy);
@@ -9698,7 +9710,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	perim_n = gmtlib_lonpath (GMT, start_lon, pole_lat, yc, &x_perim, &y_perim);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Created path from %g/%g to %g/%g [%d points]\n", start_lon, pole_lat, start_lon, yc, perim_n);
 	/* 2. Allocate enough space for new polar cap polygon */
-	n_new = 2 * perim_n + n;
+	n_new = 2 * MAX (perim_n, 1) + n;
 	plon = gmt_M_memory (GMT, NULL, n_new, double);
 	plat = gmt_M_memory (GMT, NULL, n_new, double);
 	/* Start off with the path from the pole to the crossing */
@@ -10829,8 +10841,8 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	return (P);
 }
 
-void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
-	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
+void gmt_plot_grid_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity, bool grdview) {
+	/* Lay down an image from a grid using polygons of the graticules.  This is recoded from grdview
 	 * so it can also be used in grdimage.
 	 * G is the data grid
 	 * I is an optional intensity grid.  If NULL then either intensity points to a
@@ -11053,7 +11065,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					X[np].y0 = S0->data[col_y0][row];	/* Critical point's y0 coordinate */
 					X[np].s0_i0 = row;	/* Set S0 first index inside this section */
 					/* Must interpolate to get the corresponding value at x along S1 */
-					result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+					if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 					kk = 0;
 					while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first x point beyond the NaN gap */
 					X[np].s1_i0 = kk;	/* Set first S1 index inside this section */
@@ -11062,7 +11074,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					X[np].y1 = S0->data[col_y0][row];	/* Critical point's y1 coordinate */
 					X[np].s1_i0 = row;	/* Set S1 first index inside this section */
 					/* Must interpolate to get the corresponding value at x along S0 */
-					result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+					if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 					kk = 0;
 					while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond the NaN gap */
 					X[np].s0_i0 = kk;	/* Set first S0 index inside this section */
@@ -11080,7 +11092,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 						X[np].y0 = S0->data[col_y0][row];	/* Critical point's y0 coordinate */
 						X[np].s0_i0 = row;	/* Set S0 first index inside this section */
 						/* Must interpolate to get the corresponding value at x along S1 */
-						result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+						if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 						kk = 0;
 						while (S1->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
 						X[np].s1_i0 = kk;	/* Set S1 first index inside this section */
@@ -11088,7 +11100,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 					else {	/* Working on S1 */
 						X[np].y1 = S1->data[col_y1][row];	/* Critical point's y1 coordinate */
 						X[np].s1_i0 = row;	/* Set S1 first index inside this section */
-						result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+						if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 						kk = 0;
 						while (S0->data[GMT_X][kk] < X[np].x) kk++;	/* Wind to first point beyond gap */
 						X[np].s0_i0 = kk;	/* Set first S0 index inside this section */
@@ -11119,7 +11131,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		/* Must interpolate to get the corresponding value at x along S1 (y1) */
-		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	else if (S1->data[GMT_X][0] >= S0->data[GMT_X][0]) {	/* S0 has the minimum x */
@@ -11136,7 +11148,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at start of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
 		/* Must interpolate to get the corresponding value at x along S0 (y0) */
-		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	/* If S0 ends before S1 or the other way around we must get the y-value at the smallest end point */
@@ -11154,7 +11166,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].s1_i0 = stop[1];	/* S1 has been wound back to stop[1] */
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
-		result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S1->data[GMT_X], S1->data[col_y1], NULL, S1->n_rows, 1, &(X[np].x), &(X[np].y1), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		np++;
 	}
 	else if (S1->data[GMT_X][last[1]] <= S0->data[GMT_X][last[0]]) {
@@ -11170,7 +11182,7 @@ int gmt_two_curve_fill (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S0, struct
 		X[np].s0_i0 = stop[0];	/* S0 has been wound back to stop[0] */
 		X[np].s1_i0 = last[1];	/* Last S1 in overlap is its last point */
 		X[np].s0_i1 = X[np].s1_i1 = -1;	/* Not set yet */
-		result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA);
+		if ((result = gmt_intpol (GMT, S0->data[GMT_X], S0->data[col_y0], NULL, S0->n_rows, 1, &(X[np].x), &(X[np].y0), 0.0, GMT_SPLINE_AKIMA))) return (result);
 		X[np].type = GMT_CURVE_CUT;	/* CUT type at end of common x-domain */
 		np++;
 	}

@@ -91,6 +91,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SHAKE_CTRL *C) {	/* Dealloca
 	gmt_M_free(GMT, C);
 }
 
+#if 0
 static char set_unit_and_mode (char *arg, unsigned int *mode) {
 	unsigned int k = 0;
 	*mode = GMT_GREATCIRCLE;	/* Default is great circle distances */
@@ -100,6 +101,7 @@ static char set_unit_and_mode (char *arg, unsigned int *mode) {
 	}
 	return (arg[k]);
 }
+#endif
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
@@ -150,7 +152,7 @@ static int parse (struct GMT_CTRL *GMT, struct SHAKE_CTRL *Ctrl, struct GMT_Z_IO
 	 */
 
 	unsigned int n_errors = 0, n_files = 0, pos = 0;
-	char txt_a[GMT_LEN256] = {""}, p[GMT_LEN16] = {""};
+	char p[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -266,9 +268,7 @@ EXTERN_MSC int GMT_grdshake (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *Lin = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_GRID *Grid[3] = {NULL, NULL, NULL};
-	struct GMT_RECORD *Out = NULL;
 	struct GMT_Z_IO io;
-	struct GMT_OPTION *opt = NULL;
 	struct SHAKE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ [*max\_intens*\|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
-[ |-L|\ [**i**][*gap*] ]
+[ |-L|\ [**i**\|\ **I**][*gap*] ]
 [ |-M| ]
 [ |-N|\ [**p**\|\ *dpi* ]]
 [ |-Q| ]
@@ -123,7 +123,9 @@ Optional Arguments
     those percentages are used instead to set the dimensions, where *width* is defined as a
     percentage of the bar *length*.
   - **+e** adds sidebar triangles for back- and/or foreground colors. Append **f** (foreground) or **b** 
-    background) for only one sidebar triangle [Default gives both]. Optionally, append triangle height [Default is half the barwidth].
+    (background) for only one sidebar triangle [Default gives both]. Optionally, append triangle height [Default is half the barwidth].
+    The back and/or foreground colors are taken from your **B** and **F** colors in your CPT.  If none then the system default
+    colors for **B** and **F** are used instead (:term:`COLOR_BACKGROUND` and :term:`COLOR_FOREGROUND`).
   - **+h** selects a horizontal scale [Default is vertical (**+v**)].
   - **+j** sets the anchor point. By default, the anchor point on the scale is assumed to be the bottom left corner (BL),
     but this can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
@@ -136,7 +138,8 @@ Optional Arguments
     the unit remains below. Append one or more of **a**, **l** or **u** to control which of the annotations, label, and
     unit that will be moved to the opposite side. Append **c** if you want to print a
     vertical label as a column of characters (does not work with special characters).
-  - **+n** plots a rectangle with the NaN color at the start of the bar, append *text* to change label from NaN.
+  - **+n** plots a rectangle with the NaN color (via the **N** entry in your cpt (or :term:`COLOR_NAN` if no such entry)
+    at the start of the bar, append *text* to change label from NaN. To place it at the end of the bar, use **+N** instead.
   - **+r** will reverse the positive direction of the bar.
 
 .. _-F:
@@ -171,18 +174,20 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**i**][*gap*]
+**-L**\ [**i**\|\ **I**][*gap*]
 
     Gives equal-sized color rectangles. Default scales rectangles
     according to the z-range in the CPT (Also see |-Z|). If
     *gap* is appended and the CPT is discrete we will center each
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
-    instead. If |-I| is used then each rectangle will have its
-    constant color modified by the specified intensity.  **Note**: For
-    categorical CPTs we default to activating |-L| with a *gap* such
-    that the sum of all the gaps equal 15% of the bar width.  You may
-    chose no gaps by giving |-L| only or explicitly set *gap = 0*.
+    instead, and if **I** is used instead then we include the background
+    and foreground values in the label (e.g, "< 12"). If |-I| is used
+    then each rectangle will have its constant color modified by the
+    specified intensity.  **Note**: For categorical CPTs we default to
+    activating |-L| with a *gap* such that the sum of all the gaps equal
+    15% of the bar width.  You may chose no gaps by giving |-L| only or
+    explicitly set *gap = 0*.
 
 .. _-M:
 
@@ -313,7 +318,7 @@ Notes
    Use another PDF viewer if this bothers you.
 #. For cyclic (wrapping) color tables the cyclic symbol is plotted to the right
    of the color bar.  If annotations are specified there then we place the cyclic
-   symbol at the left, unless **+n** was used in which case we center of the color bar instead.
+   symbol at the left, unless **+n** or **+N** were used in which case we center of the color bar instead.
 #. Discrete CPTs may have transparency applied to all or some individual slices.
    Continuous CPTs may have transparency applied to all slices, but not just some.
 

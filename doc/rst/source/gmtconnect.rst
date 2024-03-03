@@ -1,9 +1,9 @@
 .. index:: ! gmtconnect
 .. include:: module_core_purpose.rst_
 
-**********
-gmtconnect
-**********
+*******
+connect
+*******
 
 |gmtconnect_purpose|
 

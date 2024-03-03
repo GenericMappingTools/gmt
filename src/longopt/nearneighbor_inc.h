@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,30 +25,15 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'E', "",
-	          "",                  "",
-	          "",                  "",
+	{ 0, 'E', "empty",             "", "", "", "", GMT_TP_STANDARD },
+	GMT_G_OUTGRID_KW,
+	GMT_I_INCREMENT_KW,
+	{ 0, 'N', "sectors|nearest",
+	          "n",                 "gdal",
+	          "m",                 "min|min_sectors",
 		  GMT_TP_STANDARD },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
+	{ 0, 'S', "search_radius",     "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "weights",           "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !NEARNEIGHBOR_INC_H */

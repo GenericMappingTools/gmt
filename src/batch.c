@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -653,7 +653,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S[BATCH_PREFLIGHT].active) {	/* Create the preflight script from the user's -Sf script */
 		/* The preflight script must be modern mode */
-		unsigned int rec = 0;
 		sprintf (pre_file, "batch_preflight.%s", extension[Ctrl->In.mode]);
 		is_classic = gmt_script_is_classic (GMT, Ctrl->S[BATCH_PREFLIGHT].fp);
 		if (is_classic) {
@@ -685,7 +684,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
-			rec++;
 		}
 		fclose (Ctrl->S[BATCH_PREFLIGHT].fp);	/* Done reading the preflight script */
 		fclose (fp);	/* Done writing the temporary preflight script */

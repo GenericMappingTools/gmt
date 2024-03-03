@@ -44,8 +44,7 @@ gmt begin gspline_7 ps
 	LEGS=-l"Solution-Slopes"
 	# Loop over gradients and place grid and labels
 	while read X S X2 Sout; do
-		pattern="^${X}\t"	# Search pattern for finding y-value at gradient
-		Y=$(grep ${pattern} oneD_out.txt | awk '{print $2}')
+		Y=$(awk -v X=$X '$1==X {print $2}' oneD_out.txt) # finding y-value at gradient
 		# Lay down grid/labels after shifting origin to tangent point
 		gmt plot -W0.25p,blue -X${X}i -Y${Y}i lines.txt
 		the_Sout=$(gmt math -Q ${Sout} NEG =)

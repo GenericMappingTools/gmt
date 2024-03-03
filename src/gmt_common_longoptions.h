@@ -33,7 +33,7 @@
      * long_modifiers:   Comma-separated list of the corresponding modifier words
      * transproc_mask:   Indicates via bitwise-OR of various GMT_TP_???? bitflags any unusual
      *                   translation processing used by the particular GMT_KEYWORD_DICTIONARY
-     *                   entry, e.g., GMT_TP_MULTDIR indicates multi-directive support. Specify
+     *                   entry, e.g., GMT_TP_MULTIDIR indicates multi-directive support. Specify
      *                   GMT_TP_STANDARD to indicate standard translation processing with
      *                   no unusual attributes.
      *

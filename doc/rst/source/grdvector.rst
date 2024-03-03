@@ -15,7 +15,7 @@ Synopsis
 **gmt grdvector** *grid1* *grid2* |-J|\ *parameters*
 [ |-A| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cpt* ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-N| ] [ |-Q|\ *parameters* ]

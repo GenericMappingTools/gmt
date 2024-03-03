@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'D', "meta",
+	{ 0, 'D', "netcdf|netCDF|ncheader",
 	          "",                      "",
-	          "x,y,z,c,d,s,o,n,t,r,v", "xname,yname,zname,cpt,dname,scale,offset,invalid,title,remark,varname",
+	          "x,y,z,c,d,s,o,n,t,r,v", "xname,yname,zname,cpt|cmap,dname,scale,offset,invalid,title,remark,varname",
 		  GMT_TP_STANDARD },
 	{ 0, 'E', "profile|crosssection",
 	          "",                      "",

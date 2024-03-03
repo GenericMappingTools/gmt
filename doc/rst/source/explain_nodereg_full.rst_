@@ -4,7 +4,7 @@ The **-r** option (grid registration)
 **Syntax**
 
 **-r**\ [**g**\|\ **p**]
-    Select gridline or pixel node registration.
+    Select **g**\ ridline or **p**\ ixel node registration.
 
 **Description**
 

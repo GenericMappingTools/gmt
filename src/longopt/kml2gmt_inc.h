@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,18 +25,12 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'E', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'F', "",
-	          "",                  "",
+	{ 0, 'E', "z_ignore|extend_data", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "feature|feature_type",
+	          "s,l,p",             "point,line,polygon",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'Z', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
+	{ 0, 'Z', "altitudes",         "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !KML2GMT_INC_H */

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,7 @@
 
 #define GMT_CONV15_LIMIT 1.0e-15	/* Very tight convergence limit or "close to zero" limit */
 #define GMT_CONV12_LIMIT 1.0e-12	/* Tight limit for gaps/overlaps in CPT z-values */
+#define GMT_CONV9_LIMIT	 1.0e-9		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_CONV8_LIMIT	 1.0e-8		/* Fairly tight convergence limit or "close to zero" limit */
 #define GMT_CONV6_LIMIT	 1.0e-6		/* 1 ppm */
 #define GMT_CONV5_LIMIT	 1.0e-5		/* 10 ppm */
@@ -244,8 +245,8 @@ enum GMT_time_period {
  * supported module documentation (e.g., manual pages) rather than these
  * non-user-facing translation entries.
  */
-#define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc", "", "", "e,n", "exact,number", GMT_TP_STANDARD }
-#define GMT_C_CPT_KW	{ 0, 'C', "cpt|cmap", "", "", "h,i,u,U", "hinge,zinc,fromunit,tounit", GMT_TP_STANDARD }
+#define GMT_I_INCREMENT_KW { '/', 'I', "increment|inc|spacing", "", "", "e,n", "exact,number", GMT_TP_STANDARD }
+#define GMT_C_CPT_KW	{ 0, 'C', "cpt|cmap", "", "", "h,i,s,u,U", "hinge,zinc,file,fromunit,tounit", GMT_TP_STANDARD }
 #define GMT_G_OUTGRID_KW { 0, 'G', "outgrid", "", "", "d,n,o,s,c,l", "divide,nan,offset,scale,gdal,list", GMT_TP_STANDARD }
 #define GMT_W_PEN_KW	{ 0, 'W', "pen", "", "", "c", "color", GMT_TP_STANDARD }
 
@@ -347,6 +348,9 @@ enum GMT_time_period {
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U
 
+/* -C (cpt) args for grd*.c plotters: */
+#define CPT_OPT_ARGS "[<section>/]<master>|<cpt>|<*color1,color2[,color3,...][+h[<hinge>]][+i<dz>][+u|U<unit>][+s<fname>]"
+
 #define GMT_IS_ROMAN_LCASE	1	/* For converting Arabic numerals to Roman */
 #define GMT_IS_ROMAN_UCASE	2
 
@@ -369,6 +373,9 @@ enum GMT_time_period {
 
 /* Directives and modifiers for -F interpolant option */
 #define GMT_INTERPOLANT_OPT "a|c|e|l|n|s<p>[+d1|2]"
+
+/* Directives and modifiers for -F cpt output option in makecpt/gdr2cpt */
+#define GMT_COLORMODES_OPT "[R|c|g|h|r|x]][+c[<label>]][+k<keys>]"
 
 /* Valid modifiers for various input files */
 

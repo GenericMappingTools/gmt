@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,30 +25,21 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'C', "",
+	{ 0, 'C', "clearance",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "position",
+	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
+	          "w,j,l,o",           "width,janchor,spacing,anchoroffset",
+		  GMT_TP_STANDARD },
+	{ 0, 'F', "box",
 	          "",                  "",
+	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade",
+		  GMT_TP_STANDARD },
+	{ 0, 'M', "source",
+	          "h,e",               "hidden,explicit",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'D', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'M', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "",
-		  GMT_TP_STANDARD },
+	{ 0, 'S', "scale",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "hidden_file|leg_file", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !PSLEGEND_INC_H */

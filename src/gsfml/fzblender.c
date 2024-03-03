@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023 by P. Wessel
+ * Copyright (c) 2015-2024 by P. Wessel
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -181,7 +181,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "b: Selects the optional trough/edge blend minimum.");
 	GMT_Usage (API, 3, "d: Selects the empirical data minimum.");
 	GMT_Usage (API, 3, "e: Selects the maximum slope blend model location.");
-	GMT_Usage (API, 3, "t: Selects the optional trough model mimimum.");
+	GMT_Usage (API, 3, "t: Selects the optional trough model minimum.");
 	GMT_Usage (API, 3, "u: Selects the user's digitized original locations.");
 	GMT_Usage (API, 1, "\n--T<prefix>");
 	GMT_Usage (API, -2, "Set file prefix for all input/output files [fztrack]. "
@@ -361,8 +361,8 @@ struct TREND {	/* Holds slope and intercept for each segment column we need to d
 
 EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 	unsigned int fz, row;
-	int error = 0, n_d, n_g, k, n, item, status, ndig;
-	int col[N_BLEND_COLS][N_BLENDS] =	/* Columns in the analyzis file for b,d,e,t,u trace parameters */
+	int error = 0, n_d, n_g, k, n, item, status;
+	int col[N_BLEND_COLS][N_BLENDS] =	/* Columns in the analysis file for b,d,e,t,u trace parameters */
 	{
 		{POS_XB0, POS_XD0, POS_XE0, POS_XT0, POS_XR},	/* FZ longitudes */
 		{POS_YB0, POS_YD0, POS_YE0, POS_YT0, POS_YR},	/* FZ latitudes */
@@ -463,7 +463,6 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->E.active) {	/* Now apply the secondary filter */
 			struct GMT_DATASET *D = NULL;
-			char s_in_string[GMT_LEN256], s_out_string[GMT_LEN256];
 			/* Retrieve the primary filtering results */
 			if ((D = GMT_Read_VirtualFile (API, destination)) == NULL) {
 				Return (API->error);
@@ -485,7 +484,6 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			//sprintf (buffer, "-F%s -E -N%d %s ->%s", Ctrl->E.args, POS_DR, s_in_string, s_out_string);
 			sprintf (buffer, "-F%s -N%d %s ->%s", Ctrl->E.args, POS_DR, source, destination);
 			GMT_Report (API, GMT_MSG_DEBUG, "Args to secondary filter1d: %s\n", buffer);
 			if ((status = GMT_Call_Module (API, "filter1d", GMT_MODULE_CMD, buffer))) {
@@ -574,7 +572,7 @@ EXTERN_MSC int GMT_fzblender (void *V_API, int mode, void *args) {
 			continue;
 		}
 	
-		ndig = irint (floor (log10 ((double)Tin->segment[fz]->n_rows))) + 1;	/* Determine how many decimals are needed for largest FZ id */
+		//ndig = irint (floor (log10 ((double)Tin->segment[fz]->n_rows))) + 1;	/* Determine how many decimals are needed for largest FZ id */
 		
 		for (row = 0; row < Tin->segment[fz]->n_rows; row++) {	/* Process each point along digitized FZ trace */
 			

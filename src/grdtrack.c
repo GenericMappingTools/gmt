@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -705,7 +705,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdtrack task */
 
 	int status, error, ks;
-	uint64_t n_points = 0, n_read = 0;
+	uint64_t n_points = 0;
 	unsigned int g, k, xy_mode, dtype, pad_mode = 0;
 	bool img_conv_needed = false, some_outside = false;
 
@@ -1278,8 +1278,6 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Out = gmt_new_record (GMT, out, NULL);
 				Out->text = (GMT->current.io.trailing_text[GMT_OUT]) ? In->text : NULL;
 			}
-
-			n_read++;
 
 			status = grdtrack_sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, in[GMT_X], in[GMT_Y], value);
 			if (status == -1) {	/* Point is outside the region of all grids */

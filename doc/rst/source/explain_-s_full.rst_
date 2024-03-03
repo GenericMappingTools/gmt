@@ -13,6 +13,6 @@ Optionally, supply a comma-separated list of all *output* columns or column rang
 considers the third output data column (i.e., *cols = 2*)]. Column ranges must be given in the format
 *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified. The following modifiers are supported:
 
-- **+r** to reverse the suppression, i.e., only output the records whose *z*-value equals NaN.
-- **+a** to suppress the output of the record if just one or more of the columns equal NaN [default skips record only
+- **+r** - Reverse the suppression, i.e., only output the records whose *z*-value equals NaN.
+- **+a** - Suppress the output of the record if just one or more of the columns equal NaN [default skips record only
   if values in all specified *cols* equal NaN]

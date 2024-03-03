@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1728,7 +1728,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);	/* Default convergence criteria */
+	ppm = urint (SURFACE_CONV_LIMIT / GMT_CONV6_LIMIT);	/* Default convergence criteria */
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
@@ -1781,7 +1781,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Typically, 0.25 or more is good for potential field (smooth) data; "
 		"0.5-0.75 or so for topography.  We encourage you to experiment. Optional directives:");
 	GMT_Usage (API, 3, "b: Set tension in boundary conditions only.");
-	GMT_Usage (API, 3, "i: Set tension in interior equations only.n");
+	GMT_Usage (API, 3, "i: Set tension in interior equations only.");
 	GMT_Usage (API, -2, "Note: Without a directive we set tension for both to same value.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W[<logfile>]");

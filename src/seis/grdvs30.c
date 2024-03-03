@@ -159,8 +159,8 @@ static int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, pos = 0;
-	char txt_a[GMT_LEN256] = {""}, p[GMT_LEN16] = {""}, *pch;
+	unsigned int n_errors = 0, n_files = 0;
+	char p[GMT_LEN16] = {""}, *pch;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -223,6 +223,7 @@ static int check_grid_compat (struct GMTAPI_CTRL *API, struct GMT_GRID *A, struc
 	   return 1		if any of the corners differ more than 1/5 of the grid spacing
 	   return 3		if registrations are not equal
 	*/
+	gmt_M_unused (API);
 	if (fabs((A->header->inc[GMT_X] - B->header->inc[GMT_X]) / A->header->inc[GMT_X]) > 0.002 ||
 		fabs((A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) / A->header->inc[GMT_Y]) > 0.002)
 		return 1;
@@ -258,14 +259,13 @@ EXTERN_MSC int GMT_grdvs30 (void *V_API, int mode, void *args) {
 	unsigned int row, col, j, nr, k;
 	uint64_t ij;
 	int error = 0;
-	char cmd[GMT_LEN256] = {""}, data_grd[GMT_LEN16] = {""};
+	char cmd[GMT_LEN256] = {""};
 	char crat_grd[GMT_LEN16] = {""}, mask_grd[GMT_LEN16] = {""}, grad_grd[GMT_LEN16] = {""};
 	float crat, lg;
 	double (*table)[4], tvs[2], vv, wesn[4];
 
 	struct GMT_GRID *G = NULL, *Ggrad = NULL, *Gcrat = NULL, *Gland = NULL, *Gout = NULL;
 	struct GMT_Z_IO io;
-	struct GMT_OPTION *opt = NULL;
 	struct VS30_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

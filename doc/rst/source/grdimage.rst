@@ -16,14 +16,14 @@ Synopsis
 |-J|\ *parameters*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cpt* ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-D|\ [**r**] ]
 [ |-E|\ [**i**\|\ *dpi*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
-[ |-I|\ [*ifile*\|\ *intens*\|\ **+a**\ *azimuth**][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [*color*][**+z**\ *value*] ]
+[ |-Q|\ [*color*][**+i**][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
@@ -97,7 +97,7 @@ Optional Arguments
     documentation for available drivers. Append a **+c**\ *options* string where *options* is a list of
     one or more concatenated number of GDAL **-co** options. For example, to write a GeoPDF with the
     TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
-    then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
+    then we will write a GeoTIFF image if the GMT projection syntax translates into a PROJ syntax,
     otherwise a plain tiff file is produced. (2) Any vector elements will be lost. **Note**: The **-B**
     option is not compatible with |-A| since no PostScript output is allowed.
 
@@ -113,7 +113,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [**r**]
-    GMT will automatically detect standard image files (Geotiff, TIFF,
+    GMT will automatically detect standard image files (GeoTIFF, TIFF,
     JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
     obscure image formats you may need to explicitly set |-D|, which
     specifies that the grid is in fact an image file to be read via
@@ -158,12 +158,27 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**+z**\ *value*][*color*]
-    Make grid nodes with NaN values transparent, using the color-masking
-    feature in PostScript Level 3 (the PS device must support PS Level 3).
-    If the input is a grid, use **+z** to select another grid value than NaN.
-    If input is instead an image, append an alternate color to select another
-    pixel value to be transparent [Default is black].
+**-Q**\ [*color*][**+i**][**+z**\ *value*]
+    Handle transparency or opacity for grids or images. There are four general schemes:
+
+    - Grid - Plain |-Q| will turn grid nodes with NaN values transparent in the image, using
+      the color-masking feature in PostScript Level 3 (the PS device must support PS Level 3).
+      Use modifier **+z**\ *value* to specify another grid value than NaN. Each pixel is now
+      either opaque color or fully transparent.
+    - RGB image - Append a *color* to identify pixels that should be turned transparent
+      [Default is white]. Each pixel is then either opaque or transparent in the output image.
+    - RGBA image with two *A* values (0, 255) - True transparent image requires an alpha
+      channel that is either 0 or 255. Default turns any pixel with alpha = 0 transparent.
+    - RGBA image with variable transparency - If we have an alpha channel with variable
+      transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator
+      cannot create true variable pixel transparency *t*. Instead, each *r*, *g*, and *b* pixel
+      values are converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the
+      transparent color at full transparency [Default is white]. If *color* is given
+      then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will
+      be approximated by *n_columns* times *n_rows* of tiny squares with variable color and
+      transparency.  If *A* reflects opacity instead of transparency then you can use modifier
+      **+i** to invert these numbers first. See `Limitations on transparency`_ for more discussion.
+      **Note**: The **+i** modifier is not available for grids.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -216,6 +231,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_distunits.rst_
+
 .. module_common_ends
 
 .. module_note_begins
@@ -254,11 +271,27 @@ interpret the byte values as categories and a categorical CPT is required via |-
 If no |-C| is given then we assume the image is a grayscale image with values in the
 0-255 range.
 
+Limitations on transparency
+---------------------------
+
+The PostScript imaging model does not support any form of transparency.  However, Adobe added
+`pdfMark <https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/index.html>`_
+which allows PostScript to specify transparency but only if activated when converting PostScript
+or EPS to PDF with Adobe Distiller or GhostScript. Each graphic (e.g., polygon, line, text, image)
+can have a specified transparency. Yet, for images this is very limited: We can choose a particular
+characteristic of the image to mean transparency, e.g, a specific *r*\ /*g*\ /*b* color or an
+*alpha* channel level (0-255). Thus, variable pixel-by-pixel transparency in a sophisticated RGBA
+image (color + transparency) cannot be see-through for more than a single color.  Our
+approximation for plotting transparent RGBA images is to simulate the transparency effect
+on the color, but the image remains opaque (optionally apart from a single color via |-Q|).
+Since polygons can have separate transparencies then we may simulate the image by squares symbols
+that can have individualized color *and* transparency via (up to) 255 values in the alpha channel.
+
 Image formats recognized
 ------------------------
 
 We automatically recognize image formats via their magic bytes.  For formats
-that could contain either an image or a data set (e.g., geotiff) we determine
+that could contain either an image or a data set (e.g., GeoTIFF) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.
 
