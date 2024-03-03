@@ -30,7 +30,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "b,c,n,p",           "both,current,none,previous",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'D', "netcdf|netCDF|ncheader",
+	{ 0, 'D', "header|metadata",
 	          "",                  "",
 	          "c,d,n,o,r,s,t,v,x,y,z",
 		                       "cpt,dname,invalid,offset,remark,scale,title,varname,xname,yname,zname",
