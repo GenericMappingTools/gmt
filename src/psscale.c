@@ -1513,7 +1513,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				gmt_map_text (GMT, xright + elength[XHI] + GMT->current.setting.map_annot_offset[GMT_SECONDARY], 0.5 * width, &GMT->current.setting.font_annot[GMT_SECONDARY], unit, 0.0, PSL_ML, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
-			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0 && (Ctrl->D.emode & PSSCALE_NAN_RT) == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
+			if ((flip & PSSCALE_FLIP_UNIT) || (unit[0] == 0 && (Ctrl->D.emode & PSSCALE_NAN_RT) == 0))	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
 			else if ((Ctrl->D.emode & PSSCALE_NAN_LB) == 0)	/* No nan so place on left */
 				x0 = xleft - 2 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
@@ -1925,7 +1925,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				gmt_map_text (GMT, xright + GMT->current.setting.map_annot_offset[GMT_SECONDARY] + elength[XHI], 0.5 * width, &GMT->current.setting.font_annot[GMT_SECONDARY], unit, -90.0, PSL_BC, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
-			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0 && (Ctrl->D.emode & PSSCALE_NAN_RT) == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
+			if ((flip & PSSCALE_FLIP_UNIT) || (unit[0] == 0 && (Ctrl->D.emode & PSSCALE_NAN_RT) == 0))	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
 			else if ((Ctrl->D.emode & PSSCALE_NAN_LB) == 0)	/* TNo nan so place on left */
 				x0 = xleft - 2 * GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;

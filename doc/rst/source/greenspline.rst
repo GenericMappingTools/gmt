@@ -14,7 +14,7 @@ Synopsis
 
 **gmt greenspline** [ *table* ]
 |-G|\ *grdfile*
-[ |-A|\ *gradfile*\ **+f**\|\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
+[ |-A|\ *gradfile*\ **+f**\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*][**+r**\ *reportfile*] ]
@@ -131,7 +131,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *gradfile*\ **+f**\|\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
+**-A**\ *gradfile*\ **+f**\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
     The solution will partly be constrained by surface gradients
     :math:`\mathbf{v} = v \hat{\mathbf{n}}`, where :math:`v` is the gradient
     magnitude and :math:`\hat{\mathbf{n}}` its unit vector direction.
