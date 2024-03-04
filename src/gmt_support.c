@@ -2646,11 +2646,10 @@ GMT_LOCAL uint64_t gmtsupport_trace_contour (struct GMT_CTRL *GMT, struct GMT_GR
 				n_nan++;
 				continue;
 			}
-
 			/* Skip if no zero-crossing on this edge */
 
 			if (z[this_side+1] * z[this_side] > 0.0f) continue;
-			if ((dz = z[this_side] - z[this_side+1]) == 0.0f) continue;
+			if (fabs((dz = z[this_side] - z[this_side+1])) < 1e-10) continue;
 
 			/* Save normalized distance along edge from corner this_side to crossing of edge this_side */
 
