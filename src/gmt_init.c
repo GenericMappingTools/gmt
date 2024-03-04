@@ -16479,9 +16479,12 @@ struct GMT_CTRL * gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_nam
 /*! . */
 void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	unsigned int i, V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
+	unsigned int func_level_bak = GMT->hidden.func_level;
 	bool pass_changes_back;
 	struct GMT_DEFAULTS saved_settings;
 	double spacing[2];
+	OGRCoordinateTransformationH hCT_fwd_bak;
+	OGRCoordinateTransformationH hCT_inv_bak;
 
 	GMT->parent->use_gridline_registration = false;	/* Reset API default setting on grid registration */
 	GMT->parent->use_gridline_registration_warn = false;	/* Reset API default setting on grid registration warning */
@@ -16489,11 +16492,13 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_memcpy (spacing, GMT->current.plot.gridline_spacing, 2U, double);	/* Remember these so they can survive the end of the module */
 
 	/* If that's the case, clean up any GDAL CT object */
-	if (GMT->current.gdal_read_in.hCT_fwd)
-		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
-	if (GMT->current.gdal_read_in.hCT_inv)
-		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
-	GMT->current.gdal_read_in.hCT_fwd = GMT->current.gdal_read_in.hCT_inv = NULL;
+	if (GMT->hidden.func_level == GMT_TOP_MODULE) {		/* Don't free these on nested calls because they may still be needed. */
+		if (GMT->current.gdal_read_in.hCT_fwd)
+			OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
+		if (GMT->current.gdal_read_in.hCT_inv)
+			OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
+		GMT->current.gdal_read_in.hCT_fwd = GMT->current.gdal_read_in.hCT_inv = NULL;
+	}
 
 	if (GMT->hidden.func_level == GMT_TOP_MODULE && GMT->current.ps.oneliner && GMT->current.ps.active) {
 		char *setting = getenv ("GMT_END_SHOW");
@@ -16673,7 +16678,19 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
 
 	/* Reset these GDAL in/out stuff */
+	/* So, here the story for the need of the following. pscoast when used with DCW and a PROJ4 string call psxy
+	   to do the line plot bau still needs to give hand to pscoast again to plot eventual grid lines. Se we can't
+	   destroy the proj functions until the func_level == 1
+	*/
+	if (func_level_bak > GMT_TOP_MODULE) {
+		hCT_fwd_bak = GMT->current.gdal_read_in.hCT_fwd;
+		hCT_inv_bak = GMT->current.gdal_read_in.hCT_inv;
+	}
 	gmt_M_memset (&GMT->current.gdal_read_in,  1, struct GMT_GDALREAD_IN_CTRL);
+	if (func_level_bak > GMT_TOP_MODULE && hCT_fwd_bak) {
+		GMT->current.gdal_read_in.hCT_fwd = hCT_fwd_bak;
+		GMT->current.gdal_read_in.hCT_inv = hCT_inv_bak;
+	}
 	gmt_M_memset (&GMT->current.gdal_read_out, 1, struct GMT_GDALREAD_OUT_CTRL);
 	gmt_M_memset (&GMT->current.gdal_write,    1, struct GMT_GDALWRITE_CTRL);
 
@@ -18512,6 +18529,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					if (GMT->current.proj.projection_GMT != GMT_LINEAR)
 						GMT->current.proj.proj4_is_cart[1] = true;
 				}
+				if (GMT->current.gdal_read_in.hCT_fwd) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
+				if (GMT->current.gdal_read_in.hCT_inv) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
 				GMT->current.proj.projection      = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
