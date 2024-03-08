@@ -197,6 +197,7 @@ struct MOVIE_CTRL {
 		unsigned int stride;
 		char *format[MOVIE_N_FORMATS];
 		char *options[MOVIE_N_FORMATS];
+		char *i_options[MOVIE_N_FORMATS];
 	} F;
 	struct MOVIE_G {	/* -G<canvasfill>[+p<pen>] */
 		bool active;
@@ -331,7 +332,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu>[+c|i] -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
-		"-A<audiofile>[+e]] [-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t][+v]] "
+		"-A<audiofile>[+e]] [-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+i<opts>][+o<opts>][+s<stride>][+t][+v]] "
 		"[-G[<fill>][+p<pen>]] [-H<scale>] [-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>][+v]] "
 		"[-P<progressinfo>] [-Q[s]] [-Sb<background>] [-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -401,6 +402,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s webm: Make and convert PNG frames into an WebM movie.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s png: Just make the PNG frames.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Note: gif|mp4|webm all imply png. Two modifiers are available for mp4 or webm:");
+	GMT_Usage (API, 3, "+i Prepend custom FFmpeg encoding options (in quotes) to be applyied only to input the file (e.g. -thread_queue_size) [none].");
 	GMT_Usage (API, 3, "+o Append custom FFmpeg encoding options (in quotes) [none].");
 	GMT_Usage (API, 3, "+t Build transparent images [opaque].");
 	GMT_Usage (API, 3, "+v Open the movie in the default viewer when completed.");
@@ -700,7 +702,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	int n;
 	bool do_view = false;
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, arg[GMT_LEN64] = {""}, p[GMT_LEN256] = {""};
-	char *c = NULL, *s = NULL, *o = NULL, string[GMT_LEN128] = {""};
+	char *c = NULL, *s = NULL, *o = NULL, *io = NULL, string[GMT_LEN128] = {""};
 	double width = 24.0, height16x9 = 13.5, height4x3 = 18.0, dpu = 160.0;	/* SI values for dimensions and dpu */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
@@ -893,18 +895,21 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'F':	/* Set movie format and optional FFmpeg options */
-				if ((c = gmt_first_modifier (GMT, opt->arg, "lostv"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "liostv"))) {	/* Process any modifiers */
 					do_view = false;
 					pos = 0;	/* Reset to start of new word */
 					o = NULL;
-					while (gmt_getmodopt (GMT, 'F', c, "lostv", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'F', c, "liostv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'l':	/* Specify loops for GIF */
 								Ctrl->F.loop = true;
 								Ctrl->F.loops = (p[1]) ? atoi (&p[1]) : 0;
 								break;
+							case 'i':	/* FFmpeg option for input to pass along */
+								io = strdup(&p[1]);	/* Retain start of encoding options for input for later */
+								break;
 							case 'o':	/* FFmpeg option to pass along */
-								o = strdup (&p[1]);	/* Retain start of encoding options for later */
+								o = strdup(&p[1]);		/* Retain start of encoding options for later */
 								break;
 							case 's':	/* Specify GIF stride, 2,5,10,20,50,100,200,500 etc. */
 								Ctrl->F.skip = true;
@@ -967,6 +972,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					if (o) {	/* Gave specific encoding options */
 						if (Ctrl->F.options[k]) gmt_M_str_free (Ctrl->F.options[k]);	/* Free old setting first */
 						Ctrl->F.options[k] = o;
+					}
+					if (io) {	/* Gave specific encoding options */
+						if (Ctrl->F.i_options[k]) gmt_M_str_free(Ctrl->F.i_options[k]);	/* Free old setting first */
+						Ctrl->F.i_options[k] = io;
 					}
 				}
 				if (c) c[0] = '+';	/* Now we can restore the optional text we chopped off */
@@ -2721,8 +2730,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\"%s -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
-			extra, Ctrl->D.framerate, tmpwpath, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, audio_option,
+		sprintf (cmd, "ffmpeg %s -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\"%s -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
+			(Ctrl->F.i_options[MOVIE_MP4]) ? Ctrl->F.i_options[MOVIE_MP4] : "", extra, Ctrl->D.framerate, tmpwpath, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, audio_option,
 			(Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
@@ -2754,8 +2763,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\"%s -vcodec %s %s -pix_fmt %s %s.webm",
-			extra, Ctrl->D.framerate, tmpwpath, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, audio_option, vpx[Ctrl->F.transparent],
+		sprintf (cmd, "ffmpeg %s -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\"%s -vcodec %s %s -pix_fmt %s %s.webm",
+			(Ctrl->F.i_options[MOVIE_MP4]) ? Ctrl->F.i_options[MOVIE_MP4] : "", extra, Ctrl->D.framerate, tmpwpath, dir_sep, Ctrl->N.prefix, png_file, MOVIE_RASTER_EXTENSION, audio_option, vpx[Ctrl->F.transparent],
 			(Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", pix_fmt[Ctrl->F.transparent], Ctrl->N.prefix);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
