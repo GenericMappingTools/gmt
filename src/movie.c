@@ -332,7 +332,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu>[+c|i] -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
-		"-A<audiofile>[+e]] [-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t][+v]] "
+		"-A<audiofile>[+e]] [-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+i<opts>][+o<opts>][+s<stride>][+t][+v]] "
 		"[-G[<fill>][+p<pen>]] [-H<scale>] [-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>][+v]] "
 		"[-P<progressinfo>] [-Q[s]] [-Sb<background>] [-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -402,6 +402,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s webm: Make and convert PNG frames into an WebM movie.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s png: Just make the PNG frames.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Note: gif|mp4|webm all imply png. Two modifiers are available for mp4 or webm:");
+	GMT_Usage (API, 3, "+i Prepend custom FFmpeg encoding options (in quotes) to be applyied only to input the file (e.g. -thread_queue_size) [none].");
 	GMT_Usage (API, 3, "+o Append custom FFmpeg encoding options (in quotes) [none].");
 	GMT_Usage (API, 3, "+t Build transparent images [opaque].");
 	GMT_Usage (API, 3, "+v Open the movie in the default viewer when completed.");
