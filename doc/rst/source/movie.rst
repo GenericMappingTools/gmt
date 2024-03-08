@@ -170,8 +170,10 @@ Optional Arguments
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
     all; this requires |-M|.  Several modifiers are available:
 
+    - **+i** may be used to add additional FFmpeg encoding settings for the input file (in quotes if more
+      than one word).
     - **+l** turns on looping for *gif* animations; optionally append how many times to repeat [infinite].
-    - **+o** may be used to add additional FFmpeg encoding settings for *mp4* and *webm* (in quotes if more
+    - **+o** may be used to add additional FFmpeg encoding settings for the output file (*mp4* or *webm*; in quotes if more
       than one word).
     - **+s** creates a crude animated *gif* provided either a *mp4* or *webm* product has been selected. You
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
