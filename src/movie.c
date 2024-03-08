@@ -894,7 +894,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'F':	/* Set movie format and optional FFmpeg options */
-				if ((c = gmt_first_modifier (GMT, opt->arg, "lostv"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "liostv"))) {	/* Process any modifiers */
 					do_view = false;
 					pos = 0;	/* Reset to start of new word */
 					o = NULL;
