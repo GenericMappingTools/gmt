@@ -9,14 +9,14 @@ b=$m-l2s-b.txt
 rm -f $a $b ; touch $b
 
 cat << EOF > $a
---l2stranstest -G/some/file.grd=nf+d2+n-99
---l2stranstest -G/other/file.grd=nf+o6+s1.5
+--l2stranstest -Gfile.grd=nf+d2+n-99
+--l2stranstest -Gother_file.grd=nf+o6+s1.5
 --l2stranstest -S
 EOF
 
 # module-specific longopts
-gmt $m $l2s --outgrid=/some/file.grd=nf+divide:2+nan:-99 >> $b
-gmt $m $l2s --outgrid=/other/file.grd=nf+offset:6+scale:1.5 >> $b
+gmt $m $l2s --outgrid=file.grd=nf+divide:2+nan:-99 >> $b
+gmt $m $l2s --outgrid=other_file.grd=nf+offset:6+scale:1.5 >> $b
 gmt $m $l2s --info >> $b
 
 diff $a $b --strip-trailing-cr > fail

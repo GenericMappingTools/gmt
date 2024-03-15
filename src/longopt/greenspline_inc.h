@@ -33,7 +33,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "n,r,v",             "largest,ratio,variance",
 	          "c,f,i,n",           "cumulative,file,incremental,no_surface",
 		  GMT_TP_STANDARD },
-	{ 0, 'D', "metadata|mode",
+	{ 0, 'D', "meta|metadata",
 	          "",                  "",
 	          "c,d,n,o,r,s,t,v,x,y,z",
 	                               "cpt|cmap,dname,invalid,offset,remark,scale,title,varname,xname,yname,zname",

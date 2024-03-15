@@ -13,7 +13,7 @@ cat << EOF > $a
 --l2stranstest -Ahs
 --l2stranstest -C
 --l2stranstest -E+p -E+P
---l2stranstest -G/some/file.grd
+--l2stranstest -Gfile.grd
 --l2stranstest -Sm -Sn -Ss -Sw
 --l2stranstest -Wi -Wo+s
 EOF
@@ -23,7 +23,7 @@ gmt $m $l2s --fields=mean,stddev,low,high,weight >> $b
 gmt $m $l2s --fields=high,stddev >> $b
 gmt $m $l2s --center >> $b
 gmt $m $l2s --extend+weighted --extend+simple >> $b
-gmt $m $l2s --outgrid=/some/file.grd >> $b
+gmt $m $l2s --outgrid=file.grd >> $b
 gmt $m $l2s --statistic=mean --statistic=count --statistic=sum --statistic=weight >> $b
 gmt $m $l2s --weights=in --weights=out+sigma >> $b
 

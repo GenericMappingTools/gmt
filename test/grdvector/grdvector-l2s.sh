@@ -10,7 +10,7 @@ rm -f $a $b ; touch $b
 
 cat << EOF > $a
 --l2stranstest -A
---l2stranstest -C/some/file.cpt -C/some/file.cpt
+--l2stranstest -Cfile.cpt -Cfile.cpt
 --l2stranstest -Gblue
 --l2stranstest -I20/30 -Ix3/4 -I4/5
 --l2stranstest -N
@@ -27,7 +27,7 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --polar >> $b
-gmt $m $l2s --cpt=/some/file.cpt --cmap=/some/file.cpt >> $b
+gmt $m $l2s --cpt=file.cpt --cmap=file.cpt >> $b
 gmt $m $l2s --fill=blue >> $b
 gmt $m $l2s --increment=20/30 --inc=multiples:3/4 --spacing=4/5 >> $b
 gmt $m $l2s --noclip >> $b

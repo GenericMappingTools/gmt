@@ -19,7 +19,7 @@ cat << EOF > $a
 --l2stranstest -Nr -Nw -Nw
 --l2stranstest -S -Sr
 --l2stranstest -T5/100/2+i -T5+n
---l2stranstest -T/some/file
+--l2stranstest -Tfile
 --l2stranstest -Wwxyr
 --l2stranstest -Wry
 --l2stranstest -Z+5 -Z-5
@@ -36,7 +36,7 @@ gmt $m $l2s --norm=mean_absolute --norm=mean_squared --norm=lms >> $b
 gmt $m $l2s --norm=LMS --norm=rms --norm=RMS >> $b
 gmt $m $l2s --skip_outliers --restrict_outliers=reverse >> $b
 gmt $m $l2s --range=5/100/2+inverse --range=5+number >> $b
-gmt $m $l2s --series=/some/file >> $b
+gmt $m $l2s --series=file >> $b
 gmt $m $l2s --weighted=weights,sigmax,sigmay,correlations >> $b
 gmt $m $l2s --weighted=correlations,sigmay >> $b
 gmt $m $l2s --limit=+5 --limit=-5 >> $b

@@ -17,8 +17,8 @@ cat << EOF > $a
 --l2stranstest -D"+c-+o1+rSmart Grid"
 --l2stranstest -D"+s2+tBest Grid Ever+vmyvar"
 --l2stranstest -D+xDr.X+yDr.Y+zDr.Z
---l2stranstest -G/some/file.grd=nf+d2+n-99
---l2stranstest -G/other/file.grd=nf+o6+s1.5
+--l2stranstest -Gfile.grd=nf+d2+n-99
+--l2stranstest -Gother_file.grd=nf+o6+s1.5
 --l2stranstest -I5+e/10 -I2 -I1/2+n
 --l2stranstest -S -S
 --l2stranstest -ZTLax
@@ -44,8 +44,8 @@ gmt $m $l2s --netcdf+cpt:/some.cpt+dname:sillydata+invalid:-99 >> $b
 gmt $m $l2s --netCDF+cpt:-+offset:1+remark:'Smart Grid' >> $b
 gmt $m $l2s --ncheader+scale:2+title:"Best Grid Ever"+varname:myvar >> $b
 gmt $m $l2s --netcdf+xname:Dr.X+yname:Dr.Y+zname:Dr.Z >> $b
-gmt $m $l2s --outgrid=/some/file.grd=nf+divide:2+nan:-99 >> $b
-gmt $m $l2s --outgrid=/other/file.grd=nf+offset:6+scale:1.5 >> $b
+gmt $m $l2s --outgrid=file.grd=nf+divide:2+nan:-99 >> $b
+gmt $m $l2s --outgrid=other_file.grd=nf+offset:6+scale:1.5 >> $b
 gmt $m $l2s --increment=5+exact/10 --spacing=2 --inc=1/2+number >> $b
 gmt $m $l2s --swap --byteswap >> $b
 gmt $m $l2s --onecol=top,left,ascii,noxmax >> $b

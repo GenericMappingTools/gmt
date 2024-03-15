@@ -9,7 +9,7 @@ b=$m-l2s-b.txt
 rm -f $a $b ; touch $b
 
 cat << EOF > $a
---l2stranstest -C/some/file -C/some/other/file
+--l2stranstest -Cfile -Cother/file
 --l2stranstest -D10/20/2/3+w200/100+eb6+h
 --l2stranstest -Dg1/-0.5+v+n+r
 --l2stranstest -DjBR+jLT+maclu
@@ -26,11 +26,11 @@ cat << EOF > $a
 --l2stranstest -S+a20+c+r+s
 --l2stranstest -S+n+xmylabel+ysomeunit
 --l2stranstest -W10
---l2stranstest -Z/bar/widths/file -Z/some/z/file
+--l2stranstest -Zbar/widths/file -Zz/file
 EOF
 
 # module-specific longopts
-gmt $m $l2s --cpt=/some/file --cmap=/some/other/file >> $b
+gmt $m $l2s --cpt=file --cmap=other/file >> $b
 gmt $m $l2s --position=10/20/2/3+size:200/100+triangles:b6+horizontal >> $b
 gmt $m $l2s --position=mapcoords:1/-0.5+vertical+nan+reverse >> $b
 gmt $m $l2s --position=inside:BR+janchor:LT+move_annot:aclu >> $b
@@ -47,6 +47,6 @@ gmt $m $l2s --log >> $b
 gmt $m $l2s --appearance+angle:20+custom+minmax+nolines >> $b
 gmt $m $l2s --appearance+numeric+barlabel:mylabel+barunit:someunit >> $b
 gmt $m $l2s --scale=10 >> $b
-gmt $m $l2s --barwidths=/bar/widths/file --zfile=/some/z/file >> $b
+gmt $m $l2s --barwidths=bar/widths/file --zfile=z/file >> $b
 
 diff $a $b --strip-trailing-cr > fail

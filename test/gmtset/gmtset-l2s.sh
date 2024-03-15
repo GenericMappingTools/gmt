@@ -12,13 +12,13 @@ cat << EOF > $a
 --l2stranstest -C
 --l2stranstest -Du -Ds
 --l2stranstest -Du -Ds
---l2stranstest -G/some/file -G/other/file
+--l2stranstest -Gfile -Gother_file
 EOF
 
 # module-specific longopts
 gmt $m $l2s --convert >> $b
 gmt $m $l2s --defaults=us --defaults=si >> $b
 gmt $m $l2s --defaults=US --defaults=SI >> $b
-gmt $m $l2s --gmtconf=/some/file --defaultsfile=/other/file >> $b
+gmt $m $l2s --gmtconf=file --defaultsfile=other_file >> $b
 
 diff $a $b --strip-trailing-cr > fail

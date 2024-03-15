@@ -9,9 +9,9 @@ b=$m-l2s-b.txt
 rm -f $a $b ; touch $b
 
 cat << EOF > $a
---l2stranstest -C/some/file.cpt -C/some/file.cpt
---l2stranstest -G/this/file.grd -G/that/file.grd
---l2stranstest -I/lighting/file+a
+--l2stranstest -Cfile.cpt -Cfile.cpt
+--l2stranstest -Gthis/file.grd -Gthat/file.grd
+--l2stranstest -Ilighting/file+a
 --l2stranstest -I+d -I6+m6+nsome.args
 --l2stranstest -N200+ggreen
 --l2stranstest -Qm+m -Qmx+m
@@ -21,9 +21,9 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --cpt=/some/file.cpt --cmap=/some/file.cpt >> $b
-gmt $m $l2s --drapegrid=/this/file.grd --drape=/that/file.grd >> $b
-gmt $m $l2s --illumination=/lighting/file+azimuth >> $b
+gmt $m $l2s --cpt=file.cpt --cmap=file.cpt >> $b
+gmt $m $l2s --drapegrid=this/file.grd --drape=that/file.grd >> $b
+gmt $m $l2s --illumination=lighting/file+azimuth >> $b
 gmt $m $l2s --shading+default --intensity=6+ambient:6+args:some.args >> $b
 gmt $m $l2s --plane=200+color:green >> $b
 gmt $m $l2s --plottype=m+monochrome --surftype=mx+mono >> $b

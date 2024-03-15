@@ -15,8 +15,8 @@ cat << EOF > $a
 --l2stranstest -Er+n
 --l2stranstest -Ex+wk -Ey
 --l2stranstest -Fr1/2/3/4 -Fx10/20 -Fy4/8/1
---l2stranstest -G/some/file.grd=nf+d2+n-99
---l2stranstest -G/other/file.grd=nf+o6+s1.5
+--l2stranstest -Gfile.grd=nf+d2+n-99
+--l2stranstest -Gother_file.grd=nf+o6+s1.5
 --l2stranstest -I4 -Ig
 --l2stranstest -N10/20+d -Na+a
 --l2stranstest -Nf+a+e
@@ -34,8 +34,8 @@ gmt $m $l2s --differentiate=5 --dfdz >> $b
 gmt $m $l2s --power_spectrum=radial+normalize >> $b
 gmt $m $l2s --power_spectrum=x+wavelength:k --power_spectrum=y >> $b
 gmt $m $l2s --filter=isotropic:1/2/3/4 --filter=x:10/20 --filter=y:4/8/1 >> $b
-gmt $m $l2s --outgrid=/some/file.grd=nf+divide:2+nan:-99 >> $b
-gmt $m $l2s --outgrid=/other/file.grd=nf+offset:6+scale:1.5 >> $b
+gmt $m $l2s --outgrid=file.grd=nf+divide:2+nan:-99 >> $b
+gmt $m $l2s --outgrid=other_file.grd=nf+offset:6+scale:1.5 >> $b
 gmt $m $l2s --integrate=4 --integrate=gravity >> $b
 gmt $m $l2s --dimensions=10/20+detrend --inquire=accurate+remove_mean >> $b
 gmt $m $l2s --dimensions=actual+remove_mean+edge_point >> $b

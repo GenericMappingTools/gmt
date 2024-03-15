@@ -12,8 +12,8 @@ cat << EOF > $a
 --l2stranstest -A
 --l2stranstest -C
 --l2stranstest -D
---l2stranstest -G/some/file.grd=nf+d2+n-99
---l2stranstest -G/other/file.grd=nf+o6+s1.5
+--l2stranstest -Gfile.grd=nf+d2+n-99
+--l2stranstest -Gother_file.grd=nf+o6+s1.5
 --l2stranstest -I
 --l2stranstest -M
 --l2stranstest -Ni2 -No
@@ -25,8 +25,8 @@ EOF
 gmt $m $l2s --alpha >> $b
 gmt $m $l2s --construct >> $b
 gmt $m $l2s --deconstruct >> $b
-gmt $m $l2s --outgrid=/some/file.grd=nf+divide:2+nan:-99 >> $b
-gmt $m $l2s --outgrid=/other/file.grd=nf+offset:6+scale:1.5 >> $b
+gmt $m $l2s --outgrid=file.grd=nf+divide:2+nan:-99 >> $b
+gmt $m $l2s --outgrid=other_file.grd=nf+offset:6+scale:1.5 >> $b
 gmt $m $l2s --intensity >> $b
 gmt $m $l2s --monochrome >> $b
 gmt $m $l2s --normalize=in:2 --normalize=out >> $b

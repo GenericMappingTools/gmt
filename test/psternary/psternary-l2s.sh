@@ -9,7 +9,7 @@ b=$m-l2s-b.txt
 rm -f $a $b ; touch $b
 
 cat << EOF > $a
---l2stranstest -C/some/file -C/some/other/file -Jz1i
+--l2stranstest -Cfile -Cother/file -Jz1i
 --l2stranstest -Gred -Gp25+bgreen+fgray -Jz1i
 --l2stranstest -GP3+bwhite+fred+r300 -Jz1i
 --l2stranstest -L1/2/3 -L4/-/- -Jz1i
@@ -43,7 +43,7 @@ EOF
 # offer any longoption equivalent for -M (e.g., --dump) or this pre-scan
 # will fail to locate that equivalent and incorrectly append -Jz1i
 #gmt $m $l2s --dump >> $b
-gmt $m $l2s --cpt=/some/file --cmap=/some/other/file >> $b
+gmt $m $l2s --cpt=file --cmap=other/file >> $b
 gmt $m $l2s --fill=red --fill=bit:25+bg:green+foreground:gray >> $b
 gmt $m $l2s --fill=bitreverse:3+background:white+fg:red+dpi:300 >> $b
 gmt $m $l2s --labels=1/2/3 --vertex_labels=4/-/- >> $b

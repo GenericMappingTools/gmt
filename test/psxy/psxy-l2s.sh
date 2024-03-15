@@ -26,7 +26,7 @@ cat << EOF > $a
 --l2stranstest -L+d+xr+yt -L+D+x6+y7
 --l2stranstest -Nc -Nr
 --l2stranstest -T
---l2stranstest -Z99 -Z/my/polygon/file.txt
+--l2stranstest -Z99 -Zmy/polygon/file.txt
 EOF
 
 # module-specific longopts
@@ -47,6 +47,6 @@ gmt $m $l2s --polygon+bounds+xanchor:l+yanchor:b+pen:1p,blue >> $b
 gmt $m $l2s --polygon+symdev+xanchor:r+yanchor:t --polygon+asymdev+xanchor:6+yanchor:7 >> $b
 gmt $m $l2s --noclip=clipnorepeat --noclip=repeatnoclip >> $b
 gmt $m $l2s --ignoreinfiles >> $b
-gmt $m $l2s --zvalue=99 --level=/my/polygon/file.txt >> $b
+gmt $m $l2s --zvalue=99 --level=my/polygon/file.txt >> $b
 
 diff $a $b --strip-trailing-cr > fail

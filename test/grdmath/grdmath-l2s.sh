@@ -12,7 +12,7 @@ cat << EOF > $a
 --l2stranstest -A1000/2/4+ag+l
 --l2stranstest -A100+ai+p75
 --l2stranstest -A75+r
---l2stranstest -C/some/file.cpt -C/another/file.cpt
+--l2stranstest -Cfile.cpt -Canother_file.cpt
 --l2stranstest -Df+f -Dh
 --l2stranstest -Di -Dl
 --l2stranstest -Dc -Da
@@ -26,7 +26,7 @@ EOF
 gmt $m $l2s --min_area=1000/2/4+antarctica:g+regular_lakes >> $b
 gmt $m $l2s --area=100+antarctica:i+min_polygon:75 >> $b
 gmt $m $l2s --area_thresh=75+river_lakes >> $b
-gmt $m $l2s --cpt=/some/file.cpt --cmap=/another/file.cpt >> $b
+gmt $m $l2s --cpt=file.cpt --cmap=another_file.cpt >> $b
 gmt $m $l2s --resolution=full+lower --resolution=high >> $b
 gmt $m $l2s --resolution=intermediate --resolution=low >> $b
 gmt $m $l2s --resolution=crude --resolution=auto >> $b

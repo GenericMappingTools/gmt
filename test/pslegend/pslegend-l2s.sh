@@ -18,7 +18,7 @@ cat << EOF > $a
 --l2stranstest -F+p2p+r1p+s1/2/gray
 --l2stranstest -Mh -Me
 --l2stranstest -S4
---l2stranstest -T/my/secrets -T/your/secrets
+--l2stranstest -Tmy/secrets -Tyour/secrets
 EOF
 
 # module-specific longopts
@@ -31,6 +31,6 @@ gmt $m $l2s --box+clearance:10+fill:red+inner:4p/black >> $b
 gmt $m $l2s --box+pen:2p+radius:1p+shade:1/2/gray >> $b
 gmt $m $l2s --source=hidden --source=explicit >> $b
 gmt $m $l2s --scale=4 >> $b
-gmt $m $l2s --hidden_file=/my/secrets --leg_file=/your/secrets >> $b
+gmt $m $l2s --hidden_file=my/secrets --leg_file=your/secrets >> $b
 
 diff $a $b --strip-trailing-cr > fail

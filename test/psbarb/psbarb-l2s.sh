@@ -9,7 +9,7 @@ b=$m-l2s-b.txt
 rm -f $a $b ; touch $b
 
 cat << EOF > $a
---l2stranstest -C/some/file -C/some/other/file
+--l2stranstest -Cfile -Cother/file
 --l2stranstest -D1/2/3
 --l2stranstest -Gred
 --l2stranstest -I0.5 -I0.8
@@ -22,7 +22,7 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --cpt=/some/file --cmap=/some/other/file >> $b
+gmt $m $l2s --cpt=file --cmap=other/file >> $b
 gmt $m $l2s --offset=1/2/3 >> $b
 gmt $m $l2s --fill=red >> $b
 gmt $m $l2s --intensity=0.5 --illumination=0.8 >> $b

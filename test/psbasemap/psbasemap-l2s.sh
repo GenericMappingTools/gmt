@@ -12,7 +12,7 @@ cat << EOF > $a
 --l2stranstest -A
 --l2stranstest -D10/20/2/3+r+ui
 --l2stranstest -Dg1/-0.5+w7
---l2stranstest -DjBR+jLT+s/some/file
+--l2stranstest -DjBR+jLT+sfile
 --l2stranstest -DJBR+o1/2+t
 --l2stranstest -Dn0/0 -Dx5/5
 --l2stranstest -Fd+c0.1/0.2+gOldLace
@@ -30,7 +30,7 @@ EOF
 gmt $m $l2s --polygon >> $b
 gmt $m $l2s --inset=10/20/2/3+corners+units:i >> $b
 gmt $m $l2s --inset_box=mapcoords:1/-0.5+width:7 >> $b
-gmt $m $l2s --inset=inside:BR+janchor:LT+outfile:/some/file >> $b
+gmt $m $l2s --inset=inside:BR+janchor:LT+outfile:file >> $b
 gmt $m $l2s --inset=outside:BR+offset:1/2+translate >> $b
 gmt $m $l2s --inset=boxcoords:0/0 --inset=plotcoords:5/5 >> $b
 gmt $m $l2s --box=inset+clearance:0.1/0.2+fill:OldLace >> $b

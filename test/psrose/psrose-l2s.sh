@@ -10,9 +10,9 @@ rm -f $a $b ; touch $b
 
 cat << EOF > $a
 --l2stranstest -A20+r
---l2stranstest -C/some/file -C/some/other/file
+--l2stranstest -Cfile -Cother/file
 --l2stranstest -D
---l2stranstest -Em+w/some/file
+--l2stranstest -Em+wfile
 --l2stranstest -F
 --l2stranstest -Gred -Gp25+bgreen+fgray
 --l2stranstest -GP3+bwhite+fred+r300
@@ -37,9 +37,9 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --sector=20+rose >> $b
-gmt $m $l2s --cpt=/some/file --cmap=/some/other/file >> $b
+gmt $m $l2s --cpt=file --cmap=other/file >> $b
 gmt $m $l2s --shift >> $b
-gmt $m $l2s --vectors=mean+modefile:/some/file >> $b
+gmt $m $l2s --vectors=mean+modefile:file >> $b
 gmt $m $l2s --no_scale >> $b
 gmt $m $l2s --fill=red --fill=bit:25+bg:green+foreground:gray >> $b
 gmt $m $l2s --fill=bitreverse:3+background:white+fg:red+dpi:300 >> $b
