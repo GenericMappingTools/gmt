@@ -384,9 +384,17 @@ GMT_LOCAL int gmtmap_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode)
 		}
 	}
 	else if (!GMT->common.R.oblique) {	/* For regional (<360) areas we cannot have clon > 180 away from either boundary */
-		double de, dw;
-		dw = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]);	if (dw >= 360) dw -= 360.0;
-		de = fabs (GMT->current.proj.pars[0] - GMT->common.R.wesn[XHI]);	if (de >= 360) de -= 360.0;
+		double de, dw, clon;
+		bool is_clon0360 = GMT->current.proj.pars[0] > 180;	/* Is the central meridian in the [0 360] range */;
+		bool is_reg0360  = GMT->common.R.wesn[XLO] > 180 || GMT->common.R.wesn[XHI] > 180;	/* Is the region in the [0 360] range */
+
+		clon = GMT->current.proj.pars[0];
+		if (is_clon0360 && !is_reg0360)		/* Must take care of not checking for clon < 180 from either boundary and mix -Rg & -Rd */
+			clon -= 360.0;
+		else if (!is_clon0360 && is_reg0360)
+			clon += 360.0;
+		dw = fabs (clon - GMT->common.R.wesn[XLO]);	if (dw >= 360) dw -= 360.0;
+		de = fabs (clon - GMT->common.R.wesn[XHI]);	if (de >= 360) de -= 360.0;
 		if (dw > 180.0 || de > 180.0) {
 			if (mode == 2) {	/* Yield an error if fixed central longitude, range < 360, and exceed 180 to the border from central longitude */
 				static char *border[2] = {"Western", "Eastern"};
