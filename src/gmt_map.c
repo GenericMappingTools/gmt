@@ -389,9 +389,9 @@ GMT_LOCAL int gmtmap_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode)
 		bool is_reg0360  = GMT->common.R.wesn[XLO] > 180 || GMT->common.R.wesn[XHI] > 180;	/* Is the region in the [0 360] range */
 
 		clon = GMT->current.proj.pars[0];
-		if (is_clon0360 && !is_reg0360)		/* Must take care of not checking for clon < 180 from either boundary and mix -Rg & -Rd */
+		if (is_clon0360 && !is_reg0360 && clon > 180)	/* Must take care of not checking for clon < 180 from either boundary and mix -Rg & -Rd */
 			clon -= 360.0;
-		else if (!is_clon0360 && is_reg0360)
+		else if (!is_clon0360 && is_reg0360 && clon < 0)
 			clon += 360.0;
 		dw = fabs (clon - GMT->common.R.wesn[XLO]);	if (dw >= 360) dw -= 360.0;
 		de = fabs (clon - GMT->common.R.wesn[XHI]);	if (de >= 360) de -= 360.0;
