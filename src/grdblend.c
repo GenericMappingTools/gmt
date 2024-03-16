@@ -502,8 +502,9 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 				return (-GMT_RUNTIME_ERROR);
 			t = NULL;	/* To remind us that this is now gone */
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
-				return (-GMT_DATA_READ_ERROR);
+				return -GMT_DATA_READ_ERROR;
 			}
+			B[n].memory = false;		/* Since we read from file, even if it was a mem-grid before */
 			t = B[n].G->header;	/* Since it got reallocated */
 			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdconvert changed the region */
 		}
