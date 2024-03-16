@@ -10,7 +10,7 @@ rm -f $a $b ; touch $b
 
 cat << EOF > $a
 --l2stranstest -Ddata=earth -Dcache
---l2stranstest -G/some/gmt.conf
+--l2stranstest -Gsome/gmt.conf
 --l2stranstest -I1m
 --l2stranstest -L
 --l2stranstest -N
@@ -19,7 +19,7 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --data=data=earth --dataset=cache >> $b
-gmt $m $l2s --gmtconf=/some/gmt.conf >> $b
+gmt $m $l2s --gmtconf=some/gmt.conf >> $b
 gmt $m $l2s --increment=1m >> $b
 gmt $m $l2s --lines >> $b
 gmt $m $l2s --no_convert >> $b

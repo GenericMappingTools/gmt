@@ -10,7 +10,7 @@ rm -f $a $b ; touch $b
 
 cat << EOF > $a
 --l2stranstest -A
---l2stranstest -C/this/file -C/that/file+b
+--l2stranstest -Cthis/file -Cthat/file+b
 --l2stranstest -D+b+fTimes+o2p+r
 --l2stranstest -E1i -E8p+o2p
 --l2stranstest -F
@@ -24,7 +24,7 @@ cat << EOF > $a
 --l2stranstest -Qr
 --l2stranstest -S
 --l2stranstest -T100/500/10+n -T90/20/30+i
---l2stranstest -T/some/file
+--l2stranstest -Tfile
 --l2stranstest -W2p,red
 --l2stranstest -Z0 -Z1 -Z2+w
 --l2stranstest -Z3 -Z4 -Z5
@@ -32,7 +32,7 @@ EOF
 
 # module-specific longopts
 gmt $m $l2s --horizontal >> $b
-gmt $m $l2s --cpt=/this/file --cmap=/that/file+bin >> $b
+gmt $m $l2s --cpt=this/file --cmap=that/file+bin >> $b
 gmt $m $l2s --annotate+beneath+font:Times+offest:2p+rotate >> $b
 gmt $m $l2s --barwidth=1i --width=8p+offset:2p >> $b
 gmt $m $l2s --center >> $b
@@ -46,7 +46,7 @@ gmt $m $l2s --distribution=LMSscale --distribution=lmsscale+pen:3p >> $b
 gmt $m $l2s --cumulative=reverse >> $b
 gmt $m $l2s --stairs >> $b
 gmt $m $l2s --range=100/500/10+number --bin=90/20/30+inverse >> $b
-gmt $m $l2s --series=/some/file >> $b
+gmt $m $l2s --series=file >> $b
 gmt $m $l2s --pen=2p,red >> $b
 gmt $m $l2s --histtype=counts --kind=freq --kind=logcount+weights >> $b
 gmt $m $l2s --kind=logfreq --kind=log10count --kind=log10freq >> $b

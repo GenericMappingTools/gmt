@@ -14,7 +14,7 @@ cat << EOF > $a
 --l2stranstest -C
 --l2stranstest -D+a -D40+c -D+h -D+l
 --l2stranstest -E -Er+l -Es+h
---l2stranstest -G/some/file.grd
+--l2stranstest -Gfile.grd
 --l2stranstest -Q
 --l2stranstest -Wi -Wo+s
 EOF
@@ -25,7 +25,7 @@ gmt $m $l2s --fields=l1_scale,high,weight >> $b
 gmt $m $l2s --center >> $b
 gmt $m $l2s --histogram+average --histogram=40+center --histogram+high --histogram+low >> $b
 gmt $m $l2s --extend --extend=record+lower --extend=source+higher >> $b
-gmt $m $l2s --outgrid=/some/file.grd >> $b
+gmt $m $l2s --outgrid=file.grd >> $b
 gmt $m $l2s --quick >> $b
 gmt $m $l2s --weights=in --weights=out+sigma >> $b
 

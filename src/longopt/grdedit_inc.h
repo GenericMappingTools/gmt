@@ -30,10 +30,10 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "b,c,n,p",           "both,current,none,previous",
 	          "",                  "",
 		  GMT_TP_STANDARD },
-	{ 0, 'D', "header|metadata",
+	{ 0, 'D', "meta|metadata",
 	          "",                  "",
 	          "c,d,n,o,r,s,t,v,x,y,z",
-		                       "cpt,dname,invalid,offset,remark,scale,title,varname,xname,yname,zname",
+		                           "cpt,dname,invalid,offset,remark,scale,title,varname,xname,yname,zname",
 		  GMT_TP_STANDARD },
 	{ 0, 'E', "transform",
 	          "a,e,h,l,r,t,v",     "hvflip,xyswap,hflip,rot90ccw,rot90cw,transpose,vflip",
@@ -46,7 +46,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  GMT_TP_STANDARD },
 	{ 0, 'N', "nodes|replace",     "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'S', "lonshift_region",   "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'T', "toggle_registration|toggle", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "toggle|toggle_registration", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDEDIT_INC_H */

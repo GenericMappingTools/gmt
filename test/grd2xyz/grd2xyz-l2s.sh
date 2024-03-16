@@ -9,7 +9,7 @@ b=$m-l2s-b.txt
 rm -f $a $b ; touch $b
 
 cat << EOF > $a
---l2stranstest -C/some/file.cpt -C/some/file.cpt
+--l2stranstest -Cfile.cpt -Cfile.cpt
 --l2stranstest -Ff -Ff -Fi
 --l2stranstest -Lc -Lc
 --l2stranstest -Lr -Lx -Ly
@@ -30,7 +30,7 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --cpt=/some/file.cpt --cmap=/some/file.cpt >> $b
+gmt $m $l2s --cpt=file.cpt --cmap=file.cpt >> $b
 gmt $m $l2s --rowcol=one --row_col=fortran --rowcol=indexz >> $b
 gmt $m $l2s --single=col --hvline=column >> $b
 gmt $m $l2s --array=row --single=x --single=y >> $b

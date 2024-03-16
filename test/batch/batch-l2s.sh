@@ -14,7 +14,7 @@ cat << EOF > $a
 --l2stranstest -Qs
 --l2stranstest -Sbpre.sh -Sfpost.sh
 --l2stranstest -T6 -T50/100/5+n
---l2stranstest -T/some/timefile+p7+s12
+--l2stranstest -Ttimefile+p7+s12
 --l2stranstest -T9+w -T"6+wmy string" -T2+W
 --l2stranstest -W
 --l2stranstest -Z
@@ -26,7 +26,7 @@ gmt $m $l2s --include --onemaster --prefix >> $b
 gmt $m $l2s --debug=noexec >> $b
 gmt $m $l2s --optscript=preflight:pre.sh --optscript=postflight:post.sh >> $b
 gmt $m $l2s --njobs=6 --minmax=50/100/5+njobs >> $b
-gmt $m $l2s --timefile=/some/timefile+tagwidth:7+multisys:12 >> $b
+gmt $m $l2s --timefile=timefile+tagwidth:7+multisys:12 >> $b
 gmt $m $l2s --njobs=9+words --njobs=6+words:'my string' --njobs=2+tabwords >> $b
 gmt $m $l2s --tmpdir >> $b
 gmt $m $l2s --erasescripts >> $b

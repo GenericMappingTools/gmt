@@ -21,7 +21,7 @@ cat << EOF > $a
 --l2stranstest -Fu100 -FU100
 --l2stranstest -L15 -N3 -N5
 --l2stranstest -Q0.4 -S0.99
---l2stranstest -T10/100/5+a -T/some/file
+--l2stranstest -T10/100/5+a -Tfile
 --l2stranstest -T5+e -T5+i -T5+n
 EOF
 
@@ -38,7 +38,7 @@ gmt $m $l2s --filter=minall:100 --filter=minpos:100 >> $b
 gmt $m $l2s --filter=maxall:100 --filter=maxneg:100 >> $b
 gmt $m $l2s --gap_width=15 --time_col=3 --time_column=5 >> $b
 gmt $m $l2s --quality=0.4 --symmetry=0.99 >> $b
-gmt $m $l2s --range=10/100/5+array --range=/some/file >> $b
+gmt $m $l2s --range=10/100/5+array --range=file >> $b
 gmt $m $l2s --series=5+exact  --series=5+inverse --series=5+number >> $b
 
 diff $a $b --strip-trailing-cr > fail
