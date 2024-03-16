@@ -85,8 +85,8 @@ respectively):
         **-Jo**\|\ **O**\ [**c**\|\ **C**]\ *lon0/lat0/lonp/latp/*\ *scale*\|\ *width*\ [**+v**]
             Set projection center *lon0/lat0*, pole of oblique projection *lonp/latp*, and *scale* or *width*
 
-        Give *scale* along oblique equator (with **-Ja**\|\ **b**\|\ **c**; **1:**\ *xxxx* or
-        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JA**\|\ **B**\|\ **C**; in
+        Give *scale* along oblique equator (with **-Jo** as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JO** in
         :ref:`plot-units <plt-units>`). Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern
         hemisphere pole. Append **+v** to let the oblique Equator align with the *y*-axis [*x*-axis].  **Note**: If
         the region (**-R**) is given without the **+r** modifier then the arguments are considered oblique degrees
@@ -313,7 +313,7 @@ respectively):
 
     - **d** to indicate that data are geographical coordinates (in degrees).
     - **g** to indicate that data are geographical coordinates
-    - **l** to take log10 of values before scaling.
+    - **l** to take :math:`\log_{10}` of values before scaling.
     - **p**\ *power* to raise values to *power* before scaling.
     - **t** to indicate that input coordinates are time relative to :term:`TIME_EPOCH`.
     - **T** to indicate that input coordinates are absolute time.

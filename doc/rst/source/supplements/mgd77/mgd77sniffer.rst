@@ -47,7 +47,7 @@ resulting in multiple messages per scanned record. Data problems are
 optionally output (**-De** option) using a computer-parseable format
 (see E77 ERROR FORMAT description below). Default error thresholds are
 derived from histograms of all MGD77 geophysical data collected between
-1952 and January, 2006. Thresholds are adjustable with the **-L**
+1952 and January, 2006. Thresholds are adjustable with the |-L|
 option. Grids for comparison with cruise data may be downloaded via the web.
 
 Required Arguments
@@ -61,7 +61,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *fieldabbrev*,\ *scale*,\ *offset*
-    Apply scale factor and DC adjustment to specified data field. Allows
+    Apply scale factor and offset adjustment to specified data field. Allows
     adjustment of cruise data prior to along-track analysis. CAUTION:
     data must be thoroughly examined before applying these global data
     adjustments. May not be used for multiple cruises.
@@ -69,7 +69,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *maxspd*
-    Set maximum ship speed in m/s, or knots with **-N** option. Ship
+    Set maximum ship speed in m/s, or knots with |-N| option. Ship
     speeds exceeding 10 m/s (~20 knots) are flagged as excessive by default.
 
 .. _-D:
@@ -82,7 +82,7 @@ Optional Arguments
     navigation errors were detected).
 
     **-Dd** output differences between cruise and grid data. Requires
-    **-G** option. Output columns include:
+    |-G| option. Output columns include:
 
     *lat lon dist cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 ...]*
 
@@ -110,7 +110,7 @@ Optional Arguments
     d[msd] ds d[gobs] ds d[eot] ds d[faa] ds*
 
     **-Dl** display mgd77sniffer limits. Customize this output to create
-    a custom limits file for the **-L** option. No additional arguments
+    a custom limits file for the |-L| option. No additional arguments
     are required. Output columns include:
 
     *fieldabbrev min max maxSlope maxArea*
@@ -124,7 +124,7 @@ Optional Arguments
 
     **-Ds** output calculated gradients for speed and geophysical
     fields. Gradients correspond to the gradient type selected in the
-    **-S** option (spatial derivatives by default). Output columns include:
+    |-S| option (spatial derivatives by default). Output columns include:
 
     *speed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs] d[eot] d[faa]*
 
@@ -166,16 +166,16 @@ Optional Arguments
     field abbreviation (see **MGD77 FIELD INFO** below) followed by a
     comma, then the path (if not in current directory) and grid
     filename. Multiple grid comparison is supported by using separate
-    **-G** calls for each grid. See **GRID FILE INFO** below.
+    |-G| calls for each grid. See **GRID FILE INFO** below.
 
     Grid comparison activates several additional error checks. (1)
     Re-weighted Least Squares Regression of ship versus grid data
-    determines slope and DC shift, which when differing from expected 1
+    determines slope and intercept shift, which when differing from expected 1
     and 0, respectively, may indicate incorrectly scaled ship data,
     including incorrect units or instrument drift as well as erroneous
     gravity tie-in. (2) Accumulated ship grid offsets are computed
     along-track and excessive offsets are flagged according to *maxArea*
-    threshold (use **-L** option to adjust *maxArea*). Warning:
+    threshold (use |-L| option to adjust *maxArea*). Warning:
     predicted bathymetry grids are constrained by cruise data so grids
     and cruise data are not always independent. Comparison of cruise
     bathymetry with predicted bathymetry grids also activates a
@@ -213,7 +213,7 @@ Optional Arguments
     limits may be modified using one default file, one field per line.
     Field min, max, max slope and max area may be changed for each
     field. Max slope pertains to the gradient type selected using the
-    **-S** option. Max area is used by the **-G** option as the
+    |-S| option. Max area is used by the |-G| option as the
     threshold for flagging excessive offsets from the specified grid.
     Dump defaults **-Dl** to view syntax or to quickly create an
     editable custom limits file.
@@ -277,7 +277,7 @@ Optional Arguments
     (**o**)ffsets from grid (requires **-G**\|\ **g**), (**s**)peed
     out of range, (**t**)ime warnings, (**v**)alue out of range, (**x**)
     warning summaries. By default ALL warning messages are printed.Not
-    compatible with any **-D** options.
+    compatible with any |-D| options.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -343,7 +343,7 @@ E77 Error Format
     Information pertaining to an entire cruise, such as NCEI and survey
     institution identification codes, cruise examination time, two-way
     travel time corrector information, data precision warnings, as well
-    as systematic scales, DC shifts and correlation coefficients from
+    as systematic scales, constant offsets and correlation coefficients from
     global grid comparisons are reported as E77 header information.
 
     **Sample**
@@ -484,23 +484,23 @@ Examples
 
 To scan for excessive values or gradients, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001
+  gmt mgd77sniffer 08010001
 
 To dump cruise gradients, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001 -Ds
+  gmt mgd77sniffer 08010001 -Ds
 
 To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try
 
-   ::
+::
 
-    gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
-                 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+  gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
+               -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 See Also
 --------
@@ -513,4 +513,7 @@ References
 ----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
+`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_.
+
+Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

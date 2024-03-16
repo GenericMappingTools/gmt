@@ -1,3 +1,5 @@
+:orphan:
+
 .. set default highlighting language for this document:
 .. highlight:: c
 
@@ -56,7 +58,7 @@ driver program called ``gmt.c``.
 The :doc:`/gmt` executable simply calls the corresponding
 GMT modules; it is these modules that do all the work. These new
 functions have been placed in a new GMT high-level API library and can
-be called from a variety of environments (C/C++, Fortran, Julia, Python,
+be called from a variety of environments (C/C++, FORTRAN, Julia, Python,
 MATLAB, Visual Basic, R, etc.) [2]_. For example, the main
 program ``blockmean.c`` has been reconfigured as a high-level function
 ``GMT_blockmean()``, which does the actual spatial averaging and can
@@ -505,9 +507,9 @@ The full structure definition can be found in :ref:`GMT_MATRIX <struct-matrix>`.
       uint64_t             n_rows;        /* Number of rows in the matrix */
       uint64_t             n_columns;     /* Number of columns in the matrix */
       uint64_t             n_layers;      /* Number of layers in a 3-D matrix */
-      enum GMT_enum_fmt    shape;         /* 0 = C (rows) and 1 = Fortran (cols) */
+      enum GMT_enum_fmt    shape;         /* 0 = C (rows) and 1 = FORTRAN (cols) */
       enum GMT_enum_reg    registration;  /* 0 for gridline and 1 for pixel registration  */
-      size_t               dim;           /* Allocated length of longest C or Fortran dim */
+      size_t               dim;           /* Allocated length of longest C or FORTRAN dim */
       size_t               size;          /* Byte length of data */
       enum GMT_enum_type   type;          /* Data type, e.g. GMT_FLOAT */
       double               range[6];      /* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
@@ -778,6 +780,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Parse_           | Parse argument with FFT options and modifiers         |
     +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Reset_           | Manually demultiplex output of inverse FFT            |
+    +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Wavenumber_      | Return wavenumber given data index                    |
     +--------------------------+-------------------------------------------------------+
     | GMT_Find_Option_         | Find an option in the linked list                     |
@@ -855,6 +859,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     | GMT_Register_IO_         | Register a resources for i/o                          |
     +--------------------------+-------------------------------------------------------+
     | GMT_Report_              | Issue a message contingent upon verbosity level       |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Set_AllocMode_       | Set allocation mode of object to external             |
     +--------------------------+-------------------------------------------------------+
     | GMT_Set_Default_         | Set one of the API or GMT default settings            |
     +--------------------------+-------------------------------------------------------+
@@ -940,7 +946,7 @@ is a sum of bit flags and the various bits control the following settings:
    for reading and writing GMT resources from these environments (those modules
    would not make any sense in a Unix command-line environment).
 #. Bit 3 (4 or GMT_SESSION_COLMAJOR): If set, then it means the external API uses a column-major format for
-   matrices (e.g., MATLAB, Fortran).  If not set we default to row-major
+   matrices (e.g., MATLAB, FORTRAN).  If not set we default to row-major
    format (C/C++, Python, etc.).
 #. Big 4 (8 or GMT_SESSION_LOGERRORS): If set, we redirect all error messages to a log file based on the
    session name (we append ".log").
@@ -1178,7 +1184,9 @@ unique resource ID, or ``GMT_NOTSET`` if there was an error.
     +----------------+-----------------------------------------+
     | GMT_IS_LINE    | Geographic or Cartesian line segments   |
     +----------------+-----------------------------------------+
-    | GMT_IS_POLYGON | Geographic or Cartesian closed polygons |
+    | GMT_IS_POLY    | Geographic or Cartesian closed polygons |
+    +----------------+-----------------------------------------+
+    | GMT_IS_LP      | Either lines or polygons                |
     +----------------+-----------------------------------------+
     | GMT_IS_PLP     | Either points, lines, or polygons       |
     +----------------+-----------------------------------------+
@@ -1303,7 +1311,7 @@ Users wishing to pass their own data matrices and vectors to GMT modules will ne
 the **GMT_IS_MATRIX** and **GMT_IS_VECTOR** containers.  However, no module deals with such containers
 directly (they either expect **GMT_IS_GRID** or **GMT_IS_DATASET**, for instance).
 The solution is to specify the container type the GMT module expects but add in the special
-flags **GMT_VIA_MATRIX** or **GMT_VIA*VECTOR**.  This will create the **GMT_IS_MATRIX** or
+flags **GMT_VIA_MATRIX** or **GMT_VIA_VECTOR**.  This will create the **GMT_IS_MATRIX** or
 **GMT_IS_VECTOR** container the user needs to add the user data, but will also tell GMT how
 they should be considered by the module. **Note**: When creating your own geographic data
 (dataset, grid, image, matrix, or vector) you may add ``GMT_DATA_IS_GEO`` to ``mode`` so that
@@ -1841,7 +1849,7 @@ development simplifies if you can read entire resources into memory with
 GMT_Read_Data_ or GMT_Read_VirtualFile_.  However, if this leads to
 unacceptable memory usage or if the program logic is particularly simple,
 you may obtain one data record at the time via GMT_Get_Record_ and write
-one at the time with GMT_Put_Record_.  For row-by-row i/o for grids there
+one at a time with GMT_Put_Record_.  For row-by-row i/o for grids there
 is the corresponding function GMT_Get_Row_. There are additional overhead involved
 in setting up record-by-record processing, which is the topic of this section.
 
@@ -2332,7 +2340,7 @@ you call GMT_Begin_IO_.
 
     The modes for setting various comment types.
 
-The named modes (*command*, *remark*, *title*, *name_x,y,z* and
+The named modes (*command*, *remark*, *title*, *name_x*\|\ *y*\|\ *z* and
 *colnames* are used to distinguish regular text comments from specific
 fields in the header structures of the data resources, such as
 :ref:`GMT_GRID <struct-grid>`. For the various table resources (e.g., :ref:`GMT_DATASET <struct-dataset>`)
@@ -2785,19 +2793,23 @@ API or GMT default settings you can do so via
 where ``keyword`` is one such keyword (e.g., :term:`PROJ_LENGTH_UNIT`) and
 ``value`` must be a character string long enough to hold the answer.  In
 addition to the long list of GMT defaults you can also inquire about the
-API parameters ``API_PAD`` (the current pad setting), ``API_IMAGE_LAYOUT`` (the
-order and structure of image memory storage), ``API_GRID_LAYOUT`` (order of
-grid memory storage), ``API_VERSION`` (the API version string),
-``API_CORES`` (the number of cores seen by the API),
-``API_BINDIR`` (the API (GMT) executable path),
-``API_SHAREDIR`` (the API (GMT) shared directory path),
-``API_DATADIR`` (the API (GMT) data directory path), and
-``API_PLUGINDIR`` (the API (GMT) plugin path).
+following API parameters:
+
+  - ``API_PAD`` - the current pad setting
+  - ``API_IMAGE_LAYOUT`` - the order and structure of image memory storage
+  - ``API_GRID_LAYOUT`` - order of grid memory storage
+  - ``API_VERSION`` - the API version string
+  - ``API_CORES`` - the number of cores seen by the API
+  - ``API_BINDIR`` - the API (GMT) executable path
+  - ``API_SHAREDIR`` - the API (GMT) shared directory path
+  - ``API_DATADIR`` - the API (GMT) data directory path
+  - ``API_PLUGINDIR`` - the API (GMT) plugin path
+  - ``API_BIN_VERSION`` - the API version string with Git commit information
+
 Depending on what parameter you selected you could further convert it to
 a numerical value with GMT_Get_Values_ or just use it in a text comparison.
 
-To change any of the API or
-GMT default settings programmatically you would use
+To change any of the API or GMT default settings programmatically you would use
 
 .. _GMT_Set_Default:
 
@@ -2843,6 +2855,22 @@ You can change this information via
 
 where the ``header`` is the header of either a grid or image, and ``code`` is a three-character
 code indication ...
+
+Change allocation mode
+~~~~~~~~~~~~~~~~~~~~~~
+
+When external programs supply their own allocated memory (e.g., grid arrays, matrices) that
+are then hooked into the GMT containers data pointer, we need to flag the allocation mode as
+being external to GMT via
+
+.. _GMT_Set_AllocMode:
+
+  ::
+
+    int GMT_Set_AllocMode (void *API, unsigned int family, void *object);
+
+where :ref:`family <tbl-family>` sets the object type and and ``object`` is the container.
+This change prevents GMT from trying to free memory it did not allocate.
 
 .. _sec-func:
 
@@ -3319,6 +3347,10 @@ version of your data. The FFT is fully normalized so that calling
 forward followed by inverse yields the original data set. The information
 passed via ``K`` determines if a 1-D or 2-D transform takes place; the
 key work is done via ``GMT_FFT_1D`` or ``GMT_FFT_2D``, as explained below.
+**Note**: When ``direction`` is ``GMT_FFT_INV`` we will remove the space for
+the temporary imaginary components so that the result is real-valued only;
+this is the most common use in spectral analysis.  However, you can add
+``GMT_FFT_NO_DEMUX`` to ``mode`` which will prevent this adjustment.
 
 Taking the 1-D FFT
 ------------------
@@ -3420,6 +3452,22 @@ differently), and set up the loop this way:
         Grid->data[im] *= 2.0 * wave;
     }
 
+Manual demultiplexing
+---------------------
+
+For almost all applications this step will be done automatically for you when you
+take the inverse FFT.  However, if you need to have the result of the inverse
+transform still occupy a real/imaginary layout you will need to pass the special
+mode flag ``GMT_FFT_NO_DEMUX`` to ``GMT_FFT`` and then call
+
+.. _GMT_FFT_Reset:
+
+  ::
+
+    int GMT_FFT_Reset (void *API, void *data, unsigned int dim, unsigned int mode);
+
+which does the delayed demultiplexing of the data.
+
 Destroying the FFT machinery
 ----------------------------
 
@@ -3429,7 +3477,7 @@ When done you terminate the FFT machinery with
 
   ::
 
-    double GMT_FFT_Destroy (void *API, void *K);
+    int GMT_FFT_Destroy (void *API, void *K);
 
 which simply frees up the memory allocated by the FFT machinery with GMT_FFT_Create_.
 
@@ -3438,18 +3486,18 @@ FORTRAN Support
 
 FORTRAN 90 developers who wish to use the GMT API may use the same
 API functions as discussed in Chapter 2. As we do not have much (i.e., any) experience
-with modern Fortran we are not sure to what extent you are able to access
+with modern FORTRAN we are not sure to what extent you are able to access
 the members of the various structures, such as the :ref:`GMT_GRID <struct-grid>` structure. Thus,
 this part will depend on feedback and for the time being is to be considered
 preliminary and subject to change.  We encourage you to take contact should you
-wish to use the API with your Fortran 90 programs.
+wish to use the API with your FORTRAN 90 programs.
 
 FORTRAN 77 Grid i/o
 -------------------
 
 Because of a lack of structure pointers we can only provide a low level of
-support for Fortran 77. This API is limited to help you inquire, read and write
-GMT grids directly from Fortran 77.
+support for FORTRAN 77. This API is limited to help you inquire, read and write
+GMT grids directly from FORTRAN 77.
 To inquire about the range of information in a grid, use
 
 .. _gmt_f77_readgrdinfo:
@@ -3480,7 +3528,7 @@ the ``title`` and ``remark`` return the values of the corresponding strings.  Th
 argument is the name of the file we wish to read from.  The function returns 0 unless there is an error.
 Note on input, ``dim[2]`` can be set to 1, which means we will allocate the array for you; otherwise
 we assume space has already been secured.  Also, if ``dim[3]`` is set to 1 we will in-place transpose
-the array from C-style row-major array order to Fortran column-major array order.
+the array from C-style row-major array order to FORTRAN column-major array order.
 
 Finally, to write a grid to file you can use
 
@@ -3496,7 +3544,7 @@ where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, he
 while the ``title`` and ``remark`` supply the values of these strings.  The ``file``
 argument is the name of the file we wish to write to.  The function returns 0 unless there is an error.
 If ``dim[3]`` is set to 1 we will in-place transpose
-the array from Fortran column-major array order to C-style row-major array order before writing. Note
+the array from FORTRAN column-major array order to C-style row-major array order before writing. Note
 this means ``array`` will have been transposed when the function returns.
 
 External Interfaces
@@ -3955,9 +4003,9 @@ by the :ref:`GMT_UNIVECTOR <struct-univector>` union.
       uint64_t             n_rows;        /* Number of rows in the matrix */
       uint64_t             n_columns;     /* Number of columns in the matrix */
       uint64_t             n_layers;      /* Number of layers in a 3-D matrix */
-      enum GMT_enum_fmt    shape;         /* 0 = C (rows) and 1 = Fortran (cols) */
+      enum GMT_enum_fmt    shape;         /* 0 = C (rows) and 1 = FORTRAN (cols) */
       enum GMT_enum_reg    registration;  /* 0 for gridline and 1 for pixel registration  */
-      size_t               dim;           /* Allocated length of longest C or Fortran dim */
+      size_t               dim;           /* Allocated length of longest C or FORTRAN dim */
       size_t               size;          /* Byte length of data */
       enum GMT_enum_type   type;          /* Data type, e.g. GMT_FLOAT */
       double               range[6];      /* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */

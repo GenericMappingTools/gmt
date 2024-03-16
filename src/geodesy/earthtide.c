@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/earthtide_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"earthtide"
 #define THIS_MODULE_MODERN_NAME	"earthtide"
@@ -117,7 +118,7 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	/*  "Julian Date Converter" */
 	/*  http://aa.usno.navy.mil/data/docs/JulianDate.php */
 	/*  or https://www.aavso.org/jd-calculator */
-	/*  parameter (MJDUPPER=59393)    !*** upper limit, leap second table, 28 June 2021 */
+	/*  parameter (MJDUPPER=60306)    !*** upper limit, leap second table, 28 December 2023 */
 	/* upper limit, leap second table, */
 	/* lower limit, leap second table, */
 	/* leap second table limit flag */
@@ -137,7 +138,7 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	}
 
 	/*  test upper table limit (upper limit set by bulletin C memos) */
-	if (mjd0t > 59393) {
+	if (mjd0t > 60306) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -37;				/* return the upper table value */
 	}
@@ -1109,7 +1110,7 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 	int k, mjd, year, month, day, hour, min;
 	uint32_t row, col, n_columns = 0, n_rows = 0;
 	size_t ij_n = 0, ij_e = 0, ij_u = 0, n_inc = 0, e_inc = 0, u_inc = 0;
-	float *grd_n, *grd_e, *grd_u;
+	gmt_grdfloat *grd_n, *grd_e, *grd_u;
 	double fmjd, xsta[3], rsun[3], etide[3], rmoon[3];
 	double lat, ut, vt, wt, *lons;
 	double west = 0, south = 0, x_inc = 0, y_inc = 0;
@@ -1121,21 +1122,21 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 		e_inc = 1;
 	}
 	else
-		grd_e = (float *)malloc (1 * sizeof (float));
+		grd_e = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	if (Ctrl->G.do_north) {
 		grd_n = Grid[Y_COMP]->data;
 		n_inc = 1;
 	}
 	else
-		grd_n = (float *)malloc (1 * sizeof (float));
+		grd_n = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	if (Ctrl->G.do_up) {
 		grd_u = Grid[Z_COMP]->data;
 		u_inc = 1;
 	}
 	else
-		grd_u = (float *)malloc (1 * sizeof (float));
+		grd_u = (gmt_grdfloat *)malloc (1 * sizeof (gmt_grdfloat));
 
 	/* Get header params. Since all three have the same dims we stop when we find the first grid required */
 	for (k = 0; k < N_COMPS; k++) {
@@ -1170,9 +1171,9 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 			earthtide_detide (xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
 			earthtide_rge (lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
-			grd_n[ij_n] = (float)vt;
-			grd_e[ij_e] = (float)ut;
-			grd_u[ij_u] = (float)wt;
+			grd_n[ij_n] = (gmt_grdfloat)vt;
+			grd_e[ij_e] = (gmt_grdfloat)ut;
+			grd_u[ij_u] = (gmt_grdfloat)wt;
 			ij_n += n_inc;
 			ij_e += e_inc;
 			ij_u += u_inc;
@@ -1219,7 +1220,7 @@ GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, d
 		if (T.unit == 'm')
 		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
 		else if (T.unit == 's')
-			tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
+			tdel2 = 1.0 / (24 * 3600);	/* 1 second steps (????) */
 		else if (T.unit == 'h')
 			tdel2 = 1.0 / 24;			/* 1 hour steps */
 		else if (T.unit == 'd')
@@ -1325,14 +1326,13 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Requires -G and selects which components should be written as grids */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				while ( (gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->C.n_selected < N_COMPS) {
 					switch (p[0]) {
 						case 'x': case 'e':		Ctrl->C.selected[X_COMP] = Ctrl->G.do_east = true;	break;
@@ -1352,14 +1352,13 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':	/* Output filename */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
 					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else {
 					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
 				}
 
 				if (!GMT->parent->external) {		/* Copy the name into the 3 slots to simplify the grid writing algo */
@@ -1369,12 +1368,10 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* Location for time-series */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C<lon>/<lat>\n");
 					n_errors++;
@@ -1390,12 +1387,10 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				if (gmt_set_datum (GMT, opt->arg, &Ctrl->S.datum) == -1) n_errors++;
 				break;
 			case 'T':	/* Select time range for time-series tide estimates */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (!opt->arg) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -T: must provide a valid date\n", opt->arg);
 					n_errors++;
@@ -1468,7 +1463,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ( (GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ( (GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ( (error = parse (GMT, Ctrl, options)) != 0) Return (error);

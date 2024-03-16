@@ -5,7 +5,7 @@
  *
  *  Functions required to compute CM4 magnetic components
  *
- *  Authors:    J. Luis translated from original Fortran code
+ *  Authors:    J. Luis translated from original FORTRAN code
  *              P. Wessel further massaged it into this form
  *
  *  Version:    1.0

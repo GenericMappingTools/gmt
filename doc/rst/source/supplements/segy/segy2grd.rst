@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ |SYN_OPT-D2| ]
 [ |-L|\ [*nsamp*] ]
 [ |-M|\ [*ntraces*] ]
-[ |-Q|\ *<mode><value>* ]
+[ |-Q|\ **x**\|\ **y**\ *value* ]
 [ |-S|\ [*header*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -73,7 +73,7 @@ Optional Arguments
 **-A**\ [**n**\|\ **z**]
     Add up multiple values that belong to the same node (same as
     **-Az**). Append **n** to simply count the number of data points
-    that were assigned to each node. [Default (no **-A** option) will
+    that were assigned to each node. [Default (no |-A| option) will
     calculate mean value]. Not used for simple mapping.
 
 .. _-D:
@@ -94,19 +94,20 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *<mode><value>*
-    Can be used to change two different settings depending on *mode*:
+**-Q**\ **x**\|\ **y**\ *value*
+    Can be used to change two different settings depending on the directive:
        **-Qx**\ *x-scale* applies scalar *x-scale* to coordinates in trace
-       header to match the coordinates specified in **-R**.
+       header to match the coordinates specified in |-R|.
 
        **-Qy**\ *s_int* specifies sample interval as *s_int* if incorrect in the SEGY file.
+       Repeatable.
 
 .. _-S:
 
 **-S**\ [*header*]
     Set variable spacing; *header* is **c** for cdp, **o** for offset, or **b**\ *number*
-    for 4-byte float starting at byte *number*. If **-S** not set, assumes even
-    spacing of samples at the *x_inc, y_inc* supplied with **-I**.
+    for 4-byte float starting at byte *number*. If |-S| not set, assumes even
+    spacing of samples at the *x_inc, y_inc* supplied with |-I|.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_

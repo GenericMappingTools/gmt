@@ -16,7 +16,7 @@ TOPDIR=$(pwd)
 if [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
 	Usage: place-release.sh
-	
+
 	place-release.sh must be run from top-level gmt directory.
 	Typically run after build-release.sh has been done and that the
 	Windows installer files have been placed in pwessel staging directory.
@@ -42,11 +42,6 @@ fi
 if [ -f gmt-${Version}-darwin-arm64.dmg ]; then
 	cp -f gmt-${Version}-darwin-arm64.dmg ../gmt/bin
 	chmod og+r ../gmt/bin/gmt-${Version}-darwin-arm64.dmg
-fi
-# Place Windows 32-bit installer with read and execute permissions
-if [ -f gmt-${Version}-win32.exe ]; then
-	cp -f gmt-${Version}-win32.exe ../gmt/bin
-	chmod og+rx ../gmt/bin/gmt-${Version}-win32.exe
 fi
 # Place Windows 64-bit installer with read and execute permissions
 if [ -f gmt-${Version}-win64.exe ]; then

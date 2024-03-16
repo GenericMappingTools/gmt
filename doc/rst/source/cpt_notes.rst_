@@ -5,7 +5,7 @@ In modern mode, CPTs are rarely needed to be named explicitly.  Instead, when
 a module that may create a CPT, such as :doc:`grd2cpt` and :doc:`makecpt` (or even
 :doc:`grdimage` when no color table is available), the behavior under modern mode
 is to write that CPT to a hidden file in the session directory.  When a module
-requires a CPT (e.g., **grdimage** not given **-C** or **plot** given **-C** with no name)
+requires a CPT (e.g., **grdimage** not given |-C| or **plot** given |-C| with no name)
 then we read this hidden CPT (if it exists).  This file is called the *current* CPT.
 In fact, there are several levels of current CPTs that may all be different, and
 some may not be present.  If you create a CPT within an **inset** operation then

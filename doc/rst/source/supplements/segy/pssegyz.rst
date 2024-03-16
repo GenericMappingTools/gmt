@@ -15,14 +15,14 @@ Synopsis
 **gmt pssegyz** *SEGYfile* |-J|\ *parameters*
 |-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
-|-D|\ *deviation* |-F|\ [*color*] **-W**
+|-D|\ *deviation* |-F|\ [*color*] |-W|
 [ |-C|\ *clip* ]
 [ |-I| ] [ |-K| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ]
 [ |-N| ]
 [ |-O| ]
 [ |-P| ]
-[ |-Q|\ *<mode><value>* ]
+[ |-Q|\ **b**\|\ **i**\|\ **u**\|\ **x**\|\ **y**\ *value* ]
 [ |-S|\ *header_x*/*header_y* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

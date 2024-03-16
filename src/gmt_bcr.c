@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -68,10 +68,13 @@
  * Version:	5
  * Now 64-bit enabled.
  *
- * Public functions (3):
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
  *	gmt_bcr_get_z	   : Get interpolated grid value by convolution
  *	gmt_bcr_get_z_fast : Same, but skips NaN or outside checking
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
  *	gmtlib_bcr_get_img	   : Get interpolated image value(s) by convolution
  */
 
@@ -253,7 +256,7 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 		for (i = 0; i < HH->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
-			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero exept at that point. If so,
+			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero except at that point. If so,
 			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
 			if (node >= G->header->size) continue;
 			w = wx[i] * wy[j];
@@ -296,7 +299,7 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 		for (i = 0; i < HH->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
-			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero exept at that point. If so,
+			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero except at that point. If so,
 			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
 			if (node >= G->header->size) continue;
 			if (!gmt_M_is_fnan (G->data[node])) {
@@ -318,42 +321,49 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 	return (GMT->session.d_NaN);
 }
 
-int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z) {
+int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, double xx, double yy, unsigned char *z) {
 	/* Given xx, yy in user's image file (in non-normalized units)
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
-	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
+	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.
+	   If I->alpha exists then transparencies are given by that separate array  */
 
-	unsigned int i, j, b, nb = G->header->n_bands;
+	unsigned int i, j, b, nb = I->header->n_bands;
+	bool got_alpha = (I->alpha && (nb ==3 || nb == 1));
 	uint64_t ij, node;
 	double retval[4], wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
-	if (gmtbcr_reject (G->header, &xx, &yy)) return (1);	/* NaNs or outside */
+	if (gmtbcr_reject (I->header, &xx, &yy)) return (1);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx wy */
 
-	ij = gmtbcr_prep (G->header, xx, yy, wx, wy);
+	ij = gmtbcr_prep (I->header, xx, yy, wx, wy);
 
 	gmt_M_memset (retval, 4, double);
 	wsum = 0.0;
 	for (j = 0; j < HH->bcr_n; j++) {
 		for (i = 0; i < HH->bcr_n; i++) {
 			node = ij + i;
-			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero exept at that point. If so,
+			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero except at that point. If so,
 			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
-			if (node >= G->header->size) continue;
+			if (node >= I->header->size) continue;
 			w = wx[i] * wy[j];
 			wsum += w;
-			for (b = 0; b < nb; b++) retval[b] += G->data[nb*node+b] * w;
+			for (b = 0; b < nb; b++) retval[b] += I->data[nb*node+b] * w;
+			if (got_alpha) retval[3] += I->alpha[node] * w;
 		}
-		ij += G->header->mx;
+		ij += I->header->mx;
 	}
 	if ((wsum + GMT_CONV8_LIMIT - HH->bcr_threshold) > 0.0) {	/* OK to evaluate result */
 		for (b = 0; b < nb; b++) {
 			retval[b] /= wsum;
 			z[b] = (unsigned char) lrint (gmt_M_0_255_truncate (retval[b]));
+		}
+		if (got_alpha) {
+			retval[3] /= wsum;
+			z[3] = (unsigned char) lrint (gmt_M_0_255_truncate (retval[3]));
 		}
 	}
 	else

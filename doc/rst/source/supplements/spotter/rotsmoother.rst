@@ -39,13 +39,13 @@ Description
 
 **rotsmoother** reads a table of total reconstructions and computes mean
 rotations (and optionally covariance matrices) for sub-groups of rotations
-based on rotation age.
+based on rotation age (or all of the rotations).
 
 Required Arguments
 ------------------
 
 *table*
-    Name of a rotation table containing (lon, lat, time, angle, [weight]) values.
+    Name of a rotation table containing (*lon lat time angle* [*weight*]) values.
 
 Optional Arguments
 ------------------
@@ -55,8 +55,8 @@ Optional Arguments
 **-A**
     Use opening angles as a proxy for time.  Suitable when no time can be assigned to the
     rotations.  In this case, input is expected to contain *lon lat angle* [*weight*] records
-    and **-T** settings refer to angles instead of time.
-    [Default expects *lon lat time angle* [*weight*] and **-T** refers to time].
+    and |-T| settings refer to angles instead of time.
+    [Default expects *lon lat time angle* [*weight*] and |-T| refers to time].
 
 .. _-C:
 
@@ -80,12 +80,13 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *ages*
-    Sets the desired groups of ages.  For a single time append
-    the desired time.  For an equidistant range of reconstruction ages
-    give **-T**\ *start*\ /\ *stop*\ /\ *inc* or **-T**\ *start*\ /\ *stop*\ /\ *npoints*\ **+n**.
+    Sets the desired groups of ages.  For a single time append the desired time
+    and all rotations are used to compute a single mean rotation.  For an equidistant
+    range of reconstruction ages give **-T**\ *start*\ /\ *stop*\ /\ *inc* or
+    **-T**\ *start*\ /\ *stop*\ /\ *npoints*\ **+n**.
     For an non-equidistant set of reconstruction ages please pass them
-    via the first column in a file, e.g., **-T**\ *agefile*.  The ages indicate
-    read or generated becomes the bin-boundaries and we output the average time of
+    via the first column in a file, e.g., **-T**\ *agefile*.  The ages we
+    read or generate becomes the bin-boundaries and we output the average time of
     all rotations inside each bin.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -132,12 +133,14 @@ Optional Arguments
 Examples
 --------
 
-To smooth rotation groups in increments of 3 Myr and ensure northern hemisphere poles, try
-
-   ::
+To smooth rotation groups in increments of 3 Myr and ensure northern hemisphere poles, try::
 
     gmt rotsmoother rotations.txt -N -T3/3/30 -V > rot_means.txt
 
+To smooth all rotations and compute a single mean rotation (assigned to time = 5) with
+corresponding covariance matrix, try::
+
+    gmt rotsmoother rotations.txt -C -T5 -V > rot_means_cov.txt
 
 See Also
 --------

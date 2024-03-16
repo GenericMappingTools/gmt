@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,13 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	unsigned int ID;		/* ID to use if label contains C-format for integer */
 };
 
+struct GMT_COL_IO {	/* Common but separate information for -i and -o */
+	bool select, orig, word, end, text;
+	uint64_t n_cols, w_col;
+	uint64_t n_actual_cols;
+	char string[GMT_LEN64];
+};
+
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
 struct GMT_COMMON {
 	struct synopsis {	/* \0 (zero) or ^ */
@@ -88,6 +95,7 @@ struct GMT_COMMON {
 	} B;
 	struct J {	/* -J<params> */
 		bool active, zactive;
+		bool width_given;	/* If true then -R is required too */
 		unsigned int id;
 		char string[GMT_LEN128];
 		char zstring[GMT_LEN128];	/* For -Jz|Z */
@@ -108,6 +116,7 @@ struct GMT_COMMON {
 		bool active[4];	/* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
 		bool via_polygon;	/* Got -R<countrycode> so w/e/s/n may not perfectly fit a grid spacing, for instance */
+		int aspect;	/* -1/+1 when we get -R from a grid whose x and y coordinates are the same units, else 0 */
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
 		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
@@ -120,6 +129,7 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int just;
 		double x, y;
+		char string[GMT_LEN64];	/* User override for timestamp */
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
 	struct V {	/* -V */
@@ -173,6 +183,8 @@ struct GMT_COMMON {
 	} e;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
+		bool is_geo[2];	/* true if -f[i|o]g was set to force a Cartesian grid to be seen as geographic */
+		bool is_cart[2];	/* true if -f[i|o]c was set to force a geographic grid to be seen as Cartesian */
 		char string[GMT_LEN64];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
@@ -199,10 +211,8 @@ struct GMT_COMMON {
 		char string[GMT_LEN256];
 	} h;
 	struct i {	/* -i[<col>|<colrange>,...][t[<word>]] */
-		bool active, select, orig, word, end;
-		uint64_t n_cols, w_col;
-		uint64_t n_actual_cols;
-		char string[GMT_LEN64];
+		bool active;
+		struct GMT_COL_IO col;
 	} i;
 	struct j {	/* -je|f|g [g] */
 		bool active;
@@ -227,9 +237,8 @@ struct GMT_COMMON {
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
 	struct o {	/* -o[<col>|<colrange>,...][t[<word>]] */
-		bool active, select, orig, word, end, text;
-		uint64_t n_cols, w_col;
-		char string[GMT_LEN64];
+		bool active;
+		struct GMT_COL_IO col;
 	} o;
 	struct p {	/* -p<az>[/<el>[/<z0>]]+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
 		bool active;

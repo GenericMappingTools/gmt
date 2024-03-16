@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ *descriptfile* ]
 [ |-E|\ [**+e**][**+s**] ]
-[ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
+[ |-F|\ **e**\|\ **l**\|\ **p**\|\ **s**\|\ **t**\|\ **w** ]
 [ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
 [ |-I|\ *icon* ]
 [ |-K| ]
@@ -49,7 +49,7 @@ Synopsis
 Description
 -----------
 
-**2kml** reads one or more GMT table file and converts them to a
+**2kml** reads one or more GMT table files and converts them to a
 single output file using Google Earth's KML format. Data may represent
 points, lines, polygons, or wiggles, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
@@ -64,7 +64,7 @@ The input files should contain the following columns:
 *lon* *lat* [ *alt* ] [ *timestart* [ *timestop* ] ]
 
 where *lon* and *lat* are required for all features, *alt* is optional
-for all features (see also **-A** and **-C**), and *timestart* and
+for all features (see also |-A| and |-C|), and *timestart* and
 *timestop* apply to events and timespan features.   For wiggles,
 the *alt* column is required but is expected to represent an along-track
 data anomaly such as gravity, magnetics, etc.  These values will be
@@ -84,10 +84,10 @@ Optional Arguments
 **-A**\ **a**\|\ **g**\|\ **s**\ [*alt*\|\ **x**\ *scale*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the feature: **a** absolute
-    altitude, **g** altitude relative to sea surface or ground, **s**
-    altitude relative to seafloor or ground. To plot the features at a
+    altitude, **g** altitude relative to the ground, or **s**
+    altitude relative to seafloor. To plot the features at a
     fixed altitude, append an altitude *alt* (in m). Use 0 to clamp the
-    features to the chosen reference surface. Append **x**\ *scale* to
+    features to the chosen reference surface. Alternatively, append **x**\ *scale* to
     scale the altitude from the input file by that factor. If no value
     is appended, the altitude (in m) is read from the 3rd column of the
     input file. [By default the features are clamped to the sea surface or ground].
@@ -118,22 +118,28 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w**
-    Sets the feature type. Choose from points (**e**\ vent,
-    **s**\ ymbol, or **t**\ imespan), **l**\ ine, **p**\ olygon, or
-    **w**\ iggle [symbol]. The first two columns of the input file should contain
-    (*lon*, *lat*). When altitude or value is required (i.e., no
-    *altitude* value was given with **-A**, or **-C** is set), the third
-    column needs to contain the *altitude* (in m) or *value*. The event
-    (**-Fe**) is a symbol that should only be active at a particular
-    *time*, given in the next column. Timespan (**-Ft**) is a symbol
-    that should only be active during a particular time period indicated
-    by the next two columns (*timestart*, *timestop*). Use NaN to
-    indicate unbounded time limits. If used, times should be in ISO
-    format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format
-    (see **-f**).  For wiggles, the data anomaly is required to be
-    in the 3rd input column.  If you also need to plot the track itself
-    then do that separately with **-Fl**.
+**-F**\ **e**\|\ **l**\|\ **p**\|\ **s**\|\ **t**\|\ **w**
+    Sets the feature type. The first two columns of the input file should
+    contain (*lon*, *lat*). When altitude or value is required (i.e., no
+    *altitude* value was given with |-A|, or |-C| is set), the third
+    column needs to contain the *altitude* (in m) or *value*. Choose from
+    the following directives:
+
+    - **e**\ vent: A symbol that should only be visible at a particular
+      *time*, given in the next column.
+    - **l**\ ine: Draws a line using attributes set by |-W|.
+    - **p**\ olygon: Draws a polygon using attributes set by |-G| and |-W|.
+    - **s**\ ymbol: A regular symbol that is always visible.
+    - **t**\ imespan: A symbol that should only be active during a particular
+      time period indicated by the next two columns (containing *timestart*,
+      *timestop*). Use NaN to indicate unbounded time limits. 
+    - **w**\ iggle: The data anomaly is required to be in the 3rd input column.
+      If you also need to plot the track itself then do that separately with **-Fl**.
+      See |-Q| for additional parameters needed.
+
+    **Note**: If used, times should be in ISO format yyyy-mm-ddThh:mm:ss[.xxx]
+    or in GMT relative time format (see **-f**). For the directives **e**\|\ **s**\|\ **t**,
+    set the symbol to be used via |-I|.
 
 .. _-G:
 
@@ -165,12 +171,12 @@ Optional Arguments
     Extended data given. Append one or more column names separated by
     commas. We will expect the listed data columns to exist in the input
     immediately following the data coordinates required for the selected
-    feature set by **-F**, and they will be encoded
+    feature set by |-F|, and they will be encoded
     in the KML file as Extended Data sets, whose attributes will be
     available in a Google Earth balloon when the item is selected.
     The data file must have enough data columns and trailing text to
     accommodate the number of columns requested.  If the number of extended
-    data is one larger than the number of available numerical columns then
+    data columns is one larger than the number of available numerical columns then
     the entire trailing text is set as the last extended data column.
     Otherwise, the trailing text is split into individual words and
     set as separate extended columns.
@@ -203,13 +209,13 @@ Optional Arguments
 .. _-Q:
 
 **-Qa**\|\ **i**\|\ **s**\ *arg*
-    Option in support of wiggle plots (requires **-Fw**). You may
+    Repeatable option in support of wiggle plots (requires **-Fw**). You may
     control which directions the positive wiggles will tend to point
     to with **-Qa**.  The appended *azimuth* defines a half-circle
     centered on the selected azimuth [0] where positive anomalies
     will plot.  If outside then switch by 180 degrees.  Alternatively,
     use **-Qi** to set a fixed *azimuth* with no further variation.
-    Scaling is also required via **-Qs**\ *scale*.
+    Scaling is also required via a separate **-Qs**\ *scale* option.
     Set a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
     is then inverted to yield degrees per user z-unit and used to
@@ -233,7 +239,7 @@ Optional Arguments
 
 **-T**\ *title*\ [/*foldername*]
     Sets the document title [default is unset]. Optionally, append
-    /*FolderName*; this allows you, with **-O**, **-K**, to group
+    /*FolderName*; this allows you, with |-O|, |-K|, to group
     features into folders within the KML document. [The default folder
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
     Line, Polygon or Wiggle].
@@ -247,9 +253,9 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines, wiggles or polygon outlines. Append pen
-    attributes to use [Defaults: width = default, color = black, style =
+    attributes to use [Defaults: width = 0.25p, color = black, style =
     solid]. If the modifier **+cl** is appended then the color of the line
-    are taken from the CPT (see **-C**). If instead modifier **+cf** is
+    are taken from the CPT (see |-C|). If instead modifier **+cf** is
     appended then the color from the cpt file is applied to symbol fill.
     Use just **+c** for both effects.  Note that for KML the pen width is
     given in (fractional) pixels and not in points (1/72 inch).
@@ -306,55 +312,55 @@ first make the CPT and then create the KML file thus::
     gmt makecpt -Ccategorical > categories.cpt
     gmt 2kml @kml_pointsets.txt -Ccategories.cpt > points.kml
 
-To convert a file with point locations (lon, lat) into a KML file with
+To convert a file with point locations (*lon, lat*) into a KML file with
 red circle symbols, try
 
-   ::
+::
 
-    gmt 2kml mypoints.txt -Gred+f -Fs > mypoints.kml
+  gmt 2kml mypoints.txt -Gred+f -Fs > mypoints.kml
 
-To convert a multisegment file with lines (lon, lat) separated by
+To convert a multisegment file with lines (*lon, lat*) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick white pen, and title the document, try
 
-   ::
+::
 
-    gmt 2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
+  gmt 2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
-To convert a multisegment file with polygons (lon, lat) separated by
+To convert a multisegment file with polygons (*lon, lat*) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick black pen and semi-transparent yellow fill,
 giving a title to the document, and prescribing a particular region
 limit, try
 
-   ::
+::
 
-    gmt 2kml mypolygons.txt -Gyellow@50+f -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
+  gmt 2kml mypolygons.txt -Gyellow@50+f -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
-To convert a file with point locations (lon, lat, time) into a KML file
+To convert a file with point locations (*lon, lat, time*) into a KML file
 with green circle symbols that will go active at the specified time and
 stay active going forward, try
 
-   ::
+::
 
-    awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt 2kml -Ggreen+f -Ft > mytimepoints.kml
+  awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt 2kml -Ggreen+f -Ft > mytimepoints.kml
 
 To extract contours and labels every 10 units from the grid temp.nc and
 plot them in KML, using red lines at 75% transparency and red labels (no
 transparency), try
 
-   ::
+::
 
-    gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
-    gmt 2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
-    gmt 2kml    -O -Nt -Fs -Sn2 -Gred@0+n label.txt -I- >> contours.kml
+  gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
+  gmt 2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
+  gmt 2kml    -O -Nt -Fs -Sn2 -Gred@0+n label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try
 
-   ::
+::
 
-    gmt 2kml contours.txt -Fl -Ccontours.cpt > contours.kml
+  gmt 2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 
 To plot magnetic anomalies as wiggles along track, with positive
 wiggles painted orange and the wiggle line drawn with a black pen
@@ -362,9 +368,9 @@ of width 2p, scaling the magnetic anomalies (in nTesla) so that
 50 nT equals 1 nm on the map, and place the wiggles 50m above the
 sea surface, use
 
-   ::
+::
 
-    gmt 2kml magnetics_lon_lat_mag.txt -Fw -Gorange+f -W2p -Ag50 -Qs50n > wiggles.kml
+  gmt 2kml magnetics_lon_lat_mag.txt -Fw -Gorange+f -W2p -Ag50 -Qs50n > wiggles.kml
 
 Limitations
 -----------
@@ -385,7 +391,7 @@ a KML file and any data files, icons, or images referenced by the KML,
 contained in a zip archive. One way to organize large data sets is to
 split them into groups called Folders. A Document can contain any number
 of folders. Using scripts you can create a composite KML file using the
-**-K**, **-O** options just like you do with GMT plots. See **-T** for
+**-K**, |-O| options just like you do with GMT plots. See |-T| for
 switching between folders and documents.  The gmt_shell_scripts.sh
 contains function gmt_build_kmz that can assist in building a KMZ file
 from any number of KML files (and optionally images they may refer to).
@@ -401,13 +407,13 @@ Kml Hierarchy
 -------------
 
 GMT stores the different features in hierarchical folders by feature
-type (when using **-O**, **-K** or **-T/**\ *foldername*), by input file
+type (when using |-O|, |-K| or **-T/**\ *foldername*), by input file
 (if not standard input), and by line segment (using the name from the
-segment header, or **-N**). This makes it more easy in Google Earth to
+segment header, or |-N|). This makes it more easy in Google Earth to
 switch on or off parts of the contents of the Document. The following is
 a crude example:
 
-[ KML header information; not present if **-O** was used ]
+[ KML header information; not present if |-O| was used ]
 
 <Document><name>GMT Data Document</name>
 
@@ -415,7 +421,7 @@ a crude example:
 
 <!--This level of folder is inserted only when using -O, -K>
 
-<Folder><name>file1.dat</name>
+<Folder><name>file1.txt</name>
 
 <!--One folder for each input file (not when standard input)>
 
@@ -423,11 +429,11 @@ a crude example:
 
 <!--One folder per line segment>
 
-<!--Points from the first line segment in file file1.dat go here>
+<!--Points from the first line segment in file file1.txt go here>
 
 <Folder><name>Point Set 1</name>
 
-<!--Points from the second line segment in file file1.dat go here>
+<!--Points from the second line segment in file file1.txt go here>
 
 </Folder>
 
@@ -435,7 +441,7 @@ a crude example:
 
 <Folder><name>Line Features</name>
 
-<Folder><name>file1.dat</name>
+<Folder><name>file1.txt</name>
 
 <!--One folder for each input file (not when standard input)>
 
@@ -457,13 +463,13 @@ a crude example:
 
 </Document>
 
-[ KML trailer information; not present if **-K** was used ]
+[ KML trailer information; not present if |-K| was used ]
 
 Segment Information
 -------------------
 
 **2kml** will scan the segment headers for substrings of the form
-**-L**"*some label*\ " [also see **-N** discussion] and **-T**"*some
+**-L**"*some label*\ " [also see |-N| discussion] and **-T**"*some
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.
 

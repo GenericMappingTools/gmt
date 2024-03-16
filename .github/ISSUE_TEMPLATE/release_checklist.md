@@ -18,14 +18,13 @@ assignees: ''
 	- [ ] MB-System (@PaulWessel)
 	- [ ] GMTSAR (@PaulWessel)
 	- [ ] GMT.jl (@joa-quim)
-	- [ ] PyGMT (@leouieda, @seisman, @weiji14)
+	- [ ] PyGMT (@leouieda, @seisman, @weiji14, @maxrjones)
 	- [ ] gmtmex (@PaulWessel, @joa-quim)
-- [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
-- [ ] run `src/gmt_make_*.sh` to update some .c and .h files
+- [ ] reserve a DOI on [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@PaulWessel, @seisman)
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](https://github.com/GenericMappingTools/gmt/blob/master/doc/rst/source/changes.rst)
 - [ ] update the version information in CITATION.cff
-- [ ] check installation instructions in [INSTALL.md](https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md)
+- [ ] check installation instructions in `doc/rst/source/install.rst`
 - [ ] check if there are any warnings when building the documentation
 - [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
@@ -38,11 +37,13 @@ assignees: ''
 
 **Release**:
 
-- [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel, @meghanrjones)
-- [ ] create macOS bundle (@PaulWessel, @meghanrjones)
-- [ ] create Windows installers (win32 and win64) (@joa-quim)
-- [ ] check if the source tarballs, macOS bundle and Windows installers work well
-- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel, @meghanrjones)
+- [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
+- [ ] create macOS bundle (@PaulWessel)
+- [ ] create Windows win64 installer and portable installer (@joa-quim)
+- [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
+- [ ] check if the macOS bundles work well (@seisman, @maxrjones)
+- [ ] check if the Windows installers work well (volunteers needed!)
+- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
     ```bash
@@ -59,33 +60,27 @@ assignees: ''
   - [ ] 7 files are attached as release assets (2 source tarballs, 4 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
-- [ ] upload the tarball to zenodo (@PaulWessel)
+- [ ] upload the tarball to [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@PaulWessel, @seisman)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
-- [ ] make announcements on the [GMT twitter](https://twitter.com/gmt_dev)
-- [ ] update links on the main site (News, Download & Documentation)
+- [ ] make announcements on the [GMT Instagram](https://www.instagram.com/genericmappingtools/)
+- [ ] update links on the main site (Download & Documentation)
 - [ ] update install instructions on the wiki if needed
 
 **After release**:
 
-- [ ] create branch 6.x for bug-fixes if this is a minor release (i.e. create branch 6.1 after 6.1.0 is released)
-  ```
-  git checkout master
-  git checkout -b 6.1
-  git push --set-upstream origin 6.1
-  ```
-- [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
-- [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
-- [ ] commit changes to GitHub
+- [ ] Reset for the next version
+      - [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
+      - [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
 
 **3rd-party update**
 
 **Volunteers needed!** Please let us know if you volunteer to help to maintain GMT in these 3rd-party tools.
 
 - [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman, @weiji14)
-- [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@claudiodsf, @seisman)
+- [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/g/gmt.rb) (@claudiodsf, @seisman)
 - [ ] update [macports ports](https://github.com/macports/macports-ports/blob/master/science/gmt5/Portfile) (@remkos, @seisman)
 - [ ] update [the RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/) (@seisman)
-- [ ] update the [try-gmt](https://github.com/GenericMappingTools/try-gmt) Jupyter lab (@weiji14, @seisman)
+- [ ] update the [try-gmt](https://github.com/GenericMappingTools/try-gmt) Jupyter lab (@weiji14, @seisman, @maxrjones)
 - [ ] update [winget manifest file](https://github.com/microsoft/winget-pkgs/tree/master/manifests/g/GenericMappingTools/gmt) (@seisman)
 
 ---

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Make a figure illustrating dz curve for an event across time in psevents
-gmt begin psevents_dz ps
+gmt begin psevents_dz
 	gmt set GMT_THEME cookbook
 	cat <<- EOF > B.txt
 	-0.5	afg	t@-r@-

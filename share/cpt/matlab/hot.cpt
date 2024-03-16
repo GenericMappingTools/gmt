@@ -1,0 +1,11 @@
+#
+# matlab/hot : Black through red and yellow to white [C=RGB]
+# Simulates the HOT colormap in MATLAB
+#
+#----------------------------------------------------------
+# COLOR_MODEL = RGB
+#----------------------------------------------------------
+0	black	0.375	red
+0.375	red	0.75	yellow
+0.75	yellow	1	white
+#----------------------------------------------------------

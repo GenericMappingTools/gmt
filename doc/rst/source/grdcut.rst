@@ -17,6 +17,7 @@ Synopsis
 |-G|\ *outgrid*
 |SYN_OPT-R|
 [ |-D|\ [**+t**] ]
+[ |-E|\ **x**\|\ **y**\ *coord* ]
 [ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
@@ -31,16 +32,19 @@ Synopsis
 Description
 -----------
 
-**grdcut** will produce a new *outgrid* file which is a subregion of
-*ingrid*. The subregion may be specified with **-R** as in other programs;
-the specified range must not exceed the range of *ingrid* (but see **-N**).
-If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
-indirectly via a range check on the node values or via distances from a
-fixed point. Finally, you can use **-J** for oblique projections to determine
-the corresponding rectangular **-R** setting that will give a subregion that fully
-covers the oblique domain.  **Note**: If the input grid is actually an image (gray-scale,
-RGB, or RGBA), then options **-N** and **-Z** are unavailable, while for multi-layer
-Geotiff files only options **-R**, **-S** and **-G** are supported, i.e., you can cut out
+**grdcut** will produce a new *outgrid* file which is a sub-region of
+*ingrid*. The sub-region may be specified with |-R| as in other programs;
+the specified range must not exceed the range of *ingrid* (but see |-N|).
+If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the
+sub-region indirectly via a range check on the node values or via distances from
+a fixed point. Furthermore, you can use |-J| for oblique projections to determine
+the corresponding rectangular |-R| setting that will give a sub-region that fully
+covers the oblique domain.  You can use |-F| to specify a polygon and either use
+its bounding box for sub-region or set grid nodes inside or outside the polygon
+to NaN. Finally, if the input is a 3-D netCDF cube then you can make a vertical
+slice through existing nodes. **Note**: If the input grid is actually an image (gray-scale,
+RGB, or RGBA), then options |-N| and |-Z| are unavailable, while for multi-layer
+GeoTIFF files only options |-R|, |-S| and |-G| are supported, i.e., you can cut out
 a sub-region only (which we do via *gdal_translate* if you have multiple bands).
 Complementary to **grdcut** there is :doc:`grdpaste`, which will join together
 two grid files (not images) along a common edge.
@@ -72,11 +76,20 @@ Optional Arguments
 
 **-D**\ [**+t**]
     A "dry run": Simply report the region and increment of what would be the
-    extracted grid given the selected options.  No grid is created (**-G** is disallowed)
+    extracted grid given the selected options.  No grid is created (|-G| is disallowed)
     and instead we write a single data record with *west east south north xinc yinc*
     to standard output. The increments will reflect the input grid unless it is a
     remote gridded data set without implied resolution. Append **+t** to instead receive
     the information as the trailing string "-Rwest/east/south/north -Ixinc/yinc".
+
+.. _-E:
+
+**-E**\ **x**\|\ **y**\ *coord*
+    We extract a vertical slice going along the **x**\ -column *coord* or along the
+    **y**\ -row *coord*, depending on the given directive.
+    **Note**: (1) Input file must be a 3-D netCDF cube, and |-E| can only be used with
+    option |-G|. (2) *coord* must exactly match the coordinates given by th cube. We are
+    not interpolating between nodes and only do a clean slice through existing cube nodes.
 
 .. _-F:
 
@@ -94,7 +107,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [*nodata*]
-    Allow grid to be extended if new **-R** exceeds existing boundaries.
+    Allow grid to be extended if new |-R| exceeds existing boundaries.
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
 
 .. _-S:
@@ -182,19 +195,24 @@ that is using an oblique projection to display the remote Earth Relief data grid
 
     gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D+t -V
 
+To extract a vertical grid slice at *x = 35* and parallel to the *y-z* plane
+from the 3-D model seis3D.nc, try::
+
+    gmt grdcut seis3D.nc -Gslice_x35.nc -Ex35 -V
+
 Notes
 -----
 
-If the input file is a geotiff with multiple data bands then the output format will
+If the input file is a GeoTIFF with multiple data bands then the output format will
 depend on your selection (if any) of the bands to keep: If you do not specify
 any bands (which means we consider all the available bands) or you select more
-than one band, then the output file can either be another geotiff (if you give
+than one band, then the output file can either be another GeoTIFF (if you give
 a .tif[f] extension) or it can be a multiband netCDF file (if you give a .nc or .grd
-extension). If you select a single band from the input geotiff then GMT will
+extension). If you select a single band from the input GeoTIFF then GMT will
 normally read that in as a single grid layer and thus write a netCDF grid (unless
 you append another grid format specifier). However, if your output filename has
-a .tif[f] extension then we will instead write it as a one-band geotiff.
-All geotiff output operations are done via GDAL's *gdal_translate*.
+a .tif[f] extension then we will instead write it as a one-band GeoTIFF.
+All GeoTIFF output operations are done via GDAL's *gdal_translate*.
 
 See Also
 --------

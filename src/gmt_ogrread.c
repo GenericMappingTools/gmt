@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,16 +21,16 @@
  * The calling syntax is:
  *	s = gmt_ogrread (vector_file);
  *
- *	"s" is a 2D or 3D structure array with fields:
+ *	"s" is a 2-D or 3-D structure array with fields:
  *
  *	Name:		A string holding the layer name.
  *	wkt:		A string describing the reference system in the Well Known Format.
  *	proj4:		A string describing the reference system as a Proj4 string
- *	BoundingBox:	The 2D dataset BoundingBox as a 2x2 matrix with Xmin/Xmax in first column and Y in second
+ *	BoundingBox:	The 2-D dataset BoundingBox as a 2x2 matrix with Xmin/Xmax in first column and Y in second
  *	Type:		Geometry type. E.g. Point, Polygon or LineString
  *	X:		Column vector of doubles with the vector x-coordinates
  *	Y:		Column vector of doubles with the vector y-coordinates
- *	Z:		Same for z when vector is 3D, otherwise empty
+ *	Z:		Same for z when vector is 3-D, otherwise empty
  *	Islands:	2 columns matrix with start and ending indexes of the main Ring and its islands (if any).
  *			This only applies to Polygon geometries that have interior rings (islands).
  *	BBgeom:		Not currently assigned (would be the BoundingBox of each individual geometry)
@@ -42,9 +42,9 @@
  *			Thus if the code of element n is 2 (OFTReal) Att_values[n] can be converted to double with
  *			atof. See ogr_core.h for the list of codes and their meanings.
  *
- * Now, given the potential complexity of an OGR dataset the "s" structure can be either a 2D or 3D dimensional
- * struct array. On the simpler case of one single layer the structure is 2D. If more layers are present in the
- * dataset, each layer will be stored in each of the planes (pages) of the 3D array.
+ * Now, given the potential complexity of an OGR dataset the "s" structure can be either a 2-D or 3-D dimensional
+ * struct array. On the simpler case of one single layer the structure is 2-D. If more layers are present in the
+ * dataset, each layer will be stored in each of the planes (pages) of the 3-D array.
  * Also, besides the three simpler geometries (Point, LineString & Polygon) we can have also the more complex
  * combinations of MultiPoint|Line|Polygon or even the GeometryCollections. So each plane of the "s" array is
  * organized as in the following example:
@@ -65,7 +65,7 @@
  *
  * One final note regarding the "Islands" struct element. Because we want to keep trace on paternity of interior
  * rings (islands) of a polygon, each one of those interior polygons is appended to the main polygon but separated
- * with one row of NaNs (2 or 3 NaNs depending if vector is 2d or 3D). The "Islands" element contains thus a Nx2
+ * with one row of NaNs (2 or 3 NaNs depending if vector is 2-D or 3-D). The "Islands" element contains thus a Nx2
  * matrix with the indexes of the starting and ending positions of the N polygons that were once the Polygon and
  * its interior rings in the OGR model. For Polygons with no islands, "Islands" is an empty ([]) variable.
  *
@@ -76,6 +76,13 @@
  * Revision: 1		Based on ogrread.c MEX from Mirone
  */
 
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_ogrread
+ *	gmt_ogrread2
+ */
+
 #include "gmt_gdalread.h"
 #include <ogr_api.h>
 
@@ -83,6 +90,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
                        OGRFeatureDefnH hFeatureDefn, OGRGeometryH hGeom, int iLayer, int nFeature, int nLayers,
 					   int nAttribs, int nMaxGeoms, int recursionLevel) {
 
+	char sid [10];		/* To store the Feature ID in the field 'name' (apparently Features have no names). */
 	int	is3D, i, j, jj, k, np = 0, nPtsBase, nRings = 0, indStruct, nGeoms, do_recursion;
 	int   *ptr_i = NULL;
 	double *x = NULL, *y = NULL, *z = NULL;
@@ -244,6 +252,9 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			out[indStruct].att_number = 0;
 
 		out[0].n_filled++;				/* Increment the filled nodes counter */
+
+		sprintf(sid, "%lld", OGR_F_GetFID(hFeature)+1);
+		out[indStruct].name = strdup(sid);		/* Set the ID of the feature */
 	}
 
 	return 0;
@@ -368,7 +379,6 @@ struct OGR_FEATURES *gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctr
 		OGR_L_ResetReading(hLayer);
 		hFeatureDefn = OGR_L_GetLayerDefn(hLayer);
 
-		out[ind].name = strdup((char *)OGR_FD_GetName(hFeatureDefn));
 		hSRS = OGR_L_GetSpatialRef(hLayer);	/* Do not free it later */
 		if (hSRS) {				/* Get Layer's SRS. */
 			char *pszWKT = NULL, *pszProj4 = NULL;

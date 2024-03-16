@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2013-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2013-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,8 @@
  */
 
 #include "gmt_dev.h"
+#include "seis_defaults.h"
+#include "longopt/pspolar_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pspolar"
 #define THIS_MODULE_MODERN_NAME	"polar"
@@ -46,9 +48,6 @@
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehiqt" GMT_OPT("c")
-
-#define DEFAULT_FONTSIZE	12.0	/* In points */
-#define DEFAULT_OFFSET		3.0	/* In points */
 
 /* Control structure for pspolar */
 
@@ -64,17 +63,17 @@ struct PSPOLAR_CTRL {
 		double lon, lat;
 	} D;
  	struct PSPOLAR_E {	/* -E<fill> */
-		bool active;
+		bool active[2];	/* [0] for fill, [1] for pen */
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
 	struct PSPOLAR_F {	/* -F<fill> */
-		bool active;
+		bool active[2];	/* [0] for fill, [1] for pen */
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} F;
  	struct PSPOLAR_G {	/* -G<fill> */
-		bool active;
+		bool active[2];	/* [0] for fill, [1] for pen */
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} G;
@@ -142,7 +141,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	gmt_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0);
 	C->T.justify = PSL_TC;
-	C->T.font.size = DEFAULT_FONTSIZE;
+	C->T.font.size = SEIS_DEFAULT_FONTSIZE;
 	return (C);
 }
 
@@ -167,7 +166,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	font = API->GMT->current.setting.font_annot[GMT_PRIMARY];
-	font.size = DEFAULT_FONTSIZE;
+	font.size = SEIS_DEFAULT_FONTSIZE;
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Usage (API, 1, "\n-D<lon>/<lat>");
@@ -277,7 +276,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -319,7 +318,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode diameter %s\n", &p[1]);
 						n_errors++;
 					}
-					Ctrl->OLD_C.active = true;
 				}
 				else if (gmt_count_char (GMT, opt->arg, '/') == 1 && strstr (opt->arg, ".cpt") == NULL) {	/* Just old-style coordinates without modifiers */
 					if (gmt_M_compat_check (GMT, 6))
@@ -329,12 +327,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						continue;
 					}
 					sscanf (opt->arg, "%lf/%lf", &Ctrl->OLD_C.lon2, &Ctrl->OLD_C.lat2);
-					Ctrl->OLD_C.active = true;
 				}
 				break;
 			case 'D':	/* Location for focal sphere placement, with optional alternate location */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				/* Now get map location to place the focal sphere plot */
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not extract lon/lat coordinates from location %s\n", opt->arg);
@@ -344,59 +340,55 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->D.lat), txt_b);
 				break;
 			case 'E':	/* Set color for station in extensive part */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[0]);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
 					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
 				}
 				break;
 			case 'F':	/* Set background color of focal sphere */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active[0]);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
 					gmt_fill_syntax (GMT, 'F', NULL, " ");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Set color for station in compressive part */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[0]);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
 			case 'Q':	/* Repeatable; Controls various symbol attributes  */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'e':	/* Outline station symbol in extensive part */
-						Ctrl->E.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[1]);
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->E.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Qe", "Outline station symbol (extensive part) [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'f':	/* Outline focal sphere */
-						Ctrl->F.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active[1]);
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->F.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Qf", "Outline focal sphere [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Outline station symbol in compressive part */
-						Ctrl->G.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[1]);
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->G.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Qg", "Outline station symbol (compressive part) [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'h':	/* Use HYPO71 format */
-						Ctrl->H2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->H2.active);
 						break;
 					case 's':	/* Get S polarity */
-						Ctrl->S2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->S2.active);
 						p = strchr (opt->arg, '/');	/* Find the first slash */
 						if (p) p[0] = '\0';	/* Temporarily remove the slash */
 						Ctrl->S2.size = gmt_M_to_inch (GMT, opt->arg);
@@ -433,7 +425,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Focal sphere size -M<scale>+m<magnitude>*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				sscanf(opt->arg, "%[^+]%s", txt_a, txt_b);
 				Ctrl->M.ech = gmt_M_to_inch (GMT, txt_a);
 				if ((p = strstr (txt_b, "+m")) != NULL && p[2]) {
@@ -445,11 +436,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'N':	/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Get symbol [and size] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	Ctrl->S.symbol = PSL_STAR;		break;
 					case 'c':	Ctrl->S.symbol = PSL_CIRCLE;	break;
@@ -469,7 +459,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Information about label printing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (strlen (opt->arg)) {
 					/* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
 					if (gmt_found_modifier (GMT, opt->arg, "afjo")) {
@@ -488,9 +477,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 							if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->T.offset) < 0) n_errors++;
 						} else {	/* Set default offset */
 							if (Ctrl->T.justify%4 != 2) /* Not center aligned */
-								Ctrl->T.offset[0] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+								Ctrl->T.offset[0] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 							if (Ctrl->T.justify/4 != 1) /* Not middle aligned */
-								Ctrl->T.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
+								Ctrl->T.offset[1] = SEIS_DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 						}
 					} else {
 						/* Old syntax: -T<angle>/<form>/<justify>/<fontsize> */
@@ -500,7 +489,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':	/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
@@ -549,7 +537,7 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -590,7 +578,7 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 	}
 
 	gmt_setpen (GMT, &Ctrl->F.pen);
-	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
+	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active[1]);
 	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), PSL_CIRCLE);
 
 	GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX);	/* Only text expected */
@@ -687,12 +675,12 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 
 		if (pol == 'u' || pol == 'U' || pol == 'c' || pol == 'C' || pol == '+') {
 			gmt_setpen (GMT, &Ctrl->G.pen);
-			gmt_setfill (GMT, &(Ctrl->G.fill), Ctrl->G.active);
+			gmt_setfill (GMT, &(Ctrl->G.fill), Ctrl->G.active[1]);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &symbol_size2, Ctrl->S.symbol);
 		}
 		else if (pol == 'r' || pol == 'R' || pol == 'd' || pol == 'D' || pol == '-') {
 			gmt_setpen (GMT, &Ctrl->E.pen);
-			gmt_setfill (GMT, &(Ctrl->E.fill), Ctrl->E.active);
+			gmt_setfill (GMT, &(Ctrl->E.fill), Ctrl->E.active[1]);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &symbol_size2, Ctrl->S.symbol);
 		}
 		else {

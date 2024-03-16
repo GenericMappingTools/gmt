@@ -61,7 +61,7 @@ Optional Arguments
     Convert geographic data to a cylindrical equal-area projection prior
     to binning. Basically, we apply the projection
     **-JY**\ *lon0*/37:04:17.166076/360, where *lon0* is the
-    mid-longitude of the region. Requires **-D**, geographical data, and
+    mid-longitude of the region. Requires |-D|, geographical data, and
     a global region (e.g., **-Rg** or **-Rd**). This option is useful
     for statistics related to track-line density but should not be used
     when preparing bin-index files for the x2sys track data bases.
@@ -77,19 +77,17 @@ Examples
 --------
 
 To create a bin index file from the MGD77 file 01030061.mgd77 using the
-settings associated with the tag MGD77, do
-
-   ::
+settings associated with the tag MGD77, do::
 
     gmt x2sys_binlist 01030061.mgd77 -TMGD77 > 01030061.tbf
 
 To create a track bin index file of all MGD77+ files residing in the
 current directory using the settings associated with the tag MGD77+ and
-calculate track distances, run
-
-   ::
+calculate track distances, run::
 
     gmt x2sys_binlist *.nc -TMGD77+ -D > all.tbf
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------

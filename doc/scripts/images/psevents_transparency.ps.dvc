@@ -1,0 +1,5 @@
+outs:
+- md5: 71fbdc6871d42b004d78ab3181b81611
+  size: 29873
+  hash: md5
+  path: psevents_transparency.ps

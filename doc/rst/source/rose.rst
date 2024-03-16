@@ -55,7 +55,7 @@ Description
 
 **rose** reads (length, azimuth) pairs from *file* [or standard input]
 and plot a windrose diagram.  Add **-i**\ 0 if your file only has azimuth values.
-Optionally (with **-A**), polar histograms may be drawn (sector diagram
+Optionally (with |-A|), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
 outline of the windrose is drawn with the same color as :term:`MAP_DEFAULT_PEN`.
 
@@ -79,7 +79,7 @@ Optional Arguments
     diagram instead of sector diagram.
 
 .. |Add_-B| replace:: |Add_-B_links| Remember that "x" here is radial distance
-   and "y" is azimuth. The ylabel may be used to plot a figure caption. The
+   and "y" is azimuth. The y label may be used to plot a figure caption. The
    scale bar length is determined by the radial gridline spacing.
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -103,18 +103,18 @@ Optional Arguments
 **-E**\ **m**\|\ [**+w**]\ *mode_file*
     Plot vectors showing the principal directions given in the *mode_file*
     file. Alternatively, specify **-Em** to compute and plot mean direction. See
-    **-M** to control the vector attributes.  Finally, to instead save the
+    |-M| to control the vector attributes.  Finally, to instead save the
     computed mean direction and other statistics, use [**m**]\ **+w**\ *mode_file*.
     The eight items saved to a single record are:
     *mean_az, mean_r, mean_resultant, max_r, scaled_mean_r, length_sum, n, sign@alpha*,
     where the last term is 0 or 1 depending on whether the mean resultant is significant
-    at the level of confidence set via **-Q**.
+    at the level of confidence set via |-Q|.
 
 .. _-F:
 
 **-F**
     Do *not* draw the scale length bar [Default plots scale bar in lower right corner
-    provided **-B** is used. We use :term:`MAP_TICK_PEN_PRIMARY` to draw the scale and
+    provided |-B| is used. We use :term:`MAP_TICK_PEN_PRIMARY` to draw the scale and
     label it with :term:`FONT_ANNOT_PRIMARY`].
 
 .. _-G:
@@ -125,7 +125,7 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Inquire. Computes statistics needed to specify a useful **-R**. No
+    Inquire. Computes statistics needed to specify a useful |-R|. No
     plot is generated.  The following statistics are written to standard output:
     *n*, *mean az*, *mean r*, *mean resultant length*, *max bin sum*,
     *scaled mean*, and *linear length sum*. **Note**: You may use **-o**
@@ -143,24 +143,24 @@ Optional Arguments
     Specify labels for the 0, 90, 180, and 270 degree marks. For
     full-circle plot the default is WEST,EAST,SOUTH,NORTH and for
     half-circle the default is 90W,90E,-,0. A - in any entry disables
-    that label. Use **-L** with no argument to disable all four labels.
+    that label. Use |-L| with no argument to disable all four labels.
     Note that the :term:`GMT_LANGUAGE` setting will affect the words used.
 
 .. _-M:
 
 **-M**\ *parameters*
-    Used with **-E** to modify vector parameters. For vector heads,
-    append vector head *size* [Default is 0, i.e., a line]. See VECTOR
-    ATTRIBUTES for specifying additional attributes.  If **-E** is not
+    Used with |-E| to modify vector parameters. For vector heads,
+    append vector head *size* [Default is 0, i.e., a line]. See `Vector Attributes`_
+    for specifying additional attributes.  If |-E| is not
     given and the current plot mode is to draw a windrose diagram then
-    using **-M** will add vector heads to all individual directions
+    using |-M| will add vector heads to all individual directions
     using the supplied attributes.
 
 .. _-N:
 
 **-N**\ *mode*\ [**+p**\ *pen*]
     Draw the equivalent circular normal distribution, i.e., the *von Mises*
-    distribution; append desired pen [0.25p,black].
+    distribution; optionally append desired pen via the **+p** modifier [0.25p,black].
     The *mode* selects which central location and scale to use:
 
     * 0 = mean and standard deviation;
@@ -174,7 +174,7 @@ Optional Arguments
 **-Q**\ [*alpha*]
     Sets the confidence level used to determine if the mean resultant
     is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
-    **Note**: The critical values are approximated [Berens, 2009] and
+    **Note**: The critical values are approximated [*Berens*, 2009] and
     requires at least 10 points; the critical resultants are accurate
     to at least 3 significant digits.  For smaller data sets you
     should consult exact statistical tables.
@@ -189,10 +189,10 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**+a**]
-    Normalize input radii (or bin counts if **-A** is used) by the largest
+    Normalize input radii (or bin counts if |-A| is used) by the largest
     value so all radii (or bin counts) range from 0 to 1.  Optionally,
-    further normalize rose plots for area (i.e., take :math:`sqrt(r)` before
-    plotting [Default is no normalizations].
+    further normalize rose plots for area via modifier **+a** (i.e., take
+    :math:`sqrt(r)` before plotting [Default is no normalizations].
 
 .. _-T:
 
@@ -217,7 +217,7 @@ Optional Arguments
 **-W**\ *pen*
     Set pen attributes for sector outline or rose plot. [Default is no
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
-    (requires **-E**) [Default is same as sector outline].
+    (requires |-E|) [Default is same as sector outline].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
@@ -288,16 +288,16 @@ lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =
 solid pen (width = 0.5 point, and shown in landscape [Default]
 orientation with a timestamp and command line plotted, use:
 
-   ::
+::
 
-    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -U+c -pdf rose
+  gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -U+c -pdf rose
 
 Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
 
-   ::
+::
 
-    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c -pdf rose
+  gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c -pdf rose
 
 .. module_note_begins
 
@@ -305,7 +305,7 @@ Bugs
 ----
 
 No default radial scale and grid settings for polar histograms. Users
-must run the module with **-I** to find max length in binned data set.
+must run the module with |-I| to find max length in binned data set.
 
 References
 ----------

@@ -50,7 +50,7 @@ drho=$(gmt math -Q ${rhol} ${rhow} SUB =)
 gmt gravfft smt.nc+uk -Gsmt_grav.nc -Nf+a -Ff -E4 -D${drho} -W6k
 paste flist times.txt > flist.txt
 drho=$(gmt math -Q ${rhom} ${rhos} SUB =)
-while read file t t2 color; do
+while read t1 file t t2 color; do
 	gmt gravfft ${file}+uk -Gflx_grav.nc -Nf+a -Ff -E2 -D${drho} -W13k
 	gmt grdtrack t.txt -Gflx_grav.nc > b.txt
 	gmt psxy -R -J -O -K -W0.25p,${color},- b.txt -i0,2 >> $ps

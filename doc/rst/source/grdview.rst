@@ -14,12 +14,12 @@ Synopsis
 
 **gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
-[ |-C|\ [*cpt*]]
-[ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
-[ |-I|\ [*intensgrid*\|\ *intensity*\|\ *modifiers*] ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
+[ |-G|\ *drapegrid*\|\ *drapeimage* ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
-[ |-N|\ *level*\ [**+g**\ *fill*] ]
-[ |-Q|\ *args*\ [**+m**] ]
+[ |-N|\ [*level*]\ [**+g**\ *fill*] ]
+[ |-Q|\ **c**\|\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\ [*color*][**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
@@ -72,31 +72,17 @@ Optional Arguments
 
 .. _-G:
 
-|-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
-    Drape the image in *drapegrid* on top of the relief provided by
+|-G|\ *drapegrid*\|\ *drapeimage*
+    Drape the surface in *drapegrid* on top of the relief provided by
     *reliefgrid*. [Default determines colors from *reliefgrid*]. Note that **-Jz** and
-    **-N** always refers to the *reliefgrid*. The *drapegrid* only
+    |-N| always refers to the *reliefgrid*. The *drapegrid* only
     provides the information pertaining to colors, which (if *drapegrid* is a grid) will be looked-up
-    via the CPT (see **-C**). Instead, you may give three grid files
-    via separate **-G** options in the specified order. These files must contain the red, green, and
-    blue colors directly (in 0-255 range) and no CPT is needed. The
-    *drapegrid* may be of a different resolution than the *reliefgrid*.
-    Finally, *drapegrid* may be an image to be draped over the surface, in which
-    case the **-C** option is not required.
+    via the CPT (see |-C|). Instead, you may give a *drapeimage* to be draped over the surface, in which
+    case the |-C| option is not expected.
 
 .. _-I:
 
-**-I**\ [*intensgrid*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the (-1,+1) range,
-    or a constant intensity to apply everywhere (affects the ambient light).
-    Alternatively, derive an intensity grid from the input data grid *reliefgrid*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth*, **+n**\ *args*,
-    and **+m**\ *ambient* to specify azimuth, intensity, and ambient arguments
-    for that module, or just give **+d** to select the
-    default arguments (**+a**\ -45\ **+nt**\ 1\ **+m**\ 0). If you want a more
-    specific intensity scenario then run :doc:`grdgradient` separately first.
-    If we should derive intensities from another file than *reliefgrid*, specify the file
-    [Default is no illumination].
+.. include:: explain_intense.rst_
 
 .. _-Jz:
 
@@ -104,27 +90,35 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *level*\ [**+g**\ *fill*]
+**-N**\ [*level*]\ [**+g**\ *fill*]
     Draws a plane at this z-level. If the optional *color* is provided
     via the **+g** modifier, and the projection is not oblique,
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline.
+    If no *level* is set then we default to the minimum value in the
+    *reliefgrid*. However, if |-R| was used to set *zmin/zmax* then we
+    use that value if it is less than the grid minimum value.
 
 .. _-Q:
 
-**-Q**\ *args*\ [**+m**]
-    Select one of following settings. For any of these choices, you may force
-    a monochrome image by appending the modifier **+m**. Colors are then
-    converted to shades of gray using the (monochrome television) YIQ transformation
+**-Q**\ **c**\|\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\ [*color*][**+m**]
+    Select one of following directives. For any of these choices:
 
-    #. Specify **m** for mesh plot [Default], and optionally append *color* for a different mesh paint [white].
-    #. Specify **mx** or **my** for waterfall plots (row or column profiles). Specify color as for plain **m**
-    #. Specify **s** for surface plot, and optionally append **m** to have mesh lines drawn on top of surface.
-    #. Specify **i** for image plot, and optionally append the effective dots-per-unit resolution for the rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
-    #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
-       feature in PostScript Level 3 (the PS device must support PS Level 3).
+    - **c** - Image plot, but will make nodes with *z* = NaN transparent, using the color-masking
+      feature in PostScript Level 3. Optionally append the effective dots-per-unit resolution
+      for the rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
+    - **i** - Image plot. Optionally append the effective dots-per-unit resolution for the
+      rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
+    - **m** - Mesh plot [Default]. Optionally append *color* for a different mesh paint [white].
+      For waterfall plots, append **x** for row or **y** for column profiles). Specify color as for plain **m**.
+    - **s** - Surface plot. Optionally append **m** to have mesh lines drawn on top of surface. See **-Wm** for
+      setting a specific mesh *pen*.
 
-    **Note**: If the CPT is categorical then only **-Qm** is available (but see **-T**).
+    A modifier can adjust the color further:
+
+    - **+m** - Colors are converted to shades of gray using the (monochrome television) YIQ transformation.
+
+    **Note**: If the CPT is categorical then only **-Qm** is available (but see |-T|).
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -150,7 +144,7 @@ Optional Arguments
     node-centered bin into a polygon which is then painted separately.
     Append **+s** to skip nodes with z = NaN. This option is suitable for
     categorical data where interpolating between values is meaningless
-    and a categorical CPT has been provided via **-C**.
+    and a categorical CPT has been provided via |-C|.
     Optionally, append **+o** to draw the tile outlines, and specify a
     custom pen if the default pen is not to your liking. As this option
     produces a flat surface it cannot be combined with **-JZ** or **-Jz**.
@@ -168,19 +162,21 @@ Optional Arguments
 .. _-W:
 
 **-W**\ **c**\|\ **m**\|\ **f**\ *pen*
+    Sets pen for contours, mesh, and facade lines.  Choose among
+    these directives:
 
-    **-Wc**
-        Draw contour lines on top of surface or mesh (not image). Append pen
-        attributes used for the contours. [Default: width = 0.75p, color =
-        black, style = solid].
-    **-Wm**
-        Sets the pen attributes used for the mesh. [Default: width = 0.25p,
-        color = black, style = solid]. You must also select **-Qm** or
-        **-Qsm** for meshlines to be drawn.
-    **-Wf**
-        Sets the pen attributes used for the facade. [Default: width =
-        0.25p, color = black, style = solid]. You must also select **-N**
-        for the facade outline to be drawn.
+    - **c**: Append the desired contour pen.
+      Draw contour lines on top of surface or mesh (not image). Append pen
+      attributes used for the contours. [Default: width = 0.75p, color =
+      black, style = solid].
+    - **f**: Append the desired facade pen.
+      Sets the pen attributes used for the facade. [Default: width =
+      0.25p, color = black, style = solid]. You must also select |-N|
+      for the facade outline to be drawn.
+    - **m**: Append the desired mesh pen.
+      Sets the pen attributes used for the mesh. [Default: width = 0.25p,
+      color = black, style = solid]. You must also select **-Qm** or
+      **-Qsm** for meshlines to be drawn.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
@@ -199,6 +195,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_distunits.rst_
+
 .. include:: explain_grdresample.rst_
 
 .. module_common_ends
@@ -216,7 +214,7 @@ contours given in the CPT hawaii.cpt on a Lambert map at
 scale 20 mgal/cm, and looking at the surface from SW at 30 degree
 elevation, run::
 
-    gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
+    gmt grdview hawaii_grav.nc -Jl202/21/18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
 
 To create an illuminated color perspective plot of the gridded data set
 image.nc, using the CPT color.cpt, with linear scaling at
@@ -250,6 +248,8 @@ gridding programs like :doc:`surface` or :doc:`nearneighbor`. Unfortunately,
 this produces huge PostScript files. The alternative is to use the
 **-Qi** option, which computes bilinear or bicubic continuous color
 variations within polygons by using scanline conversion to image the polygons.
+
+.. include:: macos_preview_issue.rst_
 
 .. module_note_ends
 

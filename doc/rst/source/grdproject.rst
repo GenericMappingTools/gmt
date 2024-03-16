@@ -18,6 +18,7 @@ Synopsis
 [ |-E|\ *dpi* ] [ |-F|\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**] ] [ |-I| ] [ |-M|\ **c**\|\ **i**\|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
@@ -27,7 +28,7 @@ Synopsis
 Description
 -----------
 
-**grdproject** will do one of two things depending whether **-I** has
+**grdproject** will do one of two things depending whether |-I| has
 been set. If set, it will transform a gridded data set from a
 rectangular coordinate system onto a geographical system by resampling
 the surface at the new nodes. If not set, it will project a geographical
@@ -43,7 +44,7 @@ determined in one of several ways by specifying the grid spacing, number
 of nodes, or resolution. Nodes not constrained by input data are set to
 NaN.
 
-The **-R** option can be used to select a map region larger or smaller
+The |-R| option can be used to select a map region larger or smaller
 than that implied by the extent of the grid file.
 
 Required Arguments
@@ -74,14 +75,14 @@ Optional Arguments
 **-C**\ [*dx/dy*]
     Let projected coordinates be relative to projection center [Default
     is relative to lower left corner]. Optionally, add offsets in the
-    projected units to be added (or subtracted when **-I** is set) to
+    projected units to be added (or subtracted when |-I| is set) to
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0].
 
 .. _-D:
 
 **-D**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
-    Set the grid spacing for the new grid.  If neither **-D** nor **-E** are set then we
+    Set the grid spacing for the new grid.  If neither |-D| nor |-E| are set then we
     select the same number of output nodes as there are input nodes.
     Optionally append a suffix modifier.
     **Geographical (degrees) coordinates**: Append
@@ -102,7 +103,7 @@ Optional Arguments
     increment value depends on whether you have selected a
     gridline-registered or pixel-registered grid; see :ref:`GMT File Formats` for
     details. **Note**: If **-R**\ *grdfile* is used then the grid spacing (and registration) have
-    already been initialized; use **-D** (and **-r**) to override the values.
+    already been initialized; use |-D| (and **-r**) to override the values.
 
 .. _-E:
 
@@ -112,12 +113,12 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]
-    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
+    Force 1:1 scaling, i.e., output (or input, see |-I|) data are in
     actual projected meters [**e**]. To specify other units, append
     **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
     mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
-    (point). Without **-F**, the output (or input, see **-I**) are in
-    the units specified by :term:`PROJ_LENGTH_UNIT` (but see **-M**).
+    (point). Without |-F|, the output (or input, see |-I|) are in
+    the units specified by :term:`PROJ_LENGTH_UNIT` (but see |-M|).
 
 .. _-I:
 
@@ -129,7 +130,7 @@ Optional Arguments
 **-Mc**\|\ **i**\|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with **-F**.
+    :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with |-F|.
 
 .. |Add_-R| replace:: You may ask to project only a subset of the grid by specifying a smaller input *w/e/s/n* region
     [Default is the region given by the grid file]. |Add_-R_links|
@@ -141,6 +142,8 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_-n.rst_
 
@@ -157,15 +160,15 @@ Examples
 To transform a chunk of the geographical remote grid earth_relief_05m onto a pixel Mercator grid at 300 dpi
 given a scale of 0.25 inches per degree, run
 
-   ::
+::
 
-    gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
+  gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
 
 To inversely transform the file topo_tm.nc back onto a geographical grid, use
 
-   ::
+::
 
-    gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
+  gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
 
 This assumes, of course, that the coordinates in topo_tm.nc were
 created with the same projection parameters.
@@ -174,27 +177,29 @@ To inversely transform the file topo_utm.nc (which is in UTM meters)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-   ::
+::
 
-    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
+  gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
 
 To inversely transform the file data.nc (which is in Mercator meters with Greenwich
 as the central longitude and a false easting of -4 and produced on the ellipse WGS-72)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-   ::
+::
 
-    gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
+  gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
 
-Restrictions
-------------
+Output Region Issues
+--------------------
 
 The boundaries of a projected (rectangular) data set will not
 necessarily give rectangular geographical boundaries (Mercator is one
 exception). In those cases some nodes may be unconstrained (set to NaN).
 To get a full grid back, your input grid may have to cover a larger area
 than you are interested in.
+
+.. include:: explain_ellipsoidal.rst_
 
 See Also
 --------

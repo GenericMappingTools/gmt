@@ -1,6 +1,6 @@
 **-S**\ [*symbol*][*size*]
-    Plot individual symbols in a ternary diagram.  If **-S** is not given then
-    we will instead plot lines (requires **-W**) or polygons (requires **-C** or **-G**).
+    Plot individual symbols in a ternary diagram.  If |-S| is not given then
+    we will instead plot lines (requires |-W|) or polygons (requires |-C| or |-G|).
     If present, *size* is symbol size in the unit set by
     :term:`PROJ_LENGTH_UNIT` (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
@@ -18,7 +18,7 @@
     *coordinates* [ *value* ] [ *parameters* ] [ *symbol* ]
 
     where *coordinates* is two or three columns specifying the location of a point,
-    the optional *value* is required when **-C** is used to control color, the optional
+    the optional *value* is required when |-C| is used to control color, the optional
     *parameters* is required when no symbol size is specified, and the trailing
     text with leading *symbol* code is required when the symbol code is not specified
     on the command line.  **Note**: *parameters* may represent more than one *size*
@@ -32,7 +32,7 @@
     diameter *size*, while the *size* of the corresponding lowercase symbols
     refers to the diameter of a circumscribed circle.
 
-    You can change symbols by adding the required **-S** option to any of
+    You can change symbols by adding the required |-S| option to any of
     your multi-segment headers.
 
     Choose between these symbol codes:

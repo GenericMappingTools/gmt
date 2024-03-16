@@ -10,7 +10,7 @@ R=1.98
 gmt text -R0/3/0/1.5 -Jx1i -N -C0 -Wthin,- -F+f36p,Helvetica-Bold+jLB << EOF
 0.1	0.2	My Text
 EOF
-gmt plot -N << EOF
+gmt plot << EOF
 >
 0.05	$B
 2.04	$B
@@ -30,7 +30,7 @@ $C	0.65
 $R	0
 $R	0.65
 EOF
-gmt plot -N -Wthinner << EOF
+gmt plot -Wthinner << EOF
 >
 0.7	-0.1
 $L	$M

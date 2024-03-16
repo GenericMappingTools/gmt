@@ -15,8 +15,8 @@ append /*transp2* to set separate transparencies for fills and strokes.
 
 
 Transparency may also be controlled on a feature by feature basis when setting color or fill (see the cookbook section
-:ref:`-Gfill_attrib`). **Note**: The modules :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change
+:ref:`-Gfill_attrib`). **Notes**: (1) The modules :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change
 transparency on a record-by-record basis if **-t** is given without argument and the input file supplies variable
-transparencies as the last numerical column value(s). **Note**: The transparency is only visible when PDF or raster
+transparencies as the last numerical column value(s). (2) The transparency is only visible when PDF or raster
 format output is selected because the PostScript language does not support transparency. Only the PNG format selection
 adds a transparency layer in the image (for further processing).

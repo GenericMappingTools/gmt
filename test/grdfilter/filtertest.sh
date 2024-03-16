@@ -16,7 +16,7 @@ fi
 
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
-DATA=@earth_relief_10m # Test on ETOP10 data
+DATA=@earth_relief_10m_p # Test on ETOP10 data
 lon=150
 lat=-80
 D=5000

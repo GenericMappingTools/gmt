@@ -12,13 +12,17 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdgradient** *ingrid* |-G|\ *outgrid*
-[ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
+**gmt grdgradient** *ingrid*
+|-G|\ *outgrid*
+[ |-A|\ *azim*\ [/*azim2*] ]
+[ |-D|\ [**a**][**c**][**n**][**o**] ]
 [ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
 [ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
 [ |-Q|\ **c**\|\ **r**\|\ **R**\ [**+f**\ *file*]]
-[ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
-[ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
+[ |SYN_OPT-R| ]
+[ |-S|\ *slopefile* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT--| ]
 
@@ -56,14 +60,14 @@ Optional Arguments
 
 **-A**\ *azim*\ [/*azim2*]
     Azimuthal direction for a directional derivative; *azim* is the
-    angle in the x,y plane measured in degrees positive clockwise from
+    angle in the *x-y* plane measured in degrees positive clockwise from
     north (the +y direction) toward east (the +x direction). The
-    negative of the directional derivative, 
+    negative of the directional derivative,
     :math:`-(\frac{dz}{dx}\sin(a) + \frac{dz}{dy}\cos(a))`
     , is found where :math:`a` is the *azimuth*; negation yields positive values
     when the slope of :math:`z(x,y)` is downhill in the :math:`a` direction, the
     correct sense for shading the illumination of an image (see
-    :doc:`grdimage` and :doc:`grdview`) by a light source above the x,y plane
+    :doc:`grdimage` and :doc:`grdview`) by a light source above the *x-y* plane
     shining from the :math:`a` direction. Optionally, supply two azimuths,
     **-A**\ *azim*/*azim2*, in which case the gradients in each of these
     directions are calculated and the one larger in magnitude is
@@ -76,18 +80,18 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**a**][**c**][**o**][**n**]
+**-D**\ [**a**][**c**][**n**][**o**]
     Instead of finding the gradient in a given direction (|-A|), find the
     direction of the positive (up-slope) gradient of the data. The
-    following modifiers are supported:
+    following directives are supported:
 
-    - **a** - Find the aspect (i.e., the down-slope direction).
-    - **c** - Use the conventional Cartesian angles measured counterclockwise
+    - **a**: Find the aspect (i.e., the down-slope direction).
+    - **c**: Use the conventional Cartesian angles measured counterclockwise
       from the positive x (east direction) [Default measures directions
       clockwise from north, as *azim* in |-A|].
-    - **o** - Report orientations (0-180) rather than directions (0-360).
-    - **n** - Add 90 degrees to all angles (e.g., to give local strikes of the
+    - **n**: Add 90 degrees to all angles (e.g., to give local strikes of the
       surface).
+    - **o**: Report orientations (0-180) rather than directions (0-360).
 
 .. _-E:
 
@@ -116,8 +120,8 @@ Optional Arguments
     *amp* = 1. If *offset* is not given, it is set to the average of
     :math:`g`. The following forms are supported, where :math:`o` is the offset
     and :math:`a` is the *amp*:
-    
-    - **-N** - Normalize using :math:`g_n = a(\frac{g - o}{max(|g - o|)})`
+
+    - |-N| - Normalize using :math:`g_n = a(\frac{g - o}{max(|g - o|)})`
     - **-Ne** - Normalize using a cumulative Laplace distribution yielding:
       :math:`g_n = a(1 - \exp{(\sqrt{2}\frac{g - o}{\sigma}))}`, where
       :math:`\sigma` is estimated using the L1 norm of :math:`(g - o)` if it is
@@ -126,7 +130,7 @@ Optional Arguments
       :math:`g_n = \frac{2a}{\pi}(\tan^{-1}(\frac{g - o}{\sigma}))` where
       :math:`\sigma` is estimated using the L2 norm of :math:`(g -o)` if it
       is not given.
-      
+
     To use :math:`o` and/or :math:`\sigma` from a previous calculation,
     leave out the argument to the modifier(s) and see |-Q| for usage.  As a final
     option, you may add **+a**\ *ambient* to add *ambient* to all nodes after
@@ -135,18 +139,18 @@ Optional Arguments
 .. _-Q:
 
 **-Qc**\|\ **r**\|\ **R**\ [**+f**\ *file*]
-    Controls how normalization via **-N** is carried out.  When multiple grids
+    Controls how normalization via |-N| is carried out.  When multiple grids
     should be normalized the same way (i.e., with the same *offset* and/or *sigma*),
-    we must pass these values via **-N**.  However, this is inconvenient if we
+    we must pass these values via |-N|.  However, this is inconvenient if we
     compute these values from a grid.  Use **-Qc** to save the results of
     *offset* and *sigma* to a statistics file; if grid output is not needed
-    for this run then do not specify **-G**. For subsequent runs, just use
+    for this run then do not specify |-G|. For subsequent runs, just use
     **-Qr** to read these values.  Using **-QR** will read then delete the
     statistics file. See :ref:`Tiles <grdgradient:Tiles>` for more information.
     Optionally, append **+f**\ *file* to write/read the statistics to/from the
-    specified *file*.
+    specified *file* [Default is grdgradient.stat in the current TMP directory].
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -156,7 +160,7 @@ Optional Arguments
 
 **-S**\ *slopefile*
     Name of output grid file with scalar magnitudes of gradient vectors.
-    Requires **-D** but makes **-G** optional.
+    Requires |-D| but makes |-G| optional.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -180,12 +184,12 @@ specified unit to meter.  If your grid is geographic, convert distances to meter
 Hints
 -----
 
-- If you don't know what **-N** options to use to make an intensity file for :doc:`grdimage` or :doc:`grdview`, a good
+- If you don't know what |-N| options to use to make an intensity file for :doc:`grdimage` or :doc:`grdview`, a good
   first try is **-Ne**\ 0.6.
-- Usually 255 shades are more than enough for visualization purposes. You can save 75% disk space by appending =nb/a to
+- Usually 255 shades are more than enough for visualization purposes. You can save 75% disk space by appending =\ *nb/a* to
   the output filename *outgrid*.
 - If you want to make several illuminated maps of subregions of a large data set, and you need the illumination effects
-  to be consistent across all the maps, use the **-N** option and supply the same value of *sigma*
+  to be consistent across all the maps, use the |-N| option and supply the same value of *sigma*
   and *offset* to **grdgradient** for each map. A good guess is *offset* = 0 and *sigma* found by
   :doc:`grdinfo` **-L2** or **-L1** applied to an unnormalized gradient grd.
 - If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
@@ -200,11 +204,11 @@ Hence, different tiles of the same large grid will compute different *offset* an
 Thus, the intensity for the same directional slope will be different across the final map.
 This inconsistency can lead to visible changes in image appearance across tile seams.
 The way to ensure compatible results is to specify the same *offset* and *sigma* via
-the modifiers to **-N**.  However, if these need to be estimated from the large grid then
-the **-Q** option can help: Run **grdgradient** on the full grid (or as large portion of
+the modifiers to |-N|.  However, if these need to be estimated from the large grid then
+the |-Q| option can help: Run **grdgradient** on the full grid (or as large portion of
 the grid that your computer can handle) and specify **-Qc** to create a statistics file
 with the resulting *offset* and *sigma*.  Then, for each of your grid tile calculations, give
-**+o** and/or **+s** without arguments to **-N** and specify **-Qr**.  This option will read
+**+o** and/or **+s** without arguments to |-N| and specify **-Qr**.  This option will read
 the values from the hidden statistics file and use them in the normalization.
 If you use **-QR** for the final tile then the statistics file is removed after use.
 
@@ -237,23 +241,23 @@ the north and west directions::
 
 To find the azimuth orientations of seafloor fabric in the file topo.nc:
 
-   ::
+::
 
-    gmt grdgradient topo.nc -Dno -Gazimuths.nc -V
+  gmt grdgradient topo.nc -Dno -Gazimuths.nc -V
 
 To determine the offset and sigma suitable for normalizing the intensities from topo.nc, do
 
-   ::
+::
 
-    gmt grdgradient topo.nc -A30 -Nt0.6 -Qc -V
+  gmt grdgradient topo.nc -A30 -Nt0.6 -Qc -V
 
-Without **-G**, only the hidden statistics file is created and no output grid is written.
+Without |-G|, only the hidden statistics file is created and no output grid is written.
 
 To use the previously determined offset and sigma to normalize the intensities in tile_3.nc, do
 
-   ::
+::
 
-    gmt grdgradient tile_3.nc -A30 -Nt0.6+o+s -Qr -V -Gtile_3_int.nc
+  gmt grdgradient tile_3.nc -A30 -Nt0.6+o+s -Qr -V -Gtile_3_int.nc
 
 
 References

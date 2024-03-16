@@ -1,5 +1,5 @@
 outs:
-- md5: 68c920efcfba5f934eee90144c09b795.dir
-  size: 3975696
+- md5: aceec929e8ab2a939a5cfacf0dbf3b4c.dir
   nfiles: 23
   path: grdcontour
+  hash: md5

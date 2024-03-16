@@ -1,141 +1,207 @@
-#
-#
-# Locate netcdf
-#
-# This module accepts the following environment variables:
-#
-#    NETCDF_DIR or NETCDF_ROOT - Specify the location of NetCDF
-#
-# This module defines the following CMake variables:
-#
-#    NETCDF_FOUND - True if libnetcdf is found
-#    NETCDF_LIBRARY - A variable pointing to the NetCDF library
-#    NETCDF_INCLUDE_DIR - Where to find the headers
-#    NETCDF_INCLUDE_DIRS - Where to find the headers
-#    NETCDF_DEFINITIONS - Extra compiler flags
+# Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+# file Copyright.txt or https://cmake.org/licensing for details.
 
-#=============================================================================
-# Inspired by FindGDAL
+#.rst:
+# FindNetCDF
+# ---------
 #
-# Distributed under the OSI-approved bsd license (the "License")
+# Find the native NetCDF includes and library
 #
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See COPYING-CMAKE-SCRIPTS for more information.
-#=============================================================================
-
-# This makes the presumption that you are include netcdf.h like
+#  NETCDF_INCLUDE_DIR  - user modifiable choice of where netcdf headers are
+#  NETCDF_LIBRARY      - user modifiable choice of where netcdf libraries are
 #
-#include "netcdf.h"
+# Your package can require certain interfaces to be FOUND by setting these
+#
+#  NETCDF_CXX         - require the C++ interface and link the C++ library
+#  NETCDF_F77         - require the F77 interface and link the fortran library
+#  NETCDF_F90         - require the F90 interface and link the fortran library
+#
+# Or equivalently by calling FindNetCDF with a COMPONENTS argument containing one or
+# more of "CXX;F77;F90".
+#
+# When interfaces are requested the user has access to interface specific hints:
+#
+#  NETCDF_${LANG}_INCLUDE_DIR - where to search for interface header files
+#  NETCDF_${LANG}_LIBRARY     - where to search for interface libraries
+#
+# This module returns these variables for the rest of the project to use.
+#
+#  NETCDF_FOUND          - True if NetCDF found including required interfaces (see below)
+#  NETCDF_LIBRARIES      - All netcdf related libraries.
+#  NETCDF_INCLUDE_DIRS   - All directories to include.
+#  NETCDF_HAS_INTERFACES - Whether requested interfaces were found or not.
+#  NETCDF_${LANG}_INCLUDE_DIRS/NETCDF_${LANG}_LIBRARIES - C/C++/F70/F90 only interface
+#
+# Normal usage would be:
+#  set (NETCDF_F90 "YES")
+#  find_package (NetCDF REQUIRED)
+#  target_link_libraries (uses_everthing ${NETCDF_LIBRARIES})
+#  target_link_libraries (only_uses_f90 ${NETCDF_F90_LIBRARIES})
+#
+# It detect NetCDF configurations and set configurations in variable
+#
+# NETCDF_HAS_NC2
+# NETCDF_HAS_NC4
+# NETCDF_HAS_HDF4
+# NETCDF_HAS_HDF5
+# NETCDF_HAS_DAP
+# NETCDF_HAS_MEM
+#
 
-if (UNIX AND NOT NETCDF_FOUND)
-	# Use nc-config to obtain the libraries
-	find_program (NETCDF_CONFIG nc-config
-		HINTS
-		${NETCDF_DIR}
-		${NETCDF_ROOT}
-		$ENV{NETCDF_DIR}
-		$ENV{NETCDF_ROOT}
-		PATH_SUFFIXES bin
-		PATHS
-		/sw # Fink
-		/opt/local # DarwinPorts
-		/opt/csw # Blastwave
-		/opt
-		/usr/local
-	)
+#search starting from user editable cache var
+if (NETCDF_INCLUDE_DIR AND NETCDF_LIBRARY)
+    # Already in cache, be silent
+    set (NETCDF_FIND_QUIETLY TRUE)
+endif ()
+find_program(NC_CONFIG NAMES nc-config DOC "NetCDF config command")
+mark_as_advanced(NC_CONFIG)
 
-	if (NETCDF_CONFIG)
-		execute_process (COMMAND ${NETCDF_CONFIG} --cflags
-			ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
-			OUTPUT_VARIABLE NETCDF_CONFIG_CFLAGS)
-		if (NETCDF_CONFIG_CFLAGS)
-			string (REGEX MATCHALL "(^| )-I[^ ]+" _netcdf_dashI ${NETCDF_CONFIG_CFLAGS})
-			string (REGEX REPLACE "(^| )-I" "" _netcdf_includepath "${_netcdf_dashI}")
-			string (REGEX REPLACE "(^| )-I[^ ]+" "" _netcdf_cflags_other ${NETCDF_CONFIG_CFLAGS})
-		endif (NETCDF_CONFIG_CFLAGS)
-		execute_process (COMMAND ${NETCDF_CONFIG} --libs
-			ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
-			OUTPUT_VARIABLE NETCDF_CONFIG_LIBS)
-		if (NETCDF_CONFIG_LIBS)
-			# Ensure -l is precedeced by whitespace to not match
-			# '-l' in '-L/usr/lib/x86_64-linux-gnu/hdf5/serial'
-			string (REGEX MATCHALL "(^| )-l[^ ]+" _netcdf_dashl ${NETCDF_CONFIG_LIBS})
-			string (REGEX REPLACE "(^| )-l" "" _netcdf_lib "${_netcdf_dashl}")
-			string (REGEX MATCHALL "(^| )-L[^ ]+" _netcdf_dashL ${NETCDF_CONFIG_LIBS})
-			string (REGEX REPLACE "(^| )-L" "" _netcdf_libpath "${_netcdf_dashL}")
-		endif (NETCDF_CONFIG_LIBS)
-	endif (NETCDF_CONFIG)
-	if (_netcdf_lib)
-		list (REMOVE_DUPLICATES _netcdf_lib)
-		list (REMOVE_ITEM _netcdf_lib netcdf)
-	endif (_netcdf_lib)
-endif (UNIX AND NOT NETCDF_FOUND)
+if(NC_CONFIG)
+    execute_process(COMMAND ${NC_CONFIG} --includedir
+                    RESULT_VARIABLE nc_res
+                    OUTPUT_VARIABLE NETCDF_INCLUDE_PATH
+                    ERROR_QUIET
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${NC_CONFIG} --prefix
+                    RESULT_VARIABLE nc_res
+                    OUTPUT_VARIABLE NETCDF_PREFIX_DIR
+                    ERROR_QUIET
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
 
-find_path (NETCDF_INCLUDE_DIR netcdf.h
-	HINTS
-	${_netcdf_includepath}
-	${NETCDF_DIR}
-	${NETCDF_ROOT}
-	$ENV{NETCDF_DIR}
-	$ENV{NETCDF_ROOT}
-	PATH_SUFFIXES
-	include/netcdf
-	include/netcdf-4
-	include/netcdf-3
-	include
-	PATHS
-	/sw # Fink
-	/opt/local # DarwinPorts
-	/opt/csw # Blastwave
-	/opt
-	/usr/local
-)
+find_path(NETCDF_INCLUDE_DIR netcdf.h
+          PATHS "${NETCDF_DIR}/include"
+          HINTS ${NETCDF_INCLUDE_PATH})
 
-find_library (NETCDF_LIBRARY
-	NAMES netcdf
-	HINTS
-	${_netcdf_libpath}
-	${NETCDF_DIR}
-	${NETCDF_ROOT}
-	$ENV{NETCDF_DIR}
-	$ENV{NETCDF_ROOT}
-	PATH_SUFFIXES lib
-	PATHS
-	/sw
-	/opt/local
-	/opt/csw
-	/opt
-	/usr/local
-)
+find_library (NETCDF_LIBRARY NAMES netcdf
+        PATHS "${NETCDF_DIR}/lib"
+              "${NETCDF_INCLUDE_DIR}/../lib"
+        HINTS "${NETCDF_PREFIX_DIR}/lib")
 
-# find all libs that nc-config reports
-foreach (_extralib ${_netcdf_lib})
-	find_library (_found_lib_${_extralib}
-		NAMES ${_extralib}
-		PATHS ${_netcdf_libpath})
-	list (APPEND NETCDF_LIBRARY ${_found_lib_${_extralib}})
-endforeach (_extralib)
+if(NETCDF_INCLUDE_DIR AND NETCDF_LIBRARY)
+    set (NETCDF_C_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR})
+    set (NETCDF_C_LIBRARIES ${NETCDF_LIBRARY})
 
-if (NETCDF_LIBRARY AND NETCDF_INCLUDE_DIR AND NOT HAVE_NETCDF4)
-	# Ensure that NetCDF with version 4 extensions is installed
-	include (CMakePushCheckState)
-	include (CheckSymbolExists)
-	cmake_push_check_state() # save state of CMAKE_REQUIRED_*
-	set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${NETCDF_INCLUDE_DIR})
-	set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${NETCDF_LIBRARY})
-	set (HAVE_NETCDF4 HAVE_NETCDF4) # to force check_symbol_exists again
-	check_symbol_exists (nc_def_var_deflate netcdf.h HAVE_NETCDF4)
-	cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
-	if (NOT HAVE_NETCDF4)
-		message (SEND_ERROR "Library found but netCDF-4/HDF5 format unsupported. Do not configure netCDF-4 with --disable-netcdf-4.")
-	endif (NOT HAVE_NETCDF4)
-endif (NETCDF_LIBRARY AND NETCDF_INCLUDE_DIR AND NOT HAVE_NETCDF4)
+    find_file(NETCDF_MEM_H
+             NAMES "netcdf_mem.h"
+             HINTS ${NETCDF_INCLUDE_DIR})
+    mark_as_advanced(NETCDF_MEM_H)
+    if(NETCDF_MEM_H)
+        set(NETCDF_HAS_MEM ON)
+    endif()
+
+    function(GET_NC_CONFIG _conf)
+        if(_conf STREQUAL "c++")
+            set(_key "CXX")
+        else()
+            string(TOUPPER ${_conf} _key)
+        endif()
+        execute_process(COMMAND ${NC_CONFIG} --has-${_conf}
+                        RESULT_VARIABLE nc_res
+                        OUTPUT_VARIABLE nc_has_${_conf}
+                        ERROR_QUIET
+                        OUTPUT_STRIP_TRAILING_WHITESPACE)
+        if(nc_has_${_conf} STREQUAL "yes")
+            set(NETCDF_HAS_${_key} ON  PARENT_SCOPE)
+        else()
+            set(NETCDF_HAS_${_key} OFF PARENT_SCOPE)
+        endif()
+    endfunction()
+
+    if(NC_CONFIG AND NOT WIN32)
+        GET_NC_CONFIG(dap)
+        GET_NC_CONFIG(nc2)
+        GET_NC_CONFIG(nc4)
+        GET_NC_CONFIG(hdf4)
+        GET_NC_CONFIG(hdf5)
+    else()
+        # Detect internal NC4_create symbol as a hint that NC4 support is enabled
+        # Fragile...
+        function(detect_NC4_create)
+            include(CheckCSourceCompiles)
+            include(CMakePushCheckState)
+            cmake_push_check_state(RESET)
+            set(CMAKE_REQUIRED_QUIET "yes")
+            set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_LIBRARY})
+            check_c_source_compiles("int NC4_create ();int main () {return NC4_create ();}" HAVE_NC4_CREATE)
+            cmake_pop_check_state()
+        endfunction()
+
+        detect_NC4_create()
+        if(HAVE_NC4_CREATE)
+            set(NETCDF_HAS_NC4 ON)
+        endif()
+    endif()
+
+    macro(NetCDF_DETECT_COMPONENT _comp)
+        list (FIND NetCDF_FIND_COMPONENTS "${_comp}" _nextcomp)
+        if (_nextcomp GREATER -1)
+            set (NETCDF_${_comp} 1)
+        endif ()
+    endmacro()
+    NetCDF_DETECT_COMPONENT("CXX")
+    NetCDF_DETECT_COMPONENT("F77")
+    NetCDF_DETECT_COMPONENT("F90")
+
+    #start finding requested language components
+    set (NetCDF_libs "")
+    set (NetCDF_includes "${NETCDF_INCLUDE_DIR}")
+    get_filename_component (NetCDF_lib_dirs "${NETCDF_LIBRARY}" PATH)
+    set (NETCDF_HAS_INTERFACES "YES") # will be set to NO if we're missing any interfaces
+    macro (NetCDF_check_interface lang header libs)
+        if (NETCDF_${lang})
+            #search starting from user modifiable cache var
+            find_path (NETCDF_${lang}_INCLUDE_DIR NAMES ${header}
+                    HINTS "${NETCDF_INCLUDE_DIR}"
+                    HINTS "${NETCDF_${lang}_ROOT}/include"
+                    ${USE_DEFAULT_PATHS})
+
+            find_library (NETCDF_${lang}_LIBRARY NAMES ${libs}
+                    HINTS "${NetCDF_lib_dirs}"
+                    HINTS "${NETCDF_${lang}_ROOT}/lib"
+                    ${USE_DEFAULT_PATHS})
+
+            mark_as_advanced (NETCDF_${lang}_INCLUDE_DIR NETCDF_${lang}_LIBRARY)
+
+            #export to internal varS that rest of project can use directly
+            set (NETCDF_${lang}_LIBRARIES ${NETCDF_${lang}_LIBRARY})
+            set (NETCDF_${lang}_INCLUDE_DIRS ${NETCDF_${lang}_INCLUDE_DIR})
+
+            if (NETCDF_${lang}_INCLUDE_DIR AND NETCDF_${lang}_LIBRARY)
+                list (APPEND NetCDF_libs ${NETCDF_${lang}_LIBRARY})
+                list (APPEND NetCDF_includes ${NETCDF_${lang}_INCLUDE_DIR})
+            else ()
+                set (NETCDF_HAS_INTERFACES "NO")
+                message (STATUS "Failed to find NetCDF interface for ${lang}")
+            endif ()
+        endif ()
+    endmacro ()
+
+    NetCDF_check_interface (CXX netcdfcpp.h netcdf_c++)
+    NetCDF_check_interface (F77 netcdf.inc  netcdff)
+    NetCDF_check_interface (F90 netcdf.mod  netcdff)
+
+    #export accumulated results to internal vars that rest of project can depend on
+    list (APPEND NetCDF_libs "${NETCDF_C_LIBRARIES}")
+    set (NETCDF_LIBRARIES ${NetCDF_libs})
+    set (NETCDF_INCLUDE_DIRS ${NetCDF_includes})
+endif()
+mark_as_advanced(NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (NETCDF
-	DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR HAVE_NETCDF4)
+                                   FOUND_VAR NETCDF_FOUND
+                                   REQUIRED_VARS NETCDF_LIBRARY NETCDF_INCLUDE_DIR
+                                   VERSION_VAR NETCDF_VERSION
+                                   )
 
-set (NETCDF_LIBRARIES ${NETCDF_LIBRARY})
-set (NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR})
-string (REPLACE "-DNDEBUG" "" NETCDF_DEFINITIONS "${_netcdf_cflags_other}")
+if(NETCDF_FOUND)
+    if(NOT TARGET NETCDF::netCDF)
+        add_library(NETCDF::netCDF UNKNOWN IMPORTED)
+        set_target_properties(NETCDF::netCDF PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${NETCDF_INCLUDE_DIRS}")
+        set_target_properties(NETCDF::netCDF PROPERTIES
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C;CXX"
+            IMPORTED_LOCATION "${NETCDF_LIBRARIES}")
+    endif()
+endif()

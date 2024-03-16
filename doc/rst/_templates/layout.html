@@ -9,6 +9,11 @@
 {% endif %}
 {% endblock %}
 
+{%- block scripts %}
+    <script src="{{ pathto('_static/jquery.js', resource=True) }}"></script>
+    <script src="{{ pathto('_static/underscore.js', resource=True) }}"></script>
+    {{ super() }}
+{%- endblock %}
 
 {% block menu %}
     {{ super() }}

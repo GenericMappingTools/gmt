@@ -2,7 +2,7 @@ name-template: '$RESOLVED_VERSION Changelog'
 version-resolver:
   minor:
     labels:
-      - 'feature'
+      - 'new feature'
   default: patch
 categories:
   - title: 'New Features in GMT $RESOLVED_VERSION'

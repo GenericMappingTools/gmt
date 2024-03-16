@@ -1,0 +1,10 @@
+MacOS Preview Warning
+---------------------
+
+Low-resolution raster-images appearing in PDF or PostScript files may look blurry when viewed
+with the Preview application under macOS. This happens because Preview decides to resample very
+coarse (low dpi) images instead of leaving them alone; we do not know of a simple way to turn
+this feature off.  It is most noticeable in color bars for discrete CPTs (we now use **-Np** as
+the default setting for such CPTs) and very small grids plotted in either :doc:`grdimage` or
+:doc:`grdview` **-Qi**\|\ **c**. However, if a raster format (such as JPG or PNG) is selected instead
+then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not seem similarly affected.

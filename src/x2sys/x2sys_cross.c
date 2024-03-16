@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/x2sys_cross_inc.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
 
@@ -73,7 +74,7 @@ struct X2SYS_CROSS_CTRL {
 		bool active;
 		double limit;
 	} E;
-	struct X2SYS_CROSS_I {	/* -I */
+	struct X2SYS_CROSS_I {	/* -Ia|c|l|n */
 		bool active;
 		int mode;
 	} I;
@@ -125,7 +126,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-A<pairs>] [-C[<fname>]] [-D[S|N]] [-E<limit>] [-Il|a|c] [-Qe|i] "
+	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-A<pairs>] [-C[<fname>]] [-D[S|N]] [-E<limit>] [-Ia|c|l|n] [-Qe|i] "
 		"[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z] [%s] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
@@ -142,7 +143,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-A<pairs>");
 	GMT_Usage (API, -2, "Give file with list of track pairs to process [Default processes all combinations].");
 	GMT_Usage (API, 1, "\n-C[<fname>]");
-	GMT_Usage (API, -2, "Print run time for each pair. Optionally append <fname> to writem them to that file.");
+	GMT_Usage (API, -2, "Print run time for each pair. Optionally append <fname> to write them to that file.");
 	GMT_Usage (API, 1, "\n-D[S|N]");
 	GMT_Usage (API, -2, "Control geographic coordinate conversions. By default we automatically convert "
 		"lon,lat to polar coordinates if contained within one hemisphere. -D turns this off, while "
@@ -150,9 +151,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-E<limit>");
 	GMT_Usage (API, -2, "Exclude crossovers from lines with orientation differences less than <limit> [0].");
 	GMT_Usage (API, -2, "Select an interpolation mode:");
-	GMT_Usage (API, 3, "l: Linear interpolation [Default].");
 	GMT_Usage (API, 3, "a: Akima spline interpolation.");
 	GMT_Usage (API, 3, "c: Cubic spline interpolation.");
+	GMT_Usage (API, 3, "l: Linear interpolation [Default].");
+	GMT_Usage (API, 3, "n: Nearest neighbor interpolation.");
 	GMT_Usage (API, 1, "\n-Qe|i");
 	GMT_Usage (API, -2, "Select a sub-group of crossovers [Default is both]:");
 	GMT_Usage (API, 3, "e: Find external crossovers.");
@@ -200,19 +202,15 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Get list of approved filepair combinations to check */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
-				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file));
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (strlen(opt->arg))
 					Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Determines if projection should happen for geographic coordinates */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'S':	Ctrl->D.mode = -1; break;	/* Force projection using S pole */
 					case 'N':	Ctrl->D.mode = +1; break;	/* Force projection using N pole */
@@ -221,7 +219,6 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0])
 					Ctrl->E.limit = atof (opt->arg);
 				else {
@@ -231,19 +228,18 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
-						Ctrl->I.mode = 0;
+						Ctrl->I.mode = GMT_SPLINE_LINEAR;
 						break;
 					case 'a':
-						Ctrl->I.mode = 1;
+						Ctrl->I.mode = GMT_SPLINE_AKIMA;
 						break;
 					case 'c':
-						Ctrl->I.mode = 2;
+						Ctrl->I.mode = GMT_SPLINE_CUBIC;
 						break;
 					case 'n':
-						Ctrl->I.mode = 3;
+						Ctrl->I.mode = GMT_SPLINE_NN;
 						break;
 					default:
 						n_errors++;
@@ -256,19 +252,16 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 					case 'l':	/* Lower cutoff speed */
 						Ctrl->S.limit[VLO] = atof (&opt->arg[1]);
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[VLO]);
-						Ctrl->S.active[VLO] = true;
 						break;
 					case 'U':
 					case 'u':	/* Upper cutoff speed */
 						Ctrl->S.limit[VHI] = atof (&opt->arg[1]);
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[VHI]);
-						Ctrl->S.active[VHI] = true;
 						break;
 					case 'H':
 					case 'h':	/* Heading calculation cutoff speed */
 						Ctrl->S.limit[HHI] = atof (&opt->arg[1]);
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[HHI]);
-						Ctrl->S.active[HHI] = true;
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Syntax is -S<l|h|u><speed>\n");
@@ -278,24 +271,21 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				Ctrl->T.TAG = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.TAG);
 				break;
 			case 'W':	/* Get new window half-width as number of points */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
-				Ctrl->W.width = atoi (opt->arg);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->W.width);
 				break;
 			case 'Q':	/* Specify internal or external only */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = X2SYS_EXTERNAL;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = X2SYS_INTERNAL;
 				else Ctrl->Q.mode = X2SYS_BOTH;
 				break;
 			case 'Z':	/* Return z1, z1 rather than (z1-z1) and 0.5 * (z1 + z2) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'J':
 				if (gmt_M_compat_check (GMT, 6)) {
@@ -433,7 +423,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	double t_scale;				/* Scale to give time in seconds */
 	double plat[2] = {0.0, 0.0};		/* Pole latitude for polar reprojections */
 	double ymin[2] = {0.0, 0.0}, ymax[2] = {0.0, 0.0};	/* Latitude range of each file */
-	double delta_orientation;	/* Angle bewteen to intersecting tracks */
+	double delta_orientation;	/* Angle between two intersecting tracks */
 
 	clock_t tic = 0, toc = 0;
 
@@ -462,7 +452,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

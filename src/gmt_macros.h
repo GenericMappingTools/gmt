@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -121,6 +121,7 @@
 #define gmt_M_double_swap(x, y) {double double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define gmt_M_doublep_swap(x, y) {double *double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define gmt_M_float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
+#define gmt_M_grdfloat_swap(x, y) {gmt_grdfloat float_tmp; float_tmp = x, x = y, y = float_tmp;}
 
 /*! Macro to ensure proper value and sign of a change in longitude from lon1 to lon2 */
 #define gmt_M_set_delta_lon(lon1,lon2,delta) {delta = fmod ((lon2) - (lon1), 360.0); if (fabs (delta) > 180.0) delta = copysign (360.0 - fabs (delta), -delta);}
@@ -200,6 +201,13 @@
 /*! Get a color component from a n*4 column-oriented colormap */
 #define gmt_M_get_rgba(map,index,color,n) map[index + (color)*(n)]
 
+/*! Copy a 4-element rgb in 0-255 range to normalized 0-1 range */
+#define gmt_M_cp_rgb_normalize(rgb_normalized, rgb_integer) {for (unsigned int c = 0; c < 4; c++) rgb_normalized[c] = gmt_M_is255(rgb_integer[c]); }
+/*! Macros to do conversion to inches with PROJ_LENGTH_UNIT as default */
+
+/*! Copy a 4-element rgb in normalized 0-1 range to integer 0-255 range */
+#define gmt_M_cp_rgb_integer(rgb_integer, rgb_normalized) {for (unsigned int c = 0; c < 4; c++) rgb_integer[c] = gmt_M_s255(rgb_normalized[c]); }
+
 /*! Set a color component in a n*4 column-oriented colormap */
 #define gmt_M_set_rgba(map,index,color,n,value) map[index + (color)*(n)] = (value)
 
@@ -219,7 +227,7 @@
 #define gmt_M_file_is_netcdf_layer(file) (gmt_M_file_is_netcdf(file) && (strchr (file, '(') || strchr (file, '[')))
 
 /*! Determine if file is an image GDAL can read */
-#define gmt_M_file_is_image(file) (file != NULL && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
+#define gmt_M_file_is_image(file) (file != NULL && ((strstr (file, "@GMTAPI@") && file[13] == 'I') || strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".jpeg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
 
 /*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
 #define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)

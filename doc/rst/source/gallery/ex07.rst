@@ -31,4 +31,4 @@ Footnote
 ~~~~~~~~
 
 .. [1]
-   These data are available on CD-ROM from NCEI (www.ncei.noaa.gov).
+   These data are available on CD-ROM from NCEI (https://www.ncei.noaa.gov/).

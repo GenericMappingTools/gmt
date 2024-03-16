@@ -9,14 +9,14 @@
     .. include:: explain_refpoint.rst_
 
     The following modifiers can be appended to |-L| (**+w** is required), with additional explanation and
-    examples provided in the :ref:`placing-map-scales` cookbook section. For Cartesian projectsion, the modifiers
+    examples provided in the :ref:`placing-map-scales` cookbook section. For Cartesian projection, the modifiers
     **+c** and **+f** are not allowed and no units should be appended in **+w**.
 
     - **+w**\ *length* to set scale *length* in km, or append :ref:`unit <tbl-distunits>` from
       **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
     - **+a**\ *align* to change the label alignment (choose among **l**\ (eft), **r**\ (ight), **t**\ (op), and
       **b**\ (ottom)) [default is **t**\ (op)].
-    - **+c**\ [[*slon*/]\ *slat*]] to control where on a geographic map the scale applies. Map scale is calculated for
+    - **+c**\ [[*slon*/]\ *slat*] to control where on a geographic map the scale applies. Map scale is calculated for
       latitude *slat* (optionally supply longitude *slon* for oblique projections [default is central meridian]). If
       **+c** is not given we default to the location of the *refpoint*. If **+c** is given with no arguments then we
       select the scale origin to be the middle of the map.

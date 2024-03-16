@@ -6,7 +6,8 @@ gmt grdmath A.grd CURV = B.grd
 gmt grdmath A.grd D2DX2 = C.grd
 gmt grdmath A.grd D2DY2 = D.grd
 gmt grdmath A.grd D2DX2 A.grd D2DY2 ADD = E.grd
-gmt grdmath A.grd EXTREMA = F.grd
+# PWL: Scale extrema by 2 to avoid having to update test PS since it was made when EXTREMA gave -2/+2
+gmt grdmath A.grd EXTREMA 2 MUL = F.grd
 
 gmt makecpt -Cpolar -T-4/5/1 > t.cpt
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Demonstrate a few arrows
-gmt begin GMT_base_symbols5 ps
+gmt begin GMT_base_symbols5
 gmt set GMT_THEME cookbook
 # Cartesian straight arrows
 	gmt plot -R0/5/0/5 -JX1.75i -S -W2p -Gred --MAP_VECTOR_SHAPE=0.5 << EOF

@@ -1,3 +1,5 @@
+:orphan:
+
 #########################
 GMT Enhancement Proposals
 #########################

@@ -59,18 +59,22 @@ COLOR Parameters
 
     **COLOR_BACKGROUND**
         Color used for the background of images (i.e., when z < lowest color
-        table entry) [default is **black**].
+        table entry) [default is **black**].  **Note**: If the current CPT
+        has a specification for background color then that takes precedence.
 
     **COLOR_FOREGROUND**
         Color used for the foreground of images (i.e., when z > highest
-        color table entry) [default is **white**].
+        color table entry) [default is **white**].  **Note**: If the current CPT
+        has a specification for foreground color then that takes precedence.
 
     **COLOR_CPT**
-        Default CPT table when none is selected [default is **turbo**].
+        Default CPT table when none is selected [default is **turbo**].  **Note**:
+        Grids with a default CPT in the header will ignore this setting.
 
     **COLOR_HSV_MAX_S**
         Maximum saturation (0-1) assigned for most positive intensity value
-        [default is **0.1**].
+        [default is **0.1**]. **Note**: The default is most suitable for paper
+        printing.  Use 0 for all digital imagery.
 
     **COLOR_HSV_MIN_S**
         Minimum saturation (0-1) assigned for most negative intensity value
@@ -82,7 +86,8 @@ COLOR Parameters
 
     **COLOR_HSV_MIN_V**
         Minimum value (0-1) assigned for most negative intensity value
-        [default is **0.3**].
+        [default is **0.3**]. **Note**: The default is most suitable for paper
+        printing.  Use 0 for all digital imagery.
 
     **COLOR_MODEL**
         Selects in which color space a CPT should be interpolated.
@@ -91,12 +96,13 @@ COLOR Parameters
         directly on the HSV values better preserves those hues. The choices
         are: **none** (use whatever the **COLOR_MODEL** setting in the
         CPT demands), **rgb** (force interpolation in RGB),
-        **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
+        **hsv** (force interpolation in HSV), or **cmyk** (assumes colors are
         in CMYK but interpolates in RGB) [default is **none**].
 
     **COLOR_NAN**
         Color used for the non-defined areas of images (i.e., where z = NaN)
-        [default is **128**].
+        [default is **128**].  **Note**: If the current CPT has a color
+        specification for NaN values then that takes precedence.
 
     **COLOR_SET**
         Default comma-separated list of colors (or a *categorical* CPT name) for
@@ -111,12 +117,12 @@ DIR Parameters
 .. glossary::
 
     **DIR_CACHE**
-        Cache directory where we save remote filenames starting in **@**
+        Cache directory where we save remote cache filenames starting in **@**
         (e.g., @hotspots.txt) [default is **~/.gmt/cache**].
 
     **DIR_DATA**
         Session data directory. Overrides the value of the environment variable
-        **$GMT_DATADIR** (see :ref:`Directory parameters` in the CookBook).
+        **$GMT_DATADIR** (see :ref:`Directory parameters` in the Technical Reference).
 
     **DIR_DCW**
         Path to optional Digital Chart of the World polygon files.
@@ -161,9 +167,10 @@ FONT Parameters
         size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo [:doc:`theme
-        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
-        with plot size <auto-scaling>`.
+        Font to use for text plotted as part of the GMT time logo. **Note**: Since the
+        time logo has a fixed height the font size for the time stamp is 8p and for the
+        optional label it is 7p. Hence, changing this font only affects the font style
+        and color but not its size.
 
     **FONT_SUBTITLE**
         Font to use when plotting titles over graphs that involve a subtitle
@@ -188,36 +195,26 @@ FORMAT Parameters
 .. glossary::
 
     **FORMAT_CLOCK_IN**
-        Formatting template that indicates how an input clock string is
-        formatted. This template is then used to guide the reading of clock
-        strings in data fields. To properly decode 12-hour clocks, append **am**
-        or **pm** (or upper case) to match your data records. As examples, try
-        hh:mm, hh:mm:ssAM, etc. [default is **hh:mm:ss**].
+        Formatting template that indicates how a clock string is formatted.
+        This template is then used to guide the reading of clock strings in data fields.
+        For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.** (GMT will replace a\|A with p\|P for pm).
+        As examples, try hh:mm, hh:mm:ssAM, hh:mm:ss.xxxx etc. [default is **hh:mm:ss**].
 
     **FORMAT_CLOCK_MAP**
         Formatting template that indicates how an output clock string is to
         be plotted. This template is then used to guide the formatting of
         clock strings in plot annotations. See :term:`FORMAT_CLOCK_OUT` for
-        details. [default is **hh:mm:ss**].
+        details [default is **hh:mm:ss**].
 
     **FORMAT_CLOCK_OUT**
-        Formatting template that indicates how an output clock string is to
-        be formatted. This template is then used to guide the writing of
-        clock strings in data fields. To use a floating point format for the
-        smallest unit (e.g., seconds), append **.xxx**, where the number of x
-        indicates the desired precision. If no floating point is indicated
-        then the smallest specified unit will be rounded off to nearest
-        integer. For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.**
-        (GMT will replace a\|A with p\|P for pm). If your template starts with a
-        leading hyphen (**-**) then each integer item (y,m,d) will be printed
-        without leading zeros (default uses fixed width formats). As
-        examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
-        [default is **hh:mm:ss**]. If the format is simply **-** then no clock
-        is output and the ISO T divider between date and clock is omitted.
-        **Note**: When high-precision time-series are written to ASCII output
-        the default format may not be adequate.  Many modules automatically handle
-        this by extending the format, but you should be alert of unusual
-        situations where data may appear truncated to nearest second.
+        See :term:`FORMAT_CLOCK_IN`.
+        In addition, for output we can also start the template with a leading hyphen (**-**).
+        Then each integer item (y,m,d) will be printed without leading zeros (default uses fixed width formats).
+        If the format is simply **-** then no clock is output and the ISO T divider between date and clock is omitted.
+        To use a floating point format for the smallest unit (e.g., seconds), append **.xxx**, where the number of x indicates the desired precision.
+        If no floating point is indicated then the smallest specified unit will be rounded off to nearest integer.
+        **Note**: When high-precision time-series are written to ASCII output the default format may not be adequate.
+        Many modules automatically handle this by extending the format, but you should be alert of unusual situations where data may appear truncated to nearest second.
 
     **FORMAT_DATE_IN**
         Formatting template that indicates how an input date string is
@@ -242,7 +239,7 @@ FORMAT Parameters
         and **u** instead of W[-]ww to plot "Week ##". Both of these text
         strings will be affected by the :term:`GMT_LANGUAGE`,
         :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
-        setting. [default is **yyyy-mm-dd**].
+        setting [default is **yyyy-mm-dd**].
 
     **FORMAT_DATE_OUT**
         Formatting template that indicates how an output date string is to
@@ -269,14 +266,14 @@ FORMAT Parameters
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
         which plots the absolute value of the coordinate. Not all items may be
-        plotted as this depends on the annotation interval. [default is
+        plotted as this depends on the annotation interval [default is
         :doc:`theme dependent <theme-settings>`].
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
         coordinate is to be formatted. This template is then used to guide
         the writing of geographical coordinates in data fields. The template
-        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
+        is in general of the form **[±]D[DD]** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
@@ -286,44 +283,47 @@ FORMAT Parameters
         **D**      Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default]
         **+D**     Output longitude in the range [0,360]
         **-D**     Output longitude in the range [-360,0]
-        **ddd**    Fixed format integer degrees
-        **:**      Delimiter used
-        **mm**     Fixed format integer arc minutes
-        **ss**     Fixed format integer arc seconds
+        **DDD**    Fixed format integer degrees (3 digits for longitude, 2 digits for latitude)
+        **ddd**    Integer degrees
+        **:**      Delimiter used (this will translate to degree, minute, seconds symbols on maps)
+        **mm**     Fixed format integer arc minutes (2 digits)
+        **ss**     Fixed format integer arc seconds (2 digits)
         **.xxx**   Floating fraction of previous integer field, fixed width
         **F**      Encode sign using WESN suffix
         **G**      Same as **F** but with a leading space before suffix
         ========   =================================================================
 
+        **Note**: With :term:`FORMAT_GEO_MAP`, **F** and **G** may also be used as a prefix.
+
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
-        precision floating point numbers along plot frames and contours.
-        For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [default is **%.12g**].
+        precision floating point numbers along plot frames and contours [default is **%.12g**].
+        For geographic coordinates, see :term:`FORMAT_GEO_MAP`.
 
     **FORMAT_FLOAT_OUT**
         Format (C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ syntax)
-        to be used when printing double precision floating point numbers to output files.
+        to be used when printing double precision floating point numbers to output files [default is **%.12g**].
         For geographic coordinates, see :term:`FORMAT_GEO_OUT`.
-        [default is **%.12g**]. To give some columns a separate format,
+        To give some columns a separate format,
         supply one or more comma-separated *cols*:*format* specifications,
         where *cols* can be specific columns (e.g., 5 for 6th since 0 is the first)
-        or a range of columns (e.g.,3-7).
+        or a range of columns (e.g., 3-7).
         The last specification without column information will override the format for all other columns.
-        Alternatively, you canlist N space-separated formats and these apply to the first N columns.
+        Alternatively, you can list N space-separated formats and these apply to the first N columns.
 
         The printf syntax is ``%[minimum width].[precision]type``,
         where **type** may be **f**, **e**, **E**, **g** or **G**.
         The default is ``%.12g``, i.e. no minimum width and 12 digit precision.
 
-        See table below for examples. Input is pi (3.14159265359).
+        See table below for examples. Input is π (3.14159265359).
 
         ======   =============
         Format   Output
         ======   =============
         %.12g    3.14159265359
         %.2f     3.14
-        %8.4f      3.1416
-        %08.2f   003.1416
+        %8.4f    __3.1416
+        %08.2f   00003.14
         %.5f     3.14159
         ======   =============
 
@@ -393,7 +393,7 @@ GMT Miscellaneous Parameters
         return NaN for any element of x that is outside range. Second case lets
         the selected algorithm compute the extrapolation values. Third case sets
         the extrapolation values to the constant value passed in *value* (this
-        value must off course be numeric) [default is **NaN**].
+        value must of course be numeric) [default is **NaN**].
 
     **GMT_CUSTOM_LIBS**
         Comma-separated list of GMT-compliant shared libraries that extend
@@ -406,12 +406,12 @@ GMT Miscellaneous Parameters
         shared modules.
 
     **GMT_FFT**
-        Determines which Fast Fourier Transform (FFT) should be used among
+        Determines which Fast Fourier Transform (FFT) library should be used among
         those that have been configured during installation. Choose from
         **auto** (pick the most suitable for the task among available
         algorithms), **fftw**\ [,\ *planner_flag*] (The Fastest Fourier
         Transform in the West), **accelerate** (Use the Accelerate Framework
-        under OS X; Note, that the number of samples to be processed must be
+        under macOS; Note, that the number of samples to be processed must be
         a base 2 exponent), **kiss**, (Kiss FFT), **brenner** Brenner Legacy
         FFT [default is **auto**].
         FFTW can "learn" how to optimally compute Fourier transforms on the
@@ -429,7 +429,7 @@ GMT Miscellaneous Parameters
 
     **GMT_GRAPHICS_DPU**
         Default target dots-per-unit for images when a remote gridded data
-        set is requested without specifyin a resolution (e.g., @earth_relief).
+        set is requested without specifying a resolution (e.g., @earth_relief).
         Append "i" to indicate the DPU is dots-per-inches and "c" for dots-per-cm.
         [default is 300i].
 
@@ -443,9 +443,9 @@ GMT Miscellaneous Parameters
         gmt.history file, only read, or not use the file at all [default is **true**].
 
     **GMT_INTERPOLANT**
-        Determines if linear (**linear**), Akima's spline (**akima**), natural cubic
-        spline (**cubic**) or no interpolation (**none**) should be used for 1-D
-        interpolations in various programs [default is **akima**].
+        Determines if linear (**linear**), `Akima's <https://en.wikipedia.org/wiki/Akima_spline>`_
+        spline (**akima**), natural cubic spline (**cubic**) or no interpolation (**none**)
+        should be used for 1-D interpolations in various programs [default is **akima**].
 
     **GMT_LANGUAGE**
         Language to use when plotting calendar and map items such as months and
@@ -507,7 +507,7 @@ GMT Miscellaneous Parameters
         Determines if we use the **Watson** or **Shewchuk**
         algorithm (if configured during installation) for triangulation.
         Note that Shewchuk is required for operations involving Voronoi
-        constructions [default is **Watson**].
+        constructions [default is **Shewchuk**].
 
     **GMT_VERBOSE**
         (**-V**) Determines the level of verbosity used by GMT
@@ -524,9 +524,12 @@ I/O Parameters
 .. glossary::
 
     **IO_COL_SEPARATOR**
-        This setting determines what character will separate ASCII output
-        data columns written by GMT. Choose from **tab**, **space**, **comma**, and
-        **none** [default is **tab**].
+        This setting determines what character will separate ASCII *output*
+        data columns written by GMT. Choose from **tab**, **space**, **comma**,
+        **semicolon** and **none** [default is **tab**]. You may also just give
+        any character or string (e.g., "--|--"). **Note**: When reading input
+        data GMT automatically skips white-space, commas, and semi-colons; you
+        cannot select an individual input column separator.
 
     **IO_FIRST_HEADER**
         This setting determines if the first segment header is written when
@@ -539,7 +542,7 @@ I/O Parameters
         invalid value, written as *ff*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*].
         The 2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
         :doc:`grdconvert` and Section :ref:`grid-file-format` of the GMT Technical
-        Reference and Cookbook for more information. You may the scale as **a**
+        Reference for more information. You may the scale as **a**
         for auto-adjusting the scale and/or offset of packed integer grids
         (=\ *ID*\ **+s**\ *a* is a shorthand for =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
         When *invalid* is omitted the appropriate value for the given format is used
@@ -548,7 +551,7 @@ I/O Parameters
     **IO_GRIDFILE_SHORTHAND**
         If **true**, all grid file names are examined to see if they use the
         file extension shorthand discussed in Section :ref:`grid-file-format` of
-        the GMT Technical Reference and Cookbook. If **false**, no filename
+        the GMT Technical Reference. If **false**, no filename
         expansion is done [default is **false**].
 
     **IO_HEADER**
@@ -565,11 +568,11 @@ I/O Parameters
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
-        contain (latitude,longitude) or (y,x) rather than the expected
-        (longitude,latitude) or (x,y). false means we have (x,y) both on
-        input and output. **true** means both input and output should be (y,x).
-        **IN** means only input has (y,x), while **OUT** means only output should
-        be (y,x) [default is **false**].
+        contain (*latitude,longitude*) or (**y, x**) rather than the expected
+        (longitude,latitude) or (*x, y*). false means we have (*x, y*) both on
+        input and output. **true** means both input and output should be (**y, x**).
+        **IN** means only input has (**y, x**), while **OUT** means only output should
+        be (**y, x**) [default is **false**].
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [default is **0**].
@@ -596,8 +599,8 @@ I/O Parameters
         the **z** variable. Very large chunk sizes and sizes smaller than
         128 should be avoided because they can lead to unexpectedly bad
         performance. Note that a chunk of a single precision floating point
-        variable of size 2896x2896 completely fills the chunk cache of
-        32 MiB. Specify the chunk size for each dimension separated by a
+        variable of size 2896 x 2896 completely fills the chunk cache of
+        32 Mb. Specify the chunk size for each dimension separated by a
         comma, or **a**\ uto for optimally chosen chunk sizes in the range
         [128,256). Setting :term:`IO_NC4_CHUNK_SIZE` will produce netCDF version 4
         files, which can only be read with the netCDF 4 library, unless all
@@ -655,18 +658,22 @@ MAP Parameters
         :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_OBLIQUE**
-        This argument is a comma-separated list of up to seven keywords:
-        **separate** means longitudes will be annotated on the lower and upper
-        boundaries only, and latitudes will be annotated on the left and right
-        boundaries only; **anywhere** means annotations will occur wherever an
-        imaginary gridline crosses the map boundaries; **lon_horizontal** means
-        longitude annotations will be plotted horizontally; **lat_horizontal**
-        means latitude annotations will be plotted horizontally; **tick_extend**
-        means tick-marks are extended so the distance from the tip of the oblique
-        tick to the map frame equals the specified tick length; **tick_normal**
-        means tick-marks will be drawn normal to the border regardless of
-        gridline angle; **lat_parallel** means latitude annotations will be
-        plotted parallel to the border [default is **anywhere**].
+        This setting applies to "oblique" projections, which in this context
+        means maps whose boundary is a rectangle not specified by meridians
+        and parallels.  We expect a comma-separated list of up to seven
+        keywords [default is **anywhere**]:
+
+        ============== ============================================================================================================
+        Keyword        Meaning
+        ============== ============================================================================================================
+        separate       Annotate longitudes on lower and upper boundaries only, and latitudes on the left and right boundaries only
+        anywhere       Annotations will occur wherever an imaginary gridline crosses the map boundaries
+        lon_horizontal Longitude annotations will be plotted horizontally
+        lat_horizontal Latitude annotations will be plotted horizontally
+        tick_extend    Extend tick-marks so distance from tip of the oblique tick to map frame equals specified tick length
+        tick_normal    Draw tick-marks normal to the border regardless of gridline angle
+        lat_parallel   Latitude annotations will be plotted parallel to the border
+        ============== ============================================================================================================
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and
@@ -708,7 +715,7 @@ MAP Parameters
         Determines if map embellishments like directional or magnetic compasses,
         map scales or vertical data scales should have attributes that scale with
         the size of the feature (**auto**) or use the settings as is (**manual**).
-   
+
     **MAP_FRAME_AXES**
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
@@ -738,7 +745,7 @@ MAP Parameters
         where the projected x and y directions parallel the longitude and
         latitude directions (e.g., rectangular projections, polar projections).
         For situations where all boundary ticks and annotations must be inside
-        the maps (e.g., for preparing geotiffs), chose **inside**.  Finally,
+        the maps (e.g., for preparing GeoTIFF output), chose **inside**.  Finally,
         for Cartesian plots you can also choose **graph**\ , which adds a vector
         to the end of each axis. This works best when you reduce the number of
         axes plotted to one per dimension.  By default, the vector tip extends
@@ -749,6 +756,14 @@ MAP Parameters
         instead).  The vector stem is set to match :term:`MAP_FRAME_WIDTH`, while
         the vector head length and width are 10 and 5 times this width,
         respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
+        The graph vectors are plotted as normal boundary axes.  Use **graph-origin**
+        to shift the **W** and **S** axes so they intersect at the user data
+        (0, 0) origin instead.  In this mode, only the **W** and **S** axes can be 
+        selected (or **w**, **s**, **l**, and **b** too); the **E** and **N** (and
+        **e**, **n**, **r** and **t**) will be ignored.  **Note**: Annotations
+        at any axes intersections will be suppressed.  To select another intersection point
+        than the data origin you may append **+o**\ *xorig*/*yorig* or the short-cut
+        **+oc** to center the axes on the current data domain [0/0].
 
         .. toggle::
 
@@ -773,7 +788,7 @@ MAP Parameters
         to the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
-        Size of grid cross at lon-lat intersections. **0** means draw
+        Size of grid cross at primary lon-lat intersections. **0** means draw
         continuous gridlines instead.  A nonzero size will draw a symmetric grid
         cross. Signed sizes have special meaning and imply grid line ticks that
         embellish an already drawn set of gridlines: A negative size will only
@@ -781,16 +796,13 @@ MAP Parameters
         draw symmetric ticks [default is **0p**].
 
     **MAP_GRID_CROSS_SIZE_SECONDARY**
-        Size of grid cross at secondary lon-lat intersections. **0** means draw
-        continuous gridlines instead.  A nonzero size will draw a symmetric grid
-        cross.  Signed sizes have special meaning and imply grid line ticks that
-        embellish an already drawn set of gridlines: A negative size will only
-        draw ticks away from Equator and Greenwich, while a positive size will
-        draw symmetric ticks [default is **0p**].
+        Size of grid cross at secondary lon-lat intersections.
+        See :term:`MAP_GRID_CROSS_SIZE_PRIMARY` for details.
+        [default is **0p**].
 
     **MAP_GRID_PEN**
         Sets both :term:`MAP_GRID_PEN_PRIMARY` and :term:`MAP_GRID_PEN_SECONDARY` to
-        the value specified. This setting is not include in the **gmt.conf** file.
+        the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
@@ -863,6 +875,13 @@ MAP Parameters
         Sets the height (> 0) on the map of the map scale bars drawn by
         various programs [default is **5p**].
 
+    **MAP_SYMBOL_PEN_SCALE**
+        Used to convert non-fillable (**x**, **y**, **+** and **-**) symbol sizes
+        to the width of the pen used to stroke these symbols. Give a factor in the
+        0-1 range (e.g., 0.18) or specify a percentage (e.g., 10%) [15%]. **Note**:
+        If set to 0 then no such conversion takes place and pen settings must rely on
+        **-W** or module defaults.
+
     **MAP_TICK_LENGTH**
         Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY`
         to the value specified. This setting is not included in the **gmt.conf** file.
@@ -921,8 +940,7 @@ Projection Parameters
         doing the distance calculation. See also :term:`PROJ_MEAN_RADIUS`.
 
     **PROJ_ELLIPSOID**
-        The (case sensitive) name of the ellipsoid used for the map projections
-        [WGS-84]. Choose among:
+        The name of the ellipsoid used for the map projections [WGS-84]. Choose among:
 
         - *Airy*: Applies to Great Britain (1830)
         - *Airy-Ireland*: Applies to Ireland in 1965 (1830)
@@ -1157,7 +1175,7 @@ PostScript Parameters
         Sets the threshold angle in degrees (integer in range [0,180]) used
         for mitered joins only. When the angle between joining line segments
         is smaller than the threshold the corner will be bevelled instead of
-        mitered. [default is **35**]. Setting the threshold
+        mitered [default is **35**]. Setting the threshold
         angle to **0** implies the PostScript default of about 11 degrees.
         Setting the threshold angle to **180** causes all joins to be beveled.
 
@@ -1183,7 +1201,8 @@ PostScript Parameters
         PDF. Choose from **Color**, **ColorBurn**, **ColorDodge**, **Darken**,
         **Difference**, **Exclusion**, **HardLight**, **Hue**, **Lighten**,
         **Luminosity**, **Multiply**, **Normal**, **Overlay**, **Saturation**,
-        **SoftLight**, and **Screen** [default is **Normal**].
+        **SoftLight**, and **Screen** [default is **Normal**].  For more information,
+        see `blend modes <https://en.wikipedia.org/wiki/Blend_modes>`_.
 
 .. _Calendar/Time Parameters:
 
@@ -1225,7 +1244,8 @@ Calendar/Time Parameters
         Controls if a time-stamp should be issued at start of all progress
         reports.  Choose among **clock** (absolute time stamp),
         **elapsed** (time since start of session), or **none**
-        [default is **none**].
+        [default is **none**].  The format of the timer is controlled by
+        :term:`FORMAT_TIME_STAMP`.
 
     **TIME_SYSTEM**
         Shorthand for a combination of :term:`TIME_EPOCH` and :term:`TIME_UNIT`,
@@ -1252,8 +1272,8 @@ Calendar/Time Parameters
     **TIME_UNIT**
         Specifies the units of relative time data since epoch (see
         :term:`TIME_EPOCH`). Choose **y** (year - assumes all years are 365.2425
-        days), **o** (month - assumes all months are of equal length y/12), *ww*
-        (week) **d** (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
+        days), **o** (month - assumes all months are of equal length y/12), **w**
+        (week), **d** (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
 
     **TIME_WEEK_START**
         When weeks are indicated on time axes, this parameter determines the
@@ -1266,7 +1286,7 @@ Calendar/Time Parameters
         year in a 100-year sequence. For example, if
         :term:`TIME_Y2K_OFFSET_YEAR` is 1729, then numbers 29 through 99
         correspond to 1729 through 1799, while numbers 00 through 28
-        correspond to 1800 through 1828. [default is **1950**].
+        correspond to 1800 through 1828 [default is **1950**].
 
 See Also
 --------

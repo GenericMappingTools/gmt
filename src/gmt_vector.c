@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,41 @@
  * Author:	Walter H.F. Smith
  * Date:	1-JAN-2010
  * Version:	5.x
+ */
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_add3v
+ *	gmt_cart_to_geo
+ *	gmt_cart_to_polar
+ *	gmt_chol_dcmp
+ *	gmt_chol_recover
+ *	gmt_chol_solv
+ *	gmt_cross3v
+ *	gmt_dot2v
+ *	gmt_dot3v
+ *	gmt_fix_up_path
+ *	gmt_gauss
+ *	gmt_gaussjordan
+ *	gmt_geo_to_cart
+ *	gmt_jacobi
+ *	gmt_mag3v
+ *	gmt_make_rot_matrix
+ *	gmt_make_rot_matrix2
+ *	gmt_matrix_matrix_add
+ *	gmt_matrix_matrix_mult
+ *	gmt_matrix_vect_mult
+ *	gmt_matrix_vector_mult
+ *	gmt_n_cart_to_geo
+ *	gmt_normalize2v
+ *	gmt_normalize3v
+ *	gmt_polar_to_cart
+ *	gmt_resample_path
+ *	gmt_set_line_resampling
+ *	gmt_solve_svd
+ *	gmt_sort_svd_values
+ *	gmt_sub3v
+ *	gmt_svdcmp
  */
 
 #include "gmt_dev.h"
@@ -69,7 +104,7 @@ GMT_LOCAL int gmtvector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int
 
 	/* allocate work space */
 
-	rv1 = gmt_M_memory (GMT, NULL, n, double);
+	if ((rv1 = gmt_M_memory (GMT, NULL, n, double)) == NULL) return (GMT_MEMORY_ERROR);
 
 	/* do householder reduction to bidiagonal form */
 
@@ -511,8 +546,8 @@ GMT_LOCAL uint64_t gmtvector_resample_path_spherical (struct GMT_CTRL *GMT, doub
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 
-	lon_out = gmt_M_memory (GMT, NULL, n_out, double);
-	lat_out = gmt_M_memory (GMT, NULL, n_out, double);
+	if ((lon_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((lat_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
 
 	lon_out[0] = lon_in[0];	lat_out[0] = lat_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -611,8 +646,8 @@ GMT_LOCAL uint64_t gmtvector_resample_path_cartesian (struct GMT_CTRL *GMT, doub
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 
-	x_out = gmt_M_memory (GMT, NULL, n_out, double);
-	y_out = gmt_M_memory (GMT, NULL, n_out, double);
+	if ((x_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((y_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
 
 	x_out[0] = x_in[0];	y_out[0] = y_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -1062,7 +1097,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	lwork = -1;
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
 	lwork = (int)wkopt;
-	work = gmt_M_memory (GMT, NULL, lwork, double);
+	if ((work = gmt_M_memory (GMT, NULL, lwork, double)) == NULL) return (GMT_MEMORY_ERROR);
 	/* Solve eigenproblem */
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
 	/* Check for convergence */
@@ -1095,6 +1130,7 @@ struct GMT_SINGULAR_VALUE * gmt_sort_svd_values (struct GMT_CTRL *GMT, double *w
 	/* Store the eigenvalues in a structure and sort it so that the array is
 	 * sorted from large to small values while the order reflects the original position in w */
 	struct GMT_SINGULAR_VALUE *eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
+	if (eigen == NULL) return (NULL);
 	for (unsigned int i = 0; i < n; i++) {	/* Load in original order from |w| */
 		eigen[i].value = fabs (w[i]);
 		eigen[i].order = i;
@@ -1118,6 +1154,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 #ifdef HAVE_LAPACK
 	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
+	if (tmp == NULL) return (0);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Evaluate solution\n");
 
 	/* Find maximum singular value.  Assumes w[] may have negative eigenvalues */
@@ -1293,7 +1330,13 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
  * Then, if LAPACK is true then gmt_matrix_matrix_mult should call dgemm_ instead of plain code.
  */
 
+#ifndef ACCELERATE_NEW_LAPACK
+/* This BLAS function is updated on macos 22.4 and higher but still included in the Accelerate Framework header.
+ * Otherwise we declare it as an extern function here.  dsyev_ is not in BLAS so remains the same so far. */
+
 extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
+
+#endif
 
 void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c) {
 	uint64_t row, col, ij;
@@ -1324,7 +1367,18 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 		ne = nf = (int)n_rowsB;
 	}
 #endif
+
+#ifdef ACCELERATE_NEW_LAPACK
+	/* Must cast the arguemnts to avoid a tantrum from Apple */
+	dgemm_ ((const char * _Nonnull)"t", (const char * _Nonnull)tr,
+            (const __LAPACK_int * _Nonnull)&na, (const __LAPACK_int * _Nonnull)&nb, (const __LAPACK_int * _Nonnull)&nc,
+            (const double * _Nonnull)&one, (const double * _Nullable) A, (const __LAPACK_int * _Nonnull)&nd,
+            (const double * _Nullable) B, (const __LAPACK_int * _Nonnull)&ne,
+            (const double * _Nonnull)&zero, (double * _Nullable)C, (const __LAPACK_int * _Nonnull)&nf);
+#else
 	dgemm_ ("t", tr, &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
+#endif
+	
 #else
 	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
@@ -1347,8 +1401,8 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 }
 
 void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C) {
-	gmt_M_unused(GMT);
 	uint64_t row, col, ij;
+	gmt_M_unused(GMT);
 	for (row = ij = 0; row < n_rowsA; row++) {
 		for (col = 0; col < n_colsA; col++, ij++) {
 			C[ij] = A[ij] + B[ij];

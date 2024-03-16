@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -16,12 +16,12 @@
  *--------------------------------------------------------------------*/
 /*
  * Spherical triangulation - Delaunay or Voronoi options.
- * Relies on STRIPACK Fortran F77 library (Renka, 1997). Reference:
+ * Relies on STRIPACK FORTRAN F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 772: STRIPACK: Delaunay Triangulation
  *    and Voronoi Diagram on the Surface of a Sphere, AMC Trans. Math.
  *    Software, 23 (3), 416-434.
  * Spherical interpolation - tension or smoothing.
- * Relies on SSRFPACK Fortran F77 library (Renka, 1997). Reference:
+ * Relies on SSRFPACK FORTRAN F77 library (Renka, 1997). Reference:
  * Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of
  *    Scattered Data on the Surface of a Sphere with a Surface under Tension,
  *    AMC Trans. Math. Software, 23 (3), 435-442.
@@ -31,6 +31,17 @@
  * Date:        1-AUG-2011
  * Version:	API 5 64-bit
  *
+ */
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *
+ *	gmt_ssrfpack_grid
+ *	gmt_stripack_areas
+ *	gmt_stripack_lists
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ *	gmtlib_geo_centroid_area
  */
 
 #include "gmt_dev.h"
@@ -68,16 +79,16 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	uint64_t kk;
 	int64_t *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
-	int64_t n = n_in, n_out, k, ierror= 0, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
+	int64_t n = n_in, n_out, k, ierror= 0, lnew, nrow = TRI_NROW;	/* Since the FORTRAN funcs expect signed ints */
 	size_t n_alloc;
 	double *ds = NULL;
 
-	ds = gmt_M_memory (GMT, NULL, n, double);
-	lend = gmt_M_memory (GMT, NULL, n, int64_t);
- 	iwk = gmt_M_memory (GMT, NULL, 2*n, int64_t);
+	if ((ds = gmt_M_memory (GMT, NULL, n, double)) == NULL) return GMT_MEMORY_ERROR;
+	if ((lend = gmt_M_memory (GMT, NULL, n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+ 	if ((iwk = gmt_M_memory (GMT, NULL, 2*n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 	n_alloc = 6 * (n - 2);
-	lptr = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
-	list = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
+	if ((lptr = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+	if ((list = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
@@ -112,7 +123,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 	/* Create a triangle list which returns the number of triangles and their node list tri */
 
 	n_alloc = 2 * (n - 2);
-	T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t);
+	if ((T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRLIST subroutine\n");
 	trlist_ (&n, list, lptr, lend, &nrow, &n_out, T->D.tri, &ierror);
 	T->D.n = n_out;
@@ -131,13 +142,13 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		/* Note that the triangulation data structure is altered if NB > 0 */
 
 		n_alloc = 2 * (n - 2);
-		xc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		yc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		zc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		rc = gmt_M_memory (GMT, NULL, n_alloc, double);
+		if ((xc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((yc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((zc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((rc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
 		n_alloc = 6 * (n - 2);
-		T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
-		lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t);
+		if ((T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+		if ((lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK CRLIST subroutine\n");
 		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &n_out, xc, yc, zc, rc, &ierror);
@@ -148,8 +159,8 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		T->V.lptr = lptr;
 		/* Convert polygon vertices vectors to lon, lat */
 		n_alloc = 2 * (n - 2);
-		T->V.lon = gmt_M_memory (GMT, NULL, n_alloc, double);
-		T->V.lat = gmt_M_memory (GMT, NULL, n_alloc, double);
+		if ((T->V.lon = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((T->V.lat = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
 		gmt_n_cart_to_geo (GMT, n_alloc, xc, yc, zc, T->V.lon, T->V.lat);
 		gmt_M_free (GMT, xc);
 		gmt_M_free (GMT, yc);
@@ -161,7 +172,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 			return GMT_RUNTIME_ERROR;
 		}
 
-		/* Adjust Fortran to GMT indices */
+		/* Adjust FORTRAN to GMT indices */
 		n_alloc = 6 * (n - 2);
 		for (kk = 0; kk < n_alloc; kk++) T->V.listc[kk]--;
 		for (kk = 0; kk < n_alloc; kk++) T->V.lptr[kk]--;
@@ -172,7 +183,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		gmt_M_free (GMT, lptr);
 	}
 
-	/* Adjust Fortran to GMT indices */
+	/* Adjust FORTRAN to GMT indices */
 	for (kk = 0; kk < TRI_NROW*T->D.n; kk++) T->D.tri[kk]--;
 
 	gmt_M_free (GMT, list);
@@ -204,23 +215,23 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 
 	/* Set out output nodes */
 
-	plon = gmt_M_memory (GMT, NULL, h->n_columns, double);
-	plat = gmt_M_memory (GMT, NULL, h->n_rows, double);
+	if ((plon = gmt_M_memory (GMT, NULL, h->n_columns, double)) == NULL) return GMT_MEMORY_ERROR;
+	if ((plat = gmt_M_memory (GMT, NULL, h->n_rows, double)) == NULL) return GMT_MEMORY_ERROR;
 	for (col = 0; col < h->n_columns; col++) plon[col] = D2R * gmt_M_grd_col_to_x (GMT, col, h);
 	for (row = 0; row < h->n_rows; row++) plat[row] = D2R * gmt_M_grd_row_to_y (GMT, row, h);
 	nm = h->n_columns * h->n_rows;
 
 	/* Time to work on the interpolation */
 
-	sigma = gmt_M_memory (GMT, NULL, n_sig, double);
-	if (mode) grad = gmt_M_memory (GMT, NULL, 3*n, double);
+	if ((sigma = gmt_M_memory (GMT, NULL, n_sig, double)) == NULL) return GMT_MEMORY_ERROR;
+	if (mode && (grad = gmt_M_memory (GMT, NULL, 3*n, double)) == NULL) return GMT_MEMORY_ERROR;
 
 	if (mode == 0) {	 /* C-0 interpolation (INTRC0). */
 		nxp = 0;
 		ist = 1;
 		for (row = 0; row < h->n_rows; row++) {
 			for (col = 0; col < h->n_columns; col++) {
-				ij = (uint64_t)col * (uint64_t)h->n_rows + (uint64_t)row; /* Use Fortran indexing since calling program will transpose to GMT order */
+				ij = (uint64_t)col * (uint64_t)h->n_rows + (uint64_t)row; /* Use FORTRAN indexing since calling program will transpose to GMT order */
 				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 				if (ierror < 0) {
@@ -237,7 +248,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		int64_t k1;
 		double sum = 0.0;
 		for (k = 0; k < n; k++) {
-			k1 = k + 1;	/* Since gradl expects Fortran indexing */
+			k1 = k + 1;	/* Since gradl expects FORTRAN indexing */
 			gradl_ (&n, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[3*k], &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in GRADL: K = %" PRId64 " IER = %" PRId64 "\n", k1, ierror);
@@ -321,7 +332,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 	}
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
 		double wtk, smtol, gstol, e, sm;
-		wt = gmt_M_memory (GMT, NULL, n, double);
+		if ((wt = gmt_M_memory (GMT, NULL, n, double)) == NULL) return GMT_MEMORY_ERROR;
 		e    = (par[0] == 0.0) ? 0.01 : par[0];
 		sm   = (par[1] <= 0.0) ? (double)n : par[1];
 		itgs = (par[2] == 0.0) ? 3 : lrint (par[2]);

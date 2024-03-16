@@ -1,5 +1,7 @@
-Animations
-==========
+:orphan:
+
+Animation Gallery
+=================
 
 Here we will explore what is involved in creating animations (i.e., movies).
 Of course, an animation is nothing more than a series of individual images
@@ -40,7 +42,7 @@ full-featured movie with thousands of frames at HD or 4k resolution.
      :width: 100%
 
   :doc:`/animations/anim04`
-  
+
 - .. youtube:: 7NQa4TORA3E
      :width: 100%
 

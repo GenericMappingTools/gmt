@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Check clipping of ellipses that should wrap in a global gmt projection
+# GRAPHICSMAGICK_RMS = 0.004
 
 ps=clip_ellipse.ps
 

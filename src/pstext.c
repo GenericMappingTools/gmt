@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pstext_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pstext"
 #define THIS_MODULE_MODERN_NAME	"text"
@@ -74,9 +75,10 @@ struct PSTEXT_CTRL {
 		bool get_xy_from_justify;	/* True if +c was given and we just get it from input */
 		bool word;		/* True if we are to select a single word from the trailing text as the label */
 		bool no_input;		/* True if we give a single static text and place it via +c */
+		bool no_xy_coord;	/* If -F+c given then we dont read/parse two coordinates */
 		struct GMT_FONT font;
 		double angle;
-		int justify, R_justify, nread, first, w_col;
+		int justify, R_justify, nread, nread_numerics, first, w_col;
 		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format z using text (+z) */
 		char read[4];		/* Contains a|A, c, f, and/or j in order required to be read from input */
 		char *text;
@@ -290,7 +292,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>/<dy>][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>[/<dy>]][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] %s "
 		"[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Ql|u] [-S[<dx>/<dy>/][<shade>]] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
 		"[%s] %s[%s] [%s] [%s] [-it<word>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -339,9 +341,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Angles given as azimuths; convert to directions using current projection.");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-C[<dx>/<dy>][+tc|C|o|O]");
+	GMT_Usage (API, 1, "\n-C[<dx>[/<dy>]][+tc|C|o|O]");
 	GMT_Usage (API, -2, "Set the clearance between characters and surrounding box. Only used "
-		"if -W has been set. Append units {%s} or %% of fontsize [%d%%]. "
+		"if -W has been set. If <dy> is not given it equals <dx>. Append units {%s} or %% of fontsize [%d%%]. "
 		"Optionally append +t<shape> when -G and/or -W is used. Append a shape:", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
 	GMT_Usage (API, 3, "c: Concave rectangle (requires -M).");
 	GMT_Usage (API, 3, "C: Convex rectangle (requires -M).");
@@ -423,18 +425,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Getting azimuths rather than directions, must convert via map projection */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				c = strstr (opt->arg, "+t");
 				if ((c = strstr (opt->arg, "+t"))) {
 					if (c[2]) Ctrl->C.mode = c[2];
@@ -453,7 +454,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				k = 0;
 				if (opt->arg[k] == 'j') { Ctrl->D.justify = 1, k++; }
 				else if (opt->arg[k] == 'J') { Ctrl->D.justify = 2, k++; }
@@ -472,7 +472,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				pos = 0;
 				Ctrl->F.no_input = gmt_no_pstext_input (API, opt->arg);
 				if ((c = strstr (opt->arg, "+t")) && (q = strchr (&c[1], '+'))) {	/* Worry about plus symbols in the text. If not a valid modifier then we hide the plus symbol for now */
@@ -491,6 +490,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 							if (p[1] == '+' || p[1] == '\0') {	/* Must read angle from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
 								Ctrl->F.nread++;
+								Ctrl->F.nread_numerics++;
 							}
 							else	/* Gave a fixed angle here */
 								Ctrl->F.angle = atof (&p[1]);
@@ -527,6 +527,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
 							}
+							Ctrl->F.no_xy_coord = true;	/* Not reading lon,lat or x,y in this case */
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
@@ -581,7 +582,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (!strcmp (opt->arg, "+n") || (opt->arg[0] == 'C' && !opt->arg[1]))	/* Accept -GC or -G+n */
 					Ctrl->G.mode = PSTEXT_CLIPONLY;
 				else if (!opt->arg[0] || (opt->arg[0] == 'c' && !opt->arg[1]))	/* Accept -Gc or -G */
@@ -593,7 +593,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4)) /* Warn and pass through */
@@ -603,17 +603,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				/* Intentionally fall through */
 			case 'M':	/* Paragraph mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Do not clip at border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if (opt->arg[0] == '\0' || (k = gmt_count_char (GMT, opt->arg, '/')) > 0 || gmt_is_fill (GMT, opt->arg)) {
 					/* -S[<dx>/<dy>/][>shade>]; requires -G */
-					Ctrl->S.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 					if (opt->arg[0]) {
 						k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 						if (k == 1) {	/* Just got a new fill */
@@ -632,7 +631,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				}
 				else if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-S<pen> option is deprecated; use font pen setting instead.\n");
-					Ctrl->S_old.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S_old.active);
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->S_old.pen)) {
 						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", NULL, 0);
 						n_errors++;
@@ -643,7 +642,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'l') Ctrl->Q.mode = -1;
 				if (opt->arg[0] == 'u') Ctrl->Q.mode = +1;
 				break;
@@ -658,22 +656,22 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, "draws a box around the text with the specified pen [Default pen is %s]", NULL, 0);
 					n_errors++;
 				}
 				break;
 			case 'Z':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				/* For backward compatibility we will see -Z+ as the current -Z
 				 * and -Z<level> as an alternative to -p<az>/<el>/<level> */
-				if (opt->arg[0] == '+' && !opt->arg[1])	/* Deprecated -Z+ option */
-					Ctrl->Z.active = true;
+				if (opt->arg[0] == '+' && !opt->arg[1])	{	/* Deprecated -Z+ option */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				}
 				else if (opt->arg[0])	/* Deprecated -Z<level> option */
 					GMT->current.proj.z_level = atof(opt->arg);
-				else	/* Normal -Z only */
-					Ctrl->Z.active = true;
+				else {	/* Normal -Z only */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				}
 				break;
 
 			case 'i':	/* Local -i option for pstext to select a specific word in the text */
@@ -856,7 +854,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -867,7 +865,11 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 	tcol_f = 2 + Ctrl->Z.active;	tcol_s = tcol_f + 1;
-
+	/* Since pstext input is complicated we need to help gmtio_examine_current_record by determining how many leading numerical columns to expect */
+	API->n_numerical_columns = (Ctrl->F.no_xy_coord) ? 0 : 2;	/* Normally first 2 columns are x/y coordinates but not if -F+c */
+	if (Ctrl->F.get_text == GET_CMD_FORMAT) API->n_numerical_columns++;	/* Expect a 3rd column value for formatting */ 
+	if (Ctrl->Z.active) API->n_numerical_columns++;	/* Expect a 3-D z coordinate */
+	if (Ctrl->F.nread_numerics) API->n_numerical_columns++;	/* Will read angle from input file */
 	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.n_transparencies;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
 	no_in_txt = (Ctrl->F.get_text > 1);	/* No text in the input record */
@@ -1508,6 +1510,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = old_is_world;
 	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
+    API->n_numerical_columns = GMT_NOTSET;
 
 	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);

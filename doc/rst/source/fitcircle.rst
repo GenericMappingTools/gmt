@@ -32,7 +32,7 @@ Synopsis
 Description
 -----------
 
-**fitcircle** reads lon,lat [or lat,lon] values from the first two
+**fitcircle** reads (*lon, lat*) [or (*lat, lon*)] values from the first two
 columns on standard input [or *table*]. These are converted to
 Cartesian three-vectors on the unit sphere. Then two locations are
 found: the mean of the input positions, and the pole to the great circle
@@ -64,14 +64,14 @@ Required Arguments
 ------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**] files containing lon,lat [or lat,lon; see
+    One or more ASCII [or binary, see **-bi**] files containing (*lon, lat*) [or (*lat, lon*); see
     **-:**\ [**i**\|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 
 .. _-L:
 
 **-L**\ *norm*
-    Specify the desired *norm* as 1 or 2, or use **-L** or **-L3** to
+    Specify the desired *norm* as 1 or 2, or use |-L| or **-L3** to
     see both solutions.
 
 Optional Arguments
@@ -81,11 +81,11 @@ Optional Arguments
 
 **-F**\ *flags*
     Traditionally, **fitcircle** will write its results in the form of a text report, with
-    the values intermingled with report sentences.  Use **-F** to only return data
+    the values intermingled with report sentences.  Use |-F| to only return data
     coordinates, and append *flags* to specify which coordinates you would like. You
     can choose one or more items from **f** (Flat Earth mean location), **m** (mean location),
     **n** (north pole of great circle), **s** (south pole of great circle), and
-    **c** (pole of small circle and its colatitude, which requires **-S**).
+    **c** (pole of small circle and its colatitude, which requires |-S|).
 
 .. _-S:
 
@@ -140,32 +140,32 @@ Examples
 
 .. include:: explain_example.rst_
 
-To find the parameters of a great circle that most closely fits the (lon,lat)
+To find the parameters of a great circle that most closely fits the (*lon, lat*)
 points in the remote file @sat_03.txt in a least-squares sense, try::
 
-    gmt fitcircle @sat_03.txt -L2 -Fm
+  gmt fitcircle @sat_03.txt -L2 -Fm
 
-Suppose you have lon,lat,grav data along a twisty ship track in the file
+Suppose you have *lon, lat, grav* data along a twisty ship track in the file
 ship.xyg. You want to project this data onto a great circle and resample
 it in distance, in order to filter it or check its spectrum. Do the
 following:
 
-   ::
+::
 
-    gmt fitcircle ship.xyg -L2
-    gmt project ship.xyg -Cox/oy -Tpx/py -S -Fpz | gmt sample1d -S-100 -I1 > output.pg
+  gmt fitcircle ship.xyg -L2
+  gmt project ship.xyg -Cox/oy -Tpx/py -S -Fpz | gmt sample1d -S-100 -I1 > output.pg
 
 Here, *ox*/*oy* is the lon/lat of the mean from **fitcircle**, and
 *px*/*py* is the lon/lat of the pole. The file output.pg has distance,
 gravity data sampled every 1 km along the great circle which best fits
 ship.xyg
 
-If you have lon, lat points in the file data.txt and wish to return the northern
+If you have *lon, lat* points in the file data.txt and wish to return the northern
 hemisphere great circle pole location using the L2 norm, try
 
-   ::
+::
 
-    gmt fitcircle data.txt -L2 -Fn > pole.txt
+  gmt fitcircle data.txt -L2 -Fn > pole.txt
 
 
 See Also

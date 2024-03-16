@@ -18,7 +18,7 @@ Synopsis
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |-C|\ **f**\|\ **l**\|\ **o**\|\ **u** ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
-[ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
+[ |-S|\ *radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -46,8 +46,8 @@ Description
 specified region and lattice spacing will be set equal to one of three
 possible values depending on whether the node is outside, on the polygon
 perimeter, or inside the polygon, with the assigned  *z* value selected
-via **-N**.  If multiple polygons overlap the same nodes then the polygon
-selected depends on the **-C** selection.  The resulting mask may be used in
+via |-N|.  If multiple polygons overlap the same nodes then the polygon
+selected depends on the |-C| selection.  The resulting mask may be used in
 subsequent operations involving :doc:`grdmath` to mask out data from
 polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
@@ -86,7 +86,7 @@ Optional Arguments
 **-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
     If the input data are geographic (as indicated by **-f**) then the
     sides in the polygons will be approximated by great circle arcs.
-    When using the **-A** sides will be regarded as straight lines.
+    When using the |-A| sides will be regarded as straight lines.
     Alternatively, append **m** to have sides first follow meridians,
     then parallels. Or append **p** to first follow parallels, then meridians.
     For Cartesian data, points are simply connected, unless you append
@@ -102,8 +102,8 @@ Optional Arguments
     grid nodes. Choose from the following modes: **f** for the first polygon
     to overlap a node; **o** for the last polygon to overlap a node; **l**
     for the polygon with the lowest *z*-value, and **u** for the polygon with
-    the uppermost *z*-value [Default is **o**]. **Note**: Does not apply to **-S**.
-    For polygon *z*-values, see **-N**.
+    the uppermost *z*-value [Default is **o**]. **Note**: Does not apply to |-S|.
+    For polygon *z*-values, see |-N|.
 
 .. _-N:
 
@@ -123,14 +123,14 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *search\_radius*\|\ *xlim*\ /*ylim*
+**-S**\ *radius*\|\ *xlim*\ /*ylim*
     Set nodes to inside, on edge, or outside depending on their distance
-    to the nearest data point. Nodes within *radius* [0] from the
+    to the nearest data point. Nodes within the searsch *radius* [0] from the
     nearest data point are considered inside; append a distance unit
     (see `Units`_). If *radius* is given as **z** then we instead read
     individual radii from the 3rd input column.  Unless Cartesian data,
     specify the unit of these radii by appending it after **-Sz**.
-    If **-S** is not set then we consider the input data to define
+    If |-S| is not set then we consider the input data to define
     one or more closed polygon(s) instead.  For Cartesian data with
     different units you can instead append *xlim*\ /*ylim* which will
     perform a rectangular search where all nodes within ±\ *xlim* and
@@ -222,28 +222,28 @@ Examples
 To set all nodes inside and on the polygons coastline_*.xy to 0, and
 outside points to 1, do
 
-   ::
+::
 
-    gmt grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc=nb -V
+  gmt grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc=nb -V
 
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 
-   ::
+::
 
-    gmt grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc=nb -V
+  gmt grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc=nb -V
 
 To assign polygon IDs to the gridnodes using the insides of the polygons
 in plates.gmt, based on the attribute POL_ID, do
 
-   ::
+::
 
-    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc=ns -aZ=POL_ID -V
+  gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc=ns -aZ=POL_ID -V
 
 Same exercise, but instead compute running polygon IDs starting at 100, do
 
-   ::
+::
 
-    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc=ns -V
+  gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc=ns -V
 
 See Also
 --------

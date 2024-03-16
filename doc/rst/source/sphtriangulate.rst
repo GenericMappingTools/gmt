@@ -40,14 +40,14 @@ Description
 -----------
 
 **sphtriangulate** reads one or more ASCII [or binary] files (or
-standard input) containing lon, lat and performs a spherical Delaunay
+standard input) containing (*lon, lat*) and performs a spherical Delaunay
 triangulation, i.e., it determines how the points should be connected to give
 the most equilateral triangulation possible on the sphere. Optionally,
 you may choose **-Qv** which will do further processing to obtain the
 Voronoi polygons. Normally, either set of polygons will be written as
-closed fillable segment output; use **-T** to write unique arcs instead. As an
+closed fillable segment output; use |-T| to write unique arcs instead. As an
 option, compute the area of each triangle or polygon. The algorithm used
-is STRIPACK.
+is STRIPACK [*Renka*\ , 1997].
 
 Required Arguments
 ------------------
@@ -62,7 +62,7 @@ Optional Arguments
 
 **-A**
     Compute the area of the spherical triangles (**-Qd**) or polygons
-    (**-Qv**) and write the areas (in chosen units; see **-L**) in the
+    (**-Qv**) and write the areas (in chosen units; see |-L|) in the
     output segment headers [no areas calculated].
 
 .. _-C:
@@ -95,24 +95,28 @@ Optional Arguments
 
 **-N**\ *file*
     Write the information pertaining to each polygon. For Delaunay: the
-    three node number and the triangle area (if **-A** was set); for
-    Voronoi the unique node lon, lat and polygon area (if **-A** was
+    three node number and the triangle area (if |-A| was set); for
+    Voronoi the unique node (*lon, lat*) and polygon area (if |-A| was
     set)) to a separate file. This information is also encoded in the
     segment headers of ASCII output files. Required if binary output is needed.
 
 .. _-Q:
 
 **-Q**\ **d**\|\ **v**
-    Append **d** for Delaunay triangles or **v** for Voronoi polygons [Delaunay].
-    If **-bo** is used then **-N** may be used to specify a separate file where the
-    polygon information normally is written.
+    Append one of two directives to set the output type:
+
+    - **d**: Create Delaunay triangles [Default].
+    - **v**: Create Voronoi polygons.
+
+    **Note**: If **-bo** is active then |-N| may be used to specify a
+    separate file where the polygon information normally is written.
 
 .. _-T:
 
 **-T**
     Write the unique arcs of the construction [Default writes fillable
-    triangles or polygons]. When used with **-A** we store arc length in
-    the segment header in chosen unit (see **-L**).
+    triangles or polygons]. When used with |-A| we store arc length in
+    the segment header in chosen unit (see |-L|).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -164,17 +168,17 @@ then plot it on a sphere, try::
 To triangulate the points in the file testdata.txt, and make a Voronoi
 diagram via :doc:`plot`, use
 
-   ::
+::
 
-    gmt sphtriangulate testdata.txt -Qv | gmt plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
+  gmt sphtriangulate testdata.txt -Qv | gmt plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.txt and save the area of each triangle
 in the header record, try
 
-   ::
+::
 
-    gmt sphtriangulate globalnodes.txt -Qd -A > global_tri.txt
+  gmt sphtriangulate globalnodes.txt -Qd -A > global_tri.txt
 
 Notes
 -----
@@ -182,7 +186,7 @@ Notes
 The STRIPACK algorithm and implementation expect that there are no duplicate points
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as :doc:`blockmean` and others, to combine close points into single entries.
-Also, **sphtriangulate** has a **-D** option to determine and exclude duplicates, but
+Also, **sphtriangulate** has a |-D| option to determine and exclude duplicates, but
 it is a very brute-force yet exact comparison that is very slow for large data sets.
 Detection of duplicates in the STRIPACK library will exit the module.
 

@@ -58,7 +58,7 @@ Optional Arguments
 .. _-C:
 
 **-C**
-    Formats the report selected by **-I** using tab-separated fields on a single line. The
+    Formats the report selected by |-I| using tab-separated fields on a single line. The
     output is Sun *Lon Lat Azimuth Elevation* in degrees, *Sunrise Sunset Noon* in decimal days,
     *day length* in minutes, *SolarElevationCorrected* corrected for the effect of refraction index
     and *Equation of time* in minutes. Note that if no position is provided in **-I**\ *lon/lat* the
@@ -68,16 +68,20 @@ Optional Arguments
 
 **-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of terminators, or give no argument for clipping [Default is no fill or clipping].
-    Deactivate clipping by appending the output of gmt :doc:`clip` **-C**.
+    Deactivate clipping by appending the output of gmt :doc:`clip` |-C|.
 
 .. _-I:
 
 **-I**\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*]
     Print current sun position as well as Azimuth and Elevation. Append *lon/lat* to print also the times of
     Sunrise, Sunset, Noon and length of the day.
-    Add **+d**\ *date* in ISO 8601 format, e.g, **+d**\ *2000-04-25T04:52*, to compute sun parameters
-    for this date and time [Default is now]. If necessary, append a time zone via **+z**\ *TZ*. The time zone is given as an offset from UTC.
-    Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
+
+    The default time is now. To select another time, use these two modifiers:
+    
+    - **+d** - Print *date* in ISO 8601 format, e.g, **+d**\ *2000-04-25T04:52*, to compute sun parameters
+      for this date and time [Default is now].
+    - **+z** - If necessary, append the time zone *TZ*. The time zone is given as an offset from UTC.
+      Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -93,7 +97,7 @@ Optional Arguments
 
 **-N**
     Invert the sense of what is inside and outside the terminator.  Only
-    used with clipping (**-G**) and cannot be used together with **-B**.
+    used with clipping (|-G|) and cannot be used together with |-B|.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -103,10 +107,19 @@ Optional Arguments
 .. _-T:
 
 **-Tdcna**\ [**+d**\ *date*][**+z**\ *TZ*]
-    Plot (or dump; see **-M**\ ) one or more terminators defined via the **dcna** flags. Where:
-    **d** means day/night terminator; **c** means civil twilight; **n** means nautical twilight;
-    **a** means astronomical twilight.  Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
-    to know where the day-night was at that date [Default is now]. If necessary, append time zone via **+z**\ *TZ*.
+    Plot (or dump; see **-M**\ ) one or more terminators by appending any of these directives:
+
+    - **d** - Select the day/night terminator.
+    - **c** - Select civil twilight.
+    - **n** - Select nautical twilight;
+    - **a** - Select astronomical twilight.
+
+    The default time is now. To select another time, use these two modifiers:
+
+    - **+d** - Append *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
+      to know where the day-night was at that date [Default is now]
+    - **+z** - If necessary, append the time zone *TZ*. The time zone is given as an offset from UTC.
+      Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
 
     Refer to https://en.wikipedia.org/wiki/Twilight for definitions of different twilights.
 
@@ -124,7 +137,7 @@ Optional Arguments
 
 **-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid].
+    width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_

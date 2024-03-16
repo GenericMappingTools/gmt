@@ -21,3 +21,5 @@ Make sure you are in the top gmt directory and then
 run
 
     admin/build-release.sh [-help]
+
+to see the various options available.

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -77,6 +77,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/trend1d_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"trend1d"
 #define THIS_MODULE_MODERN_NAME	"trend1d"
@@ -197,13 +198,32 @@ GMT_LOCAL void trend1d_allocate_the_memory (struct GMT_CTRL *GMT, unsigned int n
 	*w_model = gmt_M_memory (GMT, NULL, np, double);
 }
 
+/*! Sort on x */
+GMT_LOCAL int trend1d_compare_x (const void *point_1, const void *point_2) {
+	const struct TREND1D_DATA *p1 = point_1, *p2 = point_2;
+
+	/* First sort on bin index ij */
+	if (p1->x < p2->x) return (-1);
+	if (p1->x > p2->x) return (+1);
+	/* Values are the same, return 0 */
+	return (0);
+}
+
 GMT_LOCAL void trend1d_write_output_trend (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs) {
+	bool sort_on_x = false;
 	uint64_t i;
 	unsigned int j;
 	double out[5] = {0, 0, 0, 0, 0};
 	struct GMT_RECORD Out;
 
 	Out.data = out;	Out.text = NULL;
+	for (j = 0; j < n_outputs; j++) {
+		if (output_choice[j] == 'm')
+			sort_on_x = true;
+	}
+	if (sort_on_x)	/* Sort model prediction on increasing x */
+		qsort (data, n_data, sizeof (struct TREND1D_DATA), trend1d_compare_x);
+
 	for (i = 0; i < n_data; i++) {
 		for (j = 0; j < n_outputs; j++) {
 			switch (output_choice[j]) {
@@ -591,19 +611,17 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				Ctrl->C.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					if (j < TREND1D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
@@ -615,12 +633,10 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0]) Ctrl->I.value = atof (opt->arg);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (gmt_parse_model (API->GMT, opt->option, opt->arg, 1U, &(Ctrl->N.M)) == -1) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -N: See usage for details.\n");
 					n_errors++;
@@ -628,7 +644,6 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.mode = (strstr (opt->arg, "+s")) ? 2 : 1;
 				break;
@@ -697,7 +712,7 @@ EXTERN_MSC int GMT_trend1d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

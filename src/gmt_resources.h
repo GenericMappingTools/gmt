@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -142,16 +142,16 @@ enum GMT_enum_container {
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
-/*! These are the 5 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
+/*! These are the 6 families of data types, + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
 	GMT_IS_DATASET    = 0,	/* Entity is a data table */
 	GMT_IS_GRID       = 1,	/* Entity is a grid */
 	GMT_IS_IMAGE      = 2,	/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_PALETTE    = 3,	/* Entity is a color palette table */
 	GMT_IS_POSTSCRIPT = 4,	/* Entity is a PostScript content struct */
-	GMT_IS_MATRIX	  = 5,	/* Entity is user matrix */
-	GMT_IS_VECTOR	  = 6,	/* Entity is set of user vectors */
-	GMT_IS_CUBE	  = 7,	/* Entity is set of user vectors */
+	GMT_IS_MATRIX     = 5,	/* Entity is user matrix */
+	GMT_IS_VECTOR     = 6,	/* Entity is set of user vectors */
+	GMT_IS_CUBE       = 7,	/* Entity is a 3-D data cube */
 	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
 	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
 };
@@ -295,10 +295,11 @@ enum GMT_enum_duplicate {
 
 /* Various directions and modes to call the FFT */
 enum GMT_enum_FFT {
-	GMT_FFT_FWD     = 0U,	/* forward Fourier transform */
-	GMT_FFT_INV     = 1U,	/* inverse Fourier transform */
-	GMT_FFT_REAL    = 0U,	/* real-input FT (currently unsupported) */
-	GMT_FFT_COMPLEX = 1U	/* complex-input Fourier transform */
+	GMT_FFT_FWD      = 0U,	/* forward Fourier transform */
+	GMT_FFT_INV      = 1U,	/* inverse Fourier transform */
+	GMT_FFT_REAL     = 0U,	/* real-input FT (currently unsupported) */
+	GMT_FFT_COMPLEX  = 1U,	/* complex-input Fourier transform */
+	GMT_FFT_NO_DEMUX = 8U	/* Do NOT demux the complex grid to only save the real after GMT_FFT_INV */
 };
 
 /* Various modes to select time in GMT_Message */
@@ -319,6 +320,7 @@ enum GMT_enum_verbose {
 	GMT_MSG_INFORMATION	= 5,	/* Adds informational messages */
 	GMT_MSG_COMPAT		= 6,	/* Compatibility warnings */
 	GMT_MSG_DEBUG		= 7,	/* Debug messages for developers mostly */
+	GMT_MSG_BITSHIFT	= 16,	/* Left/right shift of MSG codes when packing into mode for GMT_Create_Session. Increase if GMT_MSG_* need more space */
 	/* For API backwards compatibility only */
 	GMT_MSG_NORMAL		= 2,	/* Now GMT_MSG_ERROR */
 	GMT_MSG_VERBOSE		= 5,	/* Now GMT_MSG_WARNING  */
@@ -573,7 +575,9 @@ enum GMT_enum_color {
 	GMT_CMYK		= 1,
 	GMT_HSV			= 2,
 	GMT_COLORINT		= 4,
-	GMT_NO_COLORNAMES	= 8
+	GMT_NO_COLORNAMES	= 8,
+	GMT_HEX_COLOR		= 16,
+	GMT_GRAY		= 32,
 };
 
 enum GMT_enum_bfn {
@@ -594,6 +598,7 @@ enum GMT_enum_cptflags {
 	GMT_CPT_SOFT_HINGE = 8,
 	GMT_CPT_TIME       = 16,
 	GMT_CPT_COLORLIST  = 32,
+	GMT_CPT_GRAY_SET   = 64,
 	GMT_CPT_HINGED     = 4	/* Backwards compatibility with 6.0 API */
 };
 
@@ -733,7 +738,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 
 enum GMT_enum_fmt {
 	GMT_IS_ROW_FORMAT	= 1,	/* 2-D grid is C-style with rows: as index increase we move across rows */
-	GMT_IS_COL_FORMAT	= 2	/* 2-D grid is Fortran-style with columns: as index increase we move down columns  */
+	GMT_IS_COL_FORMAT	= 2	/* 2-D grid is FORTRAN-style with columns: as index increase we move down columns  */
 };
 
 /* These containers are used to pass user vectors and matrices in/out of GMT */
@@ -744,9 +749,9 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	uint64_t n_columns;		/* Number of columns in this matrix */
 	uint64_t n_layers;		/* Number of layers in a 3-D matrix [1] */
 	unsigned int n_headers;		/* Number of CPT header records (0 if no header) */
-	enum GMT_enum_fmt shape;	/* 0 = C (rows) and 1 = Fortran (cols) */
+	enum GMT_enum_fmt shape;	/* 0 = C (rows) and 1 = FORTRAN (cols) */
 	enum GMT_enum_reg registration;	/* 0 for gridline and 1 for pixel registration  */
-	size_t dim;			/* Allocated length of longest C or Fortran dim */
+	size_t dim;			/* Allocated length of longest C or FORTRAN dim */
 	size_t size;			/* Byte length of data */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
 	double range[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */

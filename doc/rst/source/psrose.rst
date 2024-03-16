@@ -74,7 +74,7 @@ azimuth, and shown in Portrait orientation, use:
 To plot a full circle wind rose diagram of the data in the file
 lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =
 500 units in steps of 100 with a 45 degree sector interval, using a
-solid pen (width = 0.5 point, and shown in landscape [Default]
+solid pen (width = 0.5 point), and shown in landscape [Default]
 orientation with UNIX timestamp and command line plotted, use:
 
    ::

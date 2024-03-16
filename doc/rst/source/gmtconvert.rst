@@ -1,9 +1,9 @@
 .. index:: ! gmtconvert
 .. include:: module_core_purpose.rst_
 
-**********
-gmtconvert
-**********
+*******
+convert
+*******
 
 |gmtconvert_purpose|
 
@@ -17,15 +17,16 @@ Synopsis
 [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
-[ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
+[ |-S|\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**] ]
 [ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
+[ |-Z| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -72,8 +73,8 @@ Optional Arguments
 **-A**
     The records from the input files should be pasted horizontally, not
     appended vertically [Default]. All files must have the same number
-    of segments and number of rows per segment. Note for binary input,
-    all the files you want to paste must have the same number of columns
+    of segments and number of rows per segment. **Note**: For binary input,
+    all the files you want to paste must have the *same* number of columns
     (as set with **-bi**); ASCII tables can have different number of columns.
 
 .. _-C:
@@ -91,8 +92,9 @@ Optional Arguments
 **-D**\ [*template*\ [**+o**\ *orig*]]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a multiple segment file to standard output]. Append a
-    format template for the individual file names; this template
-    **must** contain a C format specifier that can format an integer
+    format template for the individual file names; this template **must**
+    contain a C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_
+    format specifier that can format an integer
     argument (the running segment number across all tables); this is
     usually %d but could be %08d which gives leading zeros, etc.
     [Default is gmtconvert_segment\_%d.{txt\|bin}, depending on
@@ -112,29 +114,42 @@ Optional Arguments
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract every *stride* records;
-    use **M** to also include the last record.
+    use **M** to also include the last record if not on the stride. **Note**: This option operates
+    on the input records and if combined with |-N| the latter only sorts
+    the reduced data set. See **-qo** for limiting the output records after sorting.
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **r**\|\ **s**\|\ **t**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
-    **c**\ : Form continuous line segments for each group [Default].
-    **p**\ : Form line segments from a reference point reset for each group.
-    **n**\ : Form networks of line segments between all points in each group.
-    **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
+
+    - **c**\ : Form continuous line segments for each group [Default].
+    - **n**\ : Form networks of line segments between all points in each group.
+    - **p**\ : Form line segments from a reference point reset for each group.
+    - **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
+    
     Optionally, append the one of four segmentation methods to define the group:
-    **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
-    and set group reference point to the very first point of the first file.
-    **t**\ : Consider all data in each table to be a single separate group and
-    reset the group reference point to the first point of each group.
-    **s**\ : Segment headers are honored so each segment is a group; the group
-    reference point is reset to the first point of each incoming segment [Default].
-    **r**\ : Same as **s**, but the group reference point is reset after
-    each record to the previous point (this method is only available with the **-Fp** scheme).
-    Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
-    the coordinates of a *refpoint* which will serve as a fixed external
-    reference point for all groups.
+
+    - **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
+      and set group reference point to the very first point of the first file.
+    - **r**\ : Segment headers are honored so each segment is a group; the group
+      reference point is reset after each record to the previous point (this method
+      is only available with the **-Fp** scheme).
+    - **s**\ : Same as **r**, but the group reference point is reset to the first
+      point of each incoming segment [Default].
+    - **t**\ : Consider all data in each table to be a single separate group and
+      reset the group reference point to the first point of each group.
+
+    Instead of the codes **a**\|\ **r**\|\ **s**\|\ **t** you may append the
+    *lon/lat* (or *x/y*) coordinates of a *refpoint*, which will serve as a fixed
+    external reference point for all groups.
+
+    .. figure:: /_images/GMT_segmentize.*
+        :width: 600 px
+        :align: center
+    
+        Various ways to connect input points from one or more files using |-F|.
 
 .. _-I:
 
@@ -158,15 +173,17 @@ Optional Arguments
     Numerically sort each segment based on values in column *col*.
     The data records will be sorted such that the chosen column will
     fall into ascending order [**+a**\ , which is Default].  Append **+d**
-    to sort into descending order instead.  The **-N** option can be
-    combined with any other ordering scheme except **-F** (segmentation)
-    and is applied at the end.
+    to sort into descending order instead.  The |-N| option can be
+    combined with any other ordering scheme except |-F| (segmentation)
+    and is applied at the end. **Note**: If |-E| is used then be aware its effect
+    is applied *before* the sorting, not after.  For limiting the output
+    of records after sorting, see **qo**.
 
 .. _-Q:
 
 **-Q**\ [**~**]\ *selection*
     Only write segments whose number is included in *selection* and skip
-    all others. Cannot be used with **-S**. The *selection* syntax is
+    all others. Cannot be used with |-S|. The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     segment *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
     (*step* is optional and defaults to 1). A leading **~** will
@@ -175,14 +192,14 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
+**-S**\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
     **-S~**. Should your pattern happen to start with ~ you need to
     escape this character with a backslash [Default output all
-    segments]. Cannot be used with **-Q**. For matching segments based
-    on aspatial values (via OGR/GMT format), give the search string as
+    segments]. Cannot be used with |-Q|. For matching segments based
+    on aspatial values (via :ref:`OGR/GMT <OGR_compat>` format), give the search string as
     *varname*\ =\ *value* and we will compare *value* against the value
     of *varname* for each segment. **Note**: If the features are polygons
     then a match of a particular polygon perimeter also means that any
@@ -190,7 +207,9 @@ Optional Arguments
     headers against extended regular expressions enclose the expression
     in slashes. Append **i** for case-insensitive matching.
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
-    To give a single pattern starting with +f, escape it with a backslash.
+    To give a single pattern starting with "+f", escape it with a backslash.
+    Finally, append **+e** as last modifier to request an exact match [Default will
+    match any sub-string in the target].
 
 .. _-T:
 
@@ -199,7 +218,7 @@ Optional Arguments
     suppress segment headers [Default], and/or **d** to suppress duplicate
     data records.  Use **-Thd** to suppress both types of records.  By default,
     all columns must be identical across the two records to skip the record.
-    ALternatively, append a column *selection* to only use those columns
+    Alternatively, append a column *selection* to only use those columns
     in the comparisons instead.  The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     column *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
@@ -221,6 +240,14 @@ Optional Arguments
     (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
     exclude the columns with NaNs.  **Note**: These columns are identified based on
     the first input record only.
+
+.. _-Z:
+
+**-Z**
+    Transpose the single segment in a dataset. Any trailing text will be lost.
+    **Note**: If you are using binary tables then add |-V| to have the dimensions
+    of the transposed table reported since you will need to specify **-bi**\ *ncols*
+    when reading the binary transposed table.
 
 .. include:: explain_-aspatial.rst_
 
@@ -269,7 +296,7 @@ Examples
 
 To convert the binary file test.b (single precision) with 4 columns to ASCII::
 
-    gmt convert test.b -bi4f > test.dat
+    gmt convert test.b -bi4f > test.txt
 
 To convert the multiple segment ASCII table test.txt to a double precision binary file::
 
@@ -286,7 +313,7 @@ columns 4-6 and write ASCII with the command::
     gmt convert results.b -o8,4-6 -bi9s | gmt plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
-first column of a file right.txt::
+first column of a file right.txt (i.e., 1 of 0,1 and 2 of 2,3)::
 
     gmt convert left.txt right.txt -A -o1,2 | gmt plot ...
 
@@ -294,6 +321,11 @@ To extract all segments in the file big_file.txt whose headers contain
 the string "RIDGE AXIS", try::
 
     gmt convert big_file.txt -S"RIDGE AXIS" > subset.txt
+
+To only get the segments in the file big_file.txt whose headers exactly
+matches the string "Spitsbergen", try::
+
+    gmt convert big_file.txt -SSpitsbergen+e > subset.txt
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try::
@@ -310,7 +342,8 @@ To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try::
     gmt convert lots_of_segments.txt -Q0,20:2:40 > my_segments.txt
 
 
-To extract the attribute ELEVATION from an ogr gmt file like this::
+To extract the attribute ELEVATION from an :ref:`OGR/GMT <OGR_compat>` format
+file like this::
 
     # @VGMT1.0 @GPOINT
     ...
@@ -322,11 +355,11 @@ To extract the attribute ELEVATION from an ogr gmt file like this::
 
 do::
 
-    gmt convert file.gmt -a2=ELEVATION > xyz.dat
+    gmt convert file.gmt -a2=ELEVATION > xyz.txt
 
 or just::
 
-    gmt convert file.gmt -aELEVATION > xyz.dat
+    gmt convert file.gmt -aELEVATION > xyz.txt
 
 To connect all points in the file sensors.txt with the specified origin
 at 23.5/19, try::
@@ -346,6 +379,11 @@ To only read rows 100-200 and 500-600 from file junk.txt, try::
 To get all rows except those bad ones between rows 1000-2000, try::
 
     gmt convert junk.txt -q~1000-2000 > good.txt
+
+To convert miles into meters, centimeters, feet, yards, inches, and leagues, try::
+
+    gmt convert mi.txt -i0+s1609.344,0+s160934.4,0+s5280,0+s1670,0+s63360,0+d3 > mcfyil.txt
+
 
 See Also
 --------

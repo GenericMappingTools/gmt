@@ -130,7 +130,7 @@ check_function_exists (llabs            HAVE_LLABS)
 check_function_exists (pclose           HAVE_PCLOSE)
 check_function_exists (popen            HAVE_POPEN)
 check_function_exists (qsort_r          HAVE_QSORT_R)
-if (HAVE_QSORT_R)
+if (HAVE_QSORT_R AND NOT CMAKE_CROSSCOMPILING)
 	# check qsort_r compatibility
 	check_c_source_runs (
 		"
@@ -151,7 +151,7 @@ if (HAVE_QSORT_R)
 		}
 		"
 		HAVE_QSORT_R_GLIBC)
-endif (HAVE_QSORT_R)
+endif (HAVE_QSORT_R AND NOT CMAKE_CROSSCOMPILING)
 check_function_exists (strcasecmp       HAVE_STRCASECMP)
 check_function_exists (strncasecmp      HAVE_STRNCASECMP)
 check_function_exists (stricmp          HAVE_STRICMP)
@@ -297,28 +297,30 @@ set (HAVE_SYS_TYPES_H_ "${HAVE_SYS_TYPES_H}"
 
 test_big_endian (WORDS_BIGENDIAN)
 
-# Byte swapping functions
-check_c_source_runs (
-	"
-	int main(void) {
-		return !__builtin_bswap16(0xabcd) == 0xcdab;
-	}
-	"
-	HAVE___BUILTIN_BSWAP16)
-check_c_source_runs (
-	"
-	int main(void) {
-		return !__builtin_bswap32(0xdeadbeef) == 0xefbeadde;
-	}
-	"
-	HAVE___BUILTIN_BSWAP32)
-check_c_source_runs (
-	"
-	int main(void) {
-		return !__builtin_bswap64(0x1234567890abcdef) == 0xefcdab9078563412;
-	}
-	"
-	HAVE___BUILTIN_BSWAP64)
+if (NOT CMAKE_CROSSCOMPILING)
+	# Byte swapping functions
+	check_c_source_runs (
+		"
+		int main(void) {
+			return !__builtin_bswap16(0xabcd) == 0xcdab;
+		}
+		"
+		HAVE___BUILTIN_BSWAP16)
+	check_c_source_runs (
+		"
+		int main(void) {
+			return !__builtin_bswap32(0xdeadbeef) == 0xefbeadde;
+		}
+		"
+		HAVE___BUILTIN_BSWAP32)
+	check_c_source_runs (
+		"
+		int main(void) {
+			return !__builtin_bswap64(0x1234567890abcdef) == 0xefcdab9078563412;
+		}
+		"
+		HAVE___BUILTIN_BSWAP64)
+endif (NOT CMAKE_CROSSCOMPILING)
 if (WIN32)
 	check_function_exists (_byteswap_ushort HAVE__BYTESWAP_USHORT) # for uint16_t
 	check_function_exists (_byteswap_ulong  HAVE__BYTESWAP_ULONG)  # for uint32_t

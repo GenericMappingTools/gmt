@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,12 +37,13 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdview_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdview"
 #define THIS_MODULE_MODERN_NAME	"grdview"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create 3-D perspective image or surface mesh from a grid"
-#define THIS_MODULE_KEYS	"<G{,CC(,GG(,IG(,>X}"
+#define THIS_MODULE_KEYS	"<G{,CC(,GG(,GI(,IG(,>X}"
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Ec")
 
@@ -71,8 +72,10 @@ struct GRDVIEW_CTRL {
 		bool active;
 		double dz;
 		char *file;
+		char *savecpt;	/* For when we want to save the automatically generated CPT */
 	} C;
-	struct GRDVIEW_G {	/* -G<drapefile> 1 or 3 times*/
+	struct GRDVIEW_G {	/* -G<drapefile>|<drapeimage>  */
+		/* Also handle deprecated triples -Gred.grd -Ggreen.grd -Gblue.grd or -Gred.grd,green.grd,blue.grd */
 		bool active;
 		bool image;
 		unsigned int n;
@@ -91,6 +94,7 @@ struct GRDVIEW_CTRL {
 	struct GRDVIEW_N {	/* -N<level>[+g<fill>] */
 		bool active;
 		bool facade;
+		bool implicit;
 		struct GMT_FILL fill;
 		double level;
 	} N;
@@ -406,7 +410,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.file);
-	for (i = 0; i < 3; i++) gmt_M_str_free (C->G.file[i]);
+	gmt_M_str_free (C->C.savecpt);
+	for (i = 0; i < C->G.n; i++) gmt_M_str_free (C->G.file[i]);
 	gmt_M_str_free (C->I.file);
 	gmt_M_str_free (C->I.azimuth);
 	gmt_M_str_free (C->I.method);
@@ -418,32 +423,26 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>] "
-		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N<level>[+g<fill>]] %s%s[-Q<args>[+m]] [%s] [-S<smooth>] "
+	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] [-G<drapegrid>|<drapeimage>] "
+		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Qc|i|m[x|y]|s[<color>][+m]] [%s] [-S<smooth>] "
 		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, GMT_B_OPT, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
+		name, GMT_J_OPT, GMT_B_OPT, CPT_OPT_ARGS, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<topogrid> is the grid surface to be plotted.");
+	GMT_Usage (API, 1, "\n<topogrid> is the grid surface shape to be plotted.");
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-C[<cpt>]");
-	GMT_Usage (API, -2, "Color palette file to convert grid values to colors. Optionally, name a master cpt "
-		"to automatically assign continuous colors over the data range [%s]; if so, "
-		"optionally append +i<dz> to quantize the range [the exact grid range]. "
-		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
-		"linear continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
-	GMT_Usage (API, 1, "\n-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>");
-	GMT_Usage (API, -2, "Specify how to color the 3-D surface defined by <topogrid>:");
+	gmt_explain_cpt_input (API, 'C');
+	GMT_Usage (API, 1, "\n-G<drapegrid>|<drapeimage>");
+	GMT_Usage (API, -2, "Specify how to color the 3-D surface geometry defined by <topogrid>:");
 	GMT_Usage (API, 3, "%s Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Provide an image (<drapeimage>) and it will be draped over the surface.", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s Repeat -G for three grid files with separate red, green, and blue components in 0-255 range.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Notes: 1) -JZ|z and -N always refer to the data in the <topogrid>. "
-		"2) The -G option requires the -Qi[<dpi>] option.");
+		"2) The -G option requires the -Qc|i[<dpu>] option.");
 	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
 	GMT_Usage (API, -2, "Apply directional illumination. Append name of an intensity grid, or "
 		"for a constant intensity (i.e., change the ambient light), just give a scalar. "
@@ -454,21 +453,23 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
 		"To derive intensities from another grid than <topogrid>, give the alternative data grid with suitable modifiers.");
 	GMT_Option (API, "K");
-	GMT_Usage (API, 1, "\n-N<level>[+g<fill>]");
-	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level>. For rectangular projections, append +g<fill> "
+	GMT_Usage (API, 1, "\n-N[<level>][+g<fill>]");
+	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level> [minimum grid (or -R) value]. For rectangular projections, append +g<fill> "
 		"to paint the facade between the plane and the data perimeter.");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "\n-Q<args>[+m]");
-	GMT_Usage (API, -2, "Set plot type request. Choose one of the following directives:");
+	GMT_Usage (API, 1, "\n-Qc|i|m[x|y]|s[<color>][+m]");
+	GMT_Usage (API, -2, "Set plot type request via on of the following directives:");
+	GMT_Usage (API, 3, "c: Transform polygons to raster-image via scanline conversion. Append effective <dpu> [%lg%c]. "
+		"Set PS Level 3 color-masking for nodes with z = NaN.",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
+	GMT_Usage (API, 3, "i: As c but no color-masking. Append effective <dpu> [%lg%c].",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	GMT_Usage (API, 3, "m: Mesh plot [Default]. Append <color> for mesh paint [%s]. "
-		"Alternatively, append x or -y for row or column \"waterfall\" profiles.",
+		"Alternatively, append x or y for row or column \"waterfall\" profiles.",
 		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
-	GMT_Usage (API, 3, "s: Colored or shaded Surface. Append m to draw mesh-lines on the surface.");
-	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpu [%d%c].",
-		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
-	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpu [%d%c].",
-		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
-	GMT_Usage (API, -2, "To force a monochrome image using the YIQ transformation, append +m.");
+	GMT_Usage (API, 3, "s: Colored or shaded surface. Optionally, append m to draw mesh-lines on the surface.");
+	GMT_Usage (API, -2, "Color may be further adjusted by a modifier:");
+	GMT_Usage (API, 3, "+m Force a monochrome image using the YIQ transformation.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<smooth>");
 	GMT_Usage (API, -2, "Smooth contours first (see grdcontour for <smooth> value info) [no smoothing].");
@@ -506,10 +507,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id;
+	unsigned int n_errors = 0, q_set = 0, n_commas, j, k, n, id;
 	int sval;
 	bool no_cpt = false;
-	char *c = NULL;
+	char *c = NULL, *f = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -518,34 +519,32 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Cpt file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0] && (f = gmt_strrstr (Ctrl->C.file, "+s")) != NULL) {	/* Filename has a +s<outname>, extract that part */
+					Ctrl->C.savecpt = &f[2];
+					f[0] = '\0';		/* Remove the +s<outname> from Ctrl->C.file */
+				}
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
-				if (gmt_M_compat_check (GMT, 5) && n_commas == 2) {	/* Old-style -Ga,b,c option */
+				if (n_commas == 2) {	/* Old-style -Ga,b,c option */
 					/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
-					if (A[0]) Ctrl->G.file[0] = strdup (A);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[0]))) n_errors++;
-					if (B[0]) Ctrl->G.file[1] = strdup (B);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[1]))) n_errors++;
-					if (C[0]) Ctrl->G.file[2] = strdup (C);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[2]))) n_errors++;
+					n_errors += gmt_get_required_file (GMT, A, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[0]));
+					n_errors += gmt_get_required_file (GMT, B, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[1]));
+					n_errors += gmt_get_required_file (GMT, C, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[2]));
 					Ctrl->G.n = 3;
 				}
 				else if (n_commas == 0 && Ctrl->G.n < 3) {	/* Just got another drape grid or image */
@@ -554,13 +553,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					Ctrl->G.n++;
 				}
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<z.grd|image> | -G<r.grd> -G<g.grd> -G<b.grd>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Usage is -G<drapegrid|drapeimage>\n");
 					n_errors++;
 				}
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if ((c = strstr (opt->arg, "+d"))) {	/* Gave +d, so derive intensities from the input grid using default settings */
 					Ctrl->I.derive = true;
 					c[0] = '\0';	/* Chop off modifier */
@@ -609,21 +607,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* Facade */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				if (opt->arg[0]) {
 					char colors[GMT_LEN64] = {""};
-					Ctrl->N.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 					if ((c = strstr (opt->arg, "+g")) != NULL) {	/* Gave modifier +g<fill> */
 						c[0] = '\0';	/* Truncate string temporarily */
-						Ctrl->N.level = atof (opt->arg);
+						if (opt->arg[0])
+							Ctrl->N.level = atof (opt->arg);
+						else
+							Ctrl->N.implicit = true;	/* Set level when we know grids zmin */
 						c[0] = '+';	/* Restore the + */
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &c[2], &Ctrl->N.fill),
-						                                 "Option -N: Usage is -N<level>[+g<fill>]\n");
+						                                 "Option -N: Usage is -N[<level>][+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
 					else if (gmt_M_compat_check (GMT, 4) && (c = strchr (opt->arg, '/')) != NULL) {	/* Deprecated <level>/<fill> */
 						GMT_Report (API, GMT_MSG_COMPAT,
-						            "Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
+						            "Option -N<level>[/<fill>] is deprecated; use -N[<level>][+g<fill>] in the future.\n");
 						c[0] = ' ';	/* Take out the slash for now */
 						sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, colors, &Ctrl->N.fill),
@@ -634,14 +634,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					else	/* Just got the level */
 						Ctrl->N.level = atof (opt->arg);
 				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Usage is -N<level>[+g<fill>]\n");
-					n_errors++;
-				}
+				else
+					Ctrl->N.implicit = true;	/* Set level when we know grids zmin */
 				break;
 			case 'Q':	/* Plot mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				q_set++;
 				if ((c = strstr (opt->arg, "+m")) != NULL) {
 					Ctrl->Q.monochrome = true;
@@ -703,14 +700,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':	/* Smoothing of contours */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				sval = atoi (opt->arg);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: smooth value must be positive\n");
 				Ctrl->S.value = sval;
 				break;
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;	/* Plot as tiles */
 				if (opt->arg[0] && (strchr (opt->arg, '+') || gmt_M_compat_check (GMT, 6))) {	/* New syntax */
 					if (strstr (opt->arg, "+s"))
 						Ctrl->T.skip = true;
@@ -738,17 +733,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':	/* Contour, mesh, or facade pens */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				j = (opt->arg[0] == 'm' || opt->arg[0] == 'c' || opt->arg[0] == 'f');
 				id = 0;
-				if (j == 1) {	/* First check that the m or c is not part of a color name instead */
+				if (j == 1) {	/* First check that the c|f|m is not part of a color name instead */
 					char txt_a[GMT_LEN256] = {""};
 					n = j+1;
 					while (opt->arg[n] && opt->arg[n] != ',' && opt->arg[n] != '/') n++;	/* Wind until end or , or / */
 					strncpy (txt_a, opt->arg, n);	txt_a[n] = '\0';
-					if (gmt_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 */
+					if (gmt_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 and parse normally */
 						j = id = 0;
-					else
+					else	/* Got a type, set the id index accordingly */
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
@@ -770,6 +764,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 
 	if (Ctrl->G.active) {
 		if (gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
+		if (no_cpt) Ctrl->Q.cpt = false;
 		if (Ctrl->G.n == 3)
 			Ctrl->G.image = true;
 	}
@@ -789,12 +784,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 	/* Gave both -Q and -T */
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
-	                                   "Option -G: Requires either 1 or 3 grids\n");
+	                                   "Option -G: Requires either 1 or 3 grids (%d)\n",Ctrl->G.n);
 	if (Ctrl->G.active) {	/* Draping was requested */
 		for (k = 0; k < Ctrl->G.n; k++)
 			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
-		                                   "The draping option requires -Qi option\n");
+		                                   "The draping option requires the -Qc|i option\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
 	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
@@ -856,7 +851,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -881,13 +876,15 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (!Ctrl->C.active && Ctrl->Q.cpt && Ctrl->G.n != 3)
+	if (!Ctrl->C.active && (Ctrl->Q.cpt || Ctrl->T.active) && Ctrl->G.n != 3)
 		Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and auto-stretch or under modern reuse current CPT */
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active[RSET])	/* No -R, use grid region */
-		gmt_set_R_from_grd (GMT, Topo->header);
+	if (!GMT->common.R.active[RSET]) {			/* No -R, use grid region */
+		gmt_set_R_from_grd(GMT, Topo->header);
+		GMT->common.R.active[RSET] = true;		/* Needed to have gmtapi_import_image pick the right branch when draping image is referenced */
+	}
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
@@ -1228,6 +1225,12 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	yy = gmt_M_memory (GMT, NULL, max_alloc, double);
 	if (Ctrl->N.active) {
 		PSL_comment (PSL, "Plot the plane at desired level\n");
+		if (Ctrl->N.implicit) {
+			Ctrl->N.level = Topo->header->z_min;
+			if (GMT->common.R.wesn[ZLO] < GMT->common.R.wesn[ZHI] && GMT->common.R.wesn[ZLO] < Ctrl->N.level)
+				Ctrl->N.level = GMT->common.R.wesn[ZLO];
+			GMT_Report (API, GMT_MSG_INFORMATION, "Plane/facade level determined to be z = %lg\n", Ctrl->N.level);
+		}
 		gmt_setpen (GMT, &Ctrl->W.pen[2]);
 		if (!GMT->current.proj.z_project.draw[0]) {	/* Southern side */
 			if (GMT->common.R.oblique) {
@@ -1298,36 +1301,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
-		double *xx = NULL, *yy = NULL;
-		struct GMT_FILL fill;
-		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
-		gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
-
-		GMT_Report (API, GMT_MSG_INFORMATION, "Tiling without interpolation\n");
-
-		if (Ctrl->T.outline) gmt_setpen (GMT, &Ctrl->T.pen);
-		S->data = gmt_M_memory (GMT, NULL, 2, double *);
-		S->n_columns = 2;
-		gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
-			if (gmt_M_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
-			if (use_intensity_grid && Ctrl->T.skip && gmt_M_is_fnan (Intens->data[ij])) continue;
-			gmt_get_fill_from_z (GMT, P, Topo->data[ij], &fill);
-			if (use_intensity_grid)
-				gmt_illuminate (GMT, Intens->data[ij], fill.rgb);
-			else
-				gmt_illuminate (GMT, Ctrl->I.value, fill.rgb);
-			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
-			gmt_setfill (GMT, &fill, Ctrl->T.outline);
-			S->data[GMT_X] = xx;	S->data[GMT_Y] = yy;	S->n_rows = n;
-			gmt_geo_polygons (GMT, S);
-			gmt_M_free (GMT, xx);
-			gmt_M_free (GMT, yy);
-		}
-		S->data[GMT_X] = S->data[GMT_Y] = NULL;	/* Since xx and yy was set to NULL but not data... */
-		gmt_free_segment (GMT, &S);
-	}
-
+	if (Ctrl->T.active)	/* Plot colored graticules instead */
+		gmt_plot_grid_graticules (GMT, Topo, Intens, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL, true);
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
 		int nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		int done, layers, last_i, last_j;
@@ -1544,28 +1519,55 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (!Ctrl->Q.mask) {	/* Must implement the clip path for the image */
+		if (!Ctrl->Q.mask) {	/* Must implement the clip path for the perspective image */
+			/* We now have the top and bottom j-pixel per i-pixel and will build a closed clip path.
+			 * First, we find the first and last i-pixel of the actual image, then do the loop.
+			 * Because pixels are square and of finite size we build a stair-step curve around them,
+			 * hence we need 2x the number of coordinates for both the top and bottom sides */
+			int ip_l, ip_r, first_ip = 0, last_ip = nx_i - 1;
+			bool go_right = true, go_left = true;
+			double mid_y = 0.5 * (GMT->current.proj.z_project.ymin + GMT->current.proj.z_project.ymax);
 
 			x_pixel_size = x_width / (double)nx_i;
 			y_pixel_size = y_width / (double)ny_i;
-			n4 = 4 * nx_i;
+
+			for (ip_l = 0, ip_r = nx_i - 1; ip_l < nx_i; ip_l++, ip_r--) {
+				if (go_right && top_jp[ip_l] < bottom_jp[ip_l])	/* No pixels yet in this column, we can move to the right */
+					first_ip = ip_l + 1;
+				else	/* First non-empty sliver */
+					go_right = false;
+				if (go_left && top_jp[ip_r] < bottom_jp[ip_r])	/* No pixels yet in this column, we can move to the left */
+					last_ip = ip_r - 1;
+				else	/* First non-empty sliver */
+					go_left = false;
+			}
+			/* Compute number of points needed to draw the staircase clip path */
+			n4 = 4 * (last_ip - first_ip + 1);	/* 2 sides, and 2 points per pixel */
 			x_imask = gmt_M_memory (GMT, NULL, n4, double);
 			y_imask = gmt_M_memory (GMT, NULL, n4, double);
 			nk = n4 - 1;
 
-			for (ip = k = 0; ip < nx_i; ip++, k += 2) {
+			for (ip = first_ip, k = 0; ip <= last_ip; ip++, k += 2) {	/* From first to last i-pixel */
 				k1 = k + 1;
 				x_imask[k]  = x_imask[nk-k]  = GMT->current.proj.z_project.xmin + ip * x_pixel_size;
 				x_imask[k1] = x_imask[nk-k1] = x_imask[k] + x_pixel_size;
-				if (top_jp[ip] < bottom_jp[ip]) {	/* No pixels set in this column */
-					y_imask[k] = y_imask[k1] = y_imask[nk-k] = y_imask[nk-k1] = GMT->current.proj.z_project.ymin;
+				if (top_jp[ip] < bottom_jp[ip]) {	/* No pixels set in this column (e.g., in the middle due to NaNs?) */
+					y_imask[k] = y_imask[k1] = y_imask[nk-k] = y_imask[nk-k1] = mid_y;	/* Somewhat arbitrary */
 				}
-				else {	/* Set top of upper pixel and bottom of lower pixel */
+				else {	/* Set top of upper pixel and bottom of lower pixel steps */
 					y_imask[k] = y_imask[k1] = GMT->current.proj.z_project.ymin + (top_jp[ip] + 1) * y_pixel_size;
 					y_imask[nk-k] = y_imask[nk-k1] = GMT->current.proj.z_project.ymin + bottom_jp[ip] * y_pixel_size;
 				}
 			}
-			PSL_beginclipping (PSL, x_imask, y_imask, 4 * nx_i, GMT->session.no_rgb, 3);
+#if 0
+			{	/* For debugging the clip path - set the if# to 1 */
+				FILE *fp = fopen ("image_mask.txt", "w");
+				for (k = 0; k < n4; k++)
+					fprintf (fp, "%lg\t%lg\n", x_imask[k], y_imask[k]);
+				fclose (fp);
+			}
+#endif
+			PSL_beginclipping (PSL, x_imask, y_imask, n4, GMT->session.no_rgb, 3);
 			gmt_M_free (GMT, x_imask);
 			gmt_M_free (GMT, y_imask);
 		}
@@ -2151,6 +2153,12 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to free Z\n");
+	}
+	if (Ctrl->C.active) {
+		if (Ctrl->C.savecpt && GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->C.savecpt, P) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to save the used CPT in file: %s\n", Ctrl->C.savecpt);
+		}
+		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {Return (API->error);}
 	}
 
 	Return (GMT_NOERROR);

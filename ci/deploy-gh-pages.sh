@@ -38,6 +38,11 @@ echo -e "\nRemoving old files from previous builds of ${version}:"
 rm -rvf ${version}
 echo -e "\nCopying HTML files to ${version}:"
 cp -Rvf ../build/doc/rst/html/ ${version}/
+# Make a ZIP file for the HTML documentation
+cd ${version}
+zip -r ../gmt-docs-${version}.zip *
+mv ../gmt-docs-${version}.zip .
+cd ..
 # If this is a new release, update the link from /latest to it
 if [[ "${version}" != "dev" ]]; then
     echo -e "\nSetup link from ${version} to 'latest'."
@@ -54,7 +59,7 @@ git config user.name "github-actions[bot]"
 # If this is a dev build and the last commit was from a dev build
 # (detect if "dev" was in the previous commit message), reuse the
 # same commit
-if [[ "${version}" == "dev" && `git log -1 --format='%s'` == *"dev"* ]]; then
+if [[ "${version}" == "dev" && $(git log -1 --format='%s') == *"dev"* ]]; then
     echo -e "\nAmending last commit:"
     git commit --amend --reset-author -m "$message"
 else

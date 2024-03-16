@@ -1,9 +1,9 @@
 .. index:: ! gmtflexure
 .. include:: ../module_supplements_purpose.rst_
 
-**********
-gmtflexure
-**********
+*******
+flexure
+*******
 
 |gmtflexure_purpose|
 
@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *force* ]
 [ |-L| ]
-[ |-M|\ [**x**][**z**] ]
+[ |-M|\ [**h**][**v**] ]
 [ |-S| ]
 [ |-T|\ *wfile*]
 [ |SYN_OPT-V| ]
@@ -43,7 +43,7 @@ Description
 of user-selectable options, such as boundary conditions, pre-existing
 deformations, variable rigidity and restoring force, and more.  The solutions
 are obtained using finite difference approximations to the differential
-equations.
+equations [*Bodine*,\ 1980].
 
 Required Arguments
 ------------------
@@ -61,22 +61,22 @@ Required Arguments
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* instead (by default *D* is computed from *Te*, Young's
-    modulus, and Poisson's ratio; see **-C** to change these values).
+    modulus, and Poisson's ratio; see |-C| to change these values).
     Alternatively, supply a *file* with variable plate thicknesses or rigidities.
-    The file must be co-registered with any file given via **-Q**.
+    The file must be co-registered with any file given via |-Q|.
 
 .. _-Q:
 
 **-Qn**\|\ **q**\|\ **t**\ [*args*]
     Sets the vertical load specification. Choose among these three options:
     **-Qn** means there is no input load file and that any deformation is
-    simply driven by the boundary conditions set via **-A**.  If no rigidity or
-    elastic thickness file is given via **-E** then you must also append arguments
+    simply driven by the boundary conditions set via |-A|.  If no rigidity or
+    elastic thickness file is given via |-E| then you must also append arguments
     to create the locations used for the calculations; for details on array creation,
-    see `Generate 1D Array`_.
+    see `Generate 1-D Array`_.
     **-Qq**\ [*loadfile*] is a file (or standard input if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
-    (or standard input if not given) with (x,load in m or km, positive up); see **-M** for
+    (or standard input if not given) with (x,load in m or km, positive up); see |-M| for
     topography unit used [m].
 
 Optional Arguments
@@ -98,7 +98,7 @@ Optional Arguments
 
 **-C**\ **p**\|\ **y**\ *value*
     Append **p** or **y** to change the current value of Poisson's ratio [0.25]
-    or Young's modulus [7.0e10 N/m^2], respectively.
+    or Young's modulus [7.0e10 N/m\ :sup:`2`], respectively.
 
 .. _-F:
 
@@ -112,10 +112,10 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**x**][**z**]
-    Optionally append one or both of **x** and **z**: Use **x** to indicated that all
-    x-distances are in km [meters] and **z** to
-    indicate that all z-deflections are in km [meters].
+**-M**\ [**h**][**v**]
+    Optionally append one or both of **h** and **v**: Use **h** to indicated that all
+    horizontal distances are in km [meters] and **v** to
+    indicate that all vertical deflections are in km [meters].
 
 .. _-S:
 
@@ -137,14 +137,18 @@ Optional Arguments
 
 **-W**\ *wd*\ [**k**]
     Specify water depth in m; append **k** for km.  Must be positive [0].
-    Any subaerial topography will be scaled via the densities set in **-D**
+    Any subaerial topography (i.e., amplitudes in the input relief that
+    exceeds this depth) will be scaled via the densities set in |-D|
     to compensate for the larger density contrast with air.
 
 .. _-Z:
 
 **-Z**\ *zm*\ [**k**]
-    Specify reference depth to flexed surface in m; append **k** for km.  Must be positive [0].
-    We add this value to the flexed surface before output.
+    Undeformed plate flexure means *z = 0*. Specify the distance between the
+    observation level [*z = 0*] and the undeformed flexed surface in m; append **k** for km.
+    Must be positive [0]. We subtract this value from the flexed surface before output.
+    Thus, if the observation level is at sealevel and you are looking a seafloor deformation
+    in 5 km of water, use -Z5k and the undeformed surface will have *z = -5000* on output.
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_
@@ -169,12 +173,14 @@ Optional Arguments
 
 .. include:: ../../explain_array.rst_
 
+.. include:: explain_geometry.rst_
+
 Note on Units
 -------------
 
-The **-M** option controls the units used in all input and output files.
+The |-M| option controls the units used in all input and output files.
 However, this option does *not* control values given on the command line
-to the **-E**, **-W**, and **-Z** options.  These are assumed to be in
+to the |-E|, |-W|, and |-Z| options.  These are assumed to be in
 meters unless an optional **k** for km is appended.
 
 Plate Flexure Notes
@@ -191,14 +197,14 @@ Examples
 To compute elastic plate flexure from the topography load in *topo.txt*,
 for a 10 km thick plate with typical densities, try
 
-   ::
+::
 
-    gmt flexure -Qttopo.txt -E10k -D2700/3300/1035 > flex.txt
+  gmt flexure -Qttopo.txt -E10k -D2700/3300/1035 > flex.txt
 
 References
 ----------
 
-Bodine, J. H., 1980, *Numerical computation of plate flexure in marine geophysics*, 
+Bodine, J. H., 1980, *Numerical computation of plate flexure in marine geophysics*,
 Tech. Rep. CU-1-80, Columbia University.
 
 See Also

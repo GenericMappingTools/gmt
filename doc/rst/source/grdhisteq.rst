@@ -42,7 +42,7 @@ of gray occurring equally. Alternatively, see :doc:`grd2cpt`.
 The second common use of **grdhisteq** is in writing a grid with
 statistics based on some kind of cumulative distribution function. In
 this application, the output has relative highs and lows in the same
-(x,y) locations as the input file, but the values are changed to reflect
+(*x, y*) locations as the input file, but the values are changed to reflect
 their place in some cumulative distribution. One example would be to
 find the lowest 10% of the data: Take a grid, run **grdhisteq** and make
 a grid using *n_cells* = 10, and then contour the result to trace the 1
@@ -54,7 +54,7 @@ output from :doc:`grdgradient` and make a grid file output with the
 Gaussian option, you will have a grid whose values are distributed
 according to a Gaussian distribution with zero mean and unit variance.
 The locations of these values will correspond to the locations of the
-input; that is, the most negative output value will be in the (x,y)
+input; that is, the most negative output value will be in the (*x, y*)
 location of the most negative input value, and so on.
 
 Required Arguments
@@ -88,16 +88,16 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [*norm*]
-    Gaussian output. Use with **-G** to make an output grid with
+    Gaussian output. Use with |-G| to make an output grid with
     standard normal scores. Append *norm* to force the scores to fall in
-    the ±*norm* range [Default is standard normal scores].
+    the ±\ *norm* range [Default is standard normal scores].
 
 .. _-Q:
 
 **-Q**
     Quadratic output. Selects quadratic histogram equalization. [Default is linear].
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -126,9 +126,9 @@ earth_relief_05m into 16 divisions of equal area::
 To make the poorly distributed intensities in the file raw_intens.nc
 suitable for use with :doc:`grdimage` or :doc:`grdview`, run
 
-   ::
+::
 
-    gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
+  gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
 
 Notes
 ------
@@ -150,7 +150,7 @@ Notes
    dark, you should take the output of **grdhisteq** and rescale it using
    :doc:`grdmath` and multiplying by something less than 1.0, to shrink the
    range of the values, thus bringing more than 68% of the image into the
-   range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
+   range [-1, 1]. Alternatively, supply a normalization factor with |-N|.
 
 See Also
 --------

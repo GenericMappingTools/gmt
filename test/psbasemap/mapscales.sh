@@ -11,7 +11,7 @@ gmt psbasemap -R -J -Lg0/-7+c-7+w500M+jTC -F+gcornsilk1+p0.5p,black+s -O -K --FO
 gmt psbasemap -R -J -Lg0/-10+c-10+w500n+u+jTC -F+gcornsilk1+p0.5p,black -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p >> $ps
 gmt psbasemap -R -J -Lg0/-12.5+c-12.5+w3e6f+jTC -F+gcornsilk1+p0.5p,black -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p --FORMAT_FLOAT_MAP=%\'.10g >> $ps
 # Plot a red cross at the justification point for the scales
-gmt psxy -R -J -O -Sx0.2i -W0.5p,red << EOF >> $ps
+gmt psxy -R -J -O -Sx0.2i -Gred << EOF >> $ps
 0	14
 0	11
 0	8

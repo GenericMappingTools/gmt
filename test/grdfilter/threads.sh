@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Testing gmt grdfilter if openmp is used.
-ps=openmp.ps # same as test: openmp.sh
+# Testing gmt grdfilter if gthreads is enabled.
+ps=threads.ps # Basically same as test openmp.sh but using GTHREAD
 
 if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then
-  _thread_opt=-x+a
+	_thread_opt=-x+a
 fi
 
-FILT=g			# Gaussian filter
-INC=1			# 1x1 degree output
-D=1000			# 1000 km filter width
-DATA=@earth_relief_10m	# Test on ETOP10 data
+FILT=g				# Gaussian filter
+INC=1				# 1x1 degree output
+D=1000				# 1000 km filter width
+DATA=@earth_relief_10m_p	# Test on ETOP10 data
 
 # Run gmt grdfilter as specified
 gmt grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg ${_thread_opt}

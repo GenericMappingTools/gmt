@@ -67,9 +67,9 @@ To add the information stored in the track bin-index file latest.tbf to
 the track data bases associated with the tag MGD77, and replace any
 exiting information for these tracks, try
 
-   ::
+::
 
-    gmt x2sys_put latest.tbf -F -V -TMGD77
+  gmt x2sys_put latest.tbf -F -V -TMGD77
 
 X2sys Databases
 ---------------
@@ -77,7 +77,7 @@ X2sys Databases
 The **x2sys_put** utility adds new information to the x2sys data bases.
 These consists of two files: The first file contains a listing of all
 the tracks that have been added to the system; it is named
-*TAG*\ \_tracks.d and is in ASCII format. The second file is named
+*TAG*\ \_tracks.txt and is in ASCII format. The second file is named
 *TAG*\ \_index.b and is in native binary format. It contains information
 on which tracks cross each of the bins, and what data sets were observed
 while crossing the bin. The bins are defined by the |-R| and |-I|
@@ -85,7 +85,10 @@ options passed to :doc:`x2sys_init` when the *TAG* was first initiated.
 Both data base files are stored in the **$X2SYS_HOME**/*TAG* directory.
 Do not attempt to edit these files by hand.
 
+.. include:: x2sys_refs.rst_
+
 See Also
 --------
 
-:doc:`x2sys_binlist`, :doc:`x2sys_get`
+:doc:`x2sys_binlist`,
+:doc:`x2sys_get`

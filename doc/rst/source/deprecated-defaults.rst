@@ -1,3 +1,5 @@
+:orphan:
+
 Deprecated GMT Defaults Names
 =============================
 

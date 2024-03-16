@@ -52,7 +52,7 @@ Optional Arguments
 **-E**
     Get the altitude from the *ExtendData* property; *z* coordinates are then ignored. KML provides
     more than one mechanism to store information via *ExtendData* but here we only implemented the
-    *<SimpleData name="string">* variation. Implicitly sets **-Z**
+    *<SimpleData name="string">* variation. Implicitly sets |-Z|
 
 .. _-F:
 
@@ -99,20 +99,20 @@ Examples
 
 .. include:: explain_example.rst_
 
-To extract the lon,lat values from the KML file google.kml, try
+To extract the (*lon, lat*) values from the KML file google.kml, try
 
-   ::
+::
 
-    gmt kml2gmt google.kml -V > google.txt
+  gmt kml2gmt google.kml -V > google.txt
 
 
 To separate the point and polygon geometries from the KML file google.kml, try
 
-   ::
+::
 
-    gmt kml2gmt google.kml -Fp -V > polygons.txt
+  gmt kml2gmt google.kml -Fp -V > polygons.txt
 
-    gmt kml2gmt google.kml -Fs -V > points.txt
+  gmt kml2gmt google.kml -Fs -V > points.txt
 
 See Also
 --------

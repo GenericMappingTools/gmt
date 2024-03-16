@@ -40,11 +40,11 @@ Description
 -----------
 
 **sphdistance** reads one or more ASCII [or binary] files (or standard
-input) containing lon, lat and performs the construction of Voronoi
+input) containing (*lon, lat*) and performs the construction of Voronoi
 polygons. These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.
-The Voronoi algorithm used is STRIPACK. As an option, you may provide
-pre-calculated Voronoi polygon file in the format written by
+The Voronoi algorithm used is STRIPACK [*Renka*\ , 1997]. As an option,
+you may provide pre-calculated Voronoi polygon file in the format written by
 :doc:`sphtriangulate`, thus bypassing the memory- and time-consuming
 triangularization.
 
@@ -80,7 +80,7 @@ Optional Arguments
     processing) by only storing one form of location coordinates
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays
-    in memory]. Not applicable with **-Q**.
+    in memory]. Not applicable with |-Q|.
 
 .. _-D:
 
@@ -91,11 +91,15 @@ Optional Arguments
 .. _-E:
 
 **-Ed**\|\ **n**\|\ **z**\ [*dist*]
-    Specify the quantity that should be assigned to the grid nodes.  By
-    default we compute distances to the nearest data point [**-Ed**].
-    Use **-En** to assign the ID numbers of the Voronoi polygons that each
-    grid node is inside, or use **-Ez** for a natural nearest-neighbor grid where
-    we assign all nodes inside the polygon the z-value of the center node.
+    Specify the quantity that should be assigned to the grid nodes.
+    Append one of three directives:
+
+    - **d**: Compute distances to the nearest data point [Default].
+    - **n**: Assign the ID numbers of the Voronoi polygons that each
+      grid node is inside.
+    - **z**: For a natural nearest-neighbor grid where we assign all nodes
+      inside the polygon the z-value of the center node.
+    
     Optionally, append the resampling interval along Voronoi arcs in spherical
     degrees [1].
 
@@ -104,15 +108,15 @@ Optional Arguments
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
-    (mile), **n** (nautical mile) or **u** survey foot.
+    (mile), **n** (nautical mile) or **u** (survey foot).
 
 .. _-N:
 
 **-N**\ *nodetable*
     Read the information pertaining to each Voronoi
-    polygon (the unique node lon, lat and polygon area) from a separate
+    polygon (the unique node (*lon, lat*) and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
-    headers of the output file]. Required if binary input via **-Q** is used.
+    headers of the output file]. Required if binary input via |-Q| is used.
 
 .. _-Q:
 
@@ -120,7 +124,7 @@ Optional Arguments
     Append the name of a file with pre-calculated Voronoi polygons
     [Default performs the Voronoi construction on input data]. For
     binary data **-bi** you must specify the node
-    information separately (via **-N**).
+    information separately (via |-N|).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -174,16 +178,16 @@ and annotations every 1000 km, try::
 To construct Voronoi polygons from the points in the file testdata.txt
 and then calculate distances from the data to a global 1x1 degree grid, use
 
-   ::
+::
 
-    gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
+  gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
 
 To generate the same grid in two steps using :doc:`sphtriangulate` separately, try
 
-   ::
+::
 
-    gmt sphtriangulate testdata.txt -Qv > voronoi.txt
-    gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
+  gmt sphtriangulate testdata.txt -Qv > voronoi.txt
+  gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
 
 Notes
 -----
@@ -191,7 +195,7 @@ Notes
 The STRIPACK algorithm and implementation expect that there are no duplicate points
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as :doc:`blockmean` and others, to combine close points into single entries.
-Also, **sphdistance** has a **-D** option to determine and exclude duplicates, but
+Also, **sphdistance** has a |-D| option to determine and exclude duplicates, but
 it is a very brute-force yet exact comparison that is very slow for large data sets.
 Detection of duplicates in the STRIPACK library will exit the module.
 

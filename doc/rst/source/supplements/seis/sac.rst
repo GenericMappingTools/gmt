@@ -23,7 +23,7 @@ Synopsis
 [ |-M|\ *size*\ [*u*][/*alpha*] ]
 [ |-Q| ]
 [ |-S|\ [**i**]\ *scale* ]
-[ |-T|\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*] ]
+[ |-T|\ [**+r**\ *reduce_vel*][**+s**\ *shift*]\ [**+t**\ *n*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -56,11 +56,11 @@ Required Arguments
 
     *filename* is the name of SAC file to plot.
     *X* and *Y* are the position of seismograms to plot on a map.
-    On linear plots, the default *X* is the begin time of SAC file, which will be adjusted if **-T** option is used,
-    the default *Y* is determined by **-E** option.
+    On linear plots, the default *X* is the begin time of SAC file, which will be adjusted if |-T| option is used,
+    the default *Y* is determined by |-E| option.
     On geographic plots, the default *X* and *Y* are station longitude and latitude specified in SAC header.
     The *X* and *Y* given here will override the position determined by command line options.
-    *pen*, if given, will override the pen from **-W** option for current SAC file only.
+    *pen*, if given, will override the pen from |-W| option for current SAC file only.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: /explain_-J.rst_
@@ -84,14 +84,14 @@ Optional Arguments
 
 **-C**\ [*t0/t1*]
     Read and plot seismograms in timewindow between *t0* and *t1* only.
-    *t0* and *t1* are relative to a reference time specified by **-T**.
-    If **-T** option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead.
-    If only **-C** is used, *t0/t1* is determined as *xmin/xmax* from **-R** option.
+    *t0* and *t1* are relative to a reference time specified by |-T|.
+    If |-T| option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead.
+    If only |-C| is used, *t0/t1* is determined as *xmin/xmax* from |-R| option.
 
 .. _-D:
 
-**-D**\ *dx*\ [**/**\ *dy*]
-    Offset seismogram positions by the given mount *dx/dy* [Default is no offset].
+**-D**\ *dx*\ [/*dy*]
+    Offset seismogram positions by the given mount *dx*\ /*dy* [Default is no offset].
     If *dy* is not given it is set equal to *dx*.
 
 .. _-E:
@@ -129,14 +129,14 @@ Optional Arguments
 
 **-G**\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*]
     Paint positive or negative portion of traces.
-    If only **-G** is used, default to fill the positive portion black.
+    If only |-G| is used, default to fill the positive portion black.
 
         **p**\|\ **n** controls the painting of positive **p**\ ortion or **n**\ egative portion.
-        Repeat **-G** option to specify fills for positive and negative portions, respectively.
+        Repeat |-G| option to specify fills for positive and negative portions, respectively.
 
         **+g**\ *fill*: color to fill
 
-        **+t**\ *t0/t1*: paint traces between t0 and t1 only. The reference time of *t0* and *t1* is determined by **-T** option.
+        **+t**\ *t0/t1*: paint traces between t0 and t1 only. The reference time of *t0* and *t1* is determined by |-T| option.
 
         **+z**\ *zero*: define zero line. From *zero* to top is positive portion, from *zero* to bottom is negative portion.
 
@@ -172,15 +172,15 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*]
+**-T**\ [**+r**\ *reduce_vel*][**+s**\ *shift*]\ [**+t**\ *n*]
     Time alignment and shift.
-
-        **+t**\ *tmark*: align all trace along time mark. *tmark* are -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).
 
         **+r**\ *reduce_vel*: reduce velocity in km/s.
 
         **+s**\ *shift*: shift all traces by *shift* seconds.
 
+        **+t**\ *tmark*: align all trace along time mark. *tmark* are -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).
+ 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
     :start-after: **Syntax**
@@ -195,7 +195,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes for all traces unless overruled by *pen* specified in *saclist*.
-    [Defaults: width = default, color = black, style = solid].
+    [Defaults: width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_

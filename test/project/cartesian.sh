@@ -39,7 +39,7 @@ ypos=1.25
 By=Sn
 for az in 30 135 200 290 ; do
 	xpos=0.75
-	az90=`gmt math -Q $az 90 ADD =`
+	az90=$(gmt math -Q $az 90 ADD =)
 	Bx=We
 	while read x y; do
 		makeaxis $az axes.tt > tt.a
@@ -60,13 +60,13 @@ for az in 30 135 200 290 ; do
 		(echo "$x $y"; cut -f3,4 tt.d) | gmt psxy -R -J -O -K -W0.5p,- -Xa$xpos -Ya$ypos >> $ps
 		echo "$x $y" | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -Gblack >> $ps
 		cut -f3,4 tt.d | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -W0.5p,black -Gred >> $ps
-		printf "0 2 [%s,%s] (%.2f,%.2f) (%.2f,%.2f)\n" $x $y `cat tt.d` | \
+		printf "0 2 [%s,%s] (%.2f,%.2f) (%.2f,%.2f)\n" $x $y $(cat tt.d) | \
 			gmt pstext -R -J -F+f8p+jCB -O -K -Xa$xpos -Ya$ypos -N -D0/0.2i >> $ps
 		gmt pstext -R -J -O -K -Xa$xpos -Ya$ypos -N -D-0.05i/0.05i -Gwhite -W -F+f8p+jBR >> $ps <<< "2 -2 @~a@~ = $az@."
-		xpos=`gmt math -Q $xpos 1.9 ADD =`
+		xpos=$(gmt math -Q $xpos 1.9 ADD =)
 		Bx=we
 	done < pts.tt
-	ypos=`gmt math -Q $ypos 2.25 ADD =`
+	ypos=$(gmt math -Q $ypos 2.25 ADD =)
 	By=sn
 done
 gmt psxy -R -J -O -T >> $ps

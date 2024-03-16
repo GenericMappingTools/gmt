@@ -132,7 +132,7 @@ Optional Arguments
 **-Sp**
     Pole mode means we search for all poles on the given grid and determine the
     weighted chi-square misfit to all given line constraints.  This mode requires
-    **-G**, **-R**, **-I** (and optionally **-r**).
+    |-G|, |-R|, |-I| (and optionally **-r**).
 
 **-Ss**\ [**+c**\ *xfile*][**+l**]
     Spot mode means we compute bisectors to fracture zones and meridians along abyssal hills
@@ -182,7 +182,7 @@ Notes
    pairs of points define a great circle line segment.  For fracture zones,
    these points should be digitized often enough so that the great circle between
    then can approximate the small circle.
-#. All line segments are given equal angular uncertainty [1, unless changed by **-E**].  However,
+#. All line segments are given equal angular uncertainty [1, unless changed by |-E|].  However,
    individual line segments can override this weight by adding a **-D**\ *sigma*
    argument in the segment headers (in degrees).
 
@@ -190,13 +190,13 @@ Examples
 --------
 
 To create a polespotting image from the abyssal hill and fracture zone fabric
-(lon,lat) data in the files hills.txt and fractures.txt, on a 1x1 degree grid
+(*lon, lat*) data in the files hills.txt and fractures.txt, on a 1x1 degree grid
 for the northern hemisphere, sampling the great circles every 10 km, and also
 dump the great circles to standard output, try
 
-   ::
+::
 
-    gmt polespotter -Ahills.txt -Ffractures.txt -D10 -Gpoles.nc -R0/360/0/90 -I1 -V -Ss+l > lines.txt
+  gmt polespotter -Ahills.txt -Ffractures.txt -D10 -Gpoles.nc -R0/360/0/90 -I1 -V -Ss+l > lines.txt
 
 This file can then be plotted with :doc:`grdimage </grdimage>`.
 

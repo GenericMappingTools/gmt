@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 gmt begin GMT_atan
 	gmt set GMT_THEME cookbook
-	gmt grdgradient -A45 @earth_relief_30s -R-108/-103/35/40 -N -fg -Gtt.t.nc
+	gmt grdgradient -A45 @earth_relief_30s_p -R-108/-103/35/40 -N -fg -Gtt.t.nc
 	gmt grd2xyz -Z tt.t.nc > tt.d
 	gmt histogram tt.d -R-0.75/0.75/0/20 -JX1.5i/1i -Bx0.5 -By5f5 -BWSne -W0.01 -Gblack -Z1
 

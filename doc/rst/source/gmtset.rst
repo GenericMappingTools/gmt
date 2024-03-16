@@ -1,9 +1,9 @@
 .. index:: ! gmtset
 .. include:: module_core_purpose.rst_
 
-******
-gmtset
-******
+***
+set
+***
 
 |gmtset_purpose|
 
@@ -55,7 +55,7 @@ Optional Arguments
 
 **-D**\ [**s**\|\ **u**]
     Modify the GMT defaults based on the system settings. Append
-    **u** for US defaults or **s** for SI defaults. [**-D** alone gives
+    **u** for US defaults or **s** for SI defaults. [|-D| alone gives
     the version selected at compile time]
 
 .. _-G:

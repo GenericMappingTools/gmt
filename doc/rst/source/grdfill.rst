@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfill** *ingrid*
-[ |-A|\ **c**\|\ **n**\|\ **s**\ [*arg*] ]
+[ |-A|\ **c**\|\ **g**\|\ **n**\|\ **s**\ [*arg*] ]
 [ |-G|\ *outgrid* ]
 [ |-L|\ [**p**] ]
 [ |-N|\ *value* ]
@@ -29,8 +29,9 @@ Description
 
 **grdfill** reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
-this criteria can be changed via **-N**.  There are several different algorithms that
-can be used to replace the hole values.  **Note**: One of **-A** or **-L** is required.
+this criteria can be changed via |-N|.  There are several different algorithms that
+can be used to replace the hole values.  **Note**: One of |-A| or |-L| is required,
+and if no holes are found we output the original unchanged grid.
 
 Required Arguments
 ------------------
@@ -45,12 +46,16 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **c**\|\ **n**\|\ **s**\ [*arg*]
-    Specify the hole-filling algorithm to use.  Choose among **c** for constant
-    fill (and append the constant fill *value*), **n** for nearest neighbor (and optionally
-    append a search *radius* in pixels [default radius is :math:`r = \sqrt{X^2 + Y^2}`,
-    where (*X,Y*) are the node dimensions of the grid]), or
-    **s** for bicubic spline (optionally append a *tension* parameter [no tension]).
+**-A**\ **c**\|\ **g**\|\ **n**\|\ **s**\ [*arg*]
+    Specify the hole-filling algorithm to use by appending one of these directives:
+
+    - **c**: Select a constant fill (and append the constant fill *value*).
+    - **g**: Sample the (possibly coarser) grid *arg* at the nodes making
+      up the holes.
+    - **n**: Select nearest neighbor fill (and optionally append a search *radius*
+      in pixels [default radius is :math:`r = \sqrt{n^2 + m^2}`, where (*n,m*) are
+      the node dimensions of the grid]).
+    - **s**: Select bicubic spline (optionally append a *tension* parameter [no tension]).
 
 .. _-G:
 
@@ -73,7 +78,7 @@ Optional Arguments
 
 **-L**\ [**p**]
     Just list the rectangular subregions west east south north of each hole.
-    No grid fill takes place and **-G** is ignored. Optionally, append **p**
+    No grid fill takes place and |-G| is ignored. Optionally, append **p**
     to instead write closed polygons for all subregions.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -116,6 +121,10 @@ nearest non-NaN neighbor, try::
 To replace all NaN values in the file data.grd with a spline interpolation using a tension of 0.2, try::
 
     gmt grdfill data.grd -As0.2 -Gno_NaNs_spline_data.grd
+
+To replace all NaN values in the file data.grd by sampling another grid named background.grd, try::
+
+    gmt grdfill data.grd -Agbackground.grd -Gno_NaNs_sampled_data.grd
 
 
 See Also

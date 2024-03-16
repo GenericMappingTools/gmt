@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/sample1d_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sample1d"
 #define THIS_MODULE_MODERN_NAME	"sample1d"
@@ -50,10 +51,16 @@ struct SAMPLE1D_CTRL {
 		bool active, loxo, delete;
 		enum GMT_enum_track mode;
 	} A;
+	struct SAMPLE1D_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
+		bool active;
+		double dz;	/* Rounding for min/max determined from data */
+		char *file;
+		char *savecpt;	/* For when we want to save the automatically generated CPT */
+	} C;
 	struct SAMPLE1D_E {	/* -E */
 		bool active;
 	} E;
-	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+d1|2] */
+	struct SAMPLE1D_F {	/* -Fl|a|c|e|n|s<p>[+d1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
@@ -92,18 +99,18 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->C.savecpt);
 	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	char type[3] = {'l', 'a', 'c'};
-
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-E] [-Fl|a|c|n|s<p>[+d1|2]] [-N<time_col>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-C%s] [-E] [-F%s "
 		"[-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]] [%s] [-W<w_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
+		name, CPT_OPT_ARGS, GMT_INTERPOLANT_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -123,17 +130,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+d Skip records that has no increase in <time_col> value [no skipping].");
 	GMT_Usage (API, 3, "+l Compute distances along rhumblines (loxodromes) [no].");
 	GMT_Usage (API, -2, "Note: +l uses spherical calculations - cannot be combined with -je.");
+	gmt_explain_cpt_input (API, 'C');
+	GMT_Usage (API, -2, "\nWill sample the CPT given values in last input column an add R, G, B, A columns at the end.");
 	GMT_Usage (API, 1, "\n-E Add input data trailing text to output records when possible [Ignore trailing text].");
-	GMT_Usage (API, 1, "\n-Fl|a|c|n|s<p>[+d1|2]");
-	GMT_Usage (API, -2, "Set the interpolation mode.  Choose from:");
-	GMT_Usage (API, 3, "l: Linear interpolation.");
-	GMT_Usage (API, 3, "a: Akima spline interpolation.");
-	GMT_Usage (API, 3, "c: Cubic spline interpolation.");
-	GMT_Usage (API, 3, "n: No interpolation (nearest point).");
-	GMT_Usage (API, 3, "s: Smooth spline interpolation (append fit parameter <p>).");
-	GMT_Usage (API, -2, "Optionally, request a spline derivative via a modifier:");
-	GMT_Usage (API, 3, "+d Append 1 for 1st derivative or 2 for 2nd derivative.");
-	GMT_Usage (API, -2, "[Default is -F%c].", type[API->GMT->current.setting.interpolant]);
+	gmt_explain_interpolate_mode (API);
 	GMT_Usage (API, 1, "\n-N<time_col>");
 	GMT_Usage (API, -2, "Give column number of the independent variable (time) [Default is 0 (first)].");
 	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]");
@@ -142,7 +142,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"For spatial resampling with distance computed from the first two columns, specify increment as "
 		"<inc> and append a geospatial distance unit (%s) or c (for Cartesian distances). "
 		"See -A to control how the spatial resampling is done.", GMT_TIME_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
-	GMT_Usage (API, 3, "+a Add any internally computed distances as a final output column [no distances added].");
+	GMT_Usage (API, 3, "+a Add any internally computed spatial distances as a final output column [no distances added].");
 	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce over the range instead.");
 	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
 	GMT_Usage (API, -2, "Alternatively, <inc> is a file with output times in the first column, or a comma-separated list.");
@@ -162,11 +162,11 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	int col;
 	bool old_syntax = false;
 	char string[GMT_LEN64] = {""};
-	char *i_arg = NULL, *s_arg = NULL, *t_arg = NULL;
+	char *i_arg = NULL, *s_arg = NULL, *t_arg = NULL, *f = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -194,20 +194,17 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change track resampling mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] != '+') {	/* Gave a mode */
 					switch (opt->arg[0]) {
 						case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
@@ -221,45 +218,24 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				if (strstr (opt->arg, "+d")) Ctrl->A.delete = true;
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;		/* Note: spherical only */
 				break;
+			case 'C':	/* CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				gmt_M_str_free (Ctrl->C.file);
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (opt->arg[0] && (f = gmt_strrstr (Ctrl->C.file, "+s")) != NULL) {	/* Filename has a +s<outname>, extract that part */
+					Ctrl->C.savecpt = &f[2];
+					f[0] = '\0';		/* Remove the +s<outname> from Ctrl->C.file */
+				}
+				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
+				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				switch (opt->arg[0]) {
-					case 'l':
-						Ctrl->F.mode = GMT_SPLINE_LINEAR;
-						break;
-					case 'a':
-						Ctrl->F.mode = GMT_SPLINE_AKIMA;
-						break;
-					case 'c':
-						Ctrl->F.mode = GMT_SPLINE_CUBIC;
-						break;
-					case 'n':
-						Ctrl->F.mode = GMT_SPLINE_NN;
-						break;
-					case 's':
-						Ctrl->F.mode = GMT_SPLINE_SMOOTH;
-						if (opt->arg[1])
-							Ctrl->F.fit = atof (&opt->arg[1]);
-						else {
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Fs: No fit parameter given\n");
-							n_errors++;
-						}
-						break;
-					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad spline selector %c\n", opt->arg[0]);
-						n_errors++;
-						break;
-				}
-				if (strstr (&opt->arg[1], "+d1")) Ctrl->F.type = 1;	/* Want first derivative */
-				else if (strstr (&opt->arg[1], "+d2")) Ctrl->F.type = 2;	/* Want second derivative */
-				else if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative (backwards compatibility) */
-				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative (backwards compatibility) */
+				n_errors += gmt_parse_interpolant (API, opt->arg, &(Ctrl->F.mode), &(Ctrl->F.type), &(Ctrl->F.fit));
 				break;
 			case 'I':	/* Deprecated, but keep pointer to the arguments so we can build -T argument */
 				i_arg = opt->arg;
@@ -306,7 +282,6 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				}
 				else {	/* Set output knots */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-					Ctrl->T.active = true;
 					t_arg = opt->arg;
 				}
 				break;
@@ -316,7 +291,6 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 					col = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, col < 0, "Option -W: Column number cannot be negative\n");
 					Ctrl->W.col = col;
-					Ctrl->W.active = true;
 				}
 				else	/* Gave no argument */
 					n_errors++;
@@ -346,7 +320,6 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 	                                   "Option -A+l: Requires spherical calculations so -je cannot be used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Specify only one of -N and -S\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->N.col >= 2) ? Ctrl->N.col + 1 : 2);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->F.mode != GMT_SPLINE_SMOOTH,
 	                                   "Option -W: Only available with -Fs<p>\n");
@@ -390,7 +363,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -426,6 +399,34 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
+
+	if (Ctrl->C.active) {	/* Just sample the CPT for last input column value and append four columns r g b a */
+		struct GMT_PALETTE *P = NULL;
+		double rgb[4] = {0.0, 0.0, 0.0, 0.0};
+		unsigned int k, col, last = Din->n_columns - 1, nc;
+		if ((P = gmt_get_palette (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, 0.0, 255.0, Ctrl->C.dz)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
+			Return (API->error);	/* Well, that did not go so well... */
+		}
+		nc = (P->is_gray) ? 1 : 3;
+		gmt_adjust_dataset (GMT, Din, Din->n_columns + nc + 1);	/* Add one more output columns for r[, g, b], a */
+		for (tbl = 0; tbl < Din->n_tables; tbl++) {
+			for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
+				S = Din->table[tbl]->segment[seg];	/* Current segment */
+				for (row = 0; row < S->n_rows; row++) {	/* Current point */
+					gmt_get_rgb_from_z (GMT, P, S->data[last][row], rgb);
+					for (k = 0, col = last + 1; k < nc; k++, col++)
+						S->data[col][row] = irint (255.0 * rgb[k]);	/* r/g/b in 0-255 range */
+					S->data[col][row] = irint (100.0 * rgb[k]);	/* Transparency in 0-100% range */
+				}
+			}
+		}
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, Din) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		Return (GMT_NOERROR);
+	}
+
 	if (Din->n_columns < 1) {
 		GMT_Report (API, GMT_MSG_ERROR, "Input data have no data column(s) but at least 1 is needed\n");
 		Return (GMT_DIM_TOO_SMALL);
@@ -463,13 +464,17 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 
 	dim[GMT_COL] = Din->n_columns;	/* Only known dimension, the rest is 0 */
+	if (Ctrl->T.T.spatial && Ctrl->T.T.add) {	/* Append created spatial distances as last column */
+		gmt_set_column_type (GMT, GMT_OUT, dim[GMT_COL], GMT_IS_FLOAT);
+		dim[GMT_COL]++;
+	}
 	if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 	Dout->table = gmt_M_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
 	Dout->n_tables = Din->n_tables;
 
 	nan_flag = gmt_M_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Din->n_columns, 0U, false);
+		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Dout->n_columns, 0U, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -521,10 +526,12 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 				t_out = Ctrl->T.T.array;
 			}
 			/* Readjust the row allocation for the current output segment */
-			Sout = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, m, Din->n_columns, NULL, Tout->segment[seg]);
+			Sout = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, m, Dout->n_columns, NULL, Tout->segment[seg]);
 			if (Ctrl->T.T.spatial) {	/* Use resampled path coordinates */
 				gmt_M_memcpy (Sout->data[GMT_X], lon, m, double);
 				gmt_M_memcpy (Sout->data[GMT_Y], lat, m, double);
+				if (Ctrl->T.T.add)	/* Append geospatial distances as final extra out column */
+					gmt_M_memcpy (Sout->data[Dout->n_columns-1], t_out, m, double);
 			}
 			else
 				gmt_M_memcpy (Sout->data[Ctrl->N.col], t_out, m, double);

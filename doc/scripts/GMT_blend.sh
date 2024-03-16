@@ -17,7 +17,7 @@ gmt begin GMT_blend
 	1	lightyellow	2	lightorange
 	2	lightorange	3	lightred
 	EOF
-	gmt grdimage blend.grd -Jx0.2c -B -Ct.cpt
+	gmt grdimage blend.grd -Jx0.18c -B -Ct.cpt
 	gmt grdinfo -Ib 2.grd | gmt plot -W2p
 	gmt grdinfo -Ib 3.grd | gmt plot -W2p
 	gmt plot -W0.5,- -L <<- EOF
@@ -39,5 +39,5 @@ gmt begin GMT_blend
 	75  35 TR z = 3, w = 4
 	EOF
 	gmt colorbar -DjRM -F+gwhite+p0.25p -Bx -By+lz
-	gmt grdtrack -Gblend.grd -E0/22/100/22 -o0,2 | gmt plot -R0/100/0.8/2.8 -Jx0.2c/1c -Bya1g1 -BWbrt -Y9.2c -W1p,blue
+	gmt grdtrack -Gblend.grd -E0/22/100/22 -o0,2 | gmt plot -R0/100/0.8/2.8 -Jx0.18c/1c -Bya1g1 -BWbrt -Y9.2c -W1p,blue
 gmt end show

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,8 +37,18 @@
  *  Configure the implementation with gmtset GMT_FFT.
  *
  *--------------------------------------------------------------------------
- * Public functions declared in gmt_dev.h ():
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
  *
+ * gmt_fft_any_wave
+ * gmt_fft_get_wave
+ * gmt_fft_set_wave
+ *
+ * B) List of exported gmtlib_* functions available to libraries via gmt_internals.h:
+ *
+ * gmtlib_fft_cleanup
+ * gmtlib_fft_initialization
+ * gmtlib_fourt_stats
+ * gmtlib_suggest_fft_dim
  *
  */
 
@@ -1572,7 +1582,7 @@ GMT_LOCAL int gmtfft_1d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsig
         gmt_grdfloat *work = NULL;
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-        if ((work_size = gmtfft_brenner_worksize (GMT, n, 1))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
+        if ((work_size = gmtfft_brenner_worksize (GMT, n, 1)) && (work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
         (void) gmtfft_brenner_fourt_f (data, &n_signed, &ndim, &ksign, &kmode, work);
         gmt_M_free (GMT, work);
         return (GMT_OK);
@@ -1591,7 +1601,7 @@ GMT_LOCAL int gmtfft_2d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsig
         gmt_grdfloat *work = NULL;
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-        if ((work_size = gmtfft_brenner_worksize (GMT, n_columns, n_rows))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
+        if ((work_size = gmtfft_brenner_worksize (GMT, n_columns, n_rows)) && (work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
         GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Brenner_fourt_ work size = %" PRIuS "\n", work_size);
         (void) gmtfft_brenner_fourt_f (data, nn, &ndim, &ksign, &kmode, work);
         gmt_M_free (GMT, work);
@@ -1639,7 +1649,7 @@ int GMT_FFT_1D (void *V_API, gmt_grdfloat *data, uint64_t n, int direction, unsi
 	int status, use;
 	struct GMTAPI_CTRL *API = gmtfft_get_api_ptr (V_API);
 	struct GMT_CTRL *GMT = API->GMT;
-	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
+	assert (mode & GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = gmtfft_1d_selection (GMT, n);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "1-D FFT using %s\n", GMT_fft_algo[use]);
 	status = GMT->session.fft1d[use] (GMT, data, (unsigned int)n, direction, mode);
@@ -1659,7 +1669,7 @@ int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigne
 	int status, use;
 	struct GMTAPI_CTRL *API = gmtfft_get_api_ptr (V_API);
 	struct GMT_CTRL *GMT = API->GMT;
-	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
+	assert (mode & GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = gmtfft_2d_selection (GMT, n_columns, n_rows);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "2-D FFT using %s\n", GMT_fft_algo[use]);

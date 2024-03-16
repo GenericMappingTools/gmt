@@ -27,6 +27,8 @@
     - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints),
       or append unit % for a size in percentage of map width [10%].
 
+    For further information, see the Map Embellishment section on :ref:`Directional Roses <Placing-dir-map-roses>`.
+
 **-Tm**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ 
 [**+j**\ *justify*][**+l**\ [*w,e,s,n*]][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]\ [**+w**\ *width*]
 
@@ -62,3 +64,5 @@
       than *dx*).
     - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints).
       or append unit % for a size in percentage of map width [15%].
+
+    For further information, see the Map Embellishment section on :ref:`Magnetic Roses <Placing-mag-map-roses>`.

@@ -1,3 +1,5 @@
+:orphan:
+
 Modules (Classic Mode)
 ======================
 
@@ -125,6 +127,13 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/geodesy/earthtide
     supplements/geodesy/gpsgridder
     supplements/geodesy/psvelo
+    supplements/gsfml/fzanalyzer
+    supplements/gsfml/fzblender
+    supplements/gsfml/fzinformer
+    supplements/gsfml/fzmapper
+    supplements/gsfml/fzmodeler
+    supplements/gsfml/fzprofile
+    supplements/gsfml/mlconverter
     supplements/gshhg/gshhg
     supplements/img/img2grd
     supplements/mgd77/mgd77convert
@@ -139,6 +148,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/potential/gmtflexure
     supplements/potential/gmtgravmag3d
     supplements/potential/gravfft
+    supplements/potential/gravprisms
     supplements/potential/grdflexure
     supplements/potential/grdgravmag3d
     supplements/potential/grdredpol
@@ -162,6 +172,8 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/spotter/polespotter
     supplements/spotter/rotconverter
     supplements/spotter/rotsmoother
+    supplements/windbarbs/psbarb
+    supplements/windbarbs/grdbarb
     supplements/x2sys/x2sys_binlist
     supplements/x2sys/x2sys_cross
     supplements/x2sys/x2sys_datalist
@@ -193,23 +205,22 @@ Core Modules
     - :doc:`filter1d`
     - :doc:`fitcircle`
     - :doc:`gmt2kml`
-    - :doc:`gmtbinstats`
-    - :doc:`gmtconnect`
-    - :doc:`gmtconvert`
-    - :doc:`gmtdefaults`
-    - :doc:`grdgdal`
-    - :doc:`gmtget`
-    - :doc:`gmtinfo`
+    - :doc:`gmtbinstats <gmtbinstats>`
+    - :doc:`gmtconnect <gmtconnect>`
+    - :doc:`gmtconvert <gmtconvert>`
+    - :doc:`gmtdefaults <gmtdefaults>`
+    - :doc:`gmtget <gmtget>`
+    - :doc:`gmtinfo <gmtinfo>`
     - :doc:`gmtlogo-classic`
-    - :doc:`gmtmath`
-    - :doc:`gmtregress`
-    - :doc:`gmtselect`
-    - :doc:`gmtset`
-    - :doc:`gmtsimplify`
-    - :doc:`gmtspatial`
-    - :doc:`gmtsplit`
-    - :doc:`gmtvector`
-    - :doc:`gmtwhich`
+    - :doc:`gmtmath <gmtmath>`
+    - :doc:`gmtregress <gmtregress>`
+    - :doc:`gmtselect <gmtselect>`
+    - :doc:`gmtset <gmtset>`
+    - :doc:`gmtsimplify <gmtsimplify>`
+    - :doc:`gmtspatial <gmtspatial>`
+    - :doc:`gmtsplit <gmtsplit>`
+    - :doc:`gmtvector <gmtvector>`
+    - :doc:`gmtwhich <gmtwhich>`
     - :doc:`grd2cpt`
     - :doc:`grd2kml`
     - :doc:`grd2xyz`
@@ -222,6 +233,7 @@ Core Modules
     - :doc:`grdfft`
     - :doc:`grdfill`
     - :doc:`grdfilter`
+    - :doc:`grdgdal`
     - :doc:`grdgradient`
     - :doc:`grdhisteq`
     - :doc:`grdimage-classic`
@@ -285,6 +297,13 @@ Supplemental Modules
     - :doc:`/supplements/geodesy/earthtide`
     - :doc:`/supplements/geodesy/gpsgridder`
     - :doc:`/supplements/geodesy/psvelo`
+    - :doc:`/supplements/gsfml/fzanalyzer`
+    - :doc:`/supplements/gsfml/fzblender`
+    - :doc:`/supplements/gsfml/fzinformer`
+    - :doc:`/supplements/gsfml/fzmapper`
+    - :doc:`/supplements/gsfml/fzmodeler`
+    - :doc:`/supplements/gsfml/fzprofiler`
+    - :doc:`/supplements/gsfml/mlconverter`
     - :doc:`/supplements/gshhg/gshhg`
     - :doc:`/supplements/img/img2grd`
     - :doc:`/supplements/mgd77/mgd77convert`
@@ -296,9 +315,10 @@ Supplemental Modules
     - :doc:`/supplements/mgd77/mgd77path`
     - :doc:`/supplements/mgd77/mgd77sniffer`
     - :doc:`/supplements/mgd77/mgd77track-classic`
-    - :doc:`/supplements/potential/gmtflexure`
-    - :doc:`/supplements/potential/gmtgravmag3d`
+    - :doc:`gmtflexure </supplements/potential/gmtflexure>`
+    - :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`
     - :doc:`/supplements/potential/gravfft`
+    - :doc:`/supplements/potential/gravprisms`
     - :doc:`/supplements/potential/grdflexure`
     - :doc:`/supplements/potential/grdgravmag3d`
     - :doc:`/supplements/potential/grdredpol`
@@ -313,7 +333,7 @@ Supplemental Modules
     - :doc:`/supplements/seis/pspolar`
     - :doc:`/supplements/seis/pssac`
     - :doc:`/supplements/spotter/backtracker`
-    - :doc:`/supplements/spotter/gmtpmodeler`
+    - :doc:`gmtpmodeler </supplements/spotter/gmtpmodeler>`
     - :doc:`/supplements/spotter/grdpmodeler`
     - :doc:`/supplements/spotter/grdrotater`
     - :doc:`/supplements/spotter/grdspotter`
@@ -322,6 +342,8 @@ Supplemental Modules
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
+    - :doc:`/supplements/windbarbs/grdbarb`
+    - :doc:`/supplements/windbarbs/psbarb`
     - :doc:`/supplements/x2sys/x2sys_binlist`
     - :doc:`/supplements/x2sys/x2sys_cross`
     - :doc:`/supplements/x2sys/x2sys_datalist`
@@ -435,15 +457,15 @@ Gridding
 Sampling of 1-D and 2-D data
 ----------------------------
 
-+-----------------------+-----------------------+
-| :doc:`gmtsimplify`    | |gmtsimplify_purpose| |
-+-----------------------+-----------------------+
-| :doc:`grdsample`      | |grdsample_purpose|   |
-+-----------------------+-----------------------+
-| :doc:`grdtrack`       | |grdtrack_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`sample1d`       | |sample1d_purpose|    |
-+-----------------------+-----------------------+
++----------------------------------+-----------------------+
+| :doc:`gmtsimplify <gmtsimplify>` | |gmtsimplify_purpose| |
++----------------------------------+-----------------------+
+| :doc:`grdsample`                 | |grdsample_purpose|   |
++----------------------------------+-----------------------+
+| :doc:`grdtrack`                  | |grdtrack_purpose|    |
++----------------------------------+-----------------------+
+| :doc:`sample1d`                  | |sample1d_purpose|    |
++----------------------------------+-----------------------+
 
 Projection and map-transformation
 ---------------------------------
@@ -459,84 +481,84 @@ Projection and map-transformation
 Information retrieval
 ---------------------
 
-+-----------------------+-----------------------+
-| :doc:`gmtdefaults`    | |gmtdefaults_purpose| |
-+-----------------------+-----------------------+
-| :doc:`gmtget`         | |gmtget_purpose|      |
-+-----------------------+-----------------------+
-| :doc:`gmtinfo`        | |gmtinfo_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`gmtset`         | |gmtset_purpose|      |
-+-----------------------+-----------------------+
-| :doc:`grdinfo`        | |grdinfo_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`grdselect`      | |grdselect_purpose|   |
-+-----------------------+-----------------------+
++----------------------------------+-----------------------+
+| :doc:`gmtdefaults <gmtdefaults>` | |gmtdefaults_purpose| |
++----------------------------------+-----------------------+
+| :doc:`gmtget <gmtget>`           | |gmtget_purpose|      |
++----------------------------------+-----------------------+
+| :doc:`gmtinfo <gmtinfo>`         | |gmtinfo_purpose|     |
++----------------------------------+-----------------------+
+| :doc:`gmtset <gmtset>`           | |gmtset_purpose|      |
++----------------------------------+-----------------------+
+| :doc:`grdinfo`                   | |grdinfo_purpose|     |
++----------------------------------+-----------------------+
+| :doc:`grdselect`                 | |grdselect_purpose|   |
++----------------------------------+-----------------------+
 
 Mathematical operations on tables or grids
 ------------------------------------------
 
-+-----------------------+---------------------------+
-| :doc:`gmtmath`        | |gmtmath_purpose|         |
-+-----------------------+---------------------------+
-| :doc:`makecpt`        | |makecpt_purpose|         |
-+-----------------------+---------------------------+
-| :doc:`spectrum1d`     | |spectrum1d_purpose|      |
-+-----------------------+---------------------------+
-| :doc:`sph2grd`        | |sph2grd_purpose|         |
-+-----------------------+---------------------------+
-| :doc:`sphdistance`    | |sphdistance_purpose|     |
-+-----------------------+---------------------------+
-| :doc:`sphtriangulate` | |sphtriangulate_purpose|  |
-+-----------------------+---------------------------+
++--------------------------+---------------------------+
+| :doc:`gmtmath <gmtmath>` | |gmtmath_purpose|         |
++--------------------------+---------------------------+
+| :doc:`makecpt`           | |makecpt_purpose|         |
++--------------------------+---------------------------+
+| :doc:`spectrum1d`        | |spectrum1d_purpose|      |
++--------------------------+---------------------------+
+| :doc:`sph2grd`           | |sph2grd_purpose|         |
++--------------------------+---------------------------+
+| :doc:`sphdistance`       | |sphdistance_purpose|     |
++--------------------------+---------------------------+
+| :doc:`sphtriangulate`    | |sphtriangulate_purpose|  |
++--------------------------+---------------------------+
 
 Convert or extract subsets of data
 ----------------------------------
 
-+-----------------------+-----------------------+
-| :doc:`gmtbinstats`    | |gmtbinstats_purpose| |
-+-----------------------+-----------------------+
-| :doc:`gmtconnect`     | |gmtconnect_purpose|  |
-+-----------------------+-----------------------+
-| :doc:`gmtconvert`     | |gmtconvert_purpose|  |
-+-----------------------+-----------------------+
-| :doc:`gmtselect`      | |gmtselect_purpose|   |
-+-----------------------+-----------------------+
-| :doc:`gmtspatial`     | |gmtspatial_purpose|  |
-+-----------------------+-----------------------+
-| :doc:`gmtsplit`       | |gmtsplit_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`gmtvector`      | |gmtvector_purpose|   |
-+-----------------------+-----------------------+
-| :doc:`grd2kml`        | |grd2kml_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`grd2xyz`        | |grd2xyz_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`grdblend`       | |grdblend_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`grdconvert`     | |grdconvert_purpose|  |
-+-----------------------+-----------------------+
-| :doc:`grdcut`         | |grdcut_purpose|      |
-+-----------------------+-----------------------+
-| :doc:`grdpaste`       | |grdpaste_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`xyz2grd`        | |xyz2grd_purpose|     |
-+-----------------------+-----------------------+
++----------------------------------+-----------------------+
+| :doc:`gmtbinstats <gmtbinstats>` | |gmtbinstats_purpose| |
++----------------------------------+-----------------------+
+| :doc:`gmtconnect <gmtconnect>`   | |gmtconnect_purpose|  |
++----------------------------------+-----------------------+
+| :doc:`gmtconvert <gmtconvert>`   | |gmtconvert_purpose|  |
++----------------------------------+-----------------------+
+| :doc:`gmtselect <gmtselect>`     | |gmtselect_purpose|   |
++----------------------------------+-----------------------+
+| :doc:`gmtspatial <gmtspatial>`   | |gmtspatial_purpose|  |
++----------------------------------+-----------------------+
+| :doc:`gmtsplit <gmtsplit>`       | |gmtsplit_purpose|    |
++----------------------------------+-----------------------+
+| :doc:`gmtvector <gmtvector>`     | |gmtvector_purpose|   |
++----------------------------------+-----------------------+
+| :doc:`grd2kml`                   | |grd2kml_purpose|     |
++----------------------------------+-----------------------+
+| :doc:`grd2xyz`                   | |grd2xyz_purpose|     |
++----------------------------------+-----------------------+
+| :doc:`grdblend`                  | |grdblend_purpose|    |
++----------------------------------+-----------------------+
+| :doc:`grdconvert`                | |grdconvert_purpose|  |
++----------------------------------+-----------------------+
+| :doc:`grdcut`                    | |grdcut_purpose|      |
++----------------------------------+-----------------------+
+| :doc:`grdpaste`                  | |grdpaste_purpose|    |
++----------------------------------+-----------------------+
+| :doc:`xyz2grd`                   | |xyz2grd_purpose|     |
++----------------------------------+-----------------------+
 
 Trends in 1-D and 2-D data
 --------------------------
 
-+-----------------------+-----------------------+
-| :doc:`fitcircle`      | |fitcircle_purpose|   |
-+-----------------------+-----------------------+
-| :doc:`gmtregress`     | |gmtregress_purpose|  |
-+-----------------------+-----------------------+
-| :doc:`grdtrend`       | |grdtrend_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`trend1d`        | |trend1d_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`trend2d`        | |trend2d_purpose|     |
-+-----------------------+-----------------------+
++--------------------------------+-----------------------+
+| :doc:`fitcircle`               | |fitcircle_purpose|   |
++--------------------------------+-----------------------+
+| :doc:`gmtregress <gmtregress>` | |gmtregress_purpose|  |
++--------------------------------+-----------------------+
+| :doc:`grdtrend`                | |grdtrend_purpose|    |
++--------------------------------+-----------------------+
+| :doc:`trend1d`                 | |trend1d_purpose|     |
++--------------------------------+-----------------------+
+| :doc:`trend2d`                 | |trend2d_purpose|     |
++--------------------------------+-----------------------+
 
 Grid operations
 ---------------
@@ -570,23 +592,21 @@ Grid operations
 Miscellaneous
 -------------
 
-+-----------------------+-----------------------+
-| :doc:`batch`          | |batch_purpose|       |
-+-----------------------+-----------------------+
-| :doc:`docs`           | |docs_purpose|        |
-+-----------------------+-----------------------+
-| :doc:`gmt2kml`        | |gmt2kml_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`grdgdal`        | |grdgdal_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`kml2gmt`        | |kml2gmt_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`psconvert`      | |psconvert_purpose|   |
-+-----------------------+-----------------------+
++----------------------------+-----------------------+
+| :doc:`batch`               | |batch_purpose|       |
++----------------------------+-----------------------+
+| :doc:`docs`                | |docs_purpose|        |
++----------------------------+-----------------------+
+| :doc:`gmt2kml`             | |gmt2kml_purpose|     |
++----------------------------+-----------------------+
+| :doc:`grdgdal`             | |grdgdal_purpose|     |
++----------------------------+-----------------------+
+| :doc:`gmtwhich <gmtwhich>` | |gmtwhich_purpose|    |
++----------------------------+-----------------------+
+| :doc:`kml2gmt`             | |kml2gmt_purpose|     |
++----------------------------+-----------------------+
+| :doc:`psconvert`           | |psconvert_purpose|   |
++----------------------------+-----------------------+
 
 geodesy
 -------
@@ -598,6 +618,25 @@ geodesy
 +--------------------------------------------+----------------------+
 | :doc:`/supplements/geodesy/psvelo`         | |psvelo_purpose|     |
 +--------------------------------------------+----------------------+
+
+GSFML
+-----
+
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzanalyzer`  | |fzanalyzer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzblender`   | |fzblender_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzinformer`  | |fzinformer_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmapper`    | |fzmapper_purpose|    |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzmodeler`   | |fzmodeler_purpose|   |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/fzprofiler`  | |fzprofiler_purpose|  |
++---------------------------------------+-----------------------+
+| :doc:`/supplements/gsfml/mlconverter` | |mlconverter_purpose| |
++---------------------------------------+-----------------------+
 
 GSHHG
 -----
@@ -639,25 +678,27 @@ MGD77
 potential
 ---------
 
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/gmtflexure`   | |gmtflexure_purpose|     |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/gmtgravmag3d` | |gmtgravmag3d_purpose|   |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/gravfft`      | |gravfft_purpose|        |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/grdflexure`   | |grdflexure_purpose|     |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/grdgravmag3d` | |grdgravmag3d_purpose|   |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/grdredpol`    | |grdredpol_purpose|      |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/grdseamount`  | |grdseamount_purpose|    |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/talwani2d`    | |talwani2d_purpose|      |
-+--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/talwani3d`    | |talwani3d_purpose|      |
-+--------------------------------------------+--------------------------+
++-----------------------------------------------------------+--------------------------+
+| :doc:`gmtflexure </supplements/potential/gmtflexure>`     | |gmtflexure_purpose|     |
++-----------------------------------------------------------+--------------------------+
+| :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>` | |gmtgravmag3d_purpose|   |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/gravfft`                     | |gravfft_purpose|        |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/gravprisms`                  | |gravprisms_purpose|     |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/grdflexure`                  | |grdflexure_purpose|     |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/grdgravmag3d`                | |grdgravmag3d_purpose|   |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/grdredpol`                   | |grdredpol_purpose|      |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/grdseamount`                 | |grdseamount_purpose|    |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/talwani2d`                   | |talwani2d_purpose|      |
++-----------------------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/talwani3d`                   | |talwani3d_purpose|      |
++-----------------------------------------------------------+--------------------------+
 
 SEGY
 ----
@@ -673,40 +714,53 @@ SEGY
 seis
 ----
 
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pscoupe` | |pscoupe_purpose|  |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/psmeca`  | |psmeca_purpose|   |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pspolar` | |pspolar_purpose|  |
-+----------------------------------+--------------------+
-| :doc:`/supplements/seis/pssac`   | |pssac_purpose|    |
-+----------------------------------+--------------------+
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pscoupe`  | |pscoupe_purpose|  |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/psmeca`   | |psmeca_purpose|   |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pspolar`  | |pspolar_purpose|  |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/pssac`    | |pssac_purpose|    |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/grdshake` | |grdshake_purpose| |
++-----------------------------------+--------------------+
+| :doc:`/supplements/seis/grdvs30`  | |grdvs30_purpose|  |
++-----------------------------------+--------------------+
 
 spotter
 -------
 
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/backtracker`  | |backtracker_purpose|  |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/gmtpmodeler`  | |gmtpmodeler_purpose|  |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/grdpmodeler`  | |grdpmodeler_purpose|  |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/grdrotater`   | |grdrotater_purpose|   |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/grdspotter`   | |grdspotter_purpose|   |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/hotspotter`   | |hotspotter_purpose|   |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/originater`   | |originater_purpose|   |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/polespotter`  | |polespotter_purpose|  |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/rotconverter` | |rotconverter_purpose| |
-+------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/rotsmoother`  | |rotsmoother_purpose|  |
-+------------------------------------------+------------------------+
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/backtracker`               | |backtracker_purpose|  |
++-------------------------------------------------------+------------------------+
+| :doc:`gmtpmodeler </supplements/spotter/gmtpmodeler>` | |gmtpmodeler_purpose|  |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/grdpmodeler`               | |grdpmodeler_purpose|  |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/grdrotater`                | |grdrotater_purpose|   |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/grdspotter`                | |grdspotter_purpose|   |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/hotspotter`                | |hotspotter_purpose|   |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/originater`                | |originater_purpose|   |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/polespotter`               | |polespotter_purpose|  |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/rotconverter`              | |rotconverter_purpose| |
++-------------------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/rotsmoother`               | |rotsmoother_purpose|  |
++-------------------------------------------------------+------------------------+
+
+windbarbs
+---------
+
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/psbarb`   | |psbarb_purpose|  |
++----------------------------------------+-------------------+
+| :doc:`/supplements/windbarbs/grdbarb`  | |grdbarb_purpose| |
++----------------------------------------+-------------------+
 
 x2sys
 -----

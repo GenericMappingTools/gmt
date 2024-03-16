@@ -25,7 +25,7 @@ Synopsis
 [ |-L|\ *nodegrid*\ [**+i**\|\ **o**] ]
 [ |-N| ] [ |-O| ]
 [ |-P| ] [ |-Q|\ *cut* ]
-[ |-S|\ *search\_radius* ]
+[ |-S|\ *radius* ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -44,7 +44,7 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-**psmask** **-C** [ **-K** ] [ **-O** ]
+**psmask** |-C| [ |-K| ] [ |-O| ]
 
 .. include:: mask.rst
     :start-after: .. module_common_begins

@@ -15,11 +15,11 @@ Synopsis
 **gmt grd2kml** *ingrid*
 |-N|\ *prefix*
 [ |-A|\ **a**\|\ **g**\|\ **s**\ [*altitude*] ]
-[ |-C|\ *cpt* ]
+[ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
 [ |-H|\ *scale* ]
-[ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
+[ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-L|\ *tilesize* ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
@@ -40,8 +40,8 @@ tile size.  We downsample the grid depending on the
 viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
-intensities in the (-1,+1) range or by giving instructions to derive intensities
-from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
+intensities in the ±1 range or by giving instructions to derive intensities
+from the input data grid automatically (see |-I|). Values outside the ±1 intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
 :doc:`grdimage`. Otherwise, we must first make a PostScript plot that is then converted to raster image via
@@ -67,12 +67,11 @@ Optional Arguments
 
 .. _-A:
 
-
 **-A**\ **a**\|\ **g**\|\ **s**\ [*altitude*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the tile layer: **a** absolute
-    altitude, **g** altitude relative to sea surface or ground, **s**
-    altitude relative to seafloor or ground. To plot the tiles at a
+    altitude, **g** altitude relative to ground, or **s**
+    altitude relative to seafloor. To plot the tiles at a
     fixed altitude, append an altitude *altitude* (in m). Use 0 to clamp the
     features to the chosen reference surface. [By default the tiles are clamped
     to the sea surface or ground].
@@ -104,21 +103,12 @@ Optional Arguments
 
 **-H**\ *scale*
     Improve the quality of rasterization by passing the sub-pixel smoothing scale
-    to psconvert (same as **-H** option in :doc:`psconvert`) [no sub-pixel smoothing].
-    Ignored when **-W** is not used.
+    to psconvert (same as |-H| option in :doc:`psconvert`) [no sub-pixel smoothing].
+    Ignored when |-W| is not used.
 
 .. _-I:
 
-**-I**\ [*intensfile*\|\ *intensity*\|\ *modifiers*]
-    Gives the name of a grid file with intensities in the (-1,+1) range,
-    or a constant intensity to apply everywhere (affects the ambient light).
-    Alternatively, derive an intensity grid from the input data grid *grid*
-    via a call to :doc:`grdgradient`; append **+a**\ *azimuth* and **+n**\ *args*
-    to specify azimuth and intensity arguments for that module or just give **+d**
-    to select the default arguments (**+a**\ -45\ **+nt**\ 1). If you want a more
-    specific intensity scenario then run :doc:`grdgradient` separately first.
-    [Default is no illumination].
-
+.. include:: explain_intense.rst_
 
 .. _-L:
 
@@ -126,10 +116,9 @@ Optional Arguments
     Sets the fixed size of the image building blocks.  Must be an integer that
     is radix 2.  Typical values are 256 or 512 [256].  **Note**: For global
     grids (here meaning 360-degree longitude range), we will select a
-    *tilesize* of 360 if **-L** is not specified.
+    *tilesize* of 360 if |-L| is not specified.
 
 .. _-S:
-
 
 **-S**\ [*extra*]
     Add extra layers beyond that necessary to capture the full resolution of the data [none].
@@ -151,9 +140,9 @@ Optional Arguments
 **-W**\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*]
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
-    Consequently, **-W** triggers the tile creation via PostScript and thus is slower.
+    Consequently, |-W| triggers the tile creation via PostScript and thus is slower.
     If *cfile* is not a valid file we assume you instead gave a *pen* and want
-    to draw all the contours implied by the *cpt* specified in **-C**.  The contours
+    to draw all the contours implied by the *cpt* specified in |-C|.  The contours
     are overlain via calls to :doc:`grdcontour`.  **Note**: The contour pen width(s)
     refer to the highest tile level and are reduced by a factor of *scale* [sqrt(2)] for each
     lower level.  Contours with scaled pen widths < *limit* [0.1] points are skipped (except
@@ -163,6 +152,10 @@ Optional Arguments
 .. include:: explain_-f.rst_
 
 .. include:: explain_-n.rst_
+
+.. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 Quadtree building
 -----------------
@@ -189,7 +182,7 @@ Because each tile is a fixed size image (e.g., 512x512 pixels) but the amount of
 changes by factors of 4 for each new level, we cannot use a constant thickness contour pen for all
 levels.  Thus, the pen you supply must be considered the final pen applied to the highest resolution
 map overlays.  Furthermore, because the *dpi* here is very small compared to regular GMT plots, it is
-important to improve the appearance of the contours by using sub-pixel smoothing (**-H**). Both
+important to improve the appearance of the contours by using sub-pixel smoothing (|-H|). Both
 generating PostScript tiles and using sub-pixel smoothing adds considerable processing time over
 plain tiles.
 

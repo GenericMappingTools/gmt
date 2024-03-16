@@ -16,7 +16,7 @@ Synopsis
 |-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
-[ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
+[ |-A|\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *depmin*/*depmax* ]
@@ -27,7 +27,7 @@ Synopsis
 [ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*] ]
 [ |-N| ]
-[ |-T|\ *nplane*\ [/*pen*] ]
+[ |-T|\ [*plane*]\ [**+p**\ *pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -76,13 +76,19 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+p**\ *pen*][**+s**\ *size*]
+**-A**\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
     Offsets focal mechanisms to the alternate longitudes, latitudes given
     in the last two columns of the input file before the (optional) text
-    string. We will draw a line connecting the original and relocated
-    beachball positions and optionally place a small circle at the original
-    location.  Use **+s**\ *size* to set the diameter of the circle [no circle].
-    The line pen defaults to that given via **-W** but can be overridden
+    string. Alternatively, use **+o** to interpret the contents of the two
+    columns as plot offsets instead, or append fixed offset *dx/dy* for all events.
+    We will draw a line connecting the original and relocated
+    beachball positions and optionally place a small symbol [circle] at the original
+    location.  Use **+s**\ *size* to set the size of the symbol [no symbol].
+    Change from circle to any of the standard geometric symbols in :doc:`plot </plot>`,
+    i.e., **a**\|\ **c**\|\ **d**\|\ **g**\|\ **h**\|\ **i**\|\ **n**\|\ **p**\|\ **s**\|\ **t**\|\ **x** [**c**].
+    The symbol will be filled with the beachball color, but a fixed color (**+g**\ *fill*)
+    or no fill (**+g**) can be selected.
+    The line pen defaults to that given via |-W| but can be overridden
     by using **+p**\ *pen* [0.25p].
 
 .. |Add_-B| replace:: |Add_-B_links|
@@ -118,21 +124,21 @@ Optional Arguments
     cross. [Default: 6\ **p**/**cc**]
 **-Fe**\ *fill*
     Sets the color or fill pattern for the T axis symbol. [Default as
-    set by **-E**]
+    set by |-E|]
 **-Fg**\ *fill*
     Sets the color or fill pattern for the P axis symbol. [Default as
-    set by **-G**]
+    set by |-G|]
 **-Fo**
     Use the **psvelomeca** input format without depth in the third column.
 **-Fp**\ [*pen*]
-    Draws the P axis outline using default pen (see **-W**), or sets pen attributes.
+    Draws the P axis outline using default pen (see |-W|), or sets pen attributes.
 **-Fr**\ [*fill*]
     Draw a box behind the label (if any). [Default fill is white]
 **-Ft**\ [*pen*]
-    Draws the T axis outline using default pen (see **-W**), or sets pen
+    Draws the T axis outline using default pen (see |-W|), or sets pen
     attributes.
 **-Fz**\ [*pen*]
-    Overlay zero trace moment tensor using default pen (see **-W**), or
+    Overlay zero trace moment tensor using default pen (see |-W|), or
     sets pen attributes.
 
 .. _-G:
@@ -147,45 +153,45 @@ Optional Arguments
 **-H**\ [*scale*]
     Scale symbol sizes and pen widths on a per-record basis using the *scale* read from the
     data set, given as the first column after the (optional) *size* column [no scaling].
-    The symbol size is either provided by **-S** or via the input *size* column.  Alternatively,
+    The symbol size is either provided by |-S| or via the input *size* column.  Alternatively,
     append a constant *scale* that should be used instead of reading a scale column.
 
 .. _-I:
 
 **-I**\ *intens*
-    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    Use the supplied *intens* value (nominally in the ±1 range) to
     modulate the compressional fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
-    data column after the required input columns determined by **-S**.
+    data column after the required input columns determined by |-S|.
 
 .. _-L:
 
 **-L**\ [*pen*]
     Draws the "beach ball" outline with *pen* attributes instead of with
-    the default pen set by **-W**.
+    the default pen set by |-W|.
 
 .. _-N:
 
 **-N**
-    Does **NOT** skip symbols that fall outside frame boundary specified
-    by **-R** [Default plots symbols inside frame only].
+    Does **not** skip symbols that fall outside frame boundary specified
+    by |-R| [Default plots symbols inside frame only].
 
 .. _-T:
 
-**-T**\ [*nplane*][**/**\ *pen*]
+**-T**\ [*plane*]\ [**+p**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
-    If *nplane* is
+    If *plane* is
 
-    *0*: both nodal planes are plotted;
+    *0*: both nodal planes are plotted [Default];
 
     *1*: only the first nodal plane is plotted;
 
     *2*: only the second nodal plane is plotted.
 
-    Append **/**\ *pen* to set the pen attributes for this feature.
-    Default pen is as set by **-W**. [Default: 0].
+    Append **+p**\ *pen* to set alternative pen attributes for this feature 
+    [Default pen is as set by |-W|].
 
-    For double couple mechanisms, the **-T** option renders the beach ball transparent
+    For double couple mechanisms, the |-T| option renders the beach ball transparent
     by drawing only the nodal planes and the circumference.
     For non-double couple mechanisms, **-T**\ *0* option overlays best double couple transparently.
 
@@ -203,8 +209,8 @@ Optional Arguments
 
 **-W**\ *pen*
     Set pen attributes for all lines and the outline of symbols
-    [Defaults: default,black,solid]. This
-    setting applies to **-A**, **-L**, **-T**, **-Fp**, **-Ft**, and
+    [Defaults: 0.25p,black,solid]. This
+    setting applies to |-A|, |-L|, |-T|, **-Fp**, **-Ft**, and
     **-Fz**, unless overruled by options to those arguments.
 
 .. |Add_-XY| replace:: |Add_-XY_links|

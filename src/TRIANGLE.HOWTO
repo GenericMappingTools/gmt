@@ -1,31 +1,22 @@
-
 GMT contains two programs (triangulate and pscontour) that
 directly or indirectly will do a Delaunay optimal triangulation
-of arbitrarily spaced (x,y,z) data.  By default, GMT uses
+of arbitrarily spaced (x,y,z) data.  In the early days, GMT used
 a public domain (published) algorithm by Dave Watson [1982] to
-to this.  Now, a new and much faster algorithm has been released
+to this.  Today, the default is a newer and much faster algorithm
 by Jonathan Shewchuk [1996].  Because Shewchuk holds the copyright
 (i.e., it is not in the public domain nor distributed under the GNU
 Public License or the equivalent) you are advised to read it (see
 README.TRIANGLE) to see if you agree with it.  Basically, if you
 work for a for-profit company you may need to check to see if you
-will need a license.  The install_gmt script asks you what you want
-and changes the scripts accordingly.
-If you later need to change the behavior w.r.t. triangulation,
-follow these guidelines:
+will need a license.  You can control what is used either at compile
+time or later when using the modules:
 
-In makegmt.macro there are two parameters that can be defined:
-TRIANGLE_D and TRIANGLE_O.  By default they are commented out.
-To use Shewchuk's [1996] routine, remove the # from the
-beginning of the lines and then 'make clean' and 'make install'.
-To revert to the default GMT usage of Watson's [1982] algorithm,
-simply place a # in the first column at these two lines.
-Then, say 'make clean' and 'make install' again.
+1. Use set (LICENSE_RESTRICTED GPL) in cmake/ConfigUserAdvanced.cmake
+   to disable Shewchuk's routine entirely before building GMT. Otherwise,
+2. Use "gmt set GMT_TRIANGULATE <choice>" to control which algorithm is
+   used on the fly. Specify either Watson or Shewchuk as the <choice>.
 
-Paul Wessel, 16-AUG-1999
-
-
-	REFERENCES
+REFERENCES
 
 Watson, D. F., 1982, Acord: Automatic contouring of raw data,
    Comp. & Geosci., 8, 97-101.

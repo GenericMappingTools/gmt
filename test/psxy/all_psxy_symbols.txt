@@ -1,5 +1,5 @@
 # All the basic psxy symbols + two customs to fill the table
-# ALl dimensions hardwired to be in inches
+# All dimensions hardwired to be in inches
 0.5	0.5	1i	-
 1.5	0.5	1i	+
 2.5	0.5	1i	a

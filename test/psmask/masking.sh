@@ -6,8 +6,8 @@ function arrow() {
 	# Given file, pull out first 2 records and draw an arrow from first to second point per segment
 	gmt convert $1 -Dtmp.%d
 	for file in tmp.*; do
-		first=`sed -n 2p $file`
-		second=`sed -n 3p $file`
+		first=$(sed -n 2p $file)
+		second=$(sed -n 3p $file)
 		echo $first $second | awk '{print $1, $2, $3, $4}' | gmt psxy -R -J -O -K -Sv0.15i+n+e+s+h0.5 -Gblack
 	done
 	rm -f tmp.*

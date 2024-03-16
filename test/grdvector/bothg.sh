@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Test to deal with issue http://gmt.soest.hawaii.edu/boards/1/topics/6311?r=6315#message-6315
 #
-# GMT_KNOWN_FAILURE_WINDOWS
+# Due to hairline differences due to arcm64 macOS and Intel we need a
+# higher rms threshold for this test to pass
 #
 ps=bothg.ps
 gmt pscoast -R-180/180/-70/70 -JM18c -Dc -Sblue -Glightgray -W0.01p,black -Baf -P --FONT_ANNOT_PRIMARY=9p,Helvetica,black -K -Xc > $ps

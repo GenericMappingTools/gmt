@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\|\ **g**] ]
-[ |-E|\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**] ]
+[ |-E|\ [**r**\|\ **x**\|\ **y**][**+n**][**+w**\ [**k**]] ]
 [ |-F|\ [**r**\|\ **x**\|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
@@ -52,7 +52,7 @@ Required Arguments
 
 **-G**\ *outfile*
     Specify the name of the output grid file (see :ref:`Grid File Formats
-    <grd_inout_full>`) or the 1-D spectrum table (see **-E**).
+    <grd_inout_full>`) or the 1-D spectrum table (see |-E|).
 
 Optional Arguments
 ------------------
@@ -72,35 +72,43 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [*scale*\|\ **g**]
-    Differentiate the field, i.e., take d(field)/dz. This is equivalent
-    to multiplying by kr in the frequency domain (kr is radial wave
-    number). Append a scale to multiply by (kr \* *scale*) instead.
+    Differentiate the field, i.e., take :math:`\frac{\partial}{\partial z}`
+    of the grid *z*. This is equivalent
+    to multiplying by :math:`k_r` in the frequency domain (:math:`k_r` is radial wave
+    number). Append a scale to multiply by :math:`k_r \cdot`\ *scale*) instead.
     Alternatively, append **g** to indicate that your data are geoid
-    heights in meters and output should be gravity anomalies in mGal.
+    heights in meters and output should be gravity anomalies in mGal. Repeatable.
     [Default is no scale].
 
 .. _-E:
 
-**-E**\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**]
-    Estimate power spectrum in the radial direction [**r**]. Place
-    **x** or **y** immediately after **-E** to compute the spectrum in
-    the x or y direction instead. No grid file is created. If one grid
-    is given then f (i.e., frequency or wave number), power[f],
-    and 1 standard deviation in power[f] are written to the file set by
-    **-G** [standard output]. If two grids are given we write f and 8 quantities:
-    Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
-    admittance[f], gain[f], coherency[f].  Each quantity is followed by
+**-E**\ [**r**\|\ **x**\|\ **y**][**+n**][**+w**\ [**k**]]
+    Estimate power spectrum in the radial or a horizontal direction. No grid file is created. If one grid
+    is given then *f* (i.e., frequency or wave number), power[*f*],
+    and 1 standard deviation in power[*f*] are written to the file set by
+    |-G| [standard output]. If two grids are given we write *f* and 8 quantities:
+    Xpower[*f*], Ypower[*f*], coherent power[*f*], noise power[*f*], phase[*f*],
+    admittance[*f*], gain[*f*], coherency[*f*].  Each quantity is followed by
     its own 1-std dev error estimate, hence the output is 17 columns wide.
-    Give **+w** to write wavelength instead of frequency, and if your grid
-    is geographic you may further append **k** to scale wavelengths from
-    meter [Default] to km.  Finally, the spectrum is obtained by summing
-    over several frequencies.  Append **+n** to normalize so that the
-    mean spectral values per frequency are reported instead.
+    Select your spectrum by choosing one of these directives:
+
+    - **r** - Choose a radial spectrum [Default].
+    - **x** - Compute the spectrum in the *x*-direction instead. 
+    - **y** - Compute the spectrum in the *y*-direction instead. 
+    
+    Two modifiers are available the adjust the output further:
+
+    - **+w** - Write wavelength *w* instead of frequency *f*, and if your grid
+      is geographic you may further append **k** to scale wavelengths from
+      meter [Default] to km.
+    - **+n** - Normalize spectrum so that the mean spectral values per
+      frequency are reported [By default the spectrum is obtained by summing
+      over several frequencies.
 
 .. _-F:
 
 **-F**\ [**r**\|\ **x**\|\ **y**]\ *params*
-    Filter the data. Place **x** or **y** immediately after **-F** to
+    Filter the data. Place **x** or **y** immediately after |-F| to
     filter *x* or *y* direction only; default is isotropic [**r**].
     Choose between a cosine-tapered band-pass, a Gaussian band-pass
     filter, or a Butterworth band-pass filter.
@@ -142,19 +150,19 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *outfile*\|\ *table*
-    Filename for output netCDF grid file OR 1-D data table (see **-E**).
+    Filename for output netCDF grid file OR 1-D data table (see |-E|).
     This is optional for -E (spectrum written to standard output) but mandatory for
     all other options that require a grid output.
 
 .. _-I:
 
 **-I**\ [*scale*\|\ **g**]
-    Integrate the field, i.e., compute integral\_over\_z (field \* dz).
-    This is equivalent to divide by kr in the frequency domain (kr is
-    radial wave number). Append a scale to divide by (kr \* *scale*)
+    Integrate the field, i.e., compute :math:`\int z(x,y) dz`.
+    This is equivalent to divide by :math:`k_r` in the frequency domain (:math:`k_r` is
+    radial wave number). Append a scale to divide by :math:`k_r \cdot`\ *scale*
     instead. Alternatively, append **g** to indicate that your data set
     is gravity anomalies in mGal and output should be geoid heights in
-    meters. [Default is no scale].
+    meters.  Repeatable. [Default is no scale].
 
 .. _-N:
 
@@ -163,7 +171,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Selects no wavenumber operations. Useful in conjunction with **-N** modifiers
+    Selects no wavenumber operations. Useful in conjunction with |-N| modifiers
     when you wish to write out the 2-D spectrum (or other intermediate grid products)
     only.
 
@@ -200,10 +208,16 @@ meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject`
 
+Data Detrending
+---------------
+
+The default detrending mode is to remove a best-fitting linear plane (**+d**).
+Consult and use |-N| to select other modes.
+
 Normalization of Spectrum
 -------------------------
 
-By default, the power spectrum returned by **-E** simply sums the contributions
+By default, the power spectrum returned by |-E| simply sums the contributions
 from frequencies that are part of the output frequency.  For *x*- or *y*-spectra
 this means summing the power across the other frequency dimension, while for the
 radial spectrum it means summing up power within each annulus of width *delta_q*,
@@ -219,48 +233,56 @@ Examples
 .. include:: explain_example.rst_
 
 To obtain the normalized radial spectrum from the remote data grid @white_noise.nc,
-after removing the mean, let us try::
+after removing the mean, let us try:
 
-    gmt grdfft @white_noise.nc -Er+n -N+a > spectrum.txt
+::
+
+  gmt grdfft @white_noise.nc -Er+n -N+a > spectrum.txt
 
 To upward continue the sea-level magnetic anomalies in the file
 mag_0.nc to a level 800 m above sealevel:
 
-   ::
+::
 
-    gmt grdfft mag_0.nc -C800 -V -Gmag_800.nc
+  gmt grdfft mag_0.nc -C800 -V -Gmag_800.nc
 
 To transform geoid heights in m (geoid.nc) on a geographical grid to
 free-air gravity anomalies in mGal:
 
-   ::
+::
 
-    gmt grdfft geoid.nc -Dg -V -Ggrav.nc
+  gmt grdfft geoid.nc -Dg -V -Ggrav.nc
 
 To transform gravity anomalies in mGal (faa.nc) to deflections of the
 vertical (in micro-radians) in the 038 direction, we must first
 integrate gravity to get geoid, then take the directional derivative,
 and finally scale radians to micro-radians:
 
-   ::
+::
 
-    gmt grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
+  gmt grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
 
 Second vertical derivatives of gravity anomalies are related to the
-curvature of the field. We can compute these as mGal/m^2 by::
+curvature of the field. We can compute these as mGal/m\ :sup:`2` by:
 
-    gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
+::
+
+  gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 
 To compute cross-spectral estimates for co-registered bathymetry and
-gravity grids, and report result as functions of wavelengths in km, try::
+gravity grids, and report result as functions of wavelengths in km, try:
 
-    gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V > cross_spectra.txt
+::
+
+  gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V > cross_spectra.txt
 
 To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary
-components of the raw spectrum of the data in topo.nc, try::
+components of the raw spectrum of the data in topo.nc, try:
 
-    gmt grdfft topo.nc -N+w+z -fg -V -Q
+::
+
+  gmt grdfft topo.nc -N+w+z -fg -V -Q
 
 You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 

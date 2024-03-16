@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -14,6 +14,16 @@
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
+
+/*
+ * A) List of exported gmt_* functions available to modules and libraries via gmt_dev.h:
+ *	gmt_gdal_dem
+ *	gmt_gdal_grid
+ *	gmt_gdal_info
+ *	gmt_gdal_rasterize
+ *	gmt_gdal_translate
+ *	gmt_gdal_warp
+ */
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
@@ -120,7 +130,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 		return NULL;
 
 	txt_in = strdup (in);
-	args = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	if ((args = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return NULL;
 
 	/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 	 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
@@ -145,7 +155,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 
 		if (n_args == n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
-			args = gmt_M_memory(GMT, args, n_alloc, char *);
+			if ((args = gmt_M_memory(GMT, args, n_alloc, char *)) == NULL) return NULL;
 		}
 	}
 	for (k = 0; txt_in[k]; k++)	/* Restore input string to prestine condition */
@@ -183,9 +193,9 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 		return -1;
 	}
 
-	if (nPixelSize != sizeof(float)) {		/* If outdata type is not 4 bytes, must create a tmp to copy from because GMT requires floats */
+	if (nPixelSize != sizeof(gmt_grdfloat)) {		/* If outdata type is not 4 bytes, must create a tmp to copy from because GMT requires floats */
 		size_t k;
-		if ((tmp = calloc(Grid->header->nm, sizeof(float))) == NULL) {
+		if ((tmp = calloc(Grid->header->nm, sizeof(gmt_grdfloat))) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "grdgdal: failure to allocate temporary memory\n");
 			return -1;
 		}
@@ -195,7 +205,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 			return -1;
 		}
 		for (k = 0; k < Grid->header->nm; k++)
-			Grid->data[k] = (float)tmp[k];
+			Grid->data[k] = (gmt_grdfloat)tmp[k];
 
 		free(tmp);
 	}
@@ -207,7 +217,13 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 		}
 	}
 
-	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, sizeof(float));
+/* At 3.6 GDAL made some internal change that when passing back the data to the grid buffer,
+   data comes upside-down as comparing to what it used to do. But since that in fact helps
+   us since we no longer need to a flipud, we did not complain to GDAL dev. */
+#if (GDAL_VERSION_MAJOR < 3 && GDAL_VERSION_MINOR < 6)
+	gmt_grd_flip_vertical (Grid->data, (unsigned)nXSize, (unsigned)nYSize, 0, sizeof(gmt_grdfloat));
+#endif
+
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA,
 						NULL, fname, Grid) != GMT_NOERROR)
 		return GMT->parent->error;
@@ -216,7 +232,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 }
 
 /* ------------------------------------------------------------------------------------------------------------ */
-char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
+GMT_LOCAL char *out_name(struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	/* Pick the right output name when saving grids depending on if that writing is done with GMT or GDAL */
 	if (GDLL->M.write_gdal)			/* Write grid with the GDAL machinery */
 		return GDLL->fname_out;
@@ -288,10 +304,10 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 
 			if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, GDLL->fname_in, NULL)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read input grid.\n");
-				return -1;
+				return GMT_NOTSET;
 			}
 
-			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+			if ((to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL)) == NULL) return GMT_NOTSET;
 			if (G->header->ProjRefPROJ4) {to_GDALW->P.ProjRefPROJ4 = G->header->ProjRefPROJ4;	to_GDALW->P.active = true;}
 			if (G->header->ProjRefWKT)   {to_GDALW->P.ProjRefWKT   = G->header->ProjRefWKT;	to_GDALW->P.active = true;}
 			if (G->header->ProjRefEPSG)   to_GDALW->P.ProjRefEPSG  = G->header->ProjRefEPSG;	// Not yet used

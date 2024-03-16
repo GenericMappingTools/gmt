@@ -1,0 +1,8 @@
+More on Reverse Polish Notation
+
+Reverse Polish Notation (RPN) or postfix notation is widely used in computer science because of the simplicity of implementing a 
+stack-based computation system. The PostScipt language we used to make GMT graphics is postfix, for instance. 
+To learn more about RPN or postfix, watch this YouTube video explanation:
+
+..  youtube:: 7ha78yWRDlE
+    :width: 100%

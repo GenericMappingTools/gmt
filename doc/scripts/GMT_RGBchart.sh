@@ -1,35 +1,18 @@
 #!/usr/bin/env bash
 #
 # Plots a page of all 663 unique named colors
-# Usage: GMT_RGBchart.sh <size>
-# where <size> is the page size. Use either: tabloid, a4, or letter
-# This produces the file GMT_RGBchart_<size>.ps
 
-SIZE=$1
 COL=16
 ROW=35
 
-if [ "X"$SIZE"" = "Xletter" ] ; then
-	WIDTH=10.5
-	HEIGHT=8.0
-	ORIENT=landscape
-elif [ "X"$SIZE"" = "Xa4" ] ; then
-	WIDTH=11.2
-	HEIGHT=7.8
-else
-	SIZE=tabloid
-	WIDTH=16.5
-	HEIGHT=10.5
-fi
-
-ps=GMT_RGBchart_$SIZE.ps
+WIDTH=16.5
+HEIGHT=10.5
 allinfo=allinfo.tmp
 cpt=lookup.cpt
 rects=rects.tmp
 whitetags=whitetags.tmp
 blacktags=blacktags.tmp
 labels=labels.tmp
-gmt set PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
 W=$(gmt math -Q $WIDTH $COL DIV 0.95 MUL =)
@@ -51,17 +34,21 @@ $AWK -v h=$rectheight -v fs=$fontsize  '{if ($2 <= 127) printf "%g %g %gp,1 %s\n
 $AWK -v h=$rectheight -v fs=$fontsize  '{if ($2 > 127) printf "%g %g %gp,1 %s\n",$4+0.5,$5+1-0.5*h,fs,$1}' $allinfo > $blacktags
 $AWK -v h=$textheight -v fs=$fontsizeL '{printf "%g %g %gp,1 @#%s@#\n",$4+0.5,$5+0.6*h,fs,$3}' $allinfo > $labels
 
-# Plot all tiles and texts
-gmt psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -C$cpt -Sri -W $rects -K > $ps
-gmt pstext -R -J -O -K $labels -F+f --FONT=black >> $ps
-gmt pstext -R -J -O -K $blacktags -F+f --FONT=black >> $ps
-gmt pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps
+gmt begin GMT_RGBchart
+	gmt set PS_MEDIA tabloid PS_PAGE_ORIENTATION landscape
 
-# Put logo in top left corner
-gmt logo -R -J -O -K -Dg0.5/1+jMC+w$W >> $ps
+	# Plot all tiles and texts
+	gmt plot -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -C$cpt -Sri -W $rects
+	gmt text $labels -F+f --FONT=black
+	gmt text $blacktags -F+f --FONT=black
+	gmt text $whitetags -F+f --FONT=white
 
-height=$(gmt math -Q $HEIGHT $ROW DIV =)
-gmt pslegend -O -R -J -DjBR+w$WIDTH >> $ps <<END
+	# Put logo in top left corner
+	gmt logo -Dg0.5/1+jMC+w$W
+
+	height=$(gmt math -Q $HEIGHT $ROW DIV =)
+	gmt legend -DjBR+w$WIDTH <<END
 L ${fontsizeL}p,Helvetica-Bold R Values are R/G/B. Names are case-insensitive.
 L ${fontsizeL}p,Helvetica-Bold R Optionally, use GREY instead of GRAY.
 END
+gmt end show

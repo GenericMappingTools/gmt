@@ -17,9 +17,9 @@ or **s** (trailing text). If several consecutive columns have the same format yo
 than a single column. Column ranges must be given in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
 not specified.  For example, if our input file has geographic coordinates (latitude, longitude) with absolute calendar
 coordinates in the columns 3 and 4, we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**. All other columns are assumed
-to have the default (**f**\ loating point) format and need not be set individually. **Note**: You can also indicate that
+to have the default (**f**\ loating point) format and need not be set individually. **Notes**: (1) You can also indicate that
 all items from the given column and to the end of the record should be considered *trailing text* by giving the code
-**s** (for string). Only the last group may set **s**. **Note**: Types **T** and **s** can only be used with ASCII data sets.
+**s** (for string). Only the last group may set **s**. (2) Types **T** and **s** can only be used with ASCII data sets.
 
 Three shorthand options for common selections are available. The shorthand **-f**\ [**i**\|\ **o**]\ **g** means
 **-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic coordinates), while **-f**\ [**i**\|\ **o**]\ **c** means

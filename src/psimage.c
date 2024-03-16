@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psimage_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psimage"
 #define THIS_MODULE_MODERN_NAME	"image"
@@ -37,7 +38,7 @@ struct PSIMAGE_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct PSIMAGE_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<dx>[/<dy>]][+r<dpi>] */
+	struct PSIMAGE_D {	/* -D[g|j|n|x]<refpoint>+w[-]<width>[/<height>][+j<justify>][+n<n_columns>[/<n_rows>]][+o<dx>[/<dy>]][+r<dpi>[c]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;
 		double off[2];
@@ -92,7 +93,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>] [-F%s] "
+	GMT_Usage (API, 0, "usage: %s <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>[c]] [-F%s] "
 		"[-G[<color>][+b|f|t]] [-I] [%s] %s[-M] %s%s[%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s]\n",
 		name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
 		GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -104,17 +105,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
 	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
-	GMT_Usage (API, -2, "Set width (and height) of image with +w<width>/[/<height>].  If <height> = 0 "
-		"then the original aspect ratio is maintained.  If <width> < 0 "
-		"then we use absolute value as width and interpolate image in PostScript. Alternatively:");
-	GMT_Usage (API, 3, "+r Append image dpi (dots per inch).");
+	GMT_Usage (API, -2, "Set width (and height) of image with +w[-]<width>/[/<height>].  If <width> = 0 or <height> = 0 "
+		"then the original aspect ratio is maintained.  If <width> (or <height>) is < 0 "
+		"then we use absolute value as width (or height) and interpolate the image in PostScript. Alternatively:");
+	GMT_Usage (API, 3, "+r Append image dpi (dots per inch) or append c if dots per cm.");
 	GMT_Usage (API, 3, "+n Append <n_columns>[/<n_rows>] to replicate image <n_columns> by <n_rows> times [Default is no replication].");
+	GMT_Usage (API, -2, "Notes:(1) If neither +w nor +r are set then we default to the default dpu [%lg%c] "
+		"(2) If <width> is negative then we interpolate image to device resolution.\n",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Usage (API, 1, "\n-G[<color>][+b|f|t]");
 	GMT_Usage (API, -2, "Change some pixels to be transparent (or to optional <color>) depending on selected modifier (repeatable):");
 	GMT_Usage (API, 3, "+b Replace background color by <color> or make it transparent (1-bit images only).");
 	GMT_Usage (API, 3, "+f Replace foreground color by <color> or make it transparent (1-bit images only).");
-	GMT_Usage (API, 3, "+t Indicate the given <color> should be made transparent [no transparency].");
+	GMT_Usage (API, 3, "+t Indicate the given <color> should be made transparent (for color images) [no transparency].");
 	GMT_Usage (API, 1, "\n-I Invert 1-bit images (does not affect 8 or 24-bit images).");
 	GMT_Option (API, "J-Z,K");
 	GMT_Usage (API, 1, "\n-M Force color -> monochrome image using YIQ-transformation.");
@@ -133,46 +137,57 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, ind = PSIMAGE_FGD, k = 0;
+	unsigned int n_errors = 0, ind = PSIMAGE_FGD, k = 0;
 	int n;
-	bool p_fail = false;
-	char string[GMT_LEN256] = {""}, *p = NULL;
+	char cstring[GMT_LEN256] = {""}, fstring[GMT_LEN256] = {""}, *p = NULL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[4] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* Because of backwards compatibility with deprecated -C optino and upgraded -F option we need to
+	 * per-scane for those options and capture their arguments so that later we can handle the backwards
+	 * checking without worry about option order. */
+
+	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
+		if (opt->option == 'C') { /* Deprecated */
+			GMT_Report (API, GMT_MSG_COMPAT, "-C option is deprecated, use -Dx instead.\n");
+			n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, txt_c);
+			sprintf (cstring, "x%s/%s", txt_a, txt_b);	/* Build +x modifier* for -D */
+			if (n == 3) {	/* Append modifier +j with given argument */
+				strcat (cstring, "+j");
+				strcat (cstring, txt_c);
+			}
+		}
+		else if (opt->option == 'F') {	/* Check for deprecated version of -F<pen> */
+			if (gmt_M_compat_check (GMT, 5) && opt->arg[0] != '+') { /* Warn but process old -F<pen> */
+				GMT_Report (API, GMT_MSG_COMPAT, "The -F<pen> option is deprecated but was accepted. Use -F modifier +p<pen> instead\n");
+				sprintf (fstring, "+c0+p%s", opt->arg);	/* Reformat using new syntax */
+			}
+			else	/* Expected syntax given (we hope) */
+				strncpy (fstring, opt->arg, GMT_LEN256-1);
+		}
+	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
-			case 'C':	/* Image placement (old syntax) */
-				GMT_Report (API, GMT_MSG_COMPAT, "-C option is deprecated, use -Dx instead.\n");
-				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, txt_c);
-				sprintf (string, "x%s/%s", txt_a, txt_b);
-				if (n == 3) {
-					strcat (string, "+j");
-					strcat (string, txt_c);
-				}
-				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
+				p = (cstring[0]) ? cstring : opt->arg;	/* If -C was used then cstring was set above */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
-					p_fail = true;
 					n_errors++;
 				}
-				else {	/* args are now [+j<justify>][+o<dx>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */
+				else {	/* args are now [+j<justify>][+n<n_columns>[/<n_rows>]][+o<dx>[/<dy>]][+r<dpi>[c]][+[-]<width>] */
+					char string[GMT_LEN256] = {""};
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw", GMT_MSG_ERROR)) n_errors++;
 					/* Required modifier +w OR +r */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
@@ -181,9 +196,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 							Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 							Ctrl->D.interpolate = true;
 						}
+						else if (Ctrl->D.dim[GMT_Y] < 0.0) {	/* Negative height means PS interpolation */
+							Ctrl->D.dim[GMT_Y] = -Ctrl->D.dim[GMT_Y];
+							Ctrl->D.interpolate = true;
+						}
 					}
-					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string))
+					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string)) {
 						Ctrl->D.dpi = atof (string);
+						if (strchr (string, 'c')) Ctrl->D.dpi *= 2.54;	/* Convert dpc to dpi */
+					}
 					/* Optional modifiers +j, +n, +o */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
@@ -201,22 +222,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 			case 'E':	/* Specify image dpi */
 				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
 				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +r instead.\n");
-				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+r) with the old-style -C option.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Note: You cannot mix new-style modifiers (+r) with the old-style -C option.\n");
 				Ctrl->D.dpi = atof (opt->arg);
 				break;
-			case 'F':	/* Specify frame pen */
+			case 'F':	/* Specify panel behind image */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				if (gmt_M_compat_check (GMT, 5) && opt->arg[0] != '+') /* Warn but process old -F<pen> */
-					sprintf (string, "+c0+p%s", opt->arg);
-				else
-					strncpy (string, opt->arg, GMT_LEN256-1);
-				if (gmt_getpanel (GMT, opt->option, string, &(Ctrl->F.panel))) {
+				if (gmt_getpanel (GMT, opt->option, fstring, &(Ctrl->F.panel))) {	/* fstring set above */
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the image", 1);
 					n_errors++;
 				}
 				break;
-			case 'G':	/* Background/foreground color for 1-bit images */
+			case 'G':	/* Background/foreground color for 1-bit images [Repeatable] */
 				Ctrl->G.active = true;
 				if ((p = strstr (opt->arg, "+b")))	/* Background color (or transparency) selected */
 					ind = PSIMAGE_BGD, k = 0, p[0] = '\0';
@@ -258,16 +274,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.set[ind]);
-				Ctrl->G.set[ind] = true;
 				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'I':	/* Invert 1-bit images */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Monochrome image */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Replicate image */
 				GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -D modifier +n instead.\n");
@@ -282,12 +297,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 					Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 					Ctrl->D.interpolate = true;
 				}
+				else if (Ctrl->D.dim[GMT_Y] < 0.0) {
+					Ctrl->D.dim[GMT_Y] = -Ctrl->D.dim[GMT_Y];
+					Ctrl->D.interpolate = true;
+				}
 				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
+	}
+
+	if (Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dim[GMT_Y] <= 0.0 && Ctrl->D.dpi <= 0.0) {	/* No width or dpi set, default to GMT dpi */
+		Ctrl->D.dpi = GMT->current.setting.graphics_dpu;
+		if (GMT->current.setting.graphics_dpu_unit == 'c') Ctrl->D.dpi *= 2.54;	/* Convert dpc to dpi */
 	}
 
 	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
@@ -301,8 +325,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "-D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "-D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single input raster or EPS file\n");
-	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Option -D: Must specify image width (+w) or dpi (+r)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single input raster or EPS file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Option -D: Must specify positive values for replication with +n\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMAGE_FGD][0] == -1 && Ctrl->G.rgb[PSIMAGE_BGD][0] == -1,
@@ -422,7 +445,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -563,8 +586,12 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	else
 		GMT_Report (API, GMT_MSG_ERROR, "Can only do transparent color for 8- or 24-bit images. -Gt ignored\n");
 
-	if (Ctrl->D.dpi > 0.0) Ctrl->D.dim[GMT_X] = (double) header.width / Ctrl->D.dpi;
-	if (Ctrl->D.dim[GMT_Y] == 0.0) Ctrl->D.dim[GMT_Y] = header.height * Ctrl->D.dim[GMT_X] / header.width;
+	if (Ctrl->D.dpi > 0.0) {
+		Ctrl->D.dim[GMT_X] = (double) header.width / Ctrl->D.dpi;
+		Ctrl->D.dim[GMT_Y] = (double) header.height / Ctrl->D.dpi;
+	}
+	if (Ctrl->D.dim[GMT_X] == 0.0) Ctrl->D.dim[GMT_X] = header.width * Ctrl->D.dim[GMT_Y] / header.height;
+	else if (Ctrl->D.dim[GMT_Y] == 0.0) Ctrl->D.dim[GMT_Y] = header.height * Ctrl->D.dim[GMT_X] / header.width;
 
 	/* The following is needed to have psimage work correctly in perspective */
 

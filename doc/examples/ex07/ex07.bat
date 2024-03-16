@@ -1,6 +1,6 @@
 REM		GMT EXAMPLE 07
 REM
-REM Purpose:	Make a basemap with earthquakes and isochrons etc
+REM Purpose:	Make a basemap with earthquakes and isochrons, etc.
 REM GMT modules:	coast, legend, text, plot
 REM
 gmt begin ex07

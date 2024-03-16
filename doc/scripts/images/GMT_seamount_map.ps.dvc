@@ -1,0 +1,5 @@
+outs:
+- md5: e413a81787b38e5cd3ccdb74908f3fed
+  size: 28786
+  hash: md5
+  path: GMT_seamount_map.ps

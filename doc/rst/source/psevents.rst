@@ -21,7 +21,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
-[ |-E|\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
+[ |-E|\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ [**c**\|\ **l**\|\ **q**]*dt*][**+p**\ *dt*][**+d**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+f**\ [**c**\|\ **l**\|\ **q**]\ *dt*][**+l**\ *dt*] ]
 [ |-F|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]] ]
 [ |-G|\ *color* ]
 [ |-H|\ *labelbox* ]
@@ -29,7 +29,7 @@ Synopsis
 [ |-L|\ [*length*\|\ **t**] ]
 [ |-M|\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*] ]
 [ |-N|\ [**c**\|\ **r**] ]
-[ |-O| ] [ **-P** ]
+[ |-O| ] [ |-P| ]
 [ |-Q|\ *prefix* ]
 [ |-S|\ *symbol*\ [*size*] ]
 [ |SYN_OPT-U| ]
@@ -82,5 +82,6 @@ or you specify **-Ar**\ 200\ **i**.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`gmt`,
+:doc:`gmtcolors`,
 :doc:`psxy`

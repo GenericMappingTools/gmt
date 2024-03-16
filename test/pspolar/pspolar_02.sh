@@ -10,9 +10,9 @@ gmt psbasemap -R-8/8/-10/10 -JX7i -P -Xc -K -B+t"circles should plot on curves" 
 COUNTER=0
 while [  $COUNTER -lt 10 ]; do
      let COUNTER=COUNTER+1
-     let STRIKEF=`echo $COUNTER | awk '{print $1*36}'`  # strike of fault plane
-     let STRIKEP=`echo $STRIKEF | awk '{print $1+90}'`  # strike of point
-     let DIP=`   echo $COUNTER | awk '{print $1*9}'`
+	 let STRIKEF=$(echo $COUNTER | awk '{print $1*36}')  # strike of fault plane
+	 let STRIKEP=$(echo $STRIKEF | awk '{print $1+90}')  # strike of point
+	 let DIP=$(echo $COUNTER | awk '{print $1*9}')
      #echo COUNTER $COUNTER STRIKE $STRIKEF DIP $DIP
 
 # plot planes

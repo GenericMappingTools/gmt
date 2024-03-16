@@ -1,6 +1,0 @@
-{
-  "scripts": {
-    "build:docs": "bash ci/vercel-docs.sh",
-    "build": "npm run build:docs"
-  }
-}

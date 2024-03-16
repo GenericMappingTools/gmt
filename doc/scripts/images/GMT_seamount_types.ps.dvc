@@ -1,0 +1,5 @@
+outs:
+- md5: b53a8fd0b303e6cf6b62d0f6dc922772
+  size: 45369
+  hash: md5
+  path: GMT_seamount_types.ps

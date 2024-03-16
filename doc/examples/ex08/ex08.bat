@@ -2,7 +2,7 @@ REM		GMT EXAMPLE 08
 REM
 REM Purpose:	Make a 3-D bar plot
 REM GMT modules:	grd2xyz, makecpt, text, plot3d
-REM Unix progs:	echo
+REM DOS calls:	echo
 REM
 gmt begin ex08
 	gmt makecpt -Ccubhelix -T-5000/0

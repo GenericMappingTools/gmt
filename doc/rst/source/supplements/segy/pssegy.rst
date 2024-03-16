@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ *clip* ]
 [ |-E|\ *error* ] [ |-I| ] [ |-K| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ] [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-Q|\ *<mode><value>* ]
+[ |-Q|\ **b**\|\ **i**\|\ **u**\|\ **x**\|\ **y**\ *value* ]
 [ |-S|\ *header* ]
 [ |-T|\ *filename* ]
 [ |SYN_OPT-U| ]

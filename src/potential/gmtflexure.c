@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "longopt/gmtflexure_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtflexure"
 #define THIS_MODULE_MODERN_NAME	"gmtflexure"
@@ -44,8 +45,8 @@
  * input files. 1) Load file having x and load, and 2) Rigidity file
  * having x and rigidity. If both files are present, they must list load and
  * rigidity at the same x positions. All units must be in SI. The program writes
- * the deflections to standard output. Z axis is positive DOWN, so
- * positive loads, moments, and forces will all generate positive deflections.
+ * the deflections to standard output. Z axis is positive UP, so
+ * positive loads, moments, and forces will all generate negative deflections.
  * The load file is optional, whereas the rigidity file OR a uniform plate
  * thickness (-E) must be supplied. If no input files are given, then the min/max
  * distance and increment must be given on the command line using the -T option.
@@ -87,7 +88,7 @@ struct GMTFLEXURE_CTRL {
 	struct GMTFLEXURE_L {	/* Use variable restoring force [constant] */
 		bool active;
 	} L;
-	struct GMTFLEXURE_M {	/* -Mx|z  */
+	struct GMTFLEXURE_M {	/* -Mh|v  */
 		bool active[2];	/* True if km, else m */
 	} M;
 	struct GMTFLEXURE_Q {	/* Load specifier -Qn|q|t[/args] */
@@ -153,7 +154,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Dea
 
 static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	unsigned int side, k, n_errors = 0, n_files = 0;
+	unsigned int side, k, n_errors = 0;
 	int n;
 	bool both;
 	struct GMT_OPTION *opt = NULL;
@@ -163,10 +164,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 			case 'A':	/* Boundary conditions -A[l|r]<bc>[/<w>|<m>/<f>]*/
 				both = false;	side = 0;
@@ -176,7 +175,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 					default:		both = true; break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active[side]);
-				Ctrl->A.active[side] = true;
 				k = (both) ? 0 : 1;	/* Offset to <bc> argument */
 				n = atoi (&opt->arg[k]);
 				if (n < BC_INFINITY || n > BC_FREE) {
@@ -201,17 +199,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'C':	/* Rheology constants E and nu */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				switch (opt->arg[0]) {
 					case 'p':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[0]);
-						Ctrl->C.active[0] = true;
-						Ctrl->C.nu = atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->C.nu);
 						break;
 					case 'y':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[1]);
-						Ctrl->C.active[1] = true;
-						Ctrl->C.E = atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->C.E);
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized modifier %c\n", opt->arg[0]);
@@ -221,7 +216,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':	/* Set densities */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->D.rhom, &Ctrl->D.rhol, &Ctrl->D.rhoi, &Ctrl->D.rhow);
 				if (!(n == 4 || n == 3)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: must give 3-4 density values\n");
@@ -234,7 +228,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Set elastic thickness or rigidities */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (!gmt_access (GMT, opt->arg, F_OK))	/* file exists */
 					Ctrl->E.file = strdup (opt->arg);
 				else {	/* Got a value */
@@ -246,39 +239,34 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Horizontal end load */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				Ctrl->F.force = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->F.force);
 				break;
 			case 'L':	/* Variable restoring force */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Length units */
 				both = false;	side = 0;
 				switch (opt->arg[0]) {
-					case 'x': side = 0; break;
-					case 'z': side = 1; break;
+					case 'h':	case 'x': side = 0; break;	/* Deprecated x and z */
+					case 'v':	case 'z': side = 1; break;
 					default:  both = true; break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[side]);
-				Ctrl->M.active[side] = true;
 				if (both) {
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[1]);
-					Ctrl->M.active[1] = Ctrl->M.active[0];
 				}
 				break;
 			case 'S':	/* Compute curvatures also */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* Preexisting deformation */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				Ctrl->T.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file));
 				break;
 			case 'Q':	/* Load setting -Qn|q|t[/args] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'n':	Ctrl->Q.mode = NO_LOAD;
 						if (opt->arg[1]) {	/* Gave domain info */
@@ -297,12 +285,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Water depth */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				GMT_Get_Values (API, opt->arg, &Ctrl->W.water_depth, 1);	/* This yields water depth in meters if k was added */
 				break;
 			case 'Z':	/* Moho depth */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				GMT_Get_Values (API, opt->arg, &Ctrl->Z.zm, 1);	/* This yields Moho depth in meters if k was added */
 				break;
 			default:
@@ -314,7 +300,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E: Must specify plate thickness or rigidity\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Option -Q: Must specify load option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Option -Q: Must specify equidistant min/max/inc setting\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -323,7 +308,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<Te>[k]|<D>|<file> -Qn|q|t[<args>] [-A[l|r]<bc>[/<args>]] "
-		"[-Cp|y<value>] [-F<force>] [-L] [-M[x][z]] [-S] [-T<wpre>] [%s] [-W<w0>[k]] [-Z<zm>[k]] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-Cp|y<value>] [-F<force>] [-L] [-M[h][v]] [-S] [-T<wpre>] [%s] [-W<w0>[k]] [-Z<zm>[k]] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -359,10 +344,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-F<force>");
 	GMT_Usage (API, -2, "Specify the uniform, horizontal stress in the plate in Pa m [0].");
 	GMT_Usage (API, 1, "\n-L Use variable restoring force k(x) that depends on w(x).");
-	GMT_Usage (API, 1, "\n-M[x][z]");
+	GMT_Usage (API, 1, "\n-M[h][v]");
 	GMT_Usage (API, -2, "Set units used; append one or both of these directives:");
-	GMT_Usage (API, 3, "x: Indicates all x-distances are in km [meters].");
-	GMT_Usage (API, 3, "z: Indicates all z-deflections are in km [meters].");
+	GMT_Usage (API, 3, "h: Indicates all horizontal distances are in km [meters].");
+	GMT_Usage (API, 3, "v: Indicates all vertical deflections are in km [meters].");
 	GMT_Usage (API, 1, "\n-S Also compute second derivatives (curvatures) on output.");
 	GMT_Usage (API, 1, "\n-T<wpre>");
 	GMT_Usage (API, -2, "Use file <wpre> with pre-existing deflections [none].");
@@ -371,7 +356,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify water depth in m; append k for km.  Must be positive. "
 		"Subaerial topography will be scaled via -D to account for density differences.");
 	GMT_Usage (API, 1, "\n-Z<zm>[k]");
-	GMT_Usage (API, -2, "Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].");
+	GMT_Usage (API, -2, "Specify distance from observation level (z = 0) to flexed surface in m; append k for km.  Must be positive [0].");
 	GMT_Option (API, "bi,bo,d,e,h,i,o,.");
 	return (GMT_MODULE_USAGE);
 }
@@ -1289,7 +1274,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

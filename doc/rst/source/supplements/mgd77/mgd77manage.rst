@@ -42,7 +42,7 @@ obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
 Mercator \*.img grid) along track. The new data will be appended to the
 MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
-issues, see the DISCUSSION section below.
+issues, see the DISCUSSION section below [*Wessel and Chandler*, 2007].
 
 Required Arguments
 ------------------
@@ -86,7 +86,7 @@ Optional Arguments
     matching distances in the MGD77+ file will be assigned the new
     values; at other distances we set them to NaN. Alternatively, give
     upper case **D** instead and we will interpolate the column at all
-    record distances. See **-N** for choosing distance units and **-j**
+    record distances. See |-N| for choosing distance units and **-j**
     for choosing how distances are calculated.
 
     **e** Expects to find an e77 error/correction log from
@@ -118,7 +118,7 @@ Optional Arguments
     E77 file has not been verified. Use **-AE** to ignore the
     verification status.
 
-    **g** Sample a GMT geographic (lon, lat) grid along the track given
+    **g** Sample a GMT geographic (*lon, lat*) grid along the track given
     by the MGD77+ file using bicubic interpolation (however, see
     **-n**). Append name of a GMT grid file.
 
@@ -151,7 +151,7 @@ Optional Arguments
 
 **-D**\ *abbrev1*,\ *abbrev2*,...)
     Give a comma-separated list of column abbreviations that you want to
-    delete from the MGD77+ files. Do NOT use this option to remove
+    delete from the MGD77+ files. Do **not** use this option to remove
     columns that you are replacing with new data (use **-A...+f** instead).
     Because we cannot remove variables from netCDF files we must create
     a new file without the columns to be deleted. Once the file is
@@ -185,9 +185,9 @@ Optional Arguments
     to the data to make them fit inside the range implied by the chosen
     storage type, and a general comment (< 128 characters) regarding
     what these data represent. **Note**: If text data type is selected then
-    the terms "values" in the **-A** discussion refer to your text data.
+    the terms "values" in the |-A| discussion refer to your text data.
     Furthermore, the discussion on interpolation does not apply and the
-    NaN value becomes a "no string" value (see **-E** for what this is).
+    NaN value becomes a "no string" value (see |-E| for what this is).
     Place quotes around terms with more than one word (e.g., "Corrected Depth").
 
 .. _-N:
@@ -208,7 +208,7 @@ Optional Arguments
 
 .. |Add_-bi| replace::
     This applies to the input 1- or 2-column data files specified under some
-    of the **-A** options. The binary input option is only available for
+    of the |-A| options. The binary input option is only available for
     numerical data columns.
 .. include:: ../../explain_-bi.rst_
 
@@ -232,34 +232,34 @@ To append Geosat/ERS-1 gravity version 11.2 as an extra data column in
 the cruises 01010047.nc and 01010008.nc, storing the values as mGal\*10
 in a 2-byte short integer, try
 
-   ::
+::
 
-    gmt mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img \
-        -Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
+  gmt mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img \
+      -Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
 
 To append a filtered version of magnetics as an extra data column of
 type float for the cruise 01010047.nc, and interpolate the filtered data
 at the times given in the MGD77+ file, try
 
-   ::
+::
 
-    gmt mgd77manage 01010047 -ATmymag.tm -Ifiltmag/"Intermediate-wavelength \
-        magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" -V
+  gmt mgd77manage 01010047 -ATmymag.tm -Ifiltmag/"Intermediate-wavelength \
+      magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" -V
 
 To delete the existing extra columns satfaa, coastdist, and satvgg from
 all MGD77+ files, try
 
-   ::
+::
 
-    gmt mgd77manage =allmgd77.lis -Dsatfaa,coastdist,satvgg -V
+  gmt mgd77manage =allmgd77.lis -Dsatfaa,coastdist,satvgg -V
 
 To create a 4-byte float column with the correct IGRF reference field in
 all MGD77+ files, try
 
-   ::
+::
 
-    gmt mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference \
-        field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
+  gmt mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference \
+      field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
 
 Discussion
 ----------
@@ -299,7 +299,7 @@ conversion will be reported. The new \*.nc files may also be placed in
 one or more separate sub-directories and these should also be listed in
 the mgd77_paths.txt file. We suggest you place the directories with
 \*.nc files ahead of the \*.mgd77 directories. When you later want to
-limit a search to files of a certain extension you should use the **-I**
+limit a search to files of a certain extension you should use the |-I|
 option.
 
 **4. Adding new columns**
@@ -380,7 +380,7 @@ suppressed from output.
 Credits
 -------
 
-The IGRF calculations are based on a Fortran program written by Susan
+The IGRF calculations are based on a FORTRAN program written by Susan
 Macmillan, British Geological Survey, translated to C via f2c by Joaquim
 Luis, and adapted to GMT style by Paul Wessel.
 
@@ -398,6 +398,9 @@ References
 ----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_.
 
 IGRF, see `<http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+
+Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1016/j.cageo.2006.05.006.

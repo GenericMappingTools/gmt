@@ -4,7 +4,7 @@
 
 ps=plot_symbols.ps
 
-gmt psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
+gmt psxy -R0/4/1/6 -Jx1i -P -Bg1 -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Fat pen -W2p
 0.5	5.5	-
 > Plain red symbols -W- -Gred
@@ -29,7 +29,7 @@ gmt psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Blue wedges -Gblue
 3.5	2.5	80	30	w
 0.5	1.5	30	80	w
-> Fat red pen -W2p,red
+> Fat red pen -W2p,red -G-
 1.5	1.5	x
 > Fat pen -W2p
 1.5	1.5	+

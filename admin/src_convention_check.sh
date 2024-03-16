@@ -36,4 +36,4 @@ sort -u /tmp/gmt/all_modules.lis | awk '{printf "\t\"%s\",\n", $1}' > /tmp/gmt/m
 gcc admin/src_convention_check.c -o /tmp/src_convention_check
 
 find src -name '*.c' | egrep -v 'triangle.c|mergesort.c|test|example|demo|kiss|ssrfpack|stripack|s_rint|qsort.c|cm4_functions' > /tmp/gmt/c_codes.lis
-/tmp/src_convention_check $* `cat /tmp/gmt/c_codes.lis`
+/tmp/src_convention_check $* $(cat /tmp/gmt/c_codes.lis)

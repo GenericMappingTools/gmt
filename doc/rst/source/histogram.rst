@@ -12,8 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt histogram** [ *table* ] |-J|\ **x**\|\ **X**\ *parameters*
-|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+**gmt histogram** [ *table* ]
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] | |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*\ [**+b**] ]
@@ -22,6 +22,7 @@ Synopsis
 [ |-F| ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**o**\|\ **O**] ]
+[ |-J|\ **x**\|\ **X**\ *parameters* ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-L|\ **l**\|\ **h**\|\ **b** ]
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
@@ -69,14 +70,17 @@ Required Arguments
 
 **-Jx**
     *xscale*\ [/*yscale*] (Linear scale(s) in distance unit/data unit), or
-    **-JX** with *width*\ [/*height*] dimensions.
+    **-JX** with *width*\ [/*height*] dimensions.  **Note**: Optional in modern mode.
 
 .. _-T:
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ **-T**\ *file*\|\ *list*
     Make evenly spaced array of bin boundaries from *min* to *max* by *inc*.
-    If *min/max* are not given then we default to the range in **-R**.
-    For details on array creation, see `Generate 1D Array`_.
+    If *min/max* are not given then we default to the range in |-R|.
+    For details on array creation, see `Generate 1-D Array`_. **Note**: If
+    *inc* is given with a trailing time unit then it takes precedence over
+    the current setting of :term:`TIME_UNIT`; otherwise that setting determines
+    the units used for the bin widths.
 
 Optional Arguments
 ------------------
@@ -98,7 +102,7 @@ Optional Arguments
 **-C**\ *cpt*\ [**+b**]
     Give a CPT. The mid-coordinate for each bar is used to look up
     the bar color.  Alternatively, append **+b** to use the *bin* value
-    as the look-up value, unless **-Z** involves percentages,
+    as the look-up value, unless |-Z| involves percentages,
     in which case the look-up value is the *percentage* computed. If
     we are in modern mode and no *cpt* is given then we select the
     current CPT.
@@ -107,15 +111,17 @@ Optional Arguments
 
 **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**]
     Annotate each bar with the count it represents.  Append any of the
-    following modifiers: Use **+b** to place the labels beneath the bars
-    instead of above; use **+f** to change to another font than the default
-    annotation font; use **+o** to change the offset between bar and label [6p];
-    use **+r** to rotate the labels from horizontal to vertical.
+    following modifiers:
+
+    - **+b** - Place the labels beneath the bars instead of above.
+    - **+f** - Change to another font than the default annotation font.
+    - **+o** - Change the offset between bar and label [6p].
+    - **+r** - Rotate the labels from horizontal to vertical.
 
 .. _-E:
 
 **-E**\ *width*\ [**+o**\ *offset*]
-    Use an alternative histogram bar width than the default set via **-T**,
+    Use an alternative histogram bar width than the default set via |-T|,
     and optionally shift all bars by an *offset*.  Here *width* is either
     an alternative width in data units, or the user may append a valid plot
     dimension unit (**c**\|\ **i**\|\ **p**) for a fixed dimension instead.
@@ -126,7 +132,8 @@ Optional Arguments
 .. _-F:
 
 **-F**
-    Center bin on each value. [Default is left edge].
+    Center bin on each node created via |-T| [Default uses the nodes to define the
+    left edge of each bin].
 
 .. _-G:
 
@@ -136,10 +143,10 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [**o**\|\ **O**]
-    Inquire about min/max x and y after binning. The *xmin xmax ymin
-    ymax* is output; no plotting is done. Append **o** to output an
-    ASCII table of the resulting x,y data instead. Upper case **O** will
-    output all x,y bin data even when y == 0. **Note**: You may use **-o**
+    Inquire about min/max *x* and *y* after binning. The *xmin xmax ymin
+    ymax* is output; no plotting is done. Append directive **o** to output an
+    ASCII table of the resulting *x, y* data instead. Upper case directive **O** will
+    output all *x, y* bin data even when *y* == 0. **Note**: You may use **-o**
     to select a subset from this record.
 
 .. _-Jz:
@@ -149,24 +156,24 @@ Optional Arguments
 .. _-L:
 
 **-Ll**\|\ **h**\|\ **b**
-    The modifiers specify the handling of extreme values that fall outside the range
-    set by **-T**.  By default these values are ignored.  Append **b** to let
-    these values be included in the first or last bins.  To only include
-    extreme values below first bin into the first bin, use **l**, and to
-    only include extreme values above the last bin into that last bin, use
-    **h**.
+    The directives specify the handling of extreme values that fall outside the range
+    set by |-T|.  By default these values are ignored.  Choose among these:
+
+    - **b** - Let these values be included in the first or last bins.
+    - **l** - Only include extreme values below first bin into the first bin.
+    - **h** - Only include extreme values above the last bin into that last bin.
 
 .. _-N:
 
 **-N**\ [*mode*][**+p**\ *pen*]
     Draw the equivalent normal distribution; append desired pen [0.25p,black].
-    The *mode* selects which central location and scale to use:
+    The *mode* directive selects which central location and scale to use:
 
     * 0 = mean and standard deviation [Default];
     * 1 = median and L1 scale (1.4826 \* median absolute deviation; MAD);
     * 2 = LMS (least median of squares) mode and scale.
 
-    The **-N** option may be repeated to draw several of these curves.
+    The |-N| option may be repeated to draw several of these curves.
     **Note**: If **-w** is used then only *mode* = 0 is available and we will
     determine the parameters of the circular von Mises distribution instead.
 
@@ -219,8 +226,8 @@ Optional Arguments
     * 1 = frequency_percent
     * 2 = log (1.0 + count)
     * 3 = log (1.0 + frequency_percent)
-    * 4 = log10 (1.0 + count)
-    * 5 = log10 (1.0 + frequency_percent).
+    * 4 = :math:`\log_{10}` (1.0 + count)
+    * 5 = :math:`\log_{10}` (1.0 + frequency_percent).
 
     To use weights provided as a second data column instead of pure counts,
     append **+w**.
@@ -274,9 +281,9 @@ Examples
 To draw a histogram of the remote data v3206_06.txt containing seafloor depths,
 using a 250 meter bin width, center bars, and draw bar outline, use:
 
-   ::
+::
 
-    gmt histogram  @v3206_06.txt -F -T250 -W0.25p -B -pdf plot
+  gmt histogram  @v3206_06.txt -F -T250 -W0.25p -B -pdf plot
 
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)
@@ -284,11 +291,11 @@ in the file errors.xy using a 1 meter bin width, plot from -10 to +10
 meters @ 0.75 cm/m and 0.01c/count in y, annotate every 2 m and 100 counts,
 and use black bars, run:
 
-   ::
+::
 
-    gmt begin plot
-      gmt histogram errors.xy -T1 -R-10/10/0/0 -Jx0.75c/0.01c -Bx2+lError -By100+lCounts -Gblack -i1
-    gmt end show
+  gmt begin plot
+    gmt histogram errors.xy -T1 -R-10/10/0/0 -Jx0.75c/0.01c -Bx2+lError -By100+lCounts -Gblack -i1
+  gmt end show
 
 Since no y-range was specified, **histogram** will calculate *ymax* in even
 increments of 100.

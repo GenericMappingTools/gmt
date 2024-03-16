@@ -34,7 +34,8 @@ Description
 -----------
 
 **sph2grd** reads a spherical harmonics coefficient table with records of
-L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid.
+L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid
+[*Holmes and Featherstone*, 2002].
 
 Required Arguments
 ------------------
@@ -69,7 +70,7 @@ Optional Arguments
 **-D**\ [**g**\|\ **n**]
     Will evaluate a derived field from a geopotential model.  Choose
     between **Dg** which will compute the gravitational field or **Dn**
-    to compute the geoid [Add **-E** for anomalies on the ellipsoid].
+    to compute the geoid [Add |-E| for anomalies on the ellipsoid].
 
 .. _-E:
 
@@ -92,10 +93,11 @@ Optional Arguments
 .. _-N:
 
 **-N**\ **g**\|\ **m**\|\ **s**
-    Normalization used for coefficients.  Choose among **m**: Mathematical
-    normalization - inner products summed over surface equal 1 [Default].
-    **g** Geodesy normalization - inner products summed over surface
-    equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
+    Normalization used for coefficients.  Choose among these directives:
+
+    - **g**: Geodesy normalization - inner products summed over surface equal :math:`4\pi`.
+    - **m**: Mathematical normalization - inner products summed over surface equal 1 [Default].
+    - **s**: Schmidt normalization - as used in geomagnetism.
 
 .. _-Q:
 
@@ -132,12 +134,12 @@ Examples
 To create a 1 x 1 degree global grid file from the ASCII
 coefficients in the remote file EGM96_to_36.txt, use
 
-   ::
+::
 
-    gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
+  gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
-Reference
----------
+References
+----------
 
 Holmes, S. A., and Featherstone, W. E., 2002, A unified approach to
 the Clenshaw summation and the recursive computation of very high

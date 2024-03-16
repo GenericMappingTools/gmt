@@ -1,0 +1,11 @@
+#
+# matlab/polar : Blue via white to red [S, C=RGB]
+# Simulates the POLAR colormap in MATLAB
+#
+#----------------------------------------------------------
+# COLOR_MODEL = RGB
+# SOFT_HINGE
+#----------------------------------------------------------
+-1	blue	0	white
+0	white	1	red
+#----------------------------------------------------------

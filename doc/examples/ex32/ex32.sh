@@ -51,5 +51,5 @@ gmt begin ex32
 	gmt text -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0 cities.txt
 
 	# cleanup
-	rm -f cities.txt
+	rm -f cities.txt topo_32.nc mask_32.nc
 gmt end show

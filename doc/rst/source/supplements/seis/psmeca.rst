@@ -16,7 +16,7 @@ Synopsis
 |-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
-[ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
+[ |-A|\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *depmin*/*depmax* ]
@@ -30,7 +30,7 @@ Synopsis
 [ |-N| ]
 [ |-O| ]
 [ |-P| ]
-[ |-T|\ *nplane*\ [*pen*] ]
+[ |-T|\ [*plane*]\ [**+p**\ *pen*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]

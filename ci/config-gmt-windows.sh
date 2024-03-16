@@ -15,6 +15,7 @@ EOF
 if [[ "$RUN_TESTS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 enable_testing()
+set (GMT_DATA_SERVER static)
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)

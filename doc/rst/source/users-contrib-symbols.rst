@@ -1,3 +1,5 @@
+:orphan:
+
 .. _symbols_gallery:
 
 Users Symbol Contributions

@@ -1,5 +1,6 @@
 outs:
-- md5: 87b10bd2cf8cde622a46dca56307552b.dir
-  size: 561267
-  nfiles: 5
+- md5: 54dbfa406fd504a7807d387d2c2b2c7d.dir
+  size: 603850
+  nfiles: 6
   path: grdcut
+  hash: md5
