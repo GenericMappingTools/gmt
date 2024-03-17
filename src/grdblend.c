@@ -422,14 +422,14 @@ GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsign
 		Iargs[0] = Rargs[0] = '\0';
 		do_sample = 0;
 		if (not_supported) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 			            "File %s not supported via row-by-row read - must reformat first\n", B[n].file);
 			do_sample |= 2;
 		}
 		if (fabs((t->inc[GMT_X] - h->inc[GMT_X]) / h->inc[GMT_X]) > 0.002 ||
 			fabs((t->inc[GMT_Y] - h->inc[GMT_Y]) / h->inc[GMT_Y]) > 0.002) {
 			sprintf (Iargs, "-I%.12g/%.12g", h->inc[GMT_X], h->inc[GMT_Y]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s has different increments (%.12g/%.12g) than the output grid (%.12g/%.12g) - must resample\n",
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s has different increments (%.12g/%.12g) than the output grid (%.12g/%.12g) - must resample\n",
 				B[n].file, t->inc[GMT_X], t->inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample |= 1;
 		}
@@ -452,7 +452,7 @@ GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsign
 			wesn[YHI] = h->wesn[YLO] + k * h->inc[GMT_Y];
 			while (wesn[YHI] > t->wesn[YHI]) wesn[YHI] -= t->inc[GMT_Y];	/* Make sure we are not outside this grid */
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
 		}
 		else if (do_sample) {	/* Set explicit -R to handle possible subsetting */
