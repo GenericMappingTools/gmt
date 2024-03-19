@@ -1331,7 +1331,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	Ctrl->E.width *= 0.5;	/* Since we draw half-way in either direction */
 	Ctrl->E.cap   *= 0.5;	/* Since we draw half-way in either direction */
 
-	current_pen = default_pen = Ctrl->W.pen;
+	current_pen = save_pen = default_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active && Ctrl->I.mode == 0) {
