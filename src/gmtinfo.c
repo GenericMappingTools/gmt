@@ -777,11 +777,11 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					if (xyzmin[col] == DBL_MAX)	/* Encountered NaNs only */
 						low = high = GMT->session.d_NaN;
 					else if (col < Ctrl->I.ncol) {	/* Special treatment for x and y (and perhaps more) if -I selected */
-						if (Ctrl->I.mode && col == GMT_X) {
+						if ((Ctrl->I.mode || Ctrl->I.extend) && col == GMT_X) {
 							low  = wesn[XLO];
 							high = wesn[XHI];
 						}
-						else if (Ctrl->I.mode && col == GMT_Y) {
+						else if ((Ctrl->I.mode || Ctrl->I.extend) && col == GMT_Y) {
 							low  = wesn[YLO];
 							high = wesn[YHI];
 						}
