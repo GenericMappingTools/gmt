@@ -2681,7 +2681,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			/* Execute the Ghostscript command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 			gmt_M_toc(GMT, "");
-			gmt_M_tic(GMT, "");			/* Start timer to measure mostly the Ghostscript run time */
+			gmt_M_tic(GMT);				/* Start timer to measure mostly the Ghostscript run time */
 			sys_retval = system (cmd);
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
