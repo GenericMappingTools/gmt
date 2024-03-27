@@ -1116,7 +1116,7 @@ GMT_LOCAL int64_t psconvert_file_line_reader(struct GMT_CTRL *GMT, char **L, siz
 }
 
 #define bailout(code) {gmt_M_free_options(mode); return (code);}
-#define Return(code) {gmt_M_toc(GMT); Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); bailout(code);}
+#define Return(code) {Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); bailout(code);}
 
 GMT_LOCAL inline char *psconvert_alpha_bits (struct PSCONVERT_CTRL *Ctrl) {
 	/* return alpha bits which are valid for the selected driver */
@@ -2979,6 +2979,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (fp2 != NULL) fclose (fp2);
 	if (fpw != NULL) fclose (fpw);
 	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);
+
+	gmt_M_toc(GMT);
 
 	Return (GMT_NOERROR);
 }
