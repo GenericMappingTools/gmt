@@ -642,7 +642,7 @@ where we store and recall the normalized radial arguments in radians by::
 
     gmt grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 
-To create a dumb file saved as a 32 bits float GeoTiff using GDAL, run::
+To create a dumb file saved as a 32 bits float GeoTIFF using GDAL, run::
 
     gmt grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 
@@ -656,7 +656,7 @@ per node of all the grids matching the name model_*.grd using::
 
     gmt grdmath model_*.grd -S STD = std_of_models.grd
 
-To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use::
+To create a GeoTIFF with resolution 0.5x0.5 degrees with distances in km from the coast line, use::
 
     gmt grdmath -RNO,IS -Dc -I.5 LDISTG = distance.tif=gd:GTIFF
 

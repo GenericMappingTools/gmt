@@ -1,9 +1,9 @@
 .. index:: ! gmtinfo
 .. include:: module_core_purpose.rst_
 
-*******
-gmtinfo
-*******
+****
+info
+****
 
 |gmtinfo_purpose|
 

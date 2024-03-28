@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3. General Features &mdash; GMT 6.5.0 documentation</title>
+  <title>3. General Features &mdash; GMT 6.6.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
@@ -22,7 +22,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -213,7 +213,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -448,7 +448,7 @@ parameters and their default values can be found in the
 <a class="reference internal" href="#gmt-defaults-b"><span class="std std-ref">b</span></a>, and
 <a class="reference internal" href="#gmt-defaults-c"><span class="std std-ref">c</span></a> show the parameters that affect
 plots. You may create your own <code class="docutils literal notranslate"><span class="pre">gmt.conf</span></code> files by running
-<a class="reference internal" href="../gmtdefaults.html"><span class="doc">gmtdefaults</span></a> and then modify those
+<a class="reference internal" href="../gmtdefaults.html"><span class="doc">defaults</span></a> and then modify those
 parameters you want to change. If you want to use the parameter settings
 in another file you can do so by copying that file to the current
 directory and call it gmt.conf. This makes it easy to maintain several distinct parameter
@@ -744,7 +744,7 @@ include premature ending of the script due to user error or bugs
 which means the final resetting does not take place (unless you write
 your script very carefully.)</p></li>
 <li><p>To permanently change some of the GMT parameters on the fly
-inside a script the <a class="reference internal" href="../gmtset.html"><span class="doc">gmtset</span></a> utility
+inside a script the <a class="reference internal" href="../gmtset.html"><span class="doc">set</span></a> utility
 can be used. E.g., to change the primary annotation font to 12 point
 Times-Bold in red we run</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>12p,Times-Bold,red
@@ -1219,11 +1219,11 @@ where plotted with the same width and dash-spacing (-W10p,20_20:0).</span><a cla
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wfaint<span class="w"> </span>butt.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc3p<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>butt.txt
 <span class="w">	</span><span class="c1"># miter</span>
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>round<span class="w"> </span>-W10p,lightblue,,20_20:0<span class="w"> </span>round.txt
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>round<span class="w"> </span>-W10p,lightblue,20_20:0<span class="w"> </span>round.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wfaint<span class="w"> </span>round.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc3p<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>round.txt
 <span class="w">	</span><span class="c1"># bevel</span>
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>square<span class="w"> </span>-W10p,lightorange,,20_20:0<span class="w"> </span>square.txt
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>square<span class="w"> </span>-W10p,lightorange,20_20:0<span class="w"> </span>square.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wfaint<span class="w"> </span>square.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc3p<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>square.txt
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f8p,Helvetica-Bold+j<span class="w"> </span>-Dj5p<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
@@ -3060,7 +3060,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 </section>
 <section id="placing-a-gmt-logo-on-maps">
 <h3><span class="section-number">3.23.9. </span>Placing a GMT logo on maps<a class="headerlink" href="#placing-a-gmt-logo-on-maps" title="Link to this heading"></a></h3>
-<p>It is possible to overlay the GMT logo on maps as well, using the module <a class="reference internal" href="../gmtlogo.html"><span class="doc">gmtlogo</span></a>.
+<p>It is possible to overlay the GMT logo on maps as well, using the module <a class="reference internal" href="../gmtlogo.html"><span class="doc">logo</span></a>.
 Like other features it requires reference and anchor points and their optional adjustments via the <strong>-D</strong> option.
 In addition, we require one modifier to set the logo’s size.</p>
 <ol class="arabic simple">
@@ -3071,7 +3071,7 @@ GMT logo, append <strong>+w</strong>5c.</p></li>
 <figure class="align-center" id="id47">
 <a class="reference internal image-reference" href="../_images/GMT_coverlogo.png"><img alt="../_images/GMT_coverlogo.png" src="../_images/GMT_coverlogo.png" style="width: 300px;" /></a>
 <figcaption>
-<p><span class="caption-text">Placement of the GMT logo. The logo itself only has a size modifier but the <a class="reference internal" href="../gmtlogo.html"><span class="doc">gmtlogo</span></a>
+<p><span class="caption-text">Placement of the GMT logo. The logo itself only has a size modifier but the <a class="reference internal" href="../gmtlogo.html"><span class="doc">logo</span></a>
 module allows additional attributes such as a background map panel.</span><a class="headerlink" href="#id47" title="Link to this image"></a></p>
 </figcaption>
 </figure>
@@ -3749,7 +3749,7 @@ determine if a value is suitable for plotting or processing (if a NaN is
 used in a calculation the result would become NaN as well). Data points
 whose values equal NaN are not normally plotted (or plotted with the
 special NaN color given in <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>). Several tools such as
-<a class="reference internal" href="../xyz2grd.html"><span class="doc">xyz2grd</span></a>, <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a>, and
+<a class="reference internal" href="../xyz2grd.html"><span class="doc">xyz2grd</span></a>, <a class="reference internal" href="../gmtmath.html"><span class="doc">math</span></a>, and
 <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> can convert user data to NaN
 and vice versa, thus facilitating arbitrary masking and clipping of data
 sets. Note that a few computers do not have native IEEE hardware
@@ -3774,7 +3774,7 @@ skipped during reading; see Section <a class="reference internal" href="options.
 (<strong>$GMT_SHAREDIR</strong>, <strong>$GMT_DATADIR</strong>, <strong>$GMT_USERDIR</strong>, and <strong>$GMT_TMPDIR</strong>), pointing
 to folders with data files and program settings. Beginning with version
 5, some of these locations are now (also or exclusively) configurable
-with the <a class="reference internal" href="../gmtset.html"><span class="doc">gmtset</span></a> utility.
+with the <a class="reference internal" href="../gmtset.html"><span class="doc">set</span></a> utility.
 When an environment variable has an equivalent parameter in the <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> file,
 then the parameter setting will take precedence over the environment variable.</p>
 <dl class="simple">
@@ -3798,7 +3798,7 @@ name that ends in a trailing slash (/) will be searched recursively
 <dt>Variable <strong>$GMT_USERDIR</strong></dt><dd><p>may point to a directory where the user places custom configuration
 files (e.g., an alternate <code class="docutils literal notranslate"><span class="pre">coastline.conf</span></code> file, preferred default
 settings in <code class="docutils literal notranslate"><span class="pre">gmt.conf</span></code>, custom symbols and color palettes, math
-macros for <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a> and <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>, and shorthands for
+macros for <a class="reference internal" href="../gmtmath.html"><span class="doc">math</span></a> and <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>, and shorthands for
 gridfile extensions via <code class="docutils literal notranslate"><span class="pre">gmt.io</span></code>). When <strong>$GMT_USERDIR</strong> is not defined,
 then the default value <strong>$HOME</strong>/.gmt will be assumed. Users may also place their own
 data files in this directory as GMT programs will search for files
@@ -3878,7 +3878,7 @@ off; see <a class="reference internal" href="../gmt.conf.html#term-PS_COMMENTS">
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+      <span class="lastupdated">Last updated on Mar 28, 2024.
       </span></p>
   </div>
 

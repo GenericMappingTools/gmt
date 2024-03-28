@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmt &mdash; GMT 6.5.0 documentation</title>
+  <title>gmt &mdash; GMT 6.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
@@ -22,7 +22,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -60,7 +60,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -121,7 +121,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -959,8 +959,7 @@ are encapsulated under the <strong>-J</strong> option. Because there are normall
 referencing system separated by spaces (in <strong>PROJ</strong> or <strong>GDAL</strong>) we can either use double quotes as in
 <strong>-J</strong>“<em>+proj=merc +ellps=WGS84 +units=m</em>” or just glue all parameters like in
 <strong>-J</strong><em>+proj=merc+ellps=WGS84+units=m</em>.</p>
-<p>Using <a class="reference external" href="https://spatialreference.org">EPSG codes</a> is also possible (but need the setting of the <strong>GDAL_DATA</strong>
-environment variable to point to the GDAL’s <em>data</em> sub-directory). For example <strong>-JEPSG:4326</strong> sets
+<p>Using <a class="reference external" href="https://spatialreference.org">EPSG codes</a> is also possible. For example <strong>-JEPSG:4326</strong> sets
 the WGS-84 system.</p>
 <p>For <a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> and <a class="reference internal" href="grdproject.html"><span class="doc">grdproject</span></a> we can go directly from the
 referencing system A to B without the intermediate step of converting to geographic coordinates.
@@ -1230,7 +1229,7 @@ gmt<span class="w"> </span>convert<span class="w"> </span>test.bin<span class="w
 of given <em>type</em> and <em>type</em> must be one of <strong>c</strong>, <strong>u</strong>, <strong>h</strong>, <strong>H</strong>, <strong>i</strong>, <strong>I</strong>,
 <strong>l</strong>, <strong>L</strong>, <strong>f</strong>, or <strong>d</strong> [Default] (see <a class="reference internal" href="reference/options.html#bi-types"><span class="std std-ref">-bi types</span></a> for descriptions).
 Force byte-swapping of a group by appending <strong>w</strong> at the end of the group.
-For a mixed-type output record, append additional comma-separated groups (no space between groups)
+For a mixed-type output record, append additional comma-separated groups (no space between groups).
 The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
@@ -1966,7 +1965,7 @@ multi-layer plots.</p>
 </dl>
 <dl class="simple" id="p-full">
 <dt><strong>-P</strong></dt><dd><p>Select “Portrait” plot orientation [Default is “Landscape”; see
-<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> or <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a> to change the <a class="reference internal" href="gmt.conf.html#term-PS_PAGE_ORIENTATION"><span class="xref std std-term">PS_PAGE_ORIENTATION</span></a>
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> or <a class="reference internal" href="gmtset.html"><span class="doc">set</span></a> to change the <a class="reference internal" href="gmt.conf.html#term-PS_PAGE_ORIENTATION"><span class="xref std std-term">PS_PAGE_ORIENTATION</span></a>
 parameter, or supply <strong>--PS_PAGE_ORIENTATION=</strong><em>orientation</em> on the
 command line].</p>
 </dd>
@@ -2006,7 +2005,7 @@ GMT documentation site <a class="reference external" href="https://docs.generic-
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+      <span class="lastupdated">Last updated on Mar 28, 2024.
       </span></p>
   </div>
 

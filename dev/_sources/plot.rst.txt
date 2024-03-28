@@ -192,7 +192,7 @@ Optional Arguments
         Use the |-F| option to create various networks between input point.  Dashed lines
         indicate input ordering for the two tables, while solid lines are the resulting
         network connections. Top left is original input, while the next five reflect the results
-        of directives **ra**, **rt**, **rs**, **r**\ 10/35 and **na**.
+        of directives **pa**, **pt**, **ps**, **p**\ 10/35 and **na**.
 
 .. _-G:
 

@@ -16,12 +16,12 @@ it can do.
             - :doc:`std-opts`
             - :ref:`Projections Specifications <proj-codes>`
             - :doc:`Default Settings (gmt.conf) <gmt.conf>`
-            - :doc:`Colors <gmtcolors>`
-            - :doc:`Color Picker <color-picker>`
+            - :doc:`Color Codes and Lists <gmtcolors>`
+            - :doc:`Interactive Color Picker <color-picker>`
             - :doc:`35 Postscript Fonts </reference/postscript-fonts>`
-            - :doc:`Using LaTeX in text </reference/gmt-latex>`
+            - :doc:`Using LaTeX in Text </reference/gmt-latex>`
             - :doc:`Built-in CPTs </reference/cpts>`
-            - :doc:`Built-in patterns </reference/predefined-patterns>`
+            - :doc:`Built-in Patterns </reference/predefined-patterns>`
             - :doc:`Octal Codes of Characters </reference/octal-codes>`
             - :ref:`Character Escape Sequences <Char-esc-seq>`
             - :ref:`Pen Syntax <-Wpen_attrib>`

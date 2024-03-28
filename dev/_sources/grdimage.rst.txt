@@ -97,7 +97,7 @@ Optional Arguments
     documentation for available drivers. Append a **+c**\ *options* string where *options* is a list of
     one or more concatenated number of GDAL **-co** options. For example, to write a GeoPDF with the
     TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
-    then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
+    then we will write a GeoTIFF image if the GMT projection syntax translates into a PROJ syntax,
     otherwise a plain tiff file is produced. (2) Any vector elements will be lost. **Note**: The **-B**
     option is not compatible with |-A| since no PostScript output is allowed.
 
@@ -113,7 +113,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [**r**]
-    GMT will automatically detect standard image files (Geotiff, TIFF,
+    GMT will automatically detect standard image files (GeoTIFF, TIFF,
     JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
     obscure image formats you may need to explicitly set |-D|, which
     specifies that the grid is in fact an image file to be read via
@@ -173,8 +173,8 @@ Optional Arguments
       transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator
       cannot create true variable pixel transparency *t*. Instead, each *r*, *g*, and *b* pixel
       values are converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the
-      transparent color at full transparency [Default is white]. If *color* is given 
-      then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will 
+      transparent color at full transparency [Default is white]. If *color* is given
+      then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will
       be approximated by *n_columns* times *n_rows* of tiny squares with variable color and
       transparency.  If *A* reflects opacity instead of transparency then you can use modifier
       **+i** to invert these numbers first. See `Limitations on transparency`_ for more discussion.
@@ -275,7 +275,7 @@ Limitations on transparency
 ---------------------------
 
 The PostScript imaging model does not support any form of transparency.  However, Adobe added
-`pdfMark <https://opensource.adobe.com/dc-acrobat-sdk-docs/acrobatsdk/pdfs/acrobatsdk_pdfmark.pdf>`_
+`pdfMark <https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/index.html>`_
 which allows PostScript to specify transparency but only if activated when converting PostScript
 or EPS to PDF with Adobe Distiller or GhostScript. Each graphic (e.g., polygon, line, text, image)
 can have a specified transparency. Yet, for images this is very limited: We can choose a particular
@@ -291,7 +291,7 @@ Image formats recognized
 ------------------------
 
 We automatically recognize image formats via their magic bytes.  For formats
-that could contain either an image or a data set (e.g., geotiff) we determine
+that could contain either an image or a data set (e.g., GeoTIFF) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.
 

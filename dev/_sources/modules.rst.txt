@@ -199,6 +199,7 @@ Core Modules
     - :doc:`basemap`
     - :doc:`batch`
     - :doc:`begin`
+    - :doc:`gmtbinstats`
     - :doc:`blockmean`
     - :doc:`blockmedian`
     - :doc:`blockmode`
@@ -206,7 +207,10 @@ Core Modules
     - :doc:`clip`
     - :doc:`coast`
     - :doc:`colorbar`
+    - :doc:`gmtconnect`
     - :doc:`contour`
+    - :doc:`gmtconvert`
+    - :doc:`gmtdefaults`
     - :doc:`dimfilter`
     - :doc:`docs`
     - :doc:`end`
@@ -214,23 +218,8 @@ Core Modules
     - :doc:`figure`
     - :doc:`filter1d`
     - :doc:`fitcircle`
-    - :doc:`gmt2kml`
-    - :doc:`gmtbinstats`
-    - :doc:`gmtconnect`
-    - :doc:`gmtconvert`
-    - :doc:`gmtdefaults`
     - :doc:`gmtget`
-    - :doc:`gmtinfo`
-    - :doc:`gmtlogo`
-    - :doc:`gmtmath`
-    - :doc:`gmtregress`
-    - :doc:`gmtselect`
-    - :doc:`gmtset`
-    - :doc:`gmtsimplify`
-    - :doc:`gmtspatial`
-    - :doc:`gmtsplit`
-    - :doc:`gmtvector`
-    - :doc:`gmtwhich`
+    - :doc:`gmt2kml`
     - :doc:`grd2cpt`
     - :doc:`grd2kml`
     - :doc:`grd2xyz`
@@ -265,26 +254,35 @@ Core Modules
     - :doc:`greenspline`
     - :doc:`histogram`
     - :doc:`image`
+    - :doc:`gmtinfo`
     - :doc:`inset`
     - :doc:`kml2gmt`
     - :doc:`legend`
+    - :doc:`gmtlogo`
     - :doc:`makecpt`
     - :doc:`mapproject`
     - :doc:`mask`
+    - :doc:`gmtmath`
     - :doc:`movie`
     - :doc:`nearneighbor`
     - :doc:`plot`
     - :doc:`plot3d`
     - :doc:`project`
     - :doc:`psconvert`
+    - :doc:`gmtregress`
     - :doc:`rose`
     - :doc:`sample1d`
+    - :doc:`gmtselect`
+    - :doc:`gmtset`
+    - :doc:`gmtsimplify`
     - :doc:`solar`
+    - :doc:`gmtspatial`
     - :doc:`spectrum1d`
     - :doc:`sph2grd`
     - :doc:`sphdistance`
     - :doc:`sphinterpolate`
     - :doc:`sphtriangulate`
+    - :doc:`gmtsplit`
     - :doc:`subplot`
     - :doc:`surface`
     - :doc:`ternary`
@@ -292,6 +290,8 @@ Core Modules
     - :doc:`trend1d`
     - :doc:`trend2d`
     - :doc:`triangulate`
+    - :doc:`gmtvector`
+    - :doc:`gmtwhich`
     - :doc:`wiggle`
     - :doc:`xyz2grd`
 
@@ -323,8 +323,8 @@ Supplemental Modules
     - :doc:`/supplements/mgd77/mgd77sniffer`
     - :doc:`/supplements/mgd77/mgd77track`
     - :doc:`/supplements/potential/gmtflexure`
-    - :doc:`/supplements/potential/gmtgravmag3d`
     - :doc:`/supplements/potential/gravfft`
+    - :doc:`/supplements/potential/gmtgravmag3d`
     - :doc:`/supplements/potential/gravprisms`
     - :doc:`/supplements/potential/grdflexure`
     - :doc:`/supplements/potential/grdgravmag3d`
@@ -340,12 +340,12 @@ Supplemental Modules
     - :doc:`/supplements/seis/polar`
     - :doc:`/supplements/seis/sac`
     - :doc:`/supplements/spotter/backtracker`
-    - :doc:`/supplements/spotter/gmtpmodeler`
     - :doc:`/supplements/spotter/grdpmodeler`
     - :doc:`/supplements/spotter/grdrotater`
     - :doc:`/supplements/spotter/grdspotter`
     - :doc:`/supplements/spotter/hotspotter`
     - :doc:`/supplements/spotter/originater`
+    - :doc:`/supplements/spotter/gmtpmodeler`
     - :doc:`/supplements/spotter/polespotter`
     - :doc:`/supplements/spotter/rotconverter`
     - :doc:`/supplements/spotter/rotsmoother`
@@ -413,8 +413,6 @@ Plotting
 +-----------------------+-----------------------+
 | :doc:`events`         | |events_purpose|      |
 +-----------------------+-----------------------+
-| :doc:`gmtlogo`        | |gmtlogo_purpose|     |
-+-----------------------+-----------------------+
 | :doc:`grdcontour`     | |grdcontour_purpose|  |
 +-----------------------+-----------------------+
 | :doc:`grdimage`       | |grdimage_purpose|    |
@@ -428,6 +426,8 @@ Plotting
 | :doc:`image`          | |image_purpose|       |
 +-----------------------+-----------------------+
 | :doc:`legend`         | |legend_purpose|      |
++-----------------------+-----------------------+
+| :doc:`gmtlogo`        | |gmtlogo_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`mask`           | |mask_purpose|        |
 +-----------------------+-----------------------+
@@ -484,13 +484,13 @@ Sampling of 1-D and 2-D data
 ----------------------------
 
 +-----------------------+-----------------------+
-| :doc:`gmtsimplify`    | |gmtsimplify_purpose| |
-+-----------------------+-----------------------+
 | :doc:`grdsample`      | |grdsample_purpose|   |
 +-----------------------+-----------------------+
 | :doc:`grdtrack`       | |grdtrack_purpose|    |
 +-----------------------+-----------------------+
 | :doc:`sample1d`       | |sample1d_purpose|    |
++-----------------------+-----------------------+
+| :doc:`gmtsimplify`    | |gmtsimplify_purpose| |
 +-----------------------+-----------------------+
 
 Projection and map-transformation
@@ -512,22 +512,22 @@ Information retrieval
 +-----------------------+-----------------------+
 | :doc:`gmtget`         | |gmtget_purpose|      |
 +-----------------------+-----------------------+
-| :doc:`gmtinfo`        | |gmtinfo_purpose|     |
-+-----------------------+-----------------------+
-| :doc:`gmtset`         | |gmtset_purpose|      |
-+-----------------------+-----------------------+
 | :doc:`grdinfo`        | |grdinfo_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`grdselect`      | |grdselect_purpose|   |
++-----------------------+-----------------------+
+| :doc:`gmtinfo`        | |gmtinfo_purpose|     |
++-----------------------+-----------------------+
+| :doc:`gmtset`         | |gmtset_purpose|      |
 +-----------------------+-----------------------+
 
 Mathematical operations on tables or grids
 ------------------------------------------
 
 +-----------------------+---------------------------+
-| :doc:`gmtmath`        | |gmtmath_purpose|         |
-+-----------------------+---------------------------+
 | :doc:`makecpt`        | |makecpt_purpose|         |
++-----------------------+---------------------------+
+| :doc:`gmtmath`        | |gmtmath_purpose|         |
 +-----------------------+---------------------------+
 | :doc:`spectrum1d`     | |spectrum1d_purpose|      |
 +-----------------------+---------------------------+
@@ -548,14 +548,6 @@ Convert or extract subsets of data
 +-----------------------+-----------------------+
 | :doc:`gmtconvert`     | |gmtconvert_purpose|  |
 +-----------------------+-----------------------+
-| :doc:`gmtselect`      | |gmtselect_purpose|   |
-+-----------------------+-----------------------+
-| :doc:`gmtspatial`     | |gmtspatial_purpose|  |
-+-----------------------+-----------------------+
-| :doc:`gmtsplit`       | |gmtsplit_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`gmtvector`      | |gmtvector_purpose|   |
-+-----------------------+-----------------------+
 | :doc:`grd2kml`        | |grd2kml_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`grd2xyz`        | |grd2xyz_purpose|     |
@@ -568,6 +560,14 @@ Convert or extract subsets of data
 +-----------------------+-----------------------+
 | :doc:`grdpaste`       | |grdpaste_purpose|    |
 +-----------------------+-----------------------+
+| :doc:`gmtselect`      | |gmtselect_purpose|   |
++-----------------------+-----------------------+
+| :doc:`gmtspatial`     | |gmtspatial_purpose|  |
++-----------------------+-----------------------+
+| :doc:`gmtsplit`       | |gmtsplit_purpose|    |
++-----------------------+-----------------------+
+| :doc:`gmtvector`      | |gmtvector_purpose|   |
++-----------------------+-----------------------+
 | :doc:`xyz2grd`        | |xyz2grd_purpose|     |
 +-----------------------+-----------------------+
 
@@ -577,9 +577,9 @@ Trends in 1-D and 2-D data
 +-----------------------+-----------------------+
 | :doc:`fitcircle`      | |fitcircle_purpose|   |
 +-----------------------+-----------------------+
-| :doc:`gmtregress`     | |gmtregress_purpose|  |
-+-----------------------+-----------------------+
 | :doc:`grdtrend`       | |grdtrend_purpose|    |
++-----------------------+-----------------------+
+| :doc:`gmtregress`     | |gmtregress_purpose|  |
 +-----------------------+-----------------------+
 | :doc:`trend1d`        | |trend1d_purpose|     |
 +-----------------------+-----------------------+
@@ -625,13 +625,13 @@ Miscellaneous
 +-----------------------+-----------------------+
 | :doc:`grdgdal`        | |grdgdal_purpose|     |
 +-----------------------+-----------------------+
-| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
-+-----------------------+-----------------------+
 | :doc:`kml2gmt`        | |kml2gmt_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`movie`          | |movie_purpose|       |
 +-----------------------+-----------------------+
 | :doc:`psconvert`      | |psconvert_purpose|   |
++-----------------------+-----------------------+
+| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+
 
 geodesy
@@ -707,9 +707,9 @@ potential
 +--------------------------------------------+--------------------------+
 | :doc:`/supplements/potential/gmtflexure`   | |gmtflexure_purpose|     |
 +--------------------------------------------+--------------------------+
-| :doc:`/supplements/potential/gmtgravmag3d` | |gmtgravmag3d_purpose|   |
-+--------------------------------------------+--------------------------+
 | :doc:`/supplements/potential/gravfft`      | |gravfft_purpose|        |
++--------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/gmtgravmag3d` | |gmtgravmag3d_purpose|   |
 +--------------------------------------------+--------------------------+
 | :doc:`/supplements/potential/gravprisms`   | |gravprisms_purpose|     |
 +--------------------------------------------+--------------------------+
@@ -760,8 +760,6 @@ spotter
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/backtracker`  | |backtracker_purpose|  |
 +------------------------------------------+------------------------+
-| :doc:`/supplements/spotter/gmtpmodeler`  | |gmtpmodeler_purpose|  |
-+------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/grdpmodeler`  | |grdpmodeler_purpose|  |
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/grdrotater`   | |grdrotater_purpose|   |
@@ -771,6 +769,8 @@ spotter
 | :doc:`/supplements/spotter/hotspotter`   | |hotspotter_purpose|   |
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/originater`   | |originater_purpose|   |
++------------------------------------------+------------------------+
+| :doc:`/supplements/spotter/gmtpmodeler`  | |gmtpmodeler_purpose|  |
 +------------------------------------------+------------------------+
 | :doc:`/supplements/spotter/polespotter`  | |polespotter_purpose|  |
 +------------------------------------------+------------------------+

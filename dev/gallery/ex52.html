@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(52) Image and grid manipulation &mdash; GMT 6.5.0 documentation</title>
+  <title>(52) Image and grid manipulation &mdash; GMT 6.6.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
@@ -22,7 +22,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -59,7 +59,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -120,7 +120,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -154,7 +154,7 @@
 <span id="example-52"></span><h1>(52) Image and grid manipulation<a class="headerlink" href="#image-and-grid-manipulation" title="Link to this heading"></a></h1>
 <p>This example highlights how GMT can be used to manipulate images
 in conjunction with grids, using <a class="reference internal" href="../grdmix.html"><span class="doc">grdmix</span></a> (as well
-as <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>).  We start with two geotiff images for the
+as <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>).  We start with two GeoTIFF images for the
 day (&#64;earth_day) and night (&#64;earth_night) Earth views and compute
 a day/night smoothed grid to reflect the state on June 22, 2000
 at midnight in Hawaii.  The day/night grid is used to blend between
@@ -179,7 +179,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>ex52
 <span class="w">  </span><span class="c1"># We will create an intensity grid based on a pixel-registered DEM so that we can see structures in the oceans</span>
 <span class="w">  </span>gmt<span class="w"> </span>grdgradient<span class="w"> </span>@earth_relief_<span class="si">${</span><span class="nv">res</span><span class="si">}</span>_p<span class="w"> </span>-Nt0.5<span class="w"> </span>-A45<span class="w"> </span>-Gintens.grd
 <span class="w">  </span>
-<span class="w">  </span><span class="c1"># Blend the earth_day and earth_night geotiffs using the weights, so that when w is 1</span>
+<span class="w">  </span><span class="c1"># Blend the earth_day and earth_night GeoTIFFs using the weights, so that when w is 1</span>
 <span class="w">  </span><span class="c1"># we get the earth_day, and then adjust colors based on the intensity.</span>
 
 <span class="w">  </span>gmt<span class="w"> </span>grdmix<span class="w"> </span>@earth_day_<span class="si">${</span><span class="nv">res</span><span class="si">}</span><span class="w"> </span>@earth_night_<span class="si">${</span><span class="nv">res</span><span class="si">}</span><span class="w"> </span>-Ww.grd<span class="w"> </span>-Iintens.grd<span class="w"> </span>-Gview.tif
@@ -211,7 +211,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 
   <div role="contentinfo">
     <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+      <span class="lastupdated">Last updated on Mar 28, 2024.
       </span></p>
   </div>
 
