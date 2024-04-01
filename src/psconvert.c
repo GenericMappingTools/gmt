@@ -2245,7 +2245,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 #ifdef _WIN32
 			fpo = fopen("nul", "w");
 #else
-			fpo = fopen("dev/null", "w");
+			fpo = fopen("/dev/null", "w");
 #endif
 		}
 
@@ -2282,7 +2282,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 						else
 							for (int i = 0; i < len; i++) line[i] = ' ';
 
-						fprintf(fp, line);		fflush(fp);
+						fprintf(fp, "%s", line);		fflush(fp);
 					}
 					continue;
 				}
@@ -2363,12 +2363,12 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 
 				if (Ctrl->O.active) {
-					fseek(fp, (off_t)-strlen(line), SEEK_CUR);	/* Seek back to start of line */
+					fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
 					if (got_BB && !Ctrl->A.round)
 						sprintf(line, "%%%%BoundingBox: 0 0 %ld %ld", lrint (psconvert_smart_ceil(w_t)), lrint (psconvert_smart_ceil(h_t)));
 					else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
 						sprintf(line, "%%%%BoundingBox: 0 0 %ld %ld", lrint(w_t), lrint(h_t));
-					fprintf(fp, line);
+					fprintf(fp, "%s\n", line);
 					fflush(fp);
 				}
 				else {
@@ -2383,7 +2383,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					continue;	/* High-res BB will be put elsewhere */
 				if (got_HRBB) {			/* TO DELETE?. This is silly, if we 'continue' above we can never come here. */
 					if (Ctrl->O.active) {
-						fseek(fp, (off_t)-strlen(line), SEEK_CUR);	/* Seek back to start of line */
+						fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
 						fprintf(fp, "%%%%HiResBoundingBox: 0 0 %.4f %.4f", w_t, h_t);
 						fflush(fp);
 					}
@@ -2401,8 +2401,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				if (got_HRBB) {
 					if (Ctrl->O.active) {
-						fseek(fp, (off_t)-(strlen(line)+0), SEEK_CUR);	/* Seek back to start of line */
-						fprintf(fp, "%%%%HiResBoundingBox: 0 0 %.4f %.4f", w_t, h_t);
+						fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
+						fprintf(fp, "%%%%HiResBoundingBox: 0 0 %.4f %.4f", w_t, h_t);	/* No '\n' here because orig line already has it */
 						fflush(fp);
 					}
 					else
