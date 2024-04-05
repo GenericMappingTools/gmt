@@ -39,7 +39,7 @@ Ways to Contribute to Community Building
 - Participate in discussions at the monthly GMT Community Meetings, which are announced on the
   `forum governance page <https://forum.generic-mapping-tools.org/c/governance/>`_.
 - Cite GMT when using the project.
-- Spread the word about GMT or start the project!
+- Spread the word about GMT or star the project!
 
 Providing Feedback
 ------------------
@@ -474,7 +474,7 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the new test passes.
 - Run ``dvc diff`` to check that the new file is in the correct directory.
-- For teh first test of a module, you add the directory via ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``,
+- For the first test of a module, you add the directory via ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``,
   or ``dvc add doc/scripts/examples``. For later addition you do so per file, e.g. ``dvc add test/baseline/<module>/<newplot.ps>``,
   ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
   depending on the type of test modified.
