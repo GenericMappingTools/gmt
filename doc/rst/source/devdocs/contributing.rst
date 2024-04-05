@@ -85,7 +85,7 @@ Please take a look at these resources to learn about Git and pull requests (don'
 hesitate to :ref:`ask for help <devdocs/contributing:Getting Help>`):
 
 - `How to Contribute to Open Source <https://opensource.guide/how-to-contribute/>`_.
-- `Git Workflow Tutorial <http://www.asmeurer.com/git-workflow/) by Aaron Meurer>`_.
+- `Git Workflow Tutorial <http://www.asmeurer.com/git-workflow/>`_ by Aaron Meurer.
 - `How to Contribute to an Open Source Project on GitHub <https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github>`_.
 
 Getting Help
