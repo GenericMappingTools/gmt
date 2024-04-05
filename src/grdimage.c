@@ -983,10 +983,10 @@ GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIM
 	 */
 	double o, t;		/* o - opacity, t = transparency */
 	gmt_M_unused (GMT);
-	o = pix4 / 255.0;	t = 1 - o;
 	if (Conf->Transp->n_transp == 2)
 		gmt_M_rgb_only_copy (rgb, Conf->tr_rgb);
 	else {	/* Blend */
+		o = pix4 / 255.0;	t = 1 - o;
 		if (Conf->invert) t = o, o = 1 - t;
 		rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];
 		rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];
@@ -1095,26 +1095,46 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
 	unsigned char *transparency;	/* Pointer to memory where transparency resides */
 	int64_t row, col, node;
-	unsigned int k, tr, tr_max = 0, tr_min = 255, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
+	unsigned int k, tr, tr_max = 0;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
 	unsigned int n_bands = H->n_bands;
 	gmt_M_unused (GMT);
 
 	if (n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies either in band 1 or 4 nor in alpha */
 
-	tr_band = (I->alpha) ? 0 : n_bands - 1;
-	transparency = (tr_band) ? I->data : I->alpha;	/* Points to the data array with A */
-	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
-		node = gmt_M_ijp (H, row, 0) + tr_band;	/* Start pixel with 4 bytes of this image row */
-		for (col = 0; col < H->n_columns; col++, node += n_bands) {	/* March along this scanline in steps of 2 (gA) or 4 (RGBA) */
-			tr = (unsigned int)transparency[node];	/* Get transparency values */
+	if (I->alpha) {
+		for (node = 0; node < H->nm; node++) {	/* March along scanlines in the output bitimage */
+			tr = (unsigned int)I->alpha[node];	/* Get transparency values */
 			if (opacity) tr = 255 - tr;	/* Must flip from opacity to transparency */
 			T->alpha_count[tr]++;	/* Count frequency of transparency values */
 		}
 	}
+	else {
+		if (n_bands == 4 && H->mem_layout[2] == 'P') {		/* RGBA Pixel interleaved */
+			for (row = 0; row < H->n_rows; row++) {
+				for (col = 0; col < H->n_columns; col++) {
+					node = gmt_M_ijp (H, row, col) * 4 + 3;
+					tr = (unsigned int)I->data[node];
+					if (opacity) tr = 255 - tr;
+					T->alpha_count[tr]++;
+				}
+			}
+		}
+		else {									/* Band interleaved. Tansparency is in 4th band*/
+			node = H->size * (n_bands - 1);		/* Either gray or color */
+			for (row = 0; row < H->n_rows; row++) {
+				for (col = 0; col < H->n_columns; col++) {
+					node += gmt_M_ijp (H, row, col);
+					tr = (unsigned int)I->data[node];
+					if (opacity) tr = 255 - tr;
+					T->alpha_count[tr]++;
+				}
+			}
+		}
+	}
+
 	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
 		if (T->alpha_count[k]) {	/* Used at least once */
 			T->n_transp++;
-			if (T->alpha_count[k] < tr_min) tr_min = k;	/* Keep track of smallest value */
 			if (T->alpha_count[k] > tr_max) tr_max = k;	/* Keep track of largest value */
 		}
 	}
@@ -1132,13 +1152,11 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 		T->value = 0;
 		T->mode = 3;
 		T->n_dominant = T->alpha_count[0];
-		//fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	else {
 		T->value = 255;	/* Case 4: Like 3 but 255 most used of two transparency values */
 		T->n_dominant = T->alpha_count[255];
 		T->mode = 4;
-		//fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	return (true);
 }
@@ -1213,7 +1231,7 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
-	bool transparency = (H_s->n_bands == 4);
+	bool transparency = (H_s->n_bands == 4 || (Conf->Transp != NULL && Conf->Transp->n_transp == 2));
 	unsigned int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t n_bands = H_s->n_bands;
