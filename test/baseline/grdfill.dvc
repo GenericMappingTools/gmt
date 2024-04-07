@@ -1,5 +1,5 @@
 outs:
-- md5: e93fcb9574c5a90cfb4766435fb3f843.dir
-  size: 207664
+- md5: daddccdf7ad4bb8643cc0671acb7447a.dir
   nfiles: 5
   path: grdfill
+  hash: md5

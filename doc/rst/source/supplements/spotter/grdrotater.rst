@@ -48,7 +48,7 @@ rotated region is not the entire globe.
 Required Arguments
 ------------------
 
-.. |Add_ingrid| replace:: Name of a grid file in geographical (lon, lat) coordinates.
+.. |Add_ingrid| replace:: Name of a grid file in geographical (*lon, lat*) coordinates.
 .. include:: /explain_grd_inout.rst_
     :start-after: ingrid-syntax-begins
     :end-before: ingrid-syntax-ends

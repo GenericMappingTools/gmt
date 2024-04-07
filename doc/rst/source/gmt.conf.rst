@@ -204,7 +204,7 @@ FORMAT Parameters
         Formatting template that indicates how an output clock string is to
         be plotted. This template is then used to guide the formatting of
         clock strings in plot annotations. See :term:`FORMAT_CLOCK_OUT` for
-        details. [default is **hh:mm:ss**].
+        details [default is **hh:mm:ss**].
 
     **FORMAT_CLOCK_OUT**
         See :term:`FORMAT_CLOCK_IN`.
@@ -239,7 +239,7 @@ FORMAT Parameters
         and **u** instead of W[-]ww to plot "Week ##". Both of these text
         strings will be affected by the :term:`GMT_LANGUAGE`,
         :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
-        setting. [default is **yyyy-mm-dd**].
+        setting [default is **yyyy-mm-dd**].
 
     **FORMAT_DATE_OUT**
         Formatting template that indicates how an output date string is to
@@ -266,14 +266,14 @@ FORMAT Parameters
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
         which plots the absolute value of the coordinate. Not all items may be
-        plotted as this depends on the annotation interval. [default is
+        plotted as this depends on the annotation interval [default is
         :doc:`theme dependent <theme-settings>`].
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
         coordinate is to be formatted. This template is then used to guide
         the writing of geographical coordinates in data fields. The template
-        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
+        is in general of the form **[±]D[DD]** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
@@ -524,9 +524,12 @@ I/O Parameters
 .. glossary::
 
     **IO_COL_SEPARATOR**
-        This setting determines what character will separate ASCII output
-        data columns written by GMT. Choose from **tab**, **space**, **comma**, and
-        **none** [default is **tab**].
+        This setting determines what character will separate ASCII *output*
+        data columns written by GMT. Choose from **tab**, **space**, **comma**,
+        **semicolon** and **none** [default is **tab**]. You may also just give
+        any character or string (e.g., "--|--"). **Note**: When reading input
+        data GMT automatically skips white-space, commas, and semi-colons; you
+        cannot select an individual input column separator.
 
     **IO_FIRST_HEADER**
         This setting determines if the first segment header is written when
@@ -565,11 +568,11 @@ I/O Parameters
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
-        contain (latitude,longitude) or (y,x) rather than the expected
-        (longitude,latitude) or (x,y). false means we have (x,y) both on
-        input and output. **true** means both input and output should be (y,x).
-        **IN** means only input has (y,x), while **OUT** means only output should
-        be (y,x) [default is **false**].
+        contain (*latitude,longitude*) or (**y, x**) rather than the expected
+        (longitude,latitude) or (*x, y*). false means we have (*x, y*) both on
+        input and output. **true** means both input and output should be (**y, x**).
+        **IN** means only input has (**y, x**), while **OUT** means only output should
+        be (**y, x**) [default is **false**].
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [default is **0**].
@@ -1172,7 +1175,7 @@ PostScript Parameters
         Sets the threshold angle in degrees (integer in range [0,180]) used
         for mitered joins only. When the angle between joining line segments
         is smaller than the threshold the corner will be bevelled instead of
-        mitered. [default is **35**]. Setting the threshold
+        mitered [default is **35**]. Setting the threshold
         angle to **0** implies the PostScript default of about 11 degrees.
         Setting the threshold angle to **180** causes all joins to be beveled.
 
@@ -1283,7 +1286,7 @@ Calendar/Time Parameters
         year in a 100-year sequence. For example, if
         :term:`TIME_Y2K_OFFSET_YEAR` is 1729, then numbers 29 through 99
         correspond to 1729 through 1799, while numbers 00 through 28
-        correspond to 1800 through 1828. [default is **1950**].
+        correspond to 1800 through 1828 [default is **1950**].
 
 See Also
 --------

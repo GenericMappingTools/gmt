@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
-[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
+[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+b**\ *boost*][**+p**\ *power*] ]
 [ |-K|\ [*densitymodel*] ]
 [ |-L|\ [*hn*] ]
 [ |-M|\ [*list*] ]
@@ -140,7 +140,7 @@ Optional Arguments
 
 **-E**
     Set :ref:`elliptical <SMT_map>` data file format. We expect input records to contain
-    *lon, lat, azimuth, semi-major, semi-minor, height* (with  the latter in meter)
+    (*lon, lat, azimuth, semi-major, semi-minor, height*) (with  the latter in meter)
     for each seamount [Default is Circular data format, expecting *lon, lat, radius, height*].
     To mix circular and elliptical seamounts you must use |-E| and provide the circular
     parameters as elliptical ones via *azimuth = 0* and *semi-major = semi-minor = radius*.
@@ -152,7 +152,7 @@ Optional Arguments
    :align: center
 
    Use |-E| to select elliptical rather than circular shapes in map view.  Both shapes require
-   lon, lat. Circular shapes only require the radius :math:`r_0`, while elliptical ones require the
+   (*lon, lat*). Circular shapes only require the radius :math:`r_0`, while elliptical ones require the
    azimuth :math:`\alpha` of the major axis as well as the major and minor semi-axes .
 
 .. _-F:
@@ -164,7 +164,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
+**-H**\ *H*/*rho_l*/*rho_h*\ [**+b**\ *boost*][**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial :ref:`density function <SMT_rho>`
     with depth. Give the low and high seamount densities in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3` and the fixed reference height
     *H* in meters. Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase

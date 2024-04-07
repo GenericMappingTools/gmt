@@ -96,7 +96,7 @@ To only wipe your GMT server directory for Earth data, try::
 
     gmt clear data=earth
 
-To just wipe your the earth_relief data set and leave other earth data intact, try::
+To just wipe your the earth_relief data set and leave other data intact, try::
 
     gmt clear data=earth_relief
 

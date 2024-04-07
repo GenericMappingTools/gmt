@@ -42,7 +42,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The standard 44 CPTs supported by GMT.
+   The standard 46 CPTs supported by GMT.
 
 .. toggle::
 
@@ -70,8 +70,10 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 18 categorical color maps (those ending in "S" are the categorical
+   The 7 cyclic color maps (those ending in "O" are the cyclic
    scientific color maps by Fabio Crameri) supported by GMT.
+   **Note**: Any GMT colormap can be made cyclic by running :doc:`/makecpt`
+   with the **-Ww** option (wrapped = cyclic).
 
 .. toggle::
 
@@ -85,30 +87,13 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 7 cyclic color maps (those ending in "O" are the cyclic
-   scientific color maps by Fabio Crameri) supported by GMT.
-   **Note**: Any GMT colormap can be made cyclic by running :doc:`/makecpt`
-   with the **-Ww** option (wrapped = cyclic).
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_M_1d.txt
-
-.. _CPT_files_e:
-
-.. figure:: /_images/GMT_App_M_1e.*
-   :width: 500 px
-   :align: center
-
    The 22 color maps from cmocean by Kristen M. Thyng supported by GMT.
 
 .. toggle::
 
    Here is the source script for the figure above:
 
-   .. literalinclude:: /_verbatim/GMT_App_M_1e.txt
+   .. literalinclude:: /_verbatim/GMT_App_M_1d.txt
 
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and

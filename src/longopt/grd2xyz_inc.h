@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,23 +22,31 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	GMT_C_CPT_KW,
+	{ 0, 'F', "rowcol|row_col",
+	          "f,i",               "one|fortran,indexz",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'L', "single|hvline|array",
+	          "c,r,x,y",           "col|column,row,x,y",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'T', "stl",
+	          "a,b",               "ascii|ASCII,binary",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'W', "weight",
+	          "a",                 "area",
+	          "u",                 "unit",
+		  GMT_TP_STANDARD },
+	{ 0, 'Z', "onecol|one_col|ordering",
+	          "T,B,L,R,a,c,u,h,H,i,I,l,L,f,d,x,y,w",
+				       "top,bottom,left,right,ascii|ASCII,int8|char,uint8|uchar,int16|short,uint16|ushort,int32|int,uint32|uint,int64|long,uint64|ulong,float32|float,float64|double,noxmax,noymax,swap|byteswap",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_MULTIDIR },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRD2XYZ_INC_H */

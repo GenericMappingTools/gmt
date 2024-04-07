@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,8 @@
 #define GMT_qo_OPT	"-qo[~]<rows>|<limits>[,...][+c<col>][+a|t|s]"
 #define GMT_PAR_OPT	"--PAR=<value>"
 
-#ifdef GMT_MP_ENABLED
+#if defined(_OPENMP)
+/* Use these constants in modules only serviced by OpenMP; see gmt_glib.h for equivalent constants for Glib threads modules */
 #define GMT_x_OPT	" [-x[[-]<n>]] "	/* Must add spaces and brackets here and place via %s since it may be blank */
 #define GMT_ADD_x_OPT	"x"
 #else	/* No Open-MP support */
@@ -87,8 +88,8 @@
 
 /* Argument for segmentation option */
 
-#define GMT_SEGMENTIZE3	"[c|n|p][a|t|s|r|<refpoint>]"
-#define GMT_SEGMENTIZE4	"[c|n|p|v][a|t|s|r|<refpoint>]"
+#define GMT_SEGMENTIZE3	"[c|n|p][a|r|s|t|<refpoint>]"
+#define GMT_SEGMENTIZE4	"[c|n|p|v][a|r|s|t|<refpoint>]"
 
 /* Argument to *contour programs */
 
@@ -133,7 +134,7 @@
 #else
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #endif
-#define GMT_o_OPT	"-o<cols>[,...][,t[<word>]]"
+#define GMT_o_OPT	"-o<cols>[+l][+d<divisor>][+s<scale>|d|k][+o<offset>][,...][,t[<word>]]"
 #define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|t|s]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>]][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"

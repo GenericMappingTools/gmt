@@ -198,7 +198,7 @@ A 10-cm-wide basemap using the Cassini projection may be obtained by
 
 ::
 
-gmt basemap -R20/50/20/35 -JC35/28/10c -Bafg -B+tCassini -pdf cassini
+  gmt basemap -R20/50/20/35 -JC35/28/10c -Bafg -B+tCassini -pdf cassini
 
 Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,44 +22,37 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "azimuth",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "clearance",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+	          "t",                 "textbox",
+		  GMT_TP_STANDARD },
+	{ 0, 'D', "offset",
+	          "j,J",               "away,corners",
+	          "v",                 "line",
+		  GMT_TP_STANDARD },
+	{ 0, 'F', "attributes|attrib",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+	          "a,A,c,f,h,j,l,r,t,z",
+	                               "angle,zerocenter|Angle,rjustify|region_justify,font,header,justify,label,record|rec_number,text,zformat|zvalues",
+		  GMT_TP_STANDARD },
+	{ 0, 'G', "fill",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
+	          "n",                 "no_text|C",
+		  GMT_TP_STANDARD },
+	{ 0, 'L', "listfonts|list",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'M', "paragraph",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "noclip|no_clip",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Q', "case|change_case",
+	          "l,u",               "lower,upper",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'M', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Q', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Z', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, 'S', "shade",             "", "", "", "", GMT_TP_STANDARD },
+	GMT_W_PEN_KW,
+	{ 0, 'Z', "zvalues|threeD",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !PSTEXT_INC_H */

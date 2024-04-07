@@ -1,5 +1,5 @@
 #
-#	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+#	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ if (${srcdir} STREQUAL ${bindir})
 endif (${srcdir} STREQUAL ${bindir})
 
 # Define minimum CMake version required
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required (VERSION 3.16)
 message ("CMake version: ${CMAKE_VERSION}")
 
 # Use NEW behavior with newer CMake releases
@@ -56,6 +56,7 @@ foreach (p
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		CMP0115 # CMake 3.20: Source file extensions must be explicit.
+		CMP0153 # CMake 3.28: The exec_program() command should not be called.
 		)
 	if (POLICY ${p})
 		cmake_policy (SET ${p} NEW)
@@ -208,6 +209,7 @@ endif (GSHHG_PATH)
 message(
 	"*\n"
 	"*  GMT Version:               : ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}\n"
+ 	"*  System:                    : ${CMAKE_HOST_SYSTEM_NAME} (${CMAKE_HOST_SYSTEM_VERSION})\n"
 	"*\n"
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GMT_CONFIG_GSHHG_MESSAGE}\n"

@@ -97,7 +97,7 @@ Optional Arguments
     for each block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See |-W| for enabling *w* output.
-    If **-E+p**\|\ **P** is used then input data uncertainties are expected and *s*
+    If **-E+p**\|\ **P** is used then input data uncertainties are expected and **s**
     becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
 .. _-G:

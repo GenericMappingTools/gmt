@@ -167,10 +167,6 @@ Optional Arguments
     will be time in years, while the last trailing text word is formatted time. 
     The output records thus contain *time flexuregrid timetag*.
 
-.. _-N:
-
-.. include:: ../../explain_fft.rst_
-
 .. _-M:
 
 **-M**\ *tm*
@@ -178,6 +174,10 @@ Optional Arguments
     thickness specified via |-E|.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
     Cannot be used in conjunctions with |-F|.
+
+.. _-N:
+
+.. include:: ../../explain_fft.rst_
 
 .. _-Q:
 
@@ -213,16 +213,19 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *wd*\ [**k**]
-    Set reference water depth for the undeformed flexed surface in m.  Must be positive. [0].  Append **k** to indicate
-    km.  If |-W| is used and your load exceeds this depth then we scale the subaerial part of the
-    load to account for the change in surrounding density (air vs water).
+    Specify water depth in m; append **k** for km.  Must be positive [0].
+    Any subaerial topography (i.e., amplitudes in the input relief that
+    exceeds this depth) will be scaled via the densities set in |-D|
+    to compensate for the larger density contrast with air.
 
 .. _-Z:
 
 **-Z**\ *zm*\ [**k**]
-    Specify reference depth to flexed surface (e.g., Moho) in m; append **k** for km.
-    Must be positive. [0].  We subtract this value from the flexed surface before
-    writing the results.
+    Undeformed plate flexure means *z = 0*. Specify the distance between the
+    observation level [*z = 0*] and the undeformed flexed surface in m; append **k** for km.
+    Must be positive [0]. We subtract this value from the flexed surface before output.
+    Thus, if the observation level is at sealevel and you are looking a seafloor deformation
+    in 5 km of water, use -Z5k and the undeformed surface will have *z = -5000* on output.
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
@@ -257,7 +260,7 @@ Grid Distance Units
 
 If a Cartesian grid does not have meter as the horizontal unit, append **+u**\ *unit*
 to the input file name to convert from the specified unit to meter.  E.g., appending
-**+uk** to the load file name will scale the grid x,y coordinates from km to meter.  If your
+**+uk** to the load file name will scale the grid *x, y* coordinates from km to meter.  If your
 grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 netCDF COARDS geographic grids will automatically be recognized as geographic.
 

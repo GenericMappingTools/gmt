@@ -15,10 +15,9 @@ Synopsis
 **gmt legend** [ *specfile* ]
 |-D|\ *refpoint*
 [ |SYN_OPT-B| ]
-[ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
-[ |-M|\ [*items*] ]
+[ |-M|\ [**h**\|\ **e**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *scale* ]
 [ |-T|\ *file* ]
@@ -58,7 +57,10 @@ Required Arguments
     .. include:: explain_refpoint.rst_
 
     Append **+w**\ *width*\ [/*height*] to set the width (and height) of the legend box
-    in plot coordinates (inches, cm, etc.). **Note**: If **+w** is not given then we compute
+    in plot coordinates (inches, cm, etc.). If unit is % (percentage) then *width* as
+    computed as that fraction of the map width. If *height* is given as percentage then
+    then *height* is recomputed as that fraction of the legend *width* (not map height).
+    **Note**: If **+w** is not given then we compute
     the width within the *Postscript* code.  Currently, this is only possible if just
     legend codes **D**, **H**, **L**, **S**, or **V** are used and that the number of symbol
     columns (**N**) is 1. If *height* is zero or not given then we estimate *height* based
@@ -87,11 +89,6 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. _-C:
-
-**-C**\ *dx*/*dy*
-    Sets the clearance between the legend frame and the internal items [4\ **p**/4\ **p**].
-
 .. _-F:
 
 **-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]]\
@@ -112,14 +109,18 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*items*]
-    Modern mode only and pertains the situation where there are **h**\ idden, auto-generated legend
-    information created by prior plotting-modules' **-l** option and **e**\ xplicitly given information
-    from input file(s) given on the command line (or via standard input).  Use |-M| to set which of
-    these should be used and in what order via directives **h** and **e** [Default is **he**, meaning
-    we will first place any hidden auto-generated legend items (if any) and then we append the explicitly
-    given information (if present).  **Note**: For classic mode an input file must be given or else we
-    will attempt read from standard input.
+**-M**\ [**h**\|\ **e**]
+    Modern mode only and pertains the situation where there are two ways to provide legend info:
+    Specify one or two schemes in the order you desire via directives:
+
+    - **h**: Hidden, auto-generated legend information created by prior plotting-modules' **-l**
+      option
+    - **e**: Explicitly given information from input file(s) given on the command line (or via
+      standard input).
+
+    Default is **he**, meaning we will first place any hidden auto-generated legend items (if any)
+    and then we append the explicitly given information (if present).  **Note**: For classic
+    mode an input file must be given or else we will attempt read from standard input.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -366,7 +367,7 @@ specifications, use::
     gmt begin legend
     gmt makecpt -Cpanoply -T-8/8 -H > tt.cpt
     gmt set FONT_ANNOT_PRIMARY 12p
-    gmt legend -R0/10/0/10 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.2 -C0.1i/0.1i -F+p+gazure1+r -B5f1 << EOF
+    gmt legend -R0/10/0/10 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.2 -F+p+gazure1+r+c0.1i -B5f1 << EOF
     # Legend test for gmt pslegend
     # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
     # H is ps=legend.ps

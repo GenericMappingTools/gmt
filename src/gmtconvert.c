@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -45,6 +45,8 @@
 #define EXCLUDE_HEADERS		0
 #define EXCLUDE_DUPLICATES	1
 
+#define NOT_REALLY_AN_ERROR -999
+
 /* Control structure for gmtconvert */
 
 struct GMTCONVERT_CTRL {
@@ -71,7 +73,7 @@ struct GMTCONVERT_CTRL {
 		bool end;
 		int mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
-	struct GMTCONVERT_F {	/* -F<mode> */
+	struct GMTCONVERT_F {	/* -F[c|n|p|v][a|r|s|t|<refpoint>] */
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;
@@ -110,6 +112,9 @@ struct GMTCONVERT_CTRL {
 		bool transpose;	/* -Z with no arguments means transpose dataset */
 		int64_t first, last;
 	} Z;
+	struct GMTCONVERT_DEBUG {	/* -/ For testing string detection. Must be first option */
+		bool active;
+	} debug;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -137,7 +142,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] "
-		"[-E[f|l|m|M<stride>]] [-F%s] [-I[tsr]] [-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"|+f<file>[+e] | -S[~]/<regexp>/[i][+e]]"
+		"[-E[f|l|m|M<stride>]] [-F%s] [-I[tsr]] [-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"|+f<file>[+e] | -S[~]/<regexp>/[i][+e]] "
 		"[-T[h][d[[~]<selection>]]] [%s] [-W[+n]] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_SEGMENTIZE4, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -229,12 +234,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+	EXTERN_MSC unsigned int gmtlib_string_parser (struct GMT_CTRL *GMT, char *file);	/* For debug only */
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
+				/* Hidden test of string parsing for developers */
+				if (Ctrl->debug.active) {
+					if (gmtlib_string_parser (API->GMT, opt->arg)) return (GMT_RUNTIME_ERROR);
+					return (NOT_REALLY_AN_ERROR);
+				}
 				break;
 			case '>':	/* Got named output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
@@ -409,6 +420,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 				}
 				break;
 
+			case '/':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->debug.active);
+				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
 				break;
@@ -536,7 +550,10 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
+	if ((error = parse (GMT, Ctrl, options)) != 0) {
+		if (error == NOT_REALLY_AN_ERROR) Return (GMT_NOERROR);
+		Return (error);
+	}
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 

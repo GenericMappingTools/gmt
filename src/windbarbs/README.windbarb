@@ -1,0 +1,38 @@
+
+WINDBARB Supplemental Package
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+
+------------------------------------------------------
+Author:		HIGAKI, Masakazu
+Date:		June 1, 2017
+Version:	6 (for GMT 6 release).
+------------------------------------------------------
+
+This directory contains:
+
+	README.windbarb	This document
+	grdbarb.c		grdbarb C program code
+	psbarb.c		psbarb C program code
+	windbarb.c		windbarb C library code
+	windbarb.h		windbarb C include file
+	grdbarb_example.sh	sample script for grdbarb
+	psbarb_example.sh	sample script for psbarb
+
+This package contains two programs that may be useful
+for meteorologists to draw a wind field with wind barbs.
+The two programs are
+
+	grdbarb		Plot wind barb field from two component grids
+	psbarb		Plot wind barbs on maps
+
+Documentation via RST files produce HTML and MAN pages that
+give full description of the program interfaces.
+
+
+* Acknowledgement
+
+The author would like to thank Mr KATO Masaya, Nagoya University for
+developing and maintaining the Wind Barb Extension for GMT 3-4.
+( http://www.rain.hyarc.nagoya-u.ac.jp/~kato/work/GMT/index-e.html )
+The extension for GMT 5 is based on his great work.

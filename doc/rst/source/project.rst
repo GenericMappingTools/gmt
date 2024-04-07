@@ -256,7 +256,13 @@ Optional Arguments
 
 .. include:: explain_colon.rst_
 
-.. include:: explain_distunits.rst_
+Units
+-----
+
+For map distance unit, append *unit* **d** for arc degree, **m** for arc minute, and **s** for arc second,
+or **e** for meter [Default unless stated otherwise], **f** for foot, **k** for km, **M** for statute mile,
+**n** for nautical mile, and **u** for US survey foot. We compute such distances using a spherical
+approximation with great circles using the authalic radius (see PROJ_MEAN_RADIUS).
 
 .. include:: explain_help.rst_
 
@@ -267,7 +273,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To project the remote data sets ship_03.txt (lon,lat,depth) onto a great circle specified by
+To project the remote data sets ship_03.txt (*lon, lat, depth*) onto a great circle specified by
 the center (330,-18) and rotation pole (53,21) and sort the records on the projected distances along
 that circle and only output the distance and the depths, try::
 

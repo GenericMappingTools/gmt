@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -75,9 +75,10 @@ struct PSTEXT_CTRL {
 		bool get_xy_from_justify;	/* True if +c was given and we just get it from input */
 		bool word;		/* True if we are to select a single word from the trailing text as the label */
 		bool no_input;		/* True if we give a single static text and place it via +c */
+		bool no_xy_coord;	/* If -F+c given then we dont read/parse two coordinates */
 		struct GMT_FONT font;
 		double angle;
-		int justify, R_justify, nread, first, w_col;
+		int justify, R_justify, nread, nread_numerics, first, w_col;
 		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format z using text (+z) */
 		char read[4];		/* Contains a|A, c, f, and/or j in order required to be read from input */
 		char *text;
@@ -291,7 +292,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>/<dy>][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>[/<dy>]][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] %s "
 		"[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Ql|u] [-S[<dx>/<dy>/][<shade>]] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
 		"[%s] %s[%s] [%s] [%s] [-it<word>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -340,9 +341,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Angles given as azimuths; convert to directions using current projection.");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-C[<dx>/<dy>][+tc|C|o|O]");
+	GMT_Usage (API, 1, "\n-C[<dx>[/<dy>]][+tc|C|o|O]");
 	GMT_Usage (API, -2, "Set the clearance between characters and surrounding box. Only used "
-		"if -W has been set. Append units {%s} or %% of fontsize [%d%%]. "
+		"if -W has been set. If <dy> is not given it equals <dx>. Append units {%s} or %% of fontsize [%d%%]. "
 		"Optionally append +t<shape> when -G and/or -W is used. Append a shape:", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
 	GMT_Usage (API, 3, "c: Concave rectangle (requires -M).");
 	GMT_Usage (API, 3, "C: Convex rectangle (requires -M).");
@@ -489,6 +490,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 							if (p[1] == '+' || p[1] == '\0') {	/* Must read angle from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
 								Ctrl->F.nread++;
+								Ctrl->F.nread_numerics++;
 							}
 							else	/* Gave a fixed angle here */
 								Ctrl->F.angle = atof (&p[1]);
@@ -525,6 +527,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
 							}
+							Ctrl->F.no_xy_coord = true;	/* Not reading lon,lat or x,y in this case */
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
@@ -862,7 +865,11 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input text table data\n");
 	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 	tcol_f = 2 + Ctrl->Z.active;	tcol_s = tcol_f + 1;
-
+	/* Since pstext input is complicated we need to help gmtio_examine_current_record by determining how many leading numerical columns to expect */
+	API->n_numerical_columns = (Ctrl->F.no_xy_coord) ? 0 : 2;	/* Normally first 2 columns are x/y coordinates but not if -F+c */
+	if (Ctrl->F.get_text == GET_CMD_FORMAT) API->n_numerical_columns++;	/* Expect a 3rd column value for formatting */ 
+	if (Ctrl->Z.active) API->n_numerical_columns++;	/* Expect a 3-D z coordinate */
+	if (Ctrl->F.nread_numerics) API->n_numerical_columns++;	/* Will read angle from input file */
 	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.n_transparencies;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
 	no_in_txt = (Ctrl->F.get_text > 1);	/* No text in the input record */
@@ -1503,6 +1510,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = old_is_world;
 	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
+    API->n_numerical_columns = GMT_NOTSET;
 
 	gmt_map_basemap (GMT);
 	gmt_plane_perspective (GMT, -1, 0.0);

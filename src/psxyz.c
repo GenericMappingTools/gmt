@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -880,7 +880,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
 	if (Ctrl->G.set_color) polygon = true;
-	default_pen = current_pen = Ctrl->W.pen;
+	default_pen = current_pen = save_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active && Ctrl->I.mode == 0) {
@@ -1258,7 +1258,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							last_spiderpen = current_pen;
 					}
 				}
-				else if (S.symbol == PSL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */
+				else if (S.symbol == PSL_DOT && !fill_active) {	/* Must switch on default black fill */
 					current_fill = black;
 				}
 			}
@@ -1363,12 +1363,13 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (psxyz_is_stroke_symbol (S.symbol)) {	/* These are only stroked, not filled */
 				/* Unless -W was set, compute pen width from symbol size and get pen color from G or z->CPT */
-				if (!outline_active)	/* No pen width given, compute from symbol size */
+				if (!Ctrl->W.active && !outline_active)	/* No pen width given, compute from symbol size */
 					current_pen.width = (gmt_M_is_zero (GMT->current.setting.map_symbol_pen_scale)) ? GMT->current.setting.map_default_pen.width : GMT->current.setting.map_symbol_pen_scale * S.size_x * PSL_POINTS_PER_INCH;
 				if (current_fill.rgb[0] > -0.5) {	/* Color given, use it for the stroke */
 					save_pen = current_pen;
 					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
 				}
+				outline_active = true;
 			}
 
 			if (Ctrl->W.cpt_effect) {
@@ -1729,7 +1730,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 			if (!geovector) {
 				gmt_setfill (GMT, &data[i].f, data[i].outline);
-				gmt_setpen (GMT, &data[i].p);
+				if (data[i].outline) gmt_setpen (GMT, &data[i].p);
 			}
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
@@ -2419,7 +2420,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
 	if (GMT->current.proj.three_D)
 		gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
-		
+
 	gmt_plane_perspective (GMT, -1, 0.0);
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -DX, -DY, 0.0, PSL_FWD);	/* Shift plot a bit */

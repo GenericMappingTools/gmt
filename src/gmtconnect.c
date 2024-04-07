@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -923,6 +923,7 @@ EXTERN_MSC int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " new closed segments\n", n_closed);
 	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " segments were already closed\n", n_closed_orig);
 	if (n_trouble) GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " trouble spots\n", n_trouble);
+	if (chain) GMT_Report (API, GMT_MSG_DEBUG, "%" PRIu64 " composite line segments (closed or open) processed via connecting\n", chain);
 
 	gmt_M_free (GMT, buffer);
 

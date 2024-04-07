@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,35 +22,31 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "adjust_inc",        "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "cmdhist|command_history",
+	          "b,c,n,p",           "both,current,none,previous",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'D', "meta|metadata",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+	          "c,d,n,o,r,s,t,v,x,y,z",
+		                           "cpt,dname,invalid,offset,remark,scale,title,varname,xname,yname,zname",
+		  GMT_TP_STANDARD },
+	{ 0, 'E', "transform",
+	          "a,e,h,l,r,t,v",     "hvflip,xyswap,hflip,rot90ccw,rot90cw,transpose,vflip",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+		  GMT_TP_STANDARD },
+	GMT_G_OUTGRID_KW,
+	{ 0, 'L', "lonshift_numrange",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "n,p",               "negative,positive",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "nodes|replace",     "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "lonshift_region",   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "toggle|toggle_registration", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDEDIT_INC_H */

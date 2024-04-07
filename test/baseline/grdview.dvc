@@ -1,5 +1,5 @@
 outs:
-- md5: 2cf22317b740e82bb431d74b025e7986.dir
-  size: 6768275
+- md5: 648c8663b9b1b1e1ad77f99c44b044d1.dir
   nfiles: 11
   path: grdview
+  hash: md5

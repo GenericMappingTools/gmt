@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -445,6 +445,9 @@ GMT_LOCAL int gmtgdalread_populate_metadata (struct GMT_CTRL *GMT, struct GMT_GD
 	}
 
 	Ctrl->RasterCount = raster_count = GDALGetRasterCount(hDataset);
+
+	if (raster_count == 0)
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "No layers found in this file. Likely data is stored in SUBDATASETS\n.Must provide the SUBDATASET name.\n");
 
 	/* ------------------------------------------------------------------------- */
 	/* Get some metadata for each band. */
@@ -1454,4 +1457,3 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	return (GMT_NOERROR);
 }
-

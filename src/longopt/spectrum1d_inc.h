@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,29 +22,22 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'C', "outputs",
+	          "a,c,g,n,o,p,x,y",   "admittance,coherent,gain,noise,sqcoherency,phase,x,y",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+		  GMT_TP_MULTIDIR },
+	{ 0, 'D', "spacing|sample_dist", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'L', "leave_trend",
+	          "h,m",               "remove_mid,remove_mean",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "name",              "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "size",              "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "multifile",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "wavelength",        "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !SPECTRUM1D_INC_H */

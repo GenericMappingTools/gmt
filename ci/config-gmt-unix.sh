@@ -23,6 +23,7 @@ if [[ "$RUN_TESTS" == "true" ]]; then
 set (CMAKE_BUILD_TYPE Debug)
 
 enable_testing()
+set (GMT_DATA_SERVER static)
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)
@@ -30,7 +31,7 @@ set (DO_SUPPLEMENT_TESTS ON)
 set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 
 # For code coverage
-set (CMAKE_C_FLAGS "-coverage -O0 ${CMAKE_C_FLAGS}")
+set (CMAKE_C_FLAGS "--coverage -O0 ${CMAKE_C_FLAGS}")
 
 # Turn on testing of upcoming long-option syntax for common GMT options
 add_definitions(-DUSE_COMMON_LONG_OPTIONS)

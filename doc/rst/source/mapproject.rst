@@ -49,41 +49,30 @@ Synopsis
 Description
 -----------
 
-**mapproject** reads (longitude, latitude) positions from *tables* [or
-standard input] and computes (x,y) coordinates using the specified map
-projection and scales. Optionally, it can read (x,y) positions and
-compute (longitude, latitude) values doing the inverse transformation.
-This can be used to transform linear (x,y) points obtained by digitizing
+**mapproject** reads (*lon*, *lat*) positions from *tables* [or
+standard input] and computes (*x, y*) coordinates using the specified map
+projection and scales. Optionally, it can read (*x, y*) positions and
+compute (*lon, lat*) values doing the inverse transformation.
+This can be used to transform linear (*x, y*) points obtained by digitizing
 a map of known projection to geographical coordinates. May also
 calculate distances along track, to a fixed point, or closest approach
 to a line.
 Alternatively, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which
-must have (longitude,latitude) or (x,y). See option **-:** on how to
+must have (longitude,latitude) or (*x, y*). See option **-:** on how to
 read (latitude,longitude) files.
 Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
 azimuth, distances, distances to other lines, and travel-times
 along lines can all be computed by using one or more of the options
-|-A|, |-G|, |-L|, and |-Z|.
+|-A|, |-G|, |-L|, and |-Z|. **Note**: Depending on the Optional Arguments
+listed below, most times **-J** or **-R** are not actually required.
 
 Required Arguments
 ------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
-
-.. |Add_-R| replace:: Special case for the UTM projection: If |-C| is used and |-R| is not given then the
-    region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
-    (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
-.. include:: explain_-R.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 (Note that depending on the Optional Arguments listed below, sometimes -J and -R are not actually required.)
 
@@ -94,18 +83,24 @@ Optional Arguments
 
 **-Ab**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
-    with *lon0/lat0*.  |-A|\ **f** calculates the (forward) azimuth
-    to each data point. Use |-A|\ **b** to get back-azimuth from data points
-    to fixed point. Use |-A|\ **o** to get orientations (-90/90) rather than
-    azimuths (0/360). Upper case **F**, **B** or **O** will convert from
+    with *lon0/lat0*.  Choose among several directives:
+
+    - **b** - Calculate the back-azimuth from data points to the fixed point.
+    - **f** - Calculate the forward azimuth from the fixed point to each data point.
+    - **o** - Get orientations (-90/90) rather than azimuths (0/360).
+
+    Upper case directives **F**, **B** or **O** will convert from
     geodetic to geocentric latitudes and estimate azimuth of geodesics
-    (assuming the current ellipsoid is not a sphere). If no fixed point
-    is given then we compute the azimuth (or back-azimuth) from the
-    previous point.  Alternatively, append **+v** to obtain a
-    *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See `Output Order`_ for how |-A| affects the output record.  If |-R|
-    and |-J| are given the we project the coordinates first and then
-    compute Cartesian angles instead.
+    (assuming the current ellipsoid is not a sphere). **Note**: If no fixed
+    point is given then we compute the azimuth (or back-azimuth) from the
+    previous point.  One modifier is available:
+
+    - **+v** - Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns 3-4
+      in the input file.
+
+    See `Output Order`_ for how |-A| affects the output record.  **Note**:
+    If |-R| and |-J| are given the we project the coordinates first and
+    then compute Cartesian angles instead.
 
 .. _-C:
 
@@ -130,7 +125,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [*datum*]
-    Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
+    Convert from geodetic (*lon, lat, height*) to Earth Centered Earth Fixed (ECEF) (*x, y, z*) coordinates
     (add |-I| for the inverse conversion). Append datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
     ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
@@ -150,25 +145,35 @@ Optional Arguments
 
 **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with |-G|\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
-    for available units and how distances are computed [great circle using authalic
-    radius]), including **c** (Cartesian distance using input coordinates) or **C**
-    (Cartesian distance using projected coordinates). The **C** unit
-    requires |-R| and |-J| to be set and all output coordinates will be
-    reported as projected. If no fixed point is given
+    with |-G|\ *lon0*/*lat0*. If no fixed point is given
     we calculate *accumulated* distances whereas if a fixed point is given
-    we calculate *incremental* distances.  You can override these defaults
-    by adding **+a** for accumulated or **+i** for incremental distances.
-    If both **+a** and **+i** are given we will report both types of distances.
-    Append **+v** to obtain a *variable* 2nd point (*lon0*/*lat0*) via columns
-    3-4 in the input file; this updates the fixed point per record and thus the
-    selection defaults to incremental distances.
-    See `Output Order`_ for how |-G| affects the output record.
+    we calculate *incremental* distances.  You can modify this and other
+    features via some modifiers:
+    
+    - **+a** - Select accumulated distances.
+    - **+i** - Select incremental distances.
+    - **+u** - Append the distance unit (see `Units`_ for available units and
+      how distances are computed [great circle using authalic radius]),
+      including **c** (Cartesian distance using input coordinates) or **C**
+      (Cartesian distance using projected coordinates). The **C** unit
+      requires |-R| and |-J| to be set and all output coordinates will be
+      reported as projected.
+    - **+v** - Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns
+      3-4 in the input file; this updates the fixed point per record and thus the
+      selection defaults to incremental distances.
+    
+    **Notes**: (1) If both **+a** and **+i** are given we will report both
+    types of distances. (2) See `Output Order`_ for how |-G| affects the output record.
 
 .. _-I:
 
 **-I**
-    Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.
+    Do the Inverse transformation, i.e., get (longitude,latitude) from (*x, y*) data.
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
@@ -176,33 +181,44 @@ Optional Arguments
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *table*. The distance
     and the coordinates of the nearest point will be appended to the
-    output as three new columns. Append the distance unit via **+u** (see `Units`_
-    for available units and how distances are computed [great circle using authalic radius]),
-    including **c** (Cartesian distance using input coordinates) or
-    **C** (Cartesian distance using projected coordinates). Note that these **c** and **C** are
-    not listed in  `Units`_ and would be used for example as **+uc**. The **C**
-    unit requires |-R| and |-J| to be set. Finally, append **+p** to
-    report the line segment id and the fractional point number instead
-    of lon/lat of the nearest point.
-    See `Output Order`_ for how |-L| affects the output record.
-    **Note**: Calculation mode for geographic data is spherical, hence **-je**
-    cannot be used in combination with |-L|.
+    output as three new columns. Consider these modifiers:
+
+   - **+p** - Report the line segment id *seg* and the fractional point number
+     *pnr* instead of *lon*/*lat* of the nearest point.
+    - **+u** - Append the distance unit (see `Units`_ for available units and
+      how distances are computed [great circle using authalic radius]),
+      including **c** (Cartesian distance using input coordinates) or **C**
+      (Cartesian distance using projected coordinates). The **C** unit
+      requires |-R| and |-J| to be set and all output coordinates will be
+      reported as projected.
+    
+    **Notes**: (1) Calculation mode for geographic data is spherical, hence **-je**
+    cannot be used in combination with |-L|. (2) See `Output Order`_ for how |-L|
+    affects the output record.
 
 .. _-N:
 
 **-N**\ [**a**\|\ **c**\|\ **g**\|\ **m**]
     Convert from geodetic latitudes (using the current ellipsoid; see
     :term:`PROJ_ELLIPSOID`) to one of four different auxiliary latitudes
-    (longitudes are unaffected). Choose from **a**\ uthalic,
-    **c**\ onformal, **g**\ eocentric, and **m**\ eridional latitudes
-    [geocentric]. Use |-I| to convert from auxiliary latitudes to
-    geodetic latitudes.
+    (longitudes are unaffected). Choose from these directives:
+
+    - **a** - Convert to authalic latitudes.
+    - **c** - Convert to conformal latitudes.
+    - **g** - Convert to geocentric latitudes [Default].
+    - **m** - Convert to meridional latitudes.
+    
+    Use |-I| to instead convert from auxiliary latitudes to geodetic latitudes.
 
 .. _-Q:
 
 **-Q**\ [**d**\|\ **e**]
     List all projection parameters. To only list datums, use |-Q|\d. To
     only list ellipsoids, use |-Q|\e.
+
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -233,26 +249,34 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
-    Prints map width and height on standard output.  No input files are read.
-    To only output the width or the height, append **w** or **h**, respectively.
-    To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
-    The units of reported plot dimensions may be changed via |-D|.
-    To output the map coordinates of a reference point, select **j**\ *code* (with
-    standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
-    point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
-    where a plot point is given directly. To output the rectangular domain that
-    covers an oblique area as defined by |-R| |-J|, append **r**,
-    or append **R** to get the result in -Rw/e/s/n string format. Alternatively
-    use **b** or **B** to get the bounding box in longitude and latitude. Similarly, if an
-    oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
-    use **o** to return the diagonal corner coordinates in degrees (in the order
-    *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
-    text. To return the coordinates of the rectangular area encompassing the non-rectangular
-    area defined by your |-R| |-J|, use **e**, or **E** for the trailing text string.
-    Similarly, use **m** or **M** to get the rectangular region in projected coordinates instead.
-    Alternatively (for **e** or **r**), append **+n** to set how many points [100]
-    you want along each side for a closed polygon of the oblique area instead
-    [Default returns the width and height of the map].
+    Report a variety of plot dimensions or map regions in projected or geographic units.
+    No input files are read. With no argument we report the map width and hight. 
+    The chosen unit of reported plot dimensions may be changed via |-D|.  For
+    other results, select from these directives:
+
+    - **b** - Get the bounding box in longitude and latitude.
+    - **B** - Same, but get the result in -Rw/e/s/n string format returned as trailing text.
+    - **e** - Return the coordinates of the rectangular area encompassing the non-rectangular
+      area defined by your |-R| |-J|
+    - **E** - Same, but in -Rw/e/s/n string format returned as trailing text.
+    - **g** - Output the plot coordinates of the appended map point *lon*/*lat*.
+    - **h** - Only output the height of the map.
+    - **j** - Output the map coordinates of a reference point by appending its *code* (with
+      standard two-character justification codes).
+    - **n** - Same, but appended reference point *rx*/*ry* is given as normalized positions
+      in the 0-1 range,.
+    - **o** - If an oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
+      return the diagonal corner coordinates in degrees (in the order *llx urx lly ury*) 
+    - **O** - Same, but get the equivalent |-R| string format returned as trailing text.
+    - **m** - Get the rectangular region in projected plot coordinates instead.
+    - **M** - Same, but returned in |-R| string format returned as trailing text.
+    - **r** - Output the rectangular domain that covers an oblique area as defined by |-R| |-J|.
+    - **R** - Same, but get the result in -R| string format returned as trailing text.
+    - **w** - Only output the width of the map in current plot units.
+    - **x** - Output the map coordinates of the specific plot reference point *px*/*py*.
+
+    Optionally (for **e** or **r**), append modifier **+n** to set how many points [100]
+    you want along each side for a closed polygon of the oblique area instead.
 
 .. figure:: /_images/GMT_obl_regions.*
    :width: 600 px
@@ -272,18 +296,18 @@ Optional Arguments
     Append a constant speed unit; if missing we expect to read
     a variable speed from column 3.  The speed is expected to be
     in the distance units set via |-G| per time unit controlled
-    by :term:`TIME_UNIT` [m/s].  Append **+i** to output
-    *incremental* travel times between successive points, **+a**
-    to obtain *accumulated* travel times, or both to get both kinds
-    of time information.  Use **+f** to format the accumulated
-    (elapsed) travel time according to the ISO 8601 convention.
-    As for the number of decimals used to represent seconds we
-    consult the :term:`FORMAT_CLOCK_OUT`
-    setting. Finally, append **+t**\ *epoch* to report absolute
-    times (ETA) for successive points. Finally, because of the
-    need for incremental distances the |-G| option with the
-    **+i** modifier is required.
-    See `Output Order`_ for how |-Z| affects the output record.
+    by :term:`TIME_UNIT` [m/s].  A few modifiers are available:
+
+    - **+i** - Output *incremental* travel times between successive points.
+    - **+a** - Output *accumulated* travel times.
+    - **+f** - Format the accumulated (elapsed) travel time according
+      to the ISO 8601 convention. As for the number of decimals used to
+      represent seconds we consult the :term:`FORMAT_CLOCK_OUT` setting.
+    - **+t** - Append *epoch* to report absolute times (ETA) for successive points.
+      Because of the need for incremental distances the |-G| option with the
+      **+i** modifier is required.
+
+    **Note**: See `Output Order`_ for how |-Z| affects the output record.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -333,7 +357,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To transform a remote file with (latitude,longitude) into (x,y) positions in cm
+To transform a remote file with (latitude,longitude) into (*x, y*) positions in cm
 on a Mercator grid for a given scale of 0.5 cm per degree and selected region, run::
 
   gmt mapproject @waypoints.txt -R-180/180/-72/72 -Jm0.5c -: > xyfile
@@ -345,13 +369,13 @@ a file utm.txt and knowing the UTM zone (and zone or hemisphere), try::
 
 
 To transform several 2-column, binary, double precision files with
-(latitude,longitude) into (x,y) positions in inch on a Transverse
+(latitude,longitude) into (*x, y*) positions in inch on a Transverse
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
 those points that would fall outside the map area, run::
 
   gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
-To convert the geodetic coordinates (lon, lat, height) in the file
+To convert the geodetic coordinates (*lon, lat, height*) in the file
 old.txt from the NAD27 CONUS datum (Datum ID 131 which uses the
 Clarke-1866 ellipsoid) to WGS 84, run::
 
@@ -362,6 +386,11 @@ file quakes.txt and the line segments given in the multisegment ASCII
 file coastline.txt, run::
 
   gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
+
+Given a file pos.txt with use Cartesian coordinates (say in meters or miles), compute
+accumulated distance along track with::
+
+  gmt mapproject pos.txt -G+uc > cum_distances.txt
 
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times
@@ -401,71 +430,29 @@ To obtain the azimuth of a railroad using the points where it enters and leaves 
 
   echo -87.7447873 42.1192976 -87.7725841 42.1523955 | gmt mapproject -AF+v -fg -o4
 
-Restrictions
-------------
+Centering Output Region
+-----------------------
 
 The rectangular input region set with |-R| will in general be mapped
 into a non-rectangular grid. Unless |-C| is set, the leftmost point on
 this grid has xvalue = 0.0, and the lowermost point will have yvalue =
 0.0. Thus, before you digitize a map, run the extreme map coordinates
-through **mapproject** using the appropriate scale and see what (x,y)
+through **mapproject** using the appropriate scale and see what (*x, y*)
 values they are mapped onto. Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly,
-or alternatively, use **awk** to scale and shift the (x,y) values before
-transforming.
+or alternatively, use **gmt math** to scale and shift the (*x, y*) values
+before transforming.
 
-For some projection, a spherical solution may be used despite the user
-having selected an ellipsoid. This occurs when the user's |-R| setting
-implies a region that exceeds the domain in which the ellipsoidal series
-expansions are valid. These are the conditions: (1) Lambert Conformal
-Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical
-solution when the map scale exceeds 1.0E7. (2) Transverse Mercator
-(**-JT**) and UTM (**-JU**) will will use the spherical solution when
-either the west or east boundary given in |-R| is more than 10 degrees
-from the central meridian, and (3) same for Cassini
-(**-JC**) but with a limit of only 4 degrees.
-
-Ellipsoids And Spheroids
-------------------------
-
-GMT will use ellipsoidal formulae if they are implemented and the
-user have selected an ellipsoid as the reference shape (see
-:term:`PROJ_ELLIPSOID`). The user needs to be aware of a
-few potential pitfalls: (1) For some projections, such as Transverse
-Mercator, Albers, and Lambert's conformal conic we use the ellipsoidal
-expressions when the areas mapped are small, and switch to the spherical
-expressions (and substituting the appropriate auxiliary latitudes) for
-larger maps. The ellipsoidal formulae are used as follows: (a)
-Transverse Mercator: When all points are within 10 degrees of central
-meridian, (b) Conic projections when longitudinal range is less than 90
-degrees, (c) Cassini projection when all points are within 4 degrees of
-central meridian. (2) When you are trying to match some historical data
-(e.g., coordinates obtained with a certain projection and a certain
-reference ellipsoid) you may find that GMT gives results that are
-slightly different. One likely source of this mismatch is that older
-calculations often used less significant digits. For instance, Snyder's
-examples often use the Clarke 1866 ellipsoid (defined by him as having a
-flattening f = 1/294.98). From f we get the eccentricity squared to be
-0.00676862818 (this is what GMT uses), while Snyder rounds off and
-uses 0.00676866. This difference can give discrepancies of several tens
-of cm. If you need to reproduce coordinates projected with this slightly
-different eccentricity, you should specify your own ellipsoid with the
-same parameters as Clarke 1866, but with f = 1/294.97861076. Also, be
-aware that older data may be referenced to different datums, and unless
-you know which datum was used and convert all data to a common datum you
-may experience mismatches of tens to hundreds of meters. (3) Finally, be
-aware that :term:`PROJ_SCALE_FACTOR` have certain default values for some
-projections so you may have to override the setting in order to match
-results produced with other settings.
+.. include:: explain_ellipsoidal.rst_
 
 Output Order
 ------------
 
 The production order for the geodetic and temporal columns produced by the
 options |-A|, |-G|, |-L|, and |-Z| is fixed and follows the
-alphabetical order of the options.  Hence, the order these options
+alphabetical order of the options.  Hence, the order in which these options
 appear on the command line is irrelevant.  The actual output order
-can of course be modulated via **-o**.
+can of course be modulated further via **-o**.
 
 See Also
 --------

@@ -76,7 +76,7 @@
 
 .. |grdconvert_purpose| replace:: Convert between different grid formats
 
-.. |grdcut_purpose| replace:: Extract subregion from a grid or image
+.. |grdcut_purpose| replace:: Extract subregion from a grid or image or a slice from a cube
 
 .. |grdedit_purpose| replace:: Modify header or content of a grid
 

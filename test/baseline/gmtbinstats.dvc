@@ -1,5 +1,5 @@
 outs:
-- md5: 3ea60b751e1a8110481f4042eac66472.dir
-  size: 759294
-  nfiles: 6
+- md5: 78f0346f337427ffed15a93753374d68.dir
+  nfiles: 5
   path: gmtbinstats
+  hash: md5

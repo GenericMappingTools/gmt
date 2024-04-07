@@ -1,5 +1,5 @@
 outs:
-- md5: b02bb074d97d27aaec4f9d515ebfdc00.dir
-  size: 3066737
+- md5: d58fe805f1ea1401eab605a8fcd2b9b5.dir
   nfiles: 17
   path: api
+  hash: md5

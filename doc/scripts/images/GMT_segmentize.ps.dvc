@@ -1,0 +1,5 @@
+outs:
+- md5: f5898ca0117ab0d676cf80140b1b5639
+  size: 61210
+  hash: md5
+  path: GMT_segmentize.ps

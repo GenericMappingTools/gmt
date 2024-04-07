@@ -1,9 +1,9 @@
 .. index:: ! gmtflexure
 .. include:: ../module_supplements_purpose.rst_
 
-**********
-gmtflexure
-**********
+*******
+flexure
+*******
 
 |gmtflexure_purpose|
 
@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *force* ]
 [ |-L| ]
-[ |-M|\ [**x**][**z**] ]
+[ |-M|\ [**h**][**v**] ]
 [ |-S| ]
 [ |-T|\ *wfile*]
 [ |SYN_OPT-V| ]
@@ -73,7 +73,7 @@ Required Arguments
     simply driven by the boundary conditions set via |-A|.  If no rigidity or
     elastic thickness file is given via |-E| then you must also append arguments
     to create the locations used for the calculations; for details on array creation,
-    see `Generate 1D Array`_.
+    see `Generate 1-D Array`_.
     **-Qq**\ [*loadfile*] is a file (or standard input if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
     (or standard input if not given) with (x,load in m or km, positive up); see |-M| for
@@ -112,10 +112,10 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**x**][**z**]
-    Optionally append one or both of **x** and **z**: Use **x** to indicated that all
-    x-distances are in km [meters] and **z** to
-    indicate that all z-deflections are in km [meters].
+**-M**\ [**h**][**v**]
+    Optionally append one or both of **h** and **v**: Use **h** to indicated that all
+    horizontal distances are in km [meters] and **v** to
+    indicate that all vertical deflections are in km [meters].
 
 .. _-S:
 
@@ -137,14 +137,18 @@ Optional Arguments
 
 **-W**\ *wd*\ [**k**]
     Specify water depth in m; append **k** for km.  Must be positive [0].
-    Any subaerial topography will be scaled via the densities set in |-D|
+    Any subaerial topography (i.e., amplitudes in the input relief that
+    exceeds this depth) will be scaled via the densities set in |-D|
     to compensate for the larger density contrast with air.
 
 .. _-Z:
 
 **-Z**\ *zm*\ [**k**]
-    Specify reference depth to flexed surface in m; append **k** for km.  Must be positive [0].
-    We add this value to the flexed surface before output.
+    Undeformed plate flexure means *z = 0*. Specify the distance between the
+    observation level [*z = 0*] and the undeformed flexed surface in m; append **k** for km.
+    Must be positive [0]. We subtract this value from the flexed surface before output.
+    Thus, if the observation level is at sealevel and you are looking a seafloor deformation
+    in 5 km of water, use -Z5k and the undeformed surface will have *z = -5000* on output.
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_
@@ -168,6 +172,8 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_array.rst_
+
+.. include:: explain_geometry.rst_
 
 Note on Units
 -------------

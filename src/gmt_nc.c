@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -641,6 +641,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
 			gmt_M_free (GMT, attrib);
 		}
+		else if (gm_id != GMT_NOTSET && nc_inq_attlen (ncid, gm_id, "crs_wkt", &len) == NC_NOERR) {	/* New stand attrib name */
+			char *attrib = NULL;
+			gmt_M_str_free (header->ProjRefWKT);	/* Make sure we didn't have a previously allocated one */
+			attrib = gmt_M_memory (GMT, NULL, len+1, char);		/* and allocate the needed space */
+			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "crs_wkt", attrib));
+			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			gmt_M_free (GMT, attrib);
+		}
 
 		/* Explanation for the logic below: Not all netCDF grids are proper COARDS grids and hence we sometime must guess
 		 * regarding the settings.  The x and y coordinates may be written as arrays, which reflect the positions of the
@@ -680,6 +688,19 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_get_att_double (ncid, ids[HH->xy_dim[0]], "valid_max", &dummy[1])));
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
+
+			if ((strstr(HH->name, ".L3m.") != NULL) && ((strstr(HH->name, "_MODIS") != NULL) || (strstr(HH->name, "_VIIRS") != NULL))) {
+				/* Patch for the OceanColor level 3 gids that have WRONG coordinates, and advertize a PIXEL registration
+				   valid_min|max whilst their lon vector is GRID registered.
+				*/
+				double inc;
+				dummy[0] = -180.0 + 180.0 / (header->n_columns + 1);	xy[0] = dummy[0];
+				dummy[1] =  180.0 - 180.0 / (header->n_columns + 1);
+				inc = gmt_M_get_inc(GMT, dummy[0], dummy[1], header->n_columns, registration);
+				for (unsigned k = 1; k < header->n_columns; k++)
+					xy[k] = xy[0] + k * inc;
+			}
+
 			threshold = (0.5+GMT_CONV5_LIMIT) * dx;
 			min = xy[0];	max = xy[header->n_columns-1];
 			if (min > max) gmt_M_double_swap (min, max);	/* Got it backwards in the array */
@@ -735,13 +756,6 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (gmt_M_is_dnan(header->inc[GMT_X]) || gmt_M_is_zero (header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
 		if (header->n_columns == 1) registration = GMT_GRID_PIXEL_REG;	/* The only way to have a grid like that */
 
-#ifdef NC4_DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x registration: %u\n", header->registration);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x dummy: %g %g\n", dummy[0], dummy[1]);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x[0] x[nx-1]: %g %g\n", xy[0], xy[header->n_columns-1]);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "xinc: %g %g\n", header->inc[GMT_X]);
-#endif
-
 		/* Extend x boundaries by half if we found pixel registration */
 		if (registration == GMT_GRID_NODE_REG && header->registration == GMT_GRID_PIXEL_REG)
 			header->wesn[XLO] = dummy[0] - header->inc[GMT_X] / 2.0,
@@ -778,6 +792,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
 			threshold = (0.5+GMT_CONV5_LIMIT) * dy;
 			min = xy[0];	max = xy[header->n_rows-1];
+
+			/* Need to do this here because NASA MODIS L3 grids are a mess, with wrong coordinates and the valid_min/max attributes 
+			   in opposite order of that of the lat vector. That is, the lat vector is top-down but valid_min = -90 and valid_max = 90.
+			   Furthermore, the grid is grid-registered and the start lat should be -90 + 180/4321/2 = -89.97917148808146 but it wrongly
+			   starts at -89.979171752929688 (well ends at this number because the vec is top-down). Same mess with the lon vector.
+			*/
+			if (min > max) HH->row_order = k_nc_start_north;
+
 			if (min > max) gmt_M_double_swap (min, max);	/* Got it backwards in the array */
 			if (fabs (dummy[0] - min) > threshold || fabs (dummy[1] - max) > threshold) {
 				if (gmtnc_not_obviously_polar (dummy)) {
@@ -799,7 +821,19 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					}
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "The y-coordinates and range attribute are in conflict but range is exactly 180; we rely on this range\n");
+					if ((strstr(HH->name, ".L3m.") != NULL) && ((strstr(HH->name, "_MODIS") != NULL) || (strstr(HH->name, "_VIIRS") != NULL))) {
+						/* Patch for the OceanColor level 3 gids that have WRONG coordinates, and advertize a PIXEL registration
+						   valid_min|max whilst their lat vector is GRID registered.
+						*/
+						double inc;
+						dummy[0] = -90.0 + 180.0 / (header->n_rows + 1);	xy[0] = dummy[0];
+						dummy[1] =  90.0 - 180.0 / (header->n_rows + 1);
+						inc = gmt_M_get_inc(GMT, dummy[0], dummy[1], header->n_rows, registration);
+						for (unsigned int k = 1; k < header->n_rows; k++)
+							xy[k] = xy[0] + k * inc;
+					}
+					else
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "The y-coordinates and range attribute are in conflict but range is exactly 180; we rely on this range\n");
 					if ((header->n_rows%2) == 1 && header->registration == GMT_GRID_NODE_REG)	/* Pixel registration? */
 						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
 					else
@@ -964,7 +998,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
 
 		/* If we have projection information create a container variable named "grid_mapping" with an attribute
-		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
+		   "spatial_ref" or "crs_wkt" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
 			int id[1], dim[1];
 
@@ -997,6 +1031,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					gmt_M_err_trap(nc_def_var(ncid, "grid_mapping", NC_CHAR,  1, dim, &id[0]));
 				}
 				gmt_M_err_trap(nc_put_att_text(ncid, id[0], "spatial_ref", strlen(header->ProjRefWKT), header->ProjRefWKT));
+				gmt_M_err_trap(nc_put_att_text(ncid, id[0], "crs_wkt", strlen(header->ProjRefWKT), header->ProjRefWKT));
 				gmt_M_err_trap(nc_put_att_text(ncid, z_id, "grid_mapping", 12U, "grid_mapping"));	/* Create attrib in z variable */
 			}
 		}

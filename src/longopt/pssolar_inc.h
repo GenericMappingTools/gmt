@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,29 +22,25 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'C', "format",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'G', "fill",
+	          "p,P",               "bit,bitreverse",
+	          "b,f,r",             "bg|background,fg|foreground,dpi",
+		  GMT_TP_STANDARD },
+	{ 0, 'I', "sun",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'M', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "d,z",               "date,timezone|TZ",
+		  GMT_TP_STANDARD },
+	{ 0, 'M', "dump",              "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "invert",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "terminators",
+	          "d,c,n,a",           "daynight,civil,nautical,astronomical",
+	          "d,z",               "date,timezone|TZ",
+		  GMT_TP_STANDARD },
+	GMT_W_PEN_KW,
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !PSSOLAR_INC_H */

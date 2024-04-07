@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,32 +22,29 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "autolabel",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+	          "c,g,j,J,o,p,r,R,s,v",
+	                               "clearance,fill,justify|anchor,mirror,offset,pen,roman,Roman,shaded,vtag|vertical",
+		  GMT_TP_STANDARD },
+	{ 0, 'C', "clearance",
+	          "w,e,s,n,x,y",       "w|west,e|east,s|south,n|north,x,y",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'M', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          GMT_TP_STANDARD },
+	{ 0, 'D', "defaults",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "dimensions|dims",
+	          "f,s",               "overall|figsize,subplot|subsize|panels",
+	          "a,c,f,g,p,w",       "scale,expand,fractions|frac,fill,perimeter|outline,dividers|divlines",
+		  GMT_TP_STANDARD },
+	{ 0, 'M', "margins",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "share",
+	          "r,c",               "rows|y,columns|x",
+	          "l,s,p,t",           "label,label2,parallel,row_title",
+		  GMT_TP_STANDARD },
+	{ 0, 'T', "title",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !SUBPLOT_INC_H */

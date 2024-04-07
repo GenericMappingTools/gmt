@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -207,8 +207,8 @@ bool doubleAlmostEqualUlps(double A, double B, int maxUlpsDiff) {
 	bool signedA, signedB;
 	int64_t ulpsDiff;
 
-	/* Ensure that either A or B are not close to zero. */
-	assert ( (fabs(A) > 5 * DBL_EPSILON) || (fabs(B) > 5 * DBL_EPSILON) );
+	if ((fabs(A) < DBL_EPSILON) && (fabs(B) < DBL_EPSILON))		/* If they are both zero return now */
+		return true;
 
 	/* Initialize unions with floats. */
 	uA.f = A;

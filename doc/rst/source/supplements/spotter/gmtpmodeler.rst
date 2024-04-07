@@ -1,9 +1,9 @@
 .. index:: ! gmtpmodeler
 .. include:: ../module_supplements_purpose.rst_
 
-***********
-gmtpmodeler
-***********
+********
+pmodeler
+********
 
 |gmtpmodeler_purpose|
 
@@ -47,7 +47,7 @@ Required Arguments
 ------------------
 
 *table*
-    Name of one or more tables with geographical (lon, lat) coordinates and optionally
+    Name of one or more tables with geographical (*lon, lat*) coordinates and optionally
     a third column with ages in Myr.  If no file is given then we read from standard input.
 
 .. include:: explain_rots.rst_

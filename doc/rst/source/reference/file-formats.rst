@@ -46,7 +46,7 @@ given by the parameter :term:`IO_COL_SEPARATOR`, which by default is a TAB.
 Optional segment header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When dealing with time- or (*x,y*)-series it is usually convenient to
+When dealing with time- or (*x, y*)-series it is usually convenient to
 have each profile in separate files. However, this may sometimes prove
 impractical due to large numbers of profiles. An example is files of
 digitized lineations where the number of individual features may range

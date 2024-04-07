@@ -1,0 +1,5 @@
+outs:
+- md5: 480697726570ddc7bba0a063d4616bef
+  size: 25024
+  hash: md5
+  path: GMT_log.ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,47 +22,38 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "straightlines|straight_lines|straight_line",
+	          "m,p,x,y,r,t",       "mpfollow,pmfollow,xyalong,yxalong,rtalong,tralong",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+		  GMT_TP_STANDARD },
+	GMT_C_CPT_KW,
+	{ 0, 'D', "offset",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'G', "fill",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+	          "z",                 "zvalue",
+		  GMT_TP_STANDARD },
+	{ 0, 'H', "scale",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "intensity|intens",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'L', "polygon|close|closed_polygon",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
+	          "b,d,D,x,y,p",       "bounds,symdev,asymdev,xanchor,yanchor,pen",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "noclip|no_clip",
+	          "c,r",               "clipnorepeat,repeatnoclip",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'H', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'Q', "nosort|no_sort",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'W', "pen",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
+	          "c,o,s,v,z",         "color,offset,spline,vector,zvalues",
+		  GMT_TP_STANDARD },
+	{ 0, 'Z', "zvalue|level",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Q', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Z', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "t,T",               "transparency,twocols",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !PSXYZ_INC_H */

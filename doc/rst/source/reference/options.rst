@@ -44,7 +44,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-h <option_-h>`          | Specify that input/output tables have header record(s)             |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-i <option_-i>`          | Specify which input columns to read                                |
+| :ref:`-i <option_-i>`          | Specify which input columns to read and optionally transform       |
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-j <option_-j_distcalc>` | Specify how spherical distances should be computed                 |
 +--------------------------------+--------------------------------------------------------------------+
@@ -52,7 +52,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-n <option_-n>`          | Specify grid interpolation settings                                |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-o <option_-o>`          | Specify which output columns to write                              |
+| :ref:`-o <option_-o>`          | Specify which output columns to optionally transform and write     |
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-p <option_-p>`          | Control perspective views for plots                                |
 +--------------------------------+--------------------------------------------------------------------+
@@ -68,7 +68,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-x <option_-x_core>`     | Set number of cores to be used in multi-threaded applications      |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-: <option_colon>`       | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |
+| :ref:`-: <option_colon>`       | Assume input geographic data are (*lat, lon*) and not (*lon, lat*) |
 +--------------------------------+--------------------------------------------------------------------+
 
 .. _option_-R:
@@ -722,7 +722,7 @@ Input columns selection: The **-i** option
 
 **Examples**
 
-For example, to use the 4th, 7th, and 3rd data column as the required *x,y,z*
+For example, to use the 4th, 7th, and 3rd data column as the required *x, y, z*
 to :doc:`/blockmean` you would specify **-i**\ 3,6,2 (since 0 is the first
 column). The chosen data columns will be used as given.
 
@@ -803,7 +803,8 @@ Output columns selection: The **-o** option
 **Examples**
 
 To write out just the 4th and 2nd data column to the output, use **-o**\ 3,1 (since 0 is the first column).
-To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3.
+To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3. As for **-i** you can transform columns using the
+**+d**, **+l**, **+o**, and **+s** modifiers.
 
 .. _option_-p:
 
@@ -916,7 +917,7 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-   function of wavenumber :math:`k_j` [Marks and Smith, 2007 [14]_.
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007] [14]_.
 
 .. toggle::
 

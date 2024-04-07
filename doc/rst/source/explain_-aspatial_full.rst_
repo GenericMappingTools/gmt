@@ -21,7 +21,7 @@ OGR/GMT input with **-a** option
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you need to populate GMT data columns with (constant) values specified by aspatial attributes, use **-a** and append
-any number of comma-separated *col=name* associations. For example, **-a**\ *2=depth* will read the spatial *x,y*
+any number of comma-separated *col=name* associations. For example, **-a**\ *2=depth* will read the spatial *x, y*
 columns from the file and add a third (*z*) column based on the value of the aspatial field called *depth*. You can also
 associate aspatial fields with other settings such as labels, fill colors, pens, and values (for looking-up colors) by
 letting the *col* value be one of **D** (for *distance*), **G** (for *fill*), **I** (for *ID*), **L** (for *label*),

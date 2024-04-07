@@ -10,7 +10,7 @@
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5708769.svg)](https://doi.org/10.5281/zenodo.5708769)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3407865.svg)](https://zenodo.org/doi/10.5281/zenodo.3407865)
 
 ## What is GMT?
 
@@ -54,8 +54,8 @@ Note there are three GMT tar archives available (#3 is optional):
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
 
-Refer to the [install instructions](INSTALL.md) to install GMT,
-and [build instructions](BUILDING.md) to build GMT from the sources.
+Refer to the [install instructions](https://docs.generic-mapping-tools.org/latest/install.html)
+to install GMT, and [build instructions](BUILDING.md) to build GMT from the sources.
 
 ## Citation
 
@@ -85,7 +85,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2023 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
+Copyright (c) 1991-2024 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
