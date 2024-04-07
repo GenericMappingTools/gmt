@@ -12,6 +12,7 @@ on:
       - 'src/**'
       - 'cmake/**'
       - '**/CMakeLists.txt'
+      - '.github/workflows/docker.yml'
   pull_request:
     paths:
       - '.github/workflows/docker.yml'
@@ -73,11 +74,14 @@ jobs:
             apt-get install -y --no-install-recommends --no-install-suggests \
                  build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
                  ghostscript curl git \
-                libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev
+                 libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev
+            apt reinstall -y ca-certificates
+            update-ca-certificates
           elif [[ "$os" = "fedora" ]]; then
             dnf install -y cmake libcurl-devel netcdf-devel gdal-devel \
               ninja-build gdal pcre-devel fftw3-devel lapack-devel \
-              openblas-devel glib2-devel ghostscript
+              openblas-devel glib2-devel ghostscript \
+              openssl
           fi
 
       - name: Cache GSHHG and DCW data
