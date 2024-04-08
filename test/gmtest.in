@@ -33,7 +33,7 @@ if [ $skip_this_test -gt 0 ]; then	# Do not run this script, probably PS is too 
 fi
 
 # Is it a modern mode ('gmt begin figname') or one-liner script ('-ps' or '-view').
-modern=$(grep -c 'gmt begin .*\| -ps \| -view ' "$script")
+modern=$(grep "gmt begin .*\| -ps \| -view " "$script" -c)
 
 # Is it a script that is known to fail?
 if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
