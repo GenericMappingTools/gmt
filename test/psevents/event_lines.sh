@@ -7,14 +7,14 @@ gmt psevents -/qq
 mv -f psevents_function.txt psevents_function_q.txt
 gmt psevents -/cc
 mv -f psevents_function.txt psevents_function_c.txt
-cat << EOF > /tmp/labels
+cat << EOF > labels.txt
 -0.5	2.4	RISE
 0.5	2.4	PLATEAU
 1.5	2.4	DECAY
 2.5	2.4	NORMAL
 3.5	2.4	FADE
 EOF
-cat << EOF > /tmp/def
+cat << EOF > def.txt
 -2	0
 0	0
 0	1
@@ -29,21 +29,23 @@ gmt begin event_lines ps
 	gmt plot psevents_function_l.txt -W2p,green -i0,2 -lintens
 	gmt plot psevents_function_l.txt -W1p,blue  -i0,3+d100 -ltransp
 	gmt plot psevents_function_l.txt -W0.25p,orange -i0,4 -ldz
-	gmt text /tmp/labels -F+f9p+jTC
-	gmt plot /tmp/def -W1p,3_2:0 -ldefault
+	gmt text labels.txt -F+f9p+jTC
+	gmt plot def.txt -W1p,3_2:0 -ldefault
 	gmt subplot set 1 -AQuadratic
 	gmt plot psevents_function_q.txt -W3p,red -i0,1 -lsize
 	gmt plot psevents_function_q.txt -W2p,green -i0,2 -lintens
 	gmt plot psevents_function_q.txt -W1p,blue  -i0,3+d100 -ltransp
 	gmt plot psevents_function_q.txt -W0.25p,orange -i0,4 -ldz
-	gmt text /tmp/labels -F+f9p+jTC
-	gmt plot /tmp/def -W1p,3_2:0 -ldefault
+	gmt text labels.txt -F+f9p+jTC
+	gmt plot def.txt -W1p,3_2:0 -ldefault
 	gmt subplot set 2 -ACosine
 	gmt plot psevents_function_c.txt -W3p,red -i0,1 -lsize
 	gmt plot psevents_function_c.txt -W2p,green -i0,2 -lintens
 	gmt plot psevents_function_c.txt -W1p,blue  -i0,3+d100 -ltransp
 	gmt plot psevents_function_c.txt -W0.25p,orange -i0,4 -ldz
-	gmt text /tmp/labels -F+f9p+jTC
-	gmt plot /tmp/def -W1p,3_2:0 -ldefault
+	gmt text labels.txt -F+f9p+jTC
+	gmt plot def.txt -W1p,3_2:0 -ldefault
 	gmt subplot end
 gmt end show
+
+rm -f labels.txt def.txt
