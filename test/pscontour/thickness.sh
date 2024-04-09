@@ -3,7 +3,7 @@
 # Comes from forum message http://gmt.soest.hawaii.edu/boards/1/topics/5532?r=5548
 # Due to hairline differences in many gridlines between Linux and macOS we need a
 # higher rms threshold for this test to pass
-# GRAPHICSMAGICK_RMS = 0.02
+# GRAPHICSMAGICK_RMS = 0.021
 ps=thickness.ps
 cat << EOF > t.cpt
 0 255 247 236   500 255 247 236
