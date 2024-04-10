@@ -87,15 +87,16 @@ jobs:
           gmt which -Ga $data
           gmt which -Ga $data
           # Download cache files multiple times to make sure all are downloaded
+          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
+          mv ~/.gmt/gmt_data_server.txt ~/.gmt/server/
+          mv ~/.gmt/gmt_hash_server.txt ~/.gmt/server/
           gmt get -Dcache
           gmt get -Dcache
           gmt get -Dcache
-          # Workaround for the GMT_DATA_SERVER issue
+          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
           mkdir ~/.gmt/static/
           mv ~/.gmt/server ~/.gmt/static/
           mv ~/.gmt/cache ~/.gmt/static/
-          mv ~/.gmt/gmt_data_server.txt ~/.gmt/static/
-          mv ~/.gmt/gmt_hash_server.txt ~/.gmt/static/
           # check files
           ls -lR ~/.gmt
 
