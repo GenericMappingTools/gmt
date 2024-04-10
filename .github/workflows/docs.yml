@@ -119,14 +119,14 @@ jobs:
         with:
           workflow: ci-caches.yml
           name: gmt-cache
-          path: .gmt
+          path: gmt-cache
 
       # Move downloaded files to ~/.gmt directory and list them
       - name: Move and list downloaded remote files
         run: |
-          mkdir -p ~/.gmt
-          mv .gmt/* ~/.gmt
-          ls -lRh ~/.gmt
+          mkdir -p ~/.gmt/static/
+          mv gmt-cache/* ~/.gmt/static/
+          ls -lRh ~/.gmt/static/
 
       - name: Build documentation
         run: |

@@ -12,6 +12,9 @@ set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
 
+# Always use the 'static' data server in CI.
+set (GMT_DATA_SERVER static)
+
 # recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 # extra warnings
@@ -23,7 +26,6 @@ if [[ "$RUN_TESTS" == "true" ]]; then
 set (CMAKE_BUILD_TYPE Debug)
 
 enable_testing()
-set (GMT_DATA_SERVER static)
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)

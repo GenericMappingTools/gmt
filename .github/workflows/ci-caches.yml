@@ -7,10 +7,11 @@
 name: GMT CI Caches
 
 on:
-  # Uncomment the "push:" line to manually re-cache data artifacts in pushes
-  #push:
-  # Uncomment the 'pull_request:' line to manually re-cache data artifacts in PRs
-  # pull_request:
+  pull_request:
+    # Make any changes to the following files to refresh the cache in PRs
+    paths:
+      - '.github/workflows/ci-caches.yml'
+  workflow_dispatch:
   # Schedule runs on 12 noon every Sunday
   schedule:
     - cron: '0 12 * * 0'
@@ -22,12 +23,22 @@ concurrency:
 jobs:
   data_cache:
     name: Cache GMT data
-    # We have to use macOS, because Linux/Windows agents may fail to download
-    runs-on: macOS-latest
+    runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
       - name: Install GMT
-        run: brew install gmt
+        uses: mamba-org/setup-micromamba@v1.8.1
+        with:
+          environment-name: gmt
+          condarc: |
+            channels:
+              - conda-forge
+              - nodefaults
+          create-args: >-
+            gmt=6.5.0
 
       - name: Download remote data
         run: |
@@ -76,11 +87,18 @@ jobs:
           gmt which -Ga $data
           gmt which -Ga $data
           # Download cache files multiple times to make sure all are downloaded
+          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
+          mv ~/.gmt/gmt_data_server.txt ~/.gmt/server/
+          mv ~/.gmt/gmt_hash_server.txt ~/.gmt/server/
           gmt get -Dcache
           gmt get -Dcache
           gmt get -Dcache
+          # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
+          mkdir ~/.gmt/static/
+          mv ~/.gmt/server ~/.gmt/static/
+          mv ~/.gmt/cache ~/.gmt/static/
           # check files
-          ls -R ~/.gmt
+          ls -lR ~/.gmt
 
       # Upload the downloaded files as artifacts to GitHub
       - name: Upload artifacts to GitHub
@@ -88,8 +106,7 @@ jobs:
         with:
           name: gmt-cache
           path: |
-            ~/.gmt/cache
-            ~/.gmt/server
+            ~/.gmt/static
 
   vcpkg_cache:
     name: Cache vcpkg libraries
