@@ -1073,7 +1073,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				if ((c = gmt_first_modifier (GMT, opt->arg, "rv"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'M', c, "rv", &pos, p, &n_errors) && n_errors == 0) {	
+					while (gmt_getmodopt (GMT, 'M', c, "rv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'r':	/* Gave specific resolution for master frame */
 								Ctrl->M.dpu = atof (&p[2]);
@@ -1085,7 +1085,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
-					}								
+					}
 					c[0] = '\0';	/* Chop off modifiers so we just have -M[<frame>|f|l|m][,format] */
 				}
 				if ((s = strchr (opt->arg, ',')) ) {	/* Gave both frame and format */
@@ -1251,7 +1251,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Option -H: factor must be and integer > 1\n");
 	//n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->F.active[MOVIE_MP4] && !Ctrl->F.active[MOVIE_WEBM], "Option -A: Audio is only valid with -Fmp4 or -Fwebm\n");
 
-	
+
 	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
 		unsigned int n_used = 0;
 		for (k = MOVIE_ITEM_IS_LABEL; k <= MOVIE_ITEM_IS_PROG_INDICATOR; k++)
@@ -1729,8 +1729,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
 				if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
-					fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 					if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+					fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 					gmt_set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
 					fprintf (fp, "\tgmt figure movie_background ps\n");
 					fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
