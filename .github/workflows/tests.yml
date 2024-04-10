@@ -128,16 +128,16 @@ jobs:
           name: gmt-cache
           path: .gmt
 
-      # Pull baseline image data from dvc remote (DAGsHub)
-      - name: Pull baseline image data from dvc remote
-        run: dvc pull
-
       # Move downloaded files to ~/.gmt directory and list them
       - name: Move and list downloaded remote files
         run: |
-          mkdir -p ~/.gmt
-          mv .gmt/* ~/.gmt
-          ls -lRh ~/.gmt
+          mkdir -p ~/.gmt/static
+          mv .gmt/* ~/.gmt/static
+          ls -lRh ~/.gmt/static
+
+      # Pull baseline image data from dvc remote (DAGsHub)
+      - name: Pull baseline image data from dvc remote
+        run: dvc pull
 
       - name: Install GMT
         run: |
