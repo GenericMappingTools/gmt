@@ -24,6 +24,9 @@ jobs:
   data_cache:
     name: Cache GMT data
     runs-on: macos-latest
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
       - name: Install GMT
