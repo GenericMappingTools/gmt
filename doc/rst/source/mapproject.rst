@@ -250,7 +250,7 @@ Optional Arguments
 
 **-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Report a variety of plot dimensions or map regions in projected or geographic units.
-    No input files are read. With no argument we report the map width and hight. 
+    No input files are read. With no argument we report the map width and height.
     The chosen unit of reported plot dimensions may be changed via |-D|.  For
     other results, select from these directives:
 
