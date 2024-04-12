@@ -1511,11 +1511,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Determine if grid/image is to be projected */
 	need_to_project = (gmt_M_is_nonlinear_graticule (GMT) || Ctrl->E.dpi > 0);
-	if (need_to_project)
-		GMT_Report (API, GMT_MSG_DEBUG, "Projected grid is non-orthogonal, nonlinear, or dpi was changed\n");
-	else  if (Ctrl->D.active)			/* If not projecting no need for a pad */
-		gmt_set_pad(GMT, 0);
+	if (need_to_project && GMT->current.proj.projection == GMT_PROJ4_PROJS) {
+		if (GMT->current.proj.is_proj4)
+			if (strstr(GMT->common.J.proj4string, "longlat") || strstr(GMT->common.J.proj4string, "lonlat") || strstr(GMT->common.J.proj4string, "latlon"))
+				need_to_project = false;
+	}
+  
+	if (Ctrl->D.active)	gmt_set_pad(GMT, 0);		/* If not projecting no need for a pad */
+
 	pad_mode = (need_to_project) ? GMT_GRID_NEEDS_PAD2 : 0;
+
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (use_intensity_grid) {	/* Illumination grid desired */
 		if (Ctrl->I.derive) {	/* Illumination grid must be derived */
@@ -1689,16 +1694,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (!GMT->common.J.active) {	/* No map projection was supplied, set default */
-				if ((Grid_orig->header->ProjRefWKT != NULL) || (Grid_orig->header->ProjRefPROJ4 != NULL)) {
-					static char *Jarg[2] = {"X15c", "Q15c+"};	/* The two default projections for Cartesian and Geographic */
-					unsigned int kind = gmt_M_is_geographic (GMT, GMT_IN);
-					gmt_parse_common_options (GMT, "J", 'J', Jarg[kind]);	/* No projection specified, use linear or equidistant */
-					GMT->common.J.active = true;	/* Now parsed */
-				}
-				else if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-					GMT_Report (API, GMT_MSG_ERROR, "Must specify a map projection with the -J option\n");
-					Return (GMT_PARSE_ERROR);
-				}
+				static char *Jarg[2] = {"X15c/0", "Q15c+"};	/* The two default projections for Cartesian and Geographic */
+				unsigned int kind = gmt_M_is_geographic (GMT, GMT_IN);
+				gmt_parse_common_options (GMT, "J", 'J', Jarg[kind]);	/* No projection specified, use linear or equidistant */
+				GMT->common.J.active = true;	/* Now parsed */
 			}
 		}
 		if (!Ctrl->C.active)	/* Set no specific CPT so we turn -C on to use current or default CPT */
@@ -1718,11 +1717,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.dpi == 0) grdimage_adjust_R_consideration (GMT, header_work);	/* Special check for global pixel-registered plots */
 
-	/* Initialize the projection for the selected -R -J */
-	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+	/* Initialize the projection for the selected -R -J. It shouldn't be necessary when -A is in effect because it
+	   doesn't produce a map, but the grid projection machinery uses variables set by it. Can go away only when we implement
+	   image projections with GDAL instead.  
+	*/
+	if (gmt_map_setup(GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
-
 	if (!gmt_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant))
 		nothing_inside = true;	/* Means we can return an empty plot, possibly with a basemap */
 	else if (use_intensity_grid && !Ctrl->I.derive && !gmt_grd_setregion (GMT, Intens_orig->header, wesn, need_to_project * GMT->common.n.interpolant))
@@ -1997,12 +1998,16 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Project the input grid\n");
 			if ((Grid_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig)) == NULL)
 				Return (API->error);	/* Just to get a header we can change */
+
 			/* Determine the dimensions of the projected grid */
+			if (Ctrl->A.active && GMT->current.proj.rect[0] == GMT->current.proj.rect[1])	/* Somewhere behind we missed doing this */
+				gmt_M_memcpy(GMT->current.proj.rect, Grid_orig->header->wesn, 4, double);
 			grdimage_set_proj_limits (GMT, Grid_proj->header, Grid_orig->header, need_to_project, mixed);
+
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig->header->registration;
 			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->In.file)) Return (GMT_PROJECTION_ERROR);
+			                    Ctrl->In.file)) Return (GMT_PROJECTION_ERROR);
 			gmt_set_grddim (GMT, Grid_proj->header);	/* Recalculate projected grid dimensions */
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected grid */
@@ -2076,6 +2081,10 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 	}
 	else /* Use a different reference header for the image */
 		header_work = Img_proj->header;		/* Later when need to refer to the header, use this copy */
+
+	if (header_work->ProjRefPROJ4 == NULL && GMT->current.proj.is_proj4) header_work->ProjRefPROJ4 = strdup(GMT->common.J.proj4string);
+	if (!need_to_project && Ctrl->A.active && header_work->ProjRefPROJ4 == NULL && gmt_M_is_geographic(GMT, GMT_IN))
+		header_work->ProjRefPROJ4 = strdup("+proj=lonlat");
 
 	/* Assign the Conf structure members */
 	Conf->Grid      = Grid_proj;
