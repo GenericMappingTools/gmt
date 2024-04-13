@@ -463,15 +463,9 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
 	"lat_parallel"
 };
 
-#if defined(USE_COMMON_LONG_OPTIONS)
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_translate_to_short_options to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
  * options (e.g., -U"My plot"+o5c/6c) that the common and module parsers expect.
- *
- * For testing this there are two define statements that need to be set in ConfigUserAdvanced.cmake:
- *
- * -DUSE_COMMON_LONG_OPTIONS will allow us to test the gmt_common_kw array below.
- * -DUSE_MODULE_LONG_OPTIONS will allow us to test any module_kw settings in the modules
  *
  * Without these we are blind to the keyword arrays.  Note that while you can test the
  * common options without the module options, you cannot do the reverse.
@@ -483,7 +477,6 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
 static struct GMT_KEYWORD_DICTIONARY gmt_common_kw[] = {
 #include "gmt_common_longoptions.h"
 };
-#endif
 
 /* Local variables to gmt_init.c */
 
@@ -569,8 +562,7 @@ bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd) {
 }
 #endif
 
-#if defined(USE_COMMON_LONG_OPTIONS)
-GMT_LOCAL void gmtinit_handle_escape_text (char *text, char key, int way) {
+GMT_LOCAL void gmtinit_handle_escape_text(char *text, char key, int way) {
 	/* Deal with text that contains modifiers +? that should be seen as plain text
 	 * because they have a leading escape ("My dumb \+p text").  If way == 1 then
 	 * we replace \+ with two GMT_ASCII_ES (Escape) bytes and if way == -1 then we
@@ -600,7 +592,7 @@ GMT_LOCAL void gmtinit_handle_escape_text (char *text, char key, int way) {
 }
 
 /*! . */
-GMT_LOCAL char * gmtinit_colon_digexcl (char *string) {
+GMT_LOCAL char *gmtinit_colon_digexcl(char *string) {
 	/* Search for the first colon character that is not
 	 * both preceded and followed by a digit. This is
 	 * intended to ignore any colon which occurs within
@@ -630,7 +622,7 @@ GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predex
 #endif
 
 /*! . */
-GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
+GMT_LOCAL struct GMT_KEYWORD_DICTIONARY *gmtinit_find_kw(struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
 	/* Determine if this long-format arg is found in one of the two keyword lists kw1 (common) and kw2 (current module).
 	 * If we find a match we return a pointer to the corresponding keyword list and the index *k for the array entry index.
 	 * If not found then we return NULL and set index to -1 (GMT_NOTSET) */
@@ -658,7 +650,7 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *A
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_find_longoptmatch (struct GMTAPI_CTRL *API, char *longlist, char *shortlist, char *textin, int sepcode, unsigned int multidir, char *codechars, unsigned int codecharsbufsz, char *argout) {
+GMT_LOCAL int gmtinit_find_longoptmatch(struct GMTAPI_CTRL *API, char *longlist, char *shortlist, char *textin, int sepcode, unsigned int multidir, char *codechars, unsigned int codecharsbufsz, char *argout) {
 	/* Attempt to match the leading portion of textin with a long-option
 	 * directive or modifier string which is an element of longlist, a
 	 * single comma-subdivided string which concatenates a sequence of
@@ -926,7 +918,7 @@ GMT_LOCAL int gmtinit_find_longoptmatch (struct GMTAPI_CTRL *API, char *longlist
 	return ncodechars;
 }
 
-GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char separator, int k, int *sx) {
+GMT_LOCAL int gmtinit_get_section(struct GMTAPI_CTRL *API, char *arg, char separator, int k, int *sx) {
 	/* Find the k'th separator occurrence and chop off the rest, return pointer to start of k'th section */
 	int j = 0, kk = -1, s0 = 0, s = 0, last_s = 0;
 	gmt_M_unused (API);
@@ -953,7 +945,7 @@ GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char sepa
 }
 
 /*! . */
-GMT_LOCAL char * gmtinit_getfirstmodifier (char *string) {
+GMT_LOCAL char *gmtinit_getfirstmodifier(char *string) {
 	/* Return a pointer to the + character that marks the start
 	 * of the first modifier substring within string, where such
 	 * a substring always begins with a + character followed by
@@ -970,7 +962,7 @@ GMT_LOCAL char * gmtinit_getfirstmodifier (char *string) {
 }
 
 /*! . */
-GMT_LOCAL unsigned int gmtinit_copynextmodifier (char *string, unsigned int *srchstartpos, char *modstr) {
+GMT_LOCAL unsigned int gmtinit_copynextmodifier(char *string, unsigned int *srchstartpos, char *modstr) {
 	/* This routine is very loosely based (at least in terms of its
 	 * arguments and returns) on gmt_strtok() which was formerly used
 	 * in this context to return the next modifier substring within a string.
@@ -1017,7 +1009,7 @@ GMT_LOCAL unsigned int gmtinit_copynextmodifier (char *string, unsigned int *src
 }
 
 /*! . */
-GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options) {
+GMT_LOCAL void gmtinit_translate_to_short_options(struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options) {
 	/* Loop over given options and replace any recognized long-form --parameter[=value] arguments
 	 * with the corresponding classic short-format version -<code>[value]. Specifically, long-format is defined as
 	 *
@@ -1045,10 +1037,6 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 	unsigned int multidir;
 
 	if (options == NULL) return;	/* Nothing to process */
-
-	#if !defined(USE_MODULE_LONG_OPTIONS)
-	this_module_kw = NULL;	/* Debugging: Not testing the module long-options yet */
-	#endif
 
 	for (opt = *options; opt; opt = opt->next) {	/* Examine all incoming options */
 		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] long-option pair */
@@ -1209,7 +1197,6 @@ GMT_LOCAL void gmtinit_translate_to_long_options (struct GMTAPI_CTRL *API, struc
 }
 #endif
 
-#endif
 
 GMT_LOCAL int gmtinit_check_markers (struct GMT_CTRL *GMT) {
 	int error = GMT_NOERROR;
@@ -15662,11 +15649,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
 
-	#if defined(USE_COMMON_LONG_OPTIONS)
 	gmtinit_translate_to_short_options (API, this_module_kw, options);	/* Replace --long-option syntax with equivalent -onechar options */
-	#else
-	gmt_M_unused(this_module_kw);
-	#endif
 
 	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 	if (!is_PS) {	/* Override API default since module is a data processor */
