@@ -100,9 +100,6 @@ argument to the equivalent short-option argument.  That way, we only need to cal
 function at the start of a module and do the replacement.  Then, the specific
 parsers we already have for common and module options will work as is.  This design simplifies
 the coding tremendously and only requires us to create the translation tables.
-The approach has already been implemented and tested for the ~30 GMT Common Options and
-developers can play with this by adding the compiler flag **-DUSE_COMMON_LONG_OPTIONS**
-when building GMT.
 The translations for the GMT common options are encapsulated in a single include file
 (gmt_common_longoptions.h) that populates a *gmt_common_kw* structure and looks like this:
 
