@@ -272,7 +272,7 @@ Optional Arguments
         :width: 600 px
         :align: center
 
-        Use the |-M| option to paint the area between curves.  intersections and NaN-gaps are
+        Use the |-M| option to paint the area between curves. Intersections and NaN-gaps are
         found and the color depends on which curve is on top. Legends can be set as filled
         rectangles or lines with colors from the fill selections via **+r**.
 
