@@ -8014,9 +8014,11 @@ GMT_LOCAL void gmtplot_wipe_substr(char *str1, char *str2) {
 }
 #endif
 
-char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
+char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos, char *epsg2proj) {
 	/* Take a PROJ.4 projection string or EPSG code and try to find the equivalent -J syntax
 		scale_pos is position on the return string where starts the scale sub-string.
+		The pStr pointer is changed when in input it contains an EPSG code. On return it will
+		have the proj4 string corresponding to the EPSG code. That pointer can later be freed with free()
 	*/
 	unsigned int pos = 0;
 	//bool got_lonlat = false;
@@ -8031,7 +8033,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		pch[0] = '\0';
 	}
 	else {
-		GMT->current.ps.active ? sprintf(scale_c, "14c") : sprintf(scale_c, "1:1");
+		GMT->current.ps.active ? sprintf(scale_c, "15c") : sprintf(scale_c, "1:1");
 	}
 
 	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
@@ -8066,6 +8068,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			return (pStrOut);
 		}
 		snprintf(szProj4, GMT_LEN256-1, "%s", pszResult);
+		snprintf(epsg2proj, GMT_LEN256-1, "%s", pszResult);			/* This one now has the proj4 conversion of the EPSG code. */
 		if (scale_c[0] != '\0') strcat (szProj4, scale_c);		/* Add the width/scale found above */
 		CPLFree(pszResult);
 		OSRDestroySpatialReference(hSRS);

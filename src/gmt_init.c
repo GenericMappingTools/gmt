@@ -15794,9 +15794,14 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	GMT->current.ps.active = is_PS;		/* true if module will produce PS */
 
 	/* Check if there is an input remote grid or memory file so we may set geographic to be true now before we must decide on auto-J */
-	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
-		if (gmt_remote_dataset_id (API, opt->arg) != GMT_NOTSET)	/* All remote data grids/images are geographic */
-			gmt_set_geographic (GMT, GMT_IN);
+	if (options && (opt = GMT_Find_Option(API, GMT_OPT_INFILE, *options))) {
+		if (gmt_remote_dataset_id(API, opt->arg) != GMT_NOTSET) {	/* All remote data grids/images are geographic */
+			gmt_set_geographic(GMT, GMT_IN);
+			/* Above is not enough for tilled grids. That case looses this info when creating the final grid but a not
+			   consulting the units in the header of any of the tiles. Se we reinforce it with a fake -fg option.
+			*/
+			API->GMT->common.f.is_geo[0] = true;
+		}
 		else if (gmtlib_data_is_geographic (API, opt->arg))	/* This dataset, grid, image, matrix, or vector is geographic */
 			gmt_set_geographic (GMT, GMT_IN);
 	}
@@ -18238,7 +18243,7 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 
 GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
-	char  *item_t1 = NULL, *item_t2 = NULL, wktext[32] = {""}, *pch;
+	char  *item_t1 = NULL, *item_t2 = NULL, epsg2proj[GMT_LEN256] = {""}, wktext[32] = {""}, *pch;
 	bool   do_free = false;
 	int    error = 0, scale_pos;
 	size_t k, len;
@@ -18270,7 +18275,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 	/* Don't remember anymore if we still need to call gmt_importproj4(). We don't for simple
 	   mapproject usage but maybe we still need for mapping purposes. To-be-rediscovered.
 	*/
-	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos);		/* This is GMT -J proj string */
+	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos, epsg2proj);		/* This is the GMT -J proj string */
 	if (item_t2 && !GMT->current.ps.active && !strcmp(item_t2, "/1:1")) {
 		/* Even though it failed to do the mapping we can still use it in mapproject */
 		GMT->current.proj.projection_GMT = GMT_NO_PROJ;
@@ -18290,6 +18295,10 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 		}
 		else		/* Not particularly useful yet because mapproject will fail anyway when scale != 1:1 */
 			GMT->current.proj.projection_GMT = GMT_NO_PROJ;
+		
+		/* If input was a EPSG code, save the epsg -> proj conversion string. Save also if input was a +proj string */
+		if (epsg2proj[0] != '\0')   snprintf(GMT->common.J.proj4string, GMT_LEN256-1, "%s", epsg2proj);
+		else if (item_t1[0] == '+') snprintf(GMT->common.J.proj4string, GMT_LEN256-1, "%s", item_t1);
 
 		/* Check if the scale is 1 or 1:1, and don't get fooled with, for example, 1:10 */
 		pch = &item_t2[scale_pos];

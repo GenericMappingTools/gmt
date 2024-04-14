@@ -280,8 +280,8 @@ EXTERN_MSC void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct G
 EXTERN_MSC void gmt_map_title (struct GMT_CTRL *GMT, double x, double y);
 EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 EXTERN_MSC int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *dest);
-EXTERN_MSC char * gmt_export2proj4 (struct GMT_CTRL *GMT);
-EXTERN_MSC char * gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4, int *scale_pos);
+EXTERN_MSC char *gmt_export2proj4 (struct GMT_CTRL *GMT);
+EXTERN_MSC char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4, int *scale_pos, char *epsg2proj);
 EXTERN_MSC int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers);
 EXTERN_MSC void gmt_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]);
 EXTERN_MSC void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr);
