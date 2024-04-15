@@ -4,17 +4,23 @@
 name: Build
 
 on:
-  pull_request:
-    paths-ignore:
-      - 'doc/**'
-      - '!doc/**/CMakeLists.txt'
   push:
     branches:
       - master
       - 6.[0-9]+
-    paths-ignore:
-      - 'doc/**'
-      - '!doc/**/CMakeLists.txt'
+    paths:
+      - 'ci/**'
+      - 'cmake/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
+      - '.github/workflows/build.yml'
+  pull_request:
+    paths:
+      - 'ci/**'
+      - 'cmake/**'
+      - 'src/**'
+      - 'CMakeLists.txt'
+      - '.github/workflows/build.yml'
 
 defaults:
   run:
