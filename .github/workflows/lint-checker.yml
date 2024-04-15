@@ -3,6 +3,7 @@
 on:
   # enable pull request for debugging
   # pull_request:
+  workflow_dispatch:
   # Schedule runs daily
   schedule:
     - cron: '0 0 * * *'

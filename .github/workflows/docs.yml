@@ -10,9 +10,10 @@ on:
       - master
       - 6.[0-9]+
     paths:
-      - 'doc/**'
-      - '.github/workflows/**'
       - 'ci/**'
+      - 'doc/**'
+      - '**/CMakeLists.txt'
+      - '.github/workflows/docs.yml'
   release:
     types:
       - published

@@ -4,7 +4,6 @@
 name: Tests
 
 on:
-  pull_request:
   push:
     branches:
       - master
@@ -12,11 +11,16 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
-      - 'share/**'
       - 'doc/examples/**'
       - 'doc/scripts/**'
-      - '.github/workflows/**'
-      - 'ci/**'
+      - '.github/workflows/tests.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'doc/examples/**'
+      - 'doc/scripts/**'
+      - '.github/workflows/tests.yml'
 
 defaults:
   run:

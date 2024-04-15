@@ -1,6 +1,7 @@
 name: Reminders
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 1 */6 *' # Runs at midnight on the 1st day every 6th month
 

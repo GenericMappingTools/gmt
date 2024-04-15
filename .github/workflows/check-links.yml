@@ -4,6 +4,7 @@ name: Check Links
 on:
   # Uncomment the 'pull_request' line below to trigger the workflow in PR
   # pull_request:
+  workflow_dispatch:
   # Schedule runs on 12 noon every Sunday
   schedule:
     - cron: '0 12 * * 0'

@@ -5,10 +5,17 @@ on:
     branches:
       - master
       - '[0-9]+.[0-9]+'
+    paths:
+      - 'src/**'
+      - 'cmake/**'
+      - '**/*.sh'
+      - '.github/workflows/code-validator.yml'
   pull_request:
-    paths-ignore:
-      - 'doc/**'
-      - '!doc/**/CMakeLists.txt'
+    paths:
+      - 'src/**'
+      - 'cmake/**'
+      - '**/*.sh'
+      - '.github/workflows/code-validator.yml'
 
 name: Code Validator
 
