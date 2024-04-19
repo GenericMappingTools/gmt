@@ -436,7 +436,7 @@ recommended that any static part of the movie be considered either a static back
 a static foreground (to be made once by *foreground*; see **-Sf**); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
-the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
+the variables **MOVIE_WIDTH** or **MOVIE_HEIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
 exact canvas dimensions.
 
 External *PostScript* Layers
