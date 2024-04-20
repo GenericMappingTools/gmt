@@ -1,9 +1,15 @@
+#
+# Create an issue to remind us some important things.
+#
+# It's scheduled to run every 6 months.
+#
 name: Reminders
 
 on:
   workflow_dispatch:
+  # Scheduled to run at midnight on the 1st day every 6 months
   schedule:
-    - cron: '0 0 1 */6 *' # Runs at midnight on the 1st day every 6th month
+    - cron: '0 0 1 */6 *'
 
 jobs:
   review-known-failures:
@@ -29,5 +35,5 @@ jobs:
           gh issue create --title "$title" --body-file report.md
         fi
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
