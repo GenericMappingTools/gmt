@@ -1,4 +1,10 @@
-# This workflow checks the links in plaintext files in the repository
+# Check links in plaintext files in the repository
+#
+# This workflow runs the lychee tool to check all links in plaintext files. It will
+# create an issue if broken links are found.
+#
+# It is scheduled to run weekly at 12 noon every Sunday.
+#
 name: Check Links
 
 on:
@@ -13,12 +19,14 @@ jobs:
   check_links:
     name: Check Links
     runs-on: ubuntu-latest
+    if: github.repository == 'GenericMappingTools/gmt'
 
     steps:
     - name: Checkout the repository
       uses: actions/checkout@v4.1.1
 
     - name: Link Checker
+      id: lychee
       uses: lycheeverse/lychee-action@v1.9.3
       with:
         # 429: Too many requests
@@ -44,15 +52,15 @@ jobs:
           **/*.rst
           **/*.rst_
           **/*.md
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get current date
       id: date
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
     - name: Create Issue From File
-      uses: peter-evans/create-issue-from-file@v5
-      with:
-        title: Link Checker Report on ${{ steps.date.outputs.date }}
-        content-filepath: ./lychee/out.md
+      if: env.lychee_exit_code != 0
+      run: |
+        title="Link Checker Report on ${{ steps.date.outputs.date }}"
+        gh issue create --title "$title" --body-file ./lychee/out.md
+      env:
+        GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
