@@ -4,8 +4,8 @@
 #
 
 if [ ! -d cmake ]; then
-	echo "Must be run from top-level gmt directory"
-	exit 1
+    echo "Must be run from top-level gmt directory"
+    exit 1
 fi
 
 known_failures=$(grep -rl "GMT_KNOWN_FAILURE" test/**/*.sh doc/**/*.sh)
