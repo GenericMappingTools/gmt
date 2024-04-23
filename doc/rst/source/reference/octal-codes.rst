@@ -20,12 +20,6 @@ characters (shown in the light green boxes) you need to set
 
    Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts.
 
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_F_stand+_iso+.txt
-
 The chart for the Symbol character set (GMT font number 12) and Pifont
 ZapfDingbats character set (font number 34) are presented in
 Figure :ref:`Octal codes for Symbol and ZapfDingbats <Octal_codes_symbol_zap>` below. The octal code
@@ -44,12 +38,6 @@ firmware will not know about the euro).
    :align: center
 
    Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_F_symbol_dingbats.txt
 
 Footnote
 --------
