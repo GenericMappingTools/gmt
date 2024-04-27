@@ -21,7 +21,7 @@ on:
 defaults:
   run:
     # default to use bash shell
-    shell: bash
+    shell: bash -el {0}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -66,6 +66,10 @@ jobs:
           name: vcpkg-cache
           path: C:\vcpkg\installed\
         if: runner.os == 'Windows'
+
+      - name: Setup conda
+        uses: conda-incubator/setup-miniconda@v3
+        if: runner.os == 'macOS'
 
       - name: Install GMT dependencies
         run: |
