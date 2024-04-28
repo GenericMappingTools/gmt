@@ -33,6 +33,8 @@ Alternatively, you can build GMT from source by following the
 
 See also the general information about `Julia <https://julialang.org/learning/getting-started/>`_
 as well as the introduction to the Julia wrapper at
-https://www.generic-mapping-tools.org/GMT.jl/dev/usage/ and the very recommendable
-`Quick Learn <https://www.generic-mapping-tools.org/GMT.jl/dev/quick_learn/>`_. Complement with the instructions on how to
+`Introduction <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/general/introduction/index.html#introduction>`_
+and the very recommendable
+`Quick Learn <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/general/quick_learn/index.html#quick_learn/>`_.
+Complement with the instructions on how to
 install `GMT.jl <https://github.com/GenericMappingTools/GMT.jl#install>`_
