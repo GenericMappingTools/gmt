@@ -9,12 +9,17 @@ on:
       - master
       - 6.[0-9]+
     paths:
-      - 'src/**'
+      - 'ci/**'
       - 'cmake/**'
+      - 'src/**'
       - '**/CMakeLists.txt'
       - '.github/workflows/docker.yml'
   pull_request:
     paths:
+      - 'ci/**'
+      - 'cmake/**'
+      - 'src/**'
+      - '**/CMakeLists.txt'
       - '.github/workflows/docker.yml'
 
 defaults:

@@ -869,7 +869,7 @@ GMT_LOCAL bool gmtapi_modern_casename (char *arg) {
     /* Return true if argument is all letters of same case, e.g., pny, PNN, tift, jxx, i.e.,
      * the user did -pny map or -jxx map etc.  We will assume that is likely a typo and report that,
      * but this cannot possibly be foolproof. */
- 
+
     unsigned int k = 1;	/* First position beyond the leading letter */
 	if (islower (arg[0])) {	/* Expect all to be lower case letters */
 		while (arg[k]) {
@@ -4819,7 +4819,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			   so I had to set it to true in grdview (~# 884). However, having set to true means that gdalread would read it
 			   upside-down, so if image is not referenced GMT->common.R.active[RSET] is set to false.
 			   This is all a damn hack, but I couldn't find any other cleaner way to make it work for all the combinations of:
-			   Classic/Modern/Referenced/notReferenced. 
+			   Classic/Modern/Referenced/notReferenced.
 			*/
 			if (have_CRS && (GMT->common.R.active[RSET] && !S_obj->region && !GMT->common.R.oblique)) { /* subregion not passed to object yet */
 				gmt_M_memcpy (S_obj->wesn, GMT->common.R.wesn, 4U, double);
@@ -7627,7 +7627,7 @@ GMT_LOCAL void *gmtapi_get_data (void *V_API, int object_ID, unsigned int mode, 
 	gmtapi_set_object (API, S_obj);
 	//gmtapi_list_objects (API, "gmtapi_get_data");
 #endif
-	
+
 	/* 4GMT.jl For start, copy only 64 columns instead of the GMT_MAX_COLUMNS
 	   Don't change anything here without consulting with GMT.jl side
 	*/
@@ -12849,7 +12849,10 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 		if ((status = gmtapi_check_for_modern_oneliner (API, module, mode, args))) return status;	/* If a modern mode one-liner we must switch run--mode here, or fail if an error */
 		if (API->external && gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 			/* For externals only, print the equivalent command-line string under -Vd */
-			char *text = (mode == GMT_MODULE_OPT) ? GMT_Create_Cmd (API, args) : args;
+			char *text;
+			if (mode == GMT_MODULE_OPT) text = GMT_Create_Cmd (API, args);
+			else if (mode == GMT_MODULE_CMD) text = args;
+			else text = gmt_argv2str (NULL, mode, args);
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Call_Command string: gmt %s %s\n", module, text);
 			if (mode == GMT_MODULE_OPT) GMT_Destroy_Cmd (API, &text);
 		}
