@@ -29,5 +29,5 @@ jobs:
           gh issue create --title "$title" --body-file report.md
         fi
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ github.token }}
 
