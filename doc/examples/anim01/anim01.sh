@@ -3,7 +3,7 @@
 #
 # Purpose:      Make simple MP4 of sine function
 # GMT modules:  math, basemap, text, plot, movie, event
-# Unix progs:   echo, cat
+# Unix progs:   cat
 #
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/NjSDpQ5S3FM
