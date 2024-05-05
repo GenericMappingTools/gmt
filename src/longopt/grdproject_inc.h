@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,29 +22,25 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'C', "center",            "", "", "", "", GMT_TP_STANDARD },
+	{ '/', 'D', "increment|inc|spacing",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+	          "e,n",               "exact,number",
+		  GMT_TP_STANDARD },
+	{ 0, 'E', "dpi",               "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "one2one|one2one_scale",
+	          "c,i,p,e,f,k,M,n,u", "c,i,p,e,f,k,M,n,u",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+		  GMT_TP_STANDARD },
+	GMT_G_OUTGRID_KW,
+	{ 0, 'I', "inverse",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'M', "unit|projected_unit",
+	          "c,i,p",             "c,i,p",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'M', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDPROJECT_INC_H */

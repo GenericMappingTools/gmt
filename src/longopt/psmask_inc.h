@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,38 +22,25 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'C', "endclip",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "dump",              "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'F', "forceclip|oriented",
+	          "l,r",               "left|right",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'G', "fill",              "", "", "", "", GMT_TP_STANDARD },
+	GMT_I_INCREMENT_KW,
+	{ 0, 'L', "nodegrid",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Q', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "i,o",               "inside,outside",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "invert|inverse",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Q', "cut",               "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "search_radius",     "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "tiles",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !PSMASK_INC_H */

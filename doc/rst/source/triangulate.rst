@@ -25,7 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [**n**] ]
 [ |SYN_OPT-R| ]
-[ |-S| ]
+[ |-S|\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]] ]
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
@@ -59,12 +59,14 @@ input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
 network. If |-G| |-I| are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
-the triangulations is either that of *Watson* [1982] or *Shewchuk* [1996] [Default]
+the triangulation is either that of *Watson* [1982] or *Shewchuk* [1996] [Default]
 (if installed; type **gmt get GMT_TRIANGULATE** to see which method is
 selected). This choice is made during the GMT installation.  Furthermore,
 if the Shewchuk algorithm is installed then you can also perform the
 calculation of Voronoi polygons and optionally grid your data via the
-natural nearest neighbor algorithm.  **Note**: For geographic data with
+natural nearest neighbor algorithm.  Some Linux users may find their distribution
+does not provide Shewchuk due to it not being released under a GNU License.
+**Note**: For geographic data with
 global or very large extent you should consider :doc:`sphtriangulate`
 instead since **triangulate** is a Cartesian or small-geographic area operator
 and is unaware of periodic or polar boundary conditions.
@@ -165,9 +167,23 @@ Optional Arguments
 
 .. _-S:
 
-**-S**
+**-S**\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]]
     Output triangles as polygon segments separated by a segment header
-    record. Requires Delaunay triangulation.
+    record which contains node numbers *a-b-c* and **-Z**\ *polynumber*.
+    Optionally, append *first*, where *first* is an integer, to report
+    the polygon numbers by counting from *first* [Default starts at zero].
+    Incompatible with |-Q|. Optionally, add modifier
+
+    - **+z** - Request that **-Z**\ *zvalue* is placed in the segment headers,
+      where *zvalue* is a representable value for each triangle.  **Note**:
+    
+    Modifier **+z** implies |-Z|. Append directives to select that value:
+
+    - **a** - Select the mean value [Default].
+    - **l** - Select the lowest value.
+    - **m** - Select the median.
+    - **p** - Select the mode.
+    - **u** - Select the upper value.
 
 .. _-T:
 
@@ -184,8 +200,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    Controls whether we read (*x,y*) or (*x,y,z*) data and if *z* should be
-    output when |-M| or |-S| are used [Read (*x,y*) only].
+    Controls whether we read (*x, y*) or (*x, y, z*) data and if *z* should be
+    output when |-M| or |-S| (without **+z**) are used [Read (*x, y*) only].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_

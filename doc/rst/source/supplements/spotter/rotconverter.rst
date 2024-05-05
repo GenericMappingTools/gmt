@@ -133,7 +133,7 @@ model_total_reconstruction.APM to stage poles, run
 
 To obtain Nazca motion relative to Pacific hotspots by adding the motion
 of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference
-model DC85_stages.d, and report the result as total reconstruction
+model DC85_stages.txt, and report the result as total reconstruction
 reconstruction poles in the northern hemisphere, try
 
 ::

@@ -155,10 +155,10 @@ The domain of *x* and *y* will be shifted and scaled to [-1, 1] and the
 basis functions are built from Chebyshev polynomials. These have a
 numerical advantage in the form of the matrix which must be inverted and
 allow more accurate solutions. In many applications of **trend2d** the
-user has data located approximately along a line in the x,y plane which
+user has data located approximately along a line in the *x-y* plane which
 makes an angle with the *x*-axis (such as data collected along a road or
 ship track). In this case the accuracy could be improved by a rotation
-of the *x,y* axes. **trend2d** does not search for such a rotation;
+of the *x-y* axes. **trend2d** does not search for such a rotation;
 instead, it may find that the matrix problem has deficient rank.
 However, the solution is computed using the generalized inverse and
 should still work out OK. The user should check the results graphically

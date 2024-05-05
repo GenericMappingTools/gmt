@@ -4,7 +4,7 @@ gmt set FONT_LABEL 9p PROJ_ELLIPSOID sphere
 # Use sphere so we can compute scale between longitude and km exactly
 R=6371.0087714
 # Determine degree longitude at Equator that equals 5000 km
-dlon=`gmt math -Q 5000 $R DIV PI DIV 180 MUL 2 DIV =`
+dlon=$(gmt math -Q 5000 $R DIV PI DIV 180 MUL 2 DIV =)
 gmt psxy -R-100/100/0/80 -JM6i -P -Baf -K -Xc -W0.25p,- << EOF > $ps
 >
 -$dlon	0

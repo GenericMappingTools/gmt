@@ -1,0 +1,5 @@
+outs:
+- md5: 061c172ba4aedbde304ac4bfd6d7f75b
+  size: 378179
+  hash: md5
+  path: ex04c.ps

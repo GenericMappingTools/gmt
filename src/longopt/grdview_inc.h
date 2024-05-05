@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,32 +22,32 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	GMT_C_CPT_KW,
+	{ 0, 'G', "drapegrid|drape",   "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "illumination|shading|intensity",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
+	          "a,d,m,n",           "azimuth,default,ambient,args",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "plane",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
+	          "g",                 "color",
+		  GMT_TP_STANDARD },
+	{ 0, 'Q', "plottype|surftype",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
+	          "m",                 "monochrome|mono",
+		  GMT_TP_STANDARD },
+	{ 0, 'S', "smooth",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'T', "no_interp",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Q', "",
+	          "o,s",               "outlines,skipnans",
+		  GMT_TP_STANDARD },
+	{ 0, 'W', "pen",
+	          "c,m,f",             "contour,mesh,facade",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDVIEW_INC_H */

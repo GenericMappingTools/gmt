@@ -1,9 +1,9 @@
 .. index:: ! gmtget
 .. include:: module_core_purpose.rst_
 
-******
-gmtget
-******
+***
+get
+***
 
 |gmtget_purpose|
 
@@ -27,7 +27,7 @@ Synopsis
 Description
 -----------
 
-Normally, **gmt get** will list the value of one or more specified GMT default parameters.
+Normally, **get** will list the value of one or more specified GMT default parameters.
 Alternatively (with |-D|), it will instead download selected sets remote data from the
 current GMT data server.
 

@@ -34,7 +34,7 @@ The **-R** option defines the map region or data domain of interest. It may be s
 
 #. **-R**\ *gridfile*. This will copy the domain settings found for the grid in specified file. Note that depending on
    the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
-   :ref:`cookbook/options:Grid registration: The **-r** option`\ ).
+   :ref:`reference/options:Grid registration: The **-r** option`\ ).
 
 #. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]. This indirectly supplies the region by
    consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more

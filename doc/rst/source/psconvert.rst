@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*] ]
 [ |-L|\ *list* ]
 [ |-M|\ **b**\|\ **f**\ *pslayer* ]
-[ |-N|\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]] ]
+[ |-N|\ [**+f**\ *fade*][**+g**\ *background*][**+k**\ *fadecolor*][**+p**\ [*pen*]] ]
 [ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
 [ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**][**+q**\ *quality*] ]
@@ -38,13 +38,13 @@ Description
 -----------
 
 **psconvert** converts one or more PostScript files to other formats
-(BMP, EPS, JPEG, PDF, PNG, PPM, SVG, TIFF) using Ghostscript. Input file
+(BMP, EPS, JPEG, PDF, PNG, PPM, TIFF) using Ghostscript. Input file
 names are read from the command line or from a file that lists them. The
 size of the resulting images is determined by the BoundingBox (or
 HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
 may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
-recognized as geotiff.  **Note**: If the PostScript file calls on any of
+recognized as GeoTIFF.  **Note**: If the PostScript file calls on any of
 the Adobe PDF transparency extensions *and* PDF is not the selected output
 format, then the file will first be converted to a temporary PDF file
 (for the transparency to take effect) before converting the PDF to the
@@ -67,11 +67,13 @@ Optional Arguments
 
 **-A**\ [**+r**][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
-    by the image content. Append **+u** to first remove any GMT-produced time-stamps.
-    Append **+r** to *round* the HighResBoundingBox instead of using the ``ceil`` function.
-    This is going against Adobe Law but can be useful when creating very small images
-    where the difference of one pixel might matter. If |-V| is used we also report
-    the dimensions of the final illustration.
+    by the image content. Two modifiers may be used as well:
+
+    - **+r** - We *round* the HighResBoundingBox instead of using the ``ceil`` function.
+      This is going against Adobe Law but can be useful when creating very small images
+      where the difference of one pixel might matter. If |-V| is used we also report
+      the dimensions of the final illustration.
+    - **+u** - First remove any GMT-produced time-stamps (i.e., set by |SYN_OPT-U|).
 
 .. _-C:
 
@@ -130,17 +132,19 @@ Optional Arguments
 
 **-I**\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*]
     Adjust the BoundingBox and HiResBoundingBox by scaling and/or adding margins.
-    Append **+m** to specify extra margins to extend the bounding box.
-    Give either one (uniform), two (x and y) or four (individual sides)
-    margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
-    Append **+s**\ *width* to resize the output image to exactly *width* units.
-    The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
-    unit and/or impose different width and height (**Note**: This may change the
-    image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
-    work and the final image will retain the DPI resolution set by |-E|.  Append **+sm**
-    to set a maximum size and the new *width* is only imposed if the original figure width
-    exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
-    Alternatively, append **+S**\ *scale* to scale the image by a constant factor.
+    Choose from this set of modifiers:
+    
+    - **+m** - Specify extra margins to extend the bounding box.
+      Give either one (uniform), two (x and y) or four (individual sides)
+      margins; append plot unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
+    - **+s** - Append *width* to resize the output image to exactly *width* units.
+      The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
+      unit and/or impose different width and height (**Note**: This may change the
+      image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
+      work and the final image will retain the DPI resolution set by |-E|.  Prepend **m**
+      to set a maximum size and the new *width* is only imposed if the original figure width
+      exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
+    - **+S** - Append a *scale* to scale the image by a constant factor.
 
 .. _-L:
 
@@ -157,20 +161,15 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]]
-    Set optional BoundingBox fill color, fading, or draw the outline of the BoundingBox.
-    Append **+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
-    Append **+g**\ *paint* to paint the BoundingBox behind the illustration and
-    append **+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
-    the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
-    then we use *paint* as the fade color instead of black.
-    Append **+i**  to enforce gray-shades by using ICC profiles.  Ghostscript versions
-    >= 9.00 change gray-shades by using ICC profiles.  Ghostscript 9.05
-    and above provide the '-dUseFastColor=true' option to prevent that
-    and that is what **psconvert** does by default, unless modifier **+i** is
-    set.  Note that for Ghostscript >= 9.00 and < 9.05 the gray-shade
-    shifting is applied to all but PDF format.  We have no solution to
-    offer other than suggesting you upgrade Ghostscript.
+**-N**\ [**+f**\ *fade*][**+g**\ *background*][**+k**\ *fadecolor*][**+p**\ [*pen*]]
+    Set optional BoundingBox background fill color, fading, or draw the outline of the BoundingBox.
+    These modifiers lets you change the specifics:
+
+    - **+f** - Append *fade* to fade the entire plot towards *fadecolor* [black] (100%) [no fading, 0].
+    - **+g** - Append *background* to paint the BoundingBox behind the illustration.
+    - **+k** - Append *fadecolor* to set the fade color if **+f** is set [black].
+    - **+p** - Append [*pen*] to draw the BoundingBox outline (append a pen or accept
+      the default pen of 0.25p,black).
 
 .. _-Q:
 
@@ -190,16 +189,24 @@ Optional Arguments
 
 .. _-T:
 
-**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**][**+q**\ *quality*]
-    Sets the output format, where **b** means BMP, **e** means EPS,
-    **E** means EPS with PageSize command, **f** means PDF, **F** means
-    multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
-    transparent PNG (untouched regions are transparent), **m** means
-    PPM, **s** means SVG, and **t** means TIFF [default is JPEG]. To **bjgt** you can
-    append **+m** in order to get a monochrome (grayscale) image. To **j** you can
-    append **+q** to change JPEG quality in 0-100 range [90]. The EPS format can be
-    combined with any of the other formats. For example, **-Tef**
-    creates both an EPS and a PDF file. The **-TF** creates a multi-page
+**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **t**\ [**+m**][**+q**\ *quality*]
+    Sets the output format via one of these directives:
+
+    - **b** - Select BMP raster format.
+    - **e** - Select EPS vector graphics format.
+    - **E** - Same as **e** but with PageSize command.
+    - **f** - Select PDF vector graphics format.
+    - **F** - Same, but for multi-page PDF.
+    - **j** - Select JPEG raster format [Default].
+    - **g** - Select PNG raster format.
+    - **G** - Select transparent PNG raster format (untouched regions are transparent).
+    - **m** - Select PPM raster format.
+    - **t** - Select TIFF raster format.
+
+    **Notes**: (1) To directives **bjgt** you can append **+m** in order to get a monochrome
+    (grayscale) image. (2) To **j** you can append **+q** to change JPEG quality in 0-100
+    range [90]. (3) The EPS format can be combined with any of the other formats. For example,
+    **-Tef** creates both an EPS and a PDF file. (4) The **-TF** creates a multi-page
     PDF file from the list of input PS or PDF files. It requires the |-F| option.
     See also **NOTES** below.
 
@@ -212,7 +219,7 @@ Optional Arguments
 
 **-W**\ [**+a**\ *altmode*\ [*alt*]][**+c**][**+f**\ *minfade/maxfade*][**+g**][**+k**][**+l**\ *minLOD/maxLOD*][**+n**\ *layername*][**+o**\ *foldername*][**+t**\ *docname*][**+u**\ *URL*]
     Write an ESRI type world file suitable to make .tif files be
-    recognized as geotiff by software that know how to do it. Be aware,
+    recognized as GeoTIFF by software that know how to do it. Be aware,
     however, that different results are obtained depending on the image
     contents and if the |-B| option has been used or not. The trouble
     with the |-B| option is that it creates a frame and very likely
@@ -229,14 +236,14 @@ Optional Arguments
     Together with |-V| it prints on screen the *gdal_translate*
     (*gdal_translate* is a command line tool from the `GDAL package <https://gdal.org/>`_)
     command that reads the raster + world file and creates a true
-    geotiff file. Append **+g** to do a system call to *gdal_translate*
-    and create a geoTIFF image right away. The output file will have a
+    GeoTIFF file. Append **+g** to do a system call to *gdal_translate*
+    and create a GeoTIFF image right away. The output file will have a
     .tiff extension.
 
     The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a
     .tfw, for jpeg we have a .jgw and so on. **Note**: This option automatically
-    sets |-A| |-P|.  Append **+c** to *not* crop the image.
+    sets |-A| and |-P|.  Append **+c** to *not* crop the image.
 
     Append **+k** to create a minimalist KML file that allows loading the
     image in GoogleEarth. Note that for this option to work it is necessary that the postscript
@@ -270,7 +277,7 @@ Optional Arguments
 
     Further notes on the creation of georeferenced rasters.
     **psconvert** can create a georeferenced raster image with a world
-    file OR uses GDAL to convert the GMT PostScript file to geotiff.
+    file OR uses GDAL to convert the GMT PostScript file to GeoTIFF.
     GDAL uses `PROJ <https://proj.org/>`_ for its projection library. To provide with the
     information it needs to do the georeferencing, GMT embeds a
     comment near the start of the PostScript file defining the
@@ -330,12 +337,12 @@ exists in a PostScript file that is included in another document, this can wreak
 havoc on the printing or viewing of the overall document. Hence, **-TE** should only
 be used for "standalone" PostScript files.
 
-Although PDF and SVG are also vector formats, the |-E| option has an effect on
+Although PDF is also vector formats, the |-E| option has an effect on
 the resolution of pattern fills and fonts that are stored as bitmaps in
 the document. **psconvert** therefore uses a larger default resolution
-when creating PDF and SVG files. |-E| also determines the resolution of the
+when creating PDF files. |-E| also determines the resolution of the
 boundingbox values used to indicate the size of the output PDF.
-In order to obtain high-quality PDF or SVG files, the
+In order to obtain high-quality PDF files, the
 */prepress* options are in effect, allowing only loss-less DEFLATE
 compression of raster images embedded in the PostScript file.
 
@@ -343,12 +350,7 @@ Although **psconvert** was developed as part of the GMT, it can be
 used to convert PostScript files created by nearly any graphics
 program. However, **-A+u** is GMT-specific.
 
-The **ghostscript** program continues to be developed and occasionally its
-developers make decisions that affect **psconvert**.  As of version 9.16 the
-SVG device has been removed.  Fortunately, quality SVG graphics can be obtained
-by first converting to PDF and then install and use the package **pdf2svg**.
-
-See :ref:`include-gmt-graphics` of the **GMT Technical Reference and Cookbook** for more
+See :ref:`include-gmt-graphics` of the **GMT Technical Reference** for more
 information on how **psconvert** is used to produce graphics that can be
 inserted into other documents (articles, presentations, posters, etc.).
 
@@ -385,12 +387,12 @@ To create a simple linear map with :doc:`coast` and convert it to tif with a
     gmt psconvert cara.ps -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
-produce a true geotiff file::
+produce a true GeoTIFF file::
 
     gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside -ps cara
     gdalwarp -s_srs +proj=merc cara.tif carageo.tiff
 
-To create a Polar Stereographic geotiff file of Patagonia::
+To create a Polar Stereographic GeoTIFF file of Patagonia::
 
     gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48+r -Di -Gred -Bg2 --MAP_FRAME_TYPE=inside -ps patagonia
     gmt psconvert patagonia.ps -Tt -W+g -V
@@ -431,6 +433,7 @@ use it.
 Deprecations
 ------------
 
+- 6.5.0: Modifier +i of the |-N| option is deprecated (but honored). `#7972 <https://github.com/GenericMappingTools/gmt/pull/7972>`_
 - 6.3.0: Modifiers +m, +g et al of |-A| option are moved to |-I|, |-N|, or |-W| option. `#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_
 
 See Also

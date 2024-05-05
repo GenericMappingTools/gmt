@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -374,7 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
 				set++;
 				break;
 #ifdef OBSOLETE

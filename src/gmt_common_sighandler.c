@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -111,6 +111,8 @@ GMT_LOCAL void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # elif defined( __hppa__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.sc_iaoq[0])
+# elif defined( __loongarch__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.__pc)
 # elif defined(__m68k__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[R_PC])
 # elif defined(__riscv)

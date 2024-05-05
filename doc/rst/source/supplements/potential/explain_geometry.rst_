@@ -1,0 +1,12 @@
+Geometry Setup
+--------------
+
+We operate in a right-handed coordinate system where the positive *z*-axis
+is directed upwards.  In this scenario, topographic surfaces may be above
+or below a reference surface (typically the observation level) but the
+positive direction is always up.  Positive geopotential anomalies are
+thus aligned with the positive source (topographic relief) direction.
+If your input data are positive down (e.g., depths) then you will need
+to change the sign. For grids you can use the **+s** and **+o** modifiers
+to scale and offset the grid, while for table data you can use the **-i**
+modifier to scale and offset any column required.

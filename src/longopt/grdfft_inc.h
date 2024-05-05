@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,41 +22,35 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "azimuth|azim",      "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'C', "upward",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "differentiate|dfdz", "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'E', "radial_power|power_spectrum",
+	          "r,x,y",             "radial,x,y",
+	          "w,n",               "wavelength,normalize",
+		  GMT_TP_STANDARD },
+	{ 0, 'F', "filter",
+	          "r,x,y",             "isotropic,x,y",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+		  GMT_TP_STANDARD },
+	GMT_G_OUTGRID_KW,
+	{ 0, 'I', "integrate",
+	          "g",                 "gravity",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "dimensions|inquire",
+	          "a,f,m,r,s",         "accurate,actual,low_memory,rapid,show",
+	          "d,a,h,l,e,m,n,v,w,z",
+			               "detrend,remove_mean,remove_mid,leave_alone,edge_point,edge_mirror,no_extend,verbose,suffix,complex",
+		  GMT_TP_STANDARD },
+	{ 0, 'Q', "no_wavenum_ops",    "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'S', "scale",
+	          "d",                 "deflection",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Q', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'S', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDFFT_INC_H */

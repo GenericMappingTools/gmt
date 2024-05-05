@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 2009-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 2009-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -167,6 +167,9 @@
 #	define PRIuS "Iu"  /* printf size_t */
 #else
 #	define PRIuS "zu"  /* printf size_t */
+#endif
+#if _WIN32
+#include <fcntl.h>     /* for _O_TEXT and _O_BINARY */
 #endif
 
 /* Define bswap32 */
@@ -2150,12 +2153,19 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 							if (n_scan == 1) {	/* Got gray shade */
 								rgb[0] /= 255.0;	/* Normalize to 0-1 range */
 								rgb[1] = rgb[2] = rgb[0];
-								if (rgb[0] < 0.0 || rgb[0] > 1.0) error++;
+								if (rgb[0] < 0.0 || rgb[0] > 1.0) {
+									PSL_message (PSL, PSL_MSG_ERROR, "Error: Normalized gray value < 0 or > 1\n");
+									error++;
+								}
 							}
 							else if (n_scan == 3) {	/* Got r/g/b */
+								static char *color[3] = {"red", "green", "blue"};
 								for (p = 0; p < 3; p++) {
 									rgb[p] /= 255.0;	/* Normalize to 0-1 range */
-									if (rgb[p] < 0.0 || rgb[p] > 1.0) error++;
+									if (rgb[p] < 0.0 || rgb[p] > 1.0) {
+										error++;
+										PSL_message (PSL, PSL_MSG_ERROR, "Error: Normalized %s value < 0 or > 1\n", color[p]);
+									}
 								}
 							}
 							else	/* Got crap */
@@ -2341,7 +2351,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 
 	psl_freewords (word, n_alloc_txt);
 	PSL_free (word);
-	return (sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
+	return (error + sub_on|super_on|scaps_on|symbol_on|font_on|size_on|color_on|under_on);
 }
 
 static void psl_get_origin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2) {
@@ -4972,6 +4982,22 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	return (PSL_NO_ERROR);
 }
 
+int PSL_setrgb (struct PSL_CTRL *PSL, double rgb[]) {
+	/* Set the fill (PSL_IS_FILL) r/g/b color
+	 * rgb[0] >= 0: rgb is the color with R G B in 0-1 range.
+	 */
+	if (!rgb) return (PSL_NO_ERROR);	/* NULL args to be ignored */
+	if (PSL_same_rgb (rgb, PSL->current.rgb[PSL_IS_FILL])) return (PSL_NO_ERROR);	/* Same color as already set */
+
+	/* Then, finally, set the color using psl_putcolor */
+	PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb, 0));
+
+	/* Update the current stroke/fill color information */
+
+	PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
+	return (PSL_NO_ERROR);
+}
+
 char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset) {
 	/* Creates a text string with the corresponding PS command to set the pen */
 	static char buffer[PSL_BUFSIZ];
@@ -6044,7 +6070,7 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	unsigned char *buffer = NULL;
 	FILE *fp = NULL;
 
-	/* Open PostScript file */
+	/* Open PostScript file in binary mode; see below for reverting on Windows for gets reads */
 
 	if ((fp = fopen (file, "rb")) == NULL) {
 		PSL_message (PSL, PSL_MSG_ERROR, "Error: Cannot open image file %s!\n", file);
@@ -6069,6 +6095,14 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	h->magic = (int)value;
 
 	/* Scan for BoundingBox */
+
+#ifdef _WIN32
+	/* Reset I/O to text mode since we are using gets in psl_get_boundingbox */
+	if ( _setmode(_fileno(stdin), _O_TEXT) == -1 ) {
+		PSL_message (PSL, PSL_MSG_WARNING, "Could not set text mode for %s.\n", file);
+		return 0;
+	}
+#endif
 
 	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -762,6 +762,18 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((retval = nc_get_att_double (ncid, yvarid, "min", &south))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "max", &north))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "scale", &yscl))) continue;
+		if (GMT->current.setting.format_geo_out[0] == 'D') {	/* [-180 180]*/
+			if (west > 180) west -= 360;
+			if (east > 180) east -= 360;
+		}
+		else if (GMT->current.setting.format_geo_out[0] == '+') {	/* [0 360]*/
+			if (west < 0) west += 360;
+			if (east < 0) east += 360;
+		}
+		else if (GMT->current.setting.format_geo_out[0] == '-') {	/* [-360 0]*/
+			if (west > 0) west -= 360;
+			if (east > 0) east -= 360;
+		}
 		if (mode & GMT_DCW_REGION) {	/* Just update wesn */
 			Z[r_item].west = west;	Z[r_item++].east = east;
 			if (south < wesn[YLO]) wesn[YLO] = south;
@@ -798,7 +810,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		/* Extract the pieces into separate segments */
 		k = seg = 0;
 		done = false;
-	        while (!done) {
+		while (!done) {
 			first = GMT_NOTSET;
 			while (first == GMT_NOTSET && k < np) {	/* Look for next start of segment marker */
 				if (gmt_M_is_dnan (lon[k])) {
@@ -888,6 +900,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			wesn[XLO] = 0.0;
 			wesn[XHI] = 360.0;
 		}
+		/* US DCW can return dumb things like this: -R172.436/-66.9489 */
+		if (wesn[XLO] > 0.0 && wesn[XHI] < 0.0)	/* Crazy US, RU, and Fiji crossing dateline and get backwards limit signs... */
+			wesn[XHI] += 360.0;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	}
 	gmt_M_free (GMT, order);
@@ -904,7 +919,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (special) {	/* Plot via psxy or clip via psclip, then free dataset */
 		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};
-		static char *module[2] = {"psxy", "psclip"};
+		static char *module[4] = {"psxy", "psclip", "plot", "clip"};
+		if (GMT->current.setting.run_mode == GMT_MODERN) special += 2;	/* Use modern mode module names */
 		/* Get a virtual file for the current DCW dataset */
 		if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, in_string) == GMT_NOTSET) {
 			return (NULL);

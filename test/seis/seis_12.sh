@@ -21,7 +21,7 @@ gmt math -T2020-01-31T/2020-02-06T/2 --TIME_UNIT=h -o0 T = time.txt
 cat << EOF > main.sh
 gmt begin
 	gmt basemap -R0/250/0/100 -Jx0.02i/-0.02i -B -Y0.5i -X0.5i
-	gmt events labels.txt -L1 -Et -T\${MOVIE_COL0} -F+f12p,Helvetica-Bold,red+jBL -Dj0.1c --TIME_UNIT=d
+	gmt events labels.txt -L0.5 -Et -T\${MOVIE_COL0} -F+f12p,Helvetica-Bold,red+jBL -Dj0.1c --TIME_UNIT=d
 	gmt events -Z"coupe -Q -L -Sc3c -Ab128/11/120/250/90/400/0/100+f -Fa0.1i/cc" -Ct.cpt -N data.txt -T\${MOVIE_COL0} -Es+r1+p1+d1+f1 -Mi1+c-0.5 -Ms2+c0.5 -Mt+c0 -L3 --TIME_UNIT=d
 gmt end
 EOF

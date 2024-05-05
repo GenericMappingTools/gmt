@@ -29,7 +29,7 @@ Synopsis
 Description
 -----------
 
-Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
+Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in (*lon, lat*).
 The output can be either in the form of a grid or as a table printed to standard output. The format of the table data is:
 *time north east vertical* in units of meters.
 
@@ -97,7 +97,7 @@ Optional Arguments
     calculations.  If no |-T| is provided get current time in UTC from the computer clock. If no |-G| or |-S| are
     provided then |-T| is interpreted to mean compute a time-series at the location specified by |-L|, thus then |-L|
     becomes mandatory. When |-G| and |-T|, only first time T series is considered. Finally, dates may range from 1901
-    through 2099. For details on array creation, see `Generate 1D Array`_.
+    through 2099. For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
@@ -130,7 +130,7 @@ To obtain a one day long time-series, starting at same date, at the -7 *W*, 37 *
 
 ::
 
-    gmt earthtide -T2018-06-18T/2018-06-19T/1m -L-7/37 > solid_tide.dat
+    gmt earthtide -T2018-06-18T/2018-06-19T/1m -L-7/37 > solid_tide.txt
 
 
 The get the Sun and Moon position in geographical coordinates at the *now* time

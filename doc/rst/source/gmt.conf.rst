@@ -122,7 +122,7 @@ DIR Parameters
 
     **DIR_DATA**
         Session data directory. Overrides the value of the environment variable
-        **$GMT_DATADIR** (see :ref:`Directory parameters` in the CookBook).
+        **$GMT_DATADIR** (see :ref:`Directory parameters` in the Technical Reference).
 
     **DIR_DCW**
         Path to optional Digital Chart of the World polygon files.
@@ -204,7 +204,7 @@ FORMAT Parameters
         Formatting template that indicates how an output clock string is to
         be plotted. This template is then used to guide the formatting of
         clock strings in plot annotations. See :term:`FORMAT_CLOCK_OUT` for
-        details. [default is **hh:mm:ss**].
+        details [default is **hh:mm:ss**].
 
     **FORMAT_CLOCK_OUT**
         See :term:`FORMAT_CLOCK_IN`.
@@ -239,7 +239,7 @@ FORMAT Parameters
         and **u** instead of W[-]ww to plot "Week ##". Both of these text
         strings will be affected by the :term:`GMT_LANGUAGE`,
         :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
-        setting. [default is **yyyy-mm-dd**].
+        setting [default is **yyyy-mm-dd**].
 
     **FORMAT_DATE_OUT**
         Formatting template that indicates how an output date string is to
@@ -266,14 +266,14 @@ FORMAT Parameters
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
         which plots the absolute value of the coordinate. Not all items may be
-        plotted as this depends on the annotation interval. [default is
+        plotted as this depends on the annotation interval [default is
         :doc:`theme dependent <theme-settings>`].
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
         coordinate is to be formatted. This template is then used to guide
         the writing of geographical coordinates in data fields. The template
-        is in general of the form **[±]D** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
+        is in general of the form **[±]D[DD]** or **[±]ddd[:mm[:ss]][.xxx]** [default is **D**].
         By default, longitudes will be reported in the range [-180,180]. The
         various terms have the following purpose:
 
@@ -283,10 +283,11 @@ FORMAT Parameters
         **D**      Use :term:`FORMAT_FLOAT_OUT` for floating point degrees [default]
         **+D**     Output longitude in the range [0,360]
         **-D**     Output longitude in the range [-360,0]
-        **ddd**    Fixed format integer degrees
-        **:**      Delimiter used
-        **mm**     Fixed format integer arc minutes
-        **ss**     Fixed format integer arc seconds
+        **DDD**    Fixed format integer degrees (3 digits for longitude, 2 digits for latitude)
+        **ddd**    Integer degrees
+        **:**      Delimiter used (this will translate to degree, minute, seconds symbols on maps)
+        **mm**     Fixed format integer arc minutes (2 digits)
+        **ss**     Fixed format integer arc seconds (2 digits)
         **.xxx**   Floating fraction of previous integer field, fixed width
         **F**      Encode sign using WESN suffix
         **G**      Same as **F** but with a leading space before suffix
@@ -366,7 +367,7 @@ GMT Miscellaneous Parameters
     **GMT_DATA_SERVER**
         Name (or URL) of a GMT data server [default is **oceania**]. Please set
         to the data server closest to your location for faster data download. See
-        `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/>`_
+        `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/#data-server-mirrors>`_
         for a list of the currently available mirrors.
 
     **GMT_DATA_SERVER_LIMIT**
@@ -523,9 +524,12 @@ I/O Parameters
 .. glossary::
 
     **IO_COL_SEPARATOR**
-        This setting determines what character will separate ASCII output
-        data columns written by GMT. Choose from **tab**, **space**, **comma**, and
-        **none** [default is **tab**].
+        This setting determines what character will separate ASCII *output*
+        data columns written by GMT. Choose from **tab**, **space**, **comma**,
+        **semicolon** and **none** [default is **tab**]. You may also just give
+        any character or string (e.g., "--|--"). **Note**: When reading input
+        data GMT automatically skips white-space, commas, and semi-colons; you
+        cannot select an individual input column separator.
 
     **IO_FIRST_HEADER**
         This setting determines if the first segment header is written when
@@ -538,7 +542,7 @@ I/O Parameters
         invalid value, written as *ff*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*].
         The 2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
         :doc:`grdconvert` and Section :ref:`grid-file-format` of the GMT Technical
-        Reference and Cookbook for more information. You may the scale as **a**
+        Reference for more information. You may the scale as **a**
         for auto-adjusting the scale and/or offset of packed integer grids
         (=\ *ID*\ **+s**\ *a* is a shorthand for =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
         When *invalid* is omitted the appropriate value for the given format is used
@@ -547,7 +551,7 @@ I/O Parameters
     **IO_GRIDFILE_SHORTHAND**
         If **true**, all grid file names are examined to see if they use the
         file extension shorthand discussed in Section :ref:`grid-file-format` of
-        the GMT Technical Reference and Cookbook. If **false**, no filename
+        the GMT Technical Reference. If **false**, no filename
         expansion is done [default is **false**].
 
     **IO_HEADER**
@@ -564,11 +568,11 @@ I/O Parameters
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
-        contain (latitude,longitude) or (y,x) rather than the expected
-        (longitude,latitude) or (x,y). false means we have (x,y) both on
-        input and output. **true** means both input and output should be (y,x).
-        **IN** means only input has (y,x), while **OUT** means only output should
-        be (y,x) [default is **false**].
+        contain (*latitude,longitude*) or (**y, x**) rather than the expected
+        (longitude,latitude) or (*x, y*). false means we have (*x, y*) both on
+        input and output. **true** means both input and output should be (**y, x**).
+        **IN** means only input has (**y, x**), while **OUT** means only output should
+        be (**y, x**) [default is **false**].
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [default is **0**].
@@ -798,7 +802,7 @@ MAP Parameters
 
     **MAP_GRID_PEN**
         Sets both :term:`MAP_GRID_PEN_PRIMARY` and :term:`MAP_GRID_PEN_SECONDARY` to
-        the value specified. This setting is not include in the **gmt.conf** file.
+        the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
@@ -870,6 +874,13 @@ MAP Parameters
     **MAP_SCALE_HEIGHT**
         Sets the height (> 0) on the map of the map scale bars drawn by
         various programs [default is **5p**].
+
+    **MAP_SYMBOL_PEN_SCALE**
+        Used to convert non-fillable (**x**, **y**, **+** and **-**) symbol sizes
+        to the width of the pen used to stroke these symbols. Give a factor in the
+        0-1 range (e.g., 0.18) or specify a percentage (e.g., 10%) [15%]. **Note**:
+        If set to 0 then no such conversion takes place and pen settings must rely on
+        **-W** or module defaults.
 
     **MAP_TICK_LENGTH**
         Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY`
@@ -1164,7 +1175,7 @@ PostScript Parameters
         Sets the threshold angle in degrees (integer in range [0,180]) used
         for mitered joins only. When the angle between joining line segments
         is smaller than the threshold the corner will be bevelled instead of
-        mitered. [default is **35**]. Setting the threshold
+        mitered [default is **35**]. Setting the threshold
         angle to **0** implies the PostScript default of about 11 degrees.
         Setting the threshold angle to **180** causes all joins to be beveled.
 
@@ -1275,7 +1286,7 @@ Calendar/Time Parameters
         year in a 100-year sequence. For example, if
         :term:`TIME_Y2K_OFFSET_YEAR` is 1729, then numbers 29 through 99
         correspond to 1729 through 1799, while numbers 00 through 28
-        correspond to 1800 through 1828. [default is **1950**].
+        correspond to 1800 through 1828 [default is **1950**].
 
 See Also
 --------

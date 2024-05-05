@@ -10,7 +10,7 @@ smin=1.0
 smax=0.1
 vmin=0.3
 vmax=1.0
-y=`gmt math -Q $x 2 SQRT MUL =`
+y=$(gmt math -Q $x 2 SQRT MUL =)
 gmt grdmath -I1 -R0/255/0/255 Y 256 MUL X ADD = rgb_cube.grd
 gmt grdmath -I1 -R0/255/0/255 Y 255 DIV = v.grd
 gmt grdmath -I1 -R0/255/0/255 1 X Y DIV SUB X Y LE MUL = s.grd
@@ -87,7 +87,7 @@ gmt  psxy -R -JX -O -K -Sv14p+e+jc+h0.5 -G0 -W2p << EOF >> $ps
 EOF
 gmt pstext -R -JX -O -K -N -Dj0.05/0.05 -Gwhite << EOF >> $ps
 145	230	12	17	0	MC	Intensity @~\256@~ +1
-35	150	12	73	0	MC	\0551 @~\254@~ Intensity 
+35	150	12	73	0	MC	\0551 @~\254@~ Intensity
 EOF
 echo "grestore" >> $ps
 gmt psxy -R -JX -O -T >> $ps

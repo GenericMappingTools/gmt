@@ -1,0 +1,5 @@
+outs:
+- md5: 64d1e4e59749d15a72d133e7e4cfbf86
+  size: 32230
+  hash: md5
+  path: GMT_seamount_azim.ps

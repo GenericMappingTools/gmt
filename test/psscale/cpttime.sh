@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# See issue # 1092.  Fixed in r18275.
+# See issue # 1092.  Fixed in r18275. Old subversion stuff
 ps=cpttime.ps
 cat << EOF  > tmp.cpt
 98 black 100 black

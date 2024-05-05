@@ -1,5 +1,5 @@
 outs:
-- md5: f1509c2ff25cdb2b2fc09d836a3d1cf6.dir
-  size: 1581934
+- md5: 416c79243026ec7b60578a5bb74cf8b8.dir
   nfiles: 8
   path: greenspline
+  hash: md5

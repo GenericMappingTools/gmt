@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,44 +22,36 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'A', "area",
+	          "i,u",               "intersection,union",
+	          "i",                 "increment|inc",
+		  GMT_TP_STANDARD },
+	{ 0, 'C', "pointfile",         "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'D', "increment|inc",     "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'E', "tabs",
+	          "b",                 "polygon",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'C', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'F', "polygonfile",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+	          "i,o",               "in,out",
+		  GMT_TP_STANDARD },
+	{ 0, 'G', "force_remote",      "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "invert|reverse",
+	          "C,D,F,L,N,R,W,Z,r", "points,increment,polygons,lines,nans,region,range,zrange,registration",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+		  GMT_TP_MULTIDIR },
+	{ 0, 'L', "linefile",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'M', "margins",           "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "nans",
+	          "l,h",               "lower|lower_than,higher|higher_than",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'M', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'N', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'W', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'Z', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+		  GMT_TP_STANDARD },
+	{ 0, 'W', "range",             "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'Z', "zrange",            "", "", "", "", GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDSELECT_INC_H */

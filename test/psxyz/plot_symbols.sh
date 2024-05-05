@@ -29,7 +29,7 @@ gmt psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EO
 > Blue wedges -Gblue
 3.5	2.5	0	80	30	w
 0.5	1.5	0	30	80	w
-> Fat red pen -W2p,red
+> Fat red pen -W2p,red -G-
 1.5	1.5	0	x
 > Fat pen -W2p
 1.5	1.5	0	+

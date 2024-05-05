@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt histogram** [ *table* ]
-|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \| |-T|\ *file*\|\ *list*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] | |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*\ [**+b**] ]
@@ -111,10 +111,12 @@ Optional Arguments
 
 **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**]
     Annotate each bar with the count it represents.  Append any of the
-    following modifiers: Use **+b** to place the labels beneath the bars
-    instead of above; use **+f** to change to another font than the default
-    annotation font; use **+o** to change the offset between bar and label [6p];
-    use **+r** to rotate the labels from horizontal to vertical.
+    following modifiers:
+
+    - **+b** - Place the labels beneath the bars instead of above.
+    - **+f** - Change to another font than the default annotation font.
+    - **+o** - Change the offset between bar and label [6p].
+    - **+r** - Rotate the labels from horizontal to vertical.
 
 .. _-E:
 
@@ -143,8 +145,8 @@ Optional Arguments
 **-I**\ [**o**\|\ **O**]
     Inquire about min/max *x* and *y* after binning. The *xmin xmax ymin
     ymax* is output; no plotting is done. Append directive **o** to output an
-    ASCII table of the resulting *x,y* data instead. Upper case directive **O** will
-    output all *x,y* bin data even when *y* == 0. **Note**: You may use **-o**
+    ASCII table of the resulting *x, y* data instead. Upper case directive **O** will
+    output all *x, y* bin data even when *y* == 0. **Note**: You may use **-o**
     to select a subset from this record.
 
 .. _-Jz:
@@ -155,11 +157,11 @@ Optional Arguments
 
 **-Ll**\|\ **h**\|\ **b**
     The directives specify the handling of extreme values that fall outside the range
-    set by |-T|.  By default these values are ignored.  Append **b** to let
-    these values be included in the first or last bins.  To only include
-    extreme values below first bin into the first bin, use **l**, and to
-    only include extreme values above the last bin into that last bin, use
-    **h**.
+    set by |-T|.  By default these values are ignored.  Choose among these:
+
+    - **b** - Let these values be included in the first or last bins.
+    - **l** - Only include extreme values below first bin into the first bin.
+    - **h** - Only include extreme values above the last bin into that last bin.
 
 .. _-N:
 
@@ -224,8 +226,8 @@ Optional Arguments
     * 1 = frequency_percent
     * 2 = log (1.0 + count)
     * 3 = log (1.0 + frequency_percent)
-    * 4 = log10 (1.0 + count)
-    * 5 = log10 (1.0 + frequency_percent).
+    * 4 = :math:`\log_{10}` (1.0 + count)
+    * 5 = :math:`\log_{10}` (1.0 + frequency_percent).
 
     To use weights provided as a second data column instead of pure counts,
     append **+w**.

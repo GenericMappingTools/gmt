@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,35 +22,39 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "",
+		  short_directives,    long_directives,
+		  short_modifiers,     long_modifiers,
+		  transproc_mask */
+	{ 0, 'C', "oneliner",
+	          "n,t",               "numeric,name_at_end",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'D', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'D', "tiles",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'E', "",
+	          "i",                 "ignore_empty",
+		  GMT_TP_STANDARD },
+	{ 0, 'E', "extreme|extrema",
+	          "x,y",               "x,y",
+	          "l,L,u,U",           "min,minpos,max,maxneg",
+		  GMT_TP_STANDARD },
+	{ 0, 'F', "geographic",        "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'G', "download",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'I', "minmax_region",
+	          "b,i,o,r",           "polygon,imgexact,oblique,wesn",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'F', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'L', "force_scan",
+	          "0,1,2,p,a",         "scandata,medianL1,meanplus,modeLMS,all",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'G', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'M', "minmax_pos",
+	          "c,f",               "conditional,force",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'I', "",
+		  GMT_TP_STANDARD },
+	{ 0, 'T', "minmax",
 	          "",                  "",
-	          "",                  "" },
-	{ 0, 'M', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'L', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, 'T', "",
-	          "",                  "",
-	          "",                  "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+	          "a,s",               "alpha,symmetric",
+		  GMT_TP_STANDARD },
+	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
 };
 #endif  /* !GRDINFO_INC_H */

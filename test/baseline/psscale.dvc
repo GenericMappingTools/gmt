@@ -1,5 +1,6 @@
 outs:
-- md5: 6e0ca650ede513cd5f9082b611140a29.dir
-  size: 1379805
-  nfiles: 25
+- md5: bcfdbcb917f31d1c0e3b11261c5e7069.dir
+  size: 1557220
+  nfiles: 28
   path: psscale
+  hash: md5

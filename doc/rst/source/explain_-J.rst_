@@ -313,7 +313,7 @@ respectively):
 
     - **d** to indicate that data are geographical coordinates (in degrees).
     - **g** to indicate that data are geographical coordinates
-    - **l** to take log10 of values before scaling.
+    - **l** to take :math:`\log_{10}` of values before scaling.
     - **p**\ *power* to raise values to *power* before scaling.
     - **t** to indicate that input coordinates are time relative to :term:`TIME_EPOCH`.
     - **T** to indicate that input coordinates are absolute time.

@@ -93,7 +93,7 @@ vanimo|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [C=RGB]
 vik|Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]
 vikO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RGB]
 EOF
-here=`pwd`
+here=$(pwd)
 cd $DIR
 # Make formatted list of lines suitable for copying into gmt_cpt_masters.h
 awk -F'|' '{printf "\"SCM/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
@@ -109,7 +109,7 @@ cat <<- EOF > /tmp/front
 # COLOR_MODEL = RGB
 EOF
 while read line; do
-	cpt=`echo $line | awk -F'|' '{print $1}'`
+	cpt=$(echo $line | awk -F'|' '{print $1}')
 	cat <<- EOF > gmt_cpts/$cpt.cpt
 	#
 	EOF

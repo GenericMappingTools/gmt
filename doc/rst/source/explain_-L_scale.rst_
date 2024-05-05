@@ -16,7 +16,7 @@
       **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
     - **+a**\ *align* to change the label alignment (choose among **l**\ (eft), **r**\ (ight), **t**\ (op), and
       **b**\ (ottom)) [default is **t**\ (op)].
-    - **+c**\ [[*slon*/]\ *slat*]] to control where on a geographic map the scale applies. Map scale is calculated for
+    - **+c**\ [[*slon*/]\ *slat*] to control where on a geographic map the scale applies. Map scale is calculated for
       latitude *slat* (optionally supply longitude *slon* for oblique projections [default is central meridian]). If
       **+c** is not given we default to the location of the *refpoint*. If **+c** is given with no arguments then we
       select the scale origin to be the middle of the map.

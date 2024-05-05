@@ -22,6 +22,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -51,26 +52,26 @@ Required Arguments
 .. _-D:
 
 **-D**\ *flag*
-    Distance *flag* tells how grid (x,y) relates to filter *width* as
+    Distance *flag* tells how grid (*x, y*) relates to filter *width* as
     follows:
 
     - *flag* = p: grid (px,py) with *width* an odd number of pixels;
       Cartesian distances.
-    - *flag* = 0: grid (x,y) same units as *width*, Cartesian distances.
-    - *flag* = 1: grid (x,y) in degrees, *width* in km, Cartesian
+    - *flag* = 0: grid (*x, y*) same units as *width*, Cartesian distances.
+    - *flag* = 1: grid (*x, y*) in degrees, *width* in km, Cartesian
       distances.
-    - *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
+    - *flag* = 2: grid (*x, y*) in degrees, *width* in km, dx scaled by
       cos(middle y), Cartesian distances.
 
     The above options are fastest because they allow weight matrix to be
     computed only once. The next three options are slower because they
     recompute weights for each latitude.
 
-    - *flag* = 3: grid (x,y) in degrees, *width* in km, dx scaled by
+    - *flag* = 3: grid (*x, y*) in degrees, *width* in km, dx scaled by
       cosine(y), Cartesian distance calculation.
-    - *flag* = 4: grid (x,y) in degrees, *width* in km, Spherical distance
+    - *flag* = 4: grid (*x, y*) in degrees, *width* in km, Spherical distance
       calculation.
-    - *flag* = 5: grid (x,y) in Mercator **-Jm**\ 1 img units, *width* in
+    - *flag* = 5: grid (*x, y*) in Mercator **-Jm**\ 1 img units, *width* in
       km, Spherical distance calculation.
 
 .. _-F:
@@ -86,7 +87,7 @@ Required Arguments
     the output filtered grid.
     Some filters allow for optional arguments and modifiers.
 
-    Convolution filters (and their codes) are:
+    Convolution filters (and their directives) are:
 
     - (**b**) Boxcar: All weights are equal.
     - (**c**) Cosine Arch: Weights follow a cosine arch curve.
@@ -102,7 +103,7 @@ Required Arguments
       be integer multiples. Weights are assumed to sum to zero so no
       accumulation of weight sums and normalization will be done.
 
-    Non-convolution filters (and their codes) are:
+    Non-convolution filters (and their directives) are:
 
     - (**m**) Median: Returns median value. To select another quantile
       append **+q**\ *quantile* in the 0-1 range [Default is 0.5, i.e., median].
@@ -142,13 +143,14 @@ Optional Arguments
 .. _-N:
 
 **-N**\ **i**\|\ **p**\|\ **r**
-    Determine how NaN-values in the input grid affects the filtered
-    output: Append **i** to ignore all NaNs in the calculation of
-    filtered value [Default], **r** is same as **i** except if the input
-    node was NaN then the output node will be set to NaN (only applies
-    if both grids are co-registered), and **p** which will force the
-    filtered value to be NaN if any grid-nodes with NaN-values are found
-    inside the filter circle.
+    Determine how NaN-values in the input grid affect the filtered
+    output. Append one of three directives:
+
+    - **i**: Ignore all NaNs in the calculation of filtered value [Default].
+    - **p**: Force the filtered value to be NaN if any grid-nodes with NaN-values
+      are found inside the filter circle.
+    - **r**: Similar to **i** except if the input node was NaN then the output
+      node will be set to NaN (only applies if both grids are co-registered).
 
 .. _-R:
 
@@ -174,6 +176,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 

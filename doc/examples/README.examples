@@ -18,7 +18,7 @@
 # Those who plan to use the .bat files should seriously ask
 # themselves why they have not installed
 # [cygwin](https://www.cygwin.com) or [git bash](https://git-scm.com/downloads).
-# See https://docs.generic-mapping-tools.org/latest/cookbook/non-unix-platforms.html
+# See https://docs.generic-mapping-tools.org/latest/reference/non-unix-platforms.html
 # for more on that.
 #
 # Scripts that are known to fail can be excluded from the test

@@ -39,7 +39,7 @@ Ways to Contribute to Community Building
 - Participate in discussions at the monthly GMT Community Meetings, which are announced on the
   `forum governance page <https://forum.generic-mapping-tools.org/c/governance/>`_.
 - Cite GMT when using the project.
-- Spread the word about GMT or start the project!
+- Spread the word about GMT or star the project!
 
 Providing Feedback
 ------------------
@@ -85,7 +85,7 @@ Please take a look at these resources to learn about Git and pull requests (don'
 hesitate to :ref:`ask for help <devdocs/contributing:Getting Help>`):
 
 - `How to Contribute to Open Source <https://opensource.guide/how-to-contribute/>`_.
-- `Git Workflow Tutorial <http://www.asmeurer.com/git-workflow/) by Aaron Meurer>`_.
+- `Git Workflow Tutorial <http://www.asmeurer.com/git-workflow/>`_ by Aaron Meurer.
 - `How to Contribute to an Open Source Project on GitHub <https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github>`_.
 
 Getting Help
@@ -239,14 +239,18 @@ You may need to know some basic reST syntax before making changes. Please refer 
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you 
-need to `build GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_. Be sure 
-to also satisfy the 
-`developement dependencies <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md#development-dependencies>`_ 
-before proceeding. Have a look at the options in ``cmake/ConfigUserAdvanced.cmake`` if you want to change the 
-target directory for the documenation you are about to build.
+Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you
+need to `build GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_. Be sure
+to also satisfy the
+`development dependencies <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md#development-dependencies>`_
+before proceeding. Have a look at the options in ``cmake/ConfigUserAdvanced.cmake`` if you want to change the
+target directory for the documentation you are about to build.
 
-After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, 
+To build the documentation, you also need to install some Python packages (the Sphinx theme and extensions). These packages are listed in ``doc/rst/requirements.txt`` and can be installed via::
+
+    $ python -m pip install -r doc/rst/requirements.txt
+
+After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_,
 you can then build the GMT documentation using the following commands within the ``build`` directory::
 
   dvc pull
@@ -434,11 +438,12 @@ using the following steps:
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the failing tests now pass.
 - Run ``dvc diff`` to check that modified files are in the correct directory.
-- Add the modified images to dvc using ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``, or ``dvc add doc/examples/images``
-  depending on the type of test modified.
+- Add the modified images to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``,
+  or ``dvc add doc/examples/images/<newplot.ps>``
+  depending on the type of test modified. RUn one dvc add command per updated PostScript plot.
 - Check that the .dvc file was updated by running ``git status``.
-- Stage the modified .dvc file in git using ``git add test/baseline/<module>.dvc``, ``dvc add doc/scripts/images.dvc``, or
-  ``dvc add doc/examples/images.dvc``.
+- Stage the modified .dvc files in git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``,
+  or ``git add doc/examples/images/<newplot.ps>.dvc``, again per updated file.
 - Commit the changes using ``git commit``.
 - Open a pull request on GitHub with your changes.
 - Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
@@ -455,7 +460,7 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
 - Create a new shell script in the subdirectory under ``test/`` that corresponds to the module you are testing. The
   name of the shell script should be descriptive and unique.
 - Include ``#!/usr/bin/env bash`` and a short description of the test at the top of the script.
-- Add the content of the script that will create a PostScript file. Some general guidelines:
+- Add the content of the script that will create a PostScript file (here just called <newplot.ps>). Some general guidelines:
 
   - Use as small a dataset as possible. See the
     `GMT server cache <https://github.com/GenericMappingTools/gmtserver-admin/tree/master/cache>`_ for some example
@@ -469,11 +474,13 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the new test passes.
 - Run ``dvc diff`` to check that the new file is in the correct directory.
-- Add the new images to dvc using ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``, or ``dvc add doc/scripts/examples``
+- For the first test of a module, you add the directory via ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``,
+  or ``dvc add doc/scripts/examples``. For later addition you do so per file, e.g. ``dvc add test/baseline/<module>/<newplot.ps>``,
+  ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
   depending on the type of test modified.
 - Check that the .dvc file was updated by running ``git status``.
-- Add the modified .dvc file to git using ``git add test/baseline/<module>.dvc``, ``dvc add doc/scripts/images.dvc``, or
-  ``dvc add doc/examples/images.dvc``.
+- Add the modified .dvc file to git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``, or
+  ``git add doc/examples/images/<newplot.ps>.dvc``.
 - Commit the changes using ``git commit``.
 - Open a pull request on GitHub with your changes.
 - Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first

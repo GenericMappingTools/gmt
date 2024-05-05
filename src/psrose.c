@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -564,7 +564,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	n = 0;
-	n_in = (GMT->common.i.select && GMT->common.i.n_cols == 1) ? 1 : 2;
+	n_in = (GMT->common.i.col.select && GMT->common.i.col.n_cols == 1) ? 1 : 2;
 
 	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);

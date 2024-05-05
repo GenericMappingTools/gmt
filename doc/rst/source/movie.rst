@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt movie** *mainscript*
-|-C|\ *canvas*
+|-C|\ *canvassize*
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-A|\ *audiofile*\ [**+e**] ]
@@ -73,28 +73,30 @@ Required Arguments
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ **x**\ *height*\ **x**\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
+    Alternatively, give dimensions in pixels and append modifiers **+c** or **+i** to indicate that *dpu* is
+    per cm or per inches.
     
     .. _tbl-presets:
 
-    =================================== ================
-    Preset format (alias)               Pixel dimensions
-    =================================== ================
+    =================================== ================== ========= ========== 
+    Preset format (alias)               Pixel dimensions   DPC       DPI       
+    =================================== ================== ========= ========== 
     *16:9 (24x13.5 cm or 9.6x5.4 inch)*
-    4320p (8k and uhd-2)                7680 x 4320
-    2160p (4k and uhd)                  3840 x 2160
-    1080p (fhd and hd)                  1920 x 1080
-    720p                                1280 x 720
-    540p                                960 x 540
-    480p                                854 x 480
-    360p                                640 x 360
-    240p                                426 x 240
+    4320p (8k and uhd-2)                7680 x 4320        320       800       
+    2160p (4k and uhd)                  3840 x 2160        160       400       
+    1080p (fhd and hd)                  1920 x 1080        80        200       
+    720p                                1280 x 720         53.3333   133.3333  
+    540p                                960 x 540          40        100       
+    480p                                854 x 480          35.5833   88.9583   
+    360p                                640 x 360          26.6667   66.6667   
+    240p                                426 x 240          17.75     44.375    
     *4:3 (24x18 cm or 9.6x7.2 inch)*
-    uxga                                1600 x 1200
-    sxga+                               1400 x 1050
-    xga                                 1024 x 768
-    svga                                800 x 600
-    dvd                                 640 x 480
-    =================================== ================
+    uxga                                1600 x 1200        66.6667   166.6667  
+    sxga+                               1400 x 1050        58.3333   145.8333  
+    xga                                 1024 x 768         42.6667   106.6667  
+    svga                                800 x 600          33.3333   83.3333   
+    dvd                                 640 x 480          26.6667   66.6667   
+    =================================== ================== ========= ========== 
 
 .. _-N:
 
@@ -168,8 +170,10 @@ Optional Arguments
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
     all; this requires |-M|.  Several modifiers are available:
 
+    - **+i** may be used to add additional FFmpeg encoding settings for the input file (in quotes if more
+      than one word).
     - **+l** turns on looping for *gif* animations; optionally append how many times to repeat [infinite].
-    - **+o** may be used to add additional FFmpeg encoding settings for *mp4* and *webm* (in quotes if more
+    - **+o** may be used to add additional FFmpeg encoding settings for the output file (*mp4* or *webm*; in quotes if more
       than one word).
     - **+s** creates a crude animated *gif* provided either a *mp4* or *webm* product has been selected. You
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
@@ -432,7 +436,7 @@ recommended that any static part of the movie be considered either a static back
 a static foreground (to be made once by *foreground*; see **-Sf**); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
-the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
+the variables **MOVIE_WIDTH** or **MOVIE_HEIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
 exact canvas dimensions.
 
 External *PostScript* Layers
@@ -477,7 +481,7 @@ Using |-A|\ [**+e**], you can include an audio track, such as narrating the anim
 whatever you have on tap. The final movie will have a length matching the longest of the audio or animation,
 so you probably will want to process you audio file to fit your animation.  Since the animation length
 is known to be *n_frames / displayrate* you can preprocess the audio track to have the matching length.
-Alternatively, if the audio track is approximately the same length as the video (withing ±50% of animation
+Alternatively, if the audio track is approximately the same length as the video (within ±50% of animation
 length), append **+e** to scale the audio track to have the exact same length as the animation.
 
 Technical Details

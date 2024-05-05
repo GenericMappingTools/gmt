@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -361,10 +361,10 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 						}
 					}
 					else if (!strchr (opt->arg, '/'))
-						n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
+						n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &sval);
 				}
 				else
-					n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
+					n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &sval);
 				if (gmt_M_compat_check (GMT, 5) && (strstr (opt->arg, "+a") || (opt->arg[0] == 'g' || opt->arg[0] == 'c'))) {	/* Deprecated syntax */
 					GMT_Report (API, GMT_MSG_COMPAT, "-Nc|g[+a] option is deprecated; use -T[<min>/<max>/]<int>[+a|n] instead.\n");
 					if ((c = strstr (opt->arg, "+a"))) {	/* Want to output any spatial distances computed */

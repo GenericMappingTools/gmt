@@ -14,5 +14,5 @@ Specifying Pens
     `Specifying Color`_ above). *style* can be any of 'solid', 'dashed'
     'dotted', 'dashdot', or 'dotdash', or a custom combination of dashes '-' and
     dots '.'. If any of the attributes is omitted their default or
-    previous setting will be retained. See GMT Cookbook & Technical
+    previous setting will be retained. See GMT Technical
     Reference :ref:`Specifying pen attributes <-Wpen_attrib>` for more information.

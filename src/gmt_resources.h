@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -576,7 +576,8 @@ enum GMT_enum_color {
 	GMT_HSV			= 2,
 	GMT_COLORINT		= 4,
 	GMT_NO_COLORNAMES	= 8,
-	GMT_HEX_COLOR	= 16
+	GMT_HEX_COLOR		= 16,
+	GMT_GRAY		= 32,
 };
 
 enum GMT_enum_bfn {
@@ -597,6 +598,7 @@ enum GMT_enum_cptflags {
 	GMT_CPT_SOFT_HINGE = 8,
 	GMT_CPT_TIME       = 16,
 	GMT_CPT_COLORLIST  = 32,
+	GMT_CPT_GRAY_SET   = 64,
 	GMT_CPT_HINGED     = 4	/* Backwards compatibility with 6.0 API */
 };
 

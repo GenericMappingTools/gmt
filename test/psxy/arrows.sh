@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 ps=arrows.ps
-xr=`gmt math -Q 1 15 COSD MUL 1.5 ADD =`
-xri=`gmt math -Q 1 15 COSD MUL 1.5 SUB =`
-xl=`gmt math -Q $xr NEG =`
-xli=`gmt math -Q $xri NEG =`
+xr=$(gmt math -Q 1 15 COSD MUL 1.5 ADD =)
+xri=$(gmt math -Q 1 15 COSD MUL 1.5 SUB =)
+xl=$(gmt math -Q $xr NEG =)
+xli=$(gmt math -Q $xri NEG =)
 gmt psbasemap -R-3/3/0/9 -Jx1i -P -Baf -K -Xc > $ps
 gmt psxy -R -J -O -K -W0.5p << EOF >> $ps
 > -W0.5p

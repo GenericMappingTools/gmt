@@ -1,0 +1,53 @@
+GSFML Supplemental Package
+Distributed under the GNU Lesser Public License; see file
+LICENSE.TXT in main GMT directory.
+
+------------------------------------------------------
+Author:		Paul Wessel (pwessel@hawaii.edu)
+		SOEST, University of Hawaii
+Date:		December 1, 2023
+Version:	6 (for GMT 6 release).
+------------------------------------------------------
+
+This directory contains:
+
+README.gsfml		: This document
+fzanalyzer.c		: fzanalyser C program code
+fzblender.c	   	: fzblender C program code
+mlconverter.c		: mlconverter C program code
+fz_analysis.h     : Include file for these programs
+CK1995n.h         : Cande & Kent 1995 normal chron ages
+Chron_Normal.h    : Normal Chron identifiers
+Chron_Reverse.h   : Referse Chron identifiers
+GST2004n.h        : Gradstein et al 2004 normal chron ages
+GST2012n.h        : Gradstein et al 2012 normal chron ages
+Geek2007n.h       : Gee and Kent 2007 normal chron ages
+CK1995r.h         : Cande & Kent 1995 reverse chron ages
+Chron_Normal2.h   : Normal Chron identifiers without periods or dashes
+Chron_Reverse2.h  : Referse Chron identifiers without periods or dashes
+GST2004r.h        : Gradstein et al 2004 reverse chron ages
+GST2012r.h        : Gradstein et al 2012 reverse chron ages
+Geek2007r.h       : Gee and Kent 2007 reverse chron ages
+
+
+This package contains 3 programs and 4 bash scripts that may be useful
+to people who work with seafloor fabric and magnetic lineations.
+The seven programs are
+
+	fzanalyser  - Analysis of fracture zones using crossing profiles
+	fzblender   - Optimal refinement of fracture zone traces
+	mlconverter - Convert chron strings to ages using a magnetic time scale
+	fzinformer  - Plot along-FZ statistical information
+	fzmapper    - Make Mercator map of FZ traces and cross-profiles
+	fzmodeler   - Make and optionally plot a synthetic FZ model profile
+	fzprofiler  - Plot one or all FZ cross-profiles
+   fz_funcs.sh - Sub-functions for the 4 scripts
+
+REFERENCES:
+
+-> The hotspotting technique:
+
+Wessel, P., K. J. Matthews, R. D. Müller, A. Mazzoni, J. M. Whittaker,
+  R. Myhill, and M. T. Chandler, 2015, Semiautomatic fracture zone tracking,
+  Geochemistry, Geophysics, Geosystems, 10.1002/2015GC005853,
+  http://dx.doi.org/10.1002/2015gc005853.

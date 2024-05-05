@@ -14,10 +14,10 @@ cat << EOF > badpol.txt
 177 -46
 160 -46
 EOF
-scl=`gmt math -Q 6 215 170 SUB DIV =`
-scl=`gmt math -Q 6 215 155 SUB DIV =`
-xr=`gmt math -Q 205 155 SUB $scl MUL =`
-xl=`gmt math -Q 170 155 SUB $scl MUL =`
+scl=$(gmt math -Q 6 215 170 SUB DIV =)
+scl=$(gmt math -Q 6 215 155 SUB DIV =)
+xr=$(gmt math -Q 205 155 SUB $scl MUL =)
+xl=$(gmt math -Q 170 155 SUB $scl MUL =)
 gmt psxy -R0/8/0/10 -Jx1i -P -K -W0.25p,- << EOF > $ps
 >
 $xr	0

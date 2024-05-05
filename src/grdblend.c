@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -204,7 +204,8 @@ GMT_LOCAL bool grdblend_outside_cartesian_x_range (struct GMT_GRID_HEADER *h, do
 
 EXTERN_MSC void gmtlib_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
-GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, bool delayed, struct GMT_GRID *Grid) {
+GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr,
+                                      struct GRDBLEND_INFO **blend, bool delayed, struct GMT_GRID *Grid) {
 	/* Returns how many blend files or a negative error value if something went wrong */
 	int type, status, not_supported = 0, t_data, k_data = GMT_NOTSET;
 	unsigned int one_or_zero, n = 0, n_scanned, do_sample, n_download = 0, down = 0, srtm_res = 0;
@@ -377,13 +378,13 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			gmt_increment_adjust (GMT, wesn, GMT->common.R.inc, (GMT->common.R.active[GSET]) ? GMT->common.R.registration : B[0].G->header->registration);	/* In case user specified incs using distance units we must call this here before adjusting wesn */
 		inc = (GMT->common.R.active[ISET]) ? GMT->common.R.inc : B[0].G->header->inc;	/* Either use -I if given else they all have the same increments */
 		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/inc[GMT_X] - GMT_CONV6_LIMIT);
-		wesn[XHI] = wesn[XLO] + pp * B[0].G->header->inc[GMT_X];
+		wesn[XHI] = wesn[XLO] + pp * *inc;
 		pp = (uint64_t)ceil ((wesn[YHI] - wesn[YLO])/inc[GMT_Y] - GMT_CONV6_LIMIT);
-		wesn[YHI] = wesn[YLO] + pp * B[0].G->header->inc[GMT_Y];
+		wesn[YHI] = wesn[YLO] + pp * *inc;
 		/* Create the h structure and initialize it */
 		h = gmt_get_header (GMT);
 		gmt_M_memcpy (h->wesn, wesn, 4, double);
-		gmt_M_memcpy (h->inc, B[0].G->header->inc, 2, double);
+		gmt_M_memcpy (h->inc, inc, 2, double);
 		h->registration = (GMT->common.R.active[GSET]) ? GMT->common.R.registration : B[0].G->header->registration;	/* Either use -r if given else they all have the same registration */
 		gmt_M_grd_setpad (GMT, h, GMT->current.io.pad); /* Assign default pad */
 		gmt_set_grddim (GMT, h);	/* Update dimensions */
@@ -421,14 +422,14 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		Iargs[0] = Rargs[0] = '\0';
 		do_sample = 0;
 		if (not_supported) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 			            "File %s not supported via row-by-row read - must reformat first\n", B[n].file);
 			do_sample |= 2;
 		}
 		if (fabs((t->inc[GMT_X] - h->inc[GMT_X]) / h->inc[GMT_X]) > 0.002 ||
 			fabs((t->inc[GMT_Y] - h->inc[GMT_Y]) / h->inc[GMT_Y]) > 0.002) {
 			sprintf (Iargs, "-I%.12g/%.12g", h->inc[GMT_X], h->inc[GMT_Y]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s has different increments (%.12g/%.12g) than the output grid (%.12g/%.12g) - must resample\n",
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s has different increments (%.12g/%.12g) than the output grid (%.12g/%.12g) - must resample\n",
 				B[n].file, t->inc[GMT_X], t->inc[GMT_Y], h->inc[GMT_X], h->inc[GMT_Y]);
 			do_sample |= 1;
 		}
@@ -451,7 +452,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			wesn[YHI] = h->wesn[YLO] + k * h->inc[GMT_Y];
 			while (wesn[YHI] > t->wesn[YHI]) wesn[YHI] -= t->inc[GMT_Y];	/* Make sure we are not outside this grid */
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
 		}
 		else if (do_sample) {	/* Set explicit -R to handle possible subsetting */
@@ -502,8 +503,9 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 				return (-GMT_RUNTIME_ERROR);
 			t = NULL;	/* To remind us that this is now gone */
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
-				return (-GMT_DATA_READ_ERROR);
+				return -GMT_DATA_READ_ERROR;
 			}
+			B[n].memory = false;		/* Since we read from file, even if it was a mem-grid before */
 			t = B[n].G->header;	/* Since it got reallocated */
 			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdconvert changed the region */
 		}
@@ -1082,8 +1084,8 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 				n_fill++;						/* One more cell filled */
 				if (z[col] < Grid->header->z_min) Grid->header->z_min = z[col];	/* Update the extrema for output grid */
 				if (z[col] > Grid->header->z_max) Grid->header->z_max = z[col];
-                if (gmt_M_is_zero (z[col]))
-                    m = 1;
+				if (gmt_M_is_zero (z[col]))
+					m = 1;
 			}
 			else			/* No grids covered this node, defaults to the no_data value */
 				z[col] = no_data_f;
@@ -1159,6 +1161,12 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 		if (gmt_remove_file (GMT, outfile))	/* Try half-heartedly to remove the temporary file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file %s\n", outfile);
 	}
+
+	/* These two were not copied back into GMT and would be lost in gmt_end_module. Needed to set the correct
+	   @PROJ parameters in PS files. See issue #8438
+	*/
+	GMT_cpy->current.io.col_type[0][0] = GMT->current.io.col_type[0][0];
+	GMT_cpy->current.io.col_type[0][1] = GMT->current.io.col_type[0][1];
 
 	Return (GMT_NOERROR);
 }

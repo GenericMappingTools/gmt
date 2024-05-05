@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2024 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -445,6 +445,9 @@ GMT_LOCAL int gmtgdalread_populate_metadata (struct GMT_CTRL *GMT, struct GMT_GD
 	}
 
 	Ctrl->RasterCount = raster_count = GDALGetRasterCount(hDataset);
+
+	if (raster_count == 0)
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "No layers found in this file. Likely data is stored in SUBDATASETS\n.Must provide the SUBDATASET name.\n");
 
 	/* ------------------------------------------------------------------------- */
 	/* Get some metadata for each band. */
@@ -909,6 +912,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (gmtgdalread_populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer))
 			return(GMT_NOTSET);
 
+		/* See if uint8 images have set a noData */
+		if (Ctrl->band_field_names[0].nodata > -1e10)
+			Ctrl->nodata = Ctrl->band_field_names[0].nodata;
+
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
 		if (!Ctrl->hdr[6]) {		/* Grid registration */
 			Ctrl->hdr[0] += Ctrl->hdr[7] / 2;	Ctrl->hdr[1] -= Ctrl->hdr[7] / 2;
@@ -1058,6 +1065,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	switch (GDALGetRasterDataType(hBand)) {
 		case GDT_Byte:
+			/* Because of a GDAL bug that misidentifies uint8 as GDT_CFloat64 (enum 14) we are forced to do this
+			   ugly patch. Make this conditional on a GDAL version when it is fixed upstream. */
+		case 14:
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
 				Ctrl->UInt8.data = prhs->c_ptr.grd;
 			else if ((Ctrl->UInt8.data = gmt_M_memory (GMT, NULL, n_alloc, uint8_t)) == NULL)
@@ -1245,6 +1255,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 				switch (GDALGetRasterDataType(hBand)) {
 					case GDT_Byte:
+						/* Because of a GDAL bug that misidentifies uint8 as GDT_CFloat64 we are forced to do this
+						   ugly patch. Make this conditional on a GDAL version when it is fixed upstream. */
+					case 14:
 						/* This chunk is kind of complicated because we want to take into account several different cases */
 						for (n = 0; n < nXSize[piece]; n++) {
 							if (do_BIP)			/* Vector for Pixel Interleaving */
@@ -1444,4 +1457,3 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	return (GMT_NOERROR);
 }
-

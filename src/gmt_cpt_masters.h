@@ -21,6 +21,7 @@
 "gmt/rainbow        : Rainbow, magenta-blue-cyan-green-yellow-red [C=HSV]",
 "gmt/red2green      : Polar scale from red to green via white [S, C=RGB]",
 "gmt/relief         : Wessel/Martinez colors for topography [R=-8000/+8000, H, C=RGB]",
+"gmt/rust2silver    : USGS color map for planets such as Mercury [R=-5500/5500, C=RGB]",
 "gmt/seafloor       : Purple-blue-white bathymetry scale [R=-6000/0, C=RGB]",
 "gmt/sealand        : Smith bathymetry/topography scale [R=-6000/+3000, H, C=HSV]",
 "gmt/seis           : R-O-Y-G-B seismic tomography colors [C=RGB]",

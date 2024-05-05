@@ -39,7 +39,7 @@ Consider the common option **-i** that is used to specify which input columns th
 can it select *which* columns (e.g., **-i**\ 3,2,7-9), it allows optional modifiers that may be
 repeated for each column (or column group) that handles basic data transformations.  For instance,
 let us imagine that the above example needs column 3 to be used as is, but column 2 needs
-to be converted by the log10 operator and columns 7-9 must be scaled by 10 and offset by -5.  In
+to be converted by the :math:`\log_{10}` operator and columns 7-9 must be scaled by 10 and offset by -5.  In
 standard (short) GMT syntax we would write
 
 ::
@@ -51,7 +51,7 @@ long-format syntax it will instead be
 
 ::
 
-    --read-columns=3,2+log10,7-9+scale=10+offset=-5
+    --read-columns=3,2+:math:`\log_{10}`,7-9+scale=10+offset=-5
 
 which most users might be able to decipher.
 
@@ -100,9 +100,6 @@ argument to the equivalent short-option argument.  That way, we only need to cal
 function at the start of a module and do the replacement.  Then, the specific
 parsers we already have for common and module options will work as is.  This design simplifies
 the coding tremendously and only requires us to create the translation tables.
-The approach has already been implemented and tested for the ~30 GMT Common Options and
-developers can play with this by adding the compiler flag **-DUSE_COMMON_LONG_OPTIONS**
-when building GMT.
 The translations for the GMT common options are encapsulated in a single include file
 (gmt_common_longoptions.h) that populates a *gmt_common_kw* structure and looks like this:
 

@@ -1,0 +1,33 @@
+#
+# Create an issue to remind us some important things.
+#
+# It's scheduled to run every 6 months.
+#
+name: Reminders
+
+on:
+  workflow_dispatch:
+  # Scheduled to run at midnight on the 1st day every 6 months
+  schedule:
+    - cron: '0 0 1 */6 *'
+
+jobs:
+  review-known-failures:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4.1.4
+
+    - name: Find and report known failures
+      run: |
+        title="Review GMT's known failures"
+
+        bash admin/list_known_failures.sh > report.md
+
+        if [ -s "report.md" ]; then
+          gh issue create --title "$title" --body-file report.md
+        fi
+      env:
+        GH_TOKEN: ${{ github.token }}
+

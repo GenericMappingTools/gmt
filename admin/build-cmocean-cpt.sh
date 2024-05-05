@@ -69,7 +69,7 @@ awk -F'|' '{printf "\"cmocean/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cp
 rm -rf gmt_cpts
 mkdir -p gmt_cpts/cmocean
 while read line; do
-	cpt=`echo $line | cut -d'|' -f1`
+	cpt=$(echo $line | cut -d'|' -f1)
 	in=cpt/$cpt.cpt
 	out=gmt_cpts/cmocean/$cpt.cpt
 	hinge=0

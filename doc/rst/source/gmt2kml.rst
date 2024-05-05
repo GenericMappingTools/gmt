@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ *descriptfile* ]
 [ |-E|\ [**+e**][**+s**] ]
-[ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
+[ |-F|\ **e**\|\ **l**\|\ **p**\|\ **s**\|\ **t**\|\ **w** ]
 [ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
 [ |-I|\ *icon* ]
 [ |-K| ]
@@ -49,7 +49,7 @@ Synopsis
 Description
 -----------
 
-**2kml** reads one or more GMT table file and converts them to a
+**2kml** reads one or more GMT table files and converts them to a
 single output file using Google Earth's KML format. Data may represent
 points, lines, polygons, or wiggles, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
@@ -84,10 +84,10 @@ Optional Arguments
 **-A**\ **a**\|\ **g**\|\ **s**\ [*alt*\|\ **x**\ *scale*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the feature: **a** absolute
-    altitude, **g** altitude relative to sea surface or ground, **s**
-    altitude relative to seafloor or ground. To plot the features at a
+    altitude, **g** altitude relative to the ground, or **s**
+    altitude relative to seafloor. To plot the features at a
     fixed altitude, append an altitude *alt* (in m). Use 0 to clamp the
-    features to the chosen reference surface. Append **x**\ *scale* to
+    features to the chosen reference surface. Alternatively, append **x**\ *scale* to
     scale the altitude from the input file by that factor. If no value
     is appended, the altitude (in m) is read from the 3rd column of the
     input file. [By default the features are clamped to the sea surface or ground].
@@ -118,22 +118,28 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w**
-    Sets the feature type. Choose from points (**e**\ vent,
-    **s**\ ymbol, or **t**\ imespan), **l**\ ine, **p**\ olygon, or
-    **w**\ iggle [symbol]. The first two columns of the input file should contain
-    (*lon*, *lat*). When altitude or value is required (i.e., no
+**-F**\ **e**\|\ **l**\|\ **p**\|\ **s**\|\ **t**\|\ **w**
+    Sets the feature type. The first two columns of the input file should
+    contain (*lon*, *lat*). When altitude or value is required (i.e., no
     *altitude* value was given with |-A|, or |-C| is set), the third
-    column needs to contain the *altitude* (in m) or *value*. The event
-    (**-Fe**) is a symbol that should only be active at a particular
-    *time*, given in the next column. Timespan (**-Ft**) is a symbol
-    that should only be active during a particular time period indicated
-    by the next two columns (*timestart*, *timestop*). Use NaN to
-    indicate unbounded time limits. If used, times should be in ISO
-    format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format
-    (see **-f**).  For wiggles, the data anomaly is required to be
-    in the 3rd input column.  If you also need to plot the track itself
-    then do that separately with **-Fl**.
+    column needs to contain the *altitude* (in m) or *value*. Choose from
+    the following directives:
+
+    - **e**\ vent: A symbol that should only be visible at a particular
+      *time*, given in the next column.
+    - **l**\ ine: Draws a line using attributes set by |-W|.
+    - **p**\ olygon: Draws a polygon using attributes set by |-G| and |-W|.
+    - **s**\ ymbol: A regular symbol that is always visible.
+    - **t**\ imespan: A symbol that should only be active during a particular
+      time period indicated by the next two columns (containing *timestart*,
+      *timestop*). Use NaN to indicate unbounded time limits. 
+    - **w**\ iggle: The data anomaly is required to be in the 3rd input column.
+      If you also need to plot the track itself then do that separately with **-Fl**.
+      See |-Q| for additional parameters needed.
+
+    **Note**: If used, times should be in ISO format yyyy-mm-ddThh:mm:ss[.xxx]
+    or in GMT relative time format (see **-f**). For the directives **e**\|\ **s**\|\ **t**,
+    set the symbol to be used via |-I|.
 
 .. _-G:
 
@@ -203,13 +209,13 @@ Optional Arguments
 .. _-Q:
 
 **-Qa**\|\ **i**\|\ **s**\ *arg*
-    Option in support of wiggle plots (requires **-Fw**). You may
+    Repeatable option in support of wiggle plots (requires **-Fw**). You may
     control which directions the positive wiggles will tend to point
     to with **-Qa**.  The appended *azimuth* defines a half-circle
     centered on the selected azimuth [0] where positive anomalies
     will plot.  If outside then switch by 180 degrees.  Alternatively,
     use **-Qi** to set a fixed *azimuth* with no further variation.
-    Scaling is also required via **-Qs**\ *scale*.
+    Scaling is also required via a separate **-Qs**\ *scale* option.
     Set a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
     is then inverted to yield degrees per user z-unit and used to
@@ -306,14 +312,14 @@ first make the CPT and then create the KML file thus::
     gmt makecpt -Ccategorical > categories.cpt
     gmt 2kml @kml_pointsets.txt -Ccategories.cpt > points.kml
 
-To convert a file with point locations (lon, lat) into a KML file with
+To convert a file with point locations (*lon, lat*) into a KML file with
 red circle symbols, try
 
 ::
 
   gmt 2kml mypoints.txt -Gred+f -Fs > mypoints.kml
 
-To convert a multisegment file with lines (lon, lat) separated by
+To convert a multisegment file with lines (*lon, lat*) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick white pen, and title the document, try
 
@@ -321,7 +327,7 @@ name, selecting a thick white pen, and title the document, try
 
   gmt 2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
-To convert a multisegment file with polygons (lon, lat) separated by
+To convert a multisegment file with polygons (*lon, lat*) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick black pen and semi-transparent yellow fill,
 giving a title to the document, and prescribing a particular region
@@ -331,7 +337,7 @@ limit, try
 
   gmt 2kml mypolygons.txt -Gyellow@50+f -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
-To convert a file with point locations (lon, lat, time) into a KML file
+To convert a file with point locations (*lon, lat, time*) into a KML file
 with green circle symbols that will go active at the specified time and
 stay active going forward, try
 
@@ -415,7 +421,7 @@ a crude example:
 
 <!--This level of folder is inserted only when using -O, -K>
 
-<Folder><name>file1.dat</name>
+<Folder><name>file1.txt</name>
 
 <!--One folder for each input file (not when standard input)>
 
@@ -423,11 +429,11 @@ a crude example:
 
 <!--One folder per line segment>
 
-<!--Points from the first line segment in file file1.dat go here>
+<!--Points from the first line segment in file file1.txt go here>
 
 <Folder><name>Point Set 1</name>
 
-<!--Points from the second line segment in file file1.dat go here>
+<!--Points from the second line segment in file file1.txt go here>
 
 </Folder>
 
@@ -435,7 +441,7 @@ a crude example:
 
 <Folder><name>Line Features</name>
 
-<Folder><name>file1.dat</name>
+<Folder><name>file1.txt</name>
 
 <!--One folder for each input file (not when standard input)>
 

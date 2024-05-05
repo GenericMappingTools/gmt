@@ -57,13 +57,13 @@ gmt begin vector3d_mods
 	# Direction, length given as 100kÏ
 	echo 0 2 0 60 100k | gmt plot3d -S=20p+e -W2p -Gred
 	echo "-0.1 2.9 Input: 60 100k Vector: -S=20p+e" | gmt text $textopt
-	# dx_km, dy_km to mimick the same
+	# dx_km, dy_km to mimic the same
 	echo 0 3 0 ${dx_km} ${dy_km} | gmt plot3d -S=20p+e+z -W2p -Gred
 	echo "-0.1 3.9 Input: ${dx_km} ${dy_km} Vector: -S=20p+e+z" | gmt text $textopt
-	# dx_km, dy_km to mimick the same but with unit
+	# dx_km, dy_km to mimic the same but with unit
 	echo 0 4 0 ${dx_km}k ${dy_km}k | gmt plot3d -S=20p+e+z -W2p -Gred
 	echo "-0.1 4.9 Input: ${dx_km}k ${dy_km}k Vector: -S=20p+e+z" | gmt text $textopt
-	# dx_km, dy_km to mimick the same
+	# dx_km, dy_km to mimic the same
 	echo 0 5 0 ${dx_n}n ${dy_n}n | gmt plot3d -S=20p+e+z -W2p -Gred
 	echo "-0.1 5.9 Input: ${dx_n}n ${dy_n}n Vector: -S=20p+e+z" | gmt text $textopt
 	# dx, dy in specific data units with scale
