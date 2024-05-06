@@ -1257,13 +1257,13 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 	}
 	if (item[0] == 'i')	{/* Apply to input only */
 		col = GMT_IN;
-		strncpy (GMT->common.g.string, item, GMT_LEN64-1);	/* Verbatim copy */
+		strncpy (GMT->common.h.string, item, GMT_LEN256-1);	/* Verbatim copy */
 	}
 	else if (item[0] == 'o')	/* Apply to output only */
 		col = GMT_OUT;
 	else {			/* Apply to both input and output columns */
 		k = 0;
-		strncpy (GMT->common.g.string, item, GMT_LEN64-1);	/* Verbatim copy */
+		strncpy (GMT->common.h.string, item, GMT_LEN256-1);	/* Verbatim copy */
 	}
 	if ((c = strchr (item, '+')))	/* Found modifiers */
 		c[0] = '\0';	/* Truncate modifiers for now */
