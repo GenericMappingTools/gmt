@@ -54,13 +54,13 @@ jobs:
           - name: Linux
             os: ubuntu-latest
           - name: macOS
-            os: macos-latest
+            os: macos-13 # macos-14 use M1 chips, which causes many failures
           - name: Windows
             os: windows-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.4
 
       - name: Setup vcpkg (Windows)
         uses: dawidd6/action-download-artifact@v3.1.4
@@ -192,7 +192,7 @@ jobs:
         if: failure()
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4.2.0
+        uses: codecov/codecov-action@v4.3.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:

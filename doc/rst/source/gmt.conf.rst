@@ -367,7 +367,7 @@ GMT Miscellaneous Parameters
     **GMT_DATA_SERVER**
         Name (or URL) of a GMT data server [default is **oceania**]. Please set
         to the data server closest to your location for faster data download. See
-        `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/>`_
+        `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/#data-server-mirrors>`_
         for a list of the currently available mirrors.
 
     **GMT_DATA_SERVER_LIMIT**

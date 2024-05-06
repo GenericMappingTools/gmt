@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4.1.4
 
     - name: Find and report known failures
       run: |
@@ -29,5 +29,5 @@ jobs:
           gh issue create --title "$title" --body-file report.md
         fi
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ github.token }}
 

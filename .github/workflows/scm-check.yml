@@ -17,53 +17,59 @@ jobs:
   scm-check:
     name: SCM Check
     runs-on: ubuntu-latest
+
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4.1.4
 
-      - name: Check the latest release
-        id: scm
-        run: |
-          scm_version_in_gmt=8.0.0
+    - name: Check the latest release
+      id: scm
+      run: |
+        scm_version_in_gmt=8.0.0
 
-          # Get version string and date from Zenodo API
-          # https://doi.org/10.5281/zenodo.1243862
-          scm_version=$(curl -Ls https://zenodo.org/api/records/1243862 | jq '.metadata.version' | sed 's/"//g')
-          scm_version_date=$(curl -Ls https://zenodo.org/api/records/1243862 | jq '.metadata.publication_date' | sed 's/"//g')
-          echo "SCM version ${scm_version} (${scm_version_date})"
+        # Get version string and date from Zenodo API
+        # https://doi.org/10.5281/zenodo.1243862
+        scm_version=$(curl -Ls https://zenodo.org/api/records/1243862 | jq '.metadata.version' | sed 's/"//g')
+        scm_version_date=$(curl -Ls https://zenodo.org/api/records/1243862 | jq '.metadata.publication_date' | sed 's/"//g')
+        echo "SCM version ${scm_version} (${scm_version_date})"
 
-          # Set output of the current step
-          echo "scm_version=${scm_version}" >> $GITHUB_OUTPUT
-          echo "scm_version_date=${scm_version_date}" >> $GITHUB_OUTPUT
-          if [ "${scm_version}" != ${scm_version_in_gmt} ]; then
-            echo "The latest SCM version (${scm_version}) is different from the one in GMT (${scm_version_in_gmt})!"
-            echo "error_code=2" >> $GITHUB_OUTPUT
-          fi
+        # Set output of the current step
+        echo "scm_version=${scm_version}" >> $GITHUB_OUTPUT
+        echo "scm_version_date=${scm_version_date}" >> $GITHUB_OUTPUT
+        if [ "${scm_version}" != ${scm_version_in_gmt} ]; then
+          echo "The latest SCM version (${scm_version}) is different from the one in GMT (${scm_version_in_gmt})!"
+          echo "error_code=2" >> $GITHUB_OUTPUT
+        fi
 
-      - name: Create an update request
-        if: ${{ steps.scm.outputs.error_code == 2 }}
-        uses: nashmaniac/create-issue-action@v1.2
-        with:
-          title: New ScientificColourMaps version ${{ steps.scm.outputs.scm_version }} found
-          token: ${{secrets.GITHUB_TOKEN}}
-          body: |
-            A new Scientific Colour Maps release was found.
+    - name: Create an update request
+      if: ${{ steps.scm.outputs.error_code == 2 }}
+      run: |
+        title="New ScientificColourMaps version ${{ steps.scm.outputs.scm_version }} found"
+        cat > report.md << 'EOF'
+        A new Scientific Colour Maps release was found.
 
-            - website: https://www.fabiocrameri.ch/colourmaps.php
-            - version: ${{ steps.scm.outputs.scm_version }}
-            - date: ${{ steps.scm.outputs.scm_version_date }}
+        - website: https://www.fabiocrameri.ch/colourmaps.php
+        - version: ${{ steps.scm.outputs.scm_version }}
+        - date: ${{ steps.scm.outputs.scm_version_date }}
 
-            Todo list:
+        Todo list:
 
-            - [ ] Download latest ScientificColourMapsV.zip file from https://doi.org/10.5281/zenodo.1243862
-                  to a folder, e.g. ~/Downloads/ScientificColourMapsV, where V is the version number (e.g. 7).
-            - [ ] Run `./admin/build-scientific-colors-cpt.sh ~/Downloads/ScientificColourMapsV/` to update CPTs.
-            - [ ] Move newly generated CPTs to `share/cpt` using `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
-            - [ ] Make sure to update the following files:
-              - [ ] Version number in `admin/build-scientific-colors-cpt.sh` and `.github/workflows/scm-check.yml`
-              - [ ] List of colour maps in `src/gmt_cpt_masters.h` using lines in `/tmp/cpt_strings.txt` (only if new colour maps were added)
-              - [ ] Counts of colour maps in `doc/rst/source/reference/cpts.rst` (only if new colour maps were added)
-              - [ ] List of colour maps and counts in `doc/scripts/GMT_App_M_1*.sh` (only if new colour maps were added)
-            - [ ] Update the associated `doc/scripts/GMT_App_M_1*.ps` file(s)
-            - [ ] Commit all changes and open a PR
+        - [ ] Download latest ScientificColourMapsV.zip file from https://doi.org/10.5281/zenodo.1243862
+              to a folder, e.g. ~/Downloads/ScientificColourMapsV, where V is the version number (e.g. 7).
+        - [ ] Run `./admin/build-scientific-colors-cpt.sh ~/Downloads/ScientificColourMapsV/` to update CPTs.
+        - [ ] Move newly generated CPTs to `share/cpt` using `mv ~/Downloads/ScientificColourMapsV/gmt_cpts/* share/cpt/`
+        - [ ] Make sure to update the following files:
+          - [ ] Version number in `admin/build-scientific-colors-cpt.sh` and `.github/workflows/scm-check.yml`
+          - [ ] List of colour maps in `src/gmt_cpt_masters.h` using lines in `/tmp/cpt_strings.txt` (only if new colour maps were added)
+          - [ ] Counts of colour maps in `doc/rst/source/reference/cpts.rst` (only if new colour maps were added)
+          - [ ] List of colour maps and counts in `doc/scripts/GMT_App_M_1*.sh` (only if new colour maps were added)
+        - [ ] Update the associated `doc/scripts/GMT_App_M_1*.ps` file(s)
+        - [ ] Commit all changes and open a PR
 
-            **Note**: If new CPTs were added (check using `ls ~/Downloads/ScientificColourMaps`), update the
-            `admin/build-scientific-colors-cpt.sh` script first to include the new CPTs, and then rerun it again.
+        **Note**: If new CPTs were added (check using `ls ~/Downloads/ScientificColourMaps`), update the
+        `admin/build-scientific-colors-cpt.sh` script first to include the new CPTs, and then rerun it again.
+        EOF
+
+        gh issue create --title "${title}" --body-file report.md
+      env:
+        GH_TOKEN: ${{ github.token }}
