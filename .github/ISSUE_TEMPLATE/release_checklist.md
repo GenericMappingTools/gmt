@@ -13,6 +13,7 @@ assignees: ''
 
 **Before release**:
 
+- [ ] check if there are new SCM releases
 - [ ] check if all tests pass on macOS, Linux and Windows
 - [ ] check if other GMT-derived projects work well
 	- [ ] MB-System (@PaulWessel)
