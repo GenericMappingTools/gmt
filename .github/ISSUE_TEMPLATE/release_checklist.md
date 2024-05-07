@@ -13,7 +13,7 @@ assignees: ''
 
 **Before release**:
 
-- [ ] check if there are new SCM releases
+- [ ] check if there are new [SCM releases](https://doi.org/10.5281/zenodo.1243862)
 - [ ] check if all tests pass on macOS, Linux and Windows
 - [ ] check if other GMT-derived projects work well
 	- [ ] MB-System (@PaulWessel)
