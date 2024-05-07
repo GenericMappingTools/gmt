@@ -3782,7 +3782,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			unsigned int type;
 			if ((type = gmtio_examine_current_record (GMT, line, &start_of_text, &n_cols_this_record)) == GMT_NOT_OUTPUT_OBJECT) {
 				GMT->current.io.status = GMT_IO_TABLE_HEADER;
-				if (GMT->parent->external) gmtio_set_current_record(GMT, line);		/* Very useful in Julia to find the column names. */
+				if (GMT->current.setting.io_header[GMT_IN] && GMT->parent->external) gmtio_set_current_record(GMT, line);	/* Useful in Julia to find the column names. */
 				return NULL;
 			}
 			else
