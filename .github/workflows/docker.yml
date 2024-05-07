@@ -56,14 +56,14 @@ jobs:
           # Ubuntu: https://en.wikipedia.org/wiki/Ubuntu_version_history#Table_of_versions
           - ubuntu:20.04    # CMake 3.16.3 + GNU 9.3.0;  EOL: 2025-05-29
           - ubuntu:22.04    # CMake 3.22.1 + GNU 11.2.0; EOL: 2027-06-01
-          - ubuntu:23.10    # CMake 3.27.4 + GNU 11.2.0; EOL: 2024-07-01
+          - ubuntu:24.04    # CMake 3.28.3 + GNU 13.2.0; EOL: 2029-05-31
           # Debian: https://en.wikipedia.org/wiki/Debian_version_history#Release_table
           - debian:11       # CMake 3.18.4 + GNU 10.2.1; EOL: 2026-06-01
           - debian:12       # CMake 3.25.1 + GNU 12.2.0; EOL: 2028-06-01
           - debian:sid      # rolling release with latest versions
           # Fedora: https://en.wikipedia.org/wiki/Fedora_Linux_release_history
-          - fedora:38       # CMake 3.26.2 + GNU 13.0.1; EOL: 2024-05-14
           - fedora:39       # CMake 3.27.7 + GNU 13.2.1; EOL: 2024-11-12
+          - fedora:40       # CMake 3.28.2 + GNU 14.0.1; EOL: 2025-05-13
           - fedora:rawhide  # rolling release with latest versions
 
     steps:
@@ -77,16 +77,18 @@ jobs:
             apt-get update
             DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
             apt-get install -y --no-install-recommends --no-install-suggests \
-                 build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
-                 ghostscript curl git \
-                 libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev
+                 build-essential cmake ninja-build \
+                 libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
+                 libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev \
+                 ghostscript curl git
             apt reinstall -y ca-certificates
             update-ca-certificates
           elif [[ "$os" = "fedora" ]]; then
-            dnf install -y cmake libcurl-devel netcdf-devel gdal-devel \
-              ninja-build gdal pcre-devel fftw3-devel lapack-devel \
-              openblas-devel glib2-devel ghostscript \
-              openssl
+            dnf install -y \
+                cmake ninja-build \
+                libcurl-devel netcdf-devel gdal-devel gdal \
+                fftw3-devel pcre-devel lapack-devel openblas-devel glib2-devel \
+                ghostscript openssl
           fi
 
       - name: Cache GSHHG and DCW data
