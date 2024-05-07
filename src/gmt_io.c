@@ -3687,6 +3687,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		if (GMT->current.setting.io_header[GMT_IN] && GMT->current.io.rec_in_tbl_no <= GMT->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the line */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
+			gmt_strstrip (line, false);		/* Eliminate DOS endings and trailing white space, add linefeed */
 			gmtio_set_current_record (GMT, line);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
 #if 0
@@ -3781,6 +3782,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			unsigned int type;
 			if ((type = gmtio_examine_current_record (GMT, line, &start_of_text, &n_cols_this_record)) == GMT_NOT_OUTPUT_OBJECT) {
 				GMT->current.io.status = GMT_IO_TABLE_HEADER;
+				if (GMT->current.setting.io_header[GMT_IN] && GMT->parent->external) gmtio_set_current_record(GMT, line);	/* Useful in Julia to find the column names. */
 				return NULL;
 			}
 			else
@@ -8164,7 +8166,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false;
 	bool pol_check, check_geometry;
-	int status;
+	int status = 0;
 	uint64_t n_expected_fields, n_returned = 0;
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0, k;
 	size_t n_head_alloc = GMT_TINY_CHUNK;
