@@ -2,7 +2,8 @@
 # Create CI caches for:
 #
 # 1. GMT remote data for building documentation and running tests
-# 2. vcpkg libraries on Windows
+# 2. GMT GSHHG and DCW datasets
+# 3. vcpkg libraries on Windows
 #
 name: GMT CI Caches
 
@@ -105,8 +106,28 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gmt-cache
-          path: |
-            ~/.gmt/static
+          path: ~/.gmt/static
+
+  coastline_cache:
+    name: Cache GSHHG and DCW datasets
+    runs-on: ubuntu-latest
+    env:
+      COASTLINEDIR: ${{ github.workspace }}/coastline
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.4
+
+      - name: Download GSHHG and DCW datasets
+        run: bash ci/download-coastlines.sh
+        env:
+          COASTLINEDIR: ${{ env.COASTLINEDIR }}
+
+      - name: Upload artifacts to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: coastline-cache
+          path: ${{ env.COASTLINEDIR }}
 
   vcpkg_cache:
     name: Cache vcpkg libraries
