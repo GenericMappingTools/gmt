@@ -27,7 +27,6 @@ will take long time to see a Julia version of it.
 
 .. toctree::
     :maxdepth: 1
-    :hidden:
 
     intro
     session-1
