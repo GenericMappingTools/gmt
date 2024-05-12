@@ -28,7 +28,7 @@ echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/tools/gdal" >> $GITHU
 # list installed packages
 vcpkg list
 
-conda_packages="ninja ghostscript=10.02.1"
+conda_packages="ninja ghostscript=10.03.0"
 if [ "$BUILD_DOCS" = "true" ]; then
     conda_packages+=" sphinx dvc"
     # choco install pngquant
