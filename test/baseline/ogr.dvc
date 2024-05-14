@@ -1,5 +1,5 @@
 outs:
 - md5: 32c4b2ba21cb4229e89718235836d2ce.dir
-  size: 367284
   nfiles: 3
   path: ogr
+  hash: md5
