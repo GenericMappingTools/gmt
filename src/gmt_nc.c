@@ -682,10 +682,18 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (has_vector && header->n_columns == 1) has_vector = false;	/* One coordinate does not a vector make */
 
 		/* Look for the x-coordinate range attributes */
+
+		/* 
+		   Don't understand what this was meant to do. It screwes the coordinates when xx or yy have a valid_min|max
+		   attribute set to (for example lon) [-180 180] but the vector itself contains a subset of that range,
+		   which is a perfectly valid set.
+	
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[0]], "actual_range", dummy) ||
 			!nc_get_att_double (ncid, ids[HH->xy_dim[0]], "valid_range", dummy) ||
 			!(nc_get_att_double (ncid, ids[HH->xy_dim[0]], "valid_min", &dummy[0]) +
 			nc_get_att_double (ncid, ids[HH->xy_dim[0]], "valid_max", &dummy[1])));
+		*/
+		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[0]], "actual_range", dummy));
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
 
@@ -784,10 +792,15 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			dy = fabs (xy[1] - xy[0]);	/* Grid spacing in y */
 		}
 		if (has_vector && header->n_rows == 1) has_vector = false;	/* One coordinate does not a vector make */
+
+		/*
+		// Don't understand what this was meant to do. It screwes the coordinates when yy have a valid_min|max
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy) ||
 			!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_range", dummy) ||
 			!(nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_min", &dummy[0]) +
 			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1])));
+		*/
+		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy));
 
 		if (has_vector && has_range) {	/* Has both so we can do a basic sanity check */
 			threshold = (0.5+GMT_CONV5_LIMIT) * dy;
