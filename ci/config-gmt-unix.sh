@@ -21,6 +21,11 @@ set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")
 EOF
 
+# Set OpenMP_ROOT so that CMake can find the libomp header and library on macOS
+if [[ "$RUNNER_OS" == "macOS" ]]; then
+    echo "set (OpenMP_ROOT $(brew --prefix)/opt/libomp/)" >> cmake/ConfigUser.cmake
+fi
+
 if [[ "$RUN_TESTS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_BUILD_TYPE Debug)

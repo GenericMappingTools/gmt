@@ -224,7 +224,7 @@ endif (LAPACK_FOUND)
 
 # Need to know if macOS and kernel is >= 22.4.0 for newLapack syntax
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-	execute_process (COMMAND bash "-c" "echo ${CMAKE_HOST_SYSTEM_VERSION} | awk -F. '{if ($1 > 22 || ($1 == 22 && $2 > 3)) {print 1} else {print 0}}'" 
+	execute_process (COMMAND bash "-c" "echo ${CMAKE_HOST_SYSTEM_VERSION} | awk -F. '{if ($1 > 22 || ($1 == 22 && $2 > 3)) {print 1} else {print 0}}'"
 		OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE ACCELERATE_NEW_LAPACK)
 else (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
 	set (ACCELERATE_NEW_LAPACK 0)
@@ -272,15 +272,14 @@ if (APPLE)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ACCELERATE_FRAMEWORK})
 endif (APPLE)
 
-find_package (OpenMP)
+find_package (OpenMP COMPONENTS C)
 if (GMT_OPENMP)
 	set (GMT_ENABLE_OPENMP TRUE)
 	message (WARNING "CMake variable GMT_OPENMP is deprecated and will be removed in the future releases. Use GMT_ENABLE_OPENMP instead.")
 endif (GMT_OPENMP)
 if (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
+	list (APPEND GMT_OPTIONAL_LIBRARIES OpenMP::OpenMP_C)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OpenMP_SHARED_LINKER_FLAGS}")
 	set (HAVE_OPENMP TRUE CACHE INTERNAL "OpenMP enabled." FORCE)
 	set (GMT_CONFIG_OPENMP_MESSAGE "enabled" CACHE INTERNAL "OPENMP config message")
 elseif (OPENMP_FOUND AND NOT GMT_ENABLE_OPENMP)
