@@ -2,8 +2,8 @@ REM
 REM Run some simple GMT commands
 REM
 
-REM Check GMT version
-gmt --version
+REM Check GMT splash screen
+gmt
 
 REM Check GMT configuration
 bash %INSTALLDIR%/bin/gmt-config --all
@@ -22,3 +22,6 @@ gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
 
 REM Check supplemental modules
 gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
+
+REM Check OpenMP support
+gmt grdsample @earth_relief_01d -R0/20/0/20 -I30m -Gtopo_30m.nc -x2

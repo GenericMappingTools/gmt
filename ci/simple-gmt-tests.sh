@@ -5,8 +5,8 @@
 
 set -x -e
 
-# Check GMT version
-gmt --version
+# Check GMT splash screen
+gmt
 
 # Check GMT configuration
 gmt-config --all
@@ -27,5 +27,8 @@ gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
 
 # Check supplemental modules
 gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
+
+# Check OpenMP support
+gmt grdsample @earth_relief_01d -R0/20/0/20 -I30m -Gtopo_30m.nc -x2
 
 set +x +e
