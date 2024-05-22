@@ -1,5 +1,5 @@
 outs:
 - md5: 2962a196119a67e02c8242fb30ba1b59.dir
-  size: 107323
   nfiles: 3
   path: triangulate
+  hash: md5

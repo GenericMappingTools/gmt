@@ -1,5 +1,5 @@
 outs:
 - md5: 411dc7bd2fc692a5248368543dff2800.dir
-  size: 251233
   nfiles: 6
   path: filter1d
+  hash: md5

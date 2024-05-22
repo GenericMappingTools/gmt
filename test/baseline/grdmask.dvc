@@ -1,5 +1,5 @@
 outs:
 - md5: 2177ea81a6a735a299f38e647348b35c.dir
-  size: 274422
   nfiles: 7
   path: grdmask
+  hash: md5

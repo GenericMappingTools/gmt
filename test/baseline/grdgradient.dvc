@@ -1,5 +1,5 @@
 outs:
 - md5: 5378f71f4698a046d44c0f1a233a27e2.dir
-  size: 1652314
   nfiles: 5
   path: grdgradient
+  hash: md5
