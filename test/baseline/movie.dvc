@@ -1,5 +1,5 @@
 outs:
 - md5: 67875375e1e3d3e583e7b762bec7bfd7.dir
-  size: 267246
   nfiles: 8
   path: movie
+  hash: md5

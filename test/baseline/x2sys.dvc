@@ -1,5 +1,5 @@
 outs:
 - md5: d39be5a8e995afeeffbd11dd5a761abc.dir
-  size: 3562931
   nfiles: 6
   path: x2sys
+  hash: md5
