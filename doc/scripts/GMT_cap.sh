@@ -16,15 +16,15 @@ gmt begin GMT_cap
 	30	90
 	170	90
 	EOF
-	# round
+	# butt
 	gmt plot -R0/250/0/100 -Jx1p --PS_LINE_CAP=butt -W10p,lightred,20_20:0 butt.txt
 	gmt plot -Wfaint butt.txt
 	gmt plot -Sc3p -Gwhite -Wfaint butt.txt
-	# miter
+	# round
 	gmt plot --PS_LINE_CAP=round -W10p,lightblue,20_20:0 round.txt
 	gmt plot -Wfaint round.txt
 	gmt plot -Sc3p -Gwhite -Wfaint round.txt
-	# bevel
+	# square
 	gmt plot --PS_LINE_CAP=square -W10p,lightorange,20_20:0 square.txt
 	gmt plot -Wfaint square.txt
 	gmt plot -Sc3p -Gwhite -Wfaint square.txt

@@ -127,6 +127,10 @@
 # Set location of CURL (can be root directory or path to header file) [auto]:
 #set (CURL_ROOT "curl_install_prefix")
 
+# Set location of OpenMP (can be root directory or path to header file) [auto]:
+# CMake sometimes may fail to find the OpenMP library (libomp) on macOS.
+#set (OpenMP_ROOT $(brew --prefix)/opt/libomp/)
+
 # Set location of GLIB component gthread [auto].  This is an optional (and
 # experimental) option which you need to enable or disable:
 set (GMT_USE_THREADS TRUE)
