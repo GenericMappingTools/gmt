@@ -135,7 +135,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Pull baseline image data from dvc remote
-        run: dvc pull
+        run: dvc pull --no-run-cache
 
       - name: Install GMT
         run: |

@@ -197,11 +197,11 @@ if (APPLE)
 		endfunction(gp_item_default_embedded_path_override)
 
 		include (BundleUtilities)
-		# The dir /usr/local/lib is added to address the packaging issue for Homebrew
-		# as reported https://github.com/GenericMappingTools/gmt/issues/6025.
+		# The directories /usr/local/lib;/opt/homebrew/lib are added to address the
+		# packaging issue for Homebrew as reported https://github.com/GenericMappingTools/gmt/issues/6025.
 		# The root cause is unclear, possibly a cmake issue.
 		# We should try to remove it when new cmake releases are available.
-		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}/plugins/${GMT_SUPPL_LIB_NAME}.so\" \"/usr/local/lib\")
+		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}/plugins/${GMT_SUPPL_LIB_NAME}.so\" \"/usr/local/lib;/opt/homebrew/lib\")
 	endif ()
 	" COMPONENT Runtime)
 endif (APPLE)
