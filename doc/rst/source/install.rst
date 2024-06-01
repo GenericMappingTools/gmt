@@ -278,6 +278,15 @@ Install GMT via:
 
    sudo emerge --verbose --ask sci-geosciences/gmt
 
+NixOS
+~~~~~
+
+Install GMT by adding these packages to your system (or home-manager) configuration:
+
+::
+
+   gmt gshhg-gmt dcw-gmt
+
 Cross Platform Install Instructions
 -----------------------------------
 
