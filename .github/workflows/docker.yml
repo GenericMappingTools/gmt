@@ -92,7 +92,7 @@ jobs:
           fi
 
       - name: Checkout
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.6
 
       # Fix the git error:
       # "failed to run git: fatal: detected dubious ownership in repository at '/__w/gmt/gmt'"
