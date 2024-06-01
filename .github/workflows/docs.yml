@@ -81,6 +81,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
+      - name: Pull baseline image data from dvc remote
+        run: dvc pull --no-run-cache
+
       - name: Configure GMT
         run: |
           if [ "$RUNNER_OS" != "Windows" ]; then
@@ -106,9 +109,6 @@ jobs:
           cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build .
         if: runner.os == 'Windows'
-
-      - name: Pull baseline image data from dvc remote
-        run: dvc pull --no-run-cache
 
       - name: Build documentation
         run: |
