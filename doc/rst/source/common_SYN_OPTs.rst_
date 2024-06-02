@@ -80,10 +80,10 @@
 
 .. |SYN_OPT-Area| replace:: |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
 
-.. |Add_-B_links| replace:: :ref:`(See full description) <-B_full>` :ref:`(See cookbook information)
+.. |Add_-B_links| replace:: :ref:`(See full description) <-B_full>` :ref:`(See technical reference)
     <reference/options:Map frame and axes annotations: The **-B** option>`.
 
-.. |Add_-J_links| replace:: :ref:`(See full description) <-J_full>` :ref:`(See cookbook summary)
+.. |Add_-J_links| replace:: :ref:`(See full description) <-J_full>` :ref:`(See technical reference)
     <reference/options:Coordinate transformations and map projections: The **-J** option>`
     :ref:`(See projections table) <proj-codes>`.
 
@@ -93,16 +93,16 @@
    provided, the region will be automatically determined based on the data in *table*
    (equivalent to using **-Ra**). |Add_-R_links|
 
-.. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
+.. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See technical reference)
     <reference/options:Data domain or map region: The **-R** option>`.
 
-.. |Add_-XY_links| replace:: :ref:`(See full description) <-XY_full>` :ref:`(See cookbook information)
+.. |Add_-XY_links| replace:: :ref:`(See full description) <-XY_full>` :ref:`(See technical reference)
     <reference/options:Plot positioning and layout: The **-X** **-Y** options>`.
 
-.. |Add_-U_links| replace:: :ref:`(See full description) <-U_full>` :ref:`(See cookbook information)
+.. |Add_-U_links| replace:: :ref:`(See full description) <-U_full>` :ref:`(See technical reference)
     <reference/options:Timestamps on plots: The **-U** option>`.
 
-.. |Add_-V_links| replace:: :ref:`(See full description) <-V_full>` :ref:`(See cookbook information)
+.. |Add_-V_links| replace:: :ref:`(See full description) <-V_full>` :ref:`(See technical reference)
     <reference/options:Verbose feedback: The **-V** option>`.
 
 .. |br| raw:: html
