@@ -94,9 +94,9 @@ foreach (skip_test GMT_-U.sh GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh
 endforeach()
 
 # Remove GMT_latex.sh if latex or dvips not found
-if (NOT LATEX OR NOT DVIPS)
+if (NOT LATEX_FOUND)
 	list (REMOVE_ITEM _scripts_tests doc/scripts/GMT_latex.sh doc/scripts/GMT_slope2intensity.sh doc/scripts/GMT_seamount_density.sh)
-endif (NOT LATEX OR NOT DVIPS)
+endif (NOT LATEX_FOUND)
 
 if (DO_TESTS AND BASH)
 	foreach (_job ${_scripts_tests})

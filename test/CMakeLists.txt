@@ -40,9 +40,9 @@ if (DO_TESTS)
 	endif (NOT DO_SUPPLEMENT_TESTS)
 
 	# Remove latex-specific tests if latex or dvips not found
-	if (NOT LATEX OR NOT DVIPS)
+	if (NOT LATEX_FOUND)
 		list (REMOVE_ITEM GMT_TEST_DIRS latex)
-	endif (NOT LATEX OR NOT DVIPS)
+	endif (NOT LATEX_FOUND)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
