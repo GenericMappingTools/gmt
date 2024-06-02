@@ -90,8 +90,7 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 
 # Find latex and dvips for LaTeX integration
-find_program (LATEX latex)
-find_program (DVIPS dvips)
+find_package (LATEX COMPONENTS DVIPS)
 
 # Add subdirectories
 add_subdirectory (src)
