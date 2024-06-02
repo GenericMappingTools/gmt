@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Illustrate the effect of parameter u0 on slides
 gmt begin GMT_seamount_u0
-	gmt set GMT_THEME cookbook
 	gmt set FONT_LABEL 12p,Times-Italic
 	gmt basemap -R0/1/0/1 -JX6i/1i -Bxaf+l"u" -Byaf+l"q(u)"
 	gmt set FONT_ANNOT_PRIMARY 9p,Times-Italic
