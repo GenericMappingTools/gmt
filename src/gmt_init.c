@@ -12649,7 +12649,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
 	switch (case_val) {
-		case GMTCASE_SET_RUN_MODE:		/* Gat the current running mode CLASSIC or MODERN */
+		case GMTCASE_GMT_RUN_MODE:		/* Gat the current running mode CLASSIC or MODERN */
 			sprintf (value, "%d", GMT->current.setting.run_mode);
 			break;
 		/* FORMAT GROUP */
