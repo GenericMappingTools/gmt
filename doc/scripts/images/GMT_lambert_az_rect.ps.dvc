@@ -1,5 +1,5 @@
 outs:
-- md5: 407e1709d36869c4aff951b89f6f06e8
-  size: 37932
+- md5: fc3a0b3687b6cec870bd61ba5f1c02ee
+  size: 35773
   hash: md5
   path: GMT_lambert_az_rect.ps
