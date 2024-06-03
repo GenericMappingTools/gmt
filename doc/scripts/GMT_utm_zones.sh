@@ -3,7 +3,6 @@
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 #
 gmt begin GMT_utm_zones
-gmt set GMT_THEME cookbook
 gmt coast -Rd -JQ9i -Groyalblue -Sazure -Dl -A2000 -Bx60f6 -By0 -BwsNe --MAP_ANNOT_OFFSET_PRIMARY=0.15i
 cat << EOF > tt.z.d
 >  Do S pole zone
