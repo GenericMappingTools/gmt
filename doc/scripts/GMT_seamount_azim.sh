@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Illustrate the effect of parameter u0 on slides
 gmt begin GMT_seamount_azim
-	gmt set GMT_THEME cookbook
 	gmt set FONT_ANNOT_PRIMARY 9p,Times-Italic FONT_LABEL 12p,Times-Italic
 	gmt basemap -R-1/1/0/1 -JX6i/1i -Bxaf+l"@~g@~" -Byaf+l"s(@~g@~)"
 	v=2;	s_bar=$(gmt math -Q 1 1 $v 1 ADD DIV SUB =)

@@ -63,7 +63,6 @@ EOF
 $AWK -f tt.awk tt.txt > tt.d
 
 gmt begin
-	gmt set GMT_THEME cookbook
 	gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # First chart for standard font

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Illustrate the circular and elliptical bases of seamounts
 gmt begin GMT_seamount_map
-    gmt set GMT_THEME cookbook
     gmt set MAP_VECTOR_SHAPE 0.5
 
 # Circle

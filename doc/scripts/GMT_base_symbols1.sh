@@ -3,7 +3,6 @@
 # Plot psxy basic single-parameter geometric symbols for use on man page
 
 gmt begin GMT_base_symbols1
-    gmt set GMT_THEME cookbook
 cat << EOF > tmp.txt
 # All the basic geometric psxy symbols
 1	2	1c	a

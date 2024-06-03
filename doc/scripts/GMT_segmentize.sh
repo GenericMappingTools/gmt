@@ -23,7 +23,6 @@ cat << EOF > t2.txt
 EOF
 
 gmt begin GMT_segmentize
-	gmt set GMT_THEME cookbook
 	gmt set FONT_ANNOT_PRIMARY 9p
 	gmt subplot begin 2x3 -Fs5c/4.5c -R0/50/0/45  -Sct -Srl -Jx0.1cd -M1p
 		# Show the data and its natural connectivity

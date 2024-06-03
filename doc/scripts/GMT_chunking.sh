@@ -4,7 +4,6 @@
 #
 
 gmt begin GMT_chunking
-gmt set GMT_THEME cookbook
 gmt set MAP_FRAME_PEN thick FONT_ANNOT_PRIMARY 9p
 
 n=1 # current cell number

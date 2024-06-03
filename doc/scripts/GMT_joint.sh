@@ -3,7 +3,6 @@
 # Demonstrate the different line joints in PostScript
 #
 gmt begin GMT_joint
-	gmt set GMT_THEME cookbook
 	cat <<-EOF > round.txt
 	1	1
 	8	2

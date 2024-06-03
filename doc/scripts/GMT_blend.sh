@@ -3,7 +3,6 @@
 # Large grid has no inner boundary
 # Crossection shows output values are correct
 gmt begin GMT_blend
-	gmt set GMT_THEME cookbook
 	gmt grdmath -R0/100/0/45  -I0.2 1 = 1.grd
 	gmt grdmath -R10/60/15/40 -I0.2 2 = 2.grd
 	gmt grdmath -R45/75/5/35  -I0.2 3 = 3.grd

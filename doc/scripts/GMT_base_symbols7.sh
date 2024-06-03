@@ -3,7 +3,6 @@
 # Plot front symbols for use on man page
 
 gmt begin GMT_base_symbols7
-    gmt set GMT_THEME cookbook
 cat << EOF > t.txt
 0	0
 10	20

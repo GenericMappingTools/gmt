@@ -3,7 +3,6 @@
 # Testing gmt legend capabilities for tables with colors
 
 gmt begin GMT_legend
-gmt set GMT_THEME cookbook
 cat <<EOF > table.txt
 #G 0.04i
 H 24 Times-Roman Eight Largest Cities in North America

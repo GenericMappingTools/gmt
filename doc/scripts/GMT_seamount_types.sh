@@ -2,7 +2,6 @@
 # Plot five different seamount types selectable in grdseamount
 # organized by smallest to largest volume for same r,h
 gmt begin GMT_seamount_types
-    gmt set GMT_THEME cookbook
     gmt set MAP_VECTOR_SHAPE 0.5
     # 1. Gaussian seamount
     echo "0	1" > tmp

@@ -6,7 +6,6 @@
 # GMT_KNOWN_FAILURE_WINDOWS
 cat << EOF > map.sh
 gmt begin
-	gmt set GMT_THEME cookbook
 	gmt basemap -R0/10/0/5 -JX7.6i/3.4i -Bafg -BWSrt+gbeige
 gmt end
 EOF
