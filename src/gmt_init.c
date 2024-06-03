@@ -10930,7 +10930,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
 	switch (case_val) {
-		case GMTCASE_SET_RUN_MODE:		/* Allow changing to/from CLASSIC/MODERN mode */
+		case GMTCASE_GMT_RUN_MODE:		/* Allow changing to/from CLASSIC/MODERN mode */
 			if (strcmp(value, "0") && strcmp(value, "1")) {
 				error = true;
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value %s for SET_RUN_MODE\n", value);
