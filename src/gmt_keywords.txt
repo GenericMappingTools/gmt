@@ -78,6 +78,8 @@ GMT_THEME			# Group of GMT defaults to override
 GMT_TRIANGULATE			# Triangulation algorithm
 GMT_VERBOSE			# Verbosity level
 #-------------------------------------------------------
+GMT_RUN_MODE		# To change between CLASSIC and MODERN mode. Used only by externals.
+#-------------------------------------------------------
 # IO Group:	I/O settings
 #-------------------------------------------------------
 IO_COL_SEPARATOR		# Column separator for output data records
@@ -176,6 +178,3 @@ TIME_UNIT			# Unit of time measurement
 TIME_SYSTEM			# Shortcut to setting TIME_EPOCH/UNIT [does not go in gmt.conf]
 TIME_WEEK_START			# Day a new week starts on
 TIME_Y2K_OFFSET_YEAR		# For 2-digit years to separate 1900 and 2000 centuries
-#-------------------------------------------------------
-SET_RUN_MODE		# To change between CLASSIC and MODERN mode. Used only by externals.
-#-------------------------------------------------------
