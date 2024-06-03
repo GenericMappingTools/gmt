@@ -6718,7 +6718,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-GMT_LOCAL void gmtinit_conf_classic_US (struct GMT_CTRL *GMT) {
+EXTERN_MSC void gmtinit_conf_classic_US (struct GMT_CTRL *GMT) {
 	int i, case_val;
 	/* Update the settings to US where they differ from standard SI settings:
 	 *     Setting			SI			US
@@ -6759,7 +6759,7 @@ GMT_LOCAL void gmtinit_conf_classic_US (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
+EXTERN_MSC void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	int i, error = 0;
 	char path[PATH_MAX] = {""};
 	double const pt = 1.0/72.0;	/* points to inch */
@@ -7274,13 +7274,13 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value during gmtdefaults modern initialization.\n");}
 
 /*! . */
-GMT_LOCAL void gmtinit_conf_modern_US (struct GMT_CTRL *GMT) {
+void gmtinit_conf_modern_US (struct GMT_CTRL *GMT) {
 	gmtinit_conf_classic_US (GMT);	/* Override with US settings */
 	gmtinit_conf_modern_override (GMT);
 }
 
 /*! . */
-GMT_LOCAL void gmtinit_conf_modern (struct GMT_CTRL *GMT) {
+void gmtinit_conf_modern (struct GMT_CTRL *GMT) {
 	/* REPLACE WITH gmtinit_conf_modern when ready */
 	gmtinit_conf_classic (GMT);
 	gmtinit_conf_modern_override (GMT);
@@ -10930,6 +10930,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
 	switch (case_val) {
+		case GMTCASE_SET_RUN_MODE:		/* Allow changing to/from CLASSIC/MODERN mode */
+			if (strcmp(value, "0") && strcmp(value, "1")) {
+				error = true;
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value %s for SET_RUN_MODE\n", value);
+				break;
+			}
+			GMT->current.setting.run_mode = atoi(value);
+			break;
 		/* FORMAT GROUP */
 		case GMTCASE_INPUT_CLOCK_FORMAT:
 			gmt_M_compat_translate ("FORMAT_CLOCK_IN");
@@ -12641,6 +12649,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
 	switch (case_val) {
+		case GMTCASE_SET_RUN_MODE:		/* Gat the current running mode CLASSIC or MODERN */
+			sprintf (value, "%d", GMT->current.setting.run_mode);
+			break;
 		/* FORMAT GROUP */
 		case GMTCASE_INPUT_CLOCK_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
