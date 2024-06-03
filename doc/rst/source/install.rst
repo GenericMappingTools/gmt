@@ -234,7 +234,7 @@ Ubuntu/Debian
 
 **NOTE:** The Ubuntu/Debian official repositories may provide old GMT
 versions. If you want the latest GMT 6.x release, your best bet then is
-to `build the latest release from source <BUILDING.md>`__.
+to `build the latest release from source <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`__.
 
 Install GMT via:
 
@@ -270,7 +270,7 @@ Gentoo
 ~~~~~~
 
 **NOTE:** This may provide old GMT versions. Consider `building from
-source <BUILDING.md>`__.
+source <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`__.
 
 Install GMT via:
 
@@ -339,7 +339,7 @@ GMT may be installed on FreeBSD using Ports or from source.
 
 **NOTE:** The Ports Collection may provide old GMT versions. If you want
 the latest GMT release, consider `building the latest release from
-source <BUILDING.md>`__.
+source <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`__.
 
 Install via Ports
 ~~~~~~~~~~~~~~~~~
@@ -349,31 +349,22 @@ application software that has been ported to FreeBSD.
 
 **Precompiled**
 
-Install precompiled gmt binaries with
-
-::
+Install precompiled gmt binaries with::
 
    pkg install gmt
 
 **Compile from Ports**
 
-If not done already, set up the **Ports Collection** See
-https://docs.freebsd.org/en/books/handbook/ports/#ports-using:
-
-::
+If not done already, set up the `Ports Collection <https://docs.freebsd.org/en/books/handbook/ports/#ports-using>`__::
 
    portsnap fetch
    portsnap extract
 
-If already set up, make sure you’re up-to-date:
-
-::
+If already set up, make sure you’re up-to-date::
 
    portsnap fetch update
 
-Then change into directory ``/usr/ports/graphics/gmt`` and build:
-
-::
+Then change into directory ``/usr/ports/graphics/gmt`` and build::
 
    make install clean
 
