@@ -30,9 +30,13 @@ for instructions and to make sure you have all required dependencies installed.
 Alternatively, you can build GMT from source by following the
 `building guide <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
 
-In addition, we recommend access to any flavor of the UNIX operating system
-(UNIX, Linux, macOS, Cygwin, MinGW, etc.).
-We do not recommend using the DOS command window under Windows.
+See also the general information about `Julia <https://julialang.org/learning/getting-started/>`_
+as well as the introduction to the Julia wrapper at
+`Introduction <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/general/introduction/index.html#introduction>`_
+and the very recommendable
+`Quick Learn <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/general/quick_learn/index.html#quick_learn/>`_.
+Complement with the instructions on how to
+install `GMT.jl <https://github.com/GenericMappingTools/GMT.jl#install>`_
 
 .. toctree::
     :maxdepth: 1
