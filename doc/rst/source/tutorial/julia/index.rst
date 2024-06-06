@@ -25,10 +25,22 @@ still redirect to the hard-core GMT man pages, whilst others direct users to Jul
 the translated GMT manuals. A *lost case* is the GMT Technical Reference that is so big/complete that it
 will take long time to see a Julia version of it.
 
+See the :doc:`install guide </install>`
+for instructions and to make sure you have all required dependencies installed.
+Alternatively, you can build GMT from source by following the
+`building guide <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
+
+See also the general information about `Julia <https://julialang.org/learning/getting-started/>`_
+as well as the introduction to the Julia wrapper at
+`Introduction <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/general/introduction/index.html#introduction>`_
+and the very recommendable
+`Quick Learn <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/general/quick_learn/index.html#quick_learn/>`_.
+Complement with the instructions on how to
+install `GMT.jl <https://github.com/GenericMappingTools/GMT.jl#install>`_
+
 .. toctree::
     :maxdepth: 1
 
-    intro
     session-1
     session-2
     session-3

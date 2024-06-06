@@ -37,6 +37,7 @@ it can do.
             :maxdepth: 1
             :caption: Getting started
 
+            intro
             install
             gallery
             animations
