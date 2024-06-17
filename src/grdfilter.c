@@ -893,6 +893,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 		}
 	}
 
+#ifdef HAVE_GLIB_GTHREAD
+	/* Make the default equal to the OMP case where we use all threads if not stated otherwise. */
+	if (!GMT->common.x.active) GMT->common.x.n_threads = gmtlib_get_num_processors();
+#endif
+
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D: Choose from p or 0-5\n");

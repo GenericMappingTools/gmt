@@ -262,7 +262,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdgravmag3d and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -447,6 +447,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 		}
 	}
+
+#ifdef HAVE_GLIB_GTHREAD
+	/* Make the default equal to the OMP case where we use all threads if not stated otherwise. */
+	if (!GMT->common.x.active) GMT->common.x.n_threads = gmtlib_get_num_processors();
+#endif
 
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Must specify input file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || gmt_M_is_dnan(Ctrl->S.radius)),

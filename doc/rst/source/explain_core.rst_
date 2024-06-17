@@ -1,2 +1,3 @@
 **-x**\ [[-]\ *n*] :ref:`(more ...) <core_full>`
-    Limit number of cores used in multi-threaded algorithms (OpenMP required).
+    Limit number of cores used in multi-threaded algorithms (OpenMP required for most of modules,
+    or Glib for grdfilter, gmt|grdgravmag3d).
