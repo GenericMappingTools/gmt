@@ -8788,7 +8788,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	if (n < n_alloc) X->data = gmt_M_memory (GMT, X->data, n, struct GMT_LUT);
 	X->n_colors = n;
 
-	/* The master gray.cpt has only one slice and hence it comes aout as both gray & bw, but it can only be one of them. */
+	/* The master gray.cpt has only one slice and hence it comes out as both gray & bw, but it can only be one of them. */
 	if (X->n_colors == 1 && X->is_gray && X->is_bw) X->is_bw = false;	/* Prefer gray over bw (would crash grdimage with externals). */
 
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
