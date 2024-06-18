@@ -453,11 +453,6 @@ static int parse(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GM
 		}
 	}
 
-#ifdef HAVE_GLIB_GTHREAD
-	/* Make the default equal to the OMP case where we use all threads if not stated otherwise. */
-	if (!GMT->common.x.active) GMT->common.x.n_threads = API->n_cores;
-#endif
-
 	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || gmt_M_is_dnan (Ctrl->S.radius)),
 	                                  "Option -S: Radius is NaN or negative\n");
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->T.active && !Ctrl->M.active, "Options -T or -M are mandatory\n");

@@ -1,3 +1,4 @@
 **-x**\ [[-]\ *n*] :ref:`(more ...) <core_full>`
-    Limit number of cores used in multi-threaded algorithms (OpenMP required for most of modules,
-    or Glib for grdfilter, gmt|grdgravmag3d).
+    Limit number of cores used in multi-threaded algorithms. Multi-threaded behavior is enabled by default.
+    That covers the modules that implement the OpenMP API (required at compiling stage) and GThreads (Glib)
+    for the grdfilter module.
