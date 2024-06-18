@@ -57,7 +57,7 @@
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
 #define THIS_MODULE_KEYS	"<D{,DD(=,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefhiqrw" GMT_ADD_x_OPT GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVabdefhiqrw" GMT_OPT("FH")
 
 struct SURFACE_CTRL {
 	struct SURFACE_A {	/* -A<aspect_ratio> */
@@ -1790,7 +1790,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Change over-relaxation parameter [Default = %g]. Use a value "
 		"between 1 and 2. Larger number accelerates convergence but can be unstable. "
 		"Use 1 if you want to be sure to have (slow) stable convergence.", SURFACE_OVERRELAXATION);
-	GMT_Option (API, "a,bi3,di,e,f,h,i,qi,r,w,x,:,.");
+	GMT_Option (API, "a,bi3,di,e,f,h,i,qi,r,w,:,.");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Note: Geographic data with 360-degree range use periodic boundary condition in longitude. "
 		"For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.");
 

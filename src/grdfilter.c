@@ -828,7 +828,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 						Ctrl->F.rect = true;
 					}
 					else
-						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);
+						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);	/* This has an undocumented option of reading a grid */
 					if (Ctrl->F.width < 0.0) {	/* Old-style specification for high-pass filtering */
 						if (gmt_M_compat_check (GMT, 5)) {
 							GMT_Report (API, GMT_MSG_COMPAT,
@@ -895,10 +895,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 
 #ifdef HAVE_GLIB_GTHREAD
 	/* Make the default equal to the OMP case where we use all threads if not stated otherwise. */
-	if (Ctrl->F.custom && GMT->common.x.n_threads > 1) {
+	if (Ctrl->F.varwidth) {			/* Variable filter width. This option is currently undocumented. */
+		if (GMT->common.x.active)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Sorry, variable filter width does not support multiple threads. Reset to 1.\n" );
 		GMT->common.x.n_threads = 1;
-		GMT->common.x.active = false;
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Sorry, custom filtering does not support multiple threads. Reset to 1.\n" );
+		GMT->common.x.active = true;
 	}
 	if (!GMT->common.x.active) {
 		GMT->common.x.n_threads = API->n_cores;
