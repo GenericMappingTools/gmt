@@ -450,7 +450,7 @@ static int parse(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GM
 
 #ifdef HAVE_GLIB_GTHREAD
 	/* Make the default equal to the OMP case where we use all threads if not stated otherwise. */
-	if (!GMT->common.x.active) GMT->common.x.n_threads = gmtlib_get_num_processors();
+	if (!GMT->common.x.active) GMT->common.x.n_threads = API->n_cores;
 #endif
 
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Must specify input file\n");
