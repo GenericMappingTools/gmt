@@ -219,6 +219,10 @@ Optional Arguments
     just certain levels (1-4) then use the full syntax **-W**\ *level*/\ *pen*
     and repeat for each level (pen is not used but required to parse the level correctly).
 
+    Since the resolution of the datasets typically are in the order
+    of hundreds of meters, consider reducing the number of decimals by
+    setting :term:`FORMAT_FLOAT_OUT`.
+
 .. _-N:
 
 **-N**\ *border*\ [/*pen*]
