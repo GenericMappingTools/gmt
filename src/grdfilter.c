@@ -47,7 +47,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 
 #include "gmt_dev.h"
 #include "longopt/grdfilter_inc.h"
-#include "gmt_glib.h"
+//#include "gmt_glib.h"		/* Now included in gmt_dev.h */
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfilter"
 #define THIS_MODULE_MODERN_NAME	"grdfilter"
@@ -828,7 +828,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 						Ctrl->F.rect = true;
 					}
 					else
-						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);
+						Ctrl->F.width = grdfilter_get_filter_width (API, Ctrl, &txt[1]);	/* This has an undocumented option of reading a grid */
 					if (Ctrl->F.width < 0.0) {	/* Old-style specification for high-pass filtering */
 						if (gmt_M_compat_check (GMT, 5)) {
 							GMT_Report (API, GMT_MSG_COMPAT,
@@ -892,6 +892,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 				break;
 		}
 	}
+
+#ifdef HAVE_GLIB_GTHREAD
+	/* Make the default equal to the OMP case where we use all threads if not stated otherwise. */
+	if (Ctrl->F.varwidth) {			/* Variable filter width. This option is currently undocumented. */
+		if (GMT->common.x.active)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Sorry, variable filter width does not support multiple threads. Reset to 1.\n" );
+		GMT->common.x.n_threads = 1;
+		GMT->common.x.active = true;
+	}
+	if (!GMT->common.x.active) {
+		GMT->common.x.n_threads = API->n_cores;
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Enable all available threads (up to %d)\n", API->n_cores);
+	}
+#endif
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");

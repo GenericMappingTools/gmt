@@ -252,7 +252,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to gmtgravmag3d and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.

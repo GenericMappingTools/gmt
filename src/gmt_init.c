@@ -2607,8 +2607,8 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 }
 
 /*! -x[[-]<ncores>] */
+GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {	/* Only effective if MP is enabled */
 #ifdef GMT_MP_ENABLED
-GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	GMT->common.x.active = true;
 	if (!arg) return (GMT_PARSE_ERROR);	/* -x requires a non-NULL argument */
 	if (arg[0] == '\0')	/* Use all processors */
@@ -2622,9 +2622,9 @@ GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.x.n_threads = MAX(gmtlib_get_num_processors() - abs (GMT->common.x.n_threads), 1);		/* Max-n but at least one */
 	if (GMT->current.setting.max_cores)	/* Limit to max core defaults setting */
 		GMT->common.x.n_threads = GMT->current.setting.max_cores;
+#endif
 	return (GMT_NOERROR);
 }
-#endif
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_colon_option (struct GMT_CTRL *GMT, char *item) {
@@ -8124,9 +8124,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 #if defined(GMT_MP_ENABLED)
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
-			if (strlen (GMT_x_OPT) > 1) {	/* Only print this if it is in fact available */
+			if (strlen(GMT_x_OPT) > 1 || strlen(GMT_xg_OPT) > 1) {	/* Only print this if it is in fact available */
 				cores = gmtlib_get_num_processors();
-				GMT_Usage (API, 1, "\n%s", GMT_x_OPT);
+				(strlen(GMT_x_OPT) > 1) ? GMT_Usage(API, 1, "\n%s", GMT_x_OPT) : GMT_Usage(API, 1, "\n%s", GMT_xg_OPT);
 				GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
 					"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
 			}
@@ -9151,9 +9151,12 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 's': error += GMT->common.s.active == false; break;
 		case 't': error += GMT->common.t.active == false; break;
 		case 'w': error += GMT->common.w.active == false; break;
-#if defined(GMT_MP_ENABLED)
-		case 'x': error += GMT->common.x.active == false; break;
+		case 'x': error += GMT->common.x.active == false;
+#if !defined(GMT_MP_ENABLED)
+		error --;
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Option -x: GMT is not compiled with parallel support. Only one core is used\n");
 #endif
+		break;
 		case ':': error += GMT->common.colon.active == false; break;
 
 		default:
@@ -18792,12 +18795,13 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			error += gmt_M_more_than_once (GMT, GMT->common.w.active) || gmtinit_parse_w_option (GMT, item);
 			break;
 
-#ifdef GMT_MP_ENABLED
 		case 'x':
 			error += (gmt_M_more_than_once (GMT, GMT->common.x.active) || gmtinit_parse_x_option (GMT, item));
 			GMT->common.x.active = true;
-			break;
+#if !defined(GMT_MP_ENABLED)
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -x: GMT is not compiled with parallel support. Only one core is used\n");
 #endif
+			break;
 
 		case ':':
 			error += (gmt_M_more_than_once (GMT, GMT->common.colon.active) || gmtinit_parse_colon_option (GMT, item));

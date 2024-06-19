@@ -30,6 +30,7 @@
    These are used only GLIB based multi-threading */
 
 #ifndef GMT_GLIB_H
+#define GMT_GLIB_H
 
 #ifdef HAVE_GLIB_GTHREAD
 #include <glib.h>

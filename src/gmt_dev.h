@@ -154,6 +154,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_nan.h"            /* Machine-dependent macros for making and testing NaNs */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
+#include "gmt_glib.h"           /* Make the GMT_xg_OPT define visible, even if HAVE_GLIB_GTHREAD is not defined */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
 #include "gmt_grd.h"            /* Define grd file header structure */
