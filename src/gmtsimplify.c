@@ -386,6 +386,7 @@ EXTERN_MSC int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 						S[GMT_OUT]->data[col][row] = S[GMT_IN]->data[col][index[row]];
 					if (smode) S[GMT_OUT]->text[row] = strdup (S[GMT_IN]->text[row]);
 				}
+				if (S[GMT_IN]->header) S[GMT_OUT]->header = strdup(S[GMT_IN]->header);
 				seg_out++;		/* Move on to next output segment */
 				ns_in++;		/* Input segment with points */
 				if (np_out) ns_out++;	/* Output segment with points */
