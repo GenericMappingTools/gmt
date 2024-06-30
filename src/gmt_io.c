@@ -3529,8 +3529,12 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
 			if (got == GMT_IS_NAN) {	/* Parsing failed, which means we found our first non-number; but it could also be a valid NaN */
 				gmt_str_tolower (token);
-				if (strncmp (token, "nan", 3U))
-					found_text = true;
+				if (strncmp(token, "nan", 3U)) {
+					if (GMT->current.io.col_type[GMT_IN][0] == GMT_IS_FIRSTCOLSTR)
+						type[col++] = got = GMT_IS_FLOAT;
+					else
+						found_text = true;
+				}
 				else
 					type[col++] = got = GMT_IS_FLOAT;
 			}
@@ -3574,6 +3578,13 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 
 	for (k = 0; k < col; k++)	/* Check if we can utilize what we learned about each physical column */
 		gmtio_assign_col_type_if_notset (GMT, k, type[k]);
+
+	/* When -fa & -i was used here we still have a leading col_type = GMT_IS_FIRSTCOLSTR that would cause
+	   first col to always come out as NaN. Need to reset it GMT_IS_FLOAT.
+	*/
+	if (GMT->common.i.col.select && GMT->current.io.col_type[GMT_IN][0] == GMT_IS_FIRSTCOLSTR)
+		GMT->current.io.col_type[GMT_IN][0] = GMT_IS_FLOAT;
+
 	gmt_M_free (GMT, type);
 
 
@@ -7384,6 +7395,10 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			return (type);
 			break;
 
+		case  GMT_IS_FIRSTCOLSTR:
+			return (GMT_IS_NAN);
+			break;
+
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT_LOGIC_BUG: gmt_scanf() called with invalid expectation.\n");
 			return (GMT_IS_NAN);
@@ -8161,7 +8176,7 @@ struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tab
 }
 
 /*! . */
-struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, unsigned int *data_type, bool use_GMT_io) {
+struct GMT_DATATABLE *gmtlib_read_table(struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, unsigned int *data_type, bool use_GMT_io) {
 	/* Reads an entire data set into a single table in memory with any number of segments */
 
 	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false;
@@ -8256,7 +8271,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	}
 
 	if (GMT->current.io.record.data == NULL) *data_type = GMT_READ_TEXT;
-	In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record */
+	In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record. If == NULL means we read a header line. */
 	n_read++;
 	if (gmt_M_rec_is_eof(GMT)) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s is empty!\n", file);
@@ -8332,7 +8347,8 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			/* Segment initialization */
 			row = 0;
 			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets in = NULL */
-				while (!gmt_M_rec_is_eof (GMT) && (In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL) n_read++;
+				while (!gmt_M_rec_is_eof (GMT) && (In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL)
+					n_read++;
 			}
 			if (GMT->current.io.record_type[GMT_IN] == GMT_READ_TEXT)
 				S->n_columns = 0;	/* No numerical data */
@@ -8383,7 +8399,8 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 			row++;
 			In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
-			while (gmt_M_rec_is_table_header (GMT)) In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Just wind past other comments */
+			while (gmt_M_rec_is_table_header (GMT))
+				In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Just wind past other comments */
 			n_read++;
 		}
 
@@ -8403,14 +8420,16 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 				double dlon = GMT->hidden.mem_coord[GMT_X][0] - GMT->hidden.mem_coord[GMT_X][row-1];
 				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && GMT->hidden.mem_coord[GMT_Y][0] == GMT->hidden.mem_coord[GMT_Y][row-1])) {
 					gmt_prep_tmp_arrays (GMT, GMT_IN, row, S->n_columns);	/* Maybe reallocate tmp read vectors */
-					for (col = 0; col < S->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
+					for (col = 0; col < S->n_columns; col++)
+						GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
 					row++;	/* Explicitly close polygon */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Explicitly closed open geographic polygon in file %s, segment %" PRIu64 "\n", file, seg);
 				}
 			}
 			else if (gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) {	/* Cartesian closure */
 				gmt_prep_tmp_arrays (GMT, GMT_IN, row, S->n_columns);	/* Init or update tmp read vectors */
-				for (col = 0; col < S->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
+				for (col = 0; col < S->n_columns; col++)
+					GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
 				row++;	/* Explicitly close polygon */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Explicitly closed open Cartesian polygon in file %s, segment %" PRIu64 "\n", file, seg);
 			}

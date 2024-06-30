@@ -1925,8 +1925,9 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 			case 'x':	code = GMT_IS_LON;		break;		/* Longitude coordinates */
 			case 'y':	code = GMT_IS_LAT;		break;		/* Latitude coordinates */
 			case 'f':	code = GMT_IS_FLOAT;	break;		/* Plain floating point coordinates */
-			case 'd':	code = GMT_IS_DIMENSION;	break;	/* Length dimension (with possible unit) */
+			case 'd':	code = GMT_IS_DIMENSION;break;		/* Length dimension (with possible unit) */
 			case 's':	code = GMT_IS_STRING;	break;		/* This must be start of trailing text */
+			case 'a':	code = GMT_IS_FIRSTCOLSTR;	break;	/* First column is text followed by trailing numbers */
 			default:	/* No suffix, consider it an error */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed -f argument [%s]\n", arg);
 				return 1;

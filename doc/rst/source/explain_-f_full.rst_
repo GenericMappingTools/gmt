@@ -23,8 +23,13 @@ all items from the given column and to the end of the record should be considere
 
 Three shorthand options for common selections are available. The shorthand **-f**\ [**i**\|\ **o**]\ **g** means
 **-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic coordinates), while **-f**\ [**i**\|\ **o**]\ **c** means
-**-f**\ [**i**\|\ **o**]0:1\ **f** (i.e., Cartesian coordinates). A special use of **-f** is to select
+**-f**\ [**i**\|\ **o**]0:1\ **f** (i.e., Cartesian coordinates). A first special use of **-f** is to select
 **-fp**\ [*unit*], which *requires* **-J -R** and lets you use *projected* map coordinates (e.g., UTM meters) as data input.
 Such coordinates are automatically inverted to longitude, latitude during the data import. Optionally, append a length
-*unit* (see table :ref:`distance units <tbl-distunits>`) [default is meter]. For more information, see Sections
-:ref:`input-data-formats` and :ref:`output-data-formats`.
+*unit* (see table :ref:`distance units <tbl-distunits>`) [default is meter]. The second special case is to use **-fa**.
+We use this when reading a file whose first column is plain text (and NO date or time) followed by numeric records.
+Normally, such a file would result in a _"Selection led to no output columns"_ error because the file was interpreted
+to be made only of text (_i.,e.,_ no numbers). Or even worse, only part of the file is read. The **-fa** option
+forces the first column to be ignored (output as NaN) and the remaining records parsed normally. User may add the
+**-i1:** to fully drop that first column in reading. For more information, see Sections :ref:`input-data-formats`
+and :ref:`output-data-formats`.
