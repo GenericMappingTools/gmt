@@ -921,7 +921,7 @@ specification. The line attribute modifiers are:
     visible line.  Do this by specifying the desired offset between the terminal point and the
     start of the visible line.  Unless you are giving distances in Cartesian data units,
     please append the distance unit, **u**.  Depending on your desired effect, you can append
-    plot distance units (i.e., **c**\ m, **i**\ nch, **p**\ oint; Section `Dimension units`_)) or map distance units,
+    plot distance units (i.e., **c**\ m, **i**\ nch, **p**\ oint; Section `Dimension units`_) or map distance units,
     such as **k**\ m, **d**\ egrees, and many other standard distance units listed in
     Section `GMT units`_.  If only one offset is given then it applies equally to both ends of
     the line.  Give two slash-separated distances to indicate different offsets at the

@@ -1,9 +1,9 @@
 .. index:: ! gmtsimplify
 .. include:: module_core_purpose.rst_
 
-***********
-gmtsimplify
-***********
+********
+simplify
+********
 
 |gmtsimplify_purpose|
 

@@ -917,7 +917,7 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-   function of wavenumber :math:`k_j` [Marks and Smith, 2007 [14]_.
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007] [14]_.
 
 .. toggle::
 

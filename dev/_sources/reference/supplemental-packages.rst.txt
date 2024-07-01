@@ -185,7 +185,7 @@ Footnotes
    three-dimensional bodies of arbitrary shape, *Geophysics, 25*, 203–225.
 
 .. [28]
-   `Timothy J. Henstock <http://www.southampton.ac.uk/oes/research/staff/then.page>`_,
+   `Timothy J. Henstock <https://www.southampton.ac.uk/people/5wy8gd/professor-tim-henstock>`_,
    University of Southampton
 
 .. [29]
