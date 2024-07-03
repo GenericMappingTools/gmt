@@ -731,10 +731,46 @@ GMT_LOCAL int pscoast_check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SH
 	return (GMT_NOERROR);
 }
 
-#define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+/*
+ * Checks if the given GMT_CTRL structure's J.proj4string contains false eastings/northings.
+ * If found, strip them and re-initializes the coordinate transformations.
+ * See issue: https://github.com/GenericMappingTools/gmt/issues/8536 
+ *
+ * Return true if false eastings/northings are found and coordinate transformations are re-initialized,
+ * false otherwise
+ */
+GMT_LOCAL bool pscoast_proj4_no_x0y0(struct GMT_CTRL *GMT) {
+	unsigned int pos = 0;
+	size_t k;
+	char *pch1 = NULL, *pch2 = NULL, token[GMT_LEN64] = {""};
+	char *pStr = strdup(GMT->common.J.proj4string);
+	if ((pch1 = strstr(pStr, "+x_0=")) != NULL) {
+		gmt_strtok (pch1, " \t+", &pos, token);
+		if ((pch2 = strstr(pStr, token)) != NULL) {
+			for (k = 0; k < strlen(token); k++) pch2[k] = ' ';
+		}
+	}
+	if ((pch1 = strstr(pStr, "+y_0=")) != NULL) {
+		pos = 0;	gmt_strtok (pch1, " \t+", &pos, token);
+		if ((pch2 = strstr(pStr, token)) != NULL) {
+			for (k = 0; k < strlen(token); k++) pch2[k] = ' ';
+		}
+	}
+	/* If we have found false eastings/northings, we need to re-initialize the coordinate transformations */
+	if (pos > 0) {
+		if (GMT->current.gdal_read_in.hCT_fwd) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
+		if (GMT->current.gdal_read_in.hCT_inv) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
+		GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, "+proj=latlong +datum=WGS84", pStr);
+		GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, pStr, "+proj=latlong +datum=WGS84");
+		return true;
+	}
+	return false;
+}
 
-EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
+#define bailout(code) {gmt_M_free_options(mode); return (code);}
+#define Return(code) {Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); bailout(code);}
+
+EXTERN_MSC int GMT_pscoast(void *V_API, int mode, void *args) {
 	/* High-level function that implements the pscoast task */
 
 	int i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
@@ -743,7 +779,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	bool shift = false, need_coast_base, recursive, greenwich = false, possibly_donut_hell = false;
 	bool clobber_background = false, paint_polygons = false, donut, double_recursive = false;
 	bool donut_hell = false, world_map_save, clipping;
-	bool clip_to_extend_lines = false;
+	bool clip_to_extend_lines = false, reset_CT_transformers = false;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border = 0.0, east_border = 0.0, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
@@ -784,6 +820,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pscoast main code ----------------------------*/
 
 	/* Check and interpret the command line arguments */
+
+	if (!Ctrl->M.active && !Ctrl->Q.active && GMT->current.proj.is_proj4 && GMT->common.J.proj4string)
+		reset_CT_transformers = pscoast_proj4_no_x0y0(GMT);	/* x_0, y_0 in proj4 string, screw the map coords */
+
 
 	gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 	if (GMT->current.setting.run_mode == GMT_MODERN && !Ctrl->D.active)
@@ -1322,6 +1362,16 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, p);
 		}
 		gmt_br_cleanup (GMT, &b);
+	}
+
+	/* If we had temporaryly changed the proj4 coordinate transformes, must undo that change */
+	if (reset_CT_transformers) {
+		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
+		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
+		GMT->current.gdal_read_in.hCT_fwd =
+			gmt_OGRCoordinateTransformation(GMT, "+proj=latlong +datum=WGS84", GMT->common.J.proj4string);
+		GMT->current.gdal_read_in.hCT_inv =
+			gmt_OGRCoordinateTransformation(GMT, GMT->common.J.proj4string, "+proj=latlong +datum=WGS84");
 	}
 
 	if (!Ctrl->M.active) {	/* Wrap of the plotting codes */
