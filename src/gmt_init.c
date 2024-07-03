@@ -18256,7 +18256,7 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
+GMT_LOCAL int gmtinit_parse_proj4(struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
 	char  *item_t1 = NULL, *item_t2 = NULL, epsg2proj[GMT_LEN256] = {""}, wktext[32] = {""}, *pch;
 	bool   do_free = false;
@@ -18266,7 +18266,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 
 	if (item[0] == '+') {
 		bool found = false;
-		len = strlen (item);
+		len = strlen(item);
 		for (k = 1; k < len; k++) {			/* Search for glued tokens */
 			if (item[k] == '+' && item[k-1] != ' ') {
 				found = true;
@@ -18274,7 +18274,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 			}
 		}
 		if (found) {			/* OK, need to break up things like +x=0+y=0 into "+x=0 +y=0" */
-			item_t1 = gmt_strrep (item, "+", " +");
+			item_t1 = gmt_strrep(item, "+", " +");
 			do_free = true;		/* Signal that we must free item_t1 */
 		}
 		else
@@ -18287,10 +18287,7 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 	else
 		item_t1 = item;
 
-	/* Don't remember anymore if we still need to call gmt_importproj4(). We don't for simple
-	   mapproject usage but maybe we still need for mapping purposes. To-be-rediscovered.
-	*/
-	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos, epsg2proj);		/* This is the GMT -J proj string */
+	item_t2 = gmt_importproj4(GMT, item_t1, &scale_pos, epsg2proj);		/* This is the GMT -J proj string */
 	if (item_t2 && !GMT->current.ps.active && !strcmp(item_t2, "/1:1")) {
 		/* Even though it failed to do the mapping we can still use it in mapproject */
 		GMT->current.proj.projection_GMT = GMT_NO_PROJ;
@@ -18305,8 +18302,8 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 			item_t2[len-1] = '\0';
 		}
 		if (scale_pos != 0) {	/* Because if == 0 than it means we have a scale only string (i.e. no GMT mapped proj) */
-			error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Option -J given more than once\n") ||
-			                                 gmtinit_parse_J_option (GMT, item_t2));
+			error += (gmt_M_check_condition(GMT, GMT->common.J.active, "Option -J given more than once\n") ||
+			                                gmtinit_parse_J_option (GMT, item_t2));
 		}
 		else		/* Not particularly useful yet because mapproject will fail anyway when scale != 1:1 */
 			GMT->current.proj.projection_GMT = GMT_NO_PROJ;
@@ -18324,20 +18321,20 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 		else if ((sc = atof(pch)) == 1)
 			GMT->current.proj.pars[14] = 1;
 
-		free (item_t2);			/* Cannot be freed before */
+		free(item_t2);			/* Cannot be freed before */
 		item_t2 = NULL;
 	}
 	else {
-		if (do_free) free (item_t1);
+		if (do_free) free(item_t1);
 		return 1;
 	}
 
 	if (isdigit(item[0]))
-		sprintf (dest, "EPSG:%s", item);
+		sprintf(dest, "EPSG:%s", item);
 	else if (strstr(item, "EPSG:") || strstr(item, "epsg:"))
-		sprintf (dest, "%s", item);
+		sprintf(dest, "%s", item);
 	else
-		sprintf (dest, "%s", item_t1);
+		sprintf(dest, "%s", item_t1);
 
 	/* For the proj.4 string detect if this projection is supported by GDAL. If not will append a +wktext later */
 	if (!strncmp(item, "+proj=", 6) && GDAL_VERSION_NUM < 2050000) {	/* Almost for sure GDAL 2.5 doesn't need this */
@@ -18406,15 +18403,15 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 		}
 	}
 
-	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to insert spaces */
+	if (do_free) free(item_t1);			/* When we got a glued +proj=... and had to insert spaces */
 
-	if ((pch = strchr(dest, '/')) != NULL || (pch = strstr(dest, "+width=")) != NULL || (pch = strstr(dest, "+scale=")) != NULL)
+	if ((pch = strstr(dest, "+width=")) != NULL || (pch = strstr(dest, "+scale=")) != NULL || (pch = strchr(dest, '/')) != NULL)
 		/* If we have a scale, drop it before passing the string to GDAL */
 		pch[0] = '\0';
 
 	if (wktext[0]) strcat(dest, wktext);	/* Append a +wktext to make this projection recognized by GDAL */
 
-	if (item_t2) free (item_t2);
+	if (item_t2) free(item_t2);
 
 	return error;
 }
