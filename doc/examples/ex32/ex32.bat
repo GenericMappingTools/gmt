@@ -29,8 +29,9 @@ gmt begin ex32
 	gmt makecpt -C0/51/153,255/204/0 -T0,127,255 -N
 
 	REM The next step is the plotting of the image.
-	REM We use gmt grdview to plot the topography, euflag.nc to give the color, and an illumination from the azimuthal
-	REM directions 0° (north) and 270° (west) with a normalization via a cumulative Laplace distribution for the shading.
+	REM We use gmt grdview to plot the topography, euflag.nc to give the color, and an illumination
+	REM from the azimuthal directions 0° (north) and 270° (west) with a normalization via a cumulative
+	REM Laplace distribution for the shading.
 	set Rplot=%Rflag%/-10/790
 	gmt grdview topo_32.nc -JM13c %Rplot% -C -G@euflag.nc -I+a0/270+ne0.6 -Qc -JZ1c -p157.5/30
 
