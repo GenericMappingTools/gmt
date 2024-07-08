@@ -104,7 +104,7 @@ int gmt_export_image(struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 
 	ext = gmt_get_ext(fname);
 	if (ext == NULL) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Cannot NOT provide a file extension for the saving file. We need it to determine the output format.\n");
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Cannot NOT provide a file extension for the saving file (-G option). We need it to determine the output format.\n");
 		return GMT_NOTSET;
 	}
 	/* See if the extension if one of the well known image formats */
