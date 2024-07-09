@@ -104,7 +104,7 @@ int gmt_export_image(struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 
 	ext = gmt_get_ext(fname);
 	if (ext == NULL) {
-		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Cannot NOT provide a file extension for the saving file (-G option). We need it to determine the output format.\n");
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "MUST provide a file extension for the saving file (-G option). We need it to determine the output format.\n");
 		return GMT_NOTSET;
 	}
 	/* See if the extension if one of the well known image formats */
@@ -113,7 +113,7 @@ int gmt_export_image(struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 			to_GDALW->driver = strdup(gdal_drv[k]);
 		else if (!strcasecmp(ext, "jpg"))
 			to_GDALW->driver = strdup("JPEG");	/* Jpegs too */
-		else if (!strcasecmp (ext, gdal_drv[k]))
+		else if (!strcasecmp(ext, gdal_drv[k]))
 			to_GDALW->driver = strdup(gdal_drv[k]);
 	}
 	if (to_GDALW->driver == NULL) {				/* None of those; need to give a driver */
@@ -123,7 +123,7 @@ int gmt_export_image(struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 			if ((c = strstr(fname, "=gd")))		/* Check if we have not a stray =gd in name*/
 				c[0] = '\0';					/* Yes, remove it too */
 		}
-		else if ((c = strchr (fname, '='))) {    /* Gave file=<format> so pass that along */
+		else if ((c = strchr(fname, '='))) {    /* Gave file=<format> so pass that along */
 			to_GDALW->driver = strdup(&c[1]);
 			c[0] = '\0';
 		}
@@ -251,7 +251,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2(struct GMT_CTRL *GMT, struct GMT_GDALWRITE_
 				dataT[k++] = (char)t[n + j];
 		}
 		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_Byte, 0, 0);
-		gmt_M_free (GMT, dataT);
+		gmt_M_free(GMT, dataT);
 	}
 	else if (prhs->orig_type == GMT_USHORT) {
 		short int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned short int);
@@ -262,7 +262,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2(struct GMT_CTRL *GMT, struct GMT_GDALWRITE_
 				dataT[k++] = (unsigned short int)t[n + j];
 		}
 		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_UInt16, 0, 0);
-		gmt_M_free (GMT, dataT);
+		gmt_M_free(GMT, dataT);
 	}
 	else if (prhs->orig_type == GMT_SHORT) {
 		short int *dataT = gmt_M_memory(GMT, NULL, nm, short int);
@@ -273,7 +273,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2(struct GMT_CTRL *GMT, struct GMT_GDALWRITE_
 				dataT[k++] = (short int)t[n + j];
 		}
 		error = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, dataT, n_cols, n_rows, GDT_Int16, 0, 0);
-		gmt_M_free (GMT, dataT);
+		gmt_M_free(GMT, dataT);
 	}
 	else if (prhs->orig_type == GMT_UINT) {
 		unsigned int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned int);
@@ -301,7 +301,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2(struct GMT_CTRL *GMT, struct GMT_GDALWRITE_
 	return error;
 }
 
-int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
+int gmt_gdalwrite(struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
 	int	bStrict = false;
 	char **papszOptions = NULL, *projWKT = NULL;
 	char *pszFormat = "GTiff";
@@ -501,7 +501,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (prhs->co_options) {
 		unsigned int  pos = 0;
 		char token[64];
-		while (gmt_strtok (prhs->co_options, "+", &pos, token)) {
+		while (gmt_strtok(prhs->co_options, "+", &pos, token)) {
 			if (token[0] == 'c')
 				papszOptions = CSLAddString(papszOptions, &token[1]);	/* Jump the 'c' */
 		}
@@ -560,7 +560,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				if (!strcmp(prhs->type, "byte")) {
 					/* This case arrives here from a separate path. It started in grdimage and an originally
 					   data was in uchar but padded and possibly 3D (RGB) */
-					uint64_t imsize = gmt_M_get_nm (GMT, n_cols, n_rows);
+					uint64_t imsize = gmt_M_get_nm(GMT, n_cols, n_rows);
 					tmpByte = (unsigned char *)data;
 					for (nn = 0; nn < imsize; nn++)
 						outByte[nn] = tmpByte[nn*n_bands + i];
