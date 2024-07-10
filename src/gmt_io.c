@@ -9433,8 +9433,16 @@ bool gmt_is_float (struct GMT_CTRL *GMT, char *text) {
 
 	if (sscanf (text, "%lf %n", &dummy, &len) == 1 && len == (int)strlen(text))
 		return true;
-	else
+	else {
+#if defined(__MINGW32__)
+	/* The MinGW cross-compile used by Julia is probably bugged and fails above test to detect if 'text' is a number.
+	   Use this test (probably weaker) to try to save the situation.
+	*/
+	if (strspn(text, ".0123456789eE") == strlen(text))
+		return true;
+#endif
 		return false;
+	}
 }
 
 /*! . */
