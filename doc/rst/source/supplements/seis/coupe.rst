@@ -139,7 +139,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**+c**][**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
+**-D**\ [**+c**][**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*]
     Offsets projected focal mechanisms to the alternate distance, depth given
     in the last two columns of the input file before the (optional) text
     string. Instead, if alternate geographical coordinates are given in the two columns then use **+c** to first
