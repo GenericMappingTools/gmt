@@ -7368,12 +7368,12 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	bool set_NaN = false;
 	char def_width[GMT_LEN256] = {""}, width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
-	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P intact */
 	assert (P);	/* P needs to not point to NULL */
 
 	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
 	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
-	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P intact */
 
 	/* First chop off and processes any line modifiers :
 	 * +c[l|f] : Determine how a CPT (-C) affects pen and fill colors normally controlled via -W.
