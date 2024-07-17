@@ -1093,7 +1093,6 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	 */
 
 	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
-	unsigned char *transparency;	/* Pointer to memory where transparency resides */
 	int64_t row, col, node;
 	unsigned int k, tr, tr_max = 0;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
 	unsigned int n_bands = H->n_bands;
