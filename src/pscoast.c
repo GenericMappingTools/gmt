@@ -821,7 +821,7 @@ EXTERN_MSC int GMT_pscoast(void *V_API, int mode, void *args) {
 
 	/* Check and interpret the command line arguments */
 
-	if (!Ctrl->M.active && !Ctrl->Q.active && GMT->current.proj.is_proj4 && GMT->common.J.proj4string)
+	if (!Ctrl->M.active && !Ctrl->Q.active && GMT->current.proj.is_proj4 && GMT->common.J.proj4string[0])
 		reset_CT_transformers = pscoast_proj4_no_x0y0(GMT);	/* x_0, y_0 in proj4 string, screw the map coords */
 
 
