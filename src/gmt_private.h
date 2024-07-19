@@ -185,16 +185,16 @@ struct GMTAPI_CTRL {
 	char *session_dir;			/* GMT Session dir (NULL if not running in modern mode) */
 	char *gwf_dir;				/* GMT WorkFlow dir (NULL if not running in modern mode) */
 	char **tmp_header;			/* Temporary table headers held until we are able to write them to destination */
-	char *tmp_segmentheader;		/* Temporary segment header held until we are able to write it to destination */
+	char *tmp_segmentheader;	/* Temporary segment header held until we are able to write it to destination */
 	char *message;				/* To be allocated by Create_Session and used for messages */
-	char error_msg[4096];			/* The cached last error message */
+	char error_msg[4096];		/* The cached last error message */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */
 	bool parker_fft_default;	/* Used to alter the default in -N FFT settings */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
-	unsigned int do_not_exit;		/* 0 by default, meaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
-	struct GMT_LIBINFO *lib;		/* List of shared libs to consider */
-	unsigned int n_shared_libs;		/* How many in lib */
+	unsigned int do_not_exit;	/* 0 by default, meaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
+	struct GMT_LIBINFO *lib;	/* List of shared libs to consider */
+	unsigned int n_shared_libs;	/* How many in lib */
 	/* Items used by GMT_Put_Record and sub-functions */
 	int (*api_put_record) (struct GMTAPI_CTRL *API, unsigned int, struct GMT_RECORD *);
 	/*   Items used by api_put_record_fp */
@@ -211,7 +211,7 @@ struct GMTAPI_CTRL {
 	struct GMT_VECTOR *current_put_V;
 	GMT_putfunction *current_put_V_val;
 	/* Items used by GMT_Put_Record and sub-functions */
-	struct GMT_RECORD * (*api_get_record) (struct GMTAPI_CTRL *, unsigned int, int *);
+	struct GMT_RECORD *(*api_get_record) (struct GMTAPI_CTRL *, unsigned int, int *);
 	struct GMTAPI_DATA_OBJECT *current_get_obj;
 	bool get_next_record;
 	/*   Items used by api_get_record_dataset */

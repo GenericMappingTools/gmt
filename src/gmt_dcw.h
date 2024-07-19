@@ -31,7 +31,7 @@
 #ifndef GMT_DCW_H
 #define GMT_DCW_H
 
-#define DCW_OPT "<code1,code2,...>[+l|L|n][+c|C][+g<fill>][+p<pen>][+z]"
+#define DCW_OPT "<code1,code2,...>[+f<file>][+l|L|n][+c|C][+g<fill>][+p<pen>][+z]"
 
 enum GMT_DCW_modes {
 	GMT_DCW_REGION	 = 1,
@@ -57,15 +57,16 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	unsigned int adjust;		/* Round/adjust the region from polygons using the incs */
 	unsigned int mode;	/* 1 get countries, 2 get countries and states */
 	unsigned int n_items;	/* Number of items (times) -F was given */
+	char *other_dcw_file;		/* Name of alternative dcw file (NULL if not used) */
 	struct GMT_DCW_ITEM **item;	/* Pointer to array of n_items items */
 	struct GMT_OPTION *options;	/* Pointer to the GMT options */
 };
 
-EXTERN_MSC int gmt_DCW_version (struct GMTAPI_CTRL *API, char *version);
-EXTERN_MSC unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
-EXTERN_MSC unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
-EXTERN_MSC void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot);
-EXTERN_MSC struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);
-EXTERN_MSC void gmt_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
+EXTERN_MSC int gmt_DCW_version(struct GMTAPI_CTRL *API, char *version);
+EXTERN_MSC unsigned int gmt_DCW_list(struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
+EXTERN_MSC unsigned int gmt_DCW_parse(struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
+EXTERN_MSC void gmt_DCW_option(struct GMTAPI_CTRL *API, char option, unsigned int plot);
+EXTERN_MSC struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);
+EXTERN_MSC void gmt_DCW_free(struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
 
 #endif /* GMT_DCW_H */

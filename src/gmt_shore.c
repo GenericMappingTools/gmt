@@ -597,8 +597,8 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	if (!gmtshore_getpathname (GMT, stem, path, true, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
-		/* zap structure (nc_get_att_text does not null-terminate strings!) */
-		gmt_M_memset (c, 1, struct GMT_SHORE);
+	/* zap structure (nc_get_att_text does not null-terminate strings!) */
+	gmt_M_memset(c, 1, struct GMT_SHORE);
 
 	/* Open shoreline file */
 	gmt_M_err_trap (gmt_nc_open (GMT, path, NC_NOWRITE, &c->cdfid));
