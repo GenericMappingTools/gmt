@@ -132,10 +132,10 @@ for ocean and atmosphere research. Sticking to this convention allows
 GMT to read gridded data provided by other institutes and other
 programs. Conversely, other general domain programs will be able to read
 grids created by GMT. COARDS is a subset of a more extensive
-convention for netCDF data called CF-1.5 (Climate and Forecast, version
-1.5). Hence, GMT grids are also automatically CF-1.5-compliant.
-However, since CF-1.5 has more general application than COARDS, not all
-CF-1.5 compliant netCDF files can be read by GMT.
+convention for netCDF data called CF-1.7 (Climate and Forecast, version
+1.7). Hence, GMT grids are also automatically CF-1.7-compliant.
+However, since CF-1.7 has more general application than COARDS, not all
+CF-1.7 compliant netCDF files can be read by GMT.
 
 The netCDF grid file in GMT has several attributes (See Table
 :ref:`netcdf-format <tbl-netcdf-format>`) to describe the content. The routine
@@ -149,7 +149,7 @@ slightly deviating from the standards used by GMT can also be read.
 +======================+====================================================================+
 |                      | *Global attributes*                                                |
 +----------------------+--------------------------------------------------------------------+
-| Conventions          | COARDS, CF-1.5 (optional)                                          |
+| Conventions          | COARDS, CF-1.7 (optional)                                          |
 +----------------------+--------------------------------------------------------------------+
 | title                | Title (optional)                                                   |
 +----------------------+--------------------------------------------------------------------+
