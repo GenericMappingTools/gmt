@@ -2336,15 +2336,15 @@ approach should contact the GMT team for guidance.
 +==========+===============================================================+
 |          | *GMT 4 netCDF standard formats*                               |
 +----------+---------------------------------------------------------------+
-| nb       | GMT netCDF format (8-bit integer, COARDS, CF-1.5)             |
+| nb       | GMT netCDF format (8-bit integer, COARDS, CF-1.7)             |
 +----------+---------------------------------------------------------------+
-| ns       | GMT netCDF format (16-bit integer, COARDS, CF-1.5)            |
+| ns       | GMT netCDF format (16-bit integer, COARDS, CF-1.7)            |
 +----------+---------------------------------------------------------------+
-| ni       | GMT netCDF format (32-bit integer, COARDS, CF-1.5)            |
+| ni       | GMT netCDF format (32-bit integer, COARDS, CF-1.7)            |
 +----------+---------------------------------------------------------------+
-| nf       | GMT netCDF format (32-bit float, COARDS, CF-1.5)              |
+| nf       | GMT netCDF format (32-bit float, COARDS, CF-1.7)              |
 +----------+---------------------------------------------------------------+
-| nd       | GMT netCDF format (64-bit float, COARDS, CF-1.5)              |
+| nd       | GMT netCDF format (64-bit float, COARDS, CF-1.7)              |
 +----------+---------------------------------------------------------------+
 |          | *GMT 3 netCDF legacy formats*                                 |
 +----------+---------------------------------------------------------------+
