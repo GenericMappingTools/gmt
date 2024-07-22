@@ -3,7 +3,6 @@
 # Plot plot bar symbol for the man page
 
 gmt begin GMT_base_symbols4
-    gmt set GMT_THEME cookbook
 cat << EOF > ttv.d
 1	1	0
 2	3	1

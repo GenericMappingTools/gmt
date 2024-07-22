@@ -2885,7 +2885,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			else if (Ctrl->W.warp && !proj4_cmd)
 				GMT_Report (API, GMT_MSG_ERROR, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
 		}
-
 		else if (Ctrl->W.kml) {	/* Write a basic kml file */
 			char kml_file[PATH_MAX] = "";
 			if (Ctrl->D.active)
@@ -2959,7 +2958,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_INFORMATION, "Wrote KML file %s\n", kml_file);
 			}
 		}
-
 		else if (Ctrl->W.active && !found_proj) {
 			GMT_Report (API, GMT_MSG_ERROR, "Could not find the 'PROJ' tag in the PS file. No world file created.\n");
 			GMT_Report (API, GMT_MSG_ERROR, "This situation occurs when one of the two next cases is true:\n");

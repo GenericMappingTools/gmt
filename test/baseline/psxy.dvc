@@ -1,5 +1,5 @@
 outs:
 - md5: 239f4bd18d38b222c7da4a1fa70bb7aa.dir
-  size: 9322544
   nfiles: 142
   path: psxy
+  hash: md5

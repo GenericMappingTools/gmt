@@ -174,7 +174,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "a: All of the above.");
 	GMT_Usage (API, -2, "Note: If grid is geographic then we report area-weighted statistics.");
 	GMT_Usage (API, 1, "\n-M[c|f]");
-	GMT_Usage (API, -2, "\nSearch for the global data min and max locations (x0,y0{,z0}) and (x1,y1{,z1}) [Default]." 
+	GMT_Usage (API, -2, "\nSearch for the global data min and max locations (x0,y0{,z0}) and (x1,y1{,z1}) [Default]."
 		" Append c to only determine data min/max range if missing from the header, or f to force that search to override the header range.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-T[<dv>][+a[<alpha>]][+s]");
@@ -576,7 +576,7 @@ GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], uns
 EXTERN_MSC int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_set_pad (GMT, GMT_PAD_DEFAULT); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
@@ -688,8 +688,6 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	Out = gmt_new_record (GMT, (n_cols) ? out : NULL, (cmode) == GMT_COL_FIX ? record : NULL);	/* the two items */
-
-	gmt_set_pad (API->GMT, 0);	/* Not read pads to simplify operations */
 
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
@@ -852,7 +850,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 			else	/* Not a single valid node */
 				x_min = x_max = y_min = y_max = z_min = z_max = GMT->session.d_NaN;
-			if (Ctrl->M.mode == GRDINFO_FORCE) {	/* Update header */
+			if (Ctrl->M.mode == GRDINFO_FORCE || Ctrl->L.active) {	/* Update header */
 				header->z_min = v_min;
 				header->z_max = v_max;
 			}

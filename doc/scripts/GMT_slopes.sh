@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Show gmtregress -A option in effect
 gmt begin GMT_slopes
-    gmt set GMT_THEME cookbook  
 cat << EOF > data
 5.2957	-19.5631
 7.087	-36.0337

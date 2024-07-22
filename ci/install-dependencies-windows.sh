@@ -28,7 +28,7 @@ echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/tools/gdal" >> $GITHU
 # list installed packages
 vcpkg list
 
-conda_packages="ninja ghostscript=10.02.1"
+conda_packages="ninja ghostscript=10.03.0"
 if [ "$BUILD_DOCS" = "true" ]; then
     conda_packages+=" sphinx dvc"
     # choco install pngquant
@@ -38,8 +38,8 @@ if [ "$RUN_TESTS" = "true" ]; then
     conda_packages+=" dvc"
 
     # Install graphicsmagick via choco
-    choco install graphicsmagick --version 1.3.32 --no-progress
-    echo 'C:\Program Files\GraphicsMagick-1.3.32-Q8' >> $GITHUB_PATH
+    choco install graphicsmagick --version 1.3.42 --no-progress
+    echo 'C:\Program Files\GraphicsMagick-1.3.42-Q8\' >> $GITHUB_PATH
 fi
 
 # we need the GNU tar for packaging

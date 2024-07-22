@@ -29,16 +29,6 @@ it can do.
             - :ref:`Grid Format Specifications <tbl-grdformats>`
             - :doc:`theme-settings`
 
-.. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
-.. toctree::
-   :hidden:
-
-   std-opts
-   gmt.conf
-   gmtcolors
-   color-picker
-   theme-settings
-
 .. grid:: 1 2 2 2
 
     .. grid-item-card::
@@ -47,6 +37,7 @@ it can do.
             :maxdepth: 1
             :caption: Getting started
 
+            intro
             install
             gallery
             animations
@@ -90,3 +81,13 @@ it can do.
             GMT C API </devdocs/api>
             PostScriptLight C API </devdocs/postscriptlight>
             /devdocs/devdocs
+
+.. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
+.. toctree::
+   :hidden:
+
+   std-opts
+   gmt.conf
+   gmtcolors
+   color-picker
+   theme-settings

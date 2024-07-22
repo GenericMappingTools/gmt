@@ -3,7 +3,6 @@
 # Plot psxyz 3-D symbols
 
 gmt begin GMT_base_symbols3D
-    gmt set GMT_THEME cookbook
 cat << EOF > x.txt
 0	a	-Su
 1	a	-SU

@@ -1,5 +1,4 @@
 outs:
 - md5: 6e356ee3c759840deb7faf5d5c6df9c1.dir
-  size: 127366
   nfiles: 1
   path: grdclip

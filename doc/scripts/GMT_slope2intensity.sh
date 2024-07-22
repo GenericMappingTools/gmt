@@ -28,7 +28,6 @@ cat << EOF >> t2.txt
 0	0
 EOF
 gmt begin GMT_slope2intensity
-	gmt set GMT_THEME cookbook
 	gmt plot -R2/15/1.1/8.4 -Jx0.44444i -B0 t2.txt -Glightgreen -W0.25p
 	gmt plot -Sv14p+e+jb+h0.5 -W1p,orange -Gorange -N <<- EOF
 	15	4	210	0.75i
@@ -72,7 +71,7 @@ gmt begin GMT_slope2intensity
 	10	2.325	30	70
 	EOF
 	echo 	13.7	6.5	-60	14p,Helvetica,orange	CB	LIGHT SOURCE | gmt text -F+a+f+j -Gwhite -C0
-	gmt text -F+a+f+j <<- EOF 
+	gmt text -F+a+f+j <<- EOF
 	4.1		3.9	0	16p,Times-Roman	RB	<math>\\hat{\\mathbf{n}}_1</math>
 	10.7	4.1	0	16p,Times-Roman	RB	<math>\\hat{\\mathbf{n}}_2</math>
 	11.5	2.7	0	16p,Times-Roman	LB	<math>\\hat{\\mathbf{s}}</math>

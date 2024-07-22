@@ -10,22 +10,19 @@ set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 
 set (GMT_ENABLE_OPENMP TRUE)
+
+# Always use the 'static' data server in CI.
+set (GMT_DATA_SERVER static)
 EOF
 
 if [[ "$RUN_TESTS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 enable_testing()
-set (GMT_DATA_SERVER static)
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)
 set (DO_SUPPLEMENT_TESTS ON)
 set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
-
-# Turn on testing of upcoming long-option syntax for common GMT options
-add_definitions(-DUSE_COMMON_LONG_OPTIONS)
-# Turn on testing of upcoming long-option syntax for module options
-add_definitions(-DUSE_MODULE_LONG_OPTIONS)
 EOF
 fi
 

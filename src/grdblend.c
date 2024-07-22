@@ -1084,8 +1084,8 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 				n_fill++;						/* One more cell filled */
 				if (z[col] < Grid->header->z_min) Grid->header->z_min = z[col];	/* Update the extrema for output grid */
 				if (z[col] > Grid->header->z_max) Grid->header->z_max = z[col];
-                if (gmt_M_is_zero (z[col]))
-                    m = 1;
+				if (gmt_M_is_zero (z[col]))
+					m = 1;
 			}
 			else			/* No grids covered this node, defaults to the no_data value */
 				z[col] = no_data_f;
@@ -1161,6 +1161,12 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 		if (gmt_remove_file (GMT, outfile))	/* Try half-heartedly to remove the temporary file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file %s\n", outfile);
 	}
+
+	/* These two were not copied back into GMT and would be lost in gmt_end_module. Needed to set the correct
+	   @PROJ parameters in PS files. See issue #8438
+	*/
+	GMT_cpy->current.io.col_type[0][0] = GMT->current.io.col_type[0][0];
+	GMT_cpy->current.io.col_type[0][1] = GMT->current.io.col_type[0][1];
 
 	Return (GMT_NOERROR);
 }

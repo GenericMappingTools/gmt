@@ -12,18 +12,25 @@ set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
 
+# Always use the 'static' data server in CI.
+set (GMT_DATA_SERVER static)
+
 # recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 # extra warnings
 set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")
 EOF
 
+# Set OpenMP_ROOT so that CMake can find the libomp header and library on macOS
+if [[ "$RUNNER_OS" == "macOS" ]]; then
+    echo "set (OpenMP_ROOT $(brew --prefix)/opt/libomp/)" >> cmake/ConfigUser.cmake
+fi
+
 if [[ "$RUN_TESTS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_BUILD_TYPE Debug)
 
 enable_testing()
-set (GMT_DATA_SERVER static)
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)
@@ -32,11 +39,6 @@ set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 
 # For code coverage
 set (CMAKE_C_FLAGS "--coverage -O0 ${CMAKE_C_FLAGS}")
-
-# Turn on testing of upcoming long-option syntax for common GMT options
-add_definitions(-DUSE_COMMON_LONG_OPTIONS)
-# Turn on testing of upcoming long-option syntax for module options
-add_definitions(-DUSE_MODULE_LONG_OPTIONS)
 EOF
 fi
 

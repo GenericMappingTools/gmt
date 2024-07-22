@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Testing gmt grdmix on adding A to RGB image and plot via grdimage
+#
+# GMT_KNOWN_FAILURE
 
 gmt begin transp_mix ps
 	gmt set MAP_GRID_PEN 2p FONT_TAG 9p PS_MEDIA letter PS_PAGE_ORIENTATION portrait

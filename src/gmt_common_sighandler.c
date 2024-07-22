@@ -80,13 +80,19 @@ GMT_LOCAL void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 # if __DARWIN_UNIX03
 #  ifdef __x86_64__
 #   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__rip)
-#  elif __arm64__	/* Apple Silicon, e.g. M1 */
+#  elif defined(__arm64__)	/* Apple Silicon, e.g. M1 */
 #   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__pc)
+#  elif defined(__POWERPC__)	/* Both ppc and ppc64 */
+#   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__srr0)
 #  else
 #   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__eip)
 #  endif
 # else
-#  define UC_IP(uc) ((void *) (uc)->uc_mcontext->ss.eip)
+#  ifdef __ppc__
+#   define UC_IP(uc) ((void *) (uc)->uc_mcontext->ss.srr0)
+#  else
+#   define UC_IP(uc) ((void *) (uc)->uc_mcontext->ss.eip)
+#  endif
 # endif
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 # ifdef __x86_64__
@@ -111,6 +117,8 @@ GMT_LOCAL void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # elif defined( __hppa__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.sc_iaoq[0])
+# elif defined( __loongarch__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.__pc)
 # elif defined(__m68k__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[R_PC])
 # elif defined(__riscv)

@@ -15,7 +15,7 @@ gmt grdmath -R0/6/4/10 -I0.1  8 = c.nc
 gmt grdmath -R4/10/4/10 -I0.1 4 = d.nc
 
 gmt begin GMT_blendtype
-	gmt set GMT_THEME cookbook FONT_TAG 10p,Helvetica-Bold,black FONT_ANNOT_PRIMARY 8p
+	gmt set FONT_TAG 10p,Helvetica-Bold,black FONT_ANNOT_PRIMARY 8p
 	gmt makecpt -Crainbow -T0/8
 	gmt subplot begin 2x3 -Fs5c/3c -Sct -Srl -R0/10/0/10 -A0+jTR
 	gmt subplot set 0 -Aaverage
@@ -73,7 +73,7 @@ gmt begin GMT_blendtype
 	# 2. Last grid encountered matters
 	gmt grdblend ?.nc -Co -I0.1 -Gblend.nc
 	gmt subplot set 2 -Alast
-	gmt grdimage blend.nc 
+	gmt grdimage blend.nc
 	gmt plot lines.txt -W1p
 	# 3. First grid encountered matters
 	gmt grdblend ?.nc -Cf -I0.1 -Gblend.nc

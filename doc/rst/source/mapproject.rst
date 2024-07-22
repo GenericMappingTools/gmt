@@ -250,28 +250,28 @@ Optional Arguments
 
 **-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Report a variety of plot dimensions or map regions in projected or geographic units.
-    No input files are read. With no argument we report the map width and hight. 
-    The chosen unit of reported plot dimensions may be changed via |-D|.  For
+    No input files are read. With no argument we report the map width and height.
+    The chosen unit of reported plot dimensions may be changed via |-D|. For
     other results, select from these directives:
 
     - **b** - Get the bounding box in longitude and latitude.
     - **B** - Same, but get the result in -Rw/e/s/n string format returned as trailing text.
     - **e** - Return the coordinates of the rectangular area encompassing the non-rectangular
-      area defined by your |-R| |-J|
+      area defined by your |-R| |-J|.
     - **E** - Same, but in -Rw/e/s/n string format returned as trailing text.
     - **g** - Output the plot coordinates of the appended map point *lon*/*lat*.
     - **h** - Only output the height of the map.
     - **j** - Output the map coordinates of a reference point by appending its *code* (with
       standard two-character justification codes).
     - **n** - Same, but appended reference point *rx*/*ry* is given as normalized positions
-      in the 0-1 range,.
+      in the 0-1 range.
     - **o** - If an oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
-      return the diagonal corner coordinates in degrees (in the order *llx urx lly ury*) 
+      return the diagonal corner coordinates in degrees (in the order *llx urx lly ury*).
     - **O** - Same, but get the equivalent |-R| string format returned as trailing text.
     - **m** - Get the rectangular region in projected plot coordinates instead.
     - **M** - Same, but returned in |-R| string format returned as trailing text.
     - **r** - Output the rectangular domain that covers an oblique area as defined by |-R| |-J|.
-    - **R** - Same, but get the result in -R| string format returned as trailing text.
+    - **R** - Same, but get the result in |-R| string format returned as trailing text.
     - **w** - Only output the width of the map in current plot units.
     - **x** - Output the map coordinates of the specific plot reference point *px*/*py*.
 

@@ -1,5 +1,5 @@
 outs:
 - md5: 4f8356486a3cc544654ed1c8432eb15a.dir
-  size: 4081037
   nfiles: 20
   path: genper
+  hash: md5

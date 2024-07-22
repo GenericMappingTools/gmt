@@ -8047,9 +8047,9 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		/* last_inside = true; */
 	}
 	for (j = 1; j < n; j++) {
-		gmt_geo_to_xy (GMT, lon[j], lat[j], &this_x, &this_y);
-		this_inside = !gmt_map_outside (GMT, lon[j], lat[j]);
-		if (gmt_M_is_dnan (lon[j]) || gmt_M_is_dnan (lat[j])) continue;	/* Skip NaN point now */
+		gmt_geo_to_xy (GMT, lon[j], lat[j], &this_x, &this_y);			/* This guy also checks if lon,lat are NaNs */
+		this_inside = !gmt_map_outside (GMT, lon[j], lat[j]);			/* This also calls gmt_geo_to_xy */
+		if (gmt_M_is_dnan (lon[j]) || gmt_M_is_dnan (lat[j])) continue;	/* Skip NaN point now. WHY NOT MOVE THIS LINE 2 LINES ABOVE? JL. */
 		if (gmt_M_is_dnan (lon[j-1]) || gmt_M_is_dnan (lat[j-1])) {		/* Point after NaN needs a move */
 			GMT->current.plot.x[np] = this_x;	GMT->current.plot.y[np] = this_y;
 			GMT->current.plot.pen[np++] = PSL_MOVE;

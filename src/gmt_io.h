@@ -110,7 +110,8 @@ enum gmt_col_enum {
 	GMT_IS_AZIMUTH		=  512,	/* An angle to be converted via map projection to angle on map  */
 	GMT_IS_ANGLE		= 1024,	/* An angle to be used as is  */
 	GMT_IS_STRING		= 2048,	/* An text argument [internally used, not via -f]  */
-	GMT_IS_UNKNOWN		= 4096};	/* Input type is not knowable without -f */
+	GMT_IS_FIRSTCOLSTR	= 4096,	/* An text first column followed by numerics [set via -f]  */
+	GMT_IS_UNKNOWN		= 8192};/* Input type is not knowable without -f */
 
 /*! Various ways to report longitudes */
 enum GMT_lon_enum {

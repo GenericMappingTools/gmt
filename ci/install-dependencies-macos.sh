@@ -18,17 +18,18 @@ PACKAGE="${PACKAGE:-false}"
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
 packages="ninja curl pcre2 netcdf gdal geos fftw libomp"
-conda_packages="ghostscript=10.02.1"
+conda_packages="ghostscript=10.03.0"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" dvc pngquant"
-    conda_packages+=" sphinx"
+    packages+=" pngquant"
+    conda_packages+=" sphinx dvc"
 fi
 
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
-    packages+=" dvc graphicsmagick"
+    packages+=" graphicsmagick"
+    conda_packages+=" dvc"
 fi
 
 if [ "$PACKAGE" = "true" ]; then

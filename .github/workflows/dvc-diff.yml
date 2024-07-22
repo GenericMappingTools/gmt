@@ -24,16 +24,16 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.0.0
+      uses: actions/checkout@v4.1.6
 
     - name: Setup data version control (DVC)
       uses: iterative/setup-dvc@v1.1.2
 
     - name: Setup continuous machine learning (CML)
-      uses: iterative/setup-cml@v2.0.1
+      uses: iterative/setup-cml@v3
 
     - name: Setup Micromamba
-      uses: mamba-org/setup-micromamba@v1.8.1
+      uses: mamba-org/setup-micromamba@v1.9.0
       with:
         environment-name: gmt
         condarc: |

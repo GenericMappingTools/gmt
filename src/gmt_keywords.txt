@@ -78,6 +78,8 @@ GMT_THEME			# Group of GMT defaults to override
 GMT_TRIANGULATE			# Triangulation algorithm
 GMT_VERBOSE			# Verbosity level
 #-------------------------------------------------------
+GMT_RUN_MODE		# To change between CLASSIC and MODERN mode. Used only by externals.
+#-------------------------------------------------------
 # IO Group:	I/O settings
 #-------------------------------------------------------
 IO_COL_SEPARATOR		# Column separator for output data records

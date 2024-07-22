@@ -127,6 +127,10 @@
 # Set location of CURL (can be root directory or path to header file) [auto]:
 #set (CURL_ROOT "curl_install_prefix")
 
+# Set location of OpenMP (can be root directory or path to header file) [auto]:
+# CMake sometimes may fail to find the OpenMP library (libomp) on macOS.
+#set (OpenMP_ROOT $(brew --prefix)/opt/libomp/)
+
 # Set location of GLIB component gthread [auto].  This is an optional (and
 # experimental) option which you need to enable or disable:
 set (GMT_USE_THREADS TRUE)
@@ -244,8 +248,6 @@ set (GMT_ENABLE_OPENMP TRUE)
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
 #add_definitions(-DMEMDEBUG) # Turn on memory tracking; see gmt_memory .c on MEMDEBUG for information
-#add_definitions(-DUSE_COMMON_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for common GMT options
-#add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
 #add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools
 #add_definitions(-DNO_THEMES) 	                # Turn off implementation of GMT_THEME for debugging
 # Uncomment this statement if you are a developer debugging PSL and want exact line coordinates:

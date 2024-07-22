@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Illustrate the parameters for specifying slides
 gmt begin GMT_seamount_specs
-	gmt set GMT_THEME cookbook
 	gmt plot -R0/2.6/0/1.2 -Jx2.4i/1i -W1p <<- EOF
 	0	1
 	0.2	1
@@ -41,7 +40,7 @@ gmt begin GMT_seamount_specs
 	>
 	0.28	0.9
 	0.75	0.9
-	> 
+	>
 	0.44	0.4
 	1.05	0.4
 	EOF

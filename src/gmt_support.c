@@ -7368,12 +7368,12 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	bool set_NaN = false;
 	char def_width[GMT_LEN256] = {""}, width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
-	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P intact */
 	assert (P);	/* P needs to not point to NULL */
 
 	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
 	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
-	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P intact */
 
 	/* First chop off and processes any line modifiers :
 	 * +c[l|f] : Determine how a CPT (-C) affects pen and fill colors normally controlled via -W.
@@ -8787,6 +8787,9 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 	if (n < n_alloc) X->data = gmt_M_memory (GMT, X->data, n, struct GMT_LUT);
 	X->n_colors = n;
+
+	/* The master gray.cpt has only one slice and hence it comes out as both gray & bw, but it can only be one of them. */
+	if (X->n_colors == 1 && X->is_gray && X->is_bw) X->is_bw = false;	/* Prefer gray over bw (would crash grdimage with externals). */
 
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
 		dz = 1.0;	/* This will presumably get reset in the loop */

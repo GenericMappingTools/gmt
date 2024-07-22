@@ -5,10 +5,17 @@ on:
     branches:
       - master
       - '[0-9]+.[0-9]+'
+    paths:
+      - 'src/**'
+      - 'cmake/**'
+      - '**/*.sh'
+      - '.github/workflows/code-validator.yml'
   pull_request:
-    paths-ignore:
-      - 'doc/**'
-      - '!doc/**/CMakeLists.txt'
+    paths:
+      - 'src/**'
+      - 'cmake/**'
+      - '**/*.sh'
+      - '.github/workflows/code-validator.yml'
 
 name: Code Validator
 
@@ -18,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.6.0
+        uses: actions/checkout@v4.1.6
 
       - name: Check PSL_strings.h
         run: |

@@ -983,10 +983,10 @@ GMT_LOCAL void grdimage_img_set_transparency (struct GMT_CTRL *GMT, struct GRDIM
 	 */
 	double o, t;		/* o - opacity, t = transparency */
 	gmt_M_unused (GMT);
-	o = pix4 / 255.0;	t = 1 - o;
 	if (Conf->Transp->n_transp == 2)
 		gmt_M_rgb_only_copy (rgb, Conf->tr_rgb);
 	else {	/* Blend */
+		o = pix4 / 255.0;	t = 1 - o;
 		if (Conf->invert) t = o, o = 1 - t;
 		rgb[0] = o * rgb[0] + t * Conf->tr_rgb[0];
 		rgb[1] = o * rgb[1] + t * Conf->tr_rgb[1];
@@ -1093,28 +1093,47 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 	 */
 
 	struct GMT_GRID_HEADER *H = I->header;	/* Pointer to the active image header */
-	unsigned char *transparency;	/* Pointer to memory where transparency resides */
 	int64_t row, col, node;
-	unsigned int k, tr, tr_max = 0, tr_min = 255, tr_band;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
+	unsigned int k, tr, tr_max = 0;	/* tr_band is 0 if image has alpha channel, else 1 for gray and 3 for color */
 	unsigned int n_bands = H->n_bands;
 	gmt_M_unused (GMT);
 
 	if (n_bands%2 == 1 && I->alpha == NULL) return false;	/* No transparencies either in band 1 or 4 nor in alpha */
 
-	tr_band = (I->alpha) ? 0 : n_bands - 1;
-	transparency = (tr_band) ? I->data : I->alpha;	/* Points to the data array with A */
-	for (row = 0; row < H->n_rows; row++) {	/* March along scanlines in the output bitimage */
-		node = gmt_M_ijp (H, row, 0) + tr_band;	/* Start pixel with 4 bytes of this image row */
-		for (col = 0; col < H->n_columns; col++, node += n_bands) {	/* March along this scanline in steps of 2 (gA) or 4 (RGBA) */
-			tr = (unsigned int)transparency[node];	/* Get transparency values */
+	if (I->alpha) {
+		for (node = 0; node < H->nm; node++) {	/* March along scanlines in the output bitimage */
+			tr = (unsigned int)I->alpha[node];	/* Get transparency values */
 			if (opacity) tr = 255 - tr;	/* Must flip from opacity to transparency */
 			T->alpha_count[tr]++;	/* Count frequency of transparency values */
 		}
 	}
+	else {
+		if (n_bands == 4 && H->mem_layout[2] == 'P') {		/* RGBA Pixel interleaved */
+			for (row = 0; row < H->n_rows; row++) {
+				for (col = 0; col < H->n_columns; col++) {
+					node = gmt_M_ijp (H, row, col) * 4 + 3;
+					tr = (unsigned int)I->data[node];
+					if (opacity) tr = 255 - tr;
+					T->alpha_count[tr]++;
+				}
+			}
+		}
+		else {									/* Band interleaved. Tansparency is in 4th band*/
+			node = H->size * (n_bands - 1);		/* Either gray or color */
+			for (row = 0; row < H->n_rows; row++) {
+				for (col = 0; col < H->n_columns; col++) {
+					node += gmt_M_ijp (H, row, col);
+					tr = (unsigned int)I->data[node];
+					if (opacity) tr = 255 - tr;
+					T->alpha_count[tr]++;
+				}
+			}
+		}
+	}
+
 	for (k = 0; k < GMT_LEN256; k++) {	/* Determine how many different transparencies */
 		if (T->alpha_count[k]) {	/* Used at least once */
 			T->n_transp++;
-			if (T->alpha_count[k] < tr_min) tr_min = k;	/* Keep track of smallest value */
 			if (T->alpha_count[k] > tr_max) tr_max = k;	/* Keep track of largest value */
 		}
 	}
@@ -1132,13 +1151,11 @@ GMT_LOCAL bool grdimage_transparencies (struct GMT_CTRL *GMT, struct GMT_IMAGE *
 		T->value = 0;
 		T->mode = 3;
 		T->n_dominant = T->alpha_count[0];
-		//fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	else {
 		T->value = 255;	/* Case 4: Like 3 but 255 most used of two transparency values */
 		T->n_dominant = T->alpha_count[255];
 		T->mode = 4;
-		//fprintf (stderr, "Min A = %d [x %d] Max A = %d [x %d]\n", tr_min, T->alpha_count[tr_min], tr_max, T->alpha_count[tr_max]);
 	}
 	return (true);
 }
@@ -1213,7 +1230,7 @@ GMT_LOCAL void grdimage_img_c2s_no_intensity (struct GMT_CTRL *GMT, struct GRDIM
 GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
-	bool transparency = (H_s->n_bands == 4);
+	bool transparency = (H_s->n_bands == 4 || (Conf->Transp != NULL && Conf->Transp->n_transp == 2));
 	unsigned int k;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
 	uint64_t n_bands = H_s->n_bands;
@@ -1493,11 +1510,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Determine if grid/image is to be projected */
 	need_to_project = (gmt_M_is_nonlinear_graticule (GMT) || Ctrl->E.dpi > 0);
-	if (need_to_project)
-		GMT_Report (API, GMT_MSG_DEBUG, "Projected grid is non-orthogonal, nonlinear, or dpi was changed\n");
-	else  if (Ctrl->D.active)			/* If not projecting no need for a pad */
-		gmt_set_pad(GMT, 0);
+	if (need_to_project && GMT->current.proj.projection == GMT_PROJ4_PROJS) {
+		if (GMT->current.proj.is_proj4)
+			if (strstr(GMT->common.J.proj4string, "longlat") || strstr(GMT->common.J.proj4string, "lonlat") || strstr(GMT->common.J.proj4string, "latlon"))
+				need_to_project = false;
+	}
+  
+	if (Ctrl->D.active)	gmt_set_pad(GMT, 0);		/* If not projecting no need for a pad */
+
 	pad_mode = (need_to_project) ? GMT_GRID_NEEDS_PAD2 : 0;
+
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (use_intensity_grid) {	/* Illumination grid desired */
 		if (Ctrl->I.derive) {	/* Illumination grid must be derived */
@@ -1671,16 +1693,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (!GMT->common.J.active) {	/* No map projection was supplied, set default */
-				if ((Grid_orig->header->ProjRefWKT != NULL) || (Grid_orig->header->ProjRefPROJ4 != NULL)) {
-					static char *Jarg[2] = {"X15c", "Q15c+"};	/* The two default projections for Cartesian and Geographic */
-					unsigned int kind = gmt_M_is_geographic (GMT, GMT_IN);
-					gmt_parse_common_options (GMT, "J", 'J', Jarg[kind]);	/* No projection specified, use linear or equidistant */
-					GMT->common.J.active = true;	/* Now parsed */
-				}
-				else if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-					GMT_Report (API, GMT_MSG_ERROR, "Must specify a map projection with the -J option\n");
-					Return (GMT_PARSE_ERROR);
-				}
+				static char *Jarg[2] = {"X15c/0", "Q15c+"};	/* The two default projections for Cartesian and Geographic */
+				unsigned int kind = gmt_M_is_geographic (GMT, GMT_IN);
+				gmt_parse_common_options (GMT, "J", 'J', Jarg[kind]);	/* No projection specified, use linear or equidistant */
+				GMT->common.J.active = true;	/* Now parsed */
 			}
 		}
 		if (!Ctrl->C.active)	/* Set no specific CPT so we turn -C on to use current or default CPT */
@@ -1700,11 +1716,13 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.dpi == 0) grdimage_adjust_R_consideration (GMT, header_work);	/* Special check for global pixel-registered plots */
 
-	/* Initialize the projection for the selected -R -J */
-	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+	/* Initialize the projection for the selected -R -J. It shouldn't be necessary when -A is in effect because it
+	   doesn't produce a map, but the grid projection machinery uses variables set by it. Can go away only when we implement
+	   image projections with GDAL instead.  
+	*/
+	if (gmt_map_setup(GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
-
 	if (!gmt_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant))
 		nothing_inside = true;	/* Means we can return an empty plot, possibly with a basemap */
 	else if (use_intensity_grid && !Ctrl->I.derive && !gmt_grd_setregion (GMT, Intens_orig->header, wesn, need_to_project * GMT->common.n.interpolant))
@@ -1979,12 +1997,16 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Project the input grid\n");
 			if ((Grid_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig)) == NULL)
 				Return (API->error);	/* Just to get a header we can change */
+
 			/* Determine the dimensions of the projected grid */
+			if (Ctrl->A.active && GMT->current.proj.rect[0] == GMT->current.proj.rect[1])	/* Somewhere behind we missed doing this */
+				gmt_M_memcpy(GMT->current.proj.rect, Grid_orig->header->wesn, 4, double);
 			grdimage_set_proj_limits (GMT, Grid_proj->header, Grid_orig->header, need_to_project, mixed);
+
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig->header->registration;
 			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->In.file)) Return (GMT_PROJECTION_ERROR);
+			                    Ctrl->In.file)) Return (GMT_PROJECTION_ERROR);
 			gmt_set_grddim (GMT, Grid_proj->header);	/* Recalculate projected grid dimensions */
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected grid */
@@ -2058,6 +2080,10 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 	}
 	else /* Use a different reference header for the image */
 		header_work = Img_proj->header;		/* Later when need to refer to the header, use this copy */
+
+	if (header_work->ProjRefPROJ4 == NULL && GMT->current.proj.is_proj4) header_work->ProjRefPROJ4 = strdup(GMT->common.J.proj4string);
+	if (!need_to_project && Ctrl->A.active && header_work->ProjRefPROJ4 == NULL && gmt_M_is_geographic(GMT, GMT_IN))
+		header_work->ProjRefPROJ4 = strdup("+proj=lonlat");
 
 	/* Assign the Conf structure members */
 	Conf->Grid      = Grid_proj;

@@ -3,12 +3,11 @@
 # Plot psxy text symbol for the man page
 
 gmt begin GMT_base_symbols3
-    gmt set GMT_THEME cookbook
 cat << EOF > tmp.txt
 # All the basic geometric psxy symbols
 > -Gblack
 1	1	1.5c l+tA+f1c,Times-Roman
-> -Glightred 
+> -Glightred
 2	1	1.5c l+tB+f1c,Helvetica-Bold
 > -G-
 3	1	1.25c l+tNO+f1c,Palatino-Bold

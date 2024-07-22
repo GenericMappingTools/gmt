@@ -3,7 +3,6 @@
 # Plot psxy custom symbols for use on man page
 
 gmt begin GMT_base_symbols6
-    gmt set GMT_THEME cookbook
 cat << EOF > tmp.txt
 # All the basic geometric plot symbols
 1	1	1.5c	kdeltoid

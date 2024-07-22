@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *code1,code2,...*\ [**+l**\|\ **L**\|\ **n**][**+c**\|\ **C**][**+e**][**+g**\ *fill*][**+p**\ *pen*][**+r**][**+R**][**+z**]
+**-E**\ *code1,code2,...*\ [**+f**\ *file*][**+l**\|\ **L**\|\ **n**][**+c**\|\ **C**][**+e**][**+g**\ *fill*][**+p**\ *pen*][**+r**][**+R**][**+z**]
     Select painting, clipping or dumping country polygons from the Digital Chart of the World (DCW).
     This is another dataset independent of GSHHG and hence the |-A| and |-D| options do not apply. The following codes
     are supported:
@@ -121,15 +121,19 @@ Optional Arguments
       (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
       state of a country (if available), e.g., US.TX for Texas.
     - Append =\ *continent* to specify a continent, using the abbreviations AF (Africa),
-      AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
+      AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), SA (South America) or WD (World).
     - To specify a :ref:`DCW collection <dcw-collections>` or named region, give either the code or the full name.
 
     The following modifiers are supported:
 
+    - **+f**\ *file* to indicate that we want to use another netCDF file than the default DCW file. *file*, without extension,
+      can be either just the absolute file name, case in which the `file.nc` is expected to be found in the
+      shared folder that also contains the `dcw-gmt.nc` file, or the full file name, case in which the `file`
+      can be located anywhere.
     - **+l** to just list the countries and their codes (no data extraction or plotting takes place).
     - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.
-    - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries in that continent or country;
-      repeat if more than one continent or country is requested.
+    - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries or states in that continent
+      or country, respectively; repeat if more than one continent or country is requested.
     - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
       collections that contains the listed codes). All names are case-insensitive.
     - **+c** to set up an inside clip path based on your selection.
@@ -218,6 +222,10 @@ Optional Arguments
     given the selected geographic entities.  If using |-W| and you want
     just certain levels (1-4) then use the full syntax **-W**\ *level*/\ *pen*
     and repeat for each level (pen is not used but required to parse the level correctly).
+
+    Since the resolution of the datasets typically are in the order
+    of hundreds of meters, consider reducing the number of decimals by
+    setting :term:`FORMAT_FLOAT_OUT`.
 
 .. _-N:
 

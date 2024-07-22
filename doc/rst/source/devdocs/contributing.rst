@@ -39,7 +39,7 @@ Ways to Contribute to Community Building
 - Participate in discussions at the monthly GMT Community Meetings, which are announced on the
   `forum governance page <https://forum.generic-mapping-tools.org/c/governance/>`_.
 - Cite GMT when using the project.
-- Spread the word about GMT or start the project!
+- Spread the word about GMT or star the project!
 
 Providing Feedback
 ------------------
@@ -85,7 +85,7 @@ Please take a look at these resources to learn about Git and pull requests (don'
 hesitate to :ref:`ask for help <devdocs/contributing:Getting Help>`):
 
 - `How to Contribute to Open Source <https://opensource.guide/how-to-contribute/>`_.
-- `Git Workflow Tutorial <http://www.asmeurer.com/git-workflow/) by Aaron Meurer>`_.
+- `Git Workflow Tutorial <http://www.asmeurer.com/git-workflow/>`_ by Aaron Meurer.
 - `How to Contribute to an Open Source Project on GitHub <https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github>`_.
 
 Getting Help
@@ -474,7 +474,7 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the new test passes.
 - Run ``dvc diff`` to check that the new file is in the correct directory.
-- For teh first test of a module, you add the directory via ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``,
+- For the first test of a module, you add the directory via ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``,
   or ``dvc add doc/scripts/examples``. For later addition you do so per file, e.g. ``dvc add test/baseline/<module>/<newplot.ps>``,
   ``dvc add doc/scripts/images/<newplot.ps>``, or ``dvc add doc/scripts/examples/<newplot.ps>``
   depending on the type of test modified.
