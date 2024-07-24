@@ -98,6 +98,7 @@ This package contains the programs
 :doc:`meca </supplements/seis/meca>`,
 :doc:`polar </supplements/seis/polar>`,
 :doc:`sac </supplements/seis/sac>`,
+:doc:`sac </supplements/seis/gmtisf>`,
 :doc:`grdvs30 </supplements/seis/grdvs30>`, and
 :doc:`grdshake </supplements/seis/grdshake>`, which are used by seismologists
 for plotting focal mechanisms (including cross-sections
