@@ -232,7 +232,7 @@ EXTERN_MSC int GMT_gmtisf(void *V_API, int mode, void *args) {	/* High-level fun
 	if (GMT_Begin_IO(API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) 	/* Enables data output and sets access mode */
 		Return(API->error);
 
-	if ((error = GMT_Set_Columns (API, GMT_OUT, n_out_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
+	if ((error = GMT_Set_Columns(API, GMT_OUT, n_out_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 	for (i = 2; i < n_out_cols; i++) GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;
 			
 	if ((fp = fopen(Ctrl->In.file, "rt")) == NULL) {
@@ -412,12 +412,16 @@ L1:
 
 	fclose(fp);
 	gmt_M_free(GMT, etype);		gmt_M_free(GMT, author);	gmt_M_free(GMT, origid);	gmt_M_free(GMT, magtype);
-	gmt_M_free(GMT, mags); gmt_M_free(GMT, rms); gmt_M_free(GMT, lats); gmt_M_free(GMT, lons);
-	gmt_M_free(GMT, depths); gmt_M_free(GMT, years); gmt_M_free(GMT, months); gmt_M_free(GMT, days);
-	gmt_M_free(GMT, hours); gmt_M_free(GMT, minutes);
-	for (i = 0; i < 100; i++) gmt_M_free(GMT, mag_t[i]);
+	gmt_M_free(GMT, mags);		gmt_M_free(GMT, rms);		gmt_M_free(GMT, lats);		gmt_M_free(GMT, lons);
+	gmt_M_free(GMT, depths);	gmt_M_free(GMT, years);		gmt_M_free(GMT, months);	gmt_M_free(GMT, days);
+	gmt_M_free(GMT, hours);		gmt_M_free(GMT, minutes);
+	for (i = 0; i < 100; i++)	gmt_M_free(GMT, mag_t[i]);
 	gmt_M_free(GMT, mag_t);
 	gmt_M_free(GMT, Out);
+
+	if (GMT_End_IO(API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+		Return(API->error);
+	}
 
 	Return(GMT_OK);
 }
