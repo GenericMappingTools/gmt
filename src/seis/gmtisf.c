@@ -149,6 +149,20 @@ static int parse(struct GMT_CTRL *GMT, struct READISF_CTRL *Ctrl, struct GMT_OPT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+static bool filter_date(struct READISF_CTRL *Ctrl, int yyyy, int mm, int dd) {
+	/* Returns true if the date is out of date range */
+	bool is_out = false;
+	if      (yyyy < Ctrl->D.date1.year)  is_out = true;
+	else if (mm   < Ctrl->D.date1.month) is_out = true;
+	else if (dd   < Ctrl->D.date1.day_m) is_out = true;
+	if (!is_out && Ctrl->D.two_dates) {
+		if      (yyyy > Ctrl->D.date2.year)  is_out = true;
+		else if (mm   > Ctrl->D.date2.month) is_out = true;
+		else if (dd   > Ctrl->D.date2.day_m) is_out = true;
+	}
+	return is_out;
+}
+
 #define bailout(code) {gmt_M_free_options(mode); return (code);}
 #define Return(code) {Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); bailout (code);}
 
@@ -159,7 +173,7 @@ EXTERN_MSC int GMT_gmtisf(void *V_API, int mode, void *args) {	/* High-level fun
 	char  *etype, *author, *origid, *magtype, line[ISF_LINE_LEN];
 	char **mag_t, evid[ISF_LINE_LEN], region[ISF_LINE_LEN];
 	char   f_type[6], f_plane[6];
-    bool   got_event = false, event_end, tensor_end, got_region = false, out_of_date;
+    bool   got_event = false, event_end, tensor_end, got_region = false;
 	int    error = GMT_NOERROR;
 	int	   i, in, mag_c = 0, event_c, idx_min_rms, np, ns, n_out_cols;
 	int	   export_aki = false, export_cmt = false, export_tensor = false;
@@ -316,8 +330,7 @@ L1:
 				lon = lons[idx_min_rms];
 				lat = lats[idx_min_rms];
 				if (got_region && (lon < west || lon > east || lat < south || lat > north)) {
-					got_event = event_end = false;
-					mag_c = 0;
+					got_event = event_end = false;	mag_c = 0;
 					continue;
 				}
 				if (Ctrl->F.aki) {
@@ -334,6 +347,14 @@ L1:
 				dd = days[idx_min_rms];
 				got_event = event_end = tensor_end = false;
 				mag_c = 0;
+				
+				/* See if user set date bounds */
+				if (Ctrl->D.active) {
+					if (filter_date(Ctrl, yyyy, mm, dd)) {
+						got_event = event_end = false;	mag_c = 0;
+						continue;
+					}
+				}
 
 				out[GMT_X] = lon;	out[GMT_Y] = lat;	out[2] = depth;
 				if (Ctrl->F.aki) {
@@ -383,14 +404,7 @@ L1:
 				
 				/* See if user set date bounds */
 				if (Ctrl->D.active) {
-					out_of_date = false;
-					if ((Ctrl->D.date1.year < yyyy && Ctrl->D.date1.month < mm && Ctrl->D.date1.day_m < dd && Ctrl->D.date1.hour < hh))
-						out_of_date = true;
-					if (!out_of_date && Ctrl->D.two_dates) {
-						if ((Ctrl->D.date2.year > yyyy && Ctrl->D.date2.month > mm && Ctrl->D.date2.day_m > dd && Ctrl->D.date2.hour > hh))
-							out_of_date = true;
-					}
-					if (out_of_date) {
+					if (filter_date(Ctrl, yyyy, mm, dd)) {
 						got_event = event_end = false;	mag_c = 0;
 						continue;
 					}
