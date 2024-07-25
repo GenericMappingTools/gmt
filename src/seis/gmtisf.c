@@ -338,6 +338,7 @@ L1:
 				out[GMT_X] = lon;	out[GMT_Y] = lat;	out[2] = depth;
 				if (Ctrl->F.aki) {
 					out[3] = strike1;	out[4] = dip1;	out[5] = rake1;		out[6] = mag;	
+					out[7] = yyyy;		out[8] = mm;	out[9] = dd;		out[10] = hh;	out[11] = mi;
 				}
 				else {
 					out[3] = strike1;	out[4] = dip1;	out[5] = rake1;
@@ -383,10 +384,10 @@ L1:
 				/* See if user set date bounds */
 				if (Ctrl->D.active) {
 					out_of_date = false;
-					if (!(Ctrl->D.date1.year >= yyyy && Ctrl->D.date1.month >= mm && Ctrl->D.date1.day_m >= dd && Ctrl->D.date1.hour >= hh))
+					if ((Ctrl->D.date1.year < yyyy && Ctrl->D.date1.month < mm && Ctrl->D.date1.day_m < dd && Ctrl->D.date1.hour < hh))
 						out_of_date = true;
 					if (!out_of_date && Ctrl->D.two_dates) {
-						if (!(Ctrl->D.date2.year <= yyyy && Ctrl->D.date2.month <= mm && Ctrl->D.date2.day_m <= dd && Ctrl->D.date2.hour <= hh))
+						if ((Ctrl->D.date2.year > yyyy && Ctrl->D.date2.month > mm && Ctrl->D.date2.day_m > dd && Ctrl->D.date2.hour > hh))
 							out_of_date = true;
 					}
 					if (out_of_date) {
