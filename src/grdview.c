@@ -473,7 +473,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<smooth>");
 	GMT_Usage (API, -2, "Smooth contours first (see grdcontour for <smooth> value info) [no smoothing].");
-	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
+	GMT_Usage (API, 1, "\n-T[+o[<pen>]][+s]");
+	GMT_Usage (API, -2, "Image the data without interpolation by painting polygonal tiles.");
 	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
 	GMT_Usage (API, 3, "+o to draw tile outline; optionally append <pen> [Default uses no outline].");
 	GMT_Usage (API, -2, "Note: Cannot be used with -Jz|Z as it produces a flat image.");
