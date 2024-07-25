@@ -5523,7 +5523,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 						G_obj->header->wesn[XLO] -= 360.0;	G_obj->header->wesn[XHI] -= 360.0;
 					}
 					if (S_obj->wesn[XLO] < G_obj->header->wesn[XLO]) {
-						/* Must wrap G_obj->header.wesn so the left bound in S_obj is smaller larger than that in G_obj, otherwise i0 is negative (but it's defined as unsigned int */
+						/* Must wrap G_obj->header.wesn so the left bound in S_obj is larger than that in G_obj, otherwise i0 is negative (but it's defined as unsigned int */
 						G_obj->header->wesn[XLO] -= 360.0;	G_obj->header->wesn[XHI] -= 360.0;
 					}
 				}
@@ -6349,7 +6349,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 						U_obj->header->wesn[XLO] -= 360.0;	U_obj->header->wesn[XHI] -= 360.0;
 					}
 					if (S_obj->wesn[XLO] < U_obj->header->wesn[XLO]) {
-						/* Must wrap U_obj->header.wesn so the left bound in S_obj is smaller larger than that in U_obj, otherwise i0 is negative (but it's defined as unsigned int */
+						/* Must wrap U_obj->header.wesn so the left bound in S_obj is larger than that in U_obj, otherwise i0 is negative (but it's defined as unsigned int */
 						U_obj->header->wesn[XLO] -= 360.0;	U_obj->header->wesn[XHI] -= 360.0;
 					}
 				}
