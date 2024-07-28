@@ -235,7 +235,7 @@ Further reading:
 
 - `Unidata NetCDF Workshop: NetCDF Formats and Performance <http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/performance/index.html>`_
 - `Unidata NetCDF Workshop: What is Chunking? <http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/nc4chunking/WhatIsChunking.html>`_
-- `HDF NetCDF-4 Performance Report <http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf>`_
+- `HDF NetCDF-4 Performance Report <https://support.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf>`_
 
 Gridline and Pixel node registration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
