@@ -15,7 +15,7 @@
      - GMT CODES
      - Parameters
    * -
-     - **-J** (*scale*\|\ *WIDTH*);
+     - **-J** (*scale*\|\ *WIDTH*)
      -
    * - :ref:`Lambert azimuthal equal area <-Ja>`
      - **-Ja**\|\ **A**
