@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt movie** *mainscript*
-|-C|\ *canvas*
+|-C|\ *canvassize*
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-A|\ *audiofile*\ [**+e**] ]
@@ -73,6 +73,8 @@ Required Arguments
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ **x**\ *height*\ **x**\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
+    Alternatively, give dimensions in pixels and append modifiers **+c** or **+i** to indicate that *dpu* is
+    per cm or per inches.
     
     .. _tbl-presets:
 
@@ -168,8 +170,10 @@ Optional Arguments
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
     all; this requires |-M|.  Several modifiers are available:
 
+    - **+i** may be used to add additional FFmpeg encoding settings for the input file (in quotes if more
+      than one word).
     - **+l** turns on looping for *gif* animations; optionally append how many times to repeat [infinite].
-    - **+o** may be used to add additional FFmpeg encoding settings for *mp4* and *webm* (in quotes if more
+    - **+o** may be used to add additional FFmpeg encoding settings for the output file (*mp4* or *webm*; in quotes if more
       than one word).
     - **+s** creates a crude animated *gif* provided either a *mp4* or *webm* product has been selected. You
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
@@ -432,7 +436,7 @@ recommended that any static part of the movie be considered either a static back
 a static foreground (to be made once by *foreground*; see **-Sf**); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
-the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
+the variables **MOVIE_WIDTH** or **MOVIE_HEIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
 exact canvas dimensions.
 
 External *PostScript* Layers
