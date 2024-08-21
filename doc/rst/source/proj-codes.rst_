@@ -68,7 +68,7 @@
    * - :ref:`Robinson <-Jn>`
      - **-Jn**\|\ **N**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Oblique Mercator, 1: origin and azimuth <-Jo>`
+   * - :ref:`Oblique Mercator, 1: origin and azim <-Jo>`
      - **-Jo**\|\ **O**\ **a**\|\ **A**
      - |lon0|/|lat0|/\ *azim*/*scale*\|\ *width*\ [**+v**]
    * - :ref:`Oblique Mercator, 2: two points <-Jo>`
