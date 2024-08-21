@@ -218,7 +218,7 @@ Azimuthal projections
 
 .. _-Ja:
 
-Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
+Lambert azimuthal equal-area (**-Ja** **-JA**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
@@ -308,8 +308,8 @@ stereonet can be obtained by using the stereographic projection
 
 .. _-Js:
 
-Stereographic Equal-Angle (**-Js** **-JS**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Stereographic equal-angle (**-Js** **-JS**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -340,8 +340,8 @@ We will look at two different types of maps.
 Multiple types of maps can be made with this projection depending on how the region is specified. We will give
 examples in the next three subsections.
 
-Polar Stereographic Map
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Polar stereographic map
+^^^^^^^^^^^^^^^^^^^^^^^
 
 In our first example we will let the projection center be at the north
 pole. This means we have a polar stereographic projection and the map
@@ -400,8 +400,8 @@ next to its equal-area cousin in the Section `Lambert Azimuthal Equal-Area (-Ja 
 
 .. _-Jg_pers:
 
-Perspective projection (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+General perspective (**-Jg** **-JG**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -450,8 +450,8 @@ following :doc:`/coast` command (*lon0*\ =4; *lat0*\ =52; *altitude*\ =230 km; *
 
 .. _-Jg:
 
-Orthographic projection (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Azimuthal orthographic (**-Jg** **-JG**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -489,8 +489,8 @@ command:
 
 .. _-Je:
 
-Azimuthal Equidistant projection (**-Je** **-JE**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Azimuthal equidistant (**-Je** **-JE**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -528,8 +528,8 @@ perimeter:
 
 .. _-Jf:
 
-Gnomonic projection (**-Jf** **-JF**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Azimuthal gnomonic (**-Jf** **-JF**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -577,8 +577,8 @@ Each have a different way of spacing the meridians and parallels to obtain certa
 
 .. _-Jm:
 
-Mercator projection (**-Jm** **-JM**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mercator cylindrical (**-Jm** **-JM**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -627,8 +627,8 @@ example, specify the region with **-R**-180/180/-70/70 to obtain a map centered 
 
 .. _-Jt:
 
-Transverse Mercator projection (**-Jt** **-JT**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Transverse Mercator (**-Jt** **-JT**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -685,8 +685,8 @@ latitudes in the regular Mercator projection and must therefore be less than 90Â
 
 .. _-Ju:
 
-Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Universal Transverse Mercator (UTM) (**-Ju** **-JU**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -730,8 +730,8 @@ formulae instead.
 
 .. _-Jo:
 
-Oblique Mercator projection (**-Jo** **-JO**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Oblique Mercator (**-Jo** **-JO**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Option 1 Syntax**
 
@@ -846,8 +846,8 @@ to align the oblique Equator with the vertical, positive *y*-axis instead.  This
 
 .. _-Jc:
 
-Cassini cylindrical projection (**-Jc** **-JC**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cassini cylindrical (**-Jc** **-JC**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -887,8 +887,8 @@ As with the previous projections, the user can choose between a rectangular boun
 
 .. _-Jq:
 
-Cylindrical equidistant projection (**-Jq** **-JQ**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Equidistant cylindrical (**-Jq** **-JQ**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -941,8 +941,8 @@ A world map centered on the dateline using this projection can be obtained as fo
 
 .. _-Jy:
 
-Cylindrical equal-area projections (**-Jy** **-JY**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical equal-area (**-Jy** **-JY**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1002,8 +1002,8 @@ As one can see there is considerable distortion at high latitudes since the pole
 
 .. _-Jj:
 
-Miller Cylindrical projection (**-Jj** **-JJ**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Miller cylindrical (**-Jj** **-JJ**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1041,8 +1041,8 @@ can be obtained as follows:
 
 .. _-Jcyl_stere:
 
-Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical stereographic (**-Jcyl_stere** **-JCyl_stere**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1110,8 +1110,8 @@ range of the plot, specified by the (**-R**) option.
 
 .. _-Jh:
 
-Hammer projection (**-Jh** **-JH**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hammer equal-area (**-Jh** **-JH**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1143,8 +1143,8 @@ A view of the Pacific ocean using the Dateline as central meridian can be genera
 
 .. _-Jw:
 
-Mollweide projection (**-Jw** **-JW**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mollweide (**-Jw** **-JW**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1177,8 +1177,8 @@ An example centered on Greenwich can be generated thus:
 
 .. _-Jr:
 
-Winkel Tripel projection (**-Jr** **-JR**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Winkel Tripel (**-Jr** **-JR**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1219,8 +1219,8 @@ Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection <GMT
 
 .. _-Jn:
 
-Robinson projection (**-Jn** **-JN**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Robinson (**-Jn** **-JN**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1254,8 +1254,8 @@ Again centered on Greenwich, the example below was created by this command:
 
 .. _-Jk:
 
-Eckert IV and VI projection (**-Jk** **-JK**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Eckert IV and VI equal-area (**-Jk** **-JK**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1305,8 +1305,8 @@ The same script, with **s** instead of **f**, yields the Eckert VI map:
 
 .. _-Ji:
 
-Sinusoidal projection (**-Ji** **-JI**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sinusoidal equal-area (**-Ji** **-JI**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1358,8 +1358,8 @@ distributions like hydrocarbon and mineral resources, etc.
 
 .. _-Jv:
 
-Van der Grinten projection (**-Jv** **-JV**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Van der Grinten (**-Jv** **-JV**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 

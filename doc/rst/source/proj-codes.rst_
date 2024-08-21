@@ -17,10 +17,10 @@
    * -
      - **-J** (*scale*\|\ *WIDTH*)
      -
-   * - :ref:`Lambert azimuthal equal area <-Ja>`
+   * - :ref:`Lambert azimuthal equal-area <-Ja>`
      - **-Ja**\|\ **A**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`Albers conic equal area <-Jb>`
+   * - :ref:`Albers conic equal-area <-Jb>`
      - **-Jb**\|\ **B**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
    * - :ref:`Cassini cylindrical <-Jc>`
@@ -44,19 +44,19 @@
    * - :ref:`General perspective <-Jg_pers>`
      - **-Jg**\|\ **G**
      - |lon0|/|lat0|\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
-   * - :ref:`Hammer equal area <-Jh>`
+   * - :ref:`Hammer equal-area <-Jh>`
      - **-Jh**\|\ **H**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Sinusoidal equal area <-Ji>`
+   * - :ref:`Sinusoidal equal-area <-Ji>`
      - **-Ji**\|\ **I**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Miller cylindrical <-Jj>`
      - **-Jj**\|\ **J**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert IV equal area <-Jk>`
+   * - :ref:`Eckert IV equal-area <-Jk>`
      - **-Jkf**\|\ **Kf**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert VI equal area <-Jk>`
+   * - :ref:`Eckert VI equal-area <-Jk>`
      - **-Jks**\|\ **Ks**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Lambert conic conformal <-Jl>`
@@ -68,7 +68,7 @@
    * - :ref:`Robinson <-Jn>`
      - **-Jn**\|\ **N**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Oblique Mercator, 1: origin and azim <-Jo>`
+   * - :ref:`Oblique Mercator, 1: origin and azimuth <-Jo>`
      - **-Jo**\|\ **O**\ **a**\|\ **A**
      - |lon0|/|lat0|/\ *azim*/*scale*\|\ *width*\ [**+v**]
    * - :ref:`Oblique Mercator, 2: two points <-Jo>`
@@ -81,7 +81,7 @@
      - **-Jp**\|\ **P**
      - *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\ [**+k**\ *kind*]\
        [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
-   * - :ref:`(American) polyconic <-Jpoly>` 
+   * - :ref:`(American) polyconic <-Jpoly>`
      - **-Jpoly**\|\ **Poly**
      - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
    * - :ref:`Equidistant cylindrical <-Jq>`
@@ -110,6 +110,6 @@
      - **-Jx**\|\ **X**
      - *xscale*\|\ *width*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]\
        [/\ *yscale*\|\ *height*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]][**d**]
-   * - :ref:`Cylindrical equal area <-Jy>`
+   * - :ref:`Cylindrical equal-area <-Jy>`
      - **-Jy**\|\ **Y**
      - |lon0|/|lat0|/\ *scale*\|\ *width*
