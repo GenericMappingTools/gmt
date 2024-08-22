@@ -577,8 +577,8 @@ Each have a different way of spacing the meridians and parallels to obtain certa
 
 .. _-Jm:
 
-Mercator cylindrical (**-Jm** **-JM**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mercator (**-Jm** **-JM**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
