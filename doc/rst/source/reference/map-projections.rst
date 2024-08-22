@@ -49,8 +49,8 @@ Conic projections
 
 .. _-Jb:
 
-Albers conic equal-area projection (**-Jb** **-JB**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Albers conic (**-Jb** **-JB**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -92,8 +92,8 @@ generate the map below is therefore given by:
 
 .. _-Jd:
 
-Equidistant conic projection (**-Jd** **-JD**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Equidistant conic (**-Jd** **-JD**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -127,8 +127,8 @@ map of Cuba:
 
 .. _-Jl:
 
-Lambert conic conformal projection (**-Jl** **-JL**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lambert conic conformal (**-Jl** **-JL**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -172,8 +172,8 @@ latitudes 30.5°N and 47.5°N of 0.5–1%. Some areas, like Florida, experience 
 
 .. _-Jpoly:
 
-(American) polyconic projection (**-Jpoly** **-JPoly**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(American) polyconic (**-Jpoly** **-JPoly**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -218,8 +218,8 @@ Azimuthal projections
 
 .. _-Ja:
 
-Lambert azimuthal equal-area (**-Ja** **-JA**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lambert azimuthal (**-Ja** **-JA**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -308,7 +308,7 @@ stereonet can be obtained by using the stereographic projection
 
 .. _-Js:
 
-Stereographic equal-angle (**-Js** **-JS**)
+Stereographic (**-Js** **-JS**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
@@ -396,7 +396,7 @@ hemispheric maps. Our example shows Australia using a projection pole at
 
 
 By choosing 0/0 as the pole, we obtain the conformal stereonet presented
-next to its equal-area cousin in the Section `Lambert Azimuthal Equal-Area (-Ja -JA)`_ on the Lambert azimuthal equal-area projection (Figure :ref:`Stereonets <GMT_stereonets>`).
+next to its equal-area cousin in the Section `Lambert azimuthal (-Ja -JA)`_ on the Lambert azimuthal projection (Figure :ref:`Stereonets <GMT_stereonets>`).
 
 .. _-Jg_pers:
 
@@ -846,8 +846,8 @@ to align the oblique Equator with the vertical, positive *y*-axis instead.  This
 
 .. _-Jc:
 
-Cassini cylindrical (**-Jc** **-JC**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cassini (**-Jc** **-JC**)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -941,8 +941,8 @@ A world map centered on the dateline using this projection can be obtained as fo
 
 .. _-Jy:
 
-Cylindrical equal-area (**-Jy** **-JY**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical (**-Jy** **-JY**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -959,7 +959,7 @@ Cylindrical equal-area (**-Jy** **-JY**)
 **Description**
 
 This cylindrical projection is actually several projections, depending on what latitude is selected as the standard
-parallel. However, they are all equal area and hence non-conformal. All meridians and parallels are straight lines.
+parallel. However, they are all equal-area and hence non-conformal. All meridians and parallels are straight lines.
 
 While you may choose any value for the standard parallel and obtain your own personal projection, there are seven
 choices of standard parallels that result in known (or named) projections. These are listed in Table :ref:`JY <tbl-JY>`.
@@ -1002,8 +1002,8 @@ As one can see there is considerable distortion at high latitudes since the pole
 
 .. _-Jj:
 
-Miller cylindrical (**-Jj** **-JJ**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Miller (**-Jj** **-JJ**)
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1110,8 +1110,8 @@ range of the plot, specified by the (**-R**) option.
 
 .. _-Jh:
 
-Hammer equal-area (**-Jh** **-JH**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hammer (**-Jh** **-JH**)
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1254,8 +1254,8 @@ Again centered on Greenwich, the example below was created by this command:
 
 .. _-Jk:
 
-Eckert IV and VI equal-area (**-Jk** **-JK**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Eckert IV and VI (**-Jk** **-JK**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1305,8 +1305,8 @@ The same script, with **s** instead of **f**, yields the Eckert VI map:
 
 .. _-Ji:
 
-Sinusoidal equal-area (**-Ji** **-JI**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sinusoidal (**-Ji** **-JI**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 

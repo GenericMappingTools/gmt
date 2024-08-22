@@ -17,13 +17,13 @@
    * -
      - **-J** (*scale*\|\ *WIDTH*)
      -
-   * - :ref:`Lambert azimuthal equal-area <-Ja>`
+   * - :ref:`Lambert azimuthal <-Ja>`
      - **-Ja**\|\ **A**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`Albers conic equal-area <-Jb>`
+   * - :ref:`Albers conic <-Jb>`
      - **-Jb**\|\ **B**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
-   * - :ref:`Cassini cylindrical <-Jc>`
+   * - :ref:`Cassini <-Jc>`
      - **-Jc**\|\ **C**
      - |lon0|/|lat0|/\ *scale*\|\ *width*
    * - :ref:`Cylindrical stereographic <-Jcyl_stere>`
@@ -44,25 +44,25 @@
    * - :ref:`General perspective <-Jg_pers>`
      - **-Jg**\|\ **G**
      - |lon0|/|lat0|\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
-   * - :ref:`Hammer equal-area <-Jh>`
+   * - :ref:`Hammer <-Jh>`
      - **-Jh**\|\ **H**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Sinusoidal equal-area <-Ji>`
+   * - :ref:`Sinusoidal <-Ji>`
      - **-Ji**\|\ **I**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Miller cylindrical <-Jj>`
+   * - :ref:`Miller <-Jj>`
      - **-Jj**\|\ **J**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert IV equal-area <-Jk>`
+   * - :ref:`Eckert IV <-Jk>`
      - **-Jkf**\|\ **Kf**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert VI equal-area <-Jk>`
+   * - :ref:`Eckert VI <-Jk>`
      - **-Jks**\|\ **Ks**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Lambert conic conformal <-Jl>`
      - **-Jl**\|\ **L**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
-   * - :ref:`Mercator cylindrical <-Jm>`
+   * - :ref:`Mercator <-Jm>`
      - **-Jm**\|\ **M**
      - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
    * - :ref:`Robinson <-Jn>`
@@ -90,7 +90,7 @@
    * - :ref:`Winkel Tripel <-Jr>`
      - **-Jr**\|\ **R**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`General stereographic <-Js>`
+   * - :ref:`Stereographic <-Js>`
      - **-Js**\|\ **S**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
    * - :ref:`Transverse Mercator <-Jt>`
@@ -110,6 +110,6 @@
      - **-Jx**\|\ **X**
      - *xscale*\|\ *width*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]\
        [/\ *yscale*\|\ *height*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]][**d**]
-   * - :ref:`Cylindrical equal-area <-Jy>`
+   * - :ref:`Cylindrical <-Jy>`
      - **-Jy**\|\ **Y**
      - |lon0|/|lat0|/\ *scale*\|\ *width*
