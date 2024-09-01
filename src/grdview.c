@@ -774,32 +774,34 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 		Ctrl->N.facade = false;
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
-	                                   "Piping of topofile not supported!\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
-		                               "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
+	                                  "Piping of topofile not supported!\n");
+	n_errors += gmt_M_check_condition(GMT, !GMT->common.J.active,
+		                              "Must specify a map projection with the -J option\n");
 
 	/* Gave more than one -Q setting */
-	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Options -Qm, -Qs, -Qc, and -Qi are mutually exclusive.\n");
+	n_errors += gmt_M_check_condition(GMT, q_set > 1, "Options -Qm, -Qs, -Qc, and -Qi are mutually exclusive.\n");
 	/* Gave both -Q and -T */
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
-	                                   "Option -G: Requires either 1 or 3 grids (%d)\n",Ctrl->G.n);
+	n_errors += gmt_M_check_condition(GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
+	                                  "Option -G: Requires either 1 or 3 grids (%d)\n",Ctrl->G.n);
 	if (Ctrl->G.active) {	/* Draping was requested */
 		for (k = 0; k < Ctrl->G.n; k++)
-			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
-		                                   "The draping option requires the -Qc|i option\n");
+			n_errors += gmt_M_check_condition(GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
+		n_errors += gmt_M_check_condition(GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
+		                                  "The draping option requires the -Qc|i option\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
-	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt && GMT->current.setting.run_mode == GMT_CLASSIC, "Must specify color palette table\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0.0,
-	                                 "Option -Qi: Must specify positive dpi\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
-	                                 "Option -T: Cannot specify -JZ|z\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
+	                                  "Option -I: Must specify intensity file, value, or modifiers\n");
+	n_errors += gmt_M_check_condition(GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
+	                                  !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt && GMT->current.setting.run_mode == GMT_CLASSIC, "Must specify color palette table\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0.0,
+	                                  "Option -Qi: Must specify positive dpi\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->Q.mode == GRDVIEW_SURF && !Ctrl->C.active,
+	                                  "Option -Qs: Must also specify a cpt via -C\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
+	                                  "Option -T: Cannot specify -JZ|z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
