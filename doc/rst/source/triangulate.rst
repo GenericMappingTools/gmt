@@ -190,7 +190,7 @@ Optional Arguments
 **-T**
     Output edges or polygons even if gridding has been selected with
     the |-G| option [Default will not output the triangulation or
-    Voronoi polygons is gridding is selected].
+    Voronoi polygons if gridding is selected].
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
