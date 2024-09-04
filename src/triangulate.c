@@ -123,7 +123,7 @@ enum curve_enum {	/* Indices for coeff array for normalization */
 	GMT_U = GMT_H
 };
 
-GMT_LOCAL double triangulate_median3 (double three[]) {
+GMT_LOCAL double triangulate_median3(double three[]) {
 	/* Fast median of three values instead of calling gmt_median().
 	 * https://stackoverflow.com/questions/17158667/minimum-no-of-comparisons-to-find-median-of-3-numbers
 	 */
@@ -135,14 +135,14 @@ GMT_LOCAL double triangulate_median3 (double three[]) {
 	return three[0];
 }
 
-GMT_LOCAL double triangulate_mode3 (double three[]) {
+GMT_LOCAL double triangulate_mode3(double three[]) {
 	/* Fast mode of three values instead of calling gmt_mode(). */
 	if (three[0] == three[1] || three[0] == three[2]) return (three[0]);
 	if (three[1] == three[2]) return (three[1]);
 	return triangulate_median3 (three);	/* All three are different so return median instead */
 }
 
-GMT_LOCAL int triangulate_compare_edge (const void *p1, const void *p2) {
+GMT_LOCAL int triangulate_compare_edge(const void *p1, const void *p2) {
 	const struct TRIANGULATE_EDGE *a = p1, *b = p2;
 
 	if (a->begin < b->begin) return (-1);
@@ -152,7 +152,7 @@ GMT_LOCAL int triangulate_compare_edge (const void *p1, const void *p2) {
 	return (0);
 }
 
-static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl(struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TRIANGULATE_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
@@ -162,7 +162,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl(struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->F.file);
@@ -170,7 +170,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
-static int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage(struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef NNN_MODE
@@ -237,7 +237,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to triangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -415,7 +415,7 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_triangulate(void *V_API, int mode, void *args) {
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 
 	uint64_t ij, ij1, ij2, ij3, np = 0, i, j, k, n_edge, p, node = 0, seg, n = 0;
@@ -957,7 +957,6 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 			else {	/* Write polygons with various segment header information */
 				for (i = ij = 0; i < np; i++, ij += 3) {
-					sprintf (record, "Polygon %d-%d-%d ", link[ij], link[ij+1], link[ij+2]);
 					if (Ctrl->S.mode > TRI_POLY) {
 						double z_triangle = 0.0, z_node[3];
 						for (k = 0; k < 3; k++) z_node[k] = zz[link[ij+k]];	/* Get the three vertices' z-values */
@@ -997,6 +996,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 					}
 					/* Explicitly close the polygon */
 					out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];
+					if (n_output == 3) out[GMT_Z] = zz[link[ij]];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 			}
