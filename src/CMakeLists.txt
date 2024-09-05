@@ -680,9 +680,9 @@ install (FILES gmt.h gmt_resources.h declspec.h
 
 # Install developer headers
 if (BUILD_DEVELOPER)
-	# Install Developer headers [These are clean and have no #define HAVE_* configuration]
+	# Install Developer headers [These are clean and have no #define HAVE_* configuration, except gmt_glib.h]
 	install (FILES postscriptlight.h gmt_common_math.h gmt_common_string.h gmt_common.h gmt_constants.h gmt_contour.h
-		gmt_dcw.h gmt_decorate.h gmt_defaults.h gmt_error.h gmt_error_codes.h gmt_fft.h gmt_gdalread.h gmt_grd.h
+		gmt_dcw.h gmt_decorate.h gmt_defaults.h gmt_error.h gmt_error_codes.h gmt_fft.h gmt_gdalread.h gmt_glib.h gmt_grd.h
 		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_modern.h gmt_nan.h gmt_notposix.h gmt_plot.h
 		gmt_private.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_common_sighandler.h gmt_symbol.h gmt_synopsis.h
 		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h gmt_hidden.h gmt_mb.h gmt_remote.h gmt_common_byteswap.h
