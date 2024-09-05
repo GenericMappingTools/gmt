@@ -3398,8 +3398,8 @@ void gmt_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double
 GMT_LOCAL void gmtmap_translate_point_geodesic (struct GMT_CTRL *GMT, double lon1, double lat1, double azimuth, double distance_m, double *lon2, double *lat2, double *back_azimuth) {
 	/* Use Vincenty (1975) solution to the direct geodesic problem.  Unstable for near antipodal points */
 	double a = GMT->current.proj.EQ_RAD, f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening, f1 = 1.0 - f;
-	double b = a * f1, s = distance_m, alpha1 = azimuth * D2R, s_alpha1, c_alpha1, tan_U1, c_U1, s_U1, sigma1, s_alpha, cosSqAlpha, cos2SigmaM, tmp;
-	double uSq, A, B, sigma, sigmaP, deltaSigma, sinSigma, cosSigma, lambda, C, L;
+	double b = a * f1, s = distance_m, alpha1 = azimuth * D2R, s_alpha1, c_alpha1, tan_U1, c_U1, s_U1, sigma1, s_alpha, cosSqAlpha, cos2SigmaM = 0.0, tmp;
+	double uSq, A, B, sigma, sigmaP, deltaSigma, sinSigma = 0.0, cosSigma = 0.0, lambda, C, L;
 
 	sincos (alpha1, &s_alpha1, &c_alpha1);
 	tan_U1 = f1 * tand (lat1);

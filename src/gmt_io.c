@@ -1372,21 +1372,21 @@ GMT_LOCAL int gmtio_h_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *
 }
 
 /*! . */
-GMT_LOCAL int gmtio_h_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
+GMT_LOCAL int gmtio_h_read_swab(struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped int16_t */
 	uint64_t i;
-	uint16_t u;
+	uint16_t u = 0;
 	size_t k;
 	int16_t *s = (int16_t *)&u;
 	for (i = 0; i < n; ++i) {
-		if ((k = gmt_M_fread (&u, sizeof (uint16_t), 1U, fp)) != 1) {
+		if ((k = gmt_M_fread (&u, sizeof(uint16_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
-			return (GMT_DATA_READ_ERROR);
+			return GMT_DATA_READ_ERROR;
 		}
 		u = bswap16 (u);
-		d[i] = (double) *s;
+		d[i] = (double)*s;
 	}
-	return (GMT_OK);
+	return GMT_OK;
 }
 
 /*! . */
@@ -3446,7 +3446,7 @@ GMT_LOCAL void gmtio_check_abstime_format_is_suitable (struct GMT_CTRL *GMT, cha
 	char copy[GMT_LEN32] = {""}, s1[GMT_LEN16] = {""}, *c = NULL;
 	int n, d0, d1, d2;
 	unsigned int k, n_delim_template[3] = {0, 0, 0}, n_delim_token[3] = {0, 0, 0};
-	unsigned int token_delim, template_delim, delim;
+	unsigned int token_delim = 0, template_delim, delim;
 
 	if (strncmp (GMT->current.setting.format_date_in, "yyyy-mm-dd", 10U)) return;	/* No longer set to default so we trust user */
 
@@ -3502,7 +3502,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL;
 	unsigned int n_numeric_cols = (GMT->parent->n_numerical_columns == GMT_NOTSET) ? UINT_MAX : GMT->parent->n_numerical_columns;
 	int got;
-	enum gmt_col_enum phys_col_type;
+	enum gmt_col_enum phys_col_type = GMT_IS_UNKNOWN;
 	bool found_text = false;
 	char token[GMT_BUFSIZ], message[GMT_BUFSIZ] = {""};
 	double value;
