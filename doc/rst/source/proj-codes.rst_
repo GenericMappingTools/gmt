@@ -23,7 +23,7 @@
    * - :ref:`Albers conic <-Jb>`
      - **-Jb**\|\ **B**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
-   * - :ref:`Cassini <-Jc>`
+   * - :ref:`Cassini projection <-Jc>`
      - **-Jc**\|\ **C**
      - |lon0|/|lat0|/\ *scale*\|\ *width*
    * - :ref:`Cylindrical stereographic <-Jcyl_stere>`
@@ -44,37 +44,37 @@
    * - :ref:`General perspective <-Jg_pers>`
      - **-Jg**\|\ **G**
      - |lon0|/|lat0|\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
-   * - :ref:`Hammer <-Jh>`
+   * - :ref:`Hammer projection <-Jh>`
      - **-Jh**\|\ **H**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Sinusoidal <-Ji>`
+   * - :ref:`Sinusoidal projection <-Ji>`
      - **-Ji**\|\ **I**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Miller <-Jj>`
+   * - :ref:`Miller projection <-Jj>`
      - **-Jj**\|\ **J**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert IV <-Jk>`
+   * - :ref:`Eckert IV projection <-Jk>`
      - **-Jkf**\|\ **Kf**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert VI <-Jk>`
+   * - :ref:`Eckert VI projection <-Jk>`
      - **-Jks**\|\ **Ks**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Lambert conic conformal <-Jl>`
      - **-Jl**\|\ **L**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
-   * - :ref:`Mercator <-Jm>`
+   * - :ref:`Mercator projection <-Jm>`
      - **-Jm**\|\ **M**
      - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
-   * - :ref:`Robinson <-Jn>`
+   * - :ref:`Robinson projection <-Jn>`
      - **-Jn**\|\ **N**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Oblique Mercator, 1: origin and azim <-Jo>`
+   * - :ref:`Oblique Mercator projection, 1: origin and azim <-Jo>`
      - **-Jo**\|\ **O**\ **a**\|\ **A**
      - |lon0|/|lat0|/\ *azim*/*scale*\|\ *width*\ [**+v**]
-   * - :ref:`Oblique Mercator, 2: two points <-Jo>`
+   * - :ref:`Oblique Mercator projection, 2: two points <-Jo>`
      - **-Jo**\|\ **O**\ **b**\|\ **B**
      - |lon0|/|lat0|/|lon1|/|lat1|/\ *scale*\|\ *width*\ [**+v**]
-   * - :ref:`Oblique Mercator, 3: origin and pole <-Jo>`
+   * - :ref:`Oblique Mercator projection, 3: origin and pole <-Jo>`
      - **-Jo**\|\ **O**\ **c**\|\ **C**
      - |lon0|/|lat0|/|lonp|/|latp|/\ *scale*\|\ *width*\ [**+v**]
    * - :ref:`Polar [azimuthal] <-Jp>`  (:math:`\theta, r`) (or cylindrical)
@@ -93,16 +93,16 @@
    * - :ref:`Stereographic <-Js>`
      - **-Js**\|\ **S**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`Transverse Mercator <-Jt>`
+   * - :ref:`Transverse Mercator projection <-Jt>`
      - **-Jt**\|\ **T**
      - |lon0|/\ [|lat0|/]\ *scale*\|\ *width*
-   * - :ref:`Universal Transverse Mercator (UTM) <-Ju>`
+   * - :ref:`Universal Transverse Mercator (UTM) projection <-Ju>`
      - **-Ju**\|\ **U**
      - *zone*/*scale*\|\ *width*
    * - :ref:`Van der Grinten <-Jv>`
      - **-Jv**\|\ **V**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Mollweide <-Jw>`
+   * - :ref:`Mollweide projection <-Jw>`
      - **-Jw**\|\ **W**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Linear <-Jx_linear>`, :ref:`logarithmic <-Jx_log>`,

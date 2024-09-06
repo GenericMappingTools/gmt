@@ -1002,8 +1002,8 @@ As one can see there is considerable distortion at high latitudes since the pole
 
 .. _-Jj:
 
-Miller (**-Jj** **-JJ**)
-~~~~~~~~~~~~~~~~~~~~~~~~
+Miller projection (**-Jj** **-JJ**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
