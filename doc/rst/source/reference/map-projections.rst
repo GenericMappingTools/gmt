@@ -846,8 +846,8 @@ to align the oblique Equator with the vertical, positive *y*-axis instead.  This
 
 .. _-Jc:
 
-Cassini (**-Jc** **-JC**)
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Cassini projection (**-Jc** **-JC**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1254,8 +1254,8 @@ Again centered on Greenwich, the example below was created by this command:
 
 .. _-Jk:
 
-Eckert IV and VI projection (**-Jk** **-JK**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Eckert IV and VI projections (**-Jk** **-JK**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 

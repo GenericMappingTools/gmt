@@ -99,7 +99,7 @@
    * - :ref:`Universal Transverse Mercator (UTM) projection <-Ju>`
      - **-Ju**\|\ **U**
      - *zone*/*scale*\|\ *width*
-   * - :ref:`Van der Grinten <-Jv>`
+   * - :ref:`Van der Grinten projection <-Jv>`
      - **-Jv**\|\ **V**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Mollweide projection <-Jw>`
