@@ -577,8 +577,8 @@ Each have a different way of spacing the meridians and parallels to obtain certa
 
 .. _-Jm:
 
-Mercator (**-Jm** **-JM**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mercator projection (**-Jm** **-JM**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -627,8 +627,8 @@ example, specify the region with **-R**-180/180/-70/70 to obtain a map centered 
 
 .. _-Jt:
 
-Transverse Mercator (**-Jt** **-JT**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Transverse Mercator projection (**-Jt** **-JT**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -685,8 +685,8 @@ latitudes in the regular Mercator projection and must therefore be less than 90Â
 
 .. _-Ju:
 
-Universal Transverse Mercator (UTM) (**-Ju** **-JU**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -730,8 +730,8 @@ formulae instead.
 
 .. _-Jo:
 
-Oblique Mercator (**-Jo** **-JO**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Oblique Mercator projection (**-Jo** **-JO**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Option 1 Syntax**
 
@@ -1110,8 +1110,8 @@ range of the plot, specified by the (**-R**) option.
 
 .. _-Jh:
 
-Hammer (**-Jh** **-JH**)
-~~~~~~~~~~~~~~~~~~~~~~~~
+Hammer projection (**-Jh** **-JH**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1143,8 +1143,8 @@ A view of the Pacific ocean using the Dateline as central meridian can be genera
 
 .. _-Jw:
 
-Mollweide (**-Jw** **-JW**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Mollweide projection (**-Jw** **-JW**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1177,8 +1177,8 @@ An example centered on Greenwich can be generated thus:
 
 .. _-Jr:
 
-Winkel Tripel (**-Jr** **-JR**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Winkel Tripel projection (**-Jr** **-JR**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1219,8 +1219,8 @@ Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection <GMT
 
 .. _-Jn:
 
-Robinson (**-Jn** **-JN**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Robinson projection (**-Jn** **-JN**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1254,8 +1254,8 @@ Again centered on Greenwich, the example below was created by this command:
 
 .. _-Jk:
 
-Eckert IV and VI (**-Jk** **-JK**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Eckert IV and VI projection (**-Jk** **-JK**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1305,8 +1305,8 @@ The same script, with **s** instead of **f**, yields the Eckert VI map:
 
 .. _-Ji:
 
-Sinusoidal (**-Ji** **-JI**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sinusoidal projection (**-Ji** **-JI**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1358,8 +1358,8 @@ distributions like hydrocarbon and mineral resources, etc.
 
 .. _-Jv:
 
-Van der Grinten (**-Jv** **-JV**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Van der Grinten projection (**-Jv** **-JV**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
