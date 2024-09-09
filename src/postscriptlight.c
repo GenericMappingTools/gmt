@@ -1744,6 +1744,7 @@ static int psl_patch (struct PSL_CTRL *PSL, double *x, double *y, int np) {
 	n1 = --n;
 	for (i = n - 1; i >= 0; i--, n--) PSL_command (PSL, "%d %d ", ix[n] - ix[i], iy[n] - iy[i]);
 	PSL_command (PSL, "%d %d %d SP\n", n1, ix[0], iy[0]);
+	PSL_command(PSL, "FO\n");		/* Close polygon and stroke/fill as set by PSL_setfill */
 	return (PSL_NO_ERROR);
 }
 
