@@ -17,31 +17,31 @@
    * -
      - **-J** (*scale*\|\ *WIDTH*)
      -
-   * - :ref:`Lambert azimuthal <-Ja>`
+   * - :ref:`Lambert azimuthal projection <-Ja>`
      - **-Ja**\|\ **A**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`Albers conic <-Jb>`
+   * - :ref:`Albers conic projection <-Jb>`
      - **-Jb**\|\ **B**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
    * - :ref:`Cassini projection <-Jc>`
      - **-Jc**\|\ **C**
      - |lon0|/|lat0|/\ *scale*\|\ *width*
-   * - :ref:`Cylindrical stereographic <-Jcyl_stere>`
+   * - :ref:`Cylindrical stereographic projection <-Jcyl_stere>`
      - **-Jcyl_stere**\|\ **Cyc_stere**
      - [|lon0|\ [/|lat0|]/]\ *scale*\|\ *width*
-   * - :ref:`Equidistant conic <-Jd>`
+   * - :ref:`Equidistant conic projection <-Jd>`
      - **-Jd**\|\ **D**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
-   * - :ref:`Azimuthal equidistant <-Je>`
+   * - :ref:`Azimuthal equidistant projection <-Je>`
      - **-Je**\|\ **E**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`Azimuthal gnomonic <-Jf>`
+   * - :ref:`Azimuthal gnomonic projection <-Jf>`
      - **-Jf**\|\ **F**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`Azimuthal orthographic <-Jg>`
+   * - :ref:`Azimuthal orthographic projection <-Jg>`
      - **-Jg**\|\ **G**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`General perspective <-Jg_pers>`
+   * - :ref:`General perspective projection <-Jg_pers>`
      - **-Jg**\|\ **G**
      - |lon0|/|lat0|\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
    * - :ref:`Hammer projection <-Jh>`
@@ -59,7 +59,7 @@
    * - :ref:`Eckert VI projection <-Jk>`
      - **-Jks**\|\ **Ks**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Lambert conic conformal <-Jl>`
+   * - :ref:`Lambert conic conformal projection <-Jl>`
      - **-Jl**\|\ **L**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
    * - :ref:`Mercator projection <-Jm>`
@@ -81,16 +81,16 @@
      - **-Jp**\|\ **P**
      - *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\ [**+k**\ *kind*]\
        [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
-   * - :ref:`(American) polyconic <-Jpoly>`
+   * - :ref:`(American) polyconic projection <-Jpoly>`
      - **-Jpoly**\|\ **Poly**
      - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
-   * - :ref:`Equidistant cylindrical <-Jq>`
+   * - :ref:`Equidistant cylindrical projection <-Jq>`
      - **-Jq**\|\ **Q**
      - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
-   * - :ref:`Winkel Tripel <-Jr>`
+   * - :ref:`Winkel Tripel projection <-Jr>`
      - **-Jr**\|\ **R**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Stereographic <-Js>`
+   * - :ref:`Stereographic projection <-Js>`
      - **-Js**\|\ **S**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
    * - :ref:`Transverse Mercator projection <-Jt>`
@@ -110,6 +110,6 @@
      - **-Jx**\|\ **X**
      - *xscale*\|\ *width*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]\
        [/\ *yscale*\|\ *height*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]][**d**]
-   * - :ref:`Cylindrical <-Jy>`
+   * - :ref:`Cylindrical projection <-Jy>`
      - **-Jy**\|\ **Y**
      - |lon0|/|lat0|/\ *scale*\|\ *width*
