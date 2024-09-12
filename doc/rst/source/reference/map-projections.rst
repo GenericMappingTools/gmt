@@ -49,8 +49,8 @@ Conic projections
 
 .. _-Jb:
 
-Albers conic (**-Jb** **-JB**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Albers conic projection (**-Jb** **-JB**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -92,8 +92,8 @@ generate the map below is therefore given by:
 
 .. _-Jd:
 
-Equidistant conic (**-Jd** **-JD**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Equidistant conic projection (**-Jd** **-JD**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -127,8 +127,8 @@ map of Cuba:
 
 .. _-Jl:
 
-Lambert conic conformal (**-Jl** **-JL**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lambert conic conformal projection (**-Jl** **-JL**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -172,8 +172,8 @@ latitudes 30.5°N and 47.5°N of 0.5–1%. Some areas, like Florida, experience 
 
 .. _-Jpoly:
 
-(American) polyconic (**-Jpoly** **-JPoly**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(American) polyconic projection (**-Jpoly** **-JPoly**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -218,8 +218,8 @@ Azimuthal projections
 
 .. _-Ja:
 
-Lambert azimuthal (**-Ja** **-JA**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lambert azimuthal projection (**-Ja** **-JA**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -308,8 +308,8 @@ stereonet can be obtained by using the stereographic projection
 
 .. _-Js:
 
-Stereographic (**-Js** **-JS**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Stereographic projection (**-Js** **-JS**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -400,8 +400,8 @@ next to its equal-area cousin in the Section `Lambert azimuthal (-Ja -JA)`_ on t
 
 .. _-Jg_pers:
 
-General perspective (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+General perspective projection (**-Jg** **-JG**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -450,8 +450,8 @@ following :doc:`/coast` command (*lon0*\ =4; *lat0*\ =52; *altitude*\ =230 km; *
 
 .. _-Jg:
 
-Azimuthal orthographic (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Azimuthal orthographic projection (**-Jg** **-JG**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -489,8 +489,8 @@ command:
 
 .. _-Je:
 
-Azimuthal equidistant (**-Je** **-JE**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Azimuthal equidistant projection (**-Je** **-JE**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -528,8 +528,8 @@ perimeter:
 
 .. _-Jf:
 
-Azimuthal gnomonic (**-Jf** **-JF**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Azimuthal gnomonic projection (**-Jf** **-JF**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -686,7 +686,7 @@ latitudes in the regular Mercator projection and must therefore be less than 90�
 .. _-Ju:
 
 Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -887,8 +887,8 @@ As with the previous projections, the user can choose between a rectangular boun
 
 .. _-Jq:
 
-Equidistant cylindrical (**-Jq** **-JQ**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Equidistant cylindrical projection (**-Jq** **-JQ**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -941,8 +941,8 @@ A world map centered on the dateline using this projection can be obtained as fo
 
 .. _-Jy:
 
-Cylindrical (**-Jy** **-JY**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical projection (**-Jy** **-JY**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1041,8 +1041,8 @@ can be obtained as follows:
 
 .. _-Jcyl_stere:
 
-Cylindrical stereographic (**-Jcyl_stere** **-JCyl_stere**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical stereographic projection (**-Jcyl_stere** **-JCyl_stere**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
