@@ -49,7 +49,7 @@ Conic projections
 
 .. _-Jb:
 
-Albers conic projection (**-Jb** **-JB**)
+Albers conic equal-area projection (**-Jb** **-JB**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
@@ -218,7 +218,7 @@ Azimuthal projections
 
 .. _-Ja:
 
-Lambert azimuthal projection (**-Ja** **-JA**)
+Lambert azimuthal equal-area projection (**-Ja** **-JA**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
@@ -308,7 +308,7 @@ stereonet can be obtained by using the stereographic projection
 
 .. _-Js:
 
-Stereographic projection (**-Js** **-JS**)
+Stereographic equal-angle projection (**-Js** **-JS**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
@@ -941,7 +941,7 @@ A world map centered on the dateline using this projection can be obtained as fo
 
 .. _-Jy:
 
-Cylindrical projection (**-Jy** **-JY**)
+Cylindrical equal-area projection (**-Jy** **-JY**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
@@ -1110,7 +1110,7 @@ range of the plot, specified by the (**-R**) option.
 
 .. _-Jh:
 
-Hammer projection (**-Jh** **-JH**)
+Hammer equal-area projection (**-Jh** **-JH**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**

@@ -17,10 +17,10 @@
    * -
      - **-J** (*scale*\|\ *WIDTH*)
      -
-   * - :ref:`Lambert azimuthal projection <-Ja>`
+   * - :ref:`Lambert azimuthal equal-area projection <-Ja>`
      - **-Ja**\|\ **A**
      - |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*\|\ *width*
-   * - :ref:`Albers conic projection <-Jb>`
+   * - :ref:`Albers conic equal-area projection <-Jb>`
      - **-Jb**\|\ **B**
      - |lon0|/|lat0|/|lat1|/|lat2|/\ *scale*\|\ *width*
    * - :ref:`Cassini projection <-Jc>`
@@ -44,19 +44,19 @@
    * - :ref:`General perspective projection <-Jg_pers>`
      - **-Jg**\|\ **G**
      - |lon0|/|lat0|\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
-   * - :ref:`Hammer projection <-Jh>`
+   * - :ref:`Hammer equal-area projection <-Jh>`
      - **-Jh**\|\ **H**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Sinusoidal projection <-Ji>`
+   * - :ref:`Sinusoidal equal-area projection <-Ji>`
      - **-Ji**\|\ **I**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Miller projection <-Jj>`
      - **-Jj**\|\ **J**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert IV projection <-Jk>`
+   * - :ref:`Eckert IV equal-area projection <-Jk>`
      - **-Jkf**\|\ **Kf**
      - [|lon0|/]\ *scale*\|\ *width*
-   * - :ref:`Eckert VI projection <-Jk>`
+   * - :ref:`Eckert VI equal-area projection <-Jk>`
      - **-Jks**\|\ **Ks**
      - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Lambert conic conformal projection <-Jl>`
@@ -110,6 +110,6 @@
      - **-Jx**\|\ **X**
      - *xscale*\|\ *width*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]\
        [/\ *yscale*\|\ *height*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]][**d**]
-   * - :ref:`Cylindrical projection <-Jy>`
+   * - :ref:`Cylindrical equal-area projection <-Jy>`
      - **-Jy**\|\ **Y**
      - |lon0|/|lat0|/\ *scale*\|\ *width*
