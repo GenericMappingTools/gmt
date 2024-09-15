@@ -77,7 +77,7 @@
    * - :ref:`Oblique Mercator projection, 3: origin and pole <-Jo>`
      - **-Jo**\|\ **O**\ **c**\|\ **C**
      - |lon0|/|lat0|/|lonp|/|latp|/\ *scale*\|\ *width*\ [**+v**]
-   * - :ref:`Polar [azimuthal] <-Jp>`  (:math:`\theta, r`) (or cylindrical)
+   * - :ref:`Polar [azimuthal] <-Jp>` (:math:`\theta, r`) (or cylindrical)
      - **-Jp**\|\ **P**
      - *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\ [**+k**\ *kind*]\
        [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
