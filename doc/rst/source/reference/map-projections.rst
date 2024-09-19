@@ -396,7 +396,7 @@ hemispheric maps. Our example shows Australia using a projection pole at
 
 
 By choosing 0/0 as the pole, we obtain the conformal stereonet presented
-next to its equal-area cousin in the Section `Lambert azimuthal (-Ja -JA)`_ on the Lambert azimuthal projection (Figure :ref:`Stereonets <GMT_stereonets>`).
+next to its equal-area cousin in the Section `Lambert azimuthal equal-area projection (-Ja -JA)`_ on the Lambert azimuthal projection (Figure :ref:`Stereonets <GMT_stereonets>`).
 
 .. _-Jg_pers:
 
@@ -846,8 +846,8 @@ to align the oblique Equator with the vertical, positive *y*-axis instead.  This
 
 .. _-Jc:
 
-Cassini projection (**-Jc** **-JC**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cassini cylindrical projection (**-Jc** **-JC**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -1002,8 +1002,8 @@ As one can see there is considerable distortion at high latitudes since the pole
 
 .. _-Jj:
 
-Miller projection (**-Jj** **-JJ**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Miller cylindrical projection (**-Jj** **-JJ**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
