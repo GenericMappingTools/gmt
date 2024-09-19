@@ -84,7 +84,7 @@
    * - :ref:`(American) polyconic projection <-Jpoly>`
      - **-Jpoly**\|\ **Poly**
      - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
-   * - :ref:`Equidistant cylindrical projection <-Jq>`
+   * - :ref:`Cylindrical equidistant projection <-Jq>`
      - **-Jq**\|\ **Q**
      - [|lon0|/\ [|lat0|/]]\ *scale*\|\ *width*
    * - :ref:`Winkel Tripel projection <-Jr>`
