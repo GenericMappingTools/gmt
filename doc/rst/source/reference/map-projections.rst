@@ -400,8 +400,8 @@ next to its equal-area cousin in the Section `Lambert azimuthal equal-area proje
 
 .. _-Jg_pers:
 
-General perspective projection (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Perspective projection (**-Jg** **-JG**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -450,8 +450,8 @@ following :doc:`/coast` command (*lon0*\ =4; *lat0*\ =52; *altitude*\ =230 km; *
 
 .. _-Jg:
 
-Azimuthal orthographic projection (**-Jg** **-JG**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Orthographic projection (**-Jg** **-JG**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -528,8 +528,8 @@ perimeter:
 
 .. _-Jf:
 
-Azimuthal gnomonic projection (**-Jf** **-JF**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Gnomonic projection (**-Jf** **-JF**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -887,7 +887,7 @@ As with the previous projections, the user can choose between a rectangular boun
 
 .. _-Jq:
 
-Equidistant cylindrical projection (**-Jq** **-JQ**)
+Cylindrical equidistant projection (**-Jq** **-JQ**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
