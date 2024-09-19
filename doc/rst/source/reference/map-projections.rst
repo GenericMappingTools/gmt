@@ -1254,8 +1254,8 @@ Again centered on Greenwich, the example below was created by this command:
 
 .. _-Jk:
 
-Eckert IV and VI projections (**-Jk** **-JK**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Eckert IV and VI equal-area projections (**-Jk** **-JK**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
