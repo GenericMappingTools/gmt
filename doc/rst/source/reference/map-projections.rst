@@ -1110,8 +1110,8 @@ range of the plot, specified by the (**-R**) option.
 
 .. _-Jh:
 
-Hammer equal-area projection (**-Jh** **-JH**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hammer projection (**-Jh** **-JH**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
