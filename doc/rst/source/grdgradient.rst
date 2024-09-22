@@ -264,8 +264,7 @@ References
 ----------
 
 Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of the
-IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
-(https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=1456186)
+IEEE, Vol. 69, No. 1, January 1981, pp. 14-47. (https://ieeexplore.ieee.org/document/1456186/)
 
 See Also
 --------
