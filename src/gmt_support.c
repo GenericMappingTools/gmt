@@ -8188,7 +8188,7 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 		GMT_Usage (API, -19, "%s", &c[2]);
 	}
 	gmt_message (GMT, "     %s\n", divider);
-	GMT_Usage (API, 2, "[For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]. "
+	GMT_Usage (API, 2, "[For more, visit www.seaviewsensing.com/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]. "
 		"Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear "
 		"continuous CPT from those colors automatically.");
 
