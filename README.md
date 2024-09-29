@@ -127,9 +127,9 @@ GMT uses (or can access) raster data derived from these sources:
 
 GMT provides several color maps from these sources:
 
-- [SCM (Scientific Color Maps)](http://www.fabiocrameri.ch/visualisation.php)
+- [SCM (Scientific Color Maps)](https://www.fabiocrameri.ch/visualisation.php)
 - [cmocean](https://github.com/kthyng/cmocean-gmt)
-- [cpt-city](http://soliton.vm.bytemark.co.uk/pub/cpt-city/views/totp-cpt.html)
+- [cpt-city](http://www.seaviewsensing.com/pub/cpt-city/)
 - [google](https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html)
 - [matlab](https://www.mathworks.com/help/matlab/colors-1.html)
 - [matplotlib](https://matplotlib.org/stable/tutorials/colors/colormaps.html)
