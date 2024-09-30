@@ -270,7 +270,7 @@ GMT has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
 :doc:`/grdsample`, :doc:`/grdgradient`,
 :doc:`/grdtrack`, :doc:`/nearneighbor`, and
-:doc:`/grdview`, to name a few. The desired
+:doc:`/grdview`, to name a few). The desired
 condition can be set with the common GMT option **-n**; see Section
 :ref:`option_-n`. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
