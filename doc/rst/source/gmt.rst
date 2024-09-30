@@ -307,7 +307,6 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-l_full.rst_
 
 .. _-n_full:
-.. |Add_-n| replace:: :ref:`(See technical reference) <reference/options:Grid interpolation parameters: The -n option>`.
 .. include:: explain_-n_full.rst_
 
 .. _-ocols_full:
