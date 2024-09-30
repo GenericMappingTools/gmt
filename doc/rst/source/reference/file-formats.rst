@@ -263,6 +263,8 @@ option (see Section :ref:`option_nodereg`). **Note**: The smallest
 pixel-registered grid can be 1x1 (storing a single value), while a
 gridline-registered grid cannot be smaller than 2x2.
 
+.. _grid-boundary-conditions:
+
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -270,7 +272,7 @@ GMT has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
 :doc:`/grdsample`, :doc:`/grdgradient`,
 :doc:`/grdtrack`, :doc:`/nearneighbor`, and
-:doc:`/grdview`, to name a few. The desired
+:doc:`/grdview`, to name a few). The desired
 condition can be set with the common GMT option **-n**; see Section
 :ref:`option_-n`. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
