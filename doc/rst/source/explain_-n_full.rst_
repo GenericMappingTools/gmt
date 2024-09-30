@@ -22,7 +22,7 @@ The following modifiers are supported:
 - **+a** - Switch off antialiasing (where supported) [default uses antialiasing].
 - **+b** - Override boundary conditions used, by appending *g* for geographic, *p* for periodic, or *n* for
   natural boundary conditions. For the latter two you may append **x** or **y** to specify just one direction, otherwise
-  both are assumed. For more information see :ref:<reference/file-formats:boundary-conditions-for-operations-on-grids>`.
+  both are assumed. For more information see :ref:`grid-boundary-conditions`.
 
 - **+c** - Clip the interpolated grid to input z-min/z-max [default may exceed limits].
 - **+t** - Control how close to nodes with NaNs the interpolation will go based on *threshold*. A *threshold* of 1.0
