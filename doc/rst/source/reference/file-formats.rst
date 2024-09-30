@@ -263,7 +263,7 @@ option (see Section :ref:`option_nodereg`). **Note**: The smallest
 pixel-registered grid can be 1x1 (storing a single value), while a
 gridline-registered grid cannot be smaller than 2x2.
 
-.. _grid-boundary-conditions
+.. _grid-boundary-conditions:
 
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
