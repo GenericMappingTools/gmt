@@ -73,7 +73,7 @@ Optional Arguments
 
 .. _-A:
 
-.. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator)
+.. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator).
 .. include:: explain_-A.rst_
 
 .. _-C:
@@ -416,7 +416,7 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **PHI**     | 1.6180339... (golden ratio)                     |
 +-------------+-------------------------------------------------+
-| **EPS_F**   | 1.192092896e-07 (single precision epsilon       |
+| **EPS_F**   | 1.192092896e-07 (single precision epsilon)      |
 +-------------+-------------------------------------------------+
 | **XMIN**    | Minimum *x* value                               |
 +-------------+-------------------------------------------------+
