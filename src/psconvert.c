@@ -2190,7 +2190,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR,
 			            "The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file)) {	/* Remove the temporary EPS file */
-				fclose (fp);	fclose (fp2);	fclose (fpo);
+				if (fp  != NULL) fclose (fp);
+				if (fp2 != NULL) fclose (fp2);
+				if (fpo != NULL) fclose (fpo);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			continue;
