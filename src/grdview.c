@@ -140,7 +140,7 @@ struct GRDVIEW_POINT {
 	struct GRDVIEW_POINT *next_point;
 };
 
-GMT_LOCAL struct GRDVIEW_CONT * grdview_get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
+GMT_LOCAL struct GRDVIEW_CONT *grdview_get_cont_struct(struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
 	if (!binij[bin].first_cont) binij[bin].first_cont = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
@@ -157,7 +157,7 @@ GMT_LOCAL struct GRDVIEW_CONT * grdview_get_cont_struct (struct GMT_CTRL *GMT, u
 	return (new_cont);
 }
 
-GMT_LOCAL struct GRDVIEW_POINT * grdview_get_point (struct GMT_CTRL *GMT, double x, double y) {
+GMT_LOCAL struct GRDVIEW_POINT *grdview_get_point(struct GMT_CTRL *GMT, double x, double y) {
 	struct GRDVIEW_POINT *point = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_POINT);
 	point->x = x;
 	point->y = y;
@@ -809,7 +809,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true, read_z = false;
 
@@ -1431,12 +1431,10 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 		/* Plot from back to front */
 
-		gmt_M_memset (rgb, 4, double);
-		GMT_Report (API, GMT_MSG_INFORMATION, "Start rasterization\n");
+		gmt_M_memset(rgb, 4, double);
+		GMT_Report(API, GMT_MSG_INFORMATION, "Start rasterization\n");
+		GMT_Report(API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", start[0]);
 		for (j = start[0]; j != stop[0]; j += inc[0]) {
-
-			GMT_Report (API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", j);
-
 			for (i = start[1]; i != stop[1]; i += inc[1]) {
 				if (id[0] == GMT_Y) {
 					bin = gmt_M_ij0 (Z->header, j, i);
@@ -1521,6 +1519,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 		}
+		GMT_Report(API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", j-1);
 
 		if (!Ctrl->Q.mask) {	/* Must implement the clip path for the perspective image */
 			/* We now have the top and bottom j-pixel per i-pixel and will build a closed clip path.
@@ -2151,8 +2150,10 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, y);
 	gmt_M_free (GMT, z);
 	gmt_M_free (GMT, v);
-	if (Ctrl->G.active) for (k = 0; k < Ctrl->G.n; k++) {
-		gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
+	if (Ctrl->G.active) {
+		for (k = 0; k < Ctrl->G.n; k++) {
+			gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
+		}
 	}
 	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to free Z\n");
