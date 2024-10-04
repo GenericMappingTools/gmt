@@ -25,7 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [**n**] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]] ]
+[ |-S|\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]][**+n**]]
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
@@ -167,9 +167,10 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]]
+**-S**\ [*first*][**+z**\ [**a**\|\ **l**\|\ **m**\|\ **p**\|\ **u**]][**+n**]
     Output triangles as polygon segments separated by a segment header
     record which contains node numbers *a-b-c* and **-Z**\ *polynumber*.
+    However, if the **+n** flag is used, we skip writing the *polynumber* and the node numbers.
     Optionally, append *first*, where *first* is an integer, to report
     the polygon numbers by counting from *first* [Default starts at zero].
     Incompatible with |-Q|. Optionally, add modifier

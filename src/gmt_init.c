@@ -7272,7 +7272,8 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_grid_pen[GMT_SECONDARY].width = GMT->session.d_NaN;	/* 0.5p (thinner) */
 
 	if (error)
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value during gmtdefaults modern initialization.\n");}
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized value during gmtdefaults modern initialization.\n");
+}
 
 /*! . */
 void gmtinit_conf_modern_US (struct GMT_CTRL *GMT) {
@@ -20541,16 +20542,18 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Adding label space\n");
 		offset[GMT_OUT] += (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]);
 	}
-	/* Because the next call will reset frame sides i will make a copy and override the override here */
+	/* Because the next call will reset frame sides I will make a copy and override the override here */
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	was = GMT->current.map.frame.draw;
 	gmtinit_conf_modern_override (GMT);	/* Reset */
 	(void)gmt_getdefaults (GMT, NULL);
-	for (opt = options; opt; opt = opt->next) {
-		if (opt->option != '-') continue;   /* Not a parameter setting */
-		if ((c = strchr (opt->arg, '=')) == NULL) continue;
-		c[0] = '\0';  /* Remove = */
-		n_errors += gmtlib_setparameter (GMT, opt->arg, &c[1], false);
+	if (!GMT->parent->external || options->option) {	/* So that externals can send a NULL ptr for options. 'Internal' is not affected */
+		for (opt = options; opt; opt = opt->next) {
+			if (opt->option != '-') continue;   /* Not a parameter setting */
+			if ((c = strchr(opt->arg, '=')) == NULL) continue;
+			c[0] = '\0';  /* Remove = */
+			n_errors += gmtlib_setparameter(GMT, opt->arg, &c[1], false);
+		}
 	}
 	if (n_errors)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT parameter parsing failures for %d settings\n", n_errors);
