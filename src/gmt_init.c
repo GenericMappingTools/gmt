@@ -18308,7 +18308,7 @@ GMT_LOCAL int gmtinit_parse_proj4(struct GMT_CTRL *GMT, char *item, char *dest) 
 		}
 		else		/* Not particularly useful yet because mapproject will fail anyway when scale != 1:1 */
 			GMT->current.proj.projection_GMT = GMT_NO_PROJ;
-		
+
 		/* If input was a EPSG code, save the epsg -> proj conversion string. Save also if input was a +proj string */
 		if (epsg2proj[0] != '\0')   snprintf(GMT->common.J.proj4string, GMT_LEN256-1, "%s", epsg2proj);
 		else if (item_t1[0] == '+') snprintf(GMT->common.J.proj4string, GMT_LEN256-1, "%s", item_t1);
@@ -20547,7 +20547,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	was = GMT->current.map.frame.draw;
 	gmtinit_conf_modern_override (GMT);	/* Reset */
 	(void)gmt_getdefaults (GMT, NULL);
-	if (!GMT->parent->external || options->option) {	/* So that externals can send a NULL ptr for options. 'Internal' is not affected */
+	if (!GMT->parent->external || options) {	/* So that externals can send a NULL ptr for options. 'Internal' is not affected */
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option != '-') continue;   /* Not a parameter setting */
 			if ((c = strchr(opt->arg, '=')) == NULL) continue;
