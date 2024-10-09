@@ -20,7 +20,7 @@ EOF
 gmt $m $l2s --readable >> $b
 gmt $m $l2s --confirm >> $b
 gmt $m $l2s --directories --report_dir >> $b
-gmt $m $l2s --download=user --download=cache >> $b
-gmt $m $l2s --download=current --download=data >> $b
+gmt $m $l2s --download=auto --download=cache >> $b
+gmt $m $l2s --download=local --download=user >> $b
 
 diff $a $b --strip-trailing-cr > fail

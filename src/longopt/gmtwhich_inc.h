@@ -29,7 +29,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'C', "confirm",           "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'D', "directories|report_dir", "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'G', "download",
-	          "a,c,l,u",           "user,cache,current,data",
+	          "a,c,l,u",           "auto,cache,local,user",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
