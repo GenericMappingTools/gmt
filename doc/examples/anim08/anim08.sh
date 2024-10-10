@@ -38,7 +38,7 @@ gmt begin
 	2018-12-31T	240
 	EOF
     # Get gradients of the relief from N45E
-    gmt grdgradient @earth_relief_02m -Nt1.2 -A45 -Gintens.nc
+    gmt grdgradient @earth_relief_02m_p -Nt1.2 -A45 -Gintens.nc
 	gmt makecpt -Cterra -T-10000/8000 -H > t.cpt
 gmt end
 EOF
