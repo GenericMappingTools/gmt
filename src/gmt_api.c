@@ -15579,9 +15579,9 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 		}
 		if (special_type == GMT_DATETIME || gmtlib_maybe_abstime (API->GMT, text))	/* Honor backwards compatibility for GMT_DATETIME */
 			L_type = GMT_IS_ABSTIME;
-		else if (strchr ("WE", text[L]))
+		else if (strchr ("WE", text[L-1]))
 			L_type = GMT_IS_LON;
-		else if (strchr ("SN", text[L]))
+		else if (strchr ("SN", text[L-1]))
 			L_type = GMT_IS_LAT;
 		else if (strchr (text, ':'))
 			L_type = GMT_IS_GEO;
