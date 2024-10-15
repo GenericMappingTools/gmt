@@ -192,7 +192,7 @@ Optional Arguments
         Use the |-F| option to create various networks between input point.  Dashed lines
         indicate input ordering for the two tables, while solid lines are the resulting
         network connections. Top left is original input, while the next five reflect the results
-        of directives **ra**, **rt**, **rs**, **r**\ 10/35 and **na**.
+        of directives **pa**, **pt**, **ps**, **p**\ 10/35 and **na**.
 
 .. _-G:
 
@@ -239,7 +239,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]]
     Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
     given via one or more pairs of separate tables, each pair of tables having the same
     number of segments (which can vary from pair to pair). Thus, the order of the even
@@ -272,9 +272,9 @@ Optional Arguments
         :width: 600 px
         :align: center
 
-        Use the |-M| option to paint the area between curves.  intersections and NaN-gaps are
+        Use the |-M| option to paint the area between curves. Intersections and NaN-gaps are
         found and the color depends on which curve is on top. Legends can be set as filled
-        rectangles or lines with colors from the fill selections via **+r**..
+        rectangles or lines with colors from the fill selections via **+r**.
 
 .. _-N:
 
