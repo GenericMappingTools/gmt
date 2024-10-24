@@ -57,6 +57,7 @@ gmt end
 gmt math -T0/60/0.001 T 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS = chirp.txt
 gmt math -T0/60/0.5 -Ca T -C1 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS = chirp_samples.txt
 gmt math -T0/$frames/1 T $rate DIV = frame_times.txt
+gmt math -N3 frame_times.txt -i0,1,1 -C2 2 MUL 60 DIV = frame_times_Hz.txt
 EOF
 # 3. Set up the main frame script
 cat << 'EOF' > main.sh
@@ -83,15 +84,9 @@ gmt begin
 		y=$(gmt math -Q ${MOVIE_COL1} 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS =)
 		echo 0 $y | gmt plot -Sc0.5c -Gred
 	fi
-	# Add time counter in upper left corner
-	printf "t = %6.3f s\n" ${MOVIE_COL1} | gmt text -F+f18p,Helvetica-Bold+jTL+cTL -Dj0.3c
-	# Add cycles counter in upper right corner
-	fnow=$(gmt math -Q ${MOVIE_COL1} 60 DIV $f MUL =)
-	printf "f = %6.4f Hz\n" $fnow | gmt text -F+f16p,Helvetica-Bold+jTR+cTR -Dj0.3c
-	# Add frame counter in lower right corner
-	printf "%04d\n" ${MOVIE_FRAME} | gmt text -F+f14p,Helvetica-Bold+jBR+cBR -Dj0.3c
 gmt end
 EOF
 # 4. Run the movie
 source inc.sh
-gmt movie main.sh -Sbpre.sh -CHD -Iinc.sh -Tframe_times.txt -D$rate -Etitle.sh+d6s+fo1s+gwhite -Nanim06 -H8 -Zs -Fmp4 -W -V
+gmt movie main.sh -Sbpre.sh -CHD -Iinc.sh -Tframe_times_Hz.txt -D$rate -Etitle.sh+d6s+fo1s+gwhite -Nanim06 -H8 -Zs -Fmp4 -W -V \
+ -Lf+jBR+f14p,Helvetica-Bold+jBR+o1.3c -Lc1+t"t = %6.3f s"+f18p,Helvetica-Bold+o1.3c -Lc2+t"f = %6.4f Hz"+f16p,Helvetica-Bold+jTR+o1.3c
