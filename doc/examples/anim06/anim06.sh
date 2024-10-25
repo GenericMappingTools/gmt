@@ -56,8 +56,9 @@ gmt end
 # Build chirp data sets for 1 minute (60 secs); one every 1 ms and one every 0.5 sec as samples
 gmt math -T0/60/0.001 T 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS = chirp.txt
 gmt math -T0/60/0.5 -Ca T -C1 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS = chirp_samples.txt
+# Build timefile
 gmt math -T0/$frames/1 T $rate DIV = frame_times.txt
-gmt math -N3 frame_times.txt -i0,1,1 -C2 2 MUL 60 DIV = frame_times_Hz.txt
+gmt math frame_times.txt -i0,1,1 -C2 2 MUL 60 DIV = frame_times_Hz.txt
 EOF
 # 3. Set up the main frame script
 cat << 'EOF' > main.sh
