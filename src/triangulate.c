@@ -99,7 +99,8 @@ struct TRIANGULATE_CTRL {
 	} Q;
 	struct TRIANGULATE_S {	/* -S[<start>][+z[a|l|m|p|u]][+g] */
 		bool active;
-		bool color;	/* If +g given */
+		bool color;		/* If +g given */
+		bool nopoly;	/* If true, do not write polygon numbers in headers */
 		int64_t firstpol;		/* Number of first polygon [0] */
 		enum triangulate_enum_stat mode;	/* Compute a <value> in header depending on mode */
 	} S;
@@ -123,7 +124,7 @@ enum curve_enum {	/* Indices for coeff array for normalization */
 	GMT_U = GMT_H
 };
 
-GMT_LOCAL double triangulate_median3 (double three[]) {
+GMT_LOCAL double triangulate_median3(double three[]) {
 	/* Fast median of three values instead of calling gmt_median().
 	 * https://stackoverflow.com/questions/17158667/minimum-no-of-comparisons-to-find-median-of-3-numbers
 	 */
@@ -135,14 +136,14 @@ GMT_LOCAL double triangulate_median3 (double three[]) {
 	return three[0];
 }
 
-GMT_LOCAL double triangulate_mode3 (double three[]) {
+GMT_LOCAL double triangulate_mode3(double three[]) {
 	/* Fast mode of three values instead of calling gmt_mode(). */
 	if (three[0] == three[1] || three[0] == three[2]) return (three[0]);
 	if (three[1] == three[2]) return (three[1]);
 	return triangulate_median3 (three);	/* All three are different so return median instead */
 }
 
-GMT_LOCAL int triangulate_compare_edge (const void *p1, const void *p2) {
+GMT_LOCAL int triangulate_compare_edge(const void *p1, const void *p2) {
 	const struct TRIANGULATE_EDGE *a = p1, *b = p2;
 
 	if (a->begin < b->begin) return (-1);
@@ -152,7 +153,7 @@ GMT_LOCAL int triangulate_compare_edge (const void *p1, const void *p2) {
 	return (0);
 }
 
-static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+static void *New_Ctrl(struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TRIANGULATE_CTRL *C = NULL;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
@@ -162,7 +163,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl(struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->F.file);
@@ -170,7 +171,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
-static int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage(struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef NNN_MODE
@@ -180,7 +181,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #else
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-L<indextable>[+b]] [-M] [-N] "
-		"[-Q] [%s] [-S[<first>][+z[a|l|m|p|u]]] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
+		"[-Q] [%s] [-S[<first>][+z[a|l|m|p|u]][+n]] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #endif
@@ -217,7 +218,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append n to produce closed Voronoi polygons.");
 #endif
 	GMT_Option (API, "R");
-	GMT_Usage (API, 1, "\n-S[<first>][+z[a|l|m|p|u]]");
+	GMT_Usage (API, 1, "\n-S[<first>][+z[a|l|m|p|u]][+n]");
 	GMT_Usage (API, -2, "Output triangle polygons as multiple segments separated by segment headers. Append <first>, "
 		"an integer, to report polygon numbers counting from <first> [Default counts from zero]. Cannot be used with -Q. "
 		"Alternatively, compute representative value for the triplet z-values at triangle nodes via modifier +z (implies -Z).  Modes are");
@@ -226,6 +227,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "m: The median of triplet.");
 	GMT_Usage (API, 3, "p: The mode of triplet.");
 	GMT_Usage (API, 3, "u: The upper value of triplet.");
+	GMT_Usage (API, -2, "Add +n to NOT report the node number in each polygon header (this makes <first> meaningless).");
 	GMT_Usage (API, 1, "\n-T Output triangles or polygons even if gridding has been selected with -G. Default behavior "
 		"is to produce a grid based on the triangles or polygons only.");
 	GMT_Option (API, "V");
@@ -237,7 +239,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to triangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -343,6 +345,12 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+
+				if ((c = strstr(opt->arg, "+n"))) {		/* Do not write polygon node numbers in headers */
+					Ctrl->S.nopoly = true;
+					c[0] = '\0';	/* Truncate the modifier */
+				}
+
 				if ((c = strstr (opt->arg, "+z"))) {
 					switch (c[2]) {
 						case 'a': case '\0': Ctrl->S.mode = TRI_MEAN; break;	/* Use mean of three node z-values [Default] */
@@ -359,6 +367,7 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				}
 				else
 					Ctrl->S.mode = TRI_POLY;
+
 				if (opt->arg[0])
 					Ctrl->S.firstpol = atol (opt->arg);
 				else
@@ -415,7 +424,7 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_triangulate(void *V_API, int mode, void *args) {
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 
 	uint64_t ij, ij1, ij2, ij3, np = 0, i, j, k, n_edge, p, node = 0, seg, n = 0;
@@ -939,7 +948,8 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 				double z_mean;
 				for (i = ij = 0; i < np; i++, ij += 3) {
 					z_mean = (zz[link[ij]] + zz[link[ij+1]] + zz[link[ij+2]]) / 3;
-					sprintf (record, "Polygon %d-%d-%d -Z%.8g", link[ij], link[ij+1], link[ij+2], z_mean);
+					(Ctrl->S.nopoly) ? sprintf(record, " -Z%.8g", z_mean) :
+					                   sprintf(record, "Polygon %d-%d-%d -Z%.8g", link[ij], link[ij+1], link[ij+2], z_mean);
 					if (Ctrl->A.active) {	/* Compute and report area */
 						double area = 0.5 * ((xx[link[ij]] - xx[link[ij+2]]) * (yy[link[ij+1]] - yy[link[ij]]) - (xx[link[ij]] - xx[link[ij+1]]) * (yy[link[ij+2]] - yy[link[ij]]));
 						sprintf (area_txt, a_format, area);
@@ -957,7 +967,6 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 			else {	/* Write polygons with various segment header information */
 				for (i = ij = 0; i < np; i++, ij += 3) {
-					sprintf (record, "Polygon %d-%d-%d ", link[ij], link[ij+1], link[ij+2]);
 					if (Ctrl->S.mode > TRI_POLY) {
 						double z_triangle = 0.0, z_node[3];
 						for (k = 0; k < 3; k++) z_node[k] = zz[link[ij+k]];	/* Get the three vertices' z-values */
@@ -980,14 +989,16 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 							default:	/* Just for Coverity */ 
 								break;
 						}
-						sprintf (record, "Polygon %d-%d-%d -Z%g", link[ij], link[ij+1], link[ij+2], z_triangle);
+						(Ctrl->S.nopoly) ? sprintf(record, " -Z%g", z_triangle) :
+						                   sprintf(record, "Polygon %d-%d-%d -Z%g", link[ij], link[ij+1], link[ij+2], z_triangle);
 					}
 					else
-						sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i+first);
+						(Ctrl->S.nopoly) ? sprintf(record, " -Z%" PRIu64, i+first) :
+						                   sprintf(record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i+first);
 					if (Ctrl->A.active) {	/* Compute and report area */
 						double area = 0.5 * ((xx[link[ij]] - xx[link[ij+2]]) * (yy[link[ij+1]] - yy[link[ij]]) - (xx[link[ij]] - xx[link[ij+1]]) * (yy[link[ij+2]] - yy[link[ij]]));
-						sprintf (area_txt, a_format, area);
-						strcat (record, area_txt);
+						sprintf(area_txt, a_format, area);
+						strcat(record, area_txt);
 					}
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 					for (k = 0; k < 3; k++) {	/* Three vertices */
@@ -997,6 +1008,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 					}
 					/* Explicitly close the polygon */
 					out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];
+					if (n_output == 3) out[GMT_Z] = zz[link[ij]];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 			}

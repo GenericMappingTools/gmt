@@ -9,7 +9,6 @@ set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 
-set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
 
 # Always use the 'static' data server in CI.
@@ -20,6 +19,12 @@ set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 # extra warnings
 set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")
 EOF
+
+if [ "$EXCLUDE_OPTIONAL" = "true" ]; then
+    echo 'set (GMT_USE_THREADS TRUE)' >> cmake/ConfigUser.cmake
+else
+    echo 'set (GMT_USE_THREADS FALSE)' >> cmake/ConfigUser.cmake
+fi
 
 # Set OpenMP_ROOT so that CMake can find the libomp header and library on macOS
 if [[ "$RUNNER_OS" == "macOS" ]]; then

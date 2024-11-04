@@ -24,10 +24,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.6
+      uses: actions/checkout@v4.2.0
 
     - name: Setup data version control (DVC)
-      uses: iterative/setup-dvc@v1.1.2
+      uses: iterative/setup-dvc@v2
 
     - name: Setup continuous machine learning (CML)
       uses: iterative/setup-cml@v3

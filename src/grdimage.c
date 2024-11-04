@@ -240,7 +240,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+i Invert presumed opacities to transparencies (i.e., 1 - opacity).");
 	GMT_Usage (API, 3, "+z Specify grid <value> to set transparent pixel color via CPT lookup.");
 	GMT_Option (API, "R");
-	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
+	GMT_Usage (API, 1, "\n-T[+o[<pen>]][+s]");
+	GMT_Usage (API, -2, "Image the data without interpolation by painting polygonal tiles.");
 	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
 	GMT_Usage (API, 3, "+o to draw tile outline; optionally append <pen> [Default uses no outline].");
 	GMT_Option (API, "U,V,X,c,f,n,p,t,x,.");
@@ -1515,7 +1516,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (strstr(GMT->common.J.proj4string, "longlat") || strstr(GMT->common.J.proj4string, "lonlat") || strstr(GMT->common.J.proj4string, "latlon"))
 				need_to_project = false;
 	}
-  
+
 	if (Ctrl->D.active)	gmt_set_pad(GMT, 0);		/* If not projecting no need for a pad */
 
 	pad_mode = (need_to_project) ? GMT_GRID_NEEDS_PAD2 : 0;
@@ -1718,7 +1719,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Initialize the projection for the selected -R -J. It shouldn't be necessary when -A is in effect because it
 	   doesn't produce a map, but the grid projection machinery uses variables set by it. Can go away only when we implement
-	   image projections with GDAL instead.  
+	   image projections with GDAL instead.
 	*/
 	if (gmt_map_setup(GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -1977,7 +1978,7 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
 				nx_proj = Conf->n_columns;
-				ny_proj = Conf->n_rows;	
+				ny_proj = Conf->n_rows;
 			}
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
@@ -2409,7 +2410,7 @@ basemap_and_free:
 		}
 		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {Return (API->error);}
 	}
-		
+
 	gmt_M_free (GMT, Conf->actual_row);
 	gmt_M_free (GMT, Conf->actual_col);
 	gmt_M_free (GMT, Conf);

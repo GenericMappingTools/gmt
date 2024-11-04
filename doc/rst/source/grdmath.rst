@@ -73,7 +73,7 @@ Optional Arguments
 
 .. _-A:
 
-.. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator)
+.. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator).
 .. include:: explain_-A.rst_
 
 .. _-C:
@@ -416,7 +416,7 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **PHI**     | 1.6180339... (golden ratio)                     |
 +-------------+-------------------------------------------------+
-| **EPS_F**   | 1.192092896e-07 (single precision epsilon       |
+| **EPS_F**   | 1.192092896e-07 (single precision epsilon)      |
 +-------------+-------------------------------------------------+
 | **XMIN**    | Minimum *x* value                               |
 +-------------+-------------------------------------------------+
@@ -518,14 +518,16 @@ Notes On Operators
 #. The stack depth limit is hard-wired to 100.
 
 #. All functions expecting a positive radius (e.g., **LOG**, **KEI**,
-   etc.) are passed the absolute value of their argument. (9) The bitwise
-   operators (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
-   **BITTEST**, and **BITXOR**) convert a grid's single precision values to
-   unsigned 32-bit ints to perform the bitwise operations. Consequently,
-   the largest whole integer value that can be stored in a float grid is
-   2^24 or 16,777,216. Any higher result will be masked to fit in the lower
-   24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
-   bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
+   etc.) are passed the absolute value of their argument. 
+
+#. The bitwise operators (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**,
+   **BITRIGHT**, **BITTEST**, and **BITXOR**) convert a grid's single
+   precision values to unsigned 32-bit ints to perform the bitwise
+   operations. Consequently, the largest whole integer value that can be
+   stored in a float grid is 2^24 or 16,777,216. Any higher result will be
+   masked to fit in the lower 24 bits. Thus, bit operations are effectively
+   limited to 24 bit. All bitwise operators return NaN if given NaN
+   arguments or bit-settings <= 0.
 
 #. When OpenMP support is compiled in, a few operators will take advantage
    of the ability to spread the load onto several cores.  At present, the

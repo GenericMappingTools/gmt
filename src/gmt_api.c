@@ -5522,6 +5522,10 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					else if (S_obj->wesn[XHI] < G_obj->header->wesn[XLO]) { /* Must first wrap G_obj->header->wesn east to fit the data */
 						G_obj->header->wesn[XLO] -= 360.0;	G_obj->header->wesn[XHI] -= 360.0;
 					}
+					if (S_obj->wesn[XLO] < G_obj->header->wesn[XLO]) {
+						/* Must wrap G_obj->header.wesn so the left bound in S_obj is larger than that in G_obj, otherwise i0 is negative (but it's defined as unsigned int */
+						G_obj->header->wesn[XLO] -= 360.0;	G_obj->header->wesn[XHI] -= 360.0;
+					}
 				}
 				j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, G_obj->header);
 				j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, G_obj->header);
@@ -6341,7 +6345,11 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					if (S_obj->wesn[XLO] > U_obj->header->wesn[XHI]) { /* Must first wrap U_obj->header->wesn west to fit the data */
 						U_obj->header->wesn[XLO] += 360.0;	U_obj->header->wesn[XHI] += 360.0;
 					}
-					else if (S_obj->wesn[XHI] < U_obj->header->wesn[XLO]) { /* Must first wrap G_obj->header->wesn east to fit the data */
+					else if (S_obj->wesn[XHI] < U_obj->header->wesn[XLO]) { /* Must first wrap U_obj->header->wesn east to fit the data */
+						U_obj->header->wesn[XLO] -= 360.0;	U_obj->header->wesn[XHI] -= 360.0;
+					}
+					if (S_obj->wesn[XLO] < U_obj->header->wesn[XLO]) {
+						/* Must wrap U_obj->header.wesn so the left bound in S_obj is larger than that in U_obj, otherwise i0 is negative (but it's defined as unsigned int */
 						U_obj->header->wesn[XLO] -= 360.0;	U_obj->header->wesn[XHI] -= 360.0;
 					}
 				}
@@ -9521,7 +9529,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		}
 	}
 
-	if (!gmt_M_file_is_remote (infile) && !gmt_M_file_is_url(infile) && infile && strpbrk (infile, "*?[]") && !gmtapi_file_with_netcdf_directive (API, infile)) {
+	if (!gmt_M_file_is_remote (infile) && !gmt_M_file_is_url(infile) && infile && !API->external && strpbrk (infile, "*?[]") && !gmtapi_file_with_netcdf_directive (API, infile)) {
 		/* Gave a wildcard filename */
 		uint64_t n_files;
 		unsigned int k;
@@ -15571,9 +15579,9 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 		}
 		if (special_type == GMT_DATETIME || gmtlib_maybe_abstime (API->GMT, text))	/* Honor backwards compatibility for GMT_DATETIME */
 			L_type = GMT_IS_ABSTIME;
-		else if (strchr ("WE", text[L]))
+		else if (strchr ("WE", text[L-1]))
 			L_type = GMT_IS_LON;
-		else if (strchr ("SN", text[L]))
+		else if (strchr ("SN", text[L-1]))
 			L_type = GMT_IS_LAT;
 		else if (strchr (text, ':'))
 			L_type = GMT_IS_GEO;

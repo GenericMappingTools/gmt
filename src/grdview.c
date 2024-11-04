@@ -140,7 +140,7 @@ struct GRDVIEW_POINT {
 	struct GRDVIEW_POINT *next_point;
 };
 
-GMT_LOCAL struct GRDVIEW_CONT * grdview_get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
+GMT_LOCAL struct GRDVIEW_CONT *grdview_get_cont_struct(struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
 	if (!binij[bin].first_cont) binij[bin].first_cont = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
@@ -157,7 +157,7 @@ GMT_LOCAL struct GRDVIEW_CONT * grdview_get_cont_struct (struct GMT_CTRL *GMT, u
 	return (new_cont);
 }
 
-GMT_LOCAL struct GRDVIEW_POINT * grdview_get_point (struct GMT_CTRL *GMT, double x, double y) {
+GMT_LOCAL struct GRDVIEW_POINT *grdview_get_point(struct GMT_CTRL *GMT, double x, double y) {
 	struct GRDVIEW_POINT *point = gmt_M_memory (GMT, NULL, 1, struct GRDVIEW_POINT);
 	point->x = x;
 	point->y = y;
@@ -473,7 +473,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<smooth>");
 	GMT_Usage (API, -2, "Smooth contours first (see grdcontour for <smooth> value info) [no smoothing].");
-	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
+	GMT_Usage (API, 1, "\n-T[+o[<pen>]][+s]");
+	GMT_Usage (API, -2, "Image the data without interpolation by painting polygonal tiles.");
 	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
 	GMT_Usage (API, 3, "+o to draw tile outline; optionally append <pen> [Default uses no outline].");
 	GMT_Usage (API, -2, "Note: Cannot be used with -Jz|Z as it produces a flat image.");
@@ -773,32 +774,34 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 		Ctrl->N.facade = false;
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
-	                                   "Piping of topofile not supported!\n");
-	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active,
-		                               "Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file, "Must specify input file\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
+	                                  "Piping of topofile not supported!\n");
+	n_errors += gmt_M_check_condition(GMT, !GMT->common.J.active,
+		                              "Must specify a map projection with the -J option\n");
 
 	/* Gave more than one -Q setting */
-	n_errors += gmt_M_check_condition (GMT, q_set > 1, "Options -Qm, -Qs, -Qc, and -Qi are mutually exclusive.\n");
+	n_errors += gmt_M_check_condition(GMT, q_set > 1, "Options -Qm, -Qs, -Qc, and -Qi are mutually exclusive.\n");
 	/* Gave both -Q and -T */
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
-	                                   "Option -G: Requires either 1 or 3 grids (%d)\n",Ctrl->G.n);
+	n_errors += gmt_M_check_condition(GMT, Ctrl->T.active && Ctrl->Q.active, "Options -Q and -T are mutually exclusive.\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && (Ctrl->G.n < 1 || Ctrl->G.n > 3),
+	                                  "Option -G: Requires either 1 or 3 grids (%d)\n",Ctrl->G.n);
 	if (Ctrl->G.active) {	/* Draping was requested */
 		for (k = 0; k < Ctrl->G.n; k++)
-			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
-		                                   "The draping option requires the -Qc|i option\n");
+			n_errors += gmt_M_check_condition(GMT, !Ctrl->G.file[k][0], "Option -G: Must specify drape file\n");
+		n_errors += gmt_M_check_condition(GMT, Ctrl->G.n == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE,
+		                                  "The draping option requires the -Qc|i option\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
-	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt && GMT->current.setting.run_mode == GMT_CLASSIC, "Must specify color palette table\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0.0,
-	                                 "Option -Qi: Must specify positive dpi\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
-	                                 "Option -T: Cannot specify -JZ|z\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
+	                                  "Option -I: Must specify intensity file, value, or modifiers\n");
+	n_errors += gmt_M_check_condition(GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
+	                                  !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt && GMT->current.setting.run_mode == GMT_CLASSIC, "Must specify color palette table\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0.0,
+	                                  "Option -Qi: Must specify positive dpi\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->Q.mode == GRDVIEW_SURF && !Ctrl->C.active,
+	                                  "Option -Qs: Must also specify a cpt via -C\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
+	                                  "Option -T: Cannot specify -JZ|z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -806,7 +809,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true, read_z = false;
 
@@ -1428,12 +1431,10 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 		/* Plot from back to front */
 
-		gmt_M_memset (rgb, 4, double);
-		GMT_Report (API, GMT_MSG_INFORMATION, "Start rasterization\n");
+		gmt_M_memset(rgb, 4, double);
+		GMT_Report(API, GMT_MSG_INFORMATION, "Start rasterization\n");
+		GMT_Report(API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", start[0]);
 		for (j = start[0]; j != stop[0]; j += inc[0]) {
-
-			GMT_Report (API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", j);
-
 			for (i = start[1]; i != stop[1]; i += inc[1]) {
 				if (id[0] == GMT_Y) {
 					bin = gmt_M_ij0 (Z->header, j, i);
@@ -1518,6 +1519,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 		}
+		GMT_Report(API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", j-1);
 
 		if (!Ctrl->Q.mask) {	/* Must implement the clip path for the perspective image */
 			/* We now have the top and bottom j-pixel per i-pixel and will build a closed clip path.
@@ -2148,8 +2150,10 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, y);
 	gmt_M_free (GMT, z);
 	gmt_M_free (GMT, v);
-	if (Ctrl->G.active) for (k = 0; k < Ctrl->G.n; k++) {
-		gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
+	if (Ctrl->G.active) {
+		for (k = 0; k < Ctrl->G.n; k++) {
+			gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
+		}
 	}
 	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to free Z\n");

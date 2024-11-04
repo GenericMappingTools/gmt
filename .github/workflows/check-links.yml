@@ -23,11 +23,11 @@ jobs:
 
     steps:
     - name: Checkout the repository
-      uses: actions/checkout@v4.1.6
+      uses: actions/checkout@v4.2.0
 
     - name: Link Checker
       id: lychee
-      uses: lycheeverse/lychee-action@v1.10.0
+      uses: lycheeverse/lychee-action@v2.0.2
       with:
         # 429: Too many requests
         args: >
@@ -48,6 +48,7 @@ jobs:
           --exclude ^http://nsis.sourceforge.io
           --exclude ^https://www.ethnologue.com
           --exclude ^https://linux.die.net/man/3/printf
+          --exclude ^https://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml
           --verbose
           **/*.rst
           **/*.rst_

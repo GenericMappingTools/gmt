@@ -15,23 +15,24 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
-#ifndef GMTWHICH_INC_H
-#define GMTWHICH_INC_H
+#ifndef READISF_INC_H
+#define READISF_INC_H
 
 /* Translation table from long to short module options, directives and modifiers */
 
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option,
 		  short_directives,    long_directives,
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
-	{ 0, 'A', "readable",          "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'C', "confirm",           "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'D', "directories|report_dir", "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'G', "download",
-	          "a,c,l,u",           "auto,cache,local,user",
-	          "",                  "",
+	{ 0, 'D', "date",        "", "", "", "",
 		  GMT_TP_STANDARD },
-	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
+	{ 0, 'F', "focal",        "a", "akima", "", "",
+		  GMT_TP_STANDARD },
+	{ 0, 'N', "notime",        "", "", "", "",
+		  GMT_TP_STANDARD },
+	
+	{ 0, '\0', "", "", "", "", "", 0}  /* End of list marked with empty option and strings */
 };
-#endif  /* !GMTWHICH_INC_H */
+
+#endif  /* !READISF_INC_H */

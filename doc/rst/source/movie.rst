@@ -109,7 +109,7 @@ Required Arguments
 .. _-T:
 
 **-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
-    Either specify how many image frames to make, create a one-column data set width values from *min*
+    Either specify how many image frames to make, create a one-column data set with values from *min*
     to *max* every *inc* , or supply a file with a set of parameters, one record (i.e., row) per frame.
     The values in the columns will be available to the *mainscript* as named variables **MOVIE_COL0**,
     **MOVIE_COL1**, etc., while any trailing text can be accessed via the variable **MOVIE_TEXT**. The

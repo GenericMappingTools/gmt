@@ -308,8 +308,7 @@ GMT_LOCAL void FZ_trend (double *x, double *y, int n, double *intercept, double 
 	}
 }
 
-GMT_LOCAL int FZ_fit_model (struct GMT_CTRL *GMT, double *d, double *vgg, int n, double corridor, double *width, int n_widths, double *asym, int n_asym, double *comp, int n_comp, double *results, PFV *FZshape)
-{
+GMT_LOCAL int FZ_fit_model(struct GMT_CTRL *GMT, double *d, double *vgg, int n, double corridor, double *width, int n_widths, double *asym, int n_asym, double *comp, int n_comp, double *results, PFV *FZshape) {
 	/* d	   = distance along crossing profile in km, with d = 0 the nominal FZ location given by digitized line.
 	 * vgg	   = observed (resampled) VGG along crossing profile, possibly with NaNs at end.
 	 * n	   = number of points in the profile (including any NaNs)
@@ -327,7 +326,7 @@ GMT_LOCAL int FZ_fit_model (struct GMT_CTRL *GMT, double *d, double *vgg, int n,
 	
 	int col0, w, m, ic, row, way, n_sing = 0, n_fits = 0, got_trough;
 	double *d_vgg = NULL, *res = NULL, *predicted_vgg = NULL, *vgg_comp[N_SHAPES] = {NULL, NULL, NULL};
-	double min_var_b, min_var_t, var_model, intercept, slope, var_data, F, par[3];
+	double min_var_b, min_var_t, var_model, intercept = 0.0, slope, var_data, F, par[3];
 	
 	/* The algorithms used below anticipate that vgg may have NaNs and thus skip those */
 	
@@ -338,7 +337,7 @@ GMT_LOCAL int FZ_fit_model (struct GMT_CTRL *GMT, double *d, double *vgg, int n,
 	for (m = 0; m < N_SHAPES; m++) vgg_comp[m] = gmt_M_memory (GMT, NULL, n, double);
 	predicted_vgg = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_memcpy (d_vgg, vgg, n, double);	/* Make copy of vgg */
-	FZ_trend (d, d_vgg, n, &intercept, &slope, 1);		/* Find and remove linear trend just for data variance calculation */
+	FZ_trend(d, d_vgg, n, &intercept, &slope, 1);		/* Find and remove linear trend just for data variance calculation */
 	/* So trend = d * slope + intercept; the shift of FZ location does not change this calculation (i.e. d is original d) */
 	
 	var_data = FZ_get_variance (d_vgg, n);	/* Compute sum of squares for the detrended data */
@@ -352,8 +351,8 @@ GMT_LOCAL int FZ_fit_model (struct GMT_CTRL *GMT, double *d, double *vgg, int n,
 				for (ic = 0; ic < n_comp; ic++) {	/* Search for best compression factor */
 					for (row = 0; row < n_asym; row++) {	/* Search for optimal asymmetry parameter asym */
 						n_fits++;
-						FZ_blendmodel (vgg_comp[FZ_G0], vgg_comp[FZ_G1], vgg_comp[FZ_G2], predicted_vgg, n, asym[row], comp[ic], 1.0);	/* a blend, with unit amplitude */
-						if (FZ_solution  (GMT, d, vgg, d[col0], predicted_vgg, n, par)) {	/* LS solution for trend + scaled shape */
+						FZ_blendmodel(vgg_comp[FZ_G0], vgg_comp[FZ_G1], vgg_comp[FZ_G2], predicted_vgg, n, asym[row], comp[ic], 1.0);	/* a blend, with unit amplitude */
+						if (FZ_solution(GMT, d, vgg, d[col0], predicted_vgg, n, par)) {	/* LS solution for trend + scaled shape */
 							n_sing++;
 							continue;		/* Return 1 if singular */
 						}

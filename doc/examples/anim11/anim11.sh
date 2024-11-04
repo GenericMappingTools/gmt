@@ -21,7 +21,7 @@ gmt begin
   # Make global grid with a smooth 2-degree day/night transition for the 2020 solstice.
   gmt grdmath -Rd -I2m -rp $(gmt solar -C -o0:1 -I+d2020-06-20+z-10) 2 DAYNIGHT = daynight.grd
   # We will create an intensity grid based on a DEM so that we can see structures in the oceans
-  gmt grdgradient @earth_relief_02m -Nt0.75 -A45 -Gintens.grd
+  gmt grdgradient @earth_relief_02m_p -Nt0.75 -A45 -Gintens.grd
   # Make sure our remote files have been downloaded
   gmt which -Ga @earth_day_02m @earth_night_02m
 gmt end

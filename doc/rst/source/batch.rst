@@ -268,7 +268,7 @@ Shell Limitations
 -----------------
 
 As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
-involves a sub-shell), we advice against using commands in your main script that involve piping the result
+involves a sub-shell), we advise against using commands in your main script that involve piping the result
 from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...).  Because **batch** is running
 many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
 In our experience, piping in the context of batch script may corrupt the GMT history files, resulting in

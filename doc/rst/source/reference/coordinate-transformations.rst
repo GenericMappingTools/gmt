@@ -20,7 +20,7 @@ Finally, note that while we will specify dimensions in inches (by appending **i*
 points (**p**) as :ref:`unit <reference/features:Dimension units>` instead.
 
 Cartesian coordinate transformations
---------------------------------------------------------------------------------
+------------------------------------
 
 GMT Cartesian coordinate transformations come in three flavors:
 
@@ -50,7 +50,7 @@ operates on or creates table data:
 .. _-Jx_linear:
 
 Linear coordinate transformation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are in fact three different uses of the Cartesian linear transformation, each associated with specific command
 line options. The different manifestations result from specific properties of three kinds of data:
@@ -190,7 +190,7 @@ A simple plot of a school week calendar can be made as follows:
 .. _-Jx_log:
 
 Logarithmic coordinate transformation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -229,7 +229,7 @@ A plot in which the *x*-axis is logarithmic (the *y*-axis remains linear, i.e., 
 .. _-Jx_power:
 
 Power (exponential) coordinate transformation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Syntax**
 
@@ -267,7 +267,7 @@ Since :math:`q = 1` we do not need to specify **p**\ 1 since it is identical to 
 .. _-Jp:
 
 Polar coordinate transformations
---------------------------------------------------------------------------------
+--------------------------------
 
 **Syntax**
 

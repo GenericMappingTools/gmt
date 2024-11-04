@@ -21,7 +21,7 @@ gmt begin
 	# Extract a topography CPT
 	gmt makecpt -Cdem2 -T0/6000 -H > z.cpt
 	# Get gradients of the relief from N45E
-	gmt grdgradient @earth_relief_06m -Nt1.2 -A45 -Gintens.grd
+	gmt grdgradient @earth_relief_06m_p -Nt1.2 -A45 -Gintens.grd
 gmt end
 EOF
 # 2. Set up main script

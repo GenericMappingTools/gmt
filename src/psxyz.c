@@ -1420,7 +1420,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			   dist[1] is higher when objects are further above a place viewed from above or below a plane viewed from below */
 			data[n].dist[0] = GMT->current.proj.z_project.sin_az * data[n].x + GMT->current.proj.z_project.cos_az * data[n].y;
 			data[n].dist[1] = GMT->current.proj.z_project.sin_el * data[n].z;
-			GMT_Report (API, GMT_MSG_DEBUG, "dist[0] = %g dist[1] = %g\n", data[n].dist[0], data[n].dist[1]);
 
 			switch (S.symbol) {
 				case GMT_SYMBOL_BARX:
@@ -1722,7 +1721,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 
 		for (i = 0; i < n; i++) {
 
-			if (n_z == 1 || (data[i].symbol == GMT_SYMBOL_CUBE || data[i].symbol == GMT_SYMBOL_CUBE)) {
+			if (n_z == 1 || (data[i].symbol == GMT_SYMBOL_CUBE || data[i].symbol == GMT_SYMBOL_COLUMN)) {
 				for (j = 0; j < 3; j++) {
 					gmt_M_rgb_copy (rgb[j], data[i].f.rgb);
 					if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
