@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [*color*][**+i**][**+z**\ *value*] ]
+[ |-Q|\ [*color*][**+i**][**+t**][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
@@ -158,7 +158,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*color*][**+i**][**+z**\ *value*]
+**-Q**\ [*color*][**+i**][**+t**][**+z**\ *value*]
     Handle transparency or opacity for grids or images. There are four general schemes:
 
     - Grid - Plain |-Q| will turn grid nodes with NaN values transparent in the image, using
@@ -173,10 +173,13 @@ Optional Arguments
       transparency between 0 and 255 on a per pixel basis then the *PostScript* image operator
       cannot create true variable pixel transparency *t*. Instead, each *r*, *g*, and *b* pixel
       values are converted by :math:`r' = t R + (1-t) r`, where *R* (and *G*, *B*) is the
-      transparent color at full transparency [Default is white]. If *color* is given
-      then it becomes the *R*, *B*, *G*  at full transparency. Such RGBA images will
-      be approximated by *n_columns* times *n_rows* of tiny squares with variable color and
-      transparency.  If *A* reflects opacity instead of transparency then you can use modifier
+      transparent color at full transparency [Default is white]. If *color* is given then it
+      becomes the *R*, *B*, *G*  at full transparency. This (opaque) transformation is
+      actually done by default (_i.e._, no need to set **-Q**). If, however, a true transparency
+      is wished, then use the **+i** modifier. Such RGBA images will be approximated by *n_columns*
+      times *n_rows* of tiny squares with variable color and transparency. Given this schema, the
+      PositScript created file is much larger than if **+t** is not used and that is why this is
+      not the default behavior. If *A* reflects opacity instead of transparency then you can use modifier
       **+i** to invert these numbers first. See `Limitations on transparency`_ for more discussion.
       **Note**: The **+i** modifier is not available for grids.
 
