@@ -2,7 +2,6 @@
 #
 # Testing gmt grdmix on adding A to RGB image and plot via grdimage
 #
-# GMT_KNOWN_FAILURE
 
 gmt begin transp_mix ps
 	gmt set MAP_GRID_PEN 2p FONT_TAG 9p PS_MEDIA letter PS_PAGE_ORIENTATION portrait
@@ -33,6 +32,6 @@ gmt begin transp_mix ps
 		# 6. Plot image using defaults on top of grid lines (which will visible through the squares)
 		gmt subplot set 5 -A"DEFAULT IMAGE VIA SQUARES (TRUE TRANSPARENCY)"
 		gmt basemap
-		gmt grdimage rgba.tif
+		gmt grdimage rgba.tif -Q+t
 	gmt subplot end
 gmt end show
