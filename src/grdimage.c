@@ -97,6 +97,7 @@ struct GRDIMAGE_CTRL {
 	struct GRDIMAGE_Q {	/* -Q[r/g/b][+i][+z<value>] */
 		bool active;
 		bool transp_color;	/* true if a color was given */
+		bool var_transp;	/* true if applying variable transparency via quadrangles */
 		bool z_given;		/* true if a z-value was given */
 		bool mask_color;	/* true if NaN color for image -Qcolor was set */
 		bool got_color;		/* true if -Qcolor was set on an image */
@@ -251,10 +252,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 /* A few non-exported library functions we need here only */
 
-EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
-EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmtlib_get_grdtype(struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
+EXTERN_MSC int gmtlib_read_grd_info(struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
 
-static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdimage and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -434,9 +435,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'Q':	/* PS3 colormasking -Q[<color>][+i][+z<value>] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				if (gmt_validate_modifiers (GMT, opt->arg, 'Q', "iz", GMT_MSG_ERROR)) n_errors++;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "iz"))) {	/* Got at least one modifier */
+				if (gmt_validate_modifiers (GMT, opt->arg, 'Q', "itz", GMT_MSG_ERROR)) n_errors++;
+				if ((c = gmt_first_modifier (GMT, opt->arg, "itz"))) {	/* Got at least one modifier */
 					char txt[GMT_LEN256] = {""};
+					if (gmt_get_modifier (c, 't', txt))
+						Ctrl->Q.var_transp = true;
 					if (gmt_get_modifier (c, 'i', txt))
 						Ctrl->Q.invert = true;
 					if (gmt_get_modifier (c, 'z', txt)) {
@@ -886,7 +889,8 @@ GMT_LOCAL void grdimage_grd_color_no_intensity_CM (struct GMT_CTRL *GMT, struct 
 		for (scol = 0; scol < Conf->n_columns; scol++) {	/* Compute rgb for each pixel along this scanline */
 			node_s = kk_s + Conf->actual_col[scol];	/* Current grid node */
 			index = gmt_get_rgb_from_z (GMT, Conf->P, Conf->Grid->data[node_s], rgb);
-			for (k = 0; k < 3; k++) image[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
+			for (k = 0; k < 3; k++)
+				image[byte++] = i_rgb[k] = gmt_M_u255 (rgb[k]);
 			if (index != GRDIMAGE_NAN_INDEX) {	/* Deal with illumination */
 				index = (i_rgb[0]*256 + i_rgb[1])*256 + i_rgb[2];	/* The index into the cube for the selected NaN color */
 				rgb_used[index] = true;
@@ -962,7 +966,8 @@ GMT_LOCAL void grdimage_grd_color_with_intensity_CM (struct GMT_CTRL *GMT, struc
 				}
 				else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
 					gmt_illuminate (GMT, Ctrl->I.value, rgb);
-				for (k = 0; k < 3; k++) i_rgb[k] = image[byte++] = gmt_M_u255 (rgb[k]);
+				for (k = 0; k < 3; k++)
+					i_rgb[k] = image[byte++] = gmt_M_u255 (rgb[k]);
 				index = (i_rgb[0]*256 + i_rgb[1])*256 + i_rgb[2];	/* The index into the cube for the selected NaN color */
 				rgb_used[index] = true;
 			}
@@ -1165,7 +1170,7 @@ GMT_LOCAL bool grdimage_is_transparent (struct GRDIMAGE_CONF *Conf, uint64_t nod
 	unsigned int transp;
 	if (Conf->Transp && Conf->Transp->n_transp > 2) return true;
 	transp = Conf->Image->data[node];
-	if (Conf->Transp->n_transp == 2 && transp == Conf->Transp->value) return true;
+	if (Conf->Transp->n_transp <= 2 && transp == Conf->Transp->value) return true;
 	return (false);
 }
 
@@ -1255,7 +1260,7 @@ GMT_LOCAL void grdimage_img_color_no_intensity (struct GMT_CTRL *GMT, struct GRD
 	}
 }
 
-GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
+GMT_LOCAL void grdimage_img_color_with_intensity(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) color, 3) with intensity */
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active image header */
 	struct GMT_GRID_HEADER *H_i = (Conf->int_mode == 2) ? Conf->Intens->header : NULL;	/* Pointer to the active intensity header */
@@ -1288,7 +1293,7 @@ GMT_LOCAL void grdimage_img_color_with_intensity (struct GMT_CTRL *GMT, struct G
 	}
 }
 
-GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isize[]) {
+GMT_LOCAL int grdimage_plotsquare(struct PSL_CTRL *PSL, int ix, int iy, int isize[]) {
 	/* Plotting a high-resolution square with coordinate in 10*PS units as integers.
 	 * We will write x, y, dims using one decimal by dividing by 10 to get exact matches
 	 * at square boundaries. Command is "dy dx x y SS".
@@ -1306,7 +1311,7 @@ GMT_LOCAL int grdimage_plotsquare (struct PSL_CTRL *PSL, int ix, int iy, int isi
 	return (PSL_NO_ERROR);
 }
 
-GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf) {
+GMT_LOCAL void grdimage_img_variable_transparency(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf) {
 	/* Because of variable transparency we cannot use the PostScript image operator but must plot each pixel
 	 * as a square of the right color and set transparency before rendering that square. Because we cannot
 	 * have tiny gaps or overlaps between neighboring squares we up the resolution by a factor of 10 and
@@ -1328,8 +1333,10 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 		return;
 	}
 	/* Precompute BL square coordinates in PostSCript units times 10, yielding 1/12000 inches precision */
-	for (srow = 0; srow <= Conf->n_rows; srow++)    iy[srow] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * (Conf->n_rows - 1 - srow)));
-	for (scol = 0; scol <= Conf->n_columns; scol++) ix[scol] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_X] * scol));
+	for (srow = 0; srow <= Conf->n_rows; srow++)
+		iy[srow] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_Y] * (Conf->n_rows - 1 - srow)));
+	for (scol = 0; scol <= Conf->n_columns; scol++)
+		ix[scol] = irint (10.0 * PSL_DOTS_PER_INCH * (Conf->orig[GMT_Y] + Conf->dim[GMT_X] * scol));
 	for (srow = 0; srow < Conf->n_rows; srow++) {	/* March along scanlines in the output bitimage */
 		kk_s = gmt_M_ijpgi (H_s, Conf->actual_row[srow], 0);	/* Start pixel of this image row */
 		idim[GMT_Y] = iy[Conf->actual_row[srow]] - iy[Conf->actual_row[srow]+1];	/* Constant height of square in 1/12000 inches integer units for this row */
@@ -1337,22 +1344,22 @@ GMT_LOCAL void grdimage_img_variable_transparency (struct GMT_CTRL *GMT, struct 
 			node_s = kk_s + Conf->actual_col[scol] * n_bands;	/* Start of current input pixel node */
 			/* Get pixel color */
 			for (k = 0; k < bt; k++) rgb[k] = gmt_M_is255 (Conf->Image->data[node_s++]);	/* 0-255 normalized to 0-1 */
-			grdimage_img_set_transparency (GMT, Conf, Conf->Image->data[node_s], rgb);
+			grdimage_img_set_transparency(GMT, Conf, Conf->Image->data[node_s], rgb);
 			if (Conf->invert) rgb[bt] = 1.0 - rgb[bt];
 			if (Conf->int_mode == 2) {	/* Intensity value comes from the grid, so update node */
 				node_i = gmt_M_ijp (H_i, Conf->actual_row[srow], Conf->actual_col[scol]);
-				gmt_illuminate (GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
+				gmt_illuminate(GMT, Conf->Intens->data[node_i], rgb);	/* Apply illumination to this color */
 			}
 			else if (Conf->int_mode == 1)	/* A constant (ambient) intensity was given via -I */
-				gmt_illuminate (GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
-			gmt_setrgb (GMT, rgb);	/* Set current square pixel color w/ no outline */
+				gmt_illuminate(GMT, Ctrl->I.value, rgb);	/* Apply constant illumination to this color */
+			gmt_setrgb(GMT, rgb);	/* Set current square pixel color w/ no outline */
 			idim[GMT_X] = ix[scol+1] - ix[scol];	/* Constant width of square in 1/12000 inches integer units for this column */
-			grdimage_plotsquare (GMT->PSL, ix[scol], iy[srow], idim);
+			grdimage_plotsquare(GMT->PSL, ix[scol], iy[srow], idim);
 		}
 	}
 	gmt_M_free (GMT, ix);
 	gmt_M_free (GMT, iy);
-	PSL_settransparencies (GMT->PSL, transp);
+	PSL_settransparencies(GMT->PSL, transp);
 }
 
 GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
@@ -1439,7 +1446,7 @@ EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
 #define img_region_is_invalid(h) (h->wesn[XLO] == 0.0 && h->wesn[YLO] == 0.0 && img_inc_is_one(h) && \
                                   (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
 
-EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, byte_image_no_cmap;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
 	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true, plot_squares = false;
@@ -1635,7 +1642,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 					break;
 			}
 			Conf->Transp = &Transp;
-			plot_squares = (Transp.mode == 2 && !Ctrl->Q.active);	/* Plot tiny squares is selected */
+			plot_squares = (Transp.mode == 2 && Ctrl->Q.var_transp);	/* Plot tiny squares is selected */
 		}
 
 		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
@@ -1952,7 +1959,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
 	}
 
-	if (Transp.mode == 2) {	/* Must do variable transparency via squares and projection */
+	if (Transp.mode == 2) {	/* Must do variable transparency. Eventually via squares and projection */
 		goto tr_image;
 	}
 	if (need_to_project) {	/* Need to resample the grid or image [and intensity grid] using the specified map projection */
@@ -1960,11 +1967,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		double inc[2] = {0.0, 0.0};
 
 		if (got_z_grid && P && P->categorical && (GMT->common.n.interpolant != BCR_NEARNEIGHBOR || GMT->common.n.antialias)) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your CPT is categorical. Enabling -nn+a to avoid interpolation across categories.\n");
+			GMT_Report(API, GMT_MSG_WARNING, "Your CPT is categorical. Enabling -nn+a to avoid interpolation across categories.\n");
 			GMT->common.n.interpolant = BCR_NEARNEIGHBOR;
 			GMT->common.n.antialias = false;
 			GMT->common.n.threshold = 0.0;
-			HH = gmt_get_H_hidden (Grid_orig->header);
+			HH = gmt_get_H_hidden(Grid_orig->header);
 			HH->bcr_threshold = GMT->common.n.threshold;
 			HH->bcr_interpolant = GMT->common.n.interpolant;
 			HH->bcr_n = 1;
@@ -1974,35 +1981,44 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			ny_proj = Conf->n_rows;
 		}
 		if (Ctrl->D.active) { /* Must project the input image instead */
-tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
-			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
+tr_image:		GMT_Report(API, GMT_MSG_INFORMATION, "Project the input image\n");
+			if ((Img_proj = GMT_Duplicate_Data(API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return(API->error);	/* Just to get a header we can change */
 			if (Transp.mode == 2) {	/* Must do variable transparency via squares */
 				nx_proj = Conf->n_columns;
 				ny_proj = Conf->n_rows;
 			}
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
-			grdimage_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
-			if (gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
-			                Ctrl->In.file)) Return (GMT_PROJECTION_ERROR);
+			grdimage_set_proj_limits(GMT, Img_proj->header, I->header, need_to_project, mixed);
+			if (gmt_M_err_fail(GMT, gmt_project_init(GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
+			                Ctrl->In.file)) Return(GMT_PROJECTION_ERROR);
 			if (Ctrl->A.active) /* Need to set background color to white for raster images */
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
-			gmt_set_grddim (GMT, Img_proj->header);	/* Recalculate projected image dimensions */
-			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
-				Return (API->error);	/* Failed to allocate memory for the projected image */
-			if (need_to_project && gmt_img_project (GMT, I, Img_proj, false)) Return (GMT_RUNTIME_ERROR);	/* Now project the image onto the projected rectangle */
-			if (!API->external && (GMT_Destroy_Data (API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected.  Use Img_proj from now on */
-				Return (API->error);	/* Failed to free the image */
+			
+			gmt_set_grddim(GMT, Img_proj->header);	/* Recalculate projected image dimensions */
+			if (GMT_Create_Data(API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
+				Return(API->error);	/* Failed to allocate memory for the projected image */
+
+			/* This case (variable transparency) is a bit more complex. We are sent here even if no projection is
+			   needed. So to avoid the useless projection we need to do some gymnastics, that involve pretending that
+			   we are projecting the image but in fact only copying the data pointer of the original image. */
+			if (need_to_project) {
+				if (gmt_img_project(GMT, I, Img_proj, false)) Return(GMT_RUNTIME_ERROR);
+				if (!API->external && (GMT_Destroy_Data(API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected. */
+					Return(API->error);		/* Failed to free the image */
+				}
 			}
+			else
+				Img_proj->data = I->data;	/* If not projecting, just use the original image data pointer */
 		}
 		else {	/* Project the grid */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Project the input grid\n");
-			if ((Grid_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig)) == NULL)
-				Return (API->error);	/* Just to get a header we can change */
+			GMT_Report(API, GMT_MSG_INFORMATION, "Project the input grid\n");
+			if ((Grid_proj = GMT_Duplicate_Data(API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig)) == NULL)
+				Return(API->error);	/* Just to get a header we can change */
 
 			/* Determine the dimensions of the projected grid */
 			if (Ctrl->A.active && GMT->current.proj.rect[0] == GMT->current.proj.rect[1])	/* Somewhere behind we missed doing this */
 				gmt_M_memcpy(GMT->current.proj.rect, Grid_orig->header->wesn, 4, double);
-			grdimage_set_proj_limits (GMT, Grid_proj->header, Grid_orig->header, need_to_project, mixed);
+			grdimage_set_proj_limits(GMT, Grid_proj->header, Grid_orig->header, need_to_project, mixed);
 
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig->header->registration;
@@ -2203,10 +2219,12 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 	normal_x = !(GMT->current.proj.projection_GMT == GMT_LINEAR && !GMT->current.proj.xyz_pos[0] && !resampled);
 	normal_y = !(GMT->current.proj.projection_GMT == GMT_LINEAR && !GMT->current.proj.xyz_pos[1] && !resampled);
 
-	Conf->actual_row = gmt_M_memory (GMT, NULL, Conf->n_rows, unsigned int);	/* Deal with any reversal of the y-axis due to -J */
-	for (row = 0; row < (unsigned int)Conf->n_rows; row++) Conf->actual_row[row] = (normal_y) ? row : Conf->n_rows - row - 1;
-	Conf->actual_col = gmt_M_memory (GMT, NULL, Conf->n_columns, unsigned int);	/* Deal with any reversal of the x-axis due to -J */
-	for (col = 0; col < (unsigned int)Conf->n_columns; col++) Conf->actual_col[col] = (normal_x) ? col : Conf->n_columns - col - 1;
+	Conf->actual_row = gmt_M_memory(GMT, NULL, Conf->n_rows, unsigned int);	/* Deal with any reversal of the y-axis due to -J */
+	for (row = 0; row < (unsigned int)Conf->n_rows; row++)
+		Conf->actual_row[row] = (normal_y) ? row : Conf->n_rows - row - 1;
+	Conf->actual_col = gmt_M_memory(GMT, NULL, Conf->n_columns, unsigned int);	/* Deal with any reversal of the x-axis due to -J */
+	for (col = 0; col < (unsigned int)Conf->n_columns; col++)
+		Conf->actual_col[col] = (normal_x) ? col : Conf->n_columns - col - 1;
 
 	if (plot_squares) goto ready;
 
@@ -2274,7 +2292,8 @@ tr_image:		GMT_Report (API, GMT_MSG_INFORMATION, "Project the input image\n");
 					bitimage_24[2] = (unsigned char)(ks & 255);
 					GMT_Report (API, GMT_MSG_INFORMATION, "Transparency color reset from %s to color %d/%d/%d\n",
 						gmt_putrgb (GMT, P->bfn[GMT_NAN].rgb), (int)bitimage_24[0], (int)bitimage_24[1], (int)bitimage_24[2]);
-					for (k = 0; k < 3; k++) P->bfn[GMT_NAN].rgb[k] = gmt_M_is255 (bitimage_24[k]);	/* Set new NaN color */
+					for (k = 0; k < 3; k++)
+						P->bfn[GMT_NAN].rgb[k] = gmt_M_is255 (bitimage_24[k]);	/* Set new NaN color */
 				}
 			}
 			else
@@ -2308,7 +2327,8 @@ ready:
 	y_side = dy * Conf->n_rows;
 
 	if (plot_squares) { 	/* Variable transparency image must be done via individual squares */
-		grdimage_img_variable_transparency (GMT, Ctrl, Conf);
+		grdimage_img_variable_transparency(GMT, Ctrl, Conf);
+		if (!need_to_project) Img_proj->data = NULL;	/* In this case it was == to I->data and we don't want to free it here. */
 		goto basemap_and_free;	/* Jump to basemap since not building an image */
 	}
 
@@ -2400,7 +2420,8 @@ basemap_and_free:
 	}
 
 	if (Ctrl->D.active) {	/* Free the projected image */
-		if (GMT_Destroy_Data (API, &Img_proj) != GMT_NOERROR) {
+		if (!need_to_project) Img_proj->data = NULL;	/* If not prjected, no free. */
+		if (GMT_Destroy_Data(API, &Img_proj) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
