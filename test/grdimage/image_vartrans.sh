@@ -21,7 +21,7 @@ gmt begin image_vartrans
 	echo 0 0 BACKGROUND | gmt text -F+f32p,1+a45
 	# Plot 01d day image grid after adding variable transparency
 	gmt grdmix @earth_day_01d -Atransparency.nc -C -Grgba.tif
-	gmt grdimage rgba.tif
+	gmt grdimage rgba.tif -Q+t
 	# 4. Do variable transparency via image blending instead (opaque)
 	gmt subplot set 3 -A"RGBA IMAGE WITH VARIABLE TRANSPARENCY AS OPAQUE BLEND"
 	gmt basemap
