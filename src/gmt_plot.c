@@ -3181,7 +3181,7 @@ GMT_LOCAL void gmtplot_cube_box (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int
 	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
 }
 
-GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
+GMT_LOCAL void gmtplot_timestamp(struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
 	/* x, y = location of the time stamp box
 	 * justify indicates the corner of the box that (x,y) refers to, see below
 	 * U_label = label to be plotted to the right of the box
@@ -3199,9 +3199,10 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	/* Plot time string in format defined by format_time_stamp */
 
-	if (GMT->common.U.string[0])	/* Override UNIX time stamp with custom short string */
-		snprintf (label, GMT_LEN256, "  %s  ", GMT->common.U.string);
-	else {	/* Build UNIX time stamp based on current time */
+	if (GMT->common.U.string[0]) {	/* Override time stamp with custom short string. But write nothing if only one char and == ' ' */
+		if (GMT->common.U.string[0] != ' ' || GMT->common.U.string[1]) snprintf(label, GMT_LEN256, "  %s  ", GMT->common.U.string);
+	}
+	else {	/* Build time stamp based on current time */
 		time_t right_now = time ((time_t *)0);
 		char text[GMT_LEN256] = {""};
 		strftime (text, sizeof(text), GMT->current.setting.format_time_stamp, localtime (&right_now));
