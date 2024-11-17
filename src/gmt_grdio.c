@@ -2572,8 +2572,11 @@ GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], str
 }
 
 int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header) {
-	/* Most places we wish to warn if w/e/s/n is sloppy except when via DCW that must be rounded */
-	return gmtlib_adjust_loose_wesn (GMT, wesn, header, GMT->common.R.via_polygon ? GMT_MSG_INFORMATION : GMT_MSG_WARNING);
+	/* Most places we wish to warn if w/e/s/n is sloppy except when via DCW that must be rounded
+	   JL: Changed to default to GMT_MSG_INFORMATION. This warning is just too annoying and most
+	   users don't understand it. It also results often from computed code inside wrappers.
+	*/
+	return gmtlib_adjust_loose_wesn (GMT, wesn, header, GMT_MSG_INFORMATION);
 }
 
 void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, gmt_grdfloat *data, size_t length, double scale, double offset) {
