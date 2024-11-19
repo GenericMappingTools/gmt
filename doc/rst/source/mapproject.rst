@@ -137,9 +137,9 @@ Optional Arguments
 **-F**\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**]
     Force 1:1 scaling, i.e., output (or input, see |-I|) data are in
     actual projected meters. To specify other units, append the desired
-    unit (see `Units`_). Without |-F|, the output (or input, see |-I|)
-    are in the units specified by :term:`PROJ_LENGTH_UNIT` (but see
-    |-D|).
+    unit (see `Units`_). Without |-F|, and when using the classic |-J| syntax, the output (or input, see |-I|)
+    are in the units specified by :term:`PROJ_LENGTH_UNIT` (but see |-D|). This changes, however, to meters
+    when PROJ4 syntax or EPSG is used in |-J| and that regardless of |-F| being used or not.
 
 .. _-G:
 

@@ -880,6 +880,28 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+static void add_J_scale_if_needed(struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* Fixes #8624. That is, if -F is used the -J.../size|scale is inutil but it complained that
+	   "No UTM zone given;". The fix requires a function like this because -J is parsed before we even
+	   know if a -F is used. The trick is then to scan the options linked list and patch the -J option
+	   to include a "/1:1" to make the parse_option_J happy. */
+	char txt_a[GMT_LEN128] = {""};
+	struct GMT_OPTION *optJ = NULL, *optF = NULL;
+	if (options == NULL) return;	/* No arguments given to begin, done here */
+	for (optF = options; optF; optF = optF->next) {	/* Loop over all options in the linked list */
+		if (optF->option == 'F') {
+			for (optJ = options; optJ; optJ = optJ->next) {	/* Now search for -J */
+				if (optJ->option == 'J' && optJ->arg && !strchr(optJ->arg, '/')) {
+					strcpy(txt_a, optJ->arg);	/* Save the -J argument because we need to free it first (was a strdup)*/
+					free(optJ->arg);
+					optJ->arg = strdup(strcat(txt_a, "/1:1"));	/* Add /1:1 to the -J argument */
+					return;
+				}
+			}
+		}
+	}
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -926,6 +948,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	add_J_scale_if_needed(GMT, options);
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
