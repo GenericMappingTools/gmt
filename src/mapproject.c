@@ -888,14 +888,14 @@ static void add_J_scale_if_needed(struct GMT_CTRL *GMT, struct GMT_OPTION *optio
 	char txt_a[GMT_LEN128] = {""};
 	struct GMT_OPTION *optJ = NULL, *optF = NULL;
 	if (options == NULL) return;	/* No arguments given to begin, done here */
-	for (optJ = options; optJ; optJ = optJ->next) {	/* Loop over all options in the linked list */
-		if (optJ->option == 'J' && optJ->arg && !strchr(optJ->arg, '/')) {
-			for (optF = options; optF; optF = optF->next) {	/* Now search for -F */
-				if (optF->option == 'F') {
+	for (optF = options; optF; optF = optF->next) {	/* Loop over all options in the linked list */
+		if (optF->option == 'F') {
+			for (optJ = options; optJ; optJ = optJ->next) {	/* Now search for -J */
+				if (optJ->option == 'J' && optJ->arg && !strchr(optJ->arg, '/')) {
 					strcpy(txt_a, optJ->arg);	/* Save the -J argument because we need to free it first (was a strdup)*/
 					free(optJ->arg);
 					optJ->arg = strdup(strcat(txt_a, "/1:1"));	/* Add /1:1 to the -J argument */
-					break;
+					return;
 				}
 			}
 		}
