@@ -65,17 +65,6 @@ extern "C" {
 #	define int64_abs(x) ((int64_t)(((x) >= 0) ? (x) : -(x)))
 #endif
 
-/* Apparently NAN may not be defined anymore in new Visual Studio headers.
-  See https://github.com/conda-forge/gmt-feedstock/pull/302#issuecomment-2487473474
-  I found it in, and recopying it here:
-  "C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\ucrt\corecrt_math.h"
-*/
-#ifdef _WIN32
-#	ifndef NAN
-#		define NAN  (-(float)(((float)(1e+300 * 1e+300)) * 0.0F))
-#	endif
-#endif
-
 #ifdef __CYGWIN__	/* See http://gmt.soest.hawaii.edu/boards/1/topics/5428 */
 #ifdef __x86_64
 #define lrint(x) ((long int)(int)lrint(x))
