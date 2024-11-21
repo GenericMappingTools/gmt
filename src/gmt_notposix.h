@@ -331,11 +331,9 @@
 
 #ifndef NAN
 #	ifdef _MSC_VER
-		static const double _NAN = (-(float)(((float)(1e+300 * 1e+300)) * 0.0F));
-#		define NAN _NAN
+#		define NAN (-(float)(((float)(1e+300 * 1e+300)) * 0.0F));
 #	else /* _MSC_VER */
-		static const double _NAN = (HUGE_VAL-HUGE_VAL);
-#		define NAN _NAN
+#		define NAN (HUGE_VAL-HUGE_VAL);
 #	endif /* _MSC_VER */
 #endif /* !NAN */
 
