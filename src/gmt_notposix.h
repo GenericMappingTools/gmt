@@ -331,8 +331,8 @@
 
 #ifndef NAN
 #	ifdef _MSC_VER
-		static const double _NAN = (-(float)(((float)(1e+300 * 1e+300)) * 0.0F));
-#		define NAN _NAN
+#		include <ymath.h>
+#		define NAN _Nan._Double
 #	else /* _MSC_VER */
 		static const double _NAN = (HUGE_VAL-HUGE_VAL);
 #		define NAN _NAN
