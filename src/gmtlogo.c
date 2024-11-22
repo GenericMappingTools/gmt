@@ -451,12 +451,12 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	gmt_letters[idx][1] = NAN;
 	idx += 1;
 	memcpy(gmt_letters + idx, gmt_letters_g, sizeof(gmt_letters_g));
-	idx += sizeof(gmt_letters_g);
+	idx += GMT_N_LETTERS_G;
 	gmt_letters[idx][0] = NAN;
 	gmt_letters[idx][1] = NAN;
 	idx += 1;
 	memcpy(gmt_letters + idx, gmt_letters_m, sizeof(gmt_letters_m));
-	idx += sizeof(gmt_letters_m);
+	idx += GMT_N_LETTERS_M;
 	gmt_letters[idx][0] = NAN;
 	gmt_letters[idx][1] = NAN;
 	idx += 1;
