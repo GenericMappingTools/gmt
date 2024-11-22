@@ -331,9 +331,16 @@
 
 #ifndef NAN
 #	ifdef _MSC_VER
-#		define NAN (-(float)(((float)(1e+300 * 1e+300)) * 0.0F));
+# 		ifndef INFINITY
+#			ifndef _HUGE_ENUF
+#				define _HUGE_ENUF 1e+300 // _HUGE_ENUF*_HUGE_ENUF must overflow
+# 			endif
+#			define INFINITY ((float)(_HUGE_ENUF * _HUGE_ENUF))
+# 		endif
+# 		define NAN (-(float)(INFINITY * 0.0F))
 #	else /* _MSC_VER */
-#		define NAN (HUGE_VAL-HUGE_VAL);
+		static const double _NAN = (HUGE_VAL-HUGE_VAL);
+#		define NAN _NAN
 #	endif /* _MSC_VER */
 #endif /* !NAN */
 
