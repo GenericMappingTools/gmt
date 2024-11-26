@@ -1223,7 +1223,7 @@ static int mgd77_read_data_record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 			MGD77Record->bit_pattern |= MGD77_this_bit[i];	/* Turn on this bit */
 			if ((nconv = sscanf (currentField, mgd77defs[i].readMGD77, &value)) != 1) {
 				if (i == 12)        /* IFREMER mgd77 files not unusually have empty fields 58-59 (BATHYMETRIC CORRECTION CODE) */
-					value = 99;     /* In those cases, use the the 'Unspecified' code */
+					value = 99;     /* In those cases, use the 'Unspecified' code */
 				else
 					return (MGD77_ERROR_CONV_DATA_REC);
 			}
