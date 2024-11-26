@@ -1061,7 +1061,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
 		/* Adjust the min/max found for finite bin width */
 		double b_min = x_min, b_max = x_max;
-		if (Ctrl->F.active) {	/* First and last bin will stick out half a bin width from the the data limits */
+		if (Ctrl->F.active) {	/* First and last bin will stick out half a bin width from the data limits */
 			b_min -= 0.5 * F.T->inc;
 			b_max += 0.5 * F.T->inc;
 		}

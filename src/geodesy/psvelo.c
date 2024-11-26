@@ -698,7 +698,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append <confidence> value (0-1) for error ellipse or give 0 to not draw the ellipse.");
 	GMT_Usage (API, 3, "n: Anisotropy: in X,Y,Vx,Vy.");
 	GMT_Usage (API, 3, "w: Rotational wedges: in X,Y,Spin,Spinsig. "
-		"Append <wedgemag> value to scale the the Spin values [1].");
+		"Append <wedgemag> value to scale the Spin values [1].");
 	GMT_Usage (API, 3, "x: Strain crosses: in X,Y,Eps1,Eps2,Theta.n");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
