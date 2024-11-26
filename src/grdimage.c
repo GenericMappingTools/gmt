@@ -1616,7 +1616,7 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 			GMT->common.R.active[RSET] = false;	/* Temporarily turn off -R if given */
 			I_wesn = NULL;
 		}
-		/* Read in the the entire image that is to be mapped */
+		/* Read in the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX | pad_mode, I_wesn, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);

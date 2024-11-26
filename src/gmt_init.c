@@ -14541,7 +14541,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, d
 	 * first should be 1 the first time we visit this panel so that the automatic -B
 	 * and panel tag stuff only happens once. */
 	char file[PATH_MAX] = {""}, *L = NULL;
-	static char *dummy = "@";	/* Signify "use the the auto label" */
+	static char *dummy = "@";	/* Signify "use the auto label" */
 	FILE *fp = NULL;
 	L = (label && label[0]) ? label : dummy;
 	snprintf (file, PATH_MAX, "%s/gmt.panel.%d", API->gwf_dir, fig);

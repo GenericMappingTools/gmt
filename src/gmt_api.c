@@ -8106,7 +8106,7 @@ void gmtlib_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 	i = n_free = 0;
 	if (level != GMT_NOTSET) u_level = level;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
-		S_obj = API->object[i];	/* Shorthand for the the current object */
+		S_obj = API->object[i];	/* Shorthand for the current object */
 		if (!S_obj) {		/* Skip empty object [NOTE: Should not happen?] */
 			GMT_Report (API, GMT_MSG_WARNING, "gmtlib_garbage_collection found empty object number %d [Bug?]\n", i++);
 			continue;
@@ -8157,7 +8157,7 @@ void gmtlib_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o or those set to NULL above) set during this module (or session) */
 	i = 0;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
-		S_obj = API->object[i];	/* Shorthand for the the current object */
+		S_obj = API->object[i];	/* Shorthand for the current object */
 		if (S_obj && (level == GMT_NOTSET || (S_obj->alloc_level == u_level)))	/* Yes, this object was added at this level, get rid of it; do not increment i */
 			gmtlib_unregister_io (API, (int)S_obj->ID, (unsigned int)GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
 		else

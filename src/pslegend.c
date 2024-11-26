@@ -382,7 +382,7 @@ GMT_LOCAL void pslegend_drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	PSL_plotsegment (PSL, x0, y0, x1, y0);
 }
 
-/* Used to fill the cells in the the current y-line. */
+/* Used to fill the cells in the current y-line. */
 GMT_LOCAL void pslegend_fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xoff[], double *d_gap, unsigned int n_cols, char *fill[]) {
 	unsigned int col;
 	double dim[2];
