@@ -154,4 +154,4 @@ Reference
 Luis, J.L. and Miranda, J.M., 2008, Reevaluation of magnetic chrons in
 the North Atlantic between 35N and 47N: Implications for the formation
 of the Azores Triple Junction and associated plateau. *JGR*, VOL.
-**113**, B10105, doi:10.1029/2007JB005573
+**113**, B10105, https://doi.org/10.1029/2007JB005573
