@@ -113,13 +113,13 @@ Before we can allow for switching you must prepare your environment.
 In your .cshrc or .tcshrc file:
 
 Change your path statement. Make sure it includes $home/this_gmt/bin
-If $home contains spaces places the the above within double quotes.
+If $home contains spaces places the above within double quotes.
 
 2. BASH USERS
 (re)Place these lines in your .profile file:
 
 Change your PATH statement. Make sure it includes $home/this_gmt/bin
-If $home contains spaces places the the above within double quotes.
+If $home contains spaces places the above within double quotes.
 
 3. GitHub USERS:
 You will have to manually add the path to the GMT directory since

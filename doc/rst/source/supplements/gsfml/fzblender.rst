@@ -177,7 +177,7 @@ coordinates for the left/right bounds along the FZ.
 Filtering
 ---------
 
-Filtering always runs of of data near the FZ end points.  We utilize :doc:`filter1d </filter1d>` with its
+Filtering always runs of data near the FZ end points.  We utilize :doc:`filter1d </filter1d>` with its
 **-E** option to extend the result to the end.  Because we are filtering data columns that may
 contain a strong trend (e.g., longitude versus along-track distance) we first remove such
 linear trends before filtering, then restore the trends before blending.  However, you should
