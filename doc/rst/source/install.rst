@@ -25,7 +25,7 @@ Windows
 We provide 64 bit standalone installer (e.g.,
 gmt-6.x.x-win64.exe) in the `GitHub
 repository <https://github.com/GenericMappingTools/gmt/releases>`__. The
-installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
+installer come with GDAL, FFmpeg, and Ghostscript pre-installed.
 
 In addition to the GMT installer, you also need to download and install
 `GraphicsMagick <http://www.graphicsmagick.org/>`__ if you want to
