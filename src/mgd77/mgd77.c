@@ -5574,7 +5574,7 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 			t = 1.;
 			tc = 0.;
 		}
-		ll = 3255;		/* nth position corresponding to first coeff of 2020 (must always point to pen-ultimate set) */
+		ll = 3450;		/* nth position corresponding to first coeff of 2025 (must always point to pen-ultimate set) */
 		nmx = 13;
 		nc = nmx * (nmx + 2);
 		kmx = (nmx + 1) * (nmx + 2) / 2;
