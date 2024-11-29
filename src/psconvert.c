@@ -1733,6 +1733,10 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	old_transparency_code_needed = (gsVersion.major == 9 && gsVersion.minor < 53);
 
+#ifdef PS_NO_DUP		/* sets option -! by default. Build GMT with /DPS_NO_DUP or use add_definitions(/DPS_NO_DUP) in ConfigUser.cmake */
+		Ctrl->O.active = true;
+#endif
+
 	if (old_transparency_code_needed && Ctrl->O.active) {
 		Ctrl->O.active = false;
 		GMT_Report (API, GMT_MSG_WARNING, "gs version %s does not support the -! option - please upgrade to 9.53 or later\n", GSstring);
