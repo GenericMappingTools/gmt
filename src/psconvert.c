@@ -816,7 +816,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Escape any +? modifier inside strings with \\.");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Usage (API, 1, "\n-Z Remove input PostScript file(s) after successful conversion.");
+#ifndef PS_NO_DUP
 	GMT_Usage (API, 1, "\n-! Modify the input PS file instead of creating a temp EPS. Some options like -Ng will disable it.");
+#endif
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -835,6 +837,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+
+/* This a temporary setting till (if) we decide to make the insitu PS modification the default behavior. */
+#ifdef PS_NO_DUP	/* Sets option -! by default. Build GMT with /DPS_NO_DUP or use add_definitions(/DPS_NO_DUP) in ConfigUser.cmake */
+		Ctrl->O.active = true;
+#endif
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -1013,7 +1020,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 
 			case '!':	/* Modify input PS instead of creating a new temp EPS one */
+#ifdef PS_NO_DUP
+				/* In this case -! has the effect of disabling the insitu modification. That is, it reverts the global PS_NO_DUP  */
+				Ctrl->O.active = false;
+#else
+				/* Here it is the contrary. -! has the effect of setting the insitu modification when that was not the default. */
 				Ctrl->O.active = true;
+#endif
 				break;
 
 			default:	/* Report bad options */
@@ -1630,7 +1643,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false, old_transparency_code_needed;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, has_transparency, add_grestore = false;
-	bool first_pagedevice = true;
+	bool first_pagedevice = true, found_EndProlog = false;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -1732,10 +1745,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	old_transparency_code_needed = (gsVersion.major == 9 && gsVersion.minor < 53);
-
-#ifdef PS_NO_DUP		/* sets option -! by default. Build GMT with /DPS_NO_DUP or use add_definitions(/DPS_NO_DUP) in ConfigUser.cmake */
-		Ctrl->O.active = true;
-#endif
 
 	if (old_transparency_code_needed && Ctrl->O.active) {
 		Ctrl->O.active = false;
@@ -2255,11 +2264,15 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 
 		n_read_PS_lines = 0;
-		/* Max number of lines to read from file. Avoid reading entire file when Ctrl->O.active. 750 should be good. */
-		max_PS_lines = (Ctrl->O.active) ? 750 : 100000000;
+		/* Max number of lines to read from file. Avoid reading entire file when Ctrl->O.active. 1000 should be good. */
+		max_PS_lines = (Ctrl->O.active) ? 1000 : 100000000;
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp) != EOF && n_read_PS_lines < max_PS_lines) {
 			n_read_PS_lines++;
+			if (isGMT_PS && !found_EndProlog) {		/* The %%EndProlog marks the end of a GMT PS header */
+				found_EndProlog = strstr(line, "%%EndProlog");	/* Not starting the parsing before finding it saves as scanning ~700 lines */
+				continue;
+			}
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
 				if (!has_transparency) has_transparency = (strstr (line, " PSL_transp") != NULL);
 				if (look_for_transparency && has_transparency) {
