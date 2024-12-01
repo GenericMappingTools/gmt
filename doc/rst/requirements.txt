@@ -4,7 +4,7 @@
 #
 #   pip install -r doc/rst/requirements.txt
 #
-sphinx_rtd_theme==2.0.0
+sphinx_rtd_theme==3.0.2
 sphinx-copybutton==0.5.2
 sphinx-design==0.6.1
 sphinx-jinja==2.0.2
