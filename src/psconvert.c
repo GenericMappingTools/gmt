@@ -1021,7 +1021,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 
 			case '!':	/* Modify input PS instead of creating a new temp EPS one */
 #ifdef PS_NO_DUP
-				/* In this case -! has the effect of disabling the insitu modification. That is, it reverts the global PS_NO_DUP  */
+				/* In this case -! has the effect of disabling the insitu modification. That is, it reverts the global PS_NO_DUP. */
 				Ctrl->O.active = false;
 #else
 				/* Here it is the contrary. -! has the effect of setting the insitu modification when that was not the default. */
