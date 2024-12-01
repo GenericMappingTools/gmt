@@ -589,6 +589,14 @@ endforeach (_gmt_prog)
 # Rename gmt target to prevent version clash
 set_target_properties (gmt PROPERTIES OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
 
+if (GMT_BUILD_GMTMEX)
+	# If your Matlab version is younger than Cmake then you must add that version here
+	set (MATLAB_ADDITIONAL_VERSIONS
+		"R2021a=9.10")
+	find_package (Matlab)
+	add_subdirectory (gmtmex)
+endif (GMT_BUILD_GMTMEX)
+
 # psldemo
 add_executable (psldemo psldemo.h psldemo.c)
 target_link_libraries (psldemo pslib)
@@ -661,6 +669,12 @@ install (PROGRAMS gmtswitch
 install (PROGRAMS gmt_shell_functions.sh
 	RENAME gmt_shell_functions${GMT_INSTALL_NAME_SUFFIX}.sh
 	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+
+install (PROGRAMS
+	gmtmex/gmt.m
+	gmtmex/gmtmex.c
+	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
 if (WIN32)
@@ -874,7 +888,7 @@ if (BUILD_SUPPLEMENTS)
 			DESTINATION ${GMT_DOCDIR}/${GMT_SUPPL_LIB_NAME}/${_suppl_name}
 			COMPONENT Documentation)
 
-		# install example scriptss
+		# install example scripts
 		install (PROGRAMS ${_suppl_example_progs}
 			DESTINATION ${GMT_DOCDIR}/${GMT_SUPPL_LIB_NAME}/${_suppl_name}
 			COMPONENT Documentation)
@@ -887,7 +901,6 @@ if (BUILD_SUPPLEMENTS)
 		endif (BUILD_DEVELOPER)
 	endforeach (_dir)
 endif (BUILD_SUPPLEMENTS)
-
 
 ##
 ## Print out CFLAGS
