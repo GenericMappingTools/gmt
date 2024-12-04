@@ -2269,8 +2269,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp) != EOF && n_read_PS_lines < max_PS_lines) {
 			n_read_PS_lines++;
-			if (isGMT_PS && !found_EndProlog) {		/* The %%EndProlog marks the end of a GMT PS header */
-				found_EndProlog = strstr(line, "%%EndProlog");	/* Not starting the parsing before finding it saves as scanning ~700 lines */
+			if (isGMT_PS && Ctrl->O.active && !found_EndProlog) {		/* The %%EndProlog marks the end of a GMT PS header */
+				found_EndProlog = (strstr(line, "%%EndProlog") != NULL);	/* Not starting the parsing before finding it saves as scanning ~700 lines */
 				continue;
 			}
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
