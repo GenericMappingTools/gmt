@@ -846,7 +846,7 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 		out[t_col] = 0.0;
 		if (Ctrl->M.active[PSEVENTS_DZ]) out[z_col] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
 	}
-	else if (finite_duration && t_now < t[PSEVENTS_T_END]) {	/* We are within the normal display phase with nominal symbol size */
+	else if (t_now < t[PSEVENTS_T_END]) {	/* We are within the normal display phase with nominal symbol size */
 		out[x_col] = 1.0;
 		out[i_col] = out[t_col] = 0.0;	/* No intensity or transparency during normal phase */
 	}
