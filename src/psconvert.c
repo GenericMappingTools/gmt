@@ -2267,7 +2267,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		/* Max number of lines to read from file. Avoid reading entire file when Ctrl->O.active. 1000 should be good. */
 		max_PS_lines = (Ctrl->O.active) ? 1000 : 100000000;
 
-		while (psconvert_file_line_reader (GMT, &line, &line_size, fp) != EOF && n_read_PS_lines < max_PS_lines) {
+		while (psconvert_file_line_reader (GMT, &line, &line_size, fp) != EOF && (look_for_transparency || n_read_PS_lines < max_PS_lines)) {
 			n_read_PS_lines++;
 			if (isGMT_PS && Ctrl->O.active && !found_EndProlog) {		/* The %%EndProlog marks the end of a GMT PS header */
 				found_EndProlog = (strstr(line, "%%EndProlog") != NULL);	/* Not starting the parsing before finding it saves as scanning ~700 lines */
@@ -2326,7 +2326,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 				continue;
 			}
-			else if (Ctrl->T.device == GS_DEV_PDF && !found_proj && !strncmp (&line[2], "PROJ", 4)) {
+			//else if (Ctrl->T.device == GS_DEV_PDF && !found_proj && !strncmp (&line[2], "PROJ", 4)) {
+			else if (!found_proj && !strncmp (&line[2], "PROJ", 4)) {
 				/* Search for the PROJ tag in the ps file. Restrict the search for the PDF case as it's only used there. */
 				char *ptmp = NULL, xx1[128], xx2[128], yy1[128], yy2[128];
 				sscanf (&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
