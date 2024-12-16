@@ -1709,10 +1709,6 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 		}
 		if (!Ctrl->C.active)	/* Set no specific CPT so we turn -C on to use current or default CPT */
 			Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and autostretch or under modern reuse current CPT */
-		if (got_z_grid && Ctrl->Q.mask_color && use_intensity_grid) {
-			GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Cannot specify a transparent color for grids when intensities are also used\n");
-			Return (API->error);
-		}
 	}
 
 	if (got_z_grid) header_work = Grid_orig->header;	/* OK, we are in GRID mode and this was not set previously. Do it now. */
