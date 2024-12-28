@@ -1,7 +1,7 @@
-Remote Data Sets
-================
+Remote Datasets
+===============
 
-A *remote data set* is a data set that is stored on one or more remote servers. It may
+A *remote dataset* is a dataset that is stored on one or more remote servers. It may
 be a single grid file or a collection of subset tiles making up a larger grid. They
 are not distributed with GMT or installed during the installation procedures.
 GMT offers several remote global data grids that you can access via our *remote file* mechanism.
@@ -31,20 +31,20 @@ mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/
 Usage
 -----
 
-We have processed and reformatted publicly available global data sets (grids and images)
+We have processed and reformatted publicly available global datasets (grids and images)
 and standardized their file names.  In GMT, you may access such data
 (or a subset only by using the **-R** option) by specifying the special name
 
    @remote_name_\ *rr*\ *u*\ [_\ *reg*\ ]
 
-where the leading @ symbol identifies the file as a remote data set, the *remote_name_* is specific
+where the leading @ symbol identifies the file as a remote dataset, the *remote_name_* is specific
 to the dataset and the *rr* code is a 2-digit integer specifying the grid/image resolution in the
 unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
 The codes for *rr*\ *u* and the optional *reg* that are supported will be listed in the sections
-below describing each of the available data sets.
+below describing each of the available datasets.
 
 When used in plots (i.e., both when a region and map projection is selected to make an image) the data
-resolution is optional. If it is not given then we determine a data set resolution that will result
+resolution is optional. If it is not given then we determine a dataset resolution that will result
 in a final plot image dots-per-unit resolution that is the closest to the :term:`GMT_GRAPHICS_DPU` default
 setting. This eliminates the need for the user to determine what grid resolution will give a nice-looking
 image and not create a bloated file that exceeds what the eye (or printers) can discern. Use
@@ -112,7 +112,7 @@ them via Cartesian Gaussian filtering to prevent aliasing while preserving the l
 resolution in the original grid or image. To improve responsiveness, the larger files (i.e., currently
 for node spacings 05m and smaller) have been split into smaller tiles.  When the 06m or lower resolution
 files are accessed the first time we download the entire file, regardless of your selected region (**-R**).
-However, for the tiled data sets we only download the tiles that intersect your selected region
+However, for the tiled datasets we only download the tiles that intersect your selected region
 the first time they are referenced. **Note**: The mask grids are not tiled as they are very small even
 for 15s resolution (due to byte format and effective compression), and neither are images (at least for
 as long as GMT does not have the capability of blending image tiles - this may change in the future).
@@ -141,7 +141,7 @@ Cache File Updates
 
 Remote cache files are our collection of miscellaneous files that are used throughout the GMT examples,
 man pages, and test suite.  There is no system nor catalog and files come and go as we need them. The cache
-files are subject to similar rules as the remote data set when it comes to refreshing or deleting them.
+files are subject to similar rules as the remote dataset when it comes to refreshing or deleting them.
 If any of these files is precious to you we suggest you make a copy somewhere.
 
 Getting a single grid
