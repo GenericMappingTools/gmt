@@ -1,7 +1,7 @@
-Remote Data Sets
-================
+Remote Datasets
+===============
 
-A *remote data set* is a data set that is stored on one or more remote servers. It may
+A *remote dataset* is a dataset that is stored on one or more remote servers. It may
 be a single grid file or a collection of subset tiles making up a larger grid. They
 are not distributed with GMT or installed during the installation procedures.
 GMT offers several remote global data grids that you can access via our *remote file* mechanism.
@@ -11,19 +11,19 @@ From then on we read the local file from there.
 
 By using the remote file mechanism you should know that these files, on the server, will change
 from time to time (i.e., new versions are released, a problem in one file is fixed, or a dataset
-becomes obsolete), and GMT will take actions accordingly.  It is our policy to only supply the *latest*
-version of any dataset that undergoes revisions.  If you require previous versions for your work you
-will need to get those data from the data provider separately.  Unless you deactivate the remote data service,
+becomes obsolete), and GMT will take actions accordingly. It is our policy to only supply the *latest*
+version of any dataset that undergoes revisions. If you require previous versions for your work you
+will need to get those data from the data provider separately. Unless you deactivate the remote data service,
 GMT will do the following when you request a remote file in a GMT command:
 
 #. We check if the locally cached catalog with information about the data available from the server
-   is up-to-date or if it needs to be refreshed.  If the file is older that the :term:`GMT_DATA_UPDATE_INTERVAL`
+   is up-to-date or if it needs to be refreshed. If the file is older that the :term:`GMT_DATA_UPDATE_INTERVAL`
    limit then we refresh the catalog.
 #. When the catalog is refreshed, we determine the publication date for each dataset on the server,
    and if any local copies you may have are now obsolete we will remove them to force a re-download from the server.
 
-Currently Available Remote Data Sets
--------------------------------------
+Currently Available Remote Datasets
+-----------------------------------
 
 Documentation for the individual remote datasets available through the GMT server and its
 mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
@@ -31,20 +31,20 @@ mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/
 Usage
 -----
 
-We have processed and reformatted publicly available global data sets (grids and images)
-and standardized their file names.  In GMT, you may access such data
+We have processed and reformatted publicly available global datasets (grids and images)
+and standardized their file names. In GMT, you may access such data
 (or a subset only by using the **-R** option) by specifying the special name
 
    @remote_name_\ *rr*\ *u*\ [_\ *reg*\ ]
 
-where the leading @ symbol identifies the file as a remote data set, the *remote_name_* is specific
+where the leading @ symbol identifies the file as a remote dataset, the *remote_name_* is specific
 to the dataset and the *rr* code is a 2-digit integer specifying the grid/image resolution in the
 unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
 The codes for *rr*\ *u* and the optional *reg* that are supported will be listed in the sections
-below describing each of the available data sets.
+below describing each of the available datasets.
 
 When used in plots (i.e., both when a region and map projection is selected to make an image) the data
-resolution is optional. If it is not given then we determine a data set resolution that will result
+resolution is optional. If it is not given then we determine a dataset resolution that will result
 in a final plot image dots-per-unit resolution that is the closest to the :term:`GMT_GRAPHICS_DPU` default
 setting. This eliminates the need for the user to determine what grid resolution will give a nice-looking
 image and not create a bloated file that exceeds what the eye (or printers) can discern. Use
@@ -61,12 +61,12 @@ Data Registration
 -----------------
 
 Optionally, you can append _\ **g** or _\ **p** to specifically get the gridline-registered or
-pixel-registered version (if they both exist).  If *reg* is not specified then the behavior
+pixel-registered version (if they both exist). If *reg* is not specified then the behavior
 depends on whether you are making a plot or processing/extracting a subset of the data:
 
     - For plots we will return the pixel-registered version unless only the gridline-registered file is available.
     - For grid processing modules we will return the gridline-registered version unless only the pixel-registered
-      file is available.  We will also issue a warning since for calculations you should ideally know and
+      file is available. We will also issue a warning since for calculations you should ideally know and
       specify exactly what you want.
 
 If you do specify a specific registration and that version is not available you will get an error message.
@@ -91,7 +91,7 @@ If you anticipate to be without an Internet connection (or have a very slow one)
 all (or some) of the remote files prior to losing connection with the module :doc:`/gmtget`. You
 can choose which data to download and limit it to node spacings larger or equal to a limit, and you
 can minimize space on your computer by requesting that any JPEG2000 tiles *not* be converted until GMT
-is accessing them.  Here are some examples of usage.  Download the entire cache directory used
+is accessing them. Here are some examples of usage. Download the entire cache directory used
 in examples and tests::
 
     gmt get -Dcache
@@ -110,15 +110,15 @@ Typically, a dataset is released by the data provider in a single, high-resoluti
 To optimize use of these data in GMT and to prevent download bottlenecks we have downsampled
 them via Cartesian Gaussian filtering to prevent aliasing while preserving the latitude-dependent
 resolution in the original grid or image. To improve responsiveness, the larger files (i.e., currently
-for node spacings 05m and smaller) have been split into smaller tiles.  When the 06m or lower resolution
+for node spacings 05m and smaller) have been split into smaller tiles. When the 06m or lower resolution
 files are accessed the first time we download the entire file, regardless of your selected region (**-R**).
-However, for the tiled data sets we only download the tiles that intersect your selected region
+However, for the tiled datasets we only download the tiles that intersect your selected region
 the first time they are referenced. **Note**: The mask grids are not tiled as they are very small even
 for 15s resolution (due to byte format and effective compression), and neither are images (at least for
 as long as GMT does not have the capability of blending image tiles - this may change in the future).
 
 Single grids are provided as netCDF-4 maximum-lossless compressed short int grids, making the files
-much smaller than their original source files without any loss of precision.  To minimize download
+much smaller than their original source files without any loss of precision. To minimize download
 speed, the dataset tiles are all stored as JPEG2000 images on the GMT server due to superior compression,
 but once downloaded to your server directory they are converted to the same short int compressed netCDF4
 format for easier access. This step uses our GDAL bridge and requires that your GDAL distribution was
@@ -131,24 +131,24 @@ built with *openjpeg* support.
    :width: 500 px
    :align: center
 
-   Histogram of compression rates for the SRTM 1x1 arc second tiles.  100% reflects the full short integer
-   size of an uncompressed tile (~25 Mb).  As can be seen, on average a JPEG2000 tile is only half the
-   size of the corresponding fully compressed (level 9) netCDF short int grid.  This is why we
+   Histogram of compression rates for the SRTM 1x1 arc second tiles. 100% reflects the full short integer
+   size of an uncompressed tile (~25 Mb). As can be seen, on average a JPEG2000 tile is only half the
+   size of the corresponding fully compressed (level 9) netCDF short int grid. This is why we
    have chosen the JP2 format for tiles on the server.
 
 Cache File Updates
 ------------------
 
 Remote cache files are our collection of miscellaneous files that are used throughout the GMT examples,
-man pages, and test suite.  There is no system nor catalog and files come and go as we need them. The cache
-files are subject to similar rules as the remote data set when it comes to refreshing or deleting them.
+man pages, and test suite. There is no system nor catalog and files come and go as we need them. The cache
+files are subject to similar rules as the remote dataset when it comes to refreshing or deleting them.
 If any of these files is precious to you we suggest you make a copy somewhere.
 
-Getting a single grid
+Getting a Single Grid
 ---------------------
 
 Should you need a single grid from any of our tiled dataset, e.g., to feed into other programs that do
-not depend on GMT, you can create that via :doc:`/grdcut`.  For instance, to make a global grid from the
+not depend on GMT, you can create that via :doc:`/grdcut`. For instance, to make a global grid from the
 eight tiles that make up the 2m x 2m gridline-registered data, try::
 
     gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd -Rg

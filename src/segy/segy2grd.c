@@ -198,11 +198,11 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				n_errors += gmt_get_required_int (GMT, &opt->arg[1], opt->option, 0, &Ctrl->L.value);
+				n_errors += gmt_get_required_int (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				n_errors += gmt_get_required_uint (GMT, &opt->arg[1], opt->option, 0, &Ctrl->M.value);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->M.value);
 				break;
 			case 'N':	/* Deprecated 7.29.2021 PW, use -di */
 				if (gmt_M_compat_check (GMT, 6)) {	/* Honor old -N<value> option */

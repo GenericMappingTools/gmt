@@ -67,7 +67,7 @@ install on a wide range of computers, it can be used with any type of data
 file structure (within reason), may produce the same output as the old XOVER
 program, and is freely distributable yet covered by copyright.  The core
 algorithm for calculating crossovers have been replaced with the principles
-discussed the the book on C algorithms by Sedgewick [1990].  The result is
+discussed in the book on C algorithms by Sedgewick [1990].  The result is
 that X2SYS calculates crossovers faster than its predecessor, although this
 may be to some extend dependent on the track layout.
 

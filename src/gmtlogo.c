@@ -33,9 +33,13 @@
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->KJOPRUVXYtxy" GMT_OPT("c")
 
-#define GMT_N_LETTERS	116
-static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
-	{ NAN, NAN },
+
+#define GMT_N_LETTERS_G 92
+#define GMT_N_LETTERS_M 13
+#define GMT_N_LETTERS_T 8
+#define GMT_N_LETTERS (GMT_N_LETTERS_G + GMT_N_LETTERS_M + GMT_N_LETTERS_T + 3)
+
+static float gmt_letters_g[GMT_N_LETTERS_G][2] = {	/* The G polygons */
 	{ -59.5, -41.8 },
 	{ -59.5, 2.2 },
 	{ -105, 2.2 },
@@ -128,7 +132,8 @@ static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 	{ -72.7, -32 },
 	{ -71.96, -30.8 },
 	{ -68.04, -41.8 },
-	{ NAN, NAN },
+};
+static float gmt_letters_m[GMT_N_LETTERS_M][2] = {	/* The M polygons */
 	{ -37.8, -41.8 },
 	{ -23.8, -41.8 },
 	{ -23.8, 27.39 },
@@ -142,7 +147,8 @@ static float gmt_letters[GMT_N_LETTERS][2] = {	/* The G, M, T polygons */
 	{ 12.46, -29.7 },
 	{ -17.22, 40.48 },
 	{ -37.8, 40.48 },
-	{ NAN, NAN },
+};
+static float gmt_letters_t[GMT_N_LETTERS_T][2] = {	/* The T polygons */
 	{ 124.46, -41.8 },
 	{ 124.46, 30.47 },
 	{ 160.02, 30.47 },
@@ -329,12 +335,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 
 EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* High-level function that implements the gmtlogo task */
-	int error, fmode;
+	int error, fmode, idx = 0;
 
 	uint64_t par[4] = {0, 0, 0, 0};
 
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};	/* Dimensions in inches */
 	double scale, y, dim[2];
+	float gmt_letters[GMT_N_LETTERS][2];
 
 	char cmd[GMT_LEN256] = {""}, pars[GMT_LEN128] = {""}, file[GMT_VF_LEN] = {""};
 
@@ -438,6 +445,22 @@ EXTERN_MSC int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
+
+	/* Copy the polygons into the gmt_letters array, with NAN records as segment separators */
+	gmt_letters[idx][0] = NAN;
+	gmt_letters[idx][1] = NAN;
+	idx += 1;
+	memcpy(gmt_letters + idx, gmt_letters_g, sizeof(gmt_letters_g));
+	idx += GMT_N_LETTERS_G;
+	gmt_letters[idx][0] = NAN;
+	gmt_letters[idx][1] = NAN;
+	idx += 1;
+	memcpy(gmt_letters + idx, gmt_letters_m, sizeof(gmt_letters_m));
+	idx += GMT_N_LETTERS_M;
+	gmt_letters[idx][0] = NAN;
+	gmt_letters[idx][1] = NAN;
+	idx += 1;
+	memcpy(gmt_letters + idx, gmt_letters_t, sizeof(gmt_letters_t));
 
 	/* Allocate a matrix container for holding the GMT-matrix coordinates */
 	par[0] = 2;	par[1] = GMT_N_LETTERS;

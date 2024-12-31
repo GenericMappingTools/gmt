@@ -2527,43 +2527,46 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 #define is_text(item,k)  (item[k] == 't' && item[k+1])	/* Modifier t followed by random text */
 
 /*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o<dx>[/<dy>]][+t<string>]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
-GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
+GMT_LOCAL int gmtinit_parse_U_option(struct GMT_CTRL *GMT, char *item) {
 	int just = 1, error = 0;
 
 	GMT->current.setting.map_logo = true;
-	gmt_M_memset (GMT->common.U.string, GMT_LEN64, char);	/* Initialize to nothing */
+	gmt_M_memset(GMT->common.U.string, GMT_LEN64, char);	/* Initialize to nothing */
 	if (!item || !item[0]) return (GMT_NOERROR);	/* Just basic -U with no args */
 
 	if (gmt_found_modifier (GMT, item, "cjot")) {	/* New syntax */
 		unsigned int pos = 0, uerr = 0;
-		int k = 1, len = (int)strlen (item);
+		int k = 1, len = (int)strlen(item);
 		char word[GMT_LEN256] = {""}, *c = NULL;
 		/* Find the first +c|j|o|t that looks like it may be a modifier and not random text */
 		while (k < len && !(is_plus(item,k) && (is_label(item,k) || is_just(item,k) || is_off(item,k) || is_text(item,k)))) k++;
-		if (k == len)	/* Modifiers were just random text */
-			strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
+		if (k == len && item[len-2] != '+' && item[len-1] != 't')	/* Modifiers were just random text (but not if it ends in "+t")*/
+			strncpy(GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
 		else {	/* Appears to have gotten a valid modifier or more */
-			c = &item[k-1];	/* Start of the modifier */
+			c = (k != len) ? &item[k-1] : &item[k-2];	/* Start of the modifier. The ternary is for the ending "+t" case */
 			c[0] = '\0';	/* Chop off the + so we can parse the label, if any */
-			if (item[0]) strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
+			if (item[0]) strncpy(GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
 			c[0] = '+';	/* Restore modifiers */
-			while (gmt_getmodopt (GMT, 'U', c, "cjot", &pos, word, &uerr) && uerr == 0) {
+			while (gmt_getmodopt(GMT, 'U', c, "cjot", &pos, word, &uerr) && uerr == 0) {
 				switch (word[0]) {
 					case 'c':	/* Maybe +c but only if at end of followed by another modifier */
 						if (word[1] == '+' || word[1] == '\0')	/* Use command string */
 							GMT->current.ps.logo_cmd = true;
 						break;
 					case 'j':	/* Maybe +j if the next two letters are from LCRBMT */
-						if (strchr ("LCRBMT", word[1]) && strchr ("LCRBMT", word[2]))
-							just = gmt_just_decode (GMT, &word[1], GMT->current.setting.map_logo_justify);
+						if (strchr("LCRBMT", word[1]) && strchr("LCRBMT", word[2]))
+							just = gmt_just_decode(GMT, &word[1], GMT->current.setting.map_logo_justify);
 						break;
 					case 'o':	/* Maybe +o if next letter could be part of a number */
-						if (strchr ("-+.0123456789", word[1])) {	/* Seems to be a number */
-							if ((k = gmt_get_pair (GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 1) error++;
+						if (strchr("-+.0123456789", word[1])) {	/* Seems to be a number */
+							if ((k = gmt_get_pair(GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 1) error++;
 						}
 						break;
 					case 't':	/* Short text to replace dateclock string */
-						strncpy (GMT->common.U.string, &word[1], GMT_LEN64);
+						if (word[1])
+							strncpy(GMT->common.U.string, &word[1], GMT_LEN64);
+						else
+							GMT->common.U.string[0] = ' ';
 						break;
 					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				}
@@ -14538,7 +14541,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, int row, int col, d
 	 * first should be 1 the first time we visit this panel so that the automatic -B
 	 * and panel tag stuff only happens once. */
 	char file[PATH_MAX] = {""}, *L = NULL;
-	static char *dummy = "@";	/* Signify "use the the auto label" */
+	static char *dummy = "@";	/* Signify "use the auto label" */
 	FILE *fp = NULL;
 	L = (label && label[0]) ? label : dummy;
 	snprintf (file, PATH_MAX, "%s/gmt.panel.%d", API->gwf_dir, fig);
@@ -16660,22 +16663,24 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	   without calling gmt_begin() again. This is need in externals that want to keep using the API
 	   contents between diferent module calls.
 	*/
-	/* Reset default input column order */
-	for (i = 0; i < GMT_MAX_COLUMNS; i++)
-		GMT->current.io.col[GMT_IN][i].col = GMT->current.io.col[GMT_IN][i].order = i;	/* Default order */
-	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = false;	/* Consider all input columns */
-	/* Reset default output column order */
-	for (i = 0; i < GMT_MAX_COLUMNS; i++)
-		GMT->current.io.col[GMT_OUT][i].col = GMT->current.io.col[GMT_OUT][i].order = i;	/* Default order */
+	/* Reset default input column order, but not too soon (#8620) */
+	if (func_level_bak <= GMT_TOP_MODULE) {
+		for (i = 0; i < GMT_MAX_COLUMNS; i++)
+			GMT->current.io.col[GMT_IN][i].col = GMT->current.io.col[GMT_IN][i].order = i;	/* Default order */
+		for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = false;	/* Consider all input columns */
+		/* Reset default output column order */
+		for (i = 0; i < GMT_MAX_COLUMNS; i++)
+			GMT->current.io.col[GMT_OUT][i].col = GMT->current.io.col[GMT_OUT][i].order = i;	/* Default order */
+	}
 
 	for (i = 0; i < 2; i++) GMT->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
 	if (GMT->hidden.func_level == 0)	/* Only when top-level module ends. Doesn't affect CLI but useful for externals */
-		for (i = 0; i < 2; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
-	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column_type (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
-	gmt_M_memset (GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
-	gmt_M_memset (GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */
-	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
-	gmt_M_memset (GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
+		for (i = 0; i < 2; i++) gmt_set_column_type(GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
+	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column_type(GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
+	gmt_M_memset(GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
+	gmt_M_memset(GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */
+	gmt_M_memset(GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
+	gmt_M_memset(GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
 	/* Time periodicity column */
 	GMT->current.io.cycle_col = GMT_NOTSET;

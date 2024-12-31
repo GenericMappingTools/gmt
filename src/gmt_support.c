@@ -14647,7 +14647,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 	if (k == 0 || filename[k+1] == '\0') go = false;	/* No modifiers found at all, or we found a single trailing + in the name (e.g., my.test+) */
 	while (go) {	/* Here, filename[k] == '+' and k > 0 */
 		if (isalpha (filename[k+1]) && strchr (mods, filename[k+1])) {	/* This is a valid file modifier */
-			modifiers = &filename[k];	/* Update the pointer the the current start of valid modifiers */
+			modifiers = &filename[k];	/* Update the pointer the current start of valid modifiers */
 			k--;	/* Step one back from the '+' character; k could become 0 if filename was just valid modifiers (...) */
 			while (filename[k] != '+' && k) k--;	/* Wind back to last found plus sign as long as we are not in first position */
 			if (k == 0) go = false;	/* Ran out of characters */
