@@ -1604,7 +1604,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		else	/* No boost needed */
 			boost = 1.0;
 
-		if (mode == GMT_STAIRS_Y) {	/* First follow meridian, then parallel */
+		if (mode == GMT_STAIRS_X) {	/* First follow parallel, then meridian */
 			gmt_M_set_delta_lon (lon[i-1], lon[i], dlon);	/* Beware of jumps due to sign differences */
 			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
 			theta = fabs (dlon) * cosd (lat[i-1]);
@@ -1628,7 +1628,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			k = 0;
 		}
 
-		else if (mode == GMT_STAIRS_X) {	/* First follow parallel, then meridian */
+		else if (mode == GMT_STAIRS_Y) {	/* First follow meridian, then parallel */
 			theta = fabs (lat[i]-lat[i-1]);
 			n_step = lrint (theta / step);
 			for (j = 1; j <= n_step; j++) {
