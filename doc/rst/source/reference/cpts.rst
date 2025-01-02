@@ -42,7 +42,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The standard 46 CPTs supported by GMT.
+   The standard CPTs supported by GMT.
 
 .. _CPT_files_b:
 
@@ -50,7 +50,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 30 scientific color maps by Fabio Crameri supported by GMT.
+   The color maps (v8.0.1) by Fabio Crameri supported by GMT. Only the non-cyclic and non-categorical variants are shown here.
 
 .. _CPT_files_c:
 
@@ -58,8 +58,8 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 7 cyclic color maps (those ending in "O" are the cyclic
-   scientific color maps by Fabio Crameri) supported by GMT.
+   The categorical (top row) and cyclic color maps supported by GMT. Those starting with "SCM" are the cyclic
+   scientific color maps by Fabio Crameri; those stating with "cmocean" are cyclic color maps by Kristen M. Thyng.
    **Note**: Any GMT colormap can be made cyclic by running :doc:`/makecpt`
    with the **-Ww** option (wrapped = cyclic).
 
@@ -69,7 +69,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 22 color maps from cmocean by Kristen M. Thyng supported by GMT.
+   The color maps from cmocean by Kristen M. Thyng supported by GMT.
 
 For additional color tables, visit
 `cpt-city <http://www.seaviewsensing.com/pub/cpt-city/>`_ and
