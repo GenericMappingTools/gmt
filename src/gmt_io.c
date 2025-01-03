@@ -4835,7 +4835,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 						gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_no]);
 						break;
 					case GMT_IS_LAT:
-						if (GMT->current.io.curr_rec[col_no] < -90.0 || GMT->current.io.curr_rec[col_no] > +90.0) {
+						if (!GMT->common.b.active[2] && (GMT->current.io.curr_rec[col_no] < -90.0 || GMT->current.io.curr_rec[col_no] > +90.0)) {
 							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Latitude (%g) at line # %" PRIu64 " exceeds -|+ 90! - set to NaN\n", GMT->current.io.curr_rec[col_no], GMT->current.io.rec_no);
 							GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
 						}

@@ -1403,6 +1403,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
 
+	if (Ctrl->N.active && GMT->common.b.active[GMT_IN]) GMT->common.b.active[2] = true; /* To signal gmtlib_process_binary_input that lats may be of |90| */
+
 	if (GMT->common.R.active[RSET] && GMT->common.J.active && gmt_map_setup (GMT, GMT->common.R.wesn))
 		Return (GMT_PROJECTION_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
@@ -2430,7 +2432,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_M_rgb_copy (current_pen.rgb, save_pen.rgb);
 			if (Ctrl->H.active) current_pen = nominal_pen;
 		} while (true);
-		if (GMT->common.t.variable) {	/* Reset the transparencies */
+
+		GMT->common.b.active[2] = false;	/* Reset this because externals have long memory and -N may not be used in a future call */
+
+		if (GMT->common.t.variable) {		/* Reset the transparencies */
 			double transp[2] = {0.0, 0.0};	/* None selected */
 			PSL_settransparencies (PSL, transp);
 		}

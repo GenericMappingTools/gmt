@@ -158,7 +158,7 @@ struct GMT_COMMON {
 		char string[GMT_LEN256];
 	} a;
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
-		bool active[2];		/* true if current input/output is in native binary format */
+		bool active[3];		/* true if current input/output is in native binary format */
 		bool nc[2];		/* True if netcdf i/o */
 		bool o_delay;		/* true if we don't know number of output columns until we have read at least one input record */
 		bool bin_primary;	/* true if we need to switch back to binary after reading a secondary file in ascii */
