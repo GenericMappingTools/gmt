@@ -14,7 +14,7 @@ int read_event_data(FILE *fp, char *line, int *yyyy, int *mm, int *dd, int *hh, 
 		int *months, int *days, int *hours, int *minutes, int *idx_min_rms) {
 
 	int	done = false, event_c = 0; 
-	float	rms_min = 1e9, gap_min = 360;
+	float	gap_min = 360;
 	*idx_min_rms = 0; 	/* I'm currently using GAP instead of RMS */
 
 	while (!done && (fgets (line, ISF_LINE_LEN, fp) != NULL)) {
