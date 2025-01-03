@@ -35,15 +35,3 @@ maximize flexibility.  We standardized early on to use PostScript output
 instead of other graphics formats.  Apart from the built-in support for
 coastlines, GMT completely decouples data retrieval from the main
 GMT modules.  GMT uses architecture-independent file formats.
-
-GMT installation considerations
--------------------------------
-
-See the :doc:`install guide </install>`
-for instructions and to make sure you have all required dependencies installed.
-Alternatively, you can build GMT from source by following the
-`building guide <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
-
-In addition, we recommend access to any flavor of the UNIX operating system
-(UNIX, Linux, macOS, Cygwin, MinGW, etc.).
-We do not recommend using the DOS command window under Windows.

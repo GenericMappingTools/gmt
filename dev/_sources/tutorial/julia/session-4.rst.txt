@@ -19,13 +19,13 @@ CPTs can be created in any number of ways. GMT provides two mechanisms:
 
 #. Create simple, linear color tables given a master color table
    (several are built-in) and the desired *z*-values at color boundaries
-   (`makecpt <https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/>`_)
+   (`makecpt <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/>`_)
 
 #. Create color tables based on a master CPT color table and the histogram-equalized distribution of *z*-values
-   in a gridded data file (`grd2cpt <https://www.generic-mapping-tools.org/GMT.jl/dev/#GMT.grd2cpt>`_)
+   in a gridded data file (`grd2cpt <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grd2cpt>`_)
 
 One can also make these files manually. Here we will limit our discussion to
-`makecpt <https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/>`_.
+`makecpt <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/>`_.
 Its main argument is the name of the master color table (a list is
 shown if you run the module with no arguments) and the equidistant
 *z*-values to go with it.  The main options are given below.
@@ -47,12 +47,12 @@ from -20 to 60, with color changes at every 10, try these two variants:
     makecpt(cmap=:rainbow, range=(-20,60,10), write="disc.cpt")
     makecpt(cmap=:rainbow, range=(-20,60,10), continuous=true, write="cont.cpt")
 
-We can plot these color tables with `colorbar <https://www.generic-mapping-tools.org/GMT.jl/dev/colorbar/>`_;
+We can plot these color tables with `colorbar <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/colorbar/>`_;
 the options worth mentioning here are listed below. The placement of the color bar is particularly important
 and we refer you to the :ref:`Plot embellishments <GMT_Embellishments>` section for all the details. In addition,
 the **frame** option can be used to set the title and unit label (and optionally to set the annotation-, tick-,
 and grid-line intervals for the color bars.).  Note that the makecpt commands above are done in classic mode.
-If you run `makecpt <https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/>`_ in modern mode then you usually
+If you run `makecpt <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/>`_ in modern mode then you usually
 do not specify an output file via standard output since modern mode maintains what is known as the current CPT.
 However, if you must explicitly name an output CPT then you will need to add the -H option for modern mode to
 allow output to standard output.
@@ -90,7 +90,7 @@ Your plot should look like :ref:`our example 14 below <gmt_tut_14_jl>`
 
 Exercises:
 
-#. Redo the `makecpt <https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/>`_ exercise using the
+#. Redo the `makecpt <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/>`_ exercise using the
    master table *hot* and redo the bar plot.
 
 #. Try specifying **frame**\ =(annot=10, grid=5).
@@ -140,7 +140,7 @@ Here, we will extract a subset of the global 30" DEM called SRTM30+:
 Using :doc:`/grdinfo` we find that the data ranges from about 1000m to
 about 4300m so we need to make a CPT with that range.
 
-Color images are made with `grdimage <https://www.generic-mapping-tools.org/GMT.jl/dev/grdimage/>`_
+Color images are made with `grdimage <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdimage/>`_
 which takes the usual common command options (by default the **region** is taken from the data set) and a CPT;
 the main other options are:
 
@@ -173,7 +173,7 @@ Your plot should look like :ref:`our example 15 below <gmt_tut_15_jl>`
 The plain color map lacks detail and fails to reveal the topographic complexity of this Rocky Mountain region.
 What it needs is artificial illumination. We want to simulate shading by a sun source in the east, hence we
 derive the required intensities from the gradients of the topography in the N90°E direction using
-`grdgradient <https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/>`_.
+`grdgradient <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdgradient/>`_.
 Other than the required input and output filenames, the available options are
 
   +----------------------------------------------+-----------------------------------------------------------------------------+
@@ -239,7 +239,7 @@ Exercises:
 
 #. Force a gray-shade image.
 
-#. Rerun `grdgradient <https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/>`_ with **norm**\ =1.
+#. Rerun `grdgradient <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdgradient/>`_ with **norm**\ =1.
 
 Multi-dimensional maps
 ----------------------
@@ -297,7 +297,7 @@ Perspective views
 -----------------
 
 Our final undertaking in this tutorial is to examine three-dimensional perspective views. The GMT module that
-produces perspective views of gridded data files is `grdview <https://www.generic-mapping-tools.org/GMT.jl/dev/grdview/>`_.
+produces perspective views of gridded data files is `grdview <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdview/>`_.
 It can make two kinds of plots:
 
 #. Mesh or wire-frame plot (with or without superimposed contours)
@@ -384,7 +384,7 @@ Exercises:
 
 #. Choose another vantage point and scaling.
 
-#. Redo `grdgradient <https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/>`_ with another illumination
+#. Redo `grdgradient <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdgradient/>`_ with another illumination
    direction and plot again.
 
 #. Select a higher *dpi*, e.g., 200.
