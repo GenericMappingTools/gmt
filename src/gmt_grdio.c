@@ -1396,25 +1396,31 @@ int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT
 	return (GMT_GRID_CARTESIAN);
 }
 
-GMT_LOCAL void gmtgrdio_doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+GMT_LOCAL void gmtgrdio_doctor_geo_increments(struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Check for sloppy arc min/sec increments due to divisions by 60 or 3600 */
 	double round_inc[2], scale[2], inc, slop;
 	unsigned int side, n_fix = 0;
 	static char *type[2] = {"longitude", "latitude"};
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call gmtgrdio_doctor_geo_increments on a geographic grid\n");
+	GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Call gmtgrdio_doctor_geo_increments on a geographic grid\n");
 	for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
 		scale[side] = (header->inc[side] < GMT_MIN2DEG) ? 3600.0 : 60.0;	/* Check for clean multiples of minutes or seconds */
 		inc = header->inc[side] * scale[side];
 		round_inc[side] = rint (inc);
-		slop = fabs (inc - round_inc[side]);
+		slop = fabs(inc - round_inc[side]);
 		if (slop > 0 && slop < GMT_CONV4_LIMIT) n_fix++;
 	}
 	if (n_fix == 2) {
+		unsigned int good = gmt_minmaxinc_verify(GMT, header->wesn[XLO], header->wesn[XHI], header->inc[GMT_X], GMT_CONV4_LIMIT);
 		for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
 			inc = header->inc[side];
 			header->inc[side] = round_inc[side] / scale[side];
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
+			if (good == 0 && gmt_minmaxinc_verify(GMT, header->wesn[XLO], header->wesn[XHI], header->inc[GMT_X], GMT_CONV4_LIMIT) != 0) {
+				/* We are in a situation where -R -I were right but the slightly modified increments make it wrong. So do nothing & return */
+				header->inc[side] = inc;
+				break;
+			}
+			GMT_Report(GMT->parent, GMT_MSG_INFORMATION, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
 				type[side], inc, header->inc[side]);
 		}
 	}
