@@ -440,7 +440,7 @@ using the following steps:
 - Run ``dvc diff`` to check that modified files are in the correct directory.
 - Add the modified images to dvc using ``dvc add test/baseline/<module>/<newplot.ps>``, ``dvc add doc/scripts/images/<newplot.ps>``,
   or ``dvc add doc/examples/images/<newplot.ps>``
-  depending on the type of test modified. RUn one dvc add command per updated PostScript plot.
+  depending on the type of test modified. Run one dvc add command per updated PostScript plot.
 - Check that the .dvc file was updated by running ``git status``.
 - Stage the modified .dvc files in git using ``git add test/baseline/<module>/<newplot.ps>.dvc``, ``git add doc/scripts/images/<newplot.ps>.dvc``,
   or ``git add doc/examples/images/<newplot.ps>.dvc``, again per updated file.
