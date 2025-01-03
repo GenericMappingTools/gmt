@@ -71,6 +71,7 @@
 "SCM/lisbon         : Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S, C=RGB]",
 "SCM/managua        : Perceptually uniform diverging colormap, by Fabio Crameri [S,C=RGB]",
 "SCM/navia          : Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]",
+"SCM/naviaW         : Perceptually uniform sequential colormap with white ending by Fabio Crameri [C=RGB]",
 "SCM/nuuk           : Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]",
 "SCM/nuukS          : Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]",
 "SCM/oleron         : Perceptually uniform topography colormap, by Fabio Crameri [H, C=RGB]",

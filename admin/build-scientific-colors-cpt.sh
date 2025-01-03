@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #
 # This script takes the downloaded zip content from
-# Crameri, Fabio. (2023, June 14). Scientific colour maps
-# (Version 8.0.0). Zenodo.  https://doi.org/10.5281/zenodo.1243862
+# Crameri, Fabio. (2023, Oct 5). Scientific colour maps
+# (Version 8.0.1). Zenodo.  https://doi.org/10.5281/zenodo.1243862
 # and converts the *.cpt files into proper GMT master
 # CPT files with correct attribution and hinge info
 # Run from the ScientificColourMapsV directory (V is version) after the
 # zip has downloaded and been expanded.  But first you need to manually
-# update the /tmp/cpt.info entries below with one line per CPT subdir in the
+# update the $TMP/cpt.info entries below with one line per CPT subdir in the
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps8 on June 26, 2023 for GMT 6.5 (master)
-# Gave 55 CPTS: The same as release 7 with new entries glasgow, lipari, navia, managua.
+# Last setup and run for ScientificColourMaps8 (release 8.0.1) on Jan 2, 2025 for GMT 6.6 (master)
+# Gave 56 CPTs: The same as release 8.0.0 from GMT 6.5 with new entry naviaW.
 #
 
 if [ $# -eq 0 ]; then
@@ -23,11 +23,11 @@ if [ $# -eq 0 ]; then
 	Give the full path to the expanded zip file top directory, such as
 	~/Download/ScientificColourMaps8.
 	Before running you must update this script with:
-	  1. Any new CPT entries since the last release to /tmp/cpt.info
+	  1. Any new CPT entries since the last release to \$TMP/cpt.info
 	  2. Flag those with a soft hinge as S and a hard hinge as H
 	  3. Manually set the current version number/doi (see the zip PDF docs)
 	Afterwards you must:
-	  1. Update src/gmt_cpt_masters.h with any new entries (copy lines from /tmp/cpt_strings.txt)
+	  1. Update src/gmt_cpt_masters.h with any new entries (copy lines from \$DIR/cpt_strings.txt)
 	  2. Adding the CPTs to share/cpt/SCM (overwriting the previous versions)
 	  3. Probably mess with doc/scripts/GMT_App_M*.sh for new layouts
 	EOF
@@ -35,8 +35,11 @@ if [ $# -eq 0 ]; then
 fi
 
 DIR=$1
-VERSION=8.0.0
-cat << EOF > /tmp/cpt.info
+VERSION=8.0.1
+DOI=10.5281/zenodo.1243862
+
+TMP=$(mktemp -d) 
+cat << EOF > $TMP/cpt.info
 acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
 bam|Perceptually uniform bimodal colormap, light, by Fabio Crameri [C=RGB]
@@ -77,6 +80,7 @@ lisbon|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [S,C=RGB]
 lipari|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
 managua|Perceptually uniform diverging colormap, by Fabio Crameri [S,C=RGB]
 navia|Perceptually uniform sequential colormap by Fabio Crameri [C=RGB]
+naviaW|Perceptually uniform sequential colormap with white ending by Fabio Crameri [C=RGB]
 nuuk|Perceptually uniform, low-lightness gradient colormap, by Fabio Crameri [C=RGB]
 nuukS|Perceptually uniform, low-lightness gradient categorical colormap, by Fabio Crameri [C=RGB]
 oleron|Perceptually uniform topography colormap, by Fabio Crameri [H,C=RGB]
@@ -93,17 +97,16 @@ vanimo|Perceptually uniform bimodal colormap, dark, by Fabio Crameri [C=RGB]
 vik|Perceptually uniform bimodal colormap, light, by Fabio Crameri [S,C=RGB]
 vikO|Perceptually uniform bimodal cyclic colormap, light, by Fabio Crameri [C=RGB]
 EOF
-here=$(pwd)
 cd $DIR
 # Make formatted list of lines suitable for copying into gmt_cpt_masters.h
-awk -F'|' '{printf "\"SCM/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
+awk -F'|' '{printf "\"SCM/%-14s : %s\",\n", $1, $2}' $TMP/cpt.info > $TMP/cpt_strings.txt
 # Make list of CPTs with a hinge of some soft since these need to insert a true z = 0 slice
-grep "\[H," /tmp/cpt.info | awk -F'|' '{print $1}' > /tmp/hinge.lis
-grep "\[S," /tmp/cpt.info | awk -F'|' '{print $1}' >> /tmp/hinge.lis
+grep "\[H," $TMP/cpt.info | awk -F'|' '{print $1}' > $TMP/hinge.lis
+grep "\[S," $TMP/cpt.info | awk -F'|' '{print $1}' >> $TMP/hinge.lis
 
 rm -rf gmt_cpts
 mkdir gmt_cpts
-cat <<- EOF > /tmp/front
+cat <<- EOF > $TMP/front
 #
 #----------------------------------------------------------
 # COLOR_MODEL = RGB
@@ -127,7 +130,7 @@ while read line; do
 	#
 	# License: MIT License
 	# Copyright (c) 2023, Fabio Crameri.
-	# Crameri, F., (2023). Scientific colour maps. Zenodo. https://doi.org/10.5281/zenodo.1243862
+	# Crameri, F., (2023). Scientific colour maps. Zenodo. https://doi.org/$DOI
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF
@@ -138,38 +141,39 @@ while read line; do
 	    *) hinge="" ;;
 	esac
 	if [ "X${last_char}" = "XS" ]; then
-		cat /tmp/front >> gmt_cpts/$cpt.cpt
+		cat $TMP/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR, $6, $7, $8}}' > /tmp/tmp.cpt
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR, $6, $7, $8}}' > $TMP/tmp.cpt
 	elif [ "X$hinge" = "X" ]; then
-		cat /tmp/front >> gmt_cpts/$cpt.cpt
+		cat $TMP/front >> gmt_cpts/$cpt.cpt
 		if [ "X${last_char}" = "XO" ]; then
 			echo "# CYCLIC" >> gmt_cpts/$cpt.cpt
 		fi
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > /tmp/tmp.cpt
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", $1, $2, $3, $4, $5, $6, $7, $8}' > $TMP/tmp.cpt
 	else
 		echo "# Note: Range changed from 0-1 to -1/+1 to place hinge at zero." >> gmt_cpts/$cpt.cpt
-		cat /tmp/front >> gmt_cpts/$cpt.cpt
+		cat $TMP/front >> gmt_cpts/$cpt.cpt
 		echo "# $hinge" >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
 		# Convert to -1/1 range
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > /tmp/tmp.cpt
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%.6f\t%s/%s/%s\t%.6f\t%s/%s/%s\n", 2*($1-0.5), $2, $3, $4, 2*($5-0.5), $6, $7, $8}' > $TMP/tmp.cpt
 	fi
-	cat /tmp/tmp.cpt >> gmt_cpts/$cpt.cpt
+	cat $TMP/tmp.cpt >> gmt_cpts/$cpt.cpt
 	if [ "X${last_char}" = "XS" ] || [ "X${last_char}" = "XO" ]; then	# Categorical or cyclical CPTS have no F or B, only NaN
 		egrep '^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
 	else
 		egrep '^F|^B|^N' $cptdir/$cpt.cpt | awk '{printf "%s\t%s/%s/%s\n", $1, $2, $3, $4}' >> gmt_cpts/$cpt.cpt
 	fi
-done < /tmp/cpt.info
+done < $TMP/cpt.info
 # Fix the zero hinges
 while read cpt; do
-	grep '^#' gmt_cpts/${cpt}.cpt > /tmp/${cpt}.cpt
-	egrep -v '^#|B|N|F' gmt_cpts/${cpt}.cpt | awk '{if (NR == 127) {printf "%s\t%s\t0.0\t\t\t%s\n", $1, $2, $4} else if (NR == 129) {printf "0.0\t\t\t%s\t%s\t%s\n", $2, $3, $4} else if (NR != 128) { print $0}}' >> /tmp/${cpt}.cpt
-	egrep '^B|^N|^F' gmt_cpts/${cpt}.cpt >> /tmp/${cpt}.cpt
-	mv -f /tmp/${cpt}.cpt gmt_cpts
-done < /tmp/hinge.lis
-rm -f tmp
-cd $here
+	grep '^#' gmt_cpts/${cpt}.cpt > $TMP/${cpt}.cpt
+	egrep -v '^#|B|N|F' gmt_cpts/${cpt}.cpt | awk '{if (NR == 127) {printf "%s\t%s\t0.0\t\t\t%s\n", $1, $2, $4} else if (NR == 129) {printf "0.0\t\t\t%s\t%s\t%s\n", $2, $3, $4} else if (NR != 128) { print $0}}' >> $TMP/${cpt}.cpt
+	egrep '^B|^N|^F' gmt_cpts/${cpt}.cpt >> $TMP/${cpt}.cpt
+	mv -f $TMP/${cpt}.cpt gmt_cpts
+done < $TMP/hinge.lis
+mv -f $TMP/cpt_strings.txt .
+rm -rf $TMP
 echo "Folder with new cpts is $DIR/gmt_cpts"
+echo "The strings for src/gmt_cpt_masters.h can be found at $DIR/cpt_strings.txt"
