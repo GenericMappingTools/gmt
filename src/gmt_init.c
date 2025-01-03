@@ -1168,9 +1168,9 @@ GMT_LOCAL void gmtinit_translate_to_short_options(struct GMTAPI_CTRL *API, struc
 	   and also note that at this point we will always be at GMT_MSG_WARNING or whatever
 	   default verbosity level the program is initialized with -- fix this later (or not)! */
 #endif /* 0 */
-	if (modified) {
+	if (modified && gmt_M_is_verbose (API->GMT, GMT_MSG_INFORMATION)) {	/* Echo the converted options */
 		char *cmd = GMT_Create_Cmd (API, *options);
-		GMT_Report (API, GMT_MSG_WARNING, "Reformatted options: %s\n", cmd);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Reformatted options: %s\n", cmd);
 		GMT_Destroy_Cmd (API, &cmd);	/* Free string */
 	}
 }
