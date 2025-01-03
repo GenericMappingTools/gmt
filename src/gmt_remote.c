@@ -648,7 +648,7 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 	/* Get the remote file's size and if too large we refuse to download */
 	CURL *curl = NULL;
 	CURLcode res;
-	double filesize = 0.0;
+	curl_off_t filesize = 0;
 	size_t action = 0;
 	char curl_useragent[GMT_LEN64];
 
@@ -677,10 +677,10 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 		res = curl_easy_perform (curl);
 
 		if ((res = curl_easy_perform (curl)) == CURLE_OK) {
-      			res = curl_easy_getinfo (curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &filesize);
+      			res = curl_easy_getinfo (curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &filesize);
 			if ((res == CURLE_OK) && (filesize > 0.0)) {	/* Got the size */
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Remote file %s: Size is %0.0f bytes\n", URL, filesize);
-				action = (filesize < (double)limit) ? 0 : (size_t)filesize;
+				action = ((size_t)filesize < limit) ? 0 : (size_t)filesize;
 			}
 		}
 		else	/* We failed */
