@@ -595,7 +595,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		if (Ctrl->A.active) {
 			G->header->inc[GMT_X] = gmt_M_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->n_columns, G->header->registration);
 			G->header->inc[GMT_Y] = gmt_M_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->n_rows, G->header->registration);
-			GMT_Report (API, GMT_MSG_INFORMATION, "Reset grid-spacing in file %s to %g/%g\n",
+			GMT_Report (API, GMT_MSG_INFORMATION, "Reset grid-spacing in file %s to %.14g/%.14g\n",
 				out_file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}
 		if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_is_cartesian (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */

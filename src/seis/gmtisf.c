@@ -101,10 +101,7 @@ static int parse(struct GMT_CTRL *GMT, struct READISF_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, pos = 0;
-	int i, j, k;
-	size_t n_alloc = 0, len;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
+	unsigned int n_errors = 0, n_files = 0;
 	char  *pch = NULL;
 	double t;
 	struct GMT_OPTION *opt = NULL;
@@ -175,8 +172,7 @@ EXTERN_MSC int GMT_gmtisf(void *V_API, int mode, void *args) {	/* High-level fun
 	char   f_type[6], f_plane[6];
     bool   got_event = false, event_end, tensor_end, got_region = false;
 	int    error = GMT_NOERROR;
-	int	   i, in, mag_c = 0, event_c, idx_min_rms, np, ns, n_out_cols;
-	int	   export_aki = false, export_cmt = false, export_tensor = false;
+	int	   i, mag_c = 0, event_c, idx_min_rms, np, ns, n_out_cols;
 	int	   yyyy,mm,dd,hh,mi,ss,msec,strike,ndef,nsta,gap;
 	int   *years, *months, *days, *hours, *minutes;
 	float  stime,sdobs,lat,lon,depth,smaj,smin,sdepth,mindist,maxdist;
@@ -317,8 +313,9 @@ L1:
 			else if (!read_axes_head(line)) {
 				if (fgets(line, ISF_LINE_LEN, fp) != NULL) 
 					if (!read_axes(line, &scale_factor, &t_val, &t_azim, &t_pl, &b_val, &b_azim,
-					               &b_pl, &p_val, &p_azim, &p_pl,author));
-						tensor_end = true;
+					               &b_pl, &p_val, &p_azim, &p_pl,author))
+						;
+				tensor_end = true;
 			}
 			else if (tensor_end && !read_netmag_head(line)) {
 				mag_c = read_mags(fp,line,magtype,&magind,&mag,&magerr,&nsta,author,origid,mag_t,mags);
