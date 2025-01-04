@@ -929,8 +929,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_check_binary_io (GMT, n_needed))
+	if (gmt_check_binary_io(GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
+
+	if (Ctrl->N.active && GMT->common.b.active[GMT_IN]) GMT->common.b.active[2] = true; /* Signal gmtlib_process_binary_input that lats may be of |90| */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL))
@@ -1705,6 +1707,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					gmt_M_rgb_copy (current_pen.rgb, save_pen.rgb);
 			}
 		} while (true);
+
+		GMT->common.b.active[2] = false;	/* Reset this because externals have long memory and -N may not be used in a future call */
 
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
