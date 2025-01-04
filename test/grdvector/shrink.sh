@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test shrinking of line and heads with/without +n for grdvector
+# GRAPHICSMAGICK_RMS = 0.0042
 ps=shrink.ps
 gmt grdmath -R0/360/-30/60 -I30/30 -r 7 X MUL = x.nc
 gmt grdmath -R0/360/-30/60 -I30/30 -r 100 = y.nc
