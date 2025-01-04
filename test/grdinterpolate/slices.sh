@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Test grdinterpolate slicing along equator through a 3-D grid
 # Getting the file directly from IRIS
+#
+# GRAPHICSMAGICK_RMS = 0.0072
 
 gmt begin slices ps
 	gmt set PROJ_ELLIPSOID sphere
