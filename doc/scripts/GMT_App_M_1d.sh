@@ -46,13 +46,11 @@ y=0.375
 y2=0.25
 while [ $i -le $n ]
 do
-	j1=$(expr $n - $i)
-	j2=$(expr $n - $i + 1)
 	if [ $i -eq $n ]; then
-		plot $(sed -n ${j2}p tt.lis) 3.05
+		plot $(sed -n 1p tt.lis) 3.05
 	else
-		plot $(sed -n ${j1}p tt.lis) 1.55
-		plot $(sed -n ${j2}p tt.lis) 4.50
+		plot $(sed -n $(expr $n - $i    )p tt.lis) 1.55
+		plot $(sed -n $(expr $n - $i + 1)p tt.lis) 4.50
 	fi
 	i=$(expr $i + 2)
 	y=$(gmt math -Q $y $dy ADD =)
