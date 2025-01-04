@@ -446,7 +446,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
 	for (i = 1; i < n; i++) {
-		if (mode == GMT_STAIRS_Y) {	/* First follow x, then y */
+		if (mode == GMT_STAIRS_X) {	/* First follow x, then y */
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
@@ -465,7 +465,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double
 			}
 			k = 0;
 		}
-		else if (mode == GMT_STAIRS_X) {	/* First follow y, then x */
+		else if (mode == GMT_STAIRS_Y) {	/* First follow y, then x */
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
@@ -1378,7 +1378,7 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 #else
 	dgemm_ ("t", tr, &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
 #endif
-	
+
 #else
 	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
