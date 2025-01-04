@@ -139,8 +139,9 @@ message (STATUS "Searching dependent libraries. This may take a few minutes...")
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 
-# libcurl is required since 5.4
-find_package (CURL REQUIRED)
+# libcurl is required since GMT 5.4
+# At least version 7.55.0 is needed for src/gmt_remote.c
+find_package (CURL 7.55.0 REQUIRED)
 include_directories (${CURL_INCLUDE_DIRS})
 list (APPEND GMT_OPTIONAL_LIBRARIES ${CURL_LIBRARIES})
 set (CURL_LIBRARY ${CURL_LIBRARIES} CACHE INTERNAL "")
