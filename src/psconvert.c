@@ -817,7 +817,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Usage (API, 1, "\n-Z Remove input PostScript file(s) after successful conversion.");
 #ifndef PS_NO_DUP
-	GMT_Usage (API, 1, "\n-! Modify the input PS file instead of creating a temp EPS. Some options like -Ng will disable it.");
+	GMT_Usage (API, 1, "\n-! Modify the input PS file instead of creating a temp EPS. Some options like -N+g or -N+p will disable it.");
 #endif
 	GMT_Option (API, ".");
 
@@ -1756,7 +1756,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->N.BB_paint || Ctrl->N.outline) {
 		Ctrl->O.active = false;
-		GMT_Report (API, GMT_MSG_WARNING, "The -Ng or -Np option do not support the -!\n");
+		GMT_Report (API, GMT_MSG_WARNING, "The -N+g or -N+p options do not support the -!\n");
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
