@@ -168,9 +168,9 @@ Optional Arguments
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Prepend
     an optional directive:
     
-    - **-j** - Offset the text away from the point instead (i.e., the
+    - **j** - Offset the text away from the point instead (i.e., the
       text justification will determine the direction of the shift).
-    - **-J** - Shorten diagonal offsets at corners by :math:`\sqrt{2}`.
+    - **J** - Shorten diagonal offsets at corners by :math:`\sqrt{2}`.
 
     Optionally, append the modifier:
 
@@ -197,7 +197,6 @@ Optional Arguments
     - **+f** - Set the font ([*size*][,\ *fontname*][,\ *color*]); if no font info
       is given then the input file must have this information in one of its columns.
     - **+h** - Use the most recent segment header as the text to be plotted.
-      comes from the data record.  Instead, use **+h** or **+l** to select the
     - **+j** - Set the text justification; if no justification is given then the input
       file must have this item as a column. 
     - **+l** - Use the most recent segment label as the text to be plotted.
