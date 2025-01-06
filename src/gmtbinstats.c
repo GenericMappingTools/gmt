@@ -295,7 +295,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Option -S: Unable to decode radius\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Option -S: Radius is negative\n");
 	}
-	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
+	n_errors += gmt_check_binary_io(GMT, (Ctrl->C.mode == GMTBINSTATS_COUNT) ? 2 : (Ctrl->W.active) ? 4 : 3);
 	if (Ctrl->W.active) {	/* Update the mode if median or mode */
 		if (Ctrl->C.mode == GMTBINSTATS_MEDIAN) Ctrl->C.mode = GMTBINSTATS_MEDIANW;
 		if (Ctrl->C.mode == GMTBINSTATS_MODE) Ctrl->C.mode = GMTBINSTATS_MODEW;
