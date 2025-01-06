@@ -519,28 +519,16 @@ URLs and remote files
 
 Three classes of files are given special treatment in GMT.
 
-#. Some data sets are ubiquitous and used by nearly all GMT users.
-   At the moment this collection is limited to Earth relief grids.  If you specify
-   a grid input named **@earth_relief_**\ *res* on a command line then
-   such a grid will automatically be downloaded from the GMT Data Server and placed
-   in the *server* directory under **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
-   15 common grid spacings: 01d, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
-   30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
-   11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
-   as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb for the whole set, respectively). Once
-   one of these grids have been downloaded any future reference will simply obtain the
-   file from **$GMT_USERDIR** (except if explicitly removed by the user).
-   **Note**: The 15 arc-sec data comes from the original dataset SRTM15+.
-   Lower resolutions are spherically Gaussian-filtered versions of SRTM15+.
-   The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
-   between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
-   tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
-   grids and stored in subdirectories srtm1 and srtm3 under the server directory, and assembled
-   into a seamless grid using :doc:`/grdblend`. A tile is only downloaded and converted
-   once (unless the user cleans the data directories).
+#. GMT offers several remote global data grids that you can access via our remote file mechanism 
+   (e.g. **@earth_relief**). The first time you access one of these files, GMT will download
+   the file (or a subset tile) from the selected GMT server and save it to the *server* directory 
+   under your **$GMT_USERDIR** directory [~/.gmt]. Once one of these grids have been downloaded 
+   any future reference will simply obtain the file from **$GMT_USERDIR** (except if explicitly
+   removed by the user). See :doc:`remote-datasets` for a comprehensive list of available remote
+   datasets and detailed information.
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to the current directory and subsequently
-   read from there (until removed by the user).  If the URL is actually a CGI Get
+   read from there (until removed by the user). If the URL is actually a CGI Get
    command (i.e., ends in ?par=val1&par2=val2...) then we download the file
    each time we encounter the URL.
 #. Demonstration files used in online documentation, example scripts, or even the
@@ -548,11 +536,11 @@ Three classes of files are given special treatment in GMT.
    encountered on the command line it is understood to be a short-hand representation
    of the full URL to *filename* on the GMT Cache Data site.
    Since this address may change over time we use the leading
-   @ to simplify access to these files.  Such files will also be downloaded
+   @ to simplify access to these files. Such files will also be downloaded
    to :term:`DIR_CACHE` and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
    can override that selection by setting the environmental parameter **$GMT_DATA_SERVER** or
-   the default setting for :term:`GMT_DATA_SERVER`.  Alternatively, configure the CMake
+   the default setting for :term:`GMT_DATA_SERVER`. Alternatively, configure the CMake
    parameter GMT_DATA_SERVER at compile time.
 #. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
    limit the size of the largest datafile to download via :term:`GMT_DATA_SERVER_LIMIT` or
@@ -560,7 +548,7 @@ Three classes of files are given special treatment in GMT.
 
 The user cache (:term:`DIR_CACHE`) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
-can be cleared via the command **gmt clear data**.  Finally, when a remote file is requested
+can be cleared via the command **gmt clear data**. Finally, when a remote file is requested
 we also check if that file has changed at the server and re-download the updated file;
 this check is only performed no more often than once a day.
 
