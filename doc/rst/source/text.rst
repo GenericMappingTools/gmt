@@ -196,9 +196,12 @@ Optional Arguments
       at the Upper Left corner of the map.
     - **+f** - Set the font ([*size*][,\ *fontname*][,\ *color*]); if no font info
       is given then the input file must have this information in one of its columns.
-    - **+h** - Use the most recent segment header as the text to be plotted.
     - **+j** - Set the text justification; if no justification is given then the input
       file must have this item as a column. 
+
+    Normally, the text is read from the data records. Alternative ways to provide text:
+
+    - **+h** - Use the most recent segment header as the text to be plotted.
     - **+l** - Use the most recent segment label as the text to be plotted.
     - **+r** - Use the record number (counting up from *first* [0]) as the text to be plotted.
     - **+t** - Use the appended *text* to set a fixed text string (if *text* contains plus
@@ -206,14 +209,16 @@ Optional Arguments
     - **+z** - Format incoming *z* values to a string using the supplied *format* 
       [if not appended we use :term:`FORMAT_FLOAT_MAP`].
 
-     **Notes**: (1) If |-Z| is in effect then the *z* value used for formatting is in the
-     4th, not 3rd column. If you only want a specific word from the trailing text and
-     not the whole line, use **-it**\ *word* to indicate which word (0 is the first word)
-     you want. (2) Items read from the data file should be in the same order as
-     the modifiers are specified with the |-F| option. Example:
-     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
-     Helvetica-Bold font and expects to read the justification and angle
-     from the file, in that order, after *x* *y* and before *text*.
+    **Notes**: |-F|\ **+h**\|\ **l**\|\ **r**\|\ **t**\| **z** can't be used with |-M|.
+
+    **Notes**: (1) If |-Z| is in effect then the *z* value used for formatting is in the
+    4th, not 3rd column. If you only want a specific word from the trailing text and
+    not the whole line, use **-it**\ *word* to indicate which word (0 is the first word)
+    you want. (2) Items read from the data file should be in the same order as
+    the modifiers are specified with the |-F| option. Example:
+    **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
+    Helvetica-Bold font and expects to read the justification and angle
+    from the file, in that order, after *x* *y* and before *text*.
 
 .. _-G:
 

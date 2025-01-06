@@ -713,7 +713,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Option -Gc: Cannot be used with -M.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Option -Gc: Cannot be used with -W.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Option -Gc: Cannot be used with -D...v<pen>.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Option -M: Cannot be used with -F...+l|h.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Option -M: Cannot be used with -F...+l|h|r|t|z.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->G.active && Ctrl->G.mode == 0), "Option -S: Requires -G as well.\n");
 	n_errors += gmt_M_check_condition (GMT, strchr ("cC", Ctrl->C.mode) && !Ctrl->M.active, "Option -C: Box shape mode +tc|C is only available when -M is selected.\n");
 
