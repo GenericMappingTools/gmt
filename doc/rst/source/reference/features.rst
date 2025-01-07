@@ -524,8 +524,10 @@ Three classes of files are given special treatment in GMT.
    the file (or a subset tile) from the selected GMT server and save it to the *server* directory 
    under your **$GMT_USERDIR** directory [~/.gmt]. Once one of these grids have been downloaded 
    any future reference will simply obtain the file from **$GMT_USERDIR** (except if explicitly
-   removed by the user). See :doc:`remote-datasets` for a comprehensive list of available remote
-   datasets and detailed information.
+   removed by the user). See the `Remote Datasets <https://docs.generic-mapping-tools.org/dev/datasets/remote-data.html>`_ 
+   section for a comprehensive list of available remote datasets and detailed information.
+   
+
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to the current directory and subsequently
    read from there (until removed by the user). If the URL is actually a CGI Get
