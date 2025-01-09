@@ -2,8 +2,8 @@
 #               GMT EXAMPLE 39
 #
 # Purpose:      Illustrate evaluation of spherical harmonic coefficients
-# GMT modules:  colorbar, text, makecpt, grdimage, sph2grd
-# Unix progs:   rm
+# GMT modules:  colorbar, text, makecpt, grd2cpt, grdimage, sph2grd
+# Unix progs:   echo, rm
 #
 gmt begin ex39
 	# Evaluate the first 180, 90, and 30 order/degrees of Venus spherical

@@ -2,6 +2,7 @@ REM               GMT EXAMPLE 50
 REM
 REM Purpose:      Illustrate different statistical distributions in gmtmath
 REM GMT modules:  math, set, plot, text
+REM DOS calls:	del, echo
 REM
 
 gmt begin ex50

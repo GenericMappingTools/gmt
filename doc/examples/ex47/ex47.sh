@@ -3,7 +3,7 @@
 #
 # Purpose:      Illustrate use of gmtregress with different norms and types
 # GMT modules:  gmtregress, plot, text, subplot
-# Unix progs:	rm
+# Unix progs:	grep, sed, rm
 #
 
 # Because all panels are almost identical we make a bash function that plots

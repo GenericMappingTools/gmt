@@ -3,6 +3,7 @@ REM
 REM Purpose:      Illustrate data analysis using the seafloor depth/age relationship
 REM GMT modules:  blockmode, gmtmath, grdcontour, grdimage, grdsample, makecpt,
 REM		subplot, basemap, legend, colorbar, plot, xyz2grd
+REM DOS calls:	del
 REM
 
 gmt begin ex49

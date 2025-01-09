@@ -3,7 +3,7 @@
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT modules:	set, grdimage, grdmath, text, plot
-# Unix progs:	rm
+# Unix progs:	echo, rm
 gmt begin ex11
 # Use gmt plot to plot "cut-along-the-dotted" lines.
 	gmt set MAP_TICK_LENGTH_PRIMARY 0

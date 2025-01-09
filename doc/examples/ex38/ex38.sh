@@ -2,7 +2,7 @@
 #               GMT EXAMPLE 38
 #
 # Purpose:      Illustrate histogram equalization on topography grids
-# GMT modules:  colorbar, text, makecpt, grdhisteq, grdimage
+# GMT modules:  colorbar, text, makecpt, grdhisteq, grdimage, subplot
 # Unix progs:   rm
 #
 gmt begin ex38

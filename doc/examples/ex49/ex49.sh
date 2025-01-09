@@ -4,6 +4,7 @@
 # Purpose:      Illustrate data analysis using the seafloor depth/age relationship
 # GMT modules:  blockmode, gmtmath, grdcontour, grdimage, grdsample, makecpt,
 #		subplot, basemap, legend, colorbar, plot, xyz2grd
+# Unix progs:	rm
 #
 
 gmt begin ex49

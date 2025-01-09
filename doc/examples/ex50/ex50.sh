@@ -3,6 +3,7 @@
 #
 # Purpose:      Illustrate different statistical distributions in gmtmath
 # GMT modules:  math, set, plot, text
+# Unix progs:	rm
 #
 
 gmt begin ex50

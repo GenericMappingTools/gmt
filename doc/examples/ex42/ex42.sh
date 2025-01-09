@@ -2,8 +2,8 @@
 #               GMT EXAMPLE 42
 #
 # Purpose:      Illustrate Antarctica and stereographic projection
-# GMT modules:  makecpt, grdimage, coast, legend, colorbar, set, text, plot
-# Unix progs:   [curl grdconvert]
+# GMT modules:  makecpt, grdimage, coast, legend, colorbar, set, text, plot, [grdconvert]
+# Unix progs:   [curl, gunzip]
 #
 gmt begin ex42
 	gmt set PROJ_ELLIPSOID WGS-84

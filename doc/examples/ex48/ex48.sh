@@ -3,6 +3,7 @@
 #
 # Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs
 # GMT modules:  makecpt, coast, plot, sphtriangulate, grdimate, gmtmath, text
+# Unix progs:	echo, rm
 #
 
 gmt begin ex48
