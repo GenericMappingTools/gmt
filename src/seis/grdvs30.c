@@ -161,6 +161,7 @@ static int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO 
 
 	unsigned int n_errors = 0, n_files = 0;
 	char p[GMT_LEN16] = {""}, *pch;
+	float t;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -186,21 +187,19 @@ static int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO 
 				if ((pch = strstr(opt->arg, "+g")) != NULL)
 					Ctrl->C.is_grid = true;			/* Useless if Ctrl->C.file = NULL is set below */
 
-				if (!gmt_check_filearg (GMT, 'C', Ctrl->C.file, GMT_IN, GMT_IS_DATASET)) {
+				t =	atof(opt->arg);
+				if (t >= 0 && t <= 1) {
+					Ctrl->C.val = t;
 					Ctrl->C.file = NULL;
-					Ctrl->C.val = atof (opt->arg);
-					if (Ctrl->C.val < 0 || Ctrl->C.val > 1) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Errorn in -C. Must provide either a file name or a value in the [0 1] interval.\n", p);
-						n_errors++;
-					}
+				}
+				else if (!gmt_check_filearg(GMT, 'C', Ctrl->C.file, GMT_IN, GMT_IS_DATASET)) {
+					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Errorn in -C. Must provide either a file name or a value in the [0 1] interval.\n", p);
+					n_errors++;
 				}
 				break;
 			case 'G':	/* Output file */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (!gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID))
-					Ctrl->G.file = strdup (opt->arg);
-				else
-					n_errors++;
+				n_errors += gmt_M_repeated_module_option(API, Ctrl->G.active);
+				n_errors += gmt_get_required_file(GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'W':
 				Ctrl->W.water = (float)atof (opt->arg);
@@ -211,7 +210,7 @@ static int parse (struct GMT_CTRL *GMT, struct VS30_CTRL *Ctrl, struct GMT_Z_IO 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Syntax error -G option: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Syntax error -C option: Must specify a value or a file name.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -260,7 +259,9 @@ EXTERN_MSC int GMT_grdvs30 (void *V_API, int mode, void *args) {
 	uint64_t ij;
 	int error = 0;
 	char cmd[GMT_LEN256] = {""};
-	char crat_grd[GMT_LEN16] = {""}, mask_grd[GMT_LEN16] = {""}, grad_grd[GMT_LEN16] = {""};
+	char crat_grd[GMT_LEN32] = {""}, mask_grd[GMT_LEN32] = {""}, grad_grd[GMT_LEN32] = {""};
+	/*
+				*/
 	float crat, lg;
 	double (*table)[4], tvs[2], vv, wesn[4];
 
@@ -312,7 +313,7 @@ EXTERN_MSC int GMT_grdvs30 (void *V_API, int mode, void *args) {
 		Return (API->error);
 
 	/* Prepare the grdlandmask arguments */
-	sprintf (cmd, "-G%s -I%f/%f -Df -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false ",
+	sprintf (cmd, "-G%s -I%.16g/%.16g -Df -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=false ",
 	         mask_grd, G->header->inc[GMT_X], G->header->inc[GMT_Y], wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling grdlandmask with args %s\n", cmd);
