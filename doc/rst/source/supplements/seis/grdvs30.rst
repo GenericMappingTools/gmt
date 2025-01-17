@@ -45,7 +45,8 @@ Required Arguments
     Argument *val* can be one of these three:
        - A value *val* between 0 and 1, where 0 means a stable Craton and 1 an Active region.
        - The name of a multi-segment file with the *cratons* polygons. In this case the polygons will be
-         feed to grdmask to compute a cratons/active tectonic mask. 
+         feed to grdmask to compute a cratons/active tectonic mask. Use **-C**\ *@cratons.xy* to download
+         a cratons file from the GMT server.
        - The name of a grid with the cratons/active tectonic regions. In this case the **+g** suffix
          is mandatory to indicate that we are reading a grid.
 
