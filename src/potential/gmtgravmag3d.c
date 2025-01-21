@@ -363,7 +363,7 @@ static int parse(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GM
 						if (n_par < 7)  Ctrl->M.params[ELLIPSOID][nELL][6] = Ctrl->npts_circ;
 						if (n_par < 8)  Ctrl->M.params[ELLIPSOID][nELL][7] = Ctrl->n_slices;
 						if (Ctrl->M.params[SPHERE][nSPHERE][6] <= 0 || Ctrl->M.params[SPHERE][nSPHERE][7] <= 0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Bad parameters for the 'ellipsoid' body. Please, RTFM (read the manual).");
+							GMT_Report (API, GMT_MSG_ERROR, "Bad parameters for the 'ellipsoid' body. Please, read the manual.");
 							return GMT_PARSE_ERROR;
 						}
 						Ctrl->M.type[ELLIPSOID][nELL] = ELLIPSOID;
@@ -387,7 +387,7 @@ static int parse(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GM
 						if (n_par < 5)  Ctrl->M.params[SPHERE][nSPHERE][4] = Ctrl->npts_circ;
 						if (n_par < 6)  Ctrl->M.params[SPHERE][nSPHERE][5] = Ctrl->n_slices;
 						if (Ctrl->M.params[SPHERE][nSPHERE][4] <= 0 || Ctrl->M.params[SPHERE][nSPHERE][5] <= 0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Bad parameters for the 'sphere' body. Please, RTFM (read the manual).");
+							GMT_Report (API, GMT_MSG_ERROR, "Bad parameters for the 'sphere' body. Please, read the manual.");
 							return GMT_PARSE_ERROR;
 						}
 						Ctrl->M.type[SPHERE][nSPHERE] = SPHERE;
