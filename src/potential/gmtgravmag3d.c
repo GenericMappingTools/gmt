@@ -333,7 +333,7 @@ static int parse(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GM
 						if (n_par < 8)  Ctrl->M.params[BELL][nBELL][7] = Ctrl->npts_circ;
 						if (n_par < 9)  Ctrl->M.params[BELL][nBELL][8] = Ctrl->n_slices;
 						if (Ctrl->M.params[BELL][nBELL][6] || Ctrl->M.params[SPHERE][nSPHERE][7] <= 0 || Ctrl->M.params[SPHERE][nSPHERE][8] <= 0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Bad parameters for the 'bell' body. Please, RTFM (read the manual).");
+							GMT_Report(API, GMT_MSG_ERROR, "Bad parameters for the 'bell' body. Please, read the manual.");
 							return GMT_PARSE_ERROR;
 						}
 						Ctrl->M.type[BELL][nBELL] = BELL;
@@ -344,7 +344,7 @@ static int parse(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GM
 						if (n_par < 3) err_npar = 1;
 						if (n_par < 6)  Ctrl->M.params[CYLINDER][nCIL][5] = Ctrl->npts_circ;
 						if (Ctrl->M.params[SPHERE][nSPHERE][5] <= 0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Bad parameters for the 'cylinder' body. Please, RTFM (read the manual).");
+							GMT_Report(API, GMT_MSG_ERROR, "Bad parameters for the 'cylinder' body. Please, read the manual.");
 							return GMT_PARSE_ERROR;
 						}
 						Ctrl->M.type[CYLINDER][nCIL] = CYLINDER;

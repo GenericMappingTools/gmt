@@ -143,6 +143,14 @@ int five_psoid(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int body_ty
 	a  = Ctrl->M.params[body_type][nb][0];		b   = Ctrl->M.params[body_type][nb][1];
 	c  = Ctrl->M.params[body_type][nb][2];		z_c = Ctrl->M.params[body_type][nb][3];
 	x0 = Ctrl->M.params[body_type][nb][4];		y0  = Ctrl->M.params[body_type][nb][5];
+	if (body_type == SPHERE) {		/* This has less parameters so the above is wrong. */
+		b = c = a;	z_c = Ctrl->M.params[body_type][nb][1];
+		x0 = Ctrl->M.params[body_type][nb][2];		y0 = Ctrl->M.params[body_type][nb][3];
+	}
+	if (body_type == BELL) {
+		a = b;	b = c;	c = Ctrl->M.params[body_type][nb][0];
+	}
+
 	z_top = z_c + c;	z_bot = z_c;
 
 	n_tri = (hemi) ? 2 * npts_circ * n_slices : 2 * (npts_circ * (n_slices*2 - 1));
