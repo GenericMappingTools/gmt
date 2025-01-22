@@ -2,13 +2,14 @@ REM               GMT EXAMPLE 39
 REM
 REM Purpose:      Illustrate evaluation of spherical harmonic coefficients
 REM GMT modules:  colorbar, text, makecpt, grdimage, sph2grd
+REM DOS calls:	del, echo
 REM
 gmt begin ex39
 	REM Evaluate the first 180, 90, and 30 order/degrees of Venus spherical
 	REM harmonics topography model, skipping the L = 0 term (radial mean).
 	REM File truncated from http://www.ipgp.fr/~wieczor/SH/VenusTopo180.txt.zip
 	REM Wieczorek, M. A., Gravity and topography of the terrestrial planets,
-	REM   Treatise on Geophysics, 10, 165-205, doi:10.1016/B978-044452748-6/00156-5, 2007
+	REM Treatise on Geophysics, 10, 165-205, doi:10.1016/B978-044452748-6/00156-5, 2007
 
 	gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv1.nc -F1/1/25/30
 	gmt sph2grd @VenusTopo180.txt -I1 -Rg -Ng -Gv2.nc -F1/1/85/90

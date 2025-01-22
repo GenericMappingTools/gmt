@@ -31,7 +31,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 		  GMT_TP_STANDARD },
 	GMT_C_CPT_KW,
 	{ 0, 'D', "offset",                  "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'E', "errorbars",
+	{ 0, 'E', "errorbars|error_bars|error_bar",
 	          "x,y,X,Y",                 "xbar,ybar,boxwhisker,stemleaf",
 	          "a,A,c,n,w,p",             "asymmetrical,lhbounds,symbolfill,notch,capwidth,pen",
 		  GMT_TP_STANDARD },

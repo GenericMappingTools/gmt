@@ -2,7 +2,6 @@ REM		GMT EXAMPLE 04
 REM
 REM Purpose:	3-D mesh and color plot of Hawaiian topography and geoid
 REM GMT modules:	grdcontour, grdimage, grdview, basemap, coast, text, makecpt
-REM DOS calls:	echo
 REM
 gmt begin
 	gmt figure ex04

@@ -41,8 +41,7 @@ sudo apt-get update
 sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 
 # Install packages via conda
-conda update -n base -c conda-forge conda --solver libmamba
-conda install ${conda_packages} -c conda-forge --solver libmamba
+conda install ${conda_packages} -c conda-forge
 echo "${CONDA}/bin" >> $GITHUB_PATH
 
 # Remove pcre-config from conda's path so cmake won't find the conda's one

@@ -5,7 +5,7 @@
 #		selection of data
 # GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdimage
 # GMT modules:	grdmath, grdvolume, makecpt, coast, colorbar, text, plot
-# Unix progs:	rm
+# Unix progs:	echo, rm
 #
 gmt begin ex18
 	# Use spherical gmt projection since SS data define on sphere

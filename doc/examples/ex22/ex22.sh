@@ -3,7 +3,7 @@
 #
 # Purpose:	Automatic map of last month of world-wide seismicity
 # GMT modules:	coast, plot, legend
-# Unix progs:	cat, sed, awk, wget|curl
+# Unix progs:	cat, wget|curl
 #
 gmt begin ex22
 	# Get the data (-s silently) from USGS using the curl

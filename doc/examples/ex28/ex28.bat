@@ -2,6 +2,7 @@ REM		GMT EXAMPLE 28
 REM
 REM Purpose:	Illustrates how to mix UTM data and UTM gmt projection
 REM GMT modules:	makecpt, grdimage, coast, text, basemap
+REM DOS calls:	echo
 REM
 gmt begin ex28
 	REM Set up a color table

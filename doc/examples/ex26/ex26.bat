@@ -2,6 +2,7 @@ REM		GMT EXAMPLE 26
 REM
 REM Purpose:	Demonstrate general vertical perspective projection
 REM GMT modules:	coast
+REM DOS calls:	set
 REM
 gmt begin ex26
 	REM first do an overhead of the east coast from 160 km altitude point straight down

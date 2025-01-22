@@ -2,6 +2,7 @@ REM		GMT EXAMPLE 22
 REM
 REM Purpose:	Automatic map of last month of world-wide seismicity
 REM GMT modules:	set, coast, plot, legend
+REM DOS calls:	del, echo, set
 REM
 gmt begin ex22
 	gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF

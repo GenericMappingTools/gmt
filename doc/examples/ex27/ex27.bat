@@ -2,6 +2,7 @@ REM		GMT EXAMPLE 27
 REM
 REM Purpose:	Illustrates how to plot Mercator img grids
 REM GMT modules:	makecpt, grdimage, grdinfo, coast, colorbar
+REM DOS calls:	set
 REM
 gmt begin ex27
 	REM Gravity in tasman_grav.nc is in 0.1 mGal increments and the grid
