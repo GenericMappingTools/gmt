@@ -10315,7 +10315,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 	}
 }
 
-void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
+void *GMT_Get_Record(void *V_API, unsigned int mode, int *retval) {
 	/* Retrieves the next data record from the virtual input source and
 	 * returns the number of columns found via *retval (unless retval == NULL).
 	 * If current record is a segment header then we return 0.
@@ -10348,7 +10348,10 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 		record = API->api_get_record (API, mode, &n_fields);
 	} while (API->get_next_record);
 
-	if (!(n_fields == EOF || n_fields == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
+	if (!(n_fields == EOF || n_fields == GMT_IO_NEXT_FILE)) {	/* Increase record count, unless EOF */
+		API->current_rec[GMT_IN]++;
+		if (GMT->current.io.variable_in_columns) GMT->current.io.n_numerical_cols = (unsigned int)n_fields;	/* Keep track of this */
+	}
 
 	if (retval) *retval = n_fields;	/* Requested we return the number of fields found */
 	return (record);		/* Return pointer to current record */
@@ -13460,6 +13463,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 1y. Check if this is the gravprisms module, where primary dataset input should be turned off if -C is used */
 	else if (!strncmp (module, "gravprisms", 10U) && (opt = GMT_Find_Option (API, 'C', *head))) {
 		deactivate_input = true;    /* Turn off implicit input since none is in effect */
+	}
+	/* 1z. Check if gmtgravmag3d is producing grids or datasets */
+	else if (!strncmp (module, "gmtgravmag3d", 12U)) {
+		//type = (opt = GMT_Find_Option (API, 'F', *head)) ? 'D' : 'G';	/* Giving -F<file> means compute over a line, else grid */
 	}
 
 	/* 2a. Get the option key array for this module */

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt gravmag3d** *xyz_file* |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file* OR |-M|\ **+s**\ *body,params*
+**gmt gravmag3d** *xyz_file* |-T|\ **+v**\ *vert_file* OR |-T|\ **+r\|+s**\ *raw_file* OR |-M|\ **+s**\ *body,params*
 [ |-C|\ *density* ]
 [ |-E|\ *thickness* ]
 [ |-F|\ *xy_file* ]
@@ -97,15 +97,15 @@ Required Arguments (not all)
 
 .. _-T:
 
-**-Tv**\ *vert_file* (must have when passing a *xyz_file*) OR **-Tr\|s**\ *raw_file*
-    Gives names of a xyz and vertex (**-Tv**\ *vert_file*) files defining a close surface.
+**-T+v**\ *vert_file* (must have when passing a *xyz_file*) OR **-T+r\|+s**\ *raw_file*
+    Gives names of a xyz and vertex (**-T+v**\ *vert_file*) files defining a closed surface.
     The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
     The *xyz* file can have 3, 4, 5, 6 or 8 columns. In first case (3 columns) the magnetization (or density) are
     assumed constant (controlled by |-C| or |-H|). Following cases are: 4 columns -> 4rth col magnetization intensity;
     5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
-    When n columns > 3 the third argument of the |-H| option is ignored. A *raw* format (selected by the **-Tr** option)
+    When n columns > 3 the third argument of the |-H| option is ignored. A *raw* format (selected with the **-T+r** option)
     is a file with N rows (one per triangle) and 9 columns corresponding to the *x, y, z* coordinates of each of the three
-    vertex of each triangle. Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL
+    vertex of each triangle. Alternatively, the **-T+s** option indicates that the surface file is in the ASCII STL
     (Stereo Lithographic) format. These two type of files are used to provide a closed surface.
 
 Optional Arguments
