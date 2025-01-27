@@ -77,6 +77,12 @@ Optional Arguments
     solar-radio/noontime-flux/penticton/penticton_absolute/listings/
     listing_drao_noontime-flux-absolute_monthly.txt
 
+    Another update in January 2025. The NASA site above no longer updated its data and now we use *F10.7* data
+    downloaded from https://celestrak.org/spacedata/SW-All.csv  (Matlab refences this site as well). But it
+    contains only daily data. Hence we computed the montly averages. However, comparing previous and computed
+    averages from this site show some differences. For example the first 4 months of 2018 (replaced to in this
+    update) compare like this: [609 632 608 634] (nasa) _vs_ [699 725 683 700] (celestrak).
+
 .. _-A:
 
 **-A**\ [**+a**\ *alt*\ ][**+t**\ *date*\ ][**+y**]
