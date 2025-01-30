@@ -172,6 +172,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
+GMT_LOCAL int read_stl (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl);
 GMT_LOCAL void set_center (struct GMTGRAVMAG3D_CTRL *Ctrl);
 GMT_LOCAL int facet_triangulate (struct GMTGRAVMAG3D_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat);
 GMT_LOCAL int facet_raw (struct GMTGRAVMAG3D_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo);
@@ -511,9 +512,8 @@ GMT_LOCAL int read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, str
 	unsigned int k, n = 0;
 	size_t n_alloc = 10 * GMT_CHUNK;
 	char line[GMT_LEN256] = {""};
-	double x1, x2, x3, x4, x5, x6, x7, x8;
+	double x1, x2, x3;
 	struct GMT_RECORD *In = NULL;
-	FILE *fp = NULL;
 
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 0, GMT_COL_VAR)) != GMT_NOERROR)
 		return error;
