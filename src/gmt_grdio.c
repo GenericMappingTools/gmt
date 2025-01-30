@@ -1392,7 +1392,7 @@ int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT
 			return (GMT_GRID_CARTESIAN);
 		}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cartesian %s grid\n", dir[direction]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Cartesian %s grid\n", dir[direction]);
 	return (GMT_GRID_CARTESIAN);
 }
 

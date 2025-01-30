@@ -10,7 +10,7 @@ echo -50 0 > li
 echo  50 0 >> li
 gmt sample1d li -Fl -I1 > li1.dat
 
-gmt gmtgravmag3d -Tr@sphere_raw.txt -C$ro -Fli1.dat > ptodos_g.dat
+gmt gmtgravmag3d -T@sphere_raw.txt+r+n -C$ro -Fli1.dat > ptodos_g.dat
 
 # xyzokb solution
 gmt psxy ptodos_g.dat -i0,2 -R-50/50/0/0.125 -JX14c/10c -Bx10f5 -By.01 -BWSne+t"Anomaly (mGal)" -W1p -P -K > $ps
