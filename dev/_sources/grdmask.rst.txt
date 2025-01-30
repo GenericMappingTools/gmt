@@ -125,13 +125,13 @@ Optional Arguments
 
 **-S**\ *radius*\|\ *xlim*\ /*ylim*
     Set nodes to inside, on edge, or outside depending on their distance
-    to the nearest data point. Nodes within the searsch *radius* [0] from the
+    to the nearest data point. Nodes within the search *radius* [0] from the
     nearest data point are considered inside; append a distance unit
     (see `Units`_). If *radius* is given as **z** then we instead read
-    individual radii from the 3rd input column.  Unless Cartesian data,
+    individual radii from the 3rd input column. Unless Cartesian data,
     specify the unit of these radii by appending it after **-Sz**.
     If |-S| is not set then we consider the input data to define
-    one or more closed polygon(s) instead.  For Cartesian data with
+    one or more closed polygon(s) instead. For Cartesian data with
     different units you can instead append *xlim*\ /*ylim* which will
     perform a rectangular search where all nodes within ±\ *xlim* and
     ±\ *ylim* of a data point will be considered inside.
