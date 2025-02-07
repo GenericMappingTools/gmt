@@ -183,7 +183,7 @@ Set up a clip path overlay based on the day/night terminator::
 References
 ----------
 
-Code from the Excel Spreadsheets in http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html
+Code from the Excel Spreadsheets in https://gml.noaa.gov/grad/solcalc/calcdetails.html.
 
 Notes
 -----
