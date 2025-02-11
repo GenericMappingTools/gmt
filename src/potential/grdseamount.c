@@ -44,7 +44,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdseamount"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Create synthetic seamounts (Gaussian, parabolic, polynomial, cone or disc; circular or elliptical)"
-#define THIS_MODULE_KEYS	"<T{,GG},LD),MD),TD("
+#define THIS_MODULE_KEYS	"<D{,GG},KG(,WG(,LD),MD),TD("
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVbdefhir"
 
@@ -1219,7 +1219,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 		}
 		n_time = 0;	/* Number of numerical columns used for time for current record */
 		S[n].code = Ctrl->C.code;	/* Set default code if given */
-		if (In->text[0]) {	/* May have passed time information and/or code via trailing text */
+		if (In->text && In->text[0]) {	/* May have passed time information and/or code via trailing text */
 			int ns = sscanf (In->text, "%s %s %s", txt_x, txt_y, m);	/* Only consider first three words */
 			if (Ctrl->T.active) {	/* -T requires times t0, t1 */
 				if (ns == 1)	{	/* Possibly only shape code was given as trailing text */
