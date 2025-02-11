@@ -1981,6 +1981,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
 			goto wrap_up;
 		gmt_M_memcpy (data, Grid->data, Grid->header->size, gmt_grdfloat);	/* This will go away once gmt_nc.c is fixed to leave array alone */
+		if (API->GMT->current.io.col_type[GMT_X][0] == GMT_IS_LON) Grid->header->ProjRefPROJ4 = strdup("+proj=longlat");
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, gfile, Grid) != GMT_NOERROR)
 			goto wrap_up;
 		gmt_M_memcpy (Grid->data, data, Grid->header->size, gmt_grdfloat);
