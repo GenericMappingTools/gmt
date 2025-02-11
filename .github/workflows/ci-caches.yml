@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Install GMT
-        uses: mamba-org/setup-micromamba@v2.0.3
+        uses: mamba-org/setup-micromamba@v2.0.4
         with:
           environment-name: gmt
           condarc: |
