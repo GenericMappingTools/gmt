@@ -1601,7 +1601,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		else	/* Circular features */
 			major = minor = S[smt].radius;		/* Radius in m */
 		/* Compute area, volume, mean amplitude */
-		shape_func[S[smt].build_mode] (major, minor, S[smt].height, Ctrl->L.value, S[smt].f, &area, &volume, &height);
+		shape_func[S[smt].build_mode](major, minor, S[smt].height, Ctrl->L.value, S[smt].f, &area, &volume, &height);
 		V[smt] = volume;
 		h[smt] = amplitude;
 		if (map) {	/* Report values in km^2, km^3, and m */
@@ -1613,13 +1613,14 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			out[GMT_X] = area;
 			out[GMT_Y] = volume;
 			out[GMT_Z] = height;
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			API->GMT->current.io.col_type[1][0] = API->GMT->current.io.col_type[1][1] = GMT_IS_FLOAT;	/* If set to geog Put_Record would error. */
+			GMT_Put_Record(API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Seamount %" PRIu64 " [%c] area, volume, mean height: %g %g %g\n", n_smts, S[smt].code, area, volume, height);
 	}
 	if (Ctrl->L.active) {	/* OK, that was all we wanted */
-		gmt_M_free (GMT, Out);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
+		gmt_M_free(GMT, Out);
+		if (GMT_End_IO(API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
 			goto wrap_up;
 		goto wrap_up;
 	}
