@@ -19,84 +19,127 @@ are more advanced movie examples.  You can generate anything from tiny
 animated gif files for your PowerPoint or KeyNote presentations or a
 full-featured movie with thousands of frames at HD or 4k resolution.
 
-.. cssclass:: gmtgallery
+.. grid:: 1 1 1 2
 
-.. cssclass:: gmtmovie
+   .. grid-item-card:: :doc:`/animations/anim01`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim01
 
-- .. youtube:: 5m3gRhFFFLA
-     :width: 100%
+      .. youtube:: 5m3gRhFFFLA
+         :width: 100%
 
-  :doc:`/animations/anim01`
+   .. grid-item-card:: :doc:`/animations/anim02`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim02
 
-- .. youtube:: WQ6JrtEu_Fk
-     :width: 100%
+      .. youtube:: WQ6JrtEu_Fk
+         :width: 100%
 
-  :doc:`/animations/anim02`
+   .. grid-item-card:: :doc:`/animations/anim03`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim03
 
-- .. youtube:: zCo0fuMkvMY
-     :width: 100%
+      .. youtube:: zCo0fuMkvMY
+         :width: 100%
 
-  :doc:`/animations/anim03`
+   .. grid-item-card:: :doc:`/animations/anim04`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim04
 
-- .. youtube:: j75MbWb4WCE
-     :width: 100%
+      .. youtube:: j75MbWb4WCE
+         :width: 100%
 
-  :doc:`/animations/anim04`
+   .. grid-item-card:: :doc:`/animations/anim05`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim05
 
-- .. youtube:: 7NQa4TORA3E
-     :width: 100%
+      .. youtube:: 7NQa4TORA3E
+         :width: 100%
 
-  :doc:`/animations/anim05`
+   .. grid-item-card:: :doc:`/animations/anim06`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim06
 
-- .. youtube:: 3vB53hoLsls
-     :width: 100%
+      .. youtube:: 3vB53hoLsls
+         :width: 100%
 
-  :doc:`/animations/anim06`
+   .. grid-item-card:: :doc:`/animations/anim07`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim07
 
-- .. youtube:: KfBwQlyjz5w
-     :width: 100%
+      .. youtube:: KfBwQlyjz5w
+         :width: 100%
 
-  :doc:`/animations/anim07`
+   .. grid-item-card:: :doc:`/animations/anim08`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim08
 
-- .. youtube:: H0RyjHRhJ3g
-     :width: 100%
+      .. youtube:: H0RyjHRhJ3g
+         :width: 100%
 
-  :doc:`/animations/anim08`
+   .. grid-item-card:: :doc:`/animations/anim09`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim09
 
-- .. youtube:: LTxlR5LuJ8g
-     :width: 100%
+      .. youtube:: LTxlR5LuJ8g
+         :width: 100%
 
-  :doc:`/animations/anim09`
+   .. grid-item-card:: :doc:`/animations/anim10`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim10
 
-- .. youtube:: FLzYVo7wXAg
-     :width: 100%
+      .. youtube:: FLzYVo7wXAg
+         :width: 100%
 
-  :doc:`/animations/anim10`
+   .. grid-item-card:: :doc:`/animations/anim11`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim11
 
-- .. youtube:: nmxy9yb2cR8
-     :width: 100%
+      .. youtube:: nmxy9yb2cR8
+         :width: 100%
 
-  :doc:`/animations/anim11`
+   .. grid-item-card:: :doc:`/animations/anim12`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim12
 
-- .. youtube:: X8TojLs0NYk
-     :width: 100%
+      .. youtube:: X8TojLs0NYk
+         :width: 100%
 
-  :doc:`/animations/anim12`
+   .. grid-item-card:: :doc:`/animations/anim13`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim13
 
-- .. youtube:: S-kRGxwOGJw
-     :width: 100%
+      .. youtube:: S-kRGxwOGJw
+         :width: 100%
 
-  :doc:`/animations/anim13`
+   .. grid-item-card:: :doc:`/animations/anim14`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim14
 
-- .. youtube:: Wk58r72g_nk
-     :width: 100%
+      .. youtube:: Wk58r72g_nk
+         :width: 100%
 
-  :doc:`/animations/anim14`
+   .. grid-item-card:: :doc:`/animations/anim15`
+      :padding: 1
+      :link-type: doc
+      :link: animations/anim15
 
-- .. youtube:: Pvvc4vb8G4Y
-     :width: 100%
-
-  :doc:`/animations/anim15`
+      .. youtube:: Pvvc4vb8G4Y
+         :width: 100%
 
 .. toctree::
    :hidden:

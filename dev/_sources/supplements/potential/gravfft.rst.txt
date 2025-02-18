@@ -272,7 +272,7 @@ offset due to the fact that *z* is positive up):
 
 ::
 
-  gmt gravfft bat.grd=+o-6000 -D600 -Gmoho_g.grd
+  gmt gravfft bat.grd+o-6000 -D600 -Gmoho_g.grd
 
 Now, subtract it from the Bouguer to obtain the MBA anomaly. That is:
 
