@@ -1,7 +1,7 @@
 **-S**\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
     Selects the meaning of the columns in the data file.
     *scale* adjusts the scaling of the radius of the "beach ball", which will be proportional to
-    the magnitude. *scale* is the size for magnitude = 5 (i.e. scalar seismic moment M0 = 4.0E23 dynes-cm).
+    the magnitude. *scale* is the size for magnitude = 5 (i.e. scalar seismic moment M0 = 4.0E23 dyn cm).
     However, if **+l** is used then radius will be proportional to the seismic moment instead.  Use
     **+s** to change the reference magnitude (or moment), and use **+m** to plot the same size for any magnitude.
     The color or shade of the compressive quadrants can
@@ -61,7 +61,7 @@
     strike, dip, and rake of plane 2
 
     **10**,\ **11**:
-    mantissa and exponent of moment in dyne-cm
+    mantissa and exponent of moment in dyn cm
 
     **12**,\ **13**:
     longitude, latitude at which to place beachball if **-A** is used (optional).
@@ -88,7 +88,7 @@
     depth of event in kilometers
 
     **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**:
-    mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dynes-cm
+    mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dyn cm
 
     **10**:
     exponent
@@ -147,7 +147,7 @@
     depth of event in kilometers
 
     **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**,\ **10**,\ **11**,\ **12**:
-    value (in 10\*exponent dynes-cm), azimuth, plunge of T, N, P axis.
+    value (in 10\*exponent dyn cm), azimuth, plunge of T, N, P axis.
 
     **13**:
     exponent
