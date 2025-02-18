@@ -33,7 +33,7 @@
 #define THIS_MODULE_LIB			"core"
 #define THIS_MODULE_PURPOSE		"Project and plot grids or images"
 #define THIS_MODULE_KEYS		"<G{+,CC(,IG(,>X},>IA,<ID"
-#define THIS_MODULE_NEEDS		"Jg"
+#define THIS_MODULE_NEEDS		"g"
 #define THIS_MODULE_OPTIONS		"->BJKOPRUVXYfnpt" GMT_OPT("Sc") GMT_ADD_x_OPT
 
 /* These are images that GDAL knows how to read for us. */
@@ -193,7 +193,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If the image is plain (e.g., JPG, PNG, GIF) you must also give a corresponding -R.");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, -2, "If -D is used then <grid> is instead expected to be an image.");
-	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, 1, "\n-A Return a GMT raster image instead of a PostScript plot.");
@@ -221,6 +220,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+b Set background color.");
 	GMT_Usage (API, 3, "+f Set foreground color [Default].");
 	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
+	GMT_Option (API, "J-");
 	GMT_Usage (API, -2, "Apply directional illumination. Append name of an intensity grid, or "
 		"for a constant intensity (i.e., change the ambient light), just give a scalar. "
 		"To derive intensities from <grid> instead, append desired modifiers:");
