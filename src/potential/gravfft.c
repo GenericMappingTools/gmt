@@ -690,7 +690,8 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 		gravfft_do_isostasy (GMT, Grid[0], Ctrl, K);
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Inverse FFT...\n");
-		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+		//if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, Ctrl->T.moho ? GMT_FFT_NO_DEMUX : GMT_FFT_COMPLEX, K))
 			Return (GMT_RUNTIME_ERROR);
 
 		if (!doubleAlmostEqual (scale_out, 1.0))
