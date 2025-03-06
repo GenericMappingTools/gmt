@@ -161,7 +161,7 @@ Quadtree building
 -----------------
 
 The input grid must have the same spacing in longitude and latitude. If it does not, :doc:`grdsample` can be used to pre-process the grid.
-We extend the input grid vi :doc:`grdcut` to obtain a square dimension that can be repeatedly divided by 2
+We extend the input grid via :doc:`grdcut` to obtain a square dimension that can be repeatedly divided by 2
 until we arrive at tiles with the original grid increments. For global grids this mean we
 extend the grid to a 360 x 360 Cartesian region and an initial grid increment of one
 degree.  This is the first global tile. As the quartering of tiles and halving of grid
