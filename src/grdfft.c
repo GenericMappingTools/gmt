@@ -85,6 +85,10 @@ struct GRDFFT_CTRL {
 		bool active;
 		double value;
 	} I;
+	struct GRDFFT_M {	/* -M<mgal_at_45>  */
+		bool active;
+		double mgal_at_45;
+	} M;
 	struct GRDFFT_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
 		bool active;
 		struct GMT_FFT_INFO *info;
@@ -114,8 +118,6 @@ enum Grdfft_operators {
 	GRDFFT_SPECTRUM		   ,
 	GRDFFT_ISOSTASY		   ,
 	GRDFFT_NOTHING		   };
-
-#define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 
 struct F_INFO {
 	double lc[3];		/* Low-cut frequency for r, x, and y	*/
@@ -571,7 +573,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s [<ingrid2>] [-A<azimuth>] [-C<zlevel>] [-D[<scale>|g]] "
-		"[-E[r|x|y][+n][+w[k]]] [-F[r|x|y]<parameters>] [-G<outgrid>|<table>] [-I[<scale>|g]] [-N%s] [-Q] "
+		"[-E[r|x|y][+n][+w[k]]] [-F[r|x|y]<parameters>] [-G<outgrid>|<table>] [-I[<scale>|g]] [-M<mgal_at_45>] [-N%s] [-Q] "
 		"[-S<scale>|d] [%s] [-fg] [%s] [%s]\n", name, GMT_INGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -609,6 +611,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Note: Optional for -E (spectrum written to standard output); required otherwise.");
 	GMT_Usage (API, 1, "\n-I[<scale>|g]");
 	GMT_Usage (API, -2, "Integrate, i.e., divide by kr [ and optionally by scale].  Use -Ig to get m from mGal] (repeatable).");
+	GMT_Usage (API, 1, "\n-M<mgal_at_45>");
+	GMT_Usage (API, -2, "Value for gravity in mGal at 45 degrees latitude. Default is 980619.9203 mGal (Moritz's 1980 IGF value).");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Usage (API, 1, "\n-Q Perform no operations, just do forward FFF and write output if selected in -N.");
 	GMT_Usage (API, 1, "\n-S<scale>|d");
@@ -665,6 +669,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 		f_info->hp[j] = f_info->hc[j] = DBL_MAX;	/* Set huge positive, above valid frequency range  */
 	}
 
+	for (opt = options; opt; opt = opt->next) {		/* Process -M first because we may need its value for -D and/or -I */
+		switch (opt->option) {
+			case 'M':	/* Geographic data */
+				if (gmt_M_compat_check (GMT, 4)) {
+					if (sscanf(opt->arg, "%lf", &Ctrl->M.mgal_at_45))
+						Ctrl->M.active = true;
+					else {
+						GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
+						if (gmt_M_is_cartesian (GMT, GMT_IN))
+							gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+					}
+				}
+				else {
+					n_errors += gmt_M_repeated_module_option(API, Ctrl->M.active);
+					sscanf(opt->arg, "%lf", &Ctrl->M.mgal_at_45);
+				}
+			break;
+		}
+	}
+	if (!Ctrl->M.active) Ctrl->M.mgal_at_45 = 980619.9203;	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
+
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		gmt_M_memset (par, 5, double);
 
@@ -697,7 +722,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				break;
 			case 'D':	/* d/dz [repeatable] */
 				Ctrl->D.active = true;
-				par[0] = (opt->arg[0]) ? ((opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg)) : 1.0;
+				par[0] = (opt->arg[0]) ? ((opt->arg[0] == 'g' || opt->arg[0] == 'G') ? Ctrl->M.mgal_at_45 : atof (opt->arg)) : 1.0;
 				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -D: scale must be nonzero\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
 				break;
@@ -750,22 +775,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				break;
 			case 'I':	/* Integrate  [repeatable]*/
 				Ctrl->I.active = true;
-				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
+				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? Ctrl->M.mgal_at_45 : atof (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -I: scale must be nonzero\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_INTEGRATE, 1, par);
 				break;
 			case 'L':	/* Leave trend alone */
 				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; use -N modifiers in the future.\n");
-				else
-					n_errors += gmt_default_option_error (GMT, opt);
-				break;
-			case 'M':	/* Geographic data */
-				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (gmt_M_is_cartesian (GMT, GMT_IN))
-						gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
-				}
 				else
 					n_errors += gmt_default_option_error (GMT, opt);
 				break;
