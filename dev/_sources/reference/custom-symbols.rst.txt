@@ -34,12 +34,6 @@ Several custom symbol definitions comes included with GMT (see Figure :ref:`Cust
    Be aware that some symbols may have a hardwired fill or no-fill component,
    while others duplicate what is already available as standard built-in symbols.
 
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_N_1.txt
-
 You may find it convenient to examine some of these and use them as a
 starting point for your own design; they can be found in GMT's
 share/custom directory.  In addition to the ones listed in Figure :ref:`Custom symbols <Custom_symbols>`

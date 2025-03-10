@@ -160,8 +160,9 @@ Optional Arguments
 Quadtree building
 -----------------
 
-We extend the input grid vi :doc:`grdcut` to obtain a square dimension that can be repeatedly divided by 2
-until we arrive at tiles with the original grid increments.  For global grids this mean we
+The input grid must have the same spacing in longitude and latitude. If it does not, :doc:`grdsample` can be used to pre-process the grid.
+We extend the input grid via :doc:`grdcut` to obtain a square dimension that can be repeatedly divided by 2
+until we arrive at tiles with the original grid increments. For global grids this mean we
 extend the grid to a 360 x 360 Cartesian region and an initial grid increment of one
 degree.  This is the first global tile. As the quartering of tiles and halving of grid
 increment continue we may not end exactly at the original grid spacing but at the largest
@@ -169,7 +170,7 @@ increment less than or equal to the original increment. For non-global grids, e.
 (local or regional) grids, we extend the domain to a radix-2 multiple of the *tilesize*
 times the grid increment.  This initial tile is then quartered and the grid increment halved
 until we reach the original grid increment. Tiles that have all NaNs are not produced.
-THe tiles are inherently pixel-registered. Thus, if a global grid has gridline-registration then
+The tiles are inherently pixel-registered. Thus, if a global grid has gridline-registration then
 we are down-sampling the extended grid onto a pixel-registered coarser grid.  Because these
 nodes do not coincide with the original nodes we widen the filter width by a factor of sqrt(2).
 We detect if NaNs are present in any tile and if so produce a transparent PNG tile; otherwise we
@@ -221,5 +222,6 @@ See Also
 :doc:`grdhisteq`,
 :doc:`grdimage`,
 :doc:`grdmath`,
+:doc:`grdsample`,
 :doc:`kml2gmt`,
 :doc:`psconvert`
