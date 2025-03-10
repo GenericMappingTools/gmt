@@ -19,6 +19,7 @@ Synopsis
 [ |-E|\ *n_terms* ]
 [ |-F|\ [**f**\ [**+s**\|\ **z**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
 [ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
+[ |-M|\ *mgal_at_45* ]
 [ |-N|\ *params* ]
 [ |-Q| ]
 [ |-S| ]
@@ -137,6 +138,13 @@ Optional Arguments
     admittance, **b** writes a fourth column with "loading from below"
     theoretical admittance, and **t** writes a fourth column with "elastic
     plate" theoretical admittance.
+
+.. _-M:
+
+**-M**\ *mgal_at_45*
+    Specify the value of the gravity in mili Gals at 45 degrees latitude (used to convert
+    gravity anomalies to geoid heights). Default is 980619.9203 mGal (Moritz's 1980 IGF value).
+    This value needs to be changed accordingly when using data from other planets.
 
 .. _-N:
 

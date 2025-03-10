@@ -20,6 +20,7 @@ Synopsis
 [ |-E|\ [**r**\|\ **x**\|\ **y**][**+n**][**+w**\ [**k**]] ]
 [ |-F|\ [**r**\|\ **x**\|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\|\ **g**] ]
+[ |-M|\ *mgal_at_45* ]
 [ |-N|\ *params* ]
 [ |-Q|\ ]
 [ |-S|\ *scale*\|\ **d** ]
@@ -163,6 +164,13 @@ Optional Arguments
     instead. Alternatively, append **g** to indicate that your data set
     is gravity anomalies in mGal and output should be geoid heights in
     meters.  Repeatable. [Default is no scale].
+
+.. _-M:
+
+**-M**\ *mgal_at_45*
+    Specify the value of the gravity in mili Gals at 45 degrees latitude (used to convert
+    gravity anomalies to geoid heights). Default is 980619.9203 mGal (Moritz's 1980 IGF value).
+    This value needs to be changed accordingly when using data from other planets.
 
 .. _-N:
 

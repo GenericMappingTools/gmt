@@ -91,6 +91,10 @@ struct GRAVFFT_CTRL {
 		bool active;
 		double value;
 	} I;
+	struct GRAVFFT_M {	/* -M<mgal_at_45>  */
+		bool active;
+		double mgal_at_45;
+	} M;
 	struct GRAVFFT_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
 		struct GMT_FFT_INFO *info;
@@ -315,6 +319,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				else
 					n_errors += gmt_default_option_error (GMT, opt);
 				break;
+			case 'M':	/* Miligals at 45 degrees */
+				n_errors += gmt_M_repeated_module_option(API, Ctrl->M.active);
+				sscanf(opt->arg, "%lf", &Ctrl->M.mgal_at_45);
+				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				if (popt && gmt_M_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
@@ -414,6 +422,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->misc.from_top || Ctrl->misc.from_below) &&
 			!(Ctrl->F.mode == GRAVFFT_FAA || Ctrl->F.mode == GRAVFFT_GEOID),
 				"Theoretical admittances are only defined for FAA or GEOID.\n");
+	
+	if (!Ctrl->M.active) Ctrl->M.mgal_at_45 = 980619.9203;	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -422,7 +432,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s [<ingrid2>] -G%s [-C<n/wavelength/mean_depth/tbw>] "
-		"[-D<density>] [-E<n_terms>] [-F[f[+s|z]|b|g|v|n|e]] [-I<cbktw>] [-N%s] [-Q] [-S] "
+		"[-D<density>] [-E<n_terms>] [-F[f[+s|z]|b|g|v|n|e]] [-I<cbktw>] [-M<mgal_at_45>] [-N%s] [-Q] [-S] "
 		"[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>[k]] [-Z<zm>[/<zl>]] [-fg] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
@@ -468,6 +478,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "k: Use km or wavelength unit [m].");
 	GMT_Usage (API, 3, "t: Write a forth column with \"elastic plate\" theoretical admittance.");
 	GMT_Usage (API, 3, "w: Write wavelength instead of wavenumber.");
+	GMT_Usage (API, 1, "\n-M<mgal_at_45>");
+	GMT_Usage (API, -2, "Value for gravity in mGal at 45 degrees latitude. Default is 980619.9203 mGal (Moritz's 1980 IGF value).");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Usage (API, -2, "Warning: both -D -T...+m and -Q will implicitly set -N's +h.");
 	GMT_Usage (API, 1, "\n-Q Writes out a grid with the flexural topography (with z positive up) "
@@ -880,7 +892,6 @@ GMT_LOCAL void gravfft_do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	}
 }
 
-#define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 GMT_LOCAL void gravfft_do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, gmt_grdfloat *raised, uint64_t n, double rho) {
 	uint64_t i, k;
 	double f, p, t, mk, kx, ky, v, c;
@@ -909,7 +920,7 @@ GMT_LOCAL void gravfft_do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, s
 				datac[k+1] += (gmt_grdfloat) (v * raised[k+1]);
 				break;
 			case GRAVFFT_GEOID:
-				if (mk > 0.0) v /= (MGAL_AT_45 * mk);
+				if (mk > 0.0) v /= (Ctrl->M.mgal_at_45 * mk);
 				datac[k]   += (gmt_grdfloat) (v * raised[k]);
 				datac[k+1] += (gmt_grdfloat) (v * raised[k+1]);
 				break;
@@ -921,7 +932,7 @@ GMT_LOCAL void gravfft_do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, s
 			case GRAVFFT_DEFL_EAST:
 				if (mk > 0.0) {	/* Scale tan (xslope) ~ slope to microradians */
 					kx = gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
-					v *= 1.e6 * (-kx / (MGAL_AT_45 * mk));
+					v *= 1.e6 * (-kx / (Ctrl->M.mgal_at_45 * mk));
 				}
 				datac[k]   += (gmt_grdfloat) (-v * raised[k+1]);
 				datac[k+1] += (gmt_grdfloat) ( v * raised[k]);
@@ -929,7 +940,7 @@ GMT_LOCAL void gravfft_do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, s
 			case GRAVFFT_DEFL_NORTH:
 				if (mk > 0.0) {	/* Scale tan (yslope) ~ slope to microradians */
 					ky = gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
-					v *= 1.e6 * (-ky / (MGAL_AT_45 * mk));
+					v *= 1.e6 * (-ky / (Ctrl->M.mgal_at_45 * mk));
 				}
 				datac[k]   += (gmt_grdfloat) ( v * raised[k+1]);
 				datac[k+1] += (gmt_grdfloat) (-v * raised[k]);
@@ -1214,7 +1225,7 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 			case GRAVFFT_DEFL_EAST:
 				if (mk > 0.0) {	/* Scale tan (xslope) ~ slope to microradians */
 					double kx = gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
-					t1 *= 1.e6 * (-kx / (MGAL_AT_45 * mk));
+					t1 *= 1.e6 * (-kx / (Ctrl->M.mgal_at_45 * mk));
 				}
 				datac[k]   += (gmt_grdfloat) (-(Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
 				datac[k+1] += (gmt_grdfloat)  ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
@@ -1222,7 +1233,7 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 			case GRAVFFT_DEFL_NORTH:
 				if (mk > 0.0) {	/* Scale tan (yslope) ~ slope to microradians */
 					double ky = gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
-					t1 *= 1.e6 * (-ky / (MGAL_AT_45 * mk));
+					t1 *= 1.e6 * (-ky / (Ctrl->M.mgal_at_45 * mk));
 				}
 				datac[k]   += (gmt_grdfloat)  ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
 				datac[k+1] += (gmt_grdfloat) (-(Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
