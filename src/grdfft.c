@@ -785,6 +785,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				else
 					n_errors += gmt_default_option_error (GMT, opt);
 				break;
+			case 'M':	/* This was already parsed above */
+				break;
 			case 'N':	/* Grid dimension setting or inquiery */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				if (ptr && gmt_M_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
