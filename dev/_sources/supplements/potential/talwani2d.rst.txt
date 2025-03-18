@@ -79,7 +79,7 @@ Optional Arguments
 
 **-M**\ [**h**]\ [**v**]
     Sets distance units used.  Append **h** to indicate horizontal distances are in km [m],
-    and append **z** to indicate vertical distances are in km [m].
+    and append **v** to indicate vertical distances are in km [m].
 
 .. _-N:
 

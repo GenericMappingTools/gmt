@@ -1,9 +1,9 @@
 .. index:: ! gmtset
 .. include:: module_core_purpose.rst_
 
-******
-gmtset
-******
+***
+set
+***
 
 |gmtset_purpose|
 

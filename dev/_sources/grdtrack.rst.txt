@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
+**gmt grdtrack** [ *table* ] |-G|\ *grd1* [ |-G|\ *grd2* ... ]
 [ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**] ]
 [ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
