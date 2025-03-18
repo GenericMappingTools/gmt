@@ -192,7 +192,7 @@ Taken from the NOAA site *Data for Litigation* note.
 
     *The NOAA Solar Calculator is for research and recreational use only. NOAA cannot certify or authenticate sunrise, sunset or solar position data. The U.S. Government does not collect observations of astronomical data, and due to atmospheric conditions our calculated results may vary significantly from actual observed values.*
 
-    *For further information, please see the U.S. Naval Observatory's page* `Astronomical Data Used for Litigation <http://aa.usno.navy.mil/faq/docs/lawyers.php>`_
+    *For further information, please see the U.S. Naval Observatory's page* `Astronomical Data Used for Litigation <https://aa.usno.navy.mil/faq/lawyers>`_
 
 .. module_note_ends
 
