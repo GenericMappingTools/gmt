@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #               GMT EXAMPLE 46
 #
-# Purpose:      Illustrate use of solar to plot day/night terminators
+# Purpose:      Illustrate use of solar to plot day-light terminators
 # GMT modules:  solar, coast, plot
 #
 
