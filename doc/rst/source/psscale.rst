@@ -83,4 +83,4 @@ See Also
 
 :doc:`gmt`, :doc:`makecpt`
 :doc:`gmtlogo`, :doc:`grd2cpt`
-:doc:`psimage`, :doc:`pslegend`
+:doc:`psimage <image>`, :doc:`pslegend`
