@@ -8377,6 +8377,7 @@ struct GMT_DATATABLE *gmtlib_read_table(struct GMT_CTRL *GMT, void *source, unsi
 		while (! (GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
 				In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
+				if (In == NULL) continue;
 				if ((GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) break; 
 			}
 
