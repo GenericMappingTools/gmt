@@ -227,7 +227,6 @@ GMT_LOCAL unsigned int grdfft_do_azimuthal_derivative (struct GMT_GRID *Grid, do
 /* Now obsolete but left for backwards compatibility.  Users are encouraged to use gravfft */
 #define	POISSONS_RATIO	0.25
 #define	YOUNGS_MODULUS	1.0e11		/* Pascal = Nt/m**2  */
-#define	NORMAL_GRAVITY	9.806199203	/* m/s**2  */
 
 GMT_LOCAL unsigned int grdfft_do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	/* Do the isostatic response function convolution in the Freq domain.
@@ -255,7 +254,7 @@ GMT_LOCAL unsigned int grdfft_do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_
 	}
 
 	rigidity_d = (YOUNGS_MODULUS * pow (te, 3.0)) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	d_over_restoring_force = rigidity_d / ((rm - ri) * NORMAL_GRAVITY);
+	d_over_restoring_force = rigidity_d / ((rm - ri) * Ctrl->M.mgal_at_45 * 1e-5);
 
 	for (k = 0; k < Grid->header->size; k += 2) {
 		mk = gmt_fft_get_wave (k, K);

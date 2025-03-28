@@ -93,7 +93,7 @@ struct GRAVFFT_CTRL {
 	} I;
 	struct GRAVFFT_M {	/* -M<mgal_at_45>  */
 		bool active;
-		double mgal_at_45;
+		double mgal_at_45, normal_gravity;
 	} M;
 	struct GRAVFFT_N {	/* -N[f|q|s<n_columns>/<n_rows>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
@@ -137,7 +137,7 @@ struct GRAVFFT_CTRL {
 #endif
 
 #define	YOUNGS_MODULUS	7.0e10		/* Pascal = Nt/m**2  */
-#define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
+//#define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
 #define	POISSONS_RATIO	0.25
 
 static bool sphericity = false;
@@ -322,6 +322,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 			case 'M':	/* Miligals at 45 degrees */
 				n_errors += gmt_M_repeated_module_option(API, Ctrl->M.active);
 				sscanf(opt->arg, "%lf", &Ctrl->M.mgal_at_45);
+				Ctrl->M.normal_gravity = Ctrl->M.mgal_at_45 * 1e-5;
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -423,7 +424,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 			!(Ctrl->F.mode == GRAVFFT_FAA || Ctrl->F.mode == GRAVFFT_GEOID),
 				"Theoretical admittances are only defined for FAA or GEOID.\n");
 	
-	if (!Ctrl->M.active) Ctrl->M.mgal_at_45 = 980619.9203;	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
+	if (!Ctrl->M.active) {
+		Ctrl->M.mgal_at_45 = 980619.9203;	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
+		Ctrl->M.normal_gravity = 9.806199203;
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -875,7 +879,7 @@ GMT_LOCAL void gravfft_do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Using effective load density rho_l = %g and Airy boost factor A = %g\n", rho_load, A);
 	rigidity_d = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	d_over_restoring_force = rigidity_d / ( (Ctrl->T.rhom - rho_load) * NORMAL_GRAVITY);
+	d_over_restoring_force = rigidity_d / ( (Ctrl->T.rhom - rho_load) * Ctrl->M.normal_gravity);
 	airy_ratio = -A * (rho_load - Ctrl->T.rhow)/(Ctrl->T.rhom - rho_load);
 
 	if (Ctrl->T.te == 0.0) {      /* Airy isostasy; scale global variable scale_out and return */
@@ -1120,7 +1124,7 @@ GMT_LOCAL void gravfft_load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVF
 
 	delta_k /= TWO_PI;	/* Use frequency, not wavenumber  */
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow (TWO_PI, 4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow (TWO_PI, 4.) * D / (Ctrl->M.normal_gravity * Ctrl->T.rho_mc);
 
 	for (k = 0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
@@ -1129,7 +1133,7 @@ GMT_LOCAL void gravfft_load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVF
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
-			t1 /= (NORMAL_GRAVITY * freq * TWO_PI);
+			t1 /= (Ctrl->M.normal_gravity * freq * TWO_PI);
 		t2 = Ctrl->T.rho_cw * exp(-TWO_PI * freq * Ctrl->misc.z_level) +
 			Ctrl->T.rho_mc * exp(-TWO_PI * freq * Ctrl->Z.zm);
 		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(freq,4.) * alfa) * exp(-TWO_PI * freq * Ctrl->Z.zl);
@@ -1156,7 +1160,7 @@ GMT_LOCAL void gravfft_load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFF
 
 	delta_k /= TWO_PI;	/* Use frequency, not wavenumber  */
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow (TWO_PI,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow (TWO_PI,4.) * D / (Ctrl->M.normal_gravity * Ctrl->T.rho_mc);
 
 	for (k = 0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
@@ -1165,7 +1169,7 @@ GMT_LOCAL void gravfft_load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFF
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
-			t1 /= (NORMAL_GRAVITY * freq * TWO_PI);
+			t1 /= (Ctrl->M.normal_gravity * freq * TWO_PI);
 		t2 = exp(-TWO_PI * freq * Ctrl->misc.z_level) - exp(-TWO_PI * freq * Ctrl->Z.zm) / (1 + alfa*pow(freq,4.));
 		z_from_top[k] = t1 * Ctrl->T.rho_cw * t2;
 	}
@@ -1188,7 +1192,7 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 	p = n - 1.0;
 
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow(TWO_PI,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow(TWO_PI,4.) * D / (Ctrl->M.normal_gravity * Ctrl->T.rho_mc);
 	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
@@ -1213,7 +1217,7 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 				datac[k+1] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
 				break;
 			case GRAVFFT_GEOID:
-				if (mk > 0.0) t1 /= (NORMAL_GRAVITY * mk * TWO_PI);
+				if (mk > 0.0) t1 /= (Ctrl->M.normal_gravity * mk * TWO_PI);
 				datac[k]   += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
 				datac[k+1] += (gmt_grdfloat) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
 				break;
@@ -1259,7 +1263,7 @@ GMT_LOCAL void gravfft_load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GR
 	p = n - 1.0;
 
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
-	alfa = pow(TWO_PI,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
+	alfa = pow(TWO_PI,4.) * D / (Ctrl->M.normal_gravity * Ctrl->T.rho_mc);
 	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
@@ -1275,7 +1279,7 @@ GMT_LOCAL void gravfft_load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GR
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
-			t1 /= (NORMAL_GRAVITY * mk * TWO_PI);
+			t1 /= (Ctrl->M.normal_gravity * mk * TWO_PI);
 		t2 = Ctrl->T.rho_cw * exp(-TWO_PI * mk * Ctrl->misc.z_level) +
 			 Ctrl->T.rho_mc * exp(-TWO_PI * mk * Ctrl->Z.zm);
 		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(mk,4.) * alfa) * exp(-TWO_PI * mk * Ctrl->Z.zl);
