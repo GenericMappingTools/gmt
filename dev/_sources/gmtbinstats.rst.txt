@@ -1,9 +1,9 @@
 .. index:: ! gmtbinstats
 .. include:: module_core_purpose.rst_
 
-***********
-gmtbinstats
-***********
+********
+binstats
+********
 
 |gmtbinstats_purpose|
 
