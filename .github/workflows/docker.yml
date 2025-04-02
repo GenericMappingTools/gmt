@@ -65,14 +65,14 @@ jobs:
     steps:
       - name: Install GMT dependencies
         run: |
-          os=$(cat /etc/os-release | grep "^ID=" | awk -F= '{print $2}')
+          os=$(grep -E "^ID=" /etc/os-release | cut -d= -f2)
           if [[ "$os" = "ubuntu" || "$os" = "debian" ]]; then
             apt-get update
             DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
             apt-get install -y --no-install-recommends --no-install-suggests \
                  build-essential cmake ninja-build \
                  libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
-                 libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev \
+                 libfftw3-dev libpcre2-dev liblapack-dev libglib2.0-dev \
                  ghostscript curl git
             apt reinstall -y ca-certificates
             update-ca-certificates
