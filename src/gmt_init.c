@@ -20214,6 +20214,9 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 				gmt_M_free (API->GMT, F);
 			}
 		}
+		else if (symbol == GMT_SYMBOL_CUSTOM) { /* Custom symbol */
+			fprintf (fp, "S - %c%s %s %s %s - %s\n", GMT_SYMBOL_CUSTOM, S->custom->name, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}
 		else
 			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
