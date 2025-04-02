@@ -72,7 +72,7 @@ jobs:
             apt-get install -y --no-install-recommends --no-install-suggests \
                  build-essential cmake ninja-build \
                  libcurl4-gnutls-dev libnetcdf-dev libgdal-dev \
-                 libfftw3-dev libpcre-dev liblapack-dev libglib2.0-dev \
+                 libfftw3-dev libpcre2-dev liblapack-dev libglib2.0-dev \
                  ghostscript curl git
             apt reinstall -y ca-certificates
             update-ca-certificates
