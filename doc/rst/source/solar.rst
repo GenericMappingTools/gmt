@@ -109,7 +109,7 @@ Optional Arguments
 **-Tdcna**\ [**+d**\ *date*][**+z**\ *TZ*]
     Plot (or dump; see **-M**\ ) one or more terminators by appending any of these directives:
 
-    - **d** - Select the day/night terminator.
+    - **d** - Select the day-night terminator.
     - **c** - Select civil twilight.
     - **n** - Select nautical twilight;
     - **a** - Select astronomical twilight.
@@ -174,9 +174,9 @@ Plot the day-night and civil twilight::
       gmt solar -W1p -Tdc
     gmt end show
 
-Set up a clip path overlay based on the day/night terminator::
+Set up a clip path overlay based on the day-night terminator::
 
-    gmt solar -G -Tc
+    gmt solar -G -Td
 
 .. module_note_begins
 
