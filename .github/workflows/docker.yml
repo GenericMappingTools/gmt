@@ -65,7 +65,7 @@ jobs:
     steps:
       - name: Install GMT dependencies
         run: |
-          os=$(cat /etc/os-release | grep "^ID=" | awk -F= '{print $2}')
+          os=$(grep -E "^ID=" /etc/os-release | cut -d= -f2)
           if [[ "$os" = "ubuntu" || "$os" = "debian" ]]; then
             apt-get update
             DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
