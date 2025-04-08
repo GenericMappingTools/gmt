@@ -186,9 +186,9 @@
 
 .. |psscale_purpose| replace:: Plot gray scale or color scale bar
 
-.. |solar_purpose| replace:: Plot day-light terminators and other sunlight parameters
+.. |solar_purpose| replace:: Plot day-night terminators and other sunlight parameters
 
-.. |pssolar_purpose| replace:: Plot day-light terminators and other sunlight parameters
+.. |pssolar_purpose| replace:: Plot day-night terminators and other sunlight parameters
 
 .. |ternary_purpose| replace:: Plot data on ternary diagrams
 
