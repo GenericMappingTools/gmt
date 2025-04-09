@@ -3,6 +3,7 @@
 #
 # Purpose:     Mixing images and overlaying them on the Earth
 # GMT modules: grdgradient, grdimage, grdmath, grdmix, grdsample, solar
+# Unix progs:	rm
 
 res=20m # Change to 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m, 30s for higher resolutions
 

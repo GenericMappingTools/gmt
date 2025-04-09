@@ -4,6 +4,7 @@
 #
 # Purpose:      Illustrate subplot with loops
 # GMT modules:  makecpt, subplot, set, plot, grdimage, clip, coast
+# Unix progs:	rm
 #
 
 gmt begin ex53

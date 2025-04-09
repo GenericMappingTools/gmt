@@ -2,6 +2,7 @@ REM               GMT EXAMPLE 36
 REM
 REM Purpose:      Illustrate sphinterpolate with Mars radii data
 REM GMT modules:  plot, makecpt, grdimage, sphinterpolate
+REM DOS calls:	del
 REM
 gmt begin ex36
 	REM Interpolate data of Mars radius from Mariner9 and Viking Orbiter spacecrafts

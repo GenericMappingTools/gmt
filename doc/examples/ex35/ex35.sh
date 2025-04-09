@@ -3,7 +3,7 @@
 #
 # Purpose:      Illustrate sphtriangulate and sphdistance with GSHHG crude data
 # GMT modules:  coast, plot, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance
-# Unix progs:   rm
+# Unix progs:   awk, rm
 #
 
 # set AWK to awk if undefined

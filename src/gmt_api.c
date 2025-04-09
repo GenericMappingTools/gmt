@@ -3780,7 +3780,7 @@ GMT_LOCAL bool gmtapi_vector_data_must_be_duplicated (struct GMTAPI_CTRL *API, s
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+GMT_LOCAL struct GMT_DATASET *gmtapi_import_dataset(struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in the entire virtual data set (possibly via many sources)
 	 * If object_ID == GMT_NOTSET we get all registered input tables, otherwise we just get the one requested.
 	 * Note: Memory is allocated for the Dataset except for method GMT_IS_REFERENCE.
@@ -5882,7 +5882,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 	 	case GMT_IS_REFERENCE:	/* GMT grid and header in a GMT_GRID container object - just pass the reference */
 			if (S_obj->region) return (gmtlib_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
-			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing grid data to GMT_GRID memory location\n");
+			GMT_Report(API, GMT_MSG_DEBUG, "Referencing grid data to GMT_GRID memory location\n");
 			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing to file */
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
@@ -10315,7 +10315,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 	}
 }
 
-void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
+void *GMT_Get_Record(void *V_API, unsigned int mode, int *retval) {
 	/* Retrieves the next data record from the virtual input source and
 	 * returns the number of columns found via *retval (unless retval == NULL).
 	 * If current record is a segment header then we return 0.
@@ -10348,7 +10348,10 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 		record = API->api_get_record (API, mode, &n_fields);
 	} while (API->get_next_record);
 
-	if (!(n_fields == EOF || n_fields == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
+	if (!(n_fields == EOF || n_fields == GMT_IO_NEXT_FILE)) {	/* Increase record count, unless EOF */
+		API->current_rec[GMT_IN]++;
+		if (GMT->current.io.variable_in_columns) GMT->current.io.n_numerical_cols = (unsigned int)n_fields;	/* Keep track of this */
+	}
 
 	if (retval) *retval = n_fields;	/* Requested we return the number of fields found */
 	return (record);		/* Return pointer to current record */
@@ -13460,6 +13463,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 1y. Check if this is the gravprisms module, where primary dataset input should be turned off if -C is used */
 	else if (!strncmp (module, "gravprisms", 10U) && (opt = GMT_Find_Option (API, 'C', *head))) {
 		deactivate_input = true;    /* Turn off implicit input since none is in effect */
+	}
+	/* 1z. Check if gmtgravmag3d is producing grids or datasets */
+	else if (!strncmp (module, "gmtgravmag3d", 12U)) {
+		//type = (opt = GMT_Find_Option (API, 'F', *head)) ? 'D' : 'G';	/* Giving -F<file> means compute over a line, else grid */
 	}
 
 	/* 2a. Get the option key array for this module */

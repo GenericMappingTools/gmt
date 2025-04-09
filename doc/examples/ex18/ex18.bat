@@ -4,7 +4,7 @@ REM Purpose:	Illustrates volumes of grids inside contours and spatial
 REM		selection of data
 REM GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdimage
 REM GMT modules:	grdmath, grdvolume, makecpt, coast, colorbar, text, plot
-REM DOS calls:	del
+REM DOS calls:	del, echo, set
 REM
 gmt begin ex18
 	REM Use spherical gmt projection since SS data define on sphere

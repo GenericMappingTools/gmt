@@ -3,7 +3,7 @@
 #
 # Purpose:      Illustrate regression and outlier detection
 # GMT modules:  gmtregress, basemap, legend, text, plot
-# Unix progs:   grep, awk, sed
+# Unix progs:   cat, grep, awk, sed, rm
 #
 
 # set AWK to awk if undefined

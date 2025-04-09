@@ -3,7 +3,7 @@ REM
 REM Purpose:	Resample track data, do spectral analysis, and plot
 REM GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d
 REM 		spectrum1d, plot, subplot, legend, math
-REM DOS calls:	echo, set, del
+REM DOS calls:	set, del
 REM
 REM This example begins with data files "ship_03.txt" and "sat_03.txt" which
 REM are measurements of a quantity "g" (a "gravity anomaly" which is an

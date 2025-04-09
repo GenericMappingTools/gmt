@@ -3,6 +3,7 @@
 #
 # Purpose:	Illustrates how to mix UTM data and UTM gmt projection
 # GMT modules:	makecpt, grdimage, coast, text, basemap
+# Unix progs:	echo
 #
 gmt begin ex28
 	# Set up a color table

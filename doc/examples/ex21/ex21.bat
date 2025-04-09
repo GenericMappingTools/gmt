@@ -2,6 +2,7 @@ REM		GMT EXAMPLE 21
 REM
 REM Purpose:	Plot a time-series
 REM GMT modules:	set, convert, info, basemap, plot
+REM DOS calls:	del, echo, set
 REM
 gmt begin ex21
 	REM File has time stored as dd-Mon-yy so set input format to match it

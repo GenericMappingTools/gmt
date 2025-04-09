@@ -12716,16 +12716,18 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	}
 	else {	/* Determine BC based on whether grid is geographic or not */
 		type = (gmt_M_x_is_lon (GMT, GMT_IN)) ? GMT_BC_IS_GEO : GMT_BC_IS_NATURAL;
-		for (i = 0; i < 4; i++) if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = type;
+		for (i = 0; i < 4; i++)
+			if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = type;
 	}
 
 	/* Check if geographic conditions can be used with this grid */
 	if (HH->gn && !gmt_grd_is_global (GMT, h)) {
 		/* User has requested geographical conditions, but grid is not global */
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Longitude range too small; geographic boundary condition changed to natural.\n");
+		GMT_Report(GMT->parent, GMT_MSG_INFORMATION, "Longitude range too small; geographic boundary condition changed to natural.\n");
 		HH->nxp = HH->nyp = 0;
 		HH->gn  = HH->gs = false;
-		for (i = 0; i < 4; i++) if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = GMT_BC_IS_NATURAL;
+		for (i = 0; i < 4; i++)
+			if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = GMT_BC_IS_NATURAL;
 	}
 	else if (gmt_grd_is_global (GMT, h)) {	/* Grid is truly global */
 		double xtest = fmod (180.0, h->inc[GMT_X]) * HH->r_inc[GMT_X];
@@ -12733,11 +12735,13 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		if (GMT->parent->ignore_BC) xtest = 0.0;	/* To bypass the checks below */
 		/* xtest should be within GMT_CONV4_LIMIT of zero or of one.  */
 		if (xtest > GMT_CONV4_LIMIT && xtest < (1.0 - GMT_CONV4_LIMIT) && GMT->current.proj.projection_GMT == 0) {
-			/* Maybe error.  We need it to divide into 180 so we can phase-shift at poles but not if we already projected the grid to Cartesian.  */
+			/* Maybe error.  We need it to divide into 180 so we can phase-shift at poles but not if we
+			   already projected the grid to Cartesian.  */
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "x_inc does not divide 180; geographic boundary condition changed to natural.\n");
 			HH->nxp = HH->nyp = 0;
 			HH->gn  = HH->gs = false;
-			for (i = 0; i < 4; i++) if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = GMT_BC_IS_NATURAL;
+			for (i = 0; i < 4; i++)
+				if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = GMT_BC_IS_NATURAL;
 		}
 		else {
 			HH->nxp = urint (360.0 * HH->r_inc[GMT_X]);

@@ -44,7 +44,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdseamount"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Create synthetic seamounts (Gaussian, parabolic, polynomial, cone or disc; circular or elliptical)"
-#define THIS_MODULE_KEYS	"<T{,GG},LD),MD),TD("
+#define THIS_MODULE_KEYS	"<D{,GG},KG(,WG(,>DL,>DM,TD("
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVbdefhir"
 
@@ -1219,7 +1219,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 		}
 		n_time = 0;	/* Number of numerical columns used for time for current record */
 		S[n].code = Ctrl->C.code;	/* Set default code if given */
-		if (In->text[0]) {	/* May have passed time information and/or code via trailing text */
+		if (In->text && In->text[0]) {	/* May have passed time information and/or code via trailing text */
 			int ns = sscanf (In->text, "%s %s %s", txt_x, txt_y, m);	/* Only consider first three words */
 			if (Ctrl->T.active) {	/* -T requires times t0, t1 */
 				if (ns == 1)	{	/* Possibly only shape code was given as trailing text */
@@ -1601,7 +1601,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		else	/* Circular features */
 			major = minor = S[smt].radius;		/* Radius in m */
 		/* Compute area, volume, mean amplitude */
-		shape_func[S[smt].build_mode] (major, minor, S[smt].height, Ctrl->L.value, S[smt].f, &area, &volume, &height);
+		shape_func[S[smt].build_mode](major, minor, S[smt].height, Ctrl->L.value, S[smt].f, &area, &volume, &height);
 		V[smt] = volume;
 		h[smt] = amplitude;
 		if (map) {	/* Report values in km^2, km^3, and m */
@@ -1613,13 +1613,14 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			out[GMT_X] = area;
 			out[GMT_Y] = volume;
 			out[GMT_Z] = height;
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			API->GMT->current.io.col_type[1][0] = API->GMT->current.io.col_type[1][1] = GMT_IS_FLOAT;	/* If set to geog Put_Record would error. */
+			GMT_Put_Record(API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Seamount %" PRIu64 " [%c] area, volume, mean height: %g %g %g\n", n_smts, S[smt].code, area, volume, height);
 	}
 	if (Ctrl->L.active) {	/* OK, that was all we wanted */
-		gmt_M_free (GMT, Out);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
+		gmt_M_free(GMT, Out);
+		if (GMT_End_IO(API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
 			goto wrap_up;
 		goto wrap_up;
 	}
@@ -1981,6 +1982,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
 			goto wrap_up;
 		gmt_M_memcpy (data, Grid->data, Grid->header->size, gmt_grdfloat);	/* This will go away once gmt_nc.c is fixed to leave array alone */
+		if (API->GMT->current.io.col_type[GMT_X][0] == GMT_IS_LON) Grid->header->ProjRefPROJ4 = strdup("+proj=longlat");
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, gfile, Grid) != GMT_NOERROR)
 			goto wrap_up;
 		gmt_M_memcpy (Grid->data, data, Grid->header->size, gmt_grdfloat);

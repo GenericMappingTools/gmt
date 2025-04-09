@@ -2,7 +2,7 @@
 #               GMT EXAMPLE 36
 #
 # Purpose:      Illustrate sphinterpolate with Mars radii data
-# GMT modules:  plot, makecpt, grdimage, sphinterpolate
+# GMT modules:  plot, makecpt, grdimage, sphinterpolate, subplot
 # Unix progs:   rm
 #
 gmt begin ex36

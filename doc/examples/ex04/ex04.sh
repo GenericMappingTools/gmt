@@ -3,7 +3,6 @@
 #
 # Purpose:	3-D mesh and color plot of Hawaiian topography and geoid
 # GMT modules:	colorbar, grdcontour, grdimage, grdview, basemap, coast, text, makecpt
-# Unix progs:	echo, rm
 #
 gmt begin
 	gmt figure ex04

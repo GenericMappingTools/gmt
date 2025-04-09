@@ -1,8 +1,8 @@
 REM               GMT EXAMPLE 43
 REM
 REM Purpose:      Illustrate regression and outlier detection
-REM GMT modules:  gmtregress, basemap, legend, text, plot
-REM DOS calls:	grep, awk, sed
+REM GMT modules:  gmtregress, basemap, legend, text, plot, which
+REM DOS calls:	grep, awk, sed, echo, del, set
 REM
 
 REM Data from Table 7 in Rousseeuw and Leroy, 1987.

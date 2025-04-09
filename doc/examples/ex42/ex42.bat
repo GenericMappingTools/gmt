@@ -2,6 +2,7 @@ REM               GMT EXAMPLE 42
 REM
 REM Purpose:      Illustrate Antarctica and stereographic projection
 REM GMT modules:  makecpt, grdimage, coast, legend, colorbar, text, plot
+REM DOS calls:	del, echo
 REM
 gmt begin ex42
 	gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p PROJ_ELLIPSOID WGS-84 FORMAT_GEO_MAP dddF

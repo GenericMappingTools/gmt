@@ -2,6 +2,7 @@ REM               GMT EXAMPLE 45
 REM
 REM Purpose:      Illustrate use of trend1d mixed models
 REM GMT modules:  text, plot, trend1d
+REM DOS calls:	del
 REM
 
 gmt begin ex45

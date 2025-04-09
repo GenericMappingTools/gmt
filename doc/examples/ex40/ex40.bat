@@ -2,6 +2,7 @@ REM               GMT EXAMPLE 40
 REM
 REM Purpose:      Illustrate line simplification and area calculations
 REM GMT modules:  basemap, text, plot, gmtsimplify, gmtspatial, subplot
+REM DOS calls:	del
 REM
 
 gmt begin ex40

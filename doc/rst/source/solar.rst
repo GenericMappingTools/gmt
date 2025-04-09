@@ -109,7 +109,7 @@ Optional Arguments
 **-Tdcna**\ [**+d**\ *date*][**+z**\ *TZ*]
     Plot (or dump; see **-M**\ ) one or more terminators by appending any of these directives:
 
-    - **d** - Select the day/night terminator.
+    - **d** - Select the day-night terminator.
     - **c** - Select civil twilight.
     - **n** - Select nautical twilight;
     - **a** - Select astronomical twilight.
@@ -174,9 +174,9 @@ Plot the day-night and civil twilight::
       gmt solar -W1p -Tdc
     gmt end show
 
-Set up a clip path overlay based on the day/night terminator::
+Set up a clip path overlay based on the day-night terminator::
 
-    gmt solar -G -Tc
+    gmt solar -G -Td
 
 .. module_note_begins
 
@@ -192,7 +192,7 @@ Taken from the NOAA site *Data for Litigation* note.
 
     *The NOAA Solar Calculator is for research and recreational use only. NOAA cannot certify or authenticate sunrise, sunset or solar position data. The U.S. Government does not collect observations of astronomical data, and due to atmospheric conditions our calculated results may vary significantly from actual observed values.*
 
-    *For further information, please see the U.S. Naval Observatory's page* `Astronomical Data Used for Litigation <http://aa.usno.navy.mil/faq/docs/lawyers.php>`_
+    *For further information, please see the U.S. Naval Observatory's page* `Astronomical Data Used for Litigation <https://aa.usno.navy.mil/faq/lawyers>`_
 
 .. module_note_ends
 

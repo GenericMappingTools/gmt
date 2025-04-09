@@ -27,7 +27,7 @@ Description
 -----------
 
 Takes one topographic grid in geographical coordinates and a constant craton value or a craton file
-which are taken as weights ranging from 1 (one) on stable shields (craton) and 0 in active tectonic regions
+which are taken as weights ranging from 0 on stable shields (craton) and 1 (one) in active tectonic regions
 -- values in between will be computed as the weighted average of the craton and tectonic models.
 
 An optional argument *water_vel* is the value that water-covered areas will be set to; the default is 600.

@@ -2,6 +2,7 @@ REM		GMT EXAMPLE 07
 REM
 REM Purpose:	Make a basemap with earthquakes and isochrons, etc.
 REM GMT modules:	coast, legend, text, plot
+REM DOS calls:	del
 REM
 gmt begin ex07
 	gmt coast -R-50/0/-10/20 -JM24c -Slightblue -GP26+r300+ftan+bdarkbrown -Dl -Wthinnest -B --FORMAT_GEO_MAP=dddF

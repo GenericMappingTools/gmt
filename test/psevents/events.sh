@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Test gmt psevents with some quakes
 
-# GMT_KNOWN_FAILURE
 
 ps=events.ps
 
