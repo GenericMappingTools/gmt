@@ -28,7 +28,7 @@
     You can also change symbols by adding the required |-S| option to any of
     your multi-segment headers.
 
-.. rubric:: Basic Geometries
+    .. rubric:: Basic Geometries
     
     We will first outline the 14 basic geometric symbols that only require
     a *single* parameter: *size*.
@@ -95,7 +95,7 @@
     modify it by adjusting :term:`MAP_SYMBOL_PEN_SCALE` [15%], or set it to zero to
     rely on pen defaults (and |-W|).
 
-.. rubric:: Complex Geometries
+    .. rubric:: Complex Geometries
 
     The next collection shows five symbols that require two or more parameters, and
     some have optional modifiers to enhance the symbol appearance.
@@ -184,7 +184,7 @@
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
 
-.. rubric:: Text
+    .. rubric:: Text
 
     Text is normally placed with :doc:`text` but there are times we wish to treat a character
     of even a string as a symbol to be plotted:
@@ -206,7 +206,7 @@
         to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
         **+j**\ *justify* to change justification [CM].
     
-.. rubric:: Bars
+    .. rubric:: Bars
 
     The next type of symbol is the horizontal or vertical bar:
 
@@ -256,7 +256,7 @@
         Multi-band bars require |-C| with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
         Thus, input records are either (*x1 y x2 ... xn*) or (*dx1 y dx2 ... dxn*).
 
-.. rubric:: Vectors
+    .. rubric:: Vectors
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
     such as *length* and *direction* (or optionally the coordinates of the end point), we also
@@ -310,7 +310,7 @@
         If your *length* is not in distance units but in arbitrary user units (e.g., a rate in
         mm/yr) then you can use the **-i** option to scale the corresponding column via the **+s**\ *scale* modifier.
 
-.. rubric:: Customs
+    .. rubric:: Customs
 
     The next symbol is the programmable *custom* symbol:
 
@@ -338,7 +338,7 @@
         include the leading **k**. The *size* must either be given as a numerical column
         (as for all other symbols) or be added to the name with the required slash.
 
-.. rubric:: Lines with embellishments
+    .. rubric:: Lines with embellishments
 
     The last group of symbols are all special *lines* with embellishments along them.
     The first symbol is called a *front* and has specific
