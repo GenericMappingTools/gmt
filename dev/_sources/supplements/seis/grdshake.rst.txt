@@ -39,7 +39,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outgrid*
-    This is the output grid file. If more than one component is set via -C then <outgrid> must contain %%s to format component code.
+    This is the output grid file. If more than one component is set via |-C| then <outgrid> must contain %%s to format component code.
 
 .. _-L:
 
@@ -58,13 +58,13 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *a,v,i*
-    List of comma-separated components to be written as grids (requires -G). Choose from, *a*\ (cceleration),
+    List of comma-separated components to be written as grids (requires |-G|). Choose from, *a*\ (cceleration),
     *v*\ (elocity), *i*\ (ntensity) [Default is *i*].
 
 .. _-F:
 
 **-F**\ *1*\|\ *2*\|\ *3*\|\ *4*
-    Select the focal mechanism type (e.g. -F1 or -F2 ...)
+    Select the focal mechanism type (e.g. **-F**\1 or **-F**\2 ...)
        - 1 unknown [Default].
        - 2 strike-slip.
        - 3 normal.

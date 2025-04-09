@@ -6,7 +6,7 @@
 In some cases, it is nice to "drape" an arbitrary image over a
 topographic map. We have already seen how to use
 :doc:`image </image>` to plot an image anywhere in
-out plot. But here are aim is different, we want to manipulate an image
+our plot. But here our aim is different, we want to manipulate an image
 to shade it and plot it in 3-D over topography. This example was
 originally created by Stephan Eickschen for a flyer emphasizing the
 historical economical and cultural bond between Brussels, Maastricht and
