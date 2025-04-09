@@ -26,7 +26,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  short_modifiers,     long_modifiers,
 		  transproc_mask */
 	{ 0, 'A', "straightlines|straight_lines|straight_line",
-	          "m,p,x,y,r,t",       "mpfollow,pmfollow,xyalong,yxalong,rtalong,tralong",
+	          "x,y",       "x,y",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	GMT_C_CPT_KW,
