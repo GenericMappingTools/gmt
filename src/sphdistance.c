@@ -52,11 +52,6 @@ enum sphdist_modes {
 	SPHD_VALUES = 2};
 
 struct SPHDISTANCE_CTRL {
-	struct SPHDISTANCE_A {	/* -A[m|p|x|y|step] */
-		bool active;
-		unsigned int mode;
-		double step;
-	} A;
 	struct SPHDISTANCE_C {	/* -C */
 		bool active;
 	} C;
