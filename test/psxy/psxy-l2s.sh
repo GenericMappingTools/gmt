@@ -9,8 +9,8 @@ b=$m-l2s-b.txt
 rm -f $a $b ; touch $b
 
 cat << EOF > $a
---l2stranstest -Am -Ap -Ax
---l2stranstest -Ay -Ar -At
+--l2stranstest -Ax
+--l2stranstest -Ay
 --l2stranstest -Csomecpt -Cred,green,blue -C#22aa33,#ff00ff,#0077ee
 --l2stranstest -D -D12/24
 --l2stranstest -Ex+a -Ey+A
@@ -30,8 +30,8 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --straightlines=mpfollow --straightlines=pmfollow --straightlines=xyalong >> $b
-gmt $m $l2s --straightlines=yxalong --straightlines=rtalong --straightlines=tralong >> $b
+gmt $m $l2s --straight_lines=x 
+gmt $m $l2s --straight_lines=y
 gmt $m $l2s --cpt=somecpt --cmap=red,green,blue --cpt=#22aa33,#ff00ff,#0077ee >> $b
 gmt $m $l2s --offset --offset=12/24 >> $b
 gmt $m $l2s --errorbars=xbar+asymmetrical --errorbars=ybar+lhbounds >> $b
