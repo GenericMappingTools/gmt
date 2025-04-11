@@ -17,7 +17,7 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --straightlines=x --straightlines=y >> $b
+gmt $m $l2s --straight_lines=x --straight_lines=y >> $b
 gmt $m $l2s --endclip --endclip=5 >> $b
 gmt $m $l2s --invert >> $b
 gmt $m $l2s --clipregion >> $b
