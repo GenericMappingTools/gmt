@@ -28,7 +28,7 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --straight_lines=x --straight_lines=y
+gmt $m $l2s --straight_lines=x --straight_lines=y >> $b
 gmt $m $l2s --cpt=somecpt --cmap=red,green,blue >> $b
 gmt $m $l2s --cpt=#22aa33,#ff00ff,#0077ee >> $b
 gmt $m $l2s --offset --offset=12/24 >> $b
