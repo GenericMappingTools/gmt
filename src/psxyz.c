@@ -40,7 +40,7 @@
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
-	struct PSXYZ_A {	/* -A[m|y|p|x|r|t|step] */
+	struct PSXYZ_A {	/* -A[x|y] */
 		bool active;
 		unsigned int mode;
 		double step;
@@ -173,7 +173,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *mod_name = &name[4];	/* To skip the leading gmt for usage messages */
 	const char *T[2] = {" [-T]", ""};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [%s] [%s] [-A[m|p|r|t|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [%s] [%s] [-A[x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] "
 		"[-H[<scale>]] [-I[<intens>]] %s [%s] [-N[c|r]] %s %s[-Q] [-S[<symbol>][<size>][/size_y]]%s [%s] [%s] [-W[<pen>][<attr>]] "
 		"[%s] [%s] [-Z<value>|<file>[+t|T]] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, API->K_OPT, PLOT_L_OPT, API->O_OPT, API->P_OPT,
@@ -187,15 +187,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<,J-Z,R3");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "\n-A[m|p|r|t|x|y]");
+	GMT_Usage (API, 1, "\n-A[x|y]");
 	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "
-		"straight lines instead.  Six optional directives instead convert paths to staircase curves:");
-	GMT_Usage (API, 3, "m: First follow meridians, then parallels when connecting geographic points.");
-	GMT_Usage (API, 3, "p: First follow parallels, then meridians when connecting geographic point.");
-	GMT_Usage (API, 3, "r: First follow radius, then theta for staircase curves for Polar projection.");
-	GMT_Usage (API, 3, "t: First follow theta, then radius for staircase curves for Polar projection.");
-	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves for Cartesian projections.");
-	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves for Cartesian projections.");
+		"straight lines instead. Two optional directives instead convert paths to staircase curves:");
+	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves.");
+	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves.");
+	GMT_Usage (API, -2, "Here, x and y have the following meanings: "
+		"For Cartesian projections, x and y are the X- and Y-axis; "
+		"For gragraphic projections, x and y are parallels and meridians; "
+		"For polar projections, x and y are theta and radius.");
 	GMT_Usage (API, 1, "\n-C<cpt>|<color1>,<color2>[,<color3>,...]");
 	GMT_Usage (API, -2, "Assign symbol colors based on z-value in 3rd column. "
 		"Note: requires -S. Without -S, %s excepts lines/polygons "
@@ -422,6 +422,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'A':	/* Turn off draw_arc mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				/* There are 6 optional directives but only x|y are documented since 6.6.0 */
 				switch (opt->arg[0]) {
 					case 'm': case 'y': case 'r': Ctrl->A.mode = GMT_STAIRS_Y; break;
 					case 'p': case 'x': case 't': Ctrl->A.mode = GMT_STAIRS_X; break;

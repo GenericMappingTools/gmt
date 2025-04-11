@@ -37,7 +37,7 @@
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxy" GMT_OPT("EZMmc")
 
 struct PSCLIP_CTRL {
-	struct PSCLIP_A {	/* -A[m|y|p|x|r|t<step>] */
+	struct PSCLIP_A {	/* -A[x|y] */
 		bool active;
 		unsigned int mode;
 		double step;
@@ -79,7 +79,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s -C[a|<n>] [-K] [-O]\n", name);
 	GMT_Usage (API, 1, "or\n");
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|r|t|x|y]] [%s] %s[-N] %s%s[-T] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[x|y]] [%s] %s[-N] %s%s[-T] "
 		"[%s] [%s] [-W[<pen>]] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
@@ -94,15 +94,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Terminates all clipping; optionally append how many clip levels to restore [all].");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A[m|p|r|t|x|y]");
+	GMT_Usage (API, 1, "\n-A[x|y]");
 	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "
-		"straight lines instead.  Six optional directives instead convert paths to staircase curves:");
-	GMT_Usage (API, 3, "m: First follow meridians, then parallels when connecting geographic points.");
-	GMT_Usage (API, 3, "p: First follow parallels, then meridians when connecting geographic point.");
-	GMT_Usage (API, 3, "r: First follow radius, then theta for staircase curves for Polar projection.");
-	GMT_Usage (API, 3, "t: First follow theta, then radius for staircase curves for Polar projection.");
-	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves for Cartesian projections.");
-	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves for Cartesian projections.");
+		"straight lines instead. Two optional directives instead convert paths to staircase curves:");
+	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves.");
+	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves.");
+	GMT_Usage (API, -2, "Here, x and y have the following meanings: "
+		"For Cartesian projections, x and y are the X- and Y-axis; "
+		"For gragraphic projections, x and y are parallels and meridians; "
+		"For polar projections, x and y are theta and radius.");
 	GMT_Option (API, "B-,K");
 	GMT_Usage (API, 1, "\n-N Use the outside of the polygons and the map boundary as clip paths.");
 	GMT_Option (API, "O,P");
