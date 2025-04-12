@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test the -Ar|t line-resampling for polar projections
+# test the -Ax|y line-resampling for polar projections
 cat << EOF > t.txt
 10  5
 30 4
@@ -10,11 +10,11 @@ gmt begin polarcurves ps
 		gmt subplot set 0 -A"No -A"
 		gmt plot -W2p,red t.txt
 		gmt plot t.txt -Sc0.2c -Wthin
-		gmt subplot set 1 -A"-At: @~q@~, then r"
-		gmt plot -W2p,red -At t.txt
+		gmt subplot set 1 -A"-Ax: @~q@~, then r"
+		gmt plot -W2p,red -Ax t.txt
 		gmt plot t.txt -Sc0.2c -Wthin
-		gmt subplot set 2 -A"-Ar: r, then @~q@~"
-		gmt plot -W2p,red -Ar t.txt
+		gmt subplot set 2 -A"-Ay: r, then @~q@~"
+		gmt plot -W2p,red -Ay t.txt
 		gmt plot t.txt -Sc0.2c -Wthin
 	gmt subplot end
 gmt end show
