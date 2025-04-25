@@ -6915,6 +6915,9 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	}
 	f *= GMT->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
 
+	if (is_time && GMT->current.setting.time_system.scale != 1.0)	/* Because gmtmap_auto_time_increment always expects the time in seconds */
+		d *= GMT->current.setting.time_system.scale;
+
 #ifndef NO_THEMES
 	if (GMT->current.setting.run_mode == GMT_MODERN && gmt_M_axis_is_geo (GMT, axis)) {	/* Need more space for degree symbol and WESN letters not considered in the algorithm */
 		if (strchr (GMT->current.setting.format_geo_map, 'F'))	/* Need more space for degree symbol and letter */
