@@ -12,5 +12,5 @@ cat << EOF > t.txt
 115 -20
 EOF
 gmt psxy -R110/215/-27/20 -JM6i t.txt -Wfat,green -Baf -BWSne -A -P -K -Xc > $ps
-gmt psxy -R -J t.txt -Wfat,green -Baf -BWSne -Ap -O -K -Y3.15i >> $ps
+gmt psxy -R -J t.txt -Wfat,green -Baf -BWSne -Ax -O -K -Y3.15i >> $ps
 gmt psxy -R -J t.txt -Wfat,green -Baf -BWSne -O -Y3.15i >> $ps

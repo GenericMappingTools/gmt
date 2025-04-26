@@ -14,7 +14,7 @@ Synopsis
 
 **gmt clip** [ *table* ] |-J|\ *parameters* |-C|\ [*n*]
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-A|\ [**x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
 |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-N| ]
@@ -89,16 +89,20 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
-    By default, geographic line segments are connected as great circle arcs. To connect them as
-    straight lines, use the |-A| flag. Alternatively, add **m** to connect
-    the line by first following a meridian, then a parallel. Or append **p**
-    to start following a parallel, then a meridian. (This can be practical
-    to connect lines along parallels, for example).
-    For Cartesian data, points are simply connected, unless you append
-    **x** or **y** to construct stair-case paths whose first move is along
-    *x* or *y*, respectively. For polar projection, append **r** or **t** to
-    draw stair-case curves that whose first move is along *r* or *theta*, respectively.
+**-A**\ [**x**\|\ **y**]
+    By default, geographic line segments are connected as great circle arcs by resampling
+    coarse input data along such arcs. To disable this sampling and connect them as
+    straight lines, use the |-A| flag. For Cartesian data, points are simply connected.
+    To adjust these behaviors, append a directive:
+
+    - **x** - First follow *x*, then *y* for staircase curves.
+    - **y** - First follow *y*, then *x* for staircase curves.
+
+    Here, *x* and *y* have the following meanings:
+
+    - For Cartesian projections, *x* and *y* are the X- and Y-axis.
+    - For gragraphic projections, *x* and *y* are parallels and meridians.
+    - For polar projections, *x* and *y* are theta and radius.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_

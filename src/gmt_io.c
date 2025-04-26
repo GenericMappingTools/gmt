@@ -10136,7 +10136,7 @@ unsigned int gmtlib_is_time (struct GMT_CTRL *GMT, char *text) {
 		gmt_strrepc (string, p[k], ' ');	/* Replace date separators with space */
 	if (n_colon)
 		gmt_strrepc (string, ':', ' ');	/* Replace time separators with space */
-	if ((n_dash >= 1 && n_slash == 0) || (n_dash == 0 && n_slash >= 1)) {
+	if (((n_dash >= 1 && n_slash == 0) || (n_dash == 0 && n_slash >= 1)) || (n_dash == 0 && n_slash == 0 && string[L] == 'T')) {
 		/* Apart from random junk SHIT 5 6 7:X:Hello!, Possibilities are:
 		 *	1.  yyyy mm dd[T][hh.xxx|:mm.xx|:ss.xx]  Full date and possibly time
 		 *	2.  yyyy jjj[T][hh.xxx|:mm.xx|:ss.xx]  Julian day and possibly time
