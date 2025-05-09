@@ -1761,7 +1761,7 @@ Placing a feature on the map means selecting a *reference* point somewhere on th
 It may be helpful to consider the analog of a boat dropping an anchor: The boat navigates to the
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
-There are four different ways to specify the reference point on a map, allowing for complete freedom
+There are five different ways to specify the reference point on a map, allowing for complete freedom
 to select any location inside or outside the map.  The reference point syntax is [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*;
 the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
 
