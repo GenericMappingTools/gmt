@@ -1,9 +1,9 @@
 .. index:: ! gmtdefaults
 .. include:: module_core_purpose.rst_
 
-***********
-gmtdefaults
-***********
+********
+defaults
+********
 
 |gmtdefaults_purpose|
 
