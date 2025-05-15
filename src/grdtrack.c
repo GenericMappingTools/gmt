@@ -816,6 +816,14 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
 			Return (GMT_NOT_A_VALID_TYPE);
 
+		/* Check whether -C and -E use different unit */
+		if (Ctrl->C.active && Ctrl->C.unit != Ctrl->E.unit){
+			GMT_Report (API, GMT_MSG_ERROR, 
+				"Option -C and -E shoule take the same unit, but received %c (-C) and %c (-E). "
+				"Recommend you explicitly set the same unit for -C and -E.\n", Ctrl->C.unit, Ctrl->E.unit);
+			Return (GMT_RUNTIME_ERROR);
+		}
+
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
