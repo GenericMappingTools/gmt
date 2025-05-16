@@ -821,8 +821,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		/* Check whether -C and -E use different unit */
 		if (Ctrl->C.active && Ctrl->C.unit != Ctrl->E.unit){
 			GMT_Report (API, GMT_MSG_ERROR, 
-				"Option -C and -E shoule take the same unit, but received %c (-C) and %c (-E). "
-				"Recommend you explicitly set the same unit for -C and -E.\n", Ctrl->C.unit, Ctrl->E.unit);
+				"Sorry but due to a current limitation options -C and -E are required to have the same unit, "
+				"but received %c (-C) and %c (-E). You must explicitly set the same unit for -C and -E.\n", Ctrl->C.unit, Ctrl->E.unit);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
