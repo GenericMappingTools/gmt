@@ -815,7 +815,9 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
 			Return (GMT_NOT_A_VALID_TYPE);
-
+			
+		/* !!! TEMPORARY METHOD !!! */
+		/* Currently we cannot use different units in -C and -E, we have to prevent this bug first. See PR #8728 */
 		/* Check whether -C and -E use different unit */
 		if (Ctrl->C.active && Ctrl->C.unit != Ctrl->E.unit){
 			GMT_Report (API, GMT_MSG_ERROR, 
