@@ -11348,8 +11348,8 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 
-	if (strstr (args, "+c")) continuous = true;	/* Want to add distances to the output */
-	if (strstr (args, "+d")) get_distances = true;	/* Want to join abutting profiles */
+	if (strstr (args, "+c")) continuous = true;	/* Want to join abutting profiles */
+	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
 	if (strstr (args, "+g")) gridline_units = true;	/* Want degree longitudes or latitudes along a gridline */
 	if (strstr (args, "+p")) parallel = true;	/* Want to sample along a parallel */
 	if (strstr (args, "+x")) GMT->current.map.loxodrome = true;	/* Want to sample along a rhumbline */
@@ -11543,8 +11543,10 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			else {	/* Copy over but avoid repeating the joint */
 				gmt_M_memcpy (&(prev_S->data[GMT_X][start]), &(S->data[GMT_X][1]), add, double);
 				gmt_M_memcpy (&(prev_S->data[GMT_Y][start]), &(S->data[GMT_Y][1]), add, double);
-				gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
-				for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
+				if(get_distances){
+					gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
+					for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
+				}
 				gmt_free_segment (GMT, &S);	/* Done with this guy */
 				S = prev_S;
 			}
