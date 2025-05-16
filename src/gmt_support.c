@@ -11348,8 +11348,8 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 
-	if (strstr (args, "+c")) continuous = true;	/* Want to add distances to the output */
-	if (strstr (args, "+d")) get_distances = true;	/* Want to join abutting profiles */
+	if (strstr (args, "+c")) continuous = true;	/* Want to join abutting profiles */
+	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
 	if (strstr (args, "+g")) gridline_units = true;	/* Want degree longitudes or latitudes along a gridline */
 	if (strstr (args, "+p")) parallel = true;	/* Want to sample along a parallel */
 	if (strstr (args, "+x")) GMT->current.map.loxodrome = true;	/* Want to sample along a rhumbline */
