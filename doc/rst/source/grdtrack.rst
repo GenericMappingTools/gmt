@@ -139,6 +139,8 @@ Optional Arguments
     counter-clockwise.  Finally, you can use **+f** to set a fixed azimuth
     for all profiles. **Note**: If |-C| is set and *spacing* is given then
     that sampling scheme overrules any modifier set in |-E|.
+    Currently, there is a bug when |-C| and |-E| use different units.
+    If you use both, please manually specify the same unit for each.
 
 .. _-D:
 
