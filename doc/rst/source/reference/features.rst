@@ -1761,18 +1761,18 @@ Placing a feature on the map means selecting a *reference* point somewhere on th
 It may be helpful to consider the analog of a boat dropping an anchor: The boat navigates to the
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
-There are four different ways to specify the reference point on a map, allowing for complete freedom
+There are five different ways to specify the reference point on a map, allowing for complete freedom
 to select any location inside or outside the map.  The reference point syntax is [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*;
 the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
 
-.. _Reference_Points_g:
+   .. _Reference_Points_g:
 
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the reference point.
    This mechanism is useful when you want to tie the location of the feature to an actual point
    best described by data coordinates.  An example of such a reference point might
    be **g**\ 135W/20N.
 
-.. _Reference_Points_j:
+   .. _Reference_Points_j:
 
 #. [**j**] Specify *refpoint* using one of the nine *justification codes*, equivalent to the justification
    codes for placing text strings in :doc:`/text`.  This mechanism is illustrated in the figure above and
@@ -1786,14 +1786,14 @@ the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
    justification code. Thus, when using **JTL**\, the anchor point on the map feature will default to **BR**.
    This is practical for features that are drawn **outside** of the basemap (like color bars often are).
 
-.. _Reference_Points_x:
+   .. _Reference_Points_x:
 
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
    points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
    map features using familiar measurements of distance from origins. An example of such a reference
    point might be **x**\ 2.75i/2c.
 
-.. _Reference_Points_n:
+   .. _Reference_Points_n:
 
 #. [**n**] Specify *refpoint* using *normalized* coordinates, i.e., fractional coordinates between 0
    and 1 in both the *x* and *y* directions.  This mechanism avoids units and is useful if you want to always

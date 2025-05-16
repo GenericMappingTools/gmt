@@ -305,7 +305,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
-    Set pen attributes for lines or the outline of symbols [Defaults:
+    Set pen attributes for lines or the outline of symbols or polygons [Defaults:
     *width* = 0.25p, *color* = black, *style* = solid]. Modifiers can be used to change the
     appearance of the line:
 

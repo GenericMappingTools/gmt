@@ -844,8 +844,14 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_OUT, GMT_X, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON);
 		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
 		gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
-		if (Ctrl->Q.active && Ctrl->G.unit != 'k' && !Ctrl->G.number)
-			Ctrl->G.inc *= 0.001 / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in km */
+		if (Ctrl->Q.active && Ctrl->G.unit != 'k' && !Ctrl->G.number){
+			if (GMT->current.map.dist[GMT_MAP_DIST].arc) {
+				Ctrl->G.inc *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale); /* Now in km */
+			}
+			else {
+				Ctrl->G.inc /= METERS_IN_A_KM * GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in km */
+			}
+		}
 	}
 	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
 		for (col = 0; col < P.n_outputs; col++) {
