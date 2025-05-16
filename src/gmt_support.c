@@ -11543,8 +11543,10 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			else {	/* Copy over but avoid repeating the joint */
 				gmt_M_memcpy (&(prev_S->data[GMT_X][start]), &(S->data[GMT_X][1]), add, double);
 				gmt_M_memcpy (&(prev_S->data[GMT_Y][start]), &(S->data[GMT_Y][1]), add, double);
-				gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
-				for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
+				if(get_distances){
+					gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
+					for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
+				}
 				gmt_free_segment (GMT, &S);	/* Done with this guy */
 				S = prev_S;
 			}
