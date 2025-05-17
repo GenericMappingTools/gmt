@@ -1020,9 +1020,10 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 						M->data[2+k*n_step][row] = stacked_dev[k];	/* The stacked deviation */
 						M->data[3+k*n_step][row] = stacked_lo[k];	/* The stacked low value */
 						M->data[4+k*n_step][row] = stacked_hi[k];	/* The stacked high value */
-						if (Ctrl->S.mode >= STACK_LOWER) continue;
-						M->data[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
-						M->data[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						if (Ctrl->S.mode < STACK_LOWER) {
+							M->data[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+							M->data[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						} 
 						if (n_added_cols == 0) continue;	/* No modification to profile outputs requested */
 						for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to append to */
 							col_s = colx;	/* Start over at this column */
