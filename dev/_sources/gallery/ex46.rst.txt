@@ -1,11 +1,11 @@
 .. _example_46:
 
-(46) Day-light terminators and other sunlight parameters
+(46) Day-night terminators and other sunlight parameters
 --------------------------------------------------------
 
 In this example show how the module :doc:`solar </solar>`
 is used to plot several terminator lines that depend on
-the location of the sun with respect to Earth.  We also
+the location of the sun with respect to Earth. We also
 show how an EPS illustration can serve as a custom symbol
 to be plotted with :doc:`plot </plot>`.
 
@@ -16,4 +16,4 @@ to be plotted with :doc:`plot </plot>`.
    :width: 500 px
    :align: center
 
-   Day-light terminators.
+   Day-night terminators.

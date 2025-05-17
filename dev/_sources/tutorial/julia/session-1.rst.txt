@@ -5,7 +5,7 @@ Tutorial setup
 --------------
 
 #. GMT man pages, documentation, and gallery example scripts are available from the GMT.jl documentation web page
-   available from https://www.generic-mapping-tools.org/GMT.jl/dev/.
+   available from https://www.generic-mapping-tools.org/GMTjl_doc/.
 
 #. We recommend you create a sub-directory called *tutorial*,
    cd into that directory, and run the commands there to keep things tidy.
@@ -92,7 +92,7 @@ Laboratory Exercises
 We will begin our adventure by making some simple plot axes and coastline basemaps. We will do this in order
 to introduce the all-important common options **frame**, **proj**, and **region** and to familiarize ourselves
 with a few selected GMT projections. The GMT modules we will utilize are :doc:`/basemap` and
-`basemap <https://www.generic-mapping-tools.org/GMT.jl/dev/coast/>`_.
+`basemap <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast/>`_.
 Please consult their manual pages for reference.
 
 Linear projection
@@ -165,7 +165,7 @@ projections offered by GMT; here we will only have time to focus on one such pro
 
 **proj=:merc**
 
-To make coastline maps we use `basemap <https://www.generic-mapping-tools.org/GMT.jl/dev/coast/>`_ which automatically
+To make coastline maps we use `coast <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast/>`_ which automatically
 will access the GMT coastline, river and border data base derived from the GSHHG database [See *Wessel and Smith*, 1996].
 In addition to the common switches we may need to use some of several coast-specific options:
 

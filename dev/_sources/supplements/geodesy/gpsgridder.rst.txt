@@ -262,7 +262,7 @@ References
 ----------
 
 Haines, A. J. et al., 2015, *Enhanced Surface Imaging of Crustal Deformation*, SpringerBriefs in Earth Sciences,
-doi:10.1007/978-3-319-21578-5_2.
+https://doi.org/10.1007/978-3-319-21578-5_2.
 
 Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
 *Geophys. Res. Lett., 43*, 10,703-10,709,
