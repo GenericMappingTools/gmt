@@ -200,7 +200,7 @@ Optional Arguments
     values to all cross-profiles. **+d** : Append stack deviations to
     all cross-profiles. **+r** : Append data residuals (data - stack) to
     all cross-profiles. **+s**\ [*file*] : Save stacked profile to
-    *file* [grdtrack_stacked_profile.txt]. **+c**\ *fact* : Compute
+    *file* [stacked_profile.txt]. **+c**\ *fact* : Compute
     uncertainty envelope on stacked profile as ±\ *fact* \*\ *deviation* [2].
     **Notes**: (1) Deviations depend on *method* and are standard deviation (**a**), L1
     scale, i.e., 1.4826 \* median absolute deviation (MAD) (for **m** and **p**),
