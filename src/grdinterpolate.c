@@ -456,6 +456,16 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Create profile */
+			/* Need to get dx,dy from one grid */
+			if (Ctrl->Z.active)	/* Get the first file */
+				sprintf (file, "%s", Ctrl->In.file[0]);
+			else	/* Get the first layer from 3-D cube possibly via a selected variable */
+				sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
+			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
+				Return (API->error);
+			}
+
 			char prof_args[GMT_LEN128] = {""};
 			if (!(equi_levels || Ctrl->T.active)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -E requires either equidistant levels or resampling via -T\n");
@@ -467,16 +477,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
 				Return (GMT_NOT_A_VALID_TYPE);
-
-			/* Need to get dx,dy from one grid */
-			if (Ctrl->Z.active)	/* Get the first file */
-				sprintf (file, "%s", Ctrl->In.file[0]);
-			else	/* Get the first layer from 3-D cube possibly via a selected variable */
-				sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
-			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
-				Return (API->error);
-			}
+			
 			/* Set default spacing to half the min grid spacing: */
 			Ctrl->E.step = 0.5 * MIN (Grid->header->inc[GMT_X], Grid->header->inc[GMT_Y]);
 			if (GMT_Destroy_Data (API, &Grid)) {
