@@ -646,7 +646,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);
 			}
-			sprintf (cmd, "%s -F%s -N%d -T%s ->%s", i_file, Ctrl->F.spline, (int)(Out->n_columns - 1), Ctrl->T.string, o_file);
+			sprintf (cmd, "%s -F%s -N%d -T%s ->%s", i_file, Ctrl->F.spline, (Ctrl->S.active)? GMT_Z : (int)(Out->n_columns - 1), Ctrl->T.string, o_file);
 			if (GMT_Call_Module (API, "sample1d", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Interpolate each profile per -T */
 				Return (API->error);
 			}
