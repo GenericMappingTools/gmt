@@ -46,7 +46,7 @@ if (${srcdir} STREQUAL ${bindir})
 endif (${srcdir} STREQUAL ${bindir})
 
 # Define minimum CMake version required
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.16...3.31)
 message ("CMake version: ${CMAKE_VERSION}")
 
 # Use NEW behavior with newer CMake releases
