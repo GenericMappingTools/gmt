@@ -76,7 +76,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
+**-A**\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*]
     Offsets focal mechanisms to the alternate longitudes, latitudes given
     in the last two columns of the input file before the (optional) text
     string. Alternatively, use **+o** to interpret the contents of the two
