@@ -4987,6 +4987,9 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
 			GMT->current.map.frame.set[no] = true;	/* Since we want this axis drawn */
+#ifdef B0_IS_NO_FRAME
+			GMT->current.map.frame.no_frame = true;		/* Understand format '0' to mean "NO FRAME AT ALL" */
+#endif
 			continue;
 		}
 
