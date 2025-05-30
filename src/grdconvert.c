@@ -29,7 +29,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert between different grid formats"
-#define THIS_MODULE_KEYS	"<G{,>G}"
+#define THIS_MODULE_KEYS	"<G{,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RVf"
 
@@ -170,9 +170,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				n_in++;
 				break;
 			case '>':	/* Output file may be set this way from the external API */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
-				n_in++;
+				if (!Ctrl->G.active) {		/* No output grid yet. This should be used when returning the output grid to Julia/Matlab */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
+					n_in++;
+				}
 				break;
 
 			/* Processes program-specific parameters */
