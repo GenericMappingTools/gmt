@@ -506,37 +506,32 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		struct GMT_DATASEGMENT *Si = NULL;
 
 		if (Ctrl->S.file) {	/* Read a list of points, the list may have trailing text which may be activated by -S...+h */
-			if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->S.file, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
+			if ((In = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->S.file, NULL)) == NULL) {
+				GMT_Report(API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
 				Return (API->error);
 			}
 			if (Ctrl->S.header) {	/* Want to use this fixed text to add to the trailing text of all the points */
 				for (seg = 0; seg < In->n_segments; seg++) {
 					Si = In->table[0]->segment[seg];	/* Short hand to this segment */
-					if (Si->text == NULL)	/* Input file did not have any trailing text so add array now */
-						Si->text = gmt_M_memory (GMT, NULL, Si->n_rows, char *);
-					for (row = 0; row < Si->n_rows; row++) {
-						if (Si->text[row]) {	/* Already has trailing text, combine with user argument */
-							sprintf (header, "%s %s", Si->text[row], Ctrl->S.header);
-							gmt_M_str_free (Si->text[row]);
-							Si->text[row] = strdup (header);
-						}
-						else	/* Just use user argument */
-							Si->text[row] = strdup (Ctrl->S.header);
+					if (Si->text != NULL) {	/* Input file did not have any trailing text so add array now */
+						sprintf(header, "%s %s", Si->text[0], Ctrl->S.header);
+						Si->header = strdup(header);
 					}
+					else
+						Si->header = strdup(Ctrl->S.header);
 				}
 			}
 		}
 		else {	/* Single point, simplify logic below by making a 1-point dataset */
-			if ((In = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, (Ctrl->S.header) ? GMT_WITH_STRINGS : 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
+			if ((In = GMT_Create_Data(API, GMT_IS_DATASET, GMT_IS_POINT, (Ctrl->S.header) ? GMT_WITH_STRINGS : 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report(API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
 				Return (API->error);
 			}
 			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
 			Si->data[GMT_X][0] = Ctrl->S.x;
 			Si->data[GMT_Y][0] = Ctrl->S.y;
 			if (Ctrl->S.header)	/* Set the fixed header here via trailing text */
-				Si->text[0] = strdup (Ctrl->S.header);
+				Si->header = strdup(Ctrl->S.header);
 			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
 		}
@@ -599,11 +594,15 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				for (row = 0; row < Si->n_rows; row++, rec++) {	/* For each selected point which matches each output segment */
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
 					if (k == start_k) {	/* Set the segment header just once */
-						if (Si->text && Si->text[row])
-							sprintf (header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
-						else
-							sprintf (header, "Location %.12g,%.12g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
-						So->header = strdup (header);
+						if (Si->header && Si->header[0])
+							sprintf(header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->header);
+						else {
+							if (Si->text && Si->text[row])
+								sprintf(header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
+							else
+								sprintf(header, "Location %.12g,%.12g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
+						}
+						So->header = strdup(header);
 					}
 					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
 						for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
