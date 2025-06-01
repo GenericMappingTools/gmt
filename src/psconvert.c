@@ -2367,63 +2367,47 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 								"Very likely this won't work as you wish inside GE.\n");
 				}
 			}
-			else if (!strncmp (line, "%GMTBoundingBox:", 16)) {
-				sscanf (&line[16], "%s %s %s %s",c1,c2,c3,c4);
-				gmtBB_x0 = atof (c1);		gmtBB_y0 = atof (c2);
-				gmtBB_width = atof (c3);	gmtBB_height = atof (c4);
+			else if (!strncmp(line, "%GMTBoundingBox:", 16)) {
+				sscanf(&line[16], "%s %s %s %s",c1,c2,c3,c4);
+				gmtBB_x0 = atof(c1);		gmtBB_y0 = atof(c2);
+				gmtBB_width = atof(c3);	gmtBB_height = atof(c4);
 				continue;
 			}
 
-			if (!strncmp (line, "%%BoundingBox:", 14)) {
+			if (!strncmp(line, "%%BoundingBox:", 14)) {
 				double w_t, h_t;
 				w_t = w;	h_t = h;
 				if (Ctrl->I.resize) {		/* Here the BB is the new size itself */
 					w_t = Ctrl->I.new_size[0];		h_t = Ctrl->I.new_size[1];
 				}
 
-				if (Ctrl->O.active) {
-					fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
-					if (got_BB && !Ctrl->A.round)
-						sprintf(line, "%%%%BoundingBox: 0 0 %ld %ld", lrint (psconvert_smart_ceil(w_t)), lrint (psconvert_smart_ceil(h_t)));
-					else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
-						sprintf(line, "%%%%BoundingBox: 0 0 %ld %ld", lrint(w_t), lrint(h_t));
-					fprintf(fp, "%s\n", line);
-					fflush(fp);
-				}
+				if (Ctrl->O.active)
+					continue;		/* Because with -! we already parsed the code where we put the BB. This one must be from a psimage import. */
 				else {
 					if (got_BB && !Ctrl->A.round)
-						fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (psconvert_smart_ceil(w_t)), lrint (psconvert_smart_ceil(h_t)));
+						fprintf(fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint(psconvert_smart_ceil(w_t)), lrint(psconvert_smart_ceil(h_t)));
 					else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
-						fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (w_t), lrint (h_t));
+						fprintf(fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint(w_t), lrint(h_t));
 				}
 
 				got_BB = false;
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
 				if (got_HRBB) {			/* TO DELETE?. This is silly, if we 'continue' above we can never come here. */
-					if (Ctrl->O.active) {
-						fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
-						fprintf(fp, "%%%%HiResBoundingBox: 0 0 %.4f %.4f", w_t, h_t);
-						fflush(fp);
-					}
-					else
-						fprintf(fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
+					fprintf(fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
 				}
 				got_HRBB = false;
 				continue;
 			}
-			else if (!strncmp (line, "%%HiResBoundingBox:", 19)) {
+			else if (!strncmp(line, "%%HiResBoundingBox:", 19)) {
 				double w_t, h_t;
 				w_t = w;	h_t = h;
 				if (Ctrl->I.resize) {		/* Here the BB is the new size itself */
 					w_t = Ctrl->I.new_size[0];		h_t = Ctrl->I.new_size[1];
 				}
 				if (got_HRBB) {
-					if (Ctrl->O.active) {
-						fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
-						fprintf(fp, "%%%%HiResBoundingBox: 0 0 %.4f %.4f", w_t, h_t);	/* No '\n' here because orig line already has it */
-						fflush(fp);
-					}
+					if (Ctrl->O.active)
+						continue;	/* As explained above, this one must be from a psimage PS import. */
 					else
 						fprintf(fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
 				}
