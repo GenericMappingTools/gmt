@@ -4743,8 +4743,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		if (manual_feed)	/* Manual media feed requested */
 			PSL_command (PSL, "PSLevel 1 gt { << /ManualFeed true >> setpagedevice } if\n");
 		else if (PSL->internal.p_width > 0.0 && PSL->internal.p_height > 0.0)	/* Specific media selected */
-			PSL_command (PSL, "PSLevel 1 gt { << /PageSize [%.12g %.12g] /ImagingBBox null >> setpagedevice } if\n",
-			             PSL->internal.p_width, PSL->internal.p_height);
+			PSL_command (PSL, "PSLevel 1 gt { << /PageSize [%.12g %.12g] /ImagingBBox null >> setpagedevice } if      \n",
+			             PSL->internal.p_width, PSL->internal.p_height);	/* Leave some space for eventual PageSize change by psconvert */
 		if (PSL->init.copies > 1) PSL_command (PSL, "/#copies %d def\n", PSL->init.copies);
 		PSL_command (PSL, "%%%%EndSetup\n\n");
 
