@@ -1634,7 +1634,7 @@ GMT_LOCAL bool psconvert_gs_is_good (int major, int minor) {
 	return false;	/* Not implemented (?) */
 }
 
-EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0, trans_line;
 	int n_read_PS_lines, max_PS_lines;
@@ -2274,13 +2274,13 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				continue;
 			}
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
-				if (!has_transparency) has_transparency = (strstr (line, " PSL_transp") != NULL);
+				if (!has_transparency) has_transparency = (strstr(line, " PSL_transp") != NULL);
 				if (look_for_transparency && has_transparency) {
 					transparency = true;		/* Yes, found transparency */
 					look_for_transparency = false;	/* No need to check anymore */
 				}
 
-				if (setup && strstr(line,"setpagedevice") != NULL) {	/* This is a "setpagedevice" command that should be avoided */
+				if (setup && Ctrl->T.ps != 1 && strstr(line,"setpagedevice") != NULL) {	/* This is a "setpagedevice" command that should be avoided */
 					if (Ctrl->O.active) {
 						size_t len = strlen(line);
 						fseek(fp, (off_t)-(len +1), SEEK_CUR);          /* Seek back to start of line (+1 why?) */
@@ -2305,24 +2305,24 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					continue;
 				}
 
-				if (old_transparency_code_needed && strstr (line, ".setfillconstantalpha")) {
+				if (old_transparency_code_needed && strstr(line, ".setfillconstantalpha")) {
 					/* Our gs is too old so we must switch the modern transparency command to the older .setopacityalpha command.
 					 * At some point in the future we will abandon support for 9.52 and older and remove this entire if-test */
 					if (trans_line == 0) {	/* First time we warn and deal with line number one in PSL_transp function */
-						GMT_Report (API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
-						fprintf (fpo, "  /.setopacityalpha where\n");	/* Look for old .setopacityalpha instead */
+						GMT_Report(API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
+						fprintf(fpo, "  /.setopacityalpha where\n");	/* Look for old .setopacityalpha instead */
 					}
 					else
-						fprintf (fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
+						fprintf(fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
 					trans_line++;
 				}
-				else if (!old_transparency_code_needed && strstr (line, ".setopacityalpha")) {
+				else if (!old_transparency_code_needed && strstr(line, ".setopacityalpha")) {
 					/* Our PostScript file was made before 6.2 master was updated to deal with new gs settings */
-					GMT_Report (API, GMT_MSG_DEBUG, "Your gs is newer than 9.52 so we must replace .setopacityalpha in old PS files with .setfillconstantalpha.\n");
-					fprintf (fpo, "/.setfillconstantalpha where {pop .setblendmode dup .setstrokeconstantalpha .setfillconstantalpha }{\n");	/* Use the transparency for both fill and stroke */
+					GMT_Report(API, GMT_MSG_DEBUG, "Your gs is newer than 9.52 so we must replace .setopacityalpha in old PS files with .setfillconstantalpha.\n");
+					fprintf(fpo, "/.setfillconstantalpha where {pop .setblendmode dup .setstrokeconstantalpha .setfillconstantalpha }{\n");	/* Use the transparency for both fill and stroke */
 				}
 				else
-					fprintf (fpo, "%s\n", line);
+					fprintf(fpo, "%s\n", line);
 
 				continue;
 			}
@@ -2415,20 +2415,20 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				continue;
 			}
 			else if (Ctrl->P.active && landscape && !strncmp (line, "%%Orientation:", 14)) {
-				fprintf (fpo, "%%%%Orientation: Portrait\n");
+				fprintf(fpo, "%%%%Orientation: Portrait\n");
 				landscape = false;
 				continue;
 			}
-			else if (!strncmp (line, "%%BeginSetup", 12))
+			else if (!strncmp(line, "%%BeginSetup", 12))
 				setup = true;
-			else if (!strncmp (line, "%%EndSetup", 10)) {
+			else if (!strncmp(line, "%%EndSetup", 10)) {
 				setup = false;
 				if (Ctrl->T.eps == -1)	/* -TE option. Write out setpagedevice command. Note: The -! option cannot be active here. */
-					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
+					fprintf(fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
-					fprintf (fpo, "%d rotate\n", r);
+					fprintf(fpo, "%d rotate\n", r);
 				if (!gmt_M_is_zero (xt) || !gmt_M_is_zero (yt))
-					fprintf (fpo, "%g %g translate\n", xt, yt);
+					fprintf(fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
 				r = 0;
 			}
