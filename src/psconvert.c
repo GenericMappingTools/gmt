@@ -1096,6 +1096,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && GMT->current.setting.run_mode == GMT_MODERN,
 	                                   "Modern GMT mode requires the -F option\n");
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->O.active && Ctrl->T.ps && !(GMT_PACKAGE_VERSION_MAJOR > 6 || GMT_PACKAGE_VERSION_MINOR >= 6),
+	                                   "Insitu modification of PostScript files requires GMT 6.6 or later\n");
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -1641,9 +1644,9 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 	size_t len, line_size = 0U, half_baked_size = 0;
 	uint64_t pos = 0;
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false, old_transparency_code_needed;
-	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
+	bool excessK, in_BeginSetup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, has_transparency, add_grestore = false;
-	bool first_pagedevice = true, found_EndProlog = false;
+	bool first_pagedevice = true, found_EndProlog = false, second_ps = false;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -2014,7 +2017,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			file_processing = true;			/* Since we now are reading a temporary file */
 		}
 
-		got_BB = got_HRBB = file_has_HRBB = got_end = landscape = landscape_orig = setup = false;
+		got_BB = got_HRBB = file_has_HRBB = got_end = landscape = landscape_orig = in_BeginSetup = false;
 		got_BBatend = 0;
 
 		len = strlen (ps_file);
@@ -2219,12 +2222,12 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 		/* Cannot proceed without knowing the BoundingBox */
 
 		if (!got_BB) {
-			GMT_Report (API, GMT_MSG_ERROR,
-			            "The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
+			GMT_Report(API, GMT_MSG_ERROR,
+			           "The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file)) {	/* Remove the temporary EPS file */
-				if (fp  != NULL) fclose (fp);
-				if (fp2 != NULL) fclose (fp2);
-				if (fpo != NULL) fclose (fpo);
+				if (fp  != NULL) fclose(fp);
+				if (fp2 != NULL) fclose(fp2);
+				if (fpo != NULL) fclose(fpo);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			continue;
@@ -2280,29 +2283,58 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 					look_for_transparency = false;	/* No need to check anymore */
 				}
 
-				if (setup && Ctrl->T.ps != 1 && strstr(line,"setpagedevice") != NULL) {	/* This is a "setpagedevice" command that should be avoided */
-					if (Ctrl->O.active) {
-						size_t len = strlen(line);
-						fseek(fp, (off_t)-(len +1), SEEK_CUR);          /* Seek back to start of line (+1 why?) */
-						if (first_pagedevice) {		/* Some files have 1, others have 2 occurences of 'setpagedevice' */
-							if (r != 0) {                               /* Rotations must come before translations */
-								char t[GMT_LEN64] = "";                 /* To hold the translation string */
-								sprintf(line, "%d rotate\n", r);        /* Now 'line' has new length */
-								sprintf(t, "%g %g translate", xt, yt);
-								strcat(line, t);
-								for (int i = strlen(line)+strlen(t); i < len; i++) line[i] = ' ';	/* Fill remainings with spaces */
+				if (in_BeginSetup && strstr(line,"setpagedevice") != NULL) {	/* This is a "setpagedevice" command that should be avoided */
+					if (Ctrl->T.ps != 1) {									/* Not PS */
+						if (Ctrl->O.active) {
+							size_t len = strlen(line);
+							fseek(fp, (off_t)-(len +1), SEEK_CUR);          /* Seek back to start of line (+1 why?) */
+							if (first_pagedevice) {		/* Some files have 1, others have 2 occurences of 'setpagedevice' */
+								if (r != 0) {                               /* Rotations must come before translations */
+									char t[GMT_LEN64] = "";                 /* To hold the translation string */
+									sprintf(line, "%d rotate\n", r);        /* Now 'line' has new length */
+									sprintf(t, "%g %g translate", xt, yt);
+									strcat(line, t);
+									for (int i = strlen(line)+strlen(t); i < len; i++) line[i] = ' ';	/* Fill remainings with spaces */
+								}
+								else
+									sprintf(line, "%g %g translate", xt, yt);
+
+								first_pagedevice = false;
 							}
 							else
-								sprintf(line, "%g %g translate", xt, yt);
+								for (int i = 0; i < len; i++) line[i] = ' ';
 
-							first_pagedevice = false;
+							fprintf(fp, "%s", line);		fflush(fp);
 						}
-						else
-							for (int i = 0; i < len; i++) line[i] = ' ';
-
-						fprintf(fp, "%s", line);		fflush(fp);
+						continue;
 					}
-					continue;
+					else {			/* Resquested a PS output. Soo keep the setpagedevice but adjust the PageSize. */
+						if (Ctrl->O.active) {
+							size_t len = strlen(line);
+							if (strstr(line,"PageSize") == NULL) continue;		/* The other "setpagedevice" command. Too keep as is. */
+							fseek(fp, (off_t)-(len +1), SEEK_CUR);          	/* Seek back to start of line */
+							sprintf(line, "PSLevel 1 gt { << /PageSize [%.7g %.7g] /ImagingBBox null >> setpagedevice } if", x1-x0, y1-y0);
+							for (int i = strlen(line); i < len; i++) line[i] = ' ';	/* Fill remainings with spaces */
+							fprintf(fp, "%s", line);		fflush(fp);
+
+							psconvert_file_line_reader(GMT, &line, &line_size, fp);	/* Read the next line */
+							n_read_PS_lines++;
+							fseek(fp, (off_t)-(strlen(line) +1), SEEK_CUR);
+							if (r != 0) {                              /* Rotations must come before translations */
+								char t[GMT_LEN32] = "";                /* To hold the translation string */
+								sprintf(line, "%d R\n", r);            /* Now 'line' has new length */
+								sprintf(t, "%g %g T", xt, yt);
+								strcat(line, t);
+							}
+							else
+								sprintf(line, "%g %g T", xt, yt);
+
+							fprintf(fp, "%s", line);		fflush(fp);
+							continue;
+						}
+						else if (strstr(line,"PageSize") != NULL)
+							sprintf(line, "PSLevel 1 gt { << /PageSize [%.7g %.7g] /ImagingBBox null >> setpagedevice } if", x1-x0, y1-y0);
+					}
 				}
 
 				if (old_transparency_code_needed && strstr(line, ".setfillconstantalpha")) {
@@ -2420,9 +2452,9 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 				continue;
 			}
 			else if (!strncmp(line, "%%BeginSetup", 12))
-				setup = true;
+				in_BeginSetup = true;
 			else if (!strncmp(line, "%%EndSetup", 10)) {
-				setup = false;
+				in_BeginSetup = false;
 				if (Ctrl->T.eps == -1)	/* -TE option. Write out setpagedevice command. Note: The -! option cannot be active here. */
 					fprintf(fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
@@ -2613,6 +2645,15 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 		fclose (fpo);	fpo = NULL;
 		fclose (fp);	fp  = NULL;
 
+		if (!Ctrl->O.active && Ctrl->T.ps && GMT->current.setting.run_mode == GMT_CLASSIC) {
+			second_ps = true;		/* Tell the renaming branch of modern mode to deal with this case too */
+			if (!Ctrl->F.file) {
+				size_t len = strlen(ps_file);	
+				Ctrl->F.file = strdup(ps_file);
+				Ctrl->F.file[len - 3] = '_';		/* Change the last ".ps" to "_2" */
+				Ctrl->F.file[len - 2] = '2';	Ctrl->F.file[len - 1] = '\0';
+			}
+		}
 
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
 				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53 or later\n", GSstring);
@@ -2639,7 +2680,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 				strcat (out_file, "_intermediate");
 			}
 			else {	/* Output is the final result */
-					GMT_Report (API, GMT_MSG_INFORMATION, "Convert to %s...\n", tag);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Convert to %s...\n", tag);
 
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 				if (!Ctrl->F.active || return_image)
@@ -2743,7 +2784,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (GMT->current.setting.run_mode == GMT_MODERN) {
+		if (GMT->current.setting.run_mode == GMT_MODERN || second_ps) {	/* Modern mode or -Tp where we also want to save the XXX.eps as a ps file */
 			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
 				out_file[0] = '\0'; /* truncate string to build new output file */
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
