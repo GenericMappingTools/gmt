@@ -2174,44 +2174,40 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			i++;
 			if (!line[0] || line[0] != '%')
 				{ /* Skip empty and non-comment lines */ }
-			else if (!got_BB && strstr (line, "%%BoundingBox:")) {
-				sscanf (&line[14], "%s %s %s %s",c1,c2,c3,c4);
-				if (strncmp (c1, "(atend)", 7)) {	/* Got actual numbers */
+			else if (!got_BB && strstr(line, "%%BoundingBox:")) {
+				sscanf(&line[14], "%s %s %s %s",c1,c2,c3,c4);
+				if (strncmp(c1, "(atend)", 7)) {	/* Got actual numbers */
 					if (!got_HRBB) {	/* Only assign values if we haven't seen the high-res version yet */
-						x0 = atoi (c1);		y0 = atoi (c2);
-						x1 = atoi (c3);		y1 = atoi (c4);
+						x0 = atoi(c1);		y0 = atoi(c2);
+						x1 = atoi(c3);		y1 = atoi(c4);
 					}
 					got_BB = true;
 				}
 				else
 					got_BBatend++;
 			}
-			else if ((strstr (line, "%%HiResBoundingBox:"))) {
+			else if ((strstr(line, "%%HiResBoundingBox:"))) {
 				file_has_HRBB = true;
 				if (!got_HRBB) {
-					sscanf (&line[19], "%s %s %s %s",c1,c2,c3,c4);
-					if (strncmp (c1, "(atend)", 7)) {	/* Got actual numbers */
-						x0 = atof (c1);		y0 = atof (c2);
-						x1 = atof (c3);		y1 = atof (c4);
+					sscanf(&line[19], "%s %s %s %s",c1,c2,c3,c4);
+					if (strncmp(c1, "(atend)", 7)) {	/* Got actual numbers */
+						x0 = atof(c1);		y0 = atof(c2);
+						x1 = atof(c3);		y1 = atof(c4);
 						got_HRBB = got_BB = true;
 					}
 				}
 			}
-			else if ((strstr (line, "%%Creator:"))) {
-				if (!strncmp (&line[11], "GMT", 3))
-					isGMT_PS = true;
-			}
-			else if ((strstr (line, "%%Orientation:"))) {
-				if (!strncmp (&line[15], "Landscape", 9))
-					landscape = landscape_orig = true;
-			}
-			else if ((strstr (line, "%%EndComments")))
+			else if ((strstr(line, "%%Creator:")) && !strncmp(&line[11], "GMT", 3))
+				isGMT_PS = true;
+			else if ((strstr(line, "%%Orientation:")) &&!strncmp(&line[15], "Landscape", 9))
+				landscape = landscape_orig = true;
+			else if ((strstr(line, "%%EndComments")))
 				got_end = true;
 			if (got_BBatend == 1 && (got_end || i == 19)) {	/* Now is the time to look at the end of the file */
 				got_BBatend++;			/* Avoid jumping more than once to the end */
 				if (file_processing) {
-					if (fseek (fp, (off_t)-256, SEEK_END))
-						GMT_Report (API, GMT_MSG_ERROR, "Seeking to start of last 256 bytes failed\n");
+					if (fseek(fp, (off_t)-256, SEEK_END))
+						GMT_Report(API, GMT_MSG_ERROR, "Seeking to start of last 256 bytes failed\n");
 				}
 				else {	/* Get towards end of string */
 					pos = (PS->n_bytes > 256) ? PS->n_bytes - 256 : 0;
@@ -2308,7 +2304,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 						}
 						continue;
 					}
-					else {			/* Resquested a PS output. Soo keep the setpagedevice but adjust the PageSize. */
+					else {			/* Resquested a PS output. So keep the setpagedevice but adjust the PageSize. */
 						if (Ctrl->O.active) {
 							size_t len = strlen(line);
 							if (strstr(line,"PageSize") == NULL) continue;		/* The other "setpagedevice" command. Too keep as is. */
@@ -2323,13 +2319,17 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 							if (r != 0) {                              /* Rotations must come before translations */
 								char t[GMT_LEN32] = "";                /* To hold the translation string */
 								sprintf(line, "%d R\n", r);            /* Now 'line' has new length */
-								sprintf(t, "%g %g T", xt, yt);
-								strcat(line, t);
+								if (xt != 0.0 || yt != 0.0) {
+									sprintf(t, "%g %g T", xt, yt);
+									strcat(line, t);
+								}
+								fprintf(fp, "%s", line);		fflush(fp);
 							}
-							else
+							else if (xt != 0.0 || yt != 0.0) {
 								sprintf(line, "%g %g T", xt, yt);
+								fprintf(fp, "%s", line);		fflush(fp);
+							}
 
-							fprintf(fp, "%s", line);		fflush(fp);
 							continue;
 						}
 						else if (strstr(line,"PageSize") != NULL)
