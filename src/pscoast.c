@@ -533,6 +533,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
+	/* If Spilhaus projection and no -g used, set a default value. */
+	if (!GMT->common.g.active && GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) {
+		gmt_parse_g_option(GMT, "D1");
+		GMT->common.g.active = true;
+	}
+
 	if ((error = gmt_DCW_list (GMT, &(Ctrl->E.info)))) {	/* This is either success or failure... */
 		if (error != GMT_DCW_LIST)
 			return (1);	/* Not good */

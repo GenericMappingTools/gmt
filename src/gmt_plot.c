@@ -3029,7 +3029,8 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	if ((way = gmtlib_adjust_we_if_central_lon_set (GMT, &w, &e)))
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "W/E boundaries shifted by %d\n", way * 360);
 
-	PSL_comment (PSL, "Start of map frame\n");
+	if (!PSL->internal.comments) PSL_command(PSL, "\n%%Start of map frame\n");
+	PSL_comment(PSL, "Start of map frame\n");
 
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
@@ -3089,10 +3090,12 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
 			break;
 		case GMT_PROJ4_SPILHAUS:
-			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
+			//gmtplot_linear_map_boundary(GMT, PSL, w, e, s, n);
 			break;
 	}
-	PSL_comment (PSL, "End of map frame\n");
+
+	PSL_comment(PSL, "End of map frame\n");
+	if (!PSL->internal.comments) PSL_command(PSL, "\n%%End of map fram\n");
 }
 
 /* gmt_map_basemap will create a basemap for the given area.
