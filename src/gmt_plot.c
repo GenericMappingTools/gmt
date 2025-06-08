@@ -3090,7 +3090,7 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
 			break;
 		case GMT_PROJ4_SPILHAUS:
-			//gmtplot_linear_map_boundary(GMT, PSL, w, e, s, n);
+			gmtplot_linear_map_boundary(GMT, PSL, w, e, s, n);
 			break;
 	}
 

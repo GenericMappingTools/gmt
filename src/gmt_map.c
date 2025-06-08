@@ -2187,6 +2187,13 @@ GMT_LOCAL void gmtmap_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, d
 
 	/* Find min/max forward values */
 
+	if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) { 		/* The Spilhaus proj is very tricky. */
+		(*GMT->current.proj.fwd) (GMT, -113.0447807067042, 49.56674656682158, &xmin, &ymax);	/* UL */
+		(*GMT->current.proj.fwd) (GMT, -113.06804976730443, 49.553963054590234, &xmax, &ymin);	/* LR */
+		*x0 = xmin;	*x1 = xmax;	*y0 = ymin;	*y1 = ymax;
+		return;
+	}
+
 	xmax = ymax = -DBL_MAX;
 	xmin = ymin = DBL_MAX;
 	dlon = fabs (e0 - w0) / GMTMAP_N_STEPS;
