@@ -18546,7 +18546,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				if (GMT->current.gdal_read_in.hCT_inv) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
 				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
 				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
-				GMT->current.proj.projection      = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
+				GMT->current.proj.projection = strstr(dest, "spilhaus") ? GMT_PROJ4_SPILHAUS : GMT_PROJ4_PROJS;	/* Special case for spilhaus */
 				GMT->common.J.active = true;
 				if (GMT->current.gdal_read_in.hCT_fwd == NULL || GMT->current.gdal_read_in.hCT_inv == NULL)
 					error = 1;

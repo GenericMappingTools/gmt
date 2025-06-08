@@ -8026,43 +8026,63 @@ uint64_t gmt_cart_to_xy_line (struct GMT_CTRL *GMT, double *x, double *y, uint64
 }
 
 /*! . */
-uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
+uint64_t gmt_geo_to_xy_line(struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
 	/* Traces the lon/lat array and returns x,y plus appropriate pen moves
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	uint64_t j, k, np, n_sections;
-	bool this_inside, jump, cartesian = gmt_M_is_cartesian (GMT, GMT_IN);
+	bool this_inside, jump, find_coast_gaps = false, cartesian = gmt_M_is_cartesian(GMT, GMT_IN);
 	/* bool last_inside = false; */
 	unsigned int sides[4];
 	unsigned int nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
-	double this_x, this_y, last_x, last_y, dummy[4];
+	double this_x, this_y, last_x, last_y, dummy[4], dist2_pt;
 
 	if (n == 0) return 0;	/* Absolutely nothing to do */
-	while (n > GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
+	while (n > GMT->current.plot.n_alloc) gmt_get_plot_array(GMT);
 
 	/* Here we know n is at least 1 */
 	np = 0;
-	gmt_geo_to_xy (GMT, lon[0], lat[0], &last_x, &last_y);
-	if (!gmt_map_outside (GMT, lon[0], lat[0])) {	/* First point is inside the region */
+	gmt_geo_to_xy(GMT, lon[0], lat[0], &last_x, &last_y);
+	if (!gmt_map_outside(GMT, lon[0], lat[0])) {	/* First point is inside the region */
 		GMT->current.plot.x[0] = last_x;	GMT->current.plot.y[0] = last_y;
 		GMT->current.plot.pen[np++] = PSL_MOVE;
 		/* last_inside = true; */
 	}
+
+	if (GMT->common.g.active && strstr(GMT->init.module_name, "coast")) {	/* For inter-point gaps detection in pscoast data. */
+		dist2_pt = pow(GMT->common.g.gap[0], 2.0);		/* Squared gap in plot units */
+		find_coast_gaps = true;
+	}
+
 	for (j = 1; j < n; j++) {
 		gmt_geo_to_xy (GMT, lon[j], lat[j], &this_x, &this_y);			/* This guy also checks if lon,lat are NaNs */
-		this_inside = !gmt_map_outside (GMT, lon[j], lat[j]);			/* This also calls gmt_geo_to_xy */
-		if (gmt_M_is_dnan (lon[j]) || gmt_M_is_dnan (lat[j])) continue;	/* Skip NaN point now. WHY NOT MOVE THIS LINE 2 LINES ABOVE? JL. */
-		if (gmt_M_is_dnan (lon[j-1]) || gmt_M_is_dnan (lat[j-1])) {		/* Point after NaN needs a move */
+		this_inside = !gmt_map_outside(GMT, lon[j], lat[j]);			/* This also calls gmt_geo_to_xy */
+		if (gmt_M_is_dnan(lon[j]) || gmt_M_is_dnan(lat[j])) continue;	/* Skip NaN point now. WHY NOT MOVE THIS LINE 2 LINES ABOVE? JL. */
+		if (gmt_M_is_dnan(lon[j-1]) || gmt_M_is_dnan(lat[j-1])) {		/* Point after NaN needs a move */
 			GMT->current.plot.x[np] = this_x;	GMT->current.plot.y[np] = this_y;
 			GMT->current.plot.pen[np++] = PSL_MOVE;
-			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
+			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array(GMT);
 			last_x = this_x;	last_y = this_y;	/* last_inside = this_inside; */
 			continue;
 		}
+
+		if (find_coast_gaps) {		/* Pen up if we are in a projected pscoast gap */
+			double dx, dy;
+			dx = this_x - last_x;	dy = this_y - last_y;
+			if ((dx * dx + dy * dy) > dist2_pt) {
+				GMT->current.plot.x[np] = this_x;	GMT->current.plot.y[np] = this_y;
+				GMT->current.plot.pen[np++] = PSL_MOVE;
+				if (np == GMT->current.plot.n_alloc) gmt_get_plot_array(GMT);
+				last_x = this_x;	last_y = this_y;
+				continue;
+			}
+		}
+
 		if ((nx = gmtmap_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Do nothing if we get crossings*/ }
 		else if (GMT->current.map.is_world)	/* Check global wrapping if 360 range */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
+
 		if (nx == 1) {	/* inside-outside or outside-inside; set move&clip vs draw flags */
 			GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
 			/* If next point is inside then we want to move to the crossing, otherwise we want to draw to the crossing */
@@ -8082,6 +8102,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 				if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 			}
 		}
+
 		if (this_inside) {
 			if ( np >= GMT->current.plot.n_alloc ) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "bad access: cannot access current.plot.x[%" PRIu64 "], np=%" PRIu64 ", GMT->current.plot.n=%" PRIu64 "\n", np, np, GMT->current.plot.n);
@@ -8094,6 +8115,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		}
 		last_x = this_x;	last_y = this_y;	/* last_inside = this_inside; */
 	}
+
 	if (np) GMT->current.plot.pen[0] |= PSL_MOVE;	/* Sanity override: Gotta start off with new start point */
 
 	/* When a line that starts and ends inside the domain exits and reenters, we end up with two pieces.
@@ -8104,7 +8126,9 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		n_sections++;
 		if (n_sections == 2) k = j;	/* Start of 2nd section */
 	}
-	if (n_sections == 2 && doubleAlmostEqualZero (GMT->current.plot.x[0], GMT->current.plot.x[np-1]) && doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.plot.y[np-1])) {
+	if (n_sections == 2 && doubleAlmostEqualZero(GMT->current.plot.x[0], GMT->current.plot.x[np-1]) &&
+	    doubleAlmostEqualZero(GMT->current.plot.y[0], GMT->current.plot.y[np-1])) {
+
 		double *tmp = gmt_M_memory (GMT, NULL, np, double);
 		/* Shuffle x-array safely */
 		gmt_M_memcpy (tmp, &GMT->current.plot.x[k], np-k, double);
@@ -8748,7 +8772,7 @@ double gmt_azim_to_angle (struct GMT_CTRL *GMT, double lon, double lat, double c
 }
 
 /*! . */
-uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *donut) {
+uint64_t gmt_map_clip_path(struct GMT_CTRL *GMT, double **x, double **y, bool *donut) {
 	/* This function returns a clip path corresponding to the
 	 * extent of the map.
 	 */
@@ -8758,6 +8782,9 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 	double *work_x = NULL, *work_y = NULL, da, r0, s, c, lon, lat;
 
 	*donut = false;
+
+	if (GMT->current.proj.projection_GMT == -1 && GMT->current.proj.is_proj4)
+		GMT->current.proj.projection_GMT = GMT->current.proj.projection;
 
 	if (GMT->common.R.oblique)	/* Rectangular map boundary */
 		np = 4;
@@ -8813,6 +8840,9 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 			case GMT_CASSINI:
 			case GMT_POLYCONIC:
 				np = 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes);
+				break;
+			case GMT_PROJ4_SPILHAUS:
+				np = 4;
 				break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad case in gmt_map_clip_path (%d)\n", GMT->current.proj.projection_GMT);
@@ -8973,6 +9003,17 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				}
 				for (i = 1; GMT->common.R.wesn[YLO] != -90.0 && i < GMT->current.map.n_lon_nodes; i++, j++)
 					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YLO], &work_x[j], &work_y[j]);
+				break;
+			case GMT_PROJ4_SPILHAUS:
+				/* The Spilhaus proj is f. The points bellow were obtained by projecting a global grid with gdalwarp and
+				   inverting the UL and LR coordinates. But even those had to be moved a bit to inside (by trial en error).
+				   Couldn't do the same to the other two corners because permanently got Inf's. Anyway, for porposes of
+				   map clipping, this seems good enough.
+				*/
+				gmt_geo_to_xy(GMT, -113.0447807067042, 49.56674656682158, &work_x[3], &work_y[3]);		/* UL */
+				gmt_geo_to_xy(GMT, -113.06804976730443, 49.553963054590234, &work_x[1], &work_y[1]);	/* LR */
+				work_x[0] = work_x[3];		work_x[2] = work_x[1];
+				work_y[0] = work_y[1];		work_y[2] = work_y[3];
 				break;
 		}
 	}
@@ -9679,131 +9720,133 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	gmtmap_reset_oblique_settings (GMT);	/* Maybe reset MAP_ANNOT_OBLIQUE defaults depending on situation */
 
-	switch (GMT->current.proj.projection) {
-
-		case GMT_LINEAR:		/* Linear transformations */
-			error = gmtmap_init_linear (GMT, &search);
-			break;
-
-		case GMT_POLAR:		/* Both lon/lat are actually theta, radius */
-			error = gmtmap_init_polar (GMT, &search);
-			break;
-
-		case GMT_MERCATOR:		/* Standard Mercator projection */
-			error = gmtmap_init_merc (GMT, &search);
-			break;
-
-		case GMT_STEREO:		/* Stereographic projection */
-			error = gmtmap_init_stereo (GMT, &search);
-			break;
-
-		case GMT_LAMBERT:		/* Lambert Conformal Conic */
-			error = gmtmap_init_lambert (GMT, &search);
-			break;
-
-		case GMT_OBLIQUE_MERC:	/* Oblique Mercator */
-			error = gmtmap_init_oblique (GMT, &search);
-			break;
-
-		case GMT_TM:		/* Transverse Mercator */
-			error = gmtmap_init_tm (GMT, &search);
-			break;
-
-		case GMT_UTM:		/* Universal Transverse Mercator */
-			error = gmtmap_init_utm (GMT, &search);
-			break;
-
-		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
-			error = gmtmap_init_lambeq (GMT, &search);
-			break;
-
-		case GMT_ORTHO:		/* Orthographic Projection */
-			error = gmtmap_init_ortho (GMT, &search);
-			break;
-
-		case GMT_GENPER:		/* General Perspective Projection */
-			error = gmtmap_init_genper (GMT, &search);
-			break;
-
-		case GMT_AZ_EQDIST:		/* Azimuthal Equal-Distance Projection */
-			error = gmtmap_init_azeqdist (GMT, &search);
-			break;
-
-		case GMT_GNOMONIC:		/* Azimuthal Gnomonic Projection */
-			error = gmtmap_init_gnomonic (GMT, &search);
-			break;
-
-		case GMT_MOLLWEIDE:		/* Mollweide Equal-Area */
-			error = gmtmap_init_mollweide (GMT, &search);
-			break;
-
-		case GMT_HAMMER:		/* Hammer-Aitoff Equal-Area */
-			error = gmtmap_init_hammer (GMT, &search);
-			break;
-
-		case GMT_VANGRINTEN:		/* Van der Grinten */
-			error = gmtmap_init_grinten (GMT, &search);
-			break;
-
-		case GMT_WINKEL:		/* Winkel Tripel */
-			error = gmtmap_init_winkel (GMT, &search);
-			break;
-
-		case GMT_ECKERT4:		/* Eckert IV */
-			error = gmtmap_init_eckert4 (GMT, &search);
-			break;
-
-		case GMT_ECKERT6:		/* Eckert VI */
-			error = gmtmap_init_eckert6 (GMT, &search);
-			break;
-
-		case GMT_CYL_EQ:		/* Cylindrical Equal-Area */
-			error = gmtmap_init_cyleq (GMT, &search);
-			break;
-
-		case GMT_CYL_STEREO:			/* Cylindrical Stereographic */
-			error = gmtmap_init_cylstereo (GMT, &search);
-			break;
-
-		case GMT_MILLER:		/* Miller Cylindrical */
-			error = gmtmap_init_miller (GMT, &search);
-			break;
-
-		case GMT_CYL_EQDIST:	/* Cylindrical Equidistant */
-			error = gmtmap_init_cyleqdist (GMT, &search);
-			break;
-
-		case GMT_ROBINSON:		/* Robinson */
-			error = gmtmap_init_robinson (GMT, &search);
-			break;
-
-		case GMT_SINUSOIDAL:	/* Sinusoidal Equal-Area */
-			error = gmtmap_init_sinusoidal (GMT, &search);
-			break;
-
-		case GMT_CASSINI:		/* Cassini cylindrical */
-			error = gmtmap_init_cassini (GMT, &search);
-			break;
-
-		case GMT_ALBERS:		/* Albers Equal-Area Conic */
-			error = gmtmap_init_albers (GMT, &search);
-			break;
-
-		case GMT_ECONIC:		/* Equidistant Conic */
-			error = gmtmap_init_econic (GMT, &search);
-			break;
-
-		case GMT_POLYCONIC:		/* Polyconic */
-			error = gmtmap_init_polyconic (GMT, &search);
-			break;
-
-		case GMT_PROJ4_PROJS:	/* All proj.4 projections */
-			error = map_init_proj4 (GMT, &search);
-			break;
-
-		default:	/* No projection selected, return to a horrible death */
-			Error_and_return (GMT_MAP_NO_PROJECTION, GMT_PROJECTION_ERROR);
+	if (gmt_M_is_proj4(GMT)) {				/* Must process this case first. */
+		error = map_init_proj4(GMT, &search);
 	}
+	else {
+		switch (GMT->current.proj.projection) {
+
+			case GMT_LINEAR:		/* Linear transformations */
+				error = gmtmap_init_linear (GMT, &search);
+				break;
+
+			case GMT_POLAR:		/* Both lon/lat are actually theta, radius */
+				error = gmtmap_init_polar (GMT, &search);
+				break;
+
+			case GMT_MERCATOR:		/* Standard Mercator projection */
+				error = gmtmap_init_merc (GMT, &search);
+				break;
+
+			case GMT_STEREO:		/* Stereographic projection */
+				error = gmtmap_init_stereo (GMT, &search);
+				break;
+
+			case GMT_LAMBERT:		/* Lambert Conformal Conic */
+				error = gmtmap_init_lambert (GMT, &search);
+				break;
+
+			case GMT_OBLIQUE_MERC:	/* Oblique Mercator */
+				error = gmtmap_init_oblique (GMT, &search);
+				break;
+
+			case GMT_TM:		/* Transverse Mercator */
+				error = gmtmap_init_tm (GMT, &search);
+				break;
+
+			case GMT_UTM:		/* Universal Transverse Mercator */
+				error = gmtmap_init_utm (GMT, &search);
+				break;
+
+			case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
+				error = gmtmap_init_lambeq (GMT, &search);
+				break;
+
+			case GMT_ORTHO:		/* Orthographic Projection */
+				error = gmtmap_init_ortho (GMT, &search);
+				break;
+
+			case GMT_GENPER:		/* General Perspective Projection */
+				error = gmtmap_init_genper (GMT, &search);
+				break;
+
+			case GMT_AZ_EQDIST:		/* Azimuthal Equal-Distance Projection */
+				error = gmtmap_init_azeqdist (GMT, &search);
+				break;
+
+			case GMT_GNOMONIC:		/* Azimuthal Gnomonic Projection */
+				error = gmtmap_init_gnomonic (GMT, &search);
+				break;
+
+			case GMT_MOLLWEIDE:		/* Mollweide Equal-Area */
+				error = gmtmap_init_mollweide (GMT, &search);
+				break;
+
+			case GMT_HAMMER:		/* Hammer-Aitoff Equal-Area */
+				error = gmtmap_init_hammer (GMT, &search);
+				break;
+
+			case GMT_VANGRINTEN:		/* Van der Grinten */
+				error = gmtmap_init_grinten (GMT, &search);
+				break;
+
+			case GMT_WINKEL:		/* Winkel Tripel */
+				error = gmtmap_init_winkel (GMT, &search);
+				break;
+
+			case GMT_ECKERT4:		/* Eckert IV */
+				error = gmtmap_init_eckert4 (GMT, &search);
+				break;
+
+			case GMT_ECKERT6:		/* Eckert VI */
+				error = gmtmap_init_eckert6 (GMT, &search);
+				break;
+
+			case GMT_CYL_EQ:		/* Cylindrical Equal-Area */
+				error = gmtmap_init_cyleq (GMT, &search);
+				break;
+
+			case GMT_CYL_STEREO:			/* Cylindrical Stereographic */
+				error = gmtmap_init_cylstereo (GMT, &search);
+				break;
+
+			case GMT_MILLER:		/* Miller Cylindrical */
+				error = gmtmap_init_miller (GMT, &search);
+				break;
+
+			case GMT_CYL_EQDIST:	/* Cylindrical Equidistant */
+				error = gmtmap_init_cyleqdist (GMT, &search);
+				break;
+
+			case GMT_ROBINSON:		/* Robinson */
+				error = gmtmap_init_robinson (GMT, &search);
+				break;
+
+			case GMT_SINUSOIDAL:	/* Sinusoidal Equal-Area */
+				error = gmtmap_init_sinusoidal (GMT, &search);
+				break;
+
+			case GMT_CASSINI:		/* Cassini cylindrical */
+				error = gmtmap_init_cassini (GMT, &search);
+				break;
+
+			case GMT_ALBERS:		/* Albers Equal-Area Conic */
+				error = gmtmap_init_albers (GMT, &search);
+				break;
+
+			case GMT_ECONIC:		/* Equidistant Conic */
+				error = gmtmap_init_econic (GMT, &search);
+				break;
+
+			case GMT_POLYCONIC:		/* Polyconic */
+				error = gmtmap_init_polyconic (GMT, &search);
+				break;
+
+			default:	/* No projection selected, return to a horrible death */
+				Error_and_return (GMT_MAP_NO_PROJECTION, GMT_PROJECTION_ERROR);
+		}
+	}
+
 	if (error) return (GMT_PROJECTION_ERROR);	/* Something went wrong in one of the map_init_* functions */
 
 	if (GMT->current.proj.fwd == NULL)	/* Some error in projection projection parameters, return to a horrible death */

@@ -3088,6 +3088,9 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 		case GMT_VANGRINTEN:
 			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
 			break;
+		case GMT_PROJ4_SPILHAUS:
+			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
+			break;
 	}
 	PSL_comment (PSL, "End of map frame\n");
 }
