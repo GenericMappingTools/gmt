@@ -2188,8 +2188,8 @@ GMT_LOCAL void gmtmap_xy_search (struct GMT_CTRL *GMT, double *x0, double *x1, d
 	/* Find min/max forward values */
 
 	if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) { 		/* The Spilhaus proj is very tricky. */
-		(*GMT->current.proj.fwd) (GMT, -113.0447807067042, 49.56674656682158, &xmin, &ymax);	/* UL */
-		(*GMT->current.proj.fwd) (GMT, -113.06804976730443, 49.553963054590234, &xmax, &ymin);	/* LR */
+		(*GMT->current.proj.fwd) (GMT, GMT_PROJ_SPILH_LON_UL, GMT_PROJ_SPILH_LAT_UL, &xmin, &ymax);	/* UL */
+		(*GMT->current.proj.fwd) (GMT, GMT_PROJ_SPILH_LON_LR, GMT_PROJ_SPILH_LAT_LR, &xmax, &ymin);	/* LR */
 		*x0 = xmin;	*x1 = xmax;	*y0 = ymin;	*y1 = ymax;
 		return;
 	}
@@ -6387,18 +6387,29 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		xx[0] = xx[3] = GMT->current.proj.rect[XLO]; xx[1] = xx[2] = GMT->current.proj.rect[XHI];
 		yy[0] = yy[1] = GMT->current.proj.rect[YLO]; yy[2] = yy[3] = GMT->current.proj.rect[YHI];
 
-		for (i = 0; i < 4; i++) {
-			gmt_xy_to_geo (GMT, &GMT->current.proj.z_project.corner_x[i], &GMT->current.proj.z_project.corner_y[i], xx[i], yy[i]);
-			gmt_xyz_to_xy (GMT, xx[i], yy[i], gmt_z_to_zz(GMT, GMT->common.R.wesn[ZLO]), &x, &y);
-			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
-			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
-			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
-			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
-			gmt_xyz_to_xy (GMT, xx[i], yy[i], gmt_z_to_zz(GMT, GMT->common.R.wesn[ZHI]), &x, &y);
-			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
-			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
-			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
-			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
+		if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) {
+			/* Again, Spilhaus is not invertible at all 4 corners, so we set the -Rd global values to avoid annoying warnings */
+			GMT->current.proj.z_project.corner_x[0] = GMT->current.proj.z_project.corner_x[3] = GMT_PROJ_SPILH_LON_UL;
+			GMT->current.proj.z_project.corner_x[1] = GMT->current.proj.z_project.corner_x[2] = GMT_PROJ_SPILH_LON_LR;
+			GMT->current.proj.z_project.corner_y[0] = GMT->current.proj.z_project.corner_y[1] = GMT_PROJ_SPILH_LAT_LR;
+			GMT->current.proj.z_project.corner_y[2] = GMT->current.proj.z_project.corner_y[3] = GMT_PROJ_SPILH_LAT_UL;
+			GMT->current.proj.z_project.xmin = GMT->current.proj.z_project.ymin = 0.0;
+			GMT->current.proj.z_project.xmax = GMT->current.proj.z_project.ymax = GMT->current.proj.rect[XHI];
+		}
+		else {
+			for (i = 0; i < 4; i++) {
+				gmt_xy_to_geo (GMT, &GMT->current.proj.z_project.corner_x[i], &GMT->current.proj.z_project.corner_y[i], xx[i], yy[i]);
+				gmt_xyz_to_xy (GMT, xx[i], yy[i], gmt_z_to_zz(GMT, GMT->common.R.wesn[ZLO]), &x, &y);
+				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
+				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
+				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
+				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
+				gmt_xyz_to_xy (GMT, xx[i], yy[i], gmt_z_to_zz(GMT, GMT->common.R.wesn[ZHI]), &x, &y);
+				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
+				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
+				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
+				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
+			}
 		}
 	}
 	else if (GMT->current.proj.r > 0.0) {	/* Do not think the next four lines mean anything in this case, just copied from the general case */
@@ -9017,8 +9028,8 @@ uint64_t gmt_map_clip_path(struct GMT_CTRL *GMT, double **x, double **y, bool *d
 				   Couldn't do the same to the other two corners because permanently got Inf's. Anyway, for porposes of
 				   map clipping, this seems good enough.
 				*/
-				gmt_geo_to_xy(GMT, -113.0447807067042, 49.56674656682158, &work_x[3], &work_y[3]);		/* UL */
-				gmt_geo_to_xy(GMT, -113.06804976730443, 49.553963054590234, &work_x[1], &work_y[1]);	/* LR */
+				gmt_geo_to_xy(GMT, GMT_PROJ_SPILH_LON_UL, GMT_PROJ_SPILH_LAT_UL, &work_x[3], &work_y[3]);	/* UL */
+				gmt_geo_to_xy(GMT, GMT_PROJ_SPILH_LON_LR, GMT_PROJ_SPILH_LAT_LR, &work_x[1], &work_y[1]);	/* LR */
 				work_x[0] = work_x[3];		work_x[2] = work_x[1];
 				work_y[0] = work_y[1];		work_y[2] = work_y[3];
 				break;

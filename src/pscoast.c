@@ -199,10 +199,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s [%s] [%s] [-C<fill>[+l|r]] [-D<resolution>[+f]] [-E%s] "
 		"[-G[<fill>]] [-F%s] [-I<feature>[/<pen>]] %s [-L%s] [-M] [-N<feature>[/<pen>]] %s%s[-Q] [-S[<fill>]] "
-		"[-Td%s] [-Tm%s] [%s] [%s] [-W[<feature>/][<pen>]] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s [%s]\n",
+		"[-Td%s] [-Tm%s] [%s] [%s] [-W[<feature>/][<pen>]] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_A_OPT, GMT_B_OPT, DCW_OPT, GMT_PANEL, API->K_OPT, GMT_SCALE, API->O_OPT,
 		API->P_OPT, GMT_TROSE_DIR, GMT_TROSE_MAG, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT, API->c_OPT,
-		GMT_do_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, dbg, GMT_PAR_OPT);
+		GMT_do_OPT, GMT_g_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, dbg, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -268,6 +268,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "4: Lake in island in lake shores.");
 	GMT_Usage (API, -2, "Note: When feature-specific pens are used, those not set are deactivated.");
 	GMT_Option (API, "X,bo,c,do,p,t");
+	GMT_Usage (API, 1, "\n-gD<dist> Short version of the global -g option. Here it is used to set the distance, in map "
+		"units, above which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it) "
+		"and when line wrapping on dateline was not correctly detected.");
 #ifdef DEBUG
 	GMT_Usage (API, 1, "\n-+<bin> (repeatable up to 16 times)");
 	GMT_Usage (API, -2, "Plot only the specified bins (debug option).");
@@ -537,6 +540,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 	if (!GMT->common.g.active && GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) {
 		gmt_parse_g_option(GMT, "D1");
 		GMT->common.g.active = true;
+		if (!((GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) == 360 && GMT->common.R.wesn[YLO] == -90 && GMT->common.R.wesn[YHI] == 90))
+			GMT_Report(API, GMT_MSG_WARNING, "Using a non-global region with Spilhaus projection has unknown effects.\n");
 	}
 
 	if ((error = gmt_DCW_list (GMT, &(Ctrl->E.info)))) {	/* This is either success or failure... */

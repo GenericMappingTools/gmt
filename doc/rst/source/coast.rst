@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -289,6 +290,15 @@ Optional Arguments
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
+
+.. _-g:
+
+**-gD**\ *dist*
+    Short version of the global **-g** option. Here it is used to set the _dist_ distance, in map units,
+		higher then which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
+		and when line wrapping on dateline was not correctly detected. As an example of this, see for instance
+    the old issue `#3667 <https://github.com/GenericMappingTools/gmt/issues/3667>`_ that can be fixed
+    by adding **-gD**\ 1 to the command line.
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
