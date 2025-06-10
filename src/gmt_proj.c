@@ -90,6 +90,20 @@
 #define GMT_PROJ_CONV_LIMIT	1e-9
 #define gmt_M_proj_is_zero(x) (fabs (x) < GMT_PROJ_CONV_LIMIT)
 
+/* The Spilhaus proj is f. The points bellow were obtained by projecting a global grid at 1
+   deg resolution with gdalwarp and inverting the UL and LR coordinates. But even those
+   had to be moved a bit to inside (by trial en error). Couldn't do the same to the other
+   two corners because permanently got Inf's. This could probably still be refined a tinny bit.
+   They are good for global maps, but will be in excess for some local -R. However, given
+   the complexity of the projection, it is not worth the effort to determine them for all
+   cases. Anyway, the beauty of the Spilhaus projection is when applyied to the whole world,
+   so it is not a big deal.
+*/
+#define GMT_PROJ_SPILH_LON_UL	-113.0447807067042
+#define GMT_PROJ_SPILH_LAT_UL	49.56674656682158
+#define GMT_PROJ_SPILH_LON_LR	-113.06804976730443
+#define GMT_PROJ_SPILH_LAT_LR	49.553963054590234
+
 GMT_LOCAL double gmtproj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *x, double *y, double *c) {
 	/* Returns the interpolated value y(xp) from the Robinson coefficients */
 

@@ -120,7 +120,10 @@ enum gmt_enum_misc {GMT_MOLLWEIDE = 400,
 	GMT_WINKEL};
 
 /* All projections from proj.4 lib */
-enum gmt_enum_allprojs {GMT_PROJ4_PROJS = 500};
+#define gmt_M_is_proj4(C) (C->current.proj.projection / 100 == 5)
+enum gmt_enum_allprojs {GMT_PROJ4_PROJS = 500,
+	GMT_PROJ4_SPILHAUS,
+};
 
 /*! The various GMT measurement units */
 enum gmt_enum_units {GMT_IS_METER = 0,
