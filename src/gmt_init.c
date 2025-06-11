@@ -4979,17 +4979,20 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	gmt_handle5_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
-		if (!side[no]) continue;	/* Except we did not specify this axis */
+		if (!side[no]) continue;		/* Except we did not specify this axis */
 		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
-		if (text[0] == '0' && !text[1]) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
+		if (text[0] == '0' && !text[1] || !strcmp(text, "00")) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
 			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
 			GMT->current.map.frame.set[no] = true;	/* Since we want this axis drawn */
-#ifdef B0_IS_NO_FRAME
-			GMT->current.map.frame.no_frame = true;		/* Understand format '0' to mean "NO FRAME AT ALL" */
-#endif
+			if (no == 0 && !strcmp(text, "00"))
+				GMT->current.setting.map_frame_pen.width = 0;	/* Understand format '00' to mean "draw the frame with a 0 width line */
+			continue;
+		}
+		else if (!strcmp(text, "000")) {
+			GMT->current.map.frame.no_frame = true;		/* Understand format '000' to mean "NO FRAME AT ALL" */
 			continue;
 		}
 
