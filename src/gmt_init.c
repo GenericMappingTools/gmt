@@ -4991,8 +4991,10 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 				GMT->current.setting.map_frame_pen.width = 0;	/* Understand format '00' to mean "draw the frame with a 0 width line */
 			continue;
 		}
-		else if (!strcmp(text, "000")) {
-			GMT->current.map.frame.no_frame = true;		/* Understand format '000' to mean "NO FRAME AT ALL" */
+		else if (no == 0 && !strncmp(text, "000", 3)) {
+			//GMT->current.map.frame.no_frame = true;		/* Understand format '000' to mean "NO FRAME AT ALL" */
+			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* A no-frame fancy would be super complicated */
+			GMT->current.setting.ps_transparency = 100;	/* Understand format '000' to mean "no frame but keep annots, ticks etc" */
 			continue;
 		}
 
