@@ -5270,12 +5270,16 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 			gmtmap_setinfo(GMT, xmin, xmax, ymin, ymax, GMT->current.proj.proj4_scl);
 			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 #if (GDAL_VERSION_MAJOR >= 3 && GDAL_VERSION_MINOR >= 9 || GDAL_VERSION_MAJOR >= 4)
-			if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS)	/* Spilhaus issues many "ERROR 1: Point outside of projection domain" */
+			if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) {	/* Spilhaus issues many "ERROR 1: Point outside of projection domain" */
+	#if ((PROJ_VERSION_MAJOR < 9) || (PROJ_VERSION_MAJOR == 9 && PROJ_VERSION_MINOR < 6))
+				GMT_Report(GMT->parent, GMT_MSG_ERROR, "To use the Spilhaus projection you need a GDAL library that was compiled with a PROJ version >= 9.6 and you don’t have that.\n");
+	#endif
 	#ifdef WIN32
 				CPLSetConfigOption("CPL_LOG", "NUL");
 	#else
 				CPLSetConfigOption("CPL_LOG", "/dev/null");
 	#endif
+			}
 #endif
 			break;
 	}
