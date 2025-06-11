@@ -8313,8 +8313,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos, char *e
 			//strcat(opt_J, "0/");
 	}
 
-	else	/* We don't return yet because we may have a +width/+scale to parse */
+	else {	/* We don't return yet because we may have a +width/+scale to parse */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "This projection '%s' is not natively supported in GMT\n", prjcode);
+		strcat(opt_J, szProj4);
+	}
 
 #if 0
 	bool got_a = false, got_b = false;

@@ -5212,7 +5212,7 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 
 	*search = false;
 	switch (GMT->current.proj.projection_GMT) {
-		case GMT_LINEAR:        error = gmtmap_init_linear (GMT, search); break;      /* Linear transformations */
+		//case GMT_LINEAR:        error = gmtmap_init_linear (GMT, search); break;      /* Linear transformations */
 		case GMT_POLAR:         error = gmtmap_init_polar (GMT, search); break;       /* Both lon/lat are actually theta, radius */
 		case GMT_MERCATOR:      error = gmtmap_init_merc (GMT, search); break;        /* Standard Mercator projection */
 		case GMT_STEREO:        error = gmtmap_init_stereo (GMT, search); break;      /* Stereographic projection */
@@ -5247,8 +5247,8 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.proj4_scl;
 			GMT->current.map.n_lon_nodes = 360;	GMT->current.map.n_lat_nodes = 180;
 			if (GMT->common.R.oblique) {
-				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+				gmt_proj4_fwd(GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+				gmt_proj4_fwd(GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 				GMT->current.map.outside = &gmtmap_rect_outside;
 				GMT->current.map.crossing = &gmtmap_rect_crossing;
 				GMT->current.map.overlap = &gmtmap_rect_overlap;
@@ -5258,7 +5258,7 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 				GMT->current.map.frame.check_side = true;
 			}
 			else {
-				gmtmap_xy_search (GMT, &xmin, &xmax, &ymin, &ymax, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+				gmtmap_xy_search(GMT, &xmin, &xmax, &ymin, &ymax, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 				GMT->current.map.outside = &gmtmap_wesn_outside;
 				GMT->current.map.crossing = &gmtmap_wesn_crossing;
 				GMT->current.map.overlap = &gmtmap_wesn_overlap;
@@ -5267,8 +5267,20 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 				GMT->current.map.right_edge = &gmtmap_right_rect;
 				GMT->current.map.frame.horizontal = 2;
 			}
-			gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.proj4_scl);
+			gmtmap_setinfo(GMT, xmin, xmax, ymin, ymax, GMT->current.proj.proj4_scl);
 			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
+#if (GDAL_VERSION_MAJOR >= 3 && GDAL_VERSION_MINOR >= 9 || GDAL_VERSION_MAJOR >= 4)
+			if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) {	/* Spilhaus issues many "ERROR 1: Point outside of projection domain" */
+	#if ((PROJ_VERSION_MAJOR < 9) || (PROJ_VERSION_MAJOR == 9 && PROJ_VERSION_MINOR < 6))
+				GMT_Report(GMT->parent, GMT_MSG_ERROR, "To use the Spilhaus projection you need a GDAL library that was compiled with a PROJ version >= 9.6 and you don’t have that.\n");
+	#endif
+	#ifdef WIN32
+				CPLSetConfigOption("CPL_LOG", "NUL");
+	#else
+				CPLSetConfigOption("CPL_LOG", "/dev/null");
+	#endif
+			}
+#endif
 			break;
 	}
 	/* Now we only have to replace the pointers to the FWD and INV transform functions */
@@ -8476,7 +8488,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 				/* On 17-Sep-2007 the slack of GMT_CONV4_LIMIT was added to allow for round-off
 				   errors in the grid limits. */
-				if (gmt_M_x_is_lon (GMT, GMT_IN) && !gmt_M_is_dnan (x_proj)) {
+				if (gmt_M_x_is_lon (GMT, GMT_IN) && !gmt_M_is_dnan (x_proj) && !gmt_M_is_dinf(x_proj)) {	/* Spilhaus returns Inf instead of NaN */
 					while (x_proj < I->header->wesn[XLO] - GMT_CONV4_LIMIT) x_proj += 360.0;
 					while (x_proj > I->header->wesn[XHI] + GMT_CONV4_LIMIT) x_proj -= 360.0;
 				}

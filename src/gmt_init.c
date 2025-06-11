@@ -16456,6 +16456,7 @@ void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	if (!GMT->common.R.active[RSET]) return;	/* No -R given, presumably use whole grid or image */
 	if (!(gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]))) return;	/* Gave -Rd or -Rg so need to probe more*/
 	if (gmt_M_is_azimuthal (GMT) && doubleAlmostEqual (fabs (GMT->current.proj.lat0), 90.0) && !GMT->common.R.oblique) return;	/* Nothing to do */
+	if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) return;		/* This is one is square */
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Save the region we were given */
 
  	if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* Set up projection */
@@ -18544,12 +18545,14 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				}
 				if (GMT->current.gdal_read_in.hCT_fwd) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
 				if (GMT->current.gdal_read_in.hCT_inv) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
-				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
-				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
+				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, source, dest);
+				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, dest, source);
 				GMT->current.proj.projection = strstr(dest, "spilhaus") ? GMT_PROJ4_SPILHAUS : GMT_PROJ4_PROJS;	/* Special case for spilhaus */
 				GMT->common.J.active = true;
 				if (GMT->current.gdal_read_in.hCT_fwd == NULL || GMT->current.gdal_read_in.hCT_inv == NULL)
 					error = 1;
+				else if (error && strstr(dest, "+proj="))	/* In this case it arrived here with error = 1 */
+					error = 0;
 			}
 			else {	/* Horizontal map projection */
 				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Option -J given more than once\n") ||
