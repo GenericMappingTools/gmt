@@ -111,9 +111,9 @@ Optional Arguments
 .. _-M:
 
 **-M**
-    Do no plotting.  Instead, convert the input (*a*,\ *b*,\ *c*\ [,\ *z*]) records
+    Do no plotting. Instead, convert the input (*a*,\ *b*,\ *c*\ [,\ *z*]) records
     to Cartesian (*x*,\ *y*,\ [,\ *z*]) records, where *x, y* are normalized coordinates
-    on the triangle (i.e., 0–1 in *x* and 0–sqrt(3)/2 in *y*\ ).
+    on the triangle (i.e., 0–1 in *x* and :math:`0–\sqrt{3}/2` in *y*\ ).
 
 .. _-N:
 

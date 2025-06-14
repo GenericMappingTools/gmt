@@ -22,7 +22,7 @@ Your computer screen works the same way.
 
 A mix of levels of red, green, and blue creates basically any color
 imaginable. In GMT each color can be represented by the triplet
-*r7g7b*. For example, 127/255/0 (half red, full
+*r/g/b*. For example, 127/255/0 (half red, full
 green, and no blue) creates a color called chartreuse. The color sliders
 in the graphics program GIMP are an excellent way to experiment
 with colors, since they show you in advance how moving one of the color

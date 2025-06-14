@@ -15,7 +15,7 @@ Synopsis
 **gmt nearneighbor** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
-|-S|\ *search_radius*
+|-S|\ *search_radius*\ [*unit*]
 [ |-E|\ *empty* ]
 [|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**]
 [ |SYN_OPT-V| ]
@@ -92,9 +92,10 @@ Required Arguments
 
 .. _-S:
 
-**-S**\ *search_radius*
+**-S**\ *search_radius*\ [*unit*]
     Sets the *search_radius* that determines which data points are
-    considered close to a node. Append the distance unit (see `Units`_).
+    considered close to a node. Append the distance unit (see `Units`_)
+    if input is geographic coordinates.
 
 Optional Arguments
 ------------------
