@@ -8995,7 +8995,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Running in PS mode %s\n", ps_mode[GMT->current.setting.run_mode]);
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
-		bool wants_PS;
+		bool wants_PS = false;
 		double paper_margin = GMT_PAPER_MARGIN_AUTO;
 
 		if (gmtlib_fixed_paper_size (GMT->parent)) {	/* Must honor paper size and regular margin */
@@ -9014,9 +9014,15 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			GMT->parent->error = GMT_ERROR_ON_FOPEN;
 			return NULL;
 		}
-		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
+
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
+		/* Next line would let modern mode use "auto" paper size (the 11 m wall-size) to correctly crop also a PS
+		   file (currently it sets the A4 size as default), but that breaks all modern mode tests. It also terribly
+		   slows down the tests when the -! option is built in to be the default (The /DPS_NO_DUP) */
+		//if (!auto_media) wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output AND set paper size. */
+
+		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		if (wants_PS && !O_active) {	/* Requesting a new PostScript file in modern mode */
 			if (auto_media) {	/* Cannot use "auto" if requesting a PostScript file */
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "You should specify a paper size when requesting a PostScript file.\n");
