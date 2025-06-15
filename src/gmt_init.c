@@ -19567,7 +19567,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""}, device_extra[GMT_LEN8] = {""}, *do_gray[2] = {"", "+m"};
 	char *copy = NULL, *ptr = NULL, *format = NULL, *c = NULL;
 	struct GMT_FIGURE *fig = NULL;
-	bool not_PS, auto_size;
+	bool not_PS = true, auto_size;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16], jpeg_quality = GMT_JPEG_DEF_QUALITY, monochrome = 0;
 	unsigned int pos = 0;
 	double legend_width = 0.0, legend_scale = 1.0;
@@ -19581,6 +19581,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
+
 	if ((n_figs = gmtinit_read_figures (API->GMT, 2, &fig)) == GMT_NOTSET) {	/* Auto-insert the hidden gmt_0.ps- file which may not have been used */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
@@ -19591,6 +19592,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	for (k = 0; k < n_figs; k++) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
+		
 		/* Go through the format list and build array for -T arguments */
 		nf = gmtinit_get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode, &jpeg_quality, &monochrome);
 		if (n_orig && k) {	/* Specified one or more figs via gmt figure so must switch to the current figure and update the history */
@@ -19601,22 +19603,27 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
 		}
+		
 		copy = strdup (fig[k].formats);	ptr = copy;
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			format = strsep (&ptr, ",");	/* Name of next format as user specified it */
 			device_extra[0] = '\0';	/* Reset device arguments */
 			if (fmt[f] == 'j' && jpeg_quality != GMT_JPEG_DEF_QUALITY)
 				sprintf (device_extra, "+q%d", jpeg_quality);	/* Need to pass quality modifier */
+			
 			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
 			snprintf (cmd, GMT_BUFSIZ, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
+			
 			if (access (cmd, F_OK)) {	/* No such file, check if the fully baked file is there instead */
 				mark = '+';	/* This is the last char in extension for a fully-baked GMT PostScript file */
 				snprintf (cmd, GMT_BUFSIZ, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
 				if (access (cmd, F_OK)) {	/* No such file ether, give up; warn if a fig set via gmt figure (k > 0) and it is not the movie_background case which may not have a plot to go with it */
-					if (k && strcmp (fig[k].prefix, "movie_background")) GMT_Report (API, GMT_MSG_WARNING, "Figure # %d (%s) was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, fig[k].prefix);
+					if (k && strcmp (fig[k].prefix, "movie_background"))
+						GMT_Report (API, GMT_MSG_WARNING, "Figure # %d (%s) was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, fig[k].prefix);
 					continue;
 				}
 			}
+			
 			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 				/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
 				bool active = API->GMT->common.l.active;	/* Must temporarily turn off -l since should not be passed to legend and plot */
@@ -19641,11 +19648,14 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			else	/* Place products in current directory */
 				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, do_gray[monochrome], fig[k].prefix);
+			
 			gmt_filename_get (fig[k].prefix);
-			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
+			auto_size = gmtinit_check_if_autosize (API, fig[k].ID);	/* Determine if the PostScript file has auto size (32767x32767) enabled */
+			/* Next line is risky. See comments on line #9014 of gmt_plot.c/gmt_plotinit() */
+			if (!auto_size) not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS and a explicit paper size was set. */
+
 			dir[0] = '\0';	/* No directory via D<dir> convert option */
-			auto_size = gmtinit_check_if_autosize (API, fig[k].ID);	/* Determine if the PostScript file has auto size enabled */
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
@@ -19678,6 +19688,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
 				strcat (cmd, " -A");
+			
 			GMT_Report (API, GMT_MSG_DEBUG, "psconvert: %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to call psconvert\n");
@@ -19685,6 +19696,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				gmt_M_str_free (copy);
 				return error;
 			}
+			
 			if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U)) {	/* Must rename file to have .jpeg or .tiff extensions */
 				/* Since psconvert cannot tell from j and t if the extensions should be 3 or 4 characters... */
 				char old_name[PATH_MAX] = {""}, new_name[PATH_MAX] = {""}, ext[GMT_LEN8] = {""};
