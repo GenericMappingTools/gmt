@@ -41,7 +41,7 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
-#ifdef WIN32	/* Special for Windows */
+#ifdef _WIN32	/* Special for Windows */
 #	include <windows.h>
 #	include <process.h>
 #	define getpid _getpid
@@ -193,9 +193,12 @@ struct PSCONVERT_CTRL {
 	struct PSCONVERT_Z { /* -Z */
 		bool active;
 	} Z;
+	struct PSCONVERT_O { /* -0 */
+		bool active;
+	} O;
 };
 
-#ifdef WIN32	/* Special for Windows */
+#ifdef _WIN32	/* Special for Windows */
 	GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CTRL *C);
 #else
 	/* Abstraction to get popen to do bidirectional read/write */
@@ -610,7 +613,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 			perror("Error Description while accessing the GS executable:");
 	}
 	if (!found_gs) {	/* Shit. But try still the generic non-Julian paths */
-		#ifdef WIN32
+		#ifdef _WIN32
 			if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
 				C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
 		#else
@@ -618,7 +621,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 		#endif
 	}
 #else
-	#ifdef WIN32
+	#ifdef _WIN32
 		if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
 			C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
 	#else
@@ -667,7 +670,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
 		"[-N[+f<fade>][+g<backfill>][+k<fadefill>][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
-		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
+		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s [-!]"
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -704,8 +707,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Under Windows, Ghostscript path is fished from the registry. "
 		"If this fails you can still add the GS path to system's path "
 		"or give the full path here, e.g., "
-#ifdef WIN32
-		"-Gc:\\programs\\gs\\gs9.27\\bin\\gswin64c).");
+#ifdef _WIN32
+		"-Gc:\\programs\\gs\\bin\\gswin64c).");
 #else
 		"-G/some/unusual/dir/bin/gs).");
 #endif
@@ -813,17 +816,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Escape any +? modifier inside strings with \\.");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Usage (API, 1, "\n-Z Remove input PostScript file(s) after successful conversion.");
+#ifndef PS_NO_DUP
+	GMT_Usage (API, 1, "\n-! Modify the input PS file instead of creating a temp EPS. Some options like -N+g or -N+p will disable it.");
+#endif
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
-	 */
+	*/
 
 	unsigned int n_errors = 0, mode;
 	int j = 0;
@@ -831,6 +837,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+
+/* This a temporary setting till (if) we decide to make the insitu PS modification the default behavior. */
+#ifdef PS_NO_DUP	/* Sets option -! by default. Build GMT with /DPS_NO_DUP or use add_definitions(/DPS_NO_DUP) in ConfigUser.cmake */
+		Ctrl->O.active = true;
+#endif
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -1008,6 +1019,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				}
 				break;
 
+			case '!':	/* Modify input PS instead of creating a new temp EPS one */
+#ifdef PS_NO_DUP
+				/* In this case -! has the effect of disabling the insitu modification. That is, it reverts the global PS_NO_DUP. */
+				Ctrl->O.active = false;
+#else
+				/* Here it is the contrary. -! has the effect of setting the insitu modification when that was not the default. */
+				Ctrl->O.active = true;
+#endif
+				break;
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
 				break;
@@ -1075,22 +1096,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && GMT->current.setting.run_mode == GMT_MODERN,
 	                                   "Modern GMT mode requires the -F option\n");
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->O.active && Ctrl->T.ps && !(GMT_PACKAGE_VERSION_MAJOR > 6 || GMT_PACKAGE_VERSION_MINOR >= 6),
+	                                   "Insitu modification of PostScript files requires GMT 6.6 or later\n");
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int64_t psconvert_file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp, char *notused1, uint64_t *notused2) {
+GMT_LOCAL int64_t psconvert_file_line_reader(struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp) {
 	/* psconvert_file_line_reader gets the next logical record from file pointer fp and passes it back via L.
 	 * We use this function since PS files may be shitty and contain a mixture of \r or \n
 	 * to indicate end of a logical record.
 	 * all_PS and pos are not used.
 	 * Empty lines are suppressed.
 	 * If the last end-of-line is missing, the last line is still produced with an end-of-line.
-	 */
+	*/
 	int c;
 	int64_t out = 0;
 	char *line = *L;
-	if (notused1 == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
-	if (notused2 == NULL){};			/* 		""		*/
 	while ((c = fgetc (fp)) > 0) {	/* Keep reading until End-Of-File */
 		if (c == '\r' || c == '\n') {	/* Got logical end of record */
 			if (!out) continue; /* Nothing in buffer ... skip */
@@ -1109,13 +1131,8 @@ GMT_LOCAL int64_t psconvert_file_line_reader (struct GMT_CTRL *GMT, char **L, si
 	return out;			/* Return number of characters in L. The next call to the routine will return EOF. */
 }
 
-GMT_LOCAL void psconvert_file_rewind (FILE *fp, uint64_t *notused) {	/* Rewinds to start of file */
-	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
-	rewind (fp);
-}
-
-#define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define bailout(code) {gmt_M_free_options(mode); return (code);}
+#define Return(code) {gmt_M_toc(GMT,""); Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); bailout(code);}
 
 GMT_LOCAL inline char *psconvert_alpha_bits (struct PSCONVERT_CTRL *Ctrl) {
 	/* return alpha bits which are valid for the selected driver */
@@ -1620,14 +1637,16 @@ GMT_LOCAL bool psconvert_gs_is_good (int major, int minor) {
 	return false;	/* Not implemented (?) */
 }
 
-EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0, trans_line;
+	int n_read_PS_lines, max_PS_lines;
 	size_t len, line_size = 0U, half_baked_size = 0;
 	uint64_t pos = 0;
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false, old_transparency_code_needed;
-	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
+	bool excessK, in_BeginSetup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, has_transparency, add_grestore = false;
+	bool first_pagedevice = true, found_EndProlog = false, second_ps = false;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -1661,7 +1680,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		""}; /* bmpgray */
 	char *ext[N_GS_DEVICES] = {".eps", ".pdf", ".svg", ".jpg", ".png", ".ppm", ".tif", ".bmp", ".png", ".jpg", ".png", ".tif", ".bmp"};
 	char *RefLevel[N_KML_ELEVATIONS] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
-#ifdef WIN32
+#ifdef _WIN32
 	char at_sign[2] = "@";
 #else
 	char at_sign[2] = "";
@@ -1703,6 +1722,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psconvert main code ----------------------------*/
+	
+	gmt_M_tic(GMT);
 
 	if (!Ctrl->L.active && (GMT->current.setting.run_mode == GMT_CLASSIC) && (Ctrl->In.n_files == 0)) {	/* No files given, bail */
 		GMT_Report (API, GMT_MSG_ERROR, "No PostScript files specified - exiting.\n");
@@ -1727,6 +1748,19 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	old_transparency_code_needed = (gsVersion.major == 9 && gsVersion.minor < 53);
+
+	if (old_transparency_code_needed && Ctrl->O.active) {
+		Ctrl->O.active = false;
+		GMT_Report (API, GMT_MSG_WARNING, "gs version %s does not support the -! option - please upgrade to 9.53 or later\n", GSstring);
+	}
+	if (Ctrl->T.eps == -1 && Ctrl->O.active) {	/* -TE option. */
+		Ctrl->O.active = false;
+		GMT_Report (API, GMT_MSG_WARNING, "The -TE option does not support the -!\n");
+	}
+	if (Ctrl->N.BB_paint || Ctrl->N.outline) {
+		Ctrl->O.active = false;
+		GMT_Report (API, GMT_MSG_WARNING, "The -N+g or -N+p options do not support the -!\n");
+	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
 		GMT_Report (API, GMT_MSG_ERROR, "Your Ghostscript version (%s) no longer supports the SVG device.\n", GSstring);
@@ -1815,6 +1849,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			ps_names[j++] = gmt_strdup_noquote (opt->arg);
 		}
 	}
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
 		if (Ctrl->In.n_files == 0) {	/* Add the default hidden PS file */
 			if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for current PS */
@@ -1932,7 +1967,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		if (file_processing && (fp = fopen (ps_file, "r")) == NULL) {
+		if (file_processing && (fp = fopen (ps_file, "r+")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot open file %s\n", ps_file);
 			continue;
 		}
@@ -1966,7 +2001,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (fpo) {fclose (fpo);		fpo = NULL;}
 				Return (GMT_RUNTIME_ERROR);
 			}
-			while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
+			while (psconvert_file_line_reader (GMT, &line, &line_size, fp) != EOF) {
 				if (dump && !strncmp (line, "% Begin GMT time-stamp", 22))
 					dump = false;
 				if (dump)
@@ -1982,7 +2017,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			file_processing = true;			/* Since we now are reading a temporary file */
 		}
 
-		got_BB = got_HRBB = file_has_HRBB = got_end = landscape = landscape_orig = setup = false;
+		got_BB = got_HRBB = file_has_HRBB = got_end = landscape = landscape_orig = in_BeginSetup = false;
 		got_BBatend = 0;
 
 		len = strlen (ps_file);
@@ -2019,114 +2054,113 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
-				GMT_Report (API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
-				fclose (fp);
-				if (fp2) fclose (fp2);
+				GMT_Report(API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				fclose(fp);
+				if (fp2) fclose(fp2);
 				fp = fp2 = NULL;
-				gmt_M_free (GMT, PS);
-				if (gmt_remove_file (GMT, BB_file))
-					Return (GMT_RUNTIME_ERROR);
-				if (gmt_truncate_file (API, ps_file, half_baked_size))
-					Return (GMT_RUNTIME_ERROR);
-				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
-					Return (GMT_RUNTIME_ERROR);
-				Return (GMT_RUNTIME_ERROR);
+				gmt_M_free(GMT, PS);
+				if (gmt_remove_file(GMT, BB_file))
+					Return(GMT_RUNTIME_ERROR);
+				if (gmt_truncate_file(API, ps_file, half_baked_size))
+					Return(GMT_RUNTIME_ERROR);
+				if (delete && gmt_remove_file(GMT, ps_file))	/* Since we created a temporary file from the memdata */
+					Return(GMT_RUNTIME_ERROR);
+				Return(GMT_RUNTIME_ERROR);
 			}
-			if ((fpb = fopen (BB_file, "r")) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open file %s\n", BB_file);
-				gmt_M_free (GMT, PS);
-				fclose (fp);	fclose (fp2);
+			if ((fpb = fopen(BB_file, "r")) == NULL) {
+				GMT_Report(API, GMT_MSG_ERROR, "Unable to open file %s\n", BB_file);
+				gmt_M_free(GMT, PS);
+				fclose(fp);		fclose(fp2);
 				fp = fp2 = NULL;
-				if (gmt_truncate_file (API, ps_file, half_baked_size))
-					Return (GMT_RUNTIME_ERROR);
+				if (gmt_truncate_file(API, ps_file, half_baked_size))
+					Return(GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
-					Return (GMT_RUNTIME_ERROR);
-				Return (GMT_ERROR_ON_FOPEN);
+					Return(GMT_RUNTIME_ERROR);
+				Return(GMT_ERROR_ON_FOPEN);
 			}
-			while ((psconvert_file_line_reader (GMT, &line, &line_size, fpb, NULL, NULL) != EOF) && !got_BB) {
+			while ((psconvert_file_line_reader(GMT, &line, &line_size, fpb) != EOF) && !got_BB) {
 				/* We only use the High resolution BB */
-				if ((strstr (line,"%%HiResBoundingBox:"))) {
+				if ((strstr(line,"%%HiResBoundingBox:"))) {
 					sscanf (&line[19], "%s %s %s %s", c1, c2, c3, c4);
 					x0 = atof (c1);		y0 = atof (c2);
 					x1 = atof (c3);		y1 = atof (c4);
 					x0 -= Ctrl->I.margin[XLO];	x1 += Ctrl->I.margin[XHI];	/* If not given, margin = 0/0/0/0 */
 					y0 -= Ctrl->I.margin[YLO];	y1 += Ctrl->I.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
-						GMT_Report (API, GMT_MSG_ERROR, "Unable to decode BoundingBox file %s (maybe no non-white features were plotted?)\n", BB_file);
-						fclose (fpb);	fpb = NULL;            /* so we don't accidentally close twice */
+						GMT_Report(API, GMT_MSG_ERROR, "Unable to decode BoundingBox file %s (maybe no non-white features were plotted?)\n", BB_file);
+						fclose(fpb);	fpb = NULL;            /* so we don't accidentally close twice */
 						if (Ctrl->D.active)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
-						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
-						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%g -sOutputFile=%c%s%c %c%s%c",
-							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, psconvert_alpha_bits(Ctrl), device[Ctrl->T.device],
-							device_options[Ctrl->T.device],
-							Ctrl->E.dpi, quote, tmp_file, quote, quote, ps_file, quote);
-						GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
-						sys_retval = system (cmd);		/* Execute the Ghostscript command */
+						strncat(tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+						strcat(tmp_file, ext[Ctrl->T.device]);
+						sprintf(cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%g -sOutputFile=%c%s%c %c%s%c",
+						        at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, psconvert_alpha_bits(Ctrl), device[Ctrl->T.device],
+						        device_options[Ctrl->T.device], Ctrl->E.dpi, quote, tmp_file, quote, quote, ps_file, quote);
+						GMT_Report(API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
+						sys_retval = system(cmd);		/* Execute the Ghostscript command */
 						if (Ctrl->S.active) {
-							API->print_func (GMT->session.std[GMT_ERR], cmd);
-							API->print_func (GMT->session.std[GMT_ERR], "\n");
+							API->print_func(GMT->session.std[GMT_ERR], cmd);
+							API->print_func(GMT->session.std[GMT_ERR], "\n");
 						}
 						if (sys_retval) {
-							GMT_Report (API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
-							if (gmt_remove_file (GMT, tmp_file))	/* Remove the file */
-								Return (GMT_RUNTIME_ERROR);
-							if (gmt_truncate_file (API, ps_file, half_baked_size))
-								Return (GMT_RUNTIME_ERROR);
-							if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
-								Return (GMT_RUNTIME_ERROR);
-							gmt_M_free (GMT, PS);
-							fclose (fp);	fclose (fp2);
+							GMT_Report(API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
+							if (gmt_remove_file(GMT, tmp_file))	/* Remove the file */
+								Return(GMT_RUNTIME_ERROR);
+							if (gmt_truncate_file(API, ps_file, half_baked_size))
+								Return(GMT_RUNTIME_ERROR);
+							if (delete && gmt_remove_file(GMT, ps_file))	/* Since we created a temporary file from the memdata */
+								Return(GMT_RUNTIME_ERROR);
+							gmt_M_free(GMT, PS);
+							fclose(fp);		fclose(fp2);
 							fp = fp2 = NULL;
-							Return (GMT_RUNTIME_ERROR);
+							Return(GMT_RUNTIME_ERROR);
 						}
 						/* must leave loop because fpb has been closed and psconvert_file_line_reader would
 						 * read from closed file: */
 						break;
 					}
 					got_BB = got_HRBB = true;
-					GMT_Report (API, GMT_MSG_INFORMATION, "Figure dimensions: Width: %g points [%g %s]  Height: %g points [%g %s]\n",
-					            x1-x0, (x1-x0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
-					            API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit],
-					            y1-y0, (y1-y0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
-					            API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+					GMT_Report(API, GMT_MSG_INFORMATION, "Figure dimensions: Width: %g points [%g %s]  Height: %g points [%g %s]\n",
+					           x1-x0, (x1-x0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
+					           API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit],
+					           y1-y0, (y1-y0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
+					           API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 				}
 			}
 			if (fpb != NULL) { /* don't close twice */
-				fclose (fpb);	fpb = NULL;
+				fclose(fpb);	fpb = NULL;
 			}
-			if (!Ctrl->S.active && gmt_remove_file (GMT, BB_file)) {	/* Remove the file with BB info */
-				fclose (fp);	fclose (fp2);
+			if (!Ctrl->S.active && gmt_remove_file(GMT, BB_file)) {	/* Remove the file with BB info */
+				fclose(fp);		fclose(fp2);
 				fp = fp2 = NULL;
-				Return (GMT_RUNTIME_ERROR);
+				Return(GMT_RUNTIME_ERROR);
 			}
-			if (got_BB) GMT_Report (API, GMT_MSG_INFORMATION, "[%g %g %g %g]...\n", x0, y0, x1, y1);
+			if (got_BB) GMT_Report(API, GMT_MSG_INFORMATION, "[%g %g %g %g]...\n", x0, y0, x1, y1);
 		}
 
 		/* Open temporary file to be processed by Ghostscript. When -Te or -TE is used, tmp_file is for keeps */
 
 		if (Ctrl->T.eps) {
-			GMT_Report (API, GMT_MSG_INFORMATION, "Format EPS file...\n");
-			if (Ctrl->D.active) sprintf (tmp_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+			GMT_Report(API, GMT_MSG_INFORMATION, "Format EPS file...\n");
+			if (Ctrl->D.active) sprintf(tmp_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (!Ctrl->F.active || return_image)
-				strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+				strncat(tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			else
-				strcat (tmp_file, Ctrl->F.file);
+				strcat(tmp_file, Ctrl->F.file);
 			if (strlen(tmp_file) < PATH_MAX-4)		/* To please Coverity */
-				strcat (tmp_file, ext[GS_DEV_EPS]);
-			if ((fpo = fopen (tmp_file, "w")) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open file %s for writing\n", tmp_file);
+				strcat(tmp_file, ext[GS_DEV_EPS]);
+			if (!Ctrl->O.active && (fpo = fopen(tmp_file, "w")) == NULL) {
+				GMT_Report(API, GMT_MSG_ERROR, "Unable to open file %s for writing\n", tmp_file);
 				continue;
 			}
 		}
 		else {
 			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place temporary EPS files in session dir */
-				sprintf (tmp_file, "%s/psconvert_%dd.eps", API->gwf_dir, (int)getpid());
+				sprintf(tmp_file, "%s/psconvert_%dd.eps", API->gwf_dir, (int)getpid());
 			else
-				sprintf (tmp_file, "%s/psconvert_%dd.eps", Ctrl->D.dir, (int)getpid());
-			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a temporary file\n");
+				sprintf(tmp_file, "%s/psconvert_%dd.eps", Ctrl->D.dir, (int)getpid());
+			if (!Ctrl->O.active && (fpo = fopen(tmp_file, "w+")) == NULL) {
+				GMT_Report(API, GMT_MSG_ERROR, "Unable to create a temporary file\n");
 				continue;
 			}
 		}
@@ -2135,48 +2169,55 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		 * Since we prefer the HiResBB over BB we must continue to read until both are found or 20 lines have past */
 
 		i = 0;
-		while ((psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) && i < 20 && !(got_BB && got_HRBB && got_end)) {
+		while ((psconvert_file_line_reader(GMT, &line, &line_size, fp) != EOF) && i < 20 && !(got_BB && got_HRBB && got_end)) {
 			i++;
 			if (!line[0] || line[0] != '%')
 				{ /* Skip empty and non-comment lines */ }
-			else if (!got_BB && strstr (line, "%%BoundingBox:")) {
-				sscanf (&line[14], "%s %s %s %s",c1,c2,c3,c4);
-				if (strncmp (c1, "(atend)", 7)) {	/* Got actual numbers */
+			else if (!got_BB && strstr(line, "%%BoundingBox:")) {
+				sscanf(&line[14], "%s %s %s %s",c1,c2,c3,c4);
+				if (strncmp(c1, "(atend)", 7)) {	/* Got actual numbers */
 					if (!got_HRBB) {	/* Only assign values if we haven't seen the high-res version yet */
-						x0 = atoi (c1);		y0 = atoi (c2);
-						x1 = atoi (c3);		y1 = atoi (c4);
+						x0 = atoi(c1);		y0 = atoi(c2);
+						x1 = atoi(c3);		y1 = atoi(c4);
 					}
 					got_BB = true;
 				}
 				else
 					got_BBatend++;
 			}
-			else if ((strstr (line, "%%HiResBoundingBox:"))) {
+			else if ((strstr(line, "%%HiResBoundingBox:"))) {
 				file_has_HRBB = true;
 				if (!got_HRBB) {
-					sscanf (&line[19], "%s %s %s %s",c1,c2,c3,c4);
-					if (strncmp (c1, "(atend)", 7)) {	/* Got actual numbers */
-						x0 = atof (c1);		y0 = atof (c2);
-						x1 = atof (c3);		y1 = atof (c4);
+					sscanf(&line[19], "%s %s %s %s",c1,c2,c3,c4);
+					if (strncmp(c1, "(atend)", 7)) {	/* Got actual numbers */
+						x0 = atof(c1);		y0 = atof(c2);
+						x1 = atof(c3);		y1 = atof(c4);
 						got_HRBB = got_BB = true;
 					}
 				}
 			}
-			else if ((strstr (line, "%%Creator:"))) {
-				if (!strncmp (&line[11], "GMT", 3))
-					isGMT_PS = true;
-			}
-			else if ((strstr (line, "%%Orientation:"))) {
-				if (!strncmp (&line[15], "Landscape", 9))
+			else if ((strstr(line, "%%Creator:")) && !strncmp(&line[11], "GMT", 3))
+				isGMT_PS = true;
+			else if ((strstr(line, "%%Orientation:")) &&!strncmp(&line[15], "Landscape", 9)) {
+				if (Ctrl->O.active && (Ctrl->P.active || Ctrl->A.crop)) {
+					/* The case here is that the on a first time all wet well, but on a second run the Orientation
+					   was still Landscape and later on the w(idth) and h(eight) were swapped because they are set
+					   after value that were edit by the first run. The trick is then to set the Orientation to
+					   Portrait even before the rotation had been applied.
+					*/
 					landscape = landscape_orig = true;
+					fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
+					sprintf(line, "%%%%Orientation: Portrait \n");
+					fprintf(fp, "%s", line);		fflush(fp);
+				}
 			}
-			else if ((strstr (line, "%%EndComments")))
+			else if ((strstr(line, "%%EndComments")))
 				got_end = true;
 			if (got_BBatend == 1 && (got_end || i == 19)) {	/* Now is the time to look at the end of the file */
 				got_BBatend++;			/* Avoid jumping more than once to the end */
 				if (file_processing) {
-					if (fseek (fp, (off_t)-256, SEEK_END))
-						GMT_Report (API, GMT_MSG_ERROR, "Seeking to start of last 256 bytes failed\n");
+					if (fseek(fp, (off_t)-256, SEEK_END))
+						GMT_Report(API, GMT_MSG_ERROR, "Seeking to start of last 256 bytes failed\n");
 				}
 				else {	/* Get towards end of string */
 					pos = (PS->n_bytes > 256) ? PS->n_bytes - 256 : 0;
@@ -2187,12 +2228,12 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		/* Cannot proceed without knowing the BoundingBox */
 
 		if (!got_BB) {
-			GMT_Report (API, GMT_MSG_ERROR,
-			            "The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
+			GMT_Report(API, GMT_MSG_ERROR,
+			           "The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file)) {	/* Remove the temporary EPS file */
-				if (fp  != NULL) fclose (fp);
-				if (fp2 != NULL) fclose (fp2);
-				if (fpo != NULL) fclose (fpo);
+				if (fp  != NULL) fclose(fp);
+				if (fp2 != NULL) fclose(fp2);
+				if (fpo != NULL) fclose(fpo);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			continue;
@@ -2214,7 +2255,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		/*         Rewind the input file and start copying and replacing      */
 		/* ****************************************************************** */
 
-		psconvert_file_rewind (fp, &pos);
+		rewind(fp);
 
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
@@ -2222,126 +2263,214 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		set_background = (Ctrl->N.BB_paint || Ctrl->N.outline);
 		trans_line = 0;
 
-		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
+		if (Ctrl->O.active) {		/* Use a fake fpo so that we don't have to modify the whole code. */
+			if (fpo != NULL) fclose(fpo);
+#ifdef _WIN32
+			fpo = fopen("nul", "w");
+#else
+			fpo = fopen("/dev/null", "w");
+#endif
+		}
+
+		n_read_PS_lines = 0;
+		/* Max number of lines to read from file. Avoid reading entire file when Ctrl->O.active. 1000 should be good. */
+		max_PS_lines = (Ctrl->O.active) ? 1000 : 100000000;
+
+		while (psconvert_file_line_reader (GMT, &line, &line_size, fp) != EOF && (look_for_transparency || n_read_PS_lines < max_PS_lines)) {
+			n_read_PS_lines++;
+			if (isGMT_PS && Ctrl->O.active && !found_EndProlog) {		/* The %%EndProlog marks the end of a GMT PS header */
+				found_EndProlog = (strstr(line, "%%EndProlog") != NULL);	/* Not starting the parsing before finding it saves as scanning ~700 lines */
+				continue;
+			}
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
-				if (!has_transparency) has_transparency = (strstr (line, " PSL_transp") != NULL);
+				if (!has_transparency) has_transparency = (strstr(line, " PSL_transp") != NULL);
 				if (look_for_transparency && has_transparency) {
 					transparency = true;		/* Yes, found transparency */
 					look_for_transparency = false;	/* No need to check anymore */
 				}
-				if (setup && strstr(line,"setpagedevice") != NULL)	/* This is a "setpagedevice" command that should be avoided */
-					continue;
-				if (old_transparency_code_needed && strstr (line, ".setfillconstantalpha")) {
+
+				if (in_BeginSetup && strstr(line,"setpagedevice") != NULL) {	/* This is a "setpagedevice" command that should be avoided */
+					if (Ctrl->T.ps != 1) {									/* Not PS */
+						if (Ctrl->O.active) {
+							size_t len = strlen(line);
+							fseek(fp, (off_t)-(len +1), SEEK_CUR);          /* Seek back to start of line (+1 why?) */
+							if (first_pagedevice) {		/* Some files have 1, others have 2 occurences of 'setpagedevice' */
+								if (r != 0) {                               /* Rotations must come before translations */
+									char t[GMT_LEN64] = "";                 /* To hold the translation string */
+									sprintf(line, "%d rotate\n", r);        /* Now 'line' has new length */
+									sprintf(t, "%g %g translate", xt, yt);
+									strcat(line, t);
+									for (int i = strlen(line)+strlen(t); i < len; i++) line[i] = ' ';	/* Fill remainings with spaces */
+								}
+								else
+									sprintf(line, "%g %g translate", xt, yt);
+
+								first_pagedevice = false;
+							}
+							else
+								for (int i = 0; i < len; i++) line[i] = ' ';
+
+							fprintf(fp, "%s", line);		fflush(fp);
+						}
+						continue;
+					}
+					else {			/* Resquested a PS output. So keep the setpagedevice but adjust the PageSize. */
+						if (Ctrl->O.active) {
+							size_t len = strlen(line);
+							if (strstr(line,"PageSize") == NULL) continue;		/* The other "setpagedevice" command. Too keep as is. */
+							fseek(fp, (off_t)-(len +1), SEEK_CUR);          	/* Seek back to start of line */
+							sprintf(line, "PSLevel 1 gt { << /PageSize [%.7g %.7g] /ImagingBBox null >> setpagedevice } if", x1-x0, y1-y0);
+							for (int i = strlen(line); i < len; i++) line[i] = ' ';	/* Fill remainings with spaces */
+							fprintf(fp, "%s", line);		fflush(fp);
+
+							psconvert_file_line_reader(GMT, &line, &line_size, fp);	/* Read the next line */
+							n_read_PS_lines++;
+							fseek(fp, (off_t)-(strlen(line) +1), SEEK_CUR);
+							if (r != 0) {                              /* Rotations must come before translations */
+								char t[GMT_LEN32] = "";                /* To hold the translation string */
+								sprintf(line, "%d R\n", r);            /* Now 'line' has new length */
+								if (xt != 0.0 || yt != 0.0) {
+									sprintf(t, "%g %g T", xt, yt);
+									strcat(line, t);
+								}
+								fprintf(fp, "%s", line);		fflush(fp);
+							}
+							else if (xt != 0.0 || yt != 0.0) {
+								sprintf(line, "%g %g T", xt, yt);
+								fprintf(fp, "%s", line);		fflush(fp);
+							}
+
+							continue;
+						}
+						else if (strstr(line,"PageSize") != NULL)
+							sprintf(line, "PSLevel 1 gt { << /PageSize [%.7g %.7g] /ImagingBBox null >> setpagedevice } if", x1-x0, y1-y0);
+					}
+				}
+
+				if (old_transparency_code_needed && strstr(line, ".setfillconstantalpha")) {
 					/* Our gs is too old so we must switch the modern transparency command to the older .setopacityalpha command.
 					 * At some point in the future we will abandon support for 9.52 and older and remove this entire if-test */
 					if (trans_line == 0) {	/* First time we warn and deal with line number one in PSL_transp function */
-						GMT_Report (API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
-						fprintf (fpo, "  /.setopacityalpha where\n");	/* Look for old .setopacityalpha instead */
+						GMT_Report(API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
+						fprintf(fpo, "  /.setopacityalpha where\n");	/* Look for old .setopacityalpha instead */
 					}
 					else
-						fprintf (fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
+						fprintf(fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
 					trans_line++;
 				}
-				else if (!old_transparency_code_needed && strstr (line, ".setopacityalpha")) {
+				else if (!old_transparency_code_needed && strstr(line, ".setopacityalpha")) {
 					/* Our PostScript file was made before 6.2 master was updated to deal with new gs settings */
-					GMT_Report (API, GMT_MSG_DEBUG, "Your gs is newer than 9.52 so we must replace .setopacityalpha in old PS files with .setfillconstantalpha.\n");
-					fprintf (fpo, "/.setfillconstantalpha where {pop .setblendmode dup .setstrokeconstantalpha .setfillconstantalpha }{\n");	/* Use the transparency for both fill and stroke */
+					GMT_Report(API, GMT_MSG_DEBUG, "Your gs is newer than 9.52 so we must replace .setopacityalpha in old PS files with .setfillconstantalpha.\n");
+					fprintf(fpo, "/.setfillconstantalpha where {pop .setblendmode dup .setstrokeconstantalpha .setfillconstantalpha }{\n");	/* Use the transparency for both fill and stroke */
 				}
 				else
-					fprintf (fpo, "%s\n", line);
+					fprintf(fpo, "%s\n", line);
+
 				continue;
 			}
-			else if (!found_proj && !strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
+			//else if (Ctrl->T.device == GS_DEV_PDF && !found_proj && !strncmp (&line[2], "PROJ", 4)) {
+			else if (!found_proj && !strncmp(&line[2], "PROJ", 4)) {
+				/* Search for the PROJ tag in the ps file. Restrict the search for the PDF case as it's only used there. */
 				char *ptmp = NULL, xx1[128], xx2[128], yy1[128], yy2[128];
-				sscanf (&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
-				west = atof (c1);		east = atof (c2);
-				south = atof (c3);		north = atof (c4);
-				GMT->common.R.wesn[XLO] = atof (xx1);		GMT->common.R.wesn[XHI] = atof (xx2);
+				sscanf(&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
+				west = atof(c1);		east = atof(c2);
+				south = atof(c3);		north = atof(c4);
+				GMT->common.R.wesn[XLO] = atof(xx1);		GMT->common.R.wesn[XHI] = atof(xx2);
 				if (GMT->common.R.wesn[XLO] > 180.0 && GMT->common.R.wesn[XHI] > 180.0) {
 					GMT->common.R.wesn[XLO] -= 360.0;
 					GMT->common.R.wesn[XHI] -= 360.0;
 				}
-				GMT->common.R.wesn[YLO] = atof (yy1);	GMT->common.R.wesn[YHI] = atof (yy2);
+				GMT->common.R.wesn[YLO] = atof(yy1);	GMT->common.R.wesn[YHI] = atof(yy2);
 				found_proj = true;
-				if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
-					proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
+				if ((ptmp = strstr(&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
+					proj4_cmd = strdup(&line[(int)(ptmp - &line[0])]);
 					gmt_chop (proj4_cmd);		/* Remove the new line char */
 				}
-				if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy")) {	/* Linear case, use original coords */
+				if (!strcmp(proj4_name,"latlong") || !strcmp(proj4_name,"xy")) {	/* Linear case, use original coords */
 					west  = atof(xx1);		east  = atof(xx2);
 					south = atof(yy1);		north = atof(yy2);
 					/* One further test. +xy was found, but have we geog coords? Check that */
-					if (!strcmp (proj4_name,"xy") &&
+					if (!strcmp(proj4_name,"xy") &&
 							(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
 							(south >= -90) && (north <= 90) ) {
-						proj4_cmd = strdup ("latlon");
-						GMT_Report (API, GMT_MSG_INFORMATION, "An unknown psconvert setting was found but since "
-								"image coordinates seem to be geographical, a linear transformation "
-								"will be used.\n");
+						proj4_cmd = strdup("latlon");
+						GMT_Report(API, GMT_MSG_INFORMATION, "An unknown psconvert setting was found but since "
+						           "image coordinates seem to be geographical, a linear transformation "
+						           "will be used.\n");
 					}
-					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {
-						proj4_cmd = strdup ("xy");
-						GMT_Report (API, GMT_MSG_DEBUG, "Requested an automatic geotiff generation, but "
-								"not sure a good psconvert option was used for the PS creation.\n");
+					else if (!strcmp(proj4_name,"xy") && Ctrl->W.warp) {
+						proj4_cmd = strdup("xy");
+						GMT_Report(API, GMT_MSG_DEBUG, "Requested an automatic geotiff generation, but "
+						           "not sure a good psconvert option was used for the PS creation.\n");
 					}
 				}
 				else if (Ctrl->W.kml) {
-					GMT_Report (API, GMT_MSG_ERROR, "To GE images must be in geographical coordinates (-JXd projected). "
-								"Very likely this won't work as you wish inside GE.\n");
+					GMT_Report(API, GMT_MSG_ERROR, "To GE images must be in geographical coordinates (-JXd projected). "
+					           "Very likely this won't work as you wish inside GE.\n");
 				}
 			}
-			else if (!strncmp (line, "%GMTBoundingBox:", 16)) {
-				sscanf (&line[16], "%s %s %s %s",c1,c2,c3,c4);
-				gmtBB_x0 = atof (c1);		gmtBB_y0 = atof (c2);
-				gmtBB_width = atof (c3);	gmtBB_height = atof (c4);
+			else if (!strncmp(line, "%GMTBoundingBox:", 16)) {
+				sscanf(&line[16], "%s %s %s %s",c1,c2,c3,c4);
+				gmtBB_x0 = atof(c1);		gmtBB_y0 = atof(c2);
+				gmtBB_width = atof(c3);	gmtBB_height = atof(c4);
 				continue;
 			}
 
-			if (!strncmp (line, "%%BoundingBox:", 14)) {
+			if (!strncmp(line, "%%BoundingBox:", 14)) {
 				double w_t, h_t;
 				w_t = w;	h_t = h;
 				if (Ctrl->I.resize) {		/* Here the BB is the new size itself */
 					w_t = Ctrl->I.new_size[0];		h_t = Ctrl->I.new_size[1];
 				}
-				if (got_BB && !Ctrl->A.round)
-					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (psconvert_smart_ceil(w_t)), lrint (psconvert_smart_ceil(h_t)));
-				else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
-					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (w_t), lrint (h_t));
+
+				if (Ctrl->O.active)
+					continue;		/* Because with -! we already parsed the code where we put the BB. This one must be from a psimage import. */
+				else {
+					if (got_BB && !Ctrl->A.round)
+						fprintf(fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint(psconvert_smart_ceil(w_t)), lrint(psconvert_smart_ceil(h_t)));
+					else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
+						fprintf(fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint(w_t), lrint(h_t));
+				}
 
 				got_BB = false;
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
-				if (got_HRBB)
-					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
+				if (got_HRBB) {			/* TO DELETE?. This is silly, if we 'continue' above we can never come here. */
+					fprintf(fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
+				}
 				got_HRBB = false;
 				continue;
 			}
-			else if (!strncmp (line, "%%HiResBoundingBox:", 19)) {
+			else if (!strncmp(line, "%%HiResBoundingBox:", 19)) {
 				double w_t, h_t;
 				w_t = w;	h_t = h;
 				if (Ctrl->I.resize) {		/* Here the BB is the new size itself */
 					w_t = Ctrl->I.new_size[0];		h_t = Ctrl->I.new_size[1];
 				}
-				if (got_HRBB)
-					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
+				if (got_HRBB) {
+					if (Ctrl->O.active)
+						continue;	/* As explained above, this one must be from a psimage PS import. */
+					else
+						fprintf(fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
+				}
 				got_HRBB = false;
 				continue;
 			}
-			else if (Ctrl->P.active && landscape && !strncmp (line, "%%Orientation:", 14)) {
-				fprintf (fpo, "%%%%Orientation: Portrait\n");
+			else if (Ctrl->P.active && landscape && !strncmp(line, "%%Orientation:", 14)) {
+				fprintf(fpo, "%%%%Orientation: Portrait\n");
 				landscape = false;
 				continue;
 			}
-			else if (!strncmp (line, "%%BeginSetup", 12))
-				setup = true;
-			else if (!strncmp (line, "%%EndSetup", 10)) {
-				setup = false;
-				if (Ctrl->T.eps == -1)	/* Write out setpagedevice command */
-					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
+			else if (!strncmp(line, "%%BeginSetup", 12))
+				in_BeginSetup = true;
+			else if (!strncmp(line, "%%EndSetup", 10)) {
+				in_BeginSetup = false;
+				if (Ctrl->T.eps == -1)	/* -TE option. Write out setpagedevice command. Note: The -! option cannot be active here. */
+					fprintf(fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
-					fprintf (fpo, "%d rotate\n", r);
-				if (!gmt_M_is_zero (xt) || !gmt_M_is_zero (yt))
-					fprintf (fpo, "%g %g translate\n", xt, yt);
+					fprintf(fpo, "%d rotate\n", r);
+				if (!gmt_M_is_zero(xt) || !gmt_M_is_zero(yt))
+					fprintf(fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
 				r = 0;
 			}
@@ -2358,10 +2487,10 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					size_t Lsize = 128U;
 					char *line_ = gmt_M_memory (GMT, NULL, Lsize, char);
 					BeginPageSetup_here = true;	/* Signal that on next line the job must be done */
-					psconvert_file_line_reader (GMT, &line_, &Lsize, fp, PS->data, &pos);   /* Read also next line which is to be overwritten (unless a comment) */
+					psconvert_file_line_reader (GMT, &line_, &Lsize, fp);   /* Read also next line which is to be overwritten (unless a comment) */
 					while (line_[0] == '%') {	/* Skip all comments until we get the first actionable line */
 						strncpy(t3, line_, 127);
-						psconvert_file_line_reader (GMT, &line_, &Lsize, fp, PS->data, &pos);
+						psconvert_file_line_reader (GMT, &line_, &Lsize, fp);
 					}
 
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
@@ -2414,69 +2543,72 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					else
 						r_y = r_x;	/* Not sure of this. Added later to shut up a compiler warning of r_y potentially used uninitialized */
 
-					fprintf (fpo, "%% Recalculate translation and scale to obtain a resized image\n");
-					fprintf (fpo, "%g %g translate\n", new_off_x, new_off_y);
+					fprintf(fpo, "%% Recalculate translation and scale to obtain a resized image\n");
+					fprintf(fpo, "%g %g translate\n", new_off_x, new_off_y);
 					if (landscape_orig) {
-						fprintf (fpo, "gsave %g %g translate 90 rotate %g %g scale\n", atof(t1)*r_x, atof(t2)*r_y, new_scale_x, new_scale_y);
+						fprintf(fpo, "gsave %g %g translate 90 rotate %g %g scale\n", atof(t1)*r_x, atof(t2)*r_y, new_scale_x, new_scale_y);
 					}
 					else
-						fprintf (fpo, "gsave %g %g scale\n", new_scale_x, new_scale_y);
+						fprintf(fpo, "gsave %g %g scale\n", new_scale_x, new_scale_y);
 					set_background = false;
 					add_grestore = true;
-					psconvert_possibly_fill_or_outline_BB (GMT, &(Ctrl->N), fpo);
+					psconvert_possibly_fill_or_outline_BB(GMT, &(Ctrl->N), fpo);
 				}
 			}
 			else if (set_background) {
 				/* Paint or outline the background rectangle. */
-				if (!strncmp (line, "%%EndPageSetup", 14)) {
+				if (!strncmp(line, "%%EndPageSetup", 14)) {
 					set_background = false;
 					psconvert_possibly_fill_or_outline_BB (GMT, &(Ctrl->N), fpo);
 				}
 			}
-			else if (!strncmp (line, "%%Page:", 7)) {
+			else if (!strncmp(line, "%%Page:", 7)) {		/* What is this for? */
 				if (r != 0)
-					fprintf (fpo, "%d rotate\n", r);
+					fprintf(fpo, "%d rotate\n", r);
 				if (!gmt_M_is_zero (xt) || !gmt_M_is_zero (yt))
-					fprintf (fpo, "%g %g translate\n", xt, yt);
+					fprintf(fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
 				r = 0;
 			}
-			else if (Ctrl->N.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->N.fade_level > 0.0) {
+			else if (Ctrl->N.fade && !strncmp(line, "%%PageTrailer", 13) && Ctrl->N.fade_level > 0.0) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
-				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->N.fade_fill.rgb);
-				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fade_fill.rgb), irint (100.0*Ctrl->N.fade_level));
-				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
+				char *ptr = PSL_makecolor(GMT->PSL, Ctrl->N.fade_fill.rgb);
+				GMT_Report(API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb(GMT, Ctrl->N.fade_fill.rgb), irint (100.0*Ctrl->N.fade_level));
+				fprintf(fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
 				transparency = true;
 			}
-			else if (Ctrl->A.crop && found_proj && !strncmp (line, "%%PageTrailer", 13)) {
-				psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos);
-				fprintf (fpo, "%%%%PageTrailer\n");
-				fprintf (fpo, "%s\n", line);
+			else if (Ctrl->T.device == GS_DEV_PDF && Ctrl->A.crop && found_proj && !strncmp(line, "%%PageTrailer", 13)) {
+				/* This section is only needed when the output is PDF and adds GeoPDF tags.
+				   It is ignored when -! is active because then fpo == NUL
+				*/
+				psconvert_file_line_reader(GMT, &line, &line_size, fp);
+				fprintf(fpo, "%%%%PageTrailer\n");
+				fprintf(fpo, "%s\n", line);
 
 				if (Ctrl->Q.on[PSC_GEO]) {	/* Write a GeoPDF registration info */
 
 					/* Allocate new control structures */
-					to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
-					from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
+					to_gdalread = gmt_M_memory(GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+					from_gdalread = gmt_M_memory(GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 					to_gdalread->W.active = true;
 					from_gdalread->ProjRefPROJ4 = proj4_cmd;
-					gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
+					gmt_gdalread(GMT, NULL, to_gdalread, from_gdalread);
 					if (from_gdalread->ProjRefWKT != NULL) {
 						char  *new_wkt = NULL;
 
-						fprintf (fpo, "\n%% embed georegistation info\n");
-						fprintf (fpo, "[ {ThisPage} <<\n");
-						fprintf (fpo, "\t/VP [ <<\n");
-						fprintf (fpo, "\t\t/Type /Viewport\n");
-						fprintf (fpo, "\t\t/BBox[0 0 %g %g]\n", w, h);
-						fprintf (fpo, "\t\t/Measure <<\n");
-						fprintf (fpo, "\t\t\t/Type /Measure\n");
-						fprintf (fpo, "\t\t\t/Subtype /GEO\n");
-						fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
-						fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
-						         south, west, north, west, north, east, south, east);
+						fprintf(fpo, "\n%% embed georegistation info\n");
+						fprintf(fpo, "[ {ThisPage} <<\n");
+						fprintf(fpo, "\t/VP [ <<\n");
+						fprintf(fpo, "\t\t/Type /Viewport\n");
+						fprintf(fpo, "\t\t/BBox[0 0 %g %g]\n", w, h);
+						fprintf(fpo, "\t\t/Measure <<\n");
+						fprintf(fpo, "\t\t\t/Type /Measure\n");
+						fprintf(fpo, "\t\t\t/Subtype /GEO\n");
+						fprintf(fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
+						fprintf(fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
+						        south, west, north, west, north, east, south, east);
 						if (gmtBB_width == 0)	/* Older PS files that do not have yet the GMTBoundingBox */
-							fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
+							fprintf(fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
 						else {
 							/* Compute the LPTS. Takes the projected coordinate system into the page coordinate system */
 							double h0, v0, x1,x2,y1,y2;
@@ -2488,45 +2620,55 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 								x2 = gmtBB_width / w;		x1 = 1 - x2;
 								y2 = gmtBB_height / h;		y1 = 1 - y2;
 							}
-							fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
+							fprintf(fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
 						}
-						fprintf (fpo, "\t\t\t/GCS <<\n");
-						fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
-						fprintf (fpo, "\t\t\t\t/WKT\n");
+						fprintf(fpo, "\t\t\t/GCS <<\n");
+						fprintf(fpo, "\t\t\t\t/Type /PROJCS\n");
+						fprintf(fpo, "\t\t\t\t/WKT\n");
 						new_wkt = gmt_strrep(from_gdalread->ProjRefWKT, "Mercator_1SP", "Mercator");	/* Because AR is dumb */
-						fprintf (fpo, "\t\t\t\t(%s)\n", new_wkt);
-						fprintf (fpo, "\t\t\t>>\n");
-						fprintf (fpo, "\t\t>>\n");
-						fprintf (fpo, "\t>>]\n");
-						fprintf (fpo, ">> /PUT pdfmark\n\n");
+						fprintf(fpo, "\t\t\t\t(%s)\n", new_wkt);
+						fprintf(fpo, "\t\t\t>>\n");
+						fprintf(fpo, "\t\t>>\n");
+						fprintf(fpo, "\t>>]\n");
+						fprintf(fpo, ">> /PUT pdfmark\n\n");
 						if (strlen(new_wkt) != strlen(from_gdalread->ProjRefWKT)) free(new_wkt);	/* allocated in strrep */
 					}
-					gmt_M_free (GMT, to_gdalread);
-					gmt_M_free (GMT, from_gdalread);
+					gmt_M_free(GMT, to_gdalread);
+					gmt_M_free(GMT, from_gdalread);
 				}
 				continue;
 			}
-			fprintf (fpo, "%s\n", line);
-		}
+
+			fprintf(fpo, "%s\n", line);
+		}	/* End while loop */
+
 		if (add_grestore)
-			fprintf (fpo, "grestore\n");	/* Since we started with gsave to change size */
+			fprintf(fpo, "grestore\n");	/* Since we started with gsave to change size */
 		/* Recede a bit to test the contents of last line. -7 for when PS has CRLF endings */
-		if (fseek (fp, (off_t)-7, SEEK_END))
-			GMT_Report (API, GMT_MSG_ERROR, "Seeking to spot 7 bytes earlier failed\n");
+		if (fseek(fp, (off_t)-7, SEEK_END))
+			GMT_Report(API, GMT_MSG_ERROR, "Seeking to spot 7 bytes earlier failed\n");
 		/* Read until last line is encountered */
-		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF);
-		if (strncmp (line, "%%EOF", 5U))
-			/* Possibly a non-closed GMT PS file. To be confirmed later */
+		while (psconvert_file_line_reader(GMT, &line, &line_size, fp) != EOF);
+		if (strncmp(line, "%%EOF", 5U))	/* Possibly a non-closed GMT PS file. To be confirmed later */
 			excessK = true;
 
-		fclose (fpo);	fpo = NULL;
-		fclose (fp);	fp  = NULL;
+		fclose(fpo);	fpo = NULL;
+		fclose(fp);		fp  = NULL;
 
+		if (!Ctrl->O.active && Ctrl->T.ps && GMT->current.setting.run_mode == GMT_CLASSIC) {
+			second_ps = true;		/* Tell the renaming branch of modern mode to deal with this case too */
+			if (!Ctrl->F.file) {
+				size_t len = strlen(ps_file);	
+				Ctrl->F.file = strdup(ps_file);
+				Ctrl->F.file[len - 3] = '_';		/* Change the last ".ps" to "_2" */
+				Ctrl->F.file[len - 2] = '2';	Ctrl->F.file[len - 1] = '\0';
+			}
+		}
 
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
-				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53\n", GSstring);
+			GMT_Report(API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53 or later\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
-				gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
+			gs_params = (psconvert_gs_is_good(gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 
 		/* Build the converting Ghostscript command and execute it */
 
@@ -2535,28 +2677,28 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
 			double w_new, h_new;
 
-			strncpy (tag, &ext[Ctrl->T.device][1], 15U);
-			gmt_str_toupper (tag);
+			strncpy(tag, &ext[Ctrl->T.device][1], 15U);
+			gmt_str_toupper(tag);
 
 			if (transparency) {	/* Get here when PDF is _NOT_ the final output format but an intermediate format */
-				GMT_Report (API, GMT_MSG_INFORMATION, "PS file with transparency must be converted to PDF before creating %s\n", tag);
+				GMT_Report(API, GMT_MSG_INFORMATION, "PS file with transparency must be converted to PDF before creating %s\n", tag);
 				/* Temporarily change output device to PDF to get the PDF tmp file */
 				Ctrl->T.device = GS_DEV_PDF;
 				/* After conversion, we convert the tmp PDF file to desired format via a 2nd gs call */
-				GMT_Report (API, GMT_MSG_INFORMATION, "Convert to intermediate PDF...\n");
-				strncat (out_file, ps_file, (size_t)pos_ext);
-				strcat (out_file, "_intermediate");
+				GMT_Report(API, GMT_MSG_INFORMATION, "Convert to intermediate PDF...\n");
+				strncat(out_file, ps_file, (size_t)pos_ext);
+				strcat(out_file, "_intermediate");
 			}
 			else {	/* Output is the final result */
-					GMT_Report (API, GMT_MSG_INFORMATION, "Convert to %s...\n", tag);
+				GMT_Report(API, GMT_MSG_INFORMATION, "Convert to %s...\n", tag);
 
-				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				if (Ctrl->D.active) sprintf(out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 				if (!Ctrl->F.active || return_image)
-					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+					strncat(out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 				else
-					strcat (out_file, Ctrl->F.file);
+					strcat(out_file, Ctrl->F.file);
 			}
-			strcat (out_file, ext[Ctrl->T.device]);
+			strcat(out_file, ext[Ctrl->T.device]);
 
 			if (Ctrl->I.new_dpi_x) {	/* We have a resize request (was Ctrl->I.resize = true;) */
 				w_new = w * Ctrl->I.new_dpi_x / 72.0;
@@ -2565,100 +2707,108 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			else {
 				w_new = w * Ctrl->E.dpi / 72.0;
 				h_new = h * Ctrl->E.dpi / 72.0;
-
 			}
+
 			if (Ctrl->A.round) {
-				pix_w = urint (w_new);
-				pix_h = urint (h_new);
+				pix_w = urint(w_new);
+				pix_h = urint(h_new);
 			}
 			else {
-				pix_w = urint (psconvert_smart_ceil (w_new));
-				pix_h = urint (psconvert_smart_ceil (h_new));
+				pix_w = urint(psconvert_smart_ceil(w_new));
+				pix_h = urint(psconvert_smart_ceil(h_new));
 			}
 
 			if (Ctrl->H.active)	/* Rasterize at higher resolution, then downsample in gs */
-				sprintf (resolution, "-g%dx%d -r%g -dDownScaleFactor=%d", pix_w * Ctrl->H.factor, pix_h * Ctrl->H.factor, Ctrl->E.dpi * Ctrl->H.factor, Ctrl->H.factor);
+				sprintf(resolution, "-g%dx%d -r%g -dDownScaleFactor=%d", pix_w * Ctrl->H.factor, pix_h * Ctrl->H.factor, Ctrl->E.dpi * Ctrl->H.factor, Ctrl->H.factor);
 			else
-				sprintf (resolution, "-g%dx%d -r%g", pix_w, pix_h, Ctrl->E.dpi);
-			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c %c%s%c",
-				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, psconvert_alpha_bits(Ctrl), device[Ctrl->T.device],
-				device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, tmp_file, quote);
+				sprintf(resolution, "-g%dx%d -r%g", pix_w, pix_h, Ctrl->E.dpi);
+
+			sprintf(cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c %c%s%c",
+			        at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, psconvert_alpha_bits(Ctrl), device[Ctrl->T.device],
+			        device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, Ctrl->O.active ? ps_file : tmp_file, quote);
 
 			if (Ctrl->S.active) {	/* Print Ghostscript command */
-				API->print_func (GMT->session.std[GMT_ERR], cmd);
-				API->print_func (GMT->session.std[GMT_ERR], "\n");
+				API->print_func(GMT->session.std[GMT_ERR], cmd);
+				API->print_func(GMT->session.std[GMT_ERR], "\n");
 			}
 
 			/* Execute the Ghostscript command */
-			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
-			sys_retval = system (cmd);
+			GMT_Report(API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
+			gmt_M_toc(GMT, "");
+			gmt_M_tic(GMT);				/* Start timer to measure mostly the Ghostscript run time */
+			sys_retval = system(cmd);
 			if (sys_retval) {
-				GMT_Report (API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
-				gmt_remove_file (GMT, tmp_file);	/* Since we created a temporary file from the memdata */
-				Return (GMT_RUNTIME_ERROR);
+				GMT_Report(API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				gmt_remove_file(GMT, tmp_file);	/* Since we created a temporary file from the memdata */
+				Return(GMT_RUNTIME_ERROR);
 			}
 
 			/* Check output file */
-			if (access (out_file, R_OK)) {		/* output file not created */
-				if (isGMT_PS && excessK)
-					/* non-closed GMT input PS file */
-					GMT_Report (API, GMT_MSG_ERROR,
-					            "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
-				else
-					/* Either a bad closed GMT PS file or one of unknown origin */
-					GMT_Report (API, GMT_MSG_ERROR,
-					            "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
+			if (access(out_file, R_OK)) {		/* output file not created */
+				if (isGMT_PS && excessK)		/* non-closed GMT input PS file */
+					GMT_Report(API, GMT_MSG_ERROR,
+					           "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
+				else							/* Either a bad closed GMT PS file or one of unknown origin */
+					GMT_Report(API, GMT_MSG_ERROR,
+					           "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
 			}
 			else {								/* output file exists */
-				if (isGMT_PS && excessK)
-					/* non-closed GMT input PS file */
-					GMT_Report (API, GMT_MSG_ERROR,
-					            "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n",
-					            ps_file, out_file);
+				if (isGMT_PS && excessK)		/* non-closed GMT input PS file */
+					GMT_Report(API, GMT_MSG_ERROR,
+					           "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n",
+					           ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
 			}
+
 			if (transparency) {	/* Now convert temporary PDF to desired format */
 				char pdf_file[PATH_MAX] = {""};
-				GMT_Report (API, GMT_MSG_INFORMATION, "Convert PDF with transparency to %s...\n", tag);
+				GMT_Report(API, GMT_MSG_INFORMATION, "Convert PDF with transparency to %s...\n", tag);
 				Ctrl->T.device = dest_device;	/* Reset output device type */
-				strcpy (pdf_file, out_file);	/* Now the PDF is the infile */
+				strcpy(pdf_file, out_file);	/* Now the PDF is the infile */
 				*out_file = '\0'; /* truncate string to build new output file */
-				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				if (Ctrl->D.active) sprintf(out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 				if (!Ctrl->F.active || return_image)
-					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+					strncat(out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 				else
-					strcat (out_file, Ctrl->F.file);
-				strcat (out_file, ext[Ctrl->T.device]);
+					strcat(out_file, Ctrl->F.file);
+
+				strcat(out_file, ext[Ctrl->T.device]);
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
-				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c %c%s%c",
-					at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, psconvert_alpha_bits(Ctrl), device[Ctrl->T.device],
-					device_options[Ctrl->T.device],
-					resolution, quote, out_file, quote, quote, pdf_file, quote);
+				sprintf(cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c %c%s%c",
+				        at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, psconvert_alpha_bits(Ctrl), device[Ctrl->T.device],
+				        device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, pdf_file, quote);
 				if (Ctrl->S.active) {	/* Print 2nd Ghostscript command */
-					API->print_func (GMT->session.std[GMT_ERR], cmd);
-					API->print_func (GMT->session.std[GMT_ERR], "\n");
+					API->print_func(GMT->session.std[GMT_ERR], cmd);
+					API->print_func(GMT->session.std[GMT_ERR], "\n");
 				}
 				/* Execute the 2nd Ghostscript command */
-				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
-				sys_retval = system (cmd);
+				GMT_Report(API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
+				sys_retval = system(cmd);
 				if (sys_retval) {
-					GMT_Report (API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
+					GMT_Report(API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (!Ctrl->S.active && gmt_remove_file (GMT, pdf_file))	/* The temporary PDF file is no longer needed */
+				if (!Ctrl->S.active && gmt_remove_file(GMT, pdf_file))	/* The temporary PDF file is no longer needed */
 					Return (GMT_RUNTIME_ERROR);
 			}
 		}
 
-		if (GMT->current.setting.run_mode == GMT_MODERN) {
+		if (GMT->current.setting.run_mode == GMT_MODERN || second_ps) {	/* Modern mode or -Tp where we also want to save the XXX.eps as a ps file */
 			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
-			        out_file[0] = '\0'; /* truncate string to build new output file */
+				out_file[0] = '\0'; /* truncate string to build new output file */
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 				strcat (out_file, Ctrl->F.file);
 				strcat (out_file, ".ps");
-				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", tmp_file, out_file);
-				if (gmt_rename_file (GMT, tmp_file, out_file, GMT_COPY_FILE))
-					Return (GMT_RUNTIME_ERROR);
+				if (Ctrl->O.active) {
+					GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", ps_file, out_file);
+					if (gmt_rename_file (GMT, ps_file, out_file, GMT_RENAME_FILE))
+						Return (GMT_RUNTIME_ERROR);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", tmp_file, out_file);
+					if (gmt_rename_file (GMT, tmp_file, out_file, GMT_COPY_FILE))
+						Return (GMT_RUNTIME_ERROR);
+				}
 			}
 		}
 		else if (Ctrl->Z.active && !delete) {		/* Remove input file, if requested */
@@ -2694,7 +2844,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 
 		if (!Ctrl->S.active) {
-			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file))
+			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file))	/* If -! the tmp_file does not exist but gmt_remove_file handles that */
 				Return (GMT_RUNTIME_ERROR);
 			if (strlen (no_U_file) > 0 && gmt_remove_file (GMT, no_U_file)) /* empty string == file was not created */
 				Return (GMT_RUNTIME_ERROR);
@@ -2724,12 +2874,12 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				y_inc = (north - south) / pix_h;
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "width = %d\theight = %d\tX res = %f\tY res = %f\n",
-			                                        pix_w, pix_h, x_inc, y_inc);
+			                                       pix_w, pix_h, x_inc, y_inc);
 
 			/* West and North of the world file contain the coordinates of the center of the pixel
 				but our current values are of the NW corner of the pixel (pixel registration).
 				So we'll move halph pixel inward. */
-			west  += x_inc / 2.0;	north -= y_inc / 2.0;
+			west += x_inc / 2.0;	north -= y_inc / 2.0;
 
 			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
@@ -2895,7 +3045,7 @@ EXTERN_MSC int GMT_ps2raster (void *V_API, int mode, void *args) {
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CTRL *C) {
 	/* Search the Windows registry for the directory containing the gswinXXc.exe
 	   We do this by finding the GS_DLL that is a value of the HKLM\SOFTWARE\GPL Ghostscript\X.XX\ key
@@ -3000,4 +3150,4 @@ FOUNDGS:		/* Arrive directly here when we found a ghost in GMT/bin */
 	return (GMT_NOERROR);
 }
 
-#endif		/* WIN32 */
+#endif		/* _WIN32 */
