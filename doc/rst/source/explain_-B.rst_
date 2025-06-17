@@ -131,8 +131,11 @@ The following directives and modifiers can be appended to **-B** to control the 
   x-axis]. These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
 - **0** This will suppress all annotations and tick marks. Useful when you want to plot a map without any
   annotations, grid or ticks but still want to plot a frame using a line with set by :term:`MAP_FRAME_PEN`.
-- **00** Plot a frame with annotations, ticks etc use a zero width line to plot the frame.
-- **000** Plot annotations, ticks and grid lines (as choosed) but do **not** plot the frame lines.
+- **00** Plot a frame with annotations, ticks etc use a zero-width line to plot the frame (0-width lines are lines
+  that remain very thin regardless of the zoom level).
+- **000** Plot annotations, ticks and grid lines (as choosed) but do **not** plot the frame lines. Note, this effect
+  is only visible with _png_ and _pdf_ formats and is not guaranteed to work when selecting only a subset of the
+  axes (e.g., **-B000ya30g30** is not working well). 
 - *intervals* to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
