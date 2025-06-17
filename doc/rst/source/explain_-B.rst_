@@ -98,7 +98,8 @@ but you may also split this into two separate invocations for clarity, i.e.,
 
    | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+e**\ [**l**\|\ **u**]][**+f**]\
      [**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
-   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ [**00**\|\ **000**]\ *intervals*
+   | **-B0**
 
 The following directives and modifiers can be appended to **-B** to control the Axes settings:
 
@@ -128,6 +129,10 @@ The following directives and modifiers can be appended to **-B** to control the 
   the horizontal and must be in the -90 <= *angle* <= 90 range. **+an** can be used as a shorthand for normal
   (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default for
   x-axis]. These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
+- **0** This will suppress all annotations and tick marks. Useful when you want to plot a map without any
+  annotations, grid or ticks but still want to plot a frame using a line with set by :term:`MAP_FRAME_PEN`.
+- **00** Plot a frame with annotations, ticks etc use a zero width line to plot the frame.
+- **000** Plot annotations, ticks and grid lines (as choosed) but do **not** plot the frame lines.
 - *intervals* to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
