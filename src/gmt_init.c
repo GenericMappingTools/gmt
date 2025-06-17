@@ -4971,26 +4971,29 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	GMT->current.map.frame.axis[GMT_Z].angle = 0.0;	/* Default is plotting normal to axis for Z, i.e., will look horizontal on the plot */
 	GMT->current.map.frame.axis[GMT_Z].use_angle = true;
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt_handle5_plussign (GMT, text, GMT_AXIS_MODIFIERS, 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
+	gmt_handle5_plussign(GMT, text, GMT_AXIS_MODIFIERS, 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +e, +f, +p, +S|s or +u */
-	while (text[k] && !(text[k] == '+' && strchr (GMT_AXIS_MODIFIERS, text[k+1]))) k++;
+	while (text[k] && !(text[k] == '+' && strchr(GMT_AXIS_MODIFIERS, text[k+1]))) k++;
 	gmt_M_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
-	gmt_handle5_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
+	gmt_handle5_plussign(GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
-		if (!side[no]) continue;	/* Except we did not specify this axis */
+		if (!side[no]) continue;		/* Except we did not specify this axis */
 		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
-		if (text[0] == '0' && !text[1]) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
-			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
+		if (no == 0 && !strncmp(text, "000", 3)) {		/* Understand format '000' to mean "no frame but keep annots, ticks etc" */
+			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* A no-frame fancy would be super complicated */
+			GMT->current.setting.map_frame_pen.rgb[3] = 1.0;	/* Since it is very hard to no plot the axis, just make it transparent. */
+		}
+		else if (text[0] == '0' && !text[1] || !strncmp(text, "00", 2)) {	 /* Understand format '00' to mean zero line width frame. */
+			GMT->current.map.frame.draw = true;			/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
-			GMT->current.map.frame.set[no] = true;	/* Since we want this axis drawn */
-#ifdef B0_IS_NO_FRAME
-			GMT->current.map.frame.no_frame = true;		/* Understand format '0' to mean "NO FRAME AT ALL" */
-#endif
-			continue;
+			GMT->current.map.frame.set[no] = true;		/* Since we want this axis drawn */
+			if (no == 0 && !strncmp(text, "00", 2))
+				GMT->current.setting.map_frame_pen.width = 0;	/* Understand format '00' to mean "draw the frame with a 0 width line */
+			if (!text[1] || !text[2]) continue;			/* Only -B0 or -B00*/
 		}
 
 		if (mod) {	/* Process the given axis modifiers */
