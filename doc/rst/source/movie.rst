@@ -19,7 +19,7 @@ Synopsis
 [ |-A|\ *audiofile*\ [**+e**] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
-[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
+[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+i**\ *options*][**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
@@ -164,7 +164,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**]
+**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+i**\ *options*][**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**]
     Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
     *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  If just
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
@@ -472,7 +472,7 @@ able to verify the latter by viewing a transparent webm movie in Chrome. Animate
 transparent PNGs as well and here each additional frame accumulate in the final movie. Experts may create
 transparent PNGs and create movies in professional tools that support a movie alpha channel.
 
-. _Audio:
+.. _Audio:
 
 Adding an Audio Track
 ---------------------
@@ -688,6 +688,11 @@ numerous frames at the same time it is not unusual to get failures in **movie** 
 We refer you to this helpful
 `article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
 for various solutions. 
+
+References
+-------------
+
+Wessel, P., Esteban, F., & Delaviel-Anger, G. (2024). The Generic Mapping Tools and Animations for the Masses. Geochemistry, Geophysics, Geosystems, 25(6). https://doi.org/10.1029/2024GC011545
 
 See Also
 --------
