@@ -2045,14 +2045,14 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			char *psfile_to_use = NULL;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Find HiResBoundingBox ...\n");
 			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place BB file in session dir */
-				sprintf (BB_file, "%s/psconvert_%dc.bb", API->gwf_dir, (int)getpid());
+				sprintf(BB_file, "%s/psconvert_%dc.bb", API->gwf_dir, (int)getpid());
 			else
-				sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
+				sprintf(BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
-			sprintf (cmd, "%s%s %s %s %c%s%c 2> %c%s%c",
-			         at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, quote, psfile_to_use, quote, quote, BB_file, quote);
-			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
-			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
+			sprintf(cmd, "%s%s %s %s %c%s%c 2> %c%s%c",
+			        at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, quote, psfile_to_use, quote, quote, BB_file, quote);
+			GMT_Report(API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
+			sys_retval = system(cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
 				GMT_Report(API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				fclose(fp);
@@ -2074,7 +2074,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 				fp = fp2 = NULL;
 				if (gmt_truncate_file(API, ps_file, half_baked_size))
 					Return(GMT_RUNTIME_ERROR);
-				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
+				if (delete && gmt_remove_file(GMT, ps_file))	/* Since we created a temporary file from the memdata */
 					Return(GMT_RUNTIME_ERROR);
 				Return(GMT_ERROR_ON_FOPEN);
 			}
@@ -2199,13 +2199,13 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			else if ((strstr(line, "%%Creator:")) && !strncmp(&line[11], "GMT", 3))
 				isGMT_PS = true;
 			else if ((strstr(line, "%%Orientation:")) &&!strncmp(&line[15], "Landscape", 9)) {
+				landscape = landscape_orig = true;
 				if (Ctrl->O.active && (Ctrl->P.active || Ctrl->A.crop)) {
 					/* The case here is that the on a first time all wet well, but on a second run the Orientation
 					   was still Landscape and later on the w(idth) and h(eight) were swapped because they are set
 					   after value that were edit by the first run. The trick is then to set the Orientation to
 					   Portrait even before the rotation had been applied.
 					*/
-					landscape = landscape_orig = true;
 					fseek(fp, (off_t)-(strlen(line)+1), SEEK_CUR);	/* Seek back to start of line */
 					sprintf(line, "%%%%Orientation: Portrait \n");
 					fprintf(fp, "%s", line);		fflush(fp);
@@ -2213,6 +2213,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			}
 			else if ((strstr(line, "%%EndComments")))
 				got_end = true;
+
 			if (got_BBatend == 1 && (got_end || i == 19)) {	/* Now is the time to look at the end of the file */
 				got_BBatend++;			/* Avoid jumping more than once to the end */
 				if (file_processing) {
