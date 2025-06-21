@@ -2236,7 +2236,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 	}
 }
 
-void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
+void gmt_grd_shift(struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 	/* Rotate geographical, global grid in e-w direction
 	 * This function will shift a grid by shift degrees.
 	 * It is only called when we know the grid is geographic. */
@@ -2266,8 +2266,10 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 		G->header->wesn[XHI] += 360.0;
 	}
 	else if (G->header->wesn[XHI] > 360.0) {
-		G->header->wesn[XLO] -= 360.0;
-		G->header->wesn[XHI] -= 360.0;
+		while (G->header->wesn[XHI] > 360.0) {	/* Make sure we are in the range [0,360] */
+			G->header->wesn[XLO] -= 180.0;
+			G->header->wesn[XHI] -= 180.0;
+		}
 	}
 
 	gridline = (width < (int)G->header->n_columns);	/* Gridline-registrered grids will have width = n_columns-1, pixel grids have width = n_columns */
