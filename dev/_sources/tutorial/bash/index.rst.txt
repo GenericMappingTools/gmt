@@ -33,6 +33,15 @@ sufficient detail.  Nevertheless, it is hoped that the exposure
 will prompt the users to improve their GMT and UNIX skills
 after completion of this short tutorial.
 
+See the :doc:`install guide </install>`
+for instructions and to make sure you have all required dependencies installed.
+Alternatively, you can build GMT from source by following the
+`building guide <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
+
+In addition, we recommend access to any flavor of the UNIX operating system
+(UNIX, Linux, macOS, Cygwin, MinGW, etc.).
+We do not recommend using the DOS command window under Windows.
+
 .. note::
    This tutorial is for GMT 6 modern mode only. Looking for the classic mode tutorial?
    Since classic mode commands haven't changed since GMT 5, please visit
@@ -40,9 +49,7 @@ after completion of this short tutorial.
 
 .. toctree::
     :maxdepth: 1
-    :hidden:
 
-    intro
     session-1
     session-2
     session-3

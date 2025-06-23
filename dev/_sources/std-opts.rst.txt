@@ -17,7 +17,7 @@ Common Options
    * - **-R**\ *west/east/south/north*\ [*/zmin/zmax*][**+r**][**+u**\ *unit*]
      - :ref:`Specify region of interest <-R_full>`
    * - **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*][**+t**\ *text*]
-     - :ref:`Plot time-stamp on plot <-U_full>`
+     - :ref:`Display time-stamp on plot <-U_full>`
    * - **-V**\ [*verbosity*]
      - :ref:`Run in verbose mode <-V_full>`
    * - **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**]\ *xshift*
@@ -25,7 +25,7 @@ Common Options
    * - **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**]\ *yshift*
      - :ref:`Shift plot origin in y-direction <-XY_full>`
    * - **-a**\ [*col*\ =]\ *name*\ [,\ *...*]
-     - :ref:`Associates aspatial data with columns <-aspatial_full>`
+     - :ref:`Associate aspatial data with columns <-aspatial_full>`
    * - **-bi**\ *record*\ [**+b**\|\ **l**]
      - :ref:`Select binary input <-bi_full>`
    * - **-bo**\ *record*\ [**+b**\|\ **l**]
@@ -33,7 +33,7 @@ Common Options
    * - **-c**\ [*row*\ ,\ *col*\|\ *index*]
      - :ref:`Advance plot focus to selected (or next) subplot panel <-c_full>`
    * - **-d**\ [**i**\|\ **o**]\ *nodata*\ [**+c**\ *col*]
-     - :ref:`Replace columns with nodata with NaN <-d_full>`
+     - :ref:`Replace nodata in columns with NaN <-d_full>`
    * - **-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
      - :ref:`Filter data records that match the given pattern <-e_full>`
    * - **-f**\ [**i**\|\ **o**]\ *colinfo*
@@ -67,7 +67,7 @@ Common Options
    * - **-x**\ [[-]\ *n*]
      - :ref:`Set number of cores in multi-threaded modules <core_full>`
    * - **-:**\ [**i**\|\ **o**]
-     - :ref:`Expect y/x input rather than x/y <colon_full>`
+     - :ref:`Expect y/x input (or output) rather than x/y <colon_full>`
 
 .. rubric:: Standardized Command Line Options available in GMT Classic Mode Only
 
@@ -81,7 +81,7 @@ but the following common options are:
    * - Option
      - Description
    * - **-K**
-     - :ref:`Append more PS later <-K_full>`
+     - :ref:`Append more PostScript later <-K_full>`
    * - **-O**
      - :ref:`This is an overlay plot <-O_full>`
    * - **-P**

@@ -1,9 +1,9 @@
 .. index:: ! gmtvector
 .. include:: module_core_purpose.rst_
 
-*********
-gmtvector
-*********
+******
+vector
+******
 
 |gmtvector_purpose|
 
