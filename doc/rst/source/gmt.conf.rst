@@ -769,7 +769,7 @@ MAP Parameters
            :width: 100%
            :align: center
 
-        Appearance of different **MAP_FRAME_TYPE** settings
+          Appearance of different **MAP_FRAME_TYPE** settings
 
         .. toggle::
 
