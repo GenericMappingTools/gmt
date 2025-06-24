@@ -9209,7 +9209,7 @@ void gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool fr
 		for (unsigned int k = 0; k < V->n_headers; k++) gmt_M_str_free (V->header[k]);
 		gmt_M_free (GMT, V->header);
 	}
-	gmt_M_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
+	gmt_M_free_aligned (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
 	gmt_M_free (GMT, V->type);
 	gmt_M_free (GMT, VH->alloc_mode);
 	gmt_M_free (GMT, V->hidden);
