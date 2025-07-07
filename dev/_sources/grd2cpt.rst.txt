@@ -59,7 +59,7 @@ z-values. These are the background color (B) assigned to values lower
 than the lowest *z*-value, the foreground color (F) assigned to values
 higher than the highest *z*-value, and the NaN color (N) painted
 wherever values are undefined.  For color tables beyond the
-current GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
+current GMT offerings, visit `cpt-city <http://www.seaviewsensing.com/pub/cpt-city/>`_.
 
 If the master CPT includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
@@ -305,4 +305,4 @@ References
 Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
 
 Crameri, F. (2018), Geodynamic diagnostics, scientific visualisation and StagLab 3.0,
-*Geosci. Model Dev.*, 11, 2541-2562, doi:10.5194/gmd-11-2541-2018.
+*Geosci. Model Dev.*, 11, 2541-2562, https://doi.org/10.5194/gmd-11-2541-2018.
