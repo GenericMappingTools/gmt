@@ -212,7 +212,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <table> [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
+	GMT_Usage (API, 0, "usage: %s <table> [-Ab|f|o[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [%s] [-L<table>[+p][+u<unit>]] "
 		"[-N[a|c|g|m]] [-Q[d|e]] [%s] [-S] [-T[h]<from>[/<to>]] [%s] [-W[b|B|e|E|g|h|j|m|M|n|o|O|r|R|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -228,17 +228,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]");
+	GMT_Usage (API, 1, "\n-Ab|f|o[<lon0>/<lat0>][+v]");
 	GMT_Usage (API, -2, "Calculate azimuths from previous point in the input data with -Af. If <lon0>/<lat0> "
 		"is provided, then all azimuths are computed with respect to that point. Select directive:");
 	GMT_Usage (API, 3, "b: Calculate back-azimuths from data to previous or the specified point on the sphere.");
-	GMT_Usage (API, 3, "B: Calculate back-azimuths from data to previous or the specified point on the ellipsoid.");
 	GMT_Usage (API, 3, "f: Calculate azimuths from data to previous or the specified point on the sphere.");
-	GMT_Usage (API, 3, "F: Calculate back-azimuths from data to previous or the specified point on the ellipsoid.");
 	GMT_Usage (API, 3, "o: Calculate orientations (-90/90) instead of azimuths (0/360) on the sphere.");
-	GMT_Usage (API, 3, "O: Calculate orientations (-90/90) instead of azimuths (0/360) on the ellipsoid.");
 	GMT_Usage (API, -2, "Append +v to obtain variable <lon0> <lat0> points from input columns 3-4 instead. "
 		"If -R -J are given then we compute Cartesian angles after projecting the coordinates.");
+	GMT_Usage (API, -2, "Use -je option to do the computations on the ellipsoid instead of the sphere.");
 	GMT_Usage (API, 1, "\n-C[<dx></dy>][+m]");
 	GMT_Usage (API, -2, "Get projected coordinates relative to projection center [Default is relative to lower left corner]. "
 		"Optionally append <dx></dy> to add (or subtract if -I) (i.e., false easting and northing) [0/0]. "
@@ -473,7 +471,7 @@ GMT_LOCAL unsigned int mapproject_old_G_parser (struct GMT_CTRL *GMT, char *arg,
 	return (n_errors);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mapproject and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -810,6 +808,16 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 	}
 
 	if (n_errors) return GMT_PARSE_ERROR;	/* Might as well return here since otherwise we may get some false warnings from below as well */
+
+	/* -AF|B will fail if input is not detected as geog (unfortunally easy happens). On the other hand,
+	   it ignores the -j option. This patch will force the input to be recognized as geographic. And allows
+	   as to drop the upper case directives (old stuff?) in favor of -j alone.
+	*/
+	if (Ctrl->A.active && (Ctrl->A.geodesic || (GMT->common.j.active && GMT->common.j.mode >= GMT_GREATCIRCLE))) {
+		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
+		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		if (GMT->common.j.mode == GMT_GEODESIC) Ctrl->A.geodesic = true;	/* If -je set Ctrl->A.geodesic to avoid annoying warning */
+	}
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 	no_JR_needed = (Ctrl->A.active || Ctrl->E.active || Ctrl->G.active || Ctrl->L.active || Ctrl->N.active || Ctrl->Z.active);
