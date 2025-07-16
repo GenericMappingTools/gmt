@@ -48,7 +48,8 @@ Description
 
 Plots grayshaded, colored, or textured land-masses [or
 water-masses] on maps and [optionally] draws coastlines, rivers, and
-political boundaries. Alternatively, it can (1) issue clip
+political boundaries from the Global Self-consistent, Hierarchical, 
+High-resolution Geography Database (GSHHG) dataset. Alternatively, it can (1) issue clip
 paths that will contain all land or all water areas, or
 (2) dump the data to an ASCII table. The data files come
 in 5 different resolutions: (**f**)ull, (**h**)igh, (**i**)ntermediate,
@@ -102,14 +103,14 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *resolution*\ [**+f**]
-    Select the resolution of the data set to use ((**f**)ull,
+    Select the resolution of the GSHHG data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets.
     Append **+f** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
     Alternatively, choose (**a**)uto to automatically select the best
     resolution given the chosen map scale. [Default is **l** in classic mode
-    and **a** in modern mode].
+    and **a** in modern mode]. See `GSHHG five resolutions <https://github.com/GenericMappingTools/gshhg-gmt?tab=readme-ov-file#the-five-resolutions>`_ for more details.
 
 .. _-E:
 
@@ -136,7 +137,7 @@ Optional Arguments
     - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.
     - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries or states in that continent
       or country, respectively; repeat if more than one continent or country is requested.
-    - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
+    - **+n** to list the named :ref:`DCW collections dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
       collections that contains the listed codes). All names are case-insensitive.
     - **+c** to set up an inside clip path based on your selection.
     - **+C** to set up an outside (area between selection and map boundary) clip path based on your selection.
@@ -174,7 +175,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ [*fill*] :ref:`(more ...) -Gfill_attrib>`
     Select filling or clipping of "dry" areas. Append the shade, color,
     or pattern; or give no argument for clipping [Default is no fill].
 
@@ -251,7 +252,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
+**-S**\ [*fill*] :ref:`(more ...) -Gfill_attrib>`
     Select filling or clipping of "wet" areas. Append the shade, color,
     or pattern; or give no argument for clipping [Default is no fill].
 
@@ -271,7 +272,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
+**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = 0.25p, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
