@@ -120,7 +120,7 @@ Optional Arguments
     are supported:
 
     - Append one or more comma-separated countries using either the
-      `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
+      `2-letter ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
       (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
       state of a country (if available), e.g., US.TX for Texas.
     - Append =\ *continent* to specify a continent, using the abbreviations AF (Africa),
@@ -167,7 +167,7 @@ Optional Arguments
 
     Without further options, draws a rectangular border around any map scale (|-L|) or map rose (|-T|) using
     :term:`MAP_FRAME_PEN`. Used in combination with |-L| or |-T|.  Append **l** for map scale or **t** for map rose to
-    specify which plot embellisment the |-F| parameters should be applied to [default uses the same panel parameters for
+    specify which plot embellishment the |-F| parameters should be applied to [default uses the same panel parameters for
     all selected map embellishments]. The following modifiers can be appended to |-F|, with additional explanation and
     examples provided in the :ref:`Background-panel` cookbook section:
 
@@ -335,7 +335,7 @@ as the `dcw-collections.txt <https://github.com/GenericMappingTools/dcw-gmt/blob
 * All tags should be at least 3 characters long.
   Either the *tag* or the *name* (if available) can be used to make selections in |-R| or |-E|.
   Use quotes if *name* consists of more than one word (e.g. *"Franco-Italian Union"*).
-* The **-E+n** option wil list the contents of the collection distributed with DCW as well
+* The **-E+n** option will list the contents of the collection distributed with DCW as well
   as any contents in ~/.gmt/dcw.conf. The latter file is consulted first and can be used to
   override same-name tag selections in the system DCW file.
 
