@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>18. Custom Plot Symbols &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>18. Custom Plot Symbols &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -159,7 +162,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -217,83 +220,6 @@ Be aware that some symbols may have a hardwired fill or no-fill component,
 while others duplicate what is already available as standard built-in symbols.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;^#&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/share/custom/gmt_custom_symbols.conf<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">$AWK</span><span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>tt.lis
-<span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>tt.lis<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-
-
-<span class="nv">width</span><span class="o">=</span><span class="m">0</span>.85
-<span class="nv">n_cols</span><span class="o">=</span><span class="m">6</span>
-<span class="nv">n_rows</span><span class="o">=</span><span class="m">7</span>
-<span class="nv">n_rows_p1</span><span class="o">=</span><span class="m">7</span>
-<span class="nv">fs</span><span class="o">=</span><span class="m">9</span>
-<span class="nv">dy</span><span class="o">=</span><span class="m">0</span>.15
-
-<span class="nv">n_pages</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n</span><span class="w"> </span><span class="nv">$n_cols</span><span class="w"> </span>DIV<span class="w"> </span>CEIL<span class="w"> </span><span class="nv">$n_rows_p1</span><span class="w"> </span>SUB<span class="w"> </span><span class="m">0</span><span class="w"> </span>MAX<span class="w"> </span><span class="nv">$n_rows</span><span class="w"> </span>DIV<span class="w"> </span>CEIL<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-
-<span class="nv">p</span><span class="o">=</span><span class="m">0</span>
-<span class="nv">s</span><span class="o">=</span><span class="m">0</span>
-<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$p</span><span class="w"> </span>-lt<span class="w"> </span><span class="nv">$n_pages</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">	</span><span class="nv">p</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$p</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$p</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">		</span><span class="nv">max_rows</span><span class="o">=</span><span class="nv">$n_rows_p1</span>
-<span class="w">	</span><span class="k">else</span>
-<span class="w">		</span><span class="nv">max_rows</span><span class="o">=</span><span class="nv">$n_rows</span>
-<span class="w">	</span><span class="k">fi</span>
-
-<span class="w">	</span><span class="nv">n_rows_to_go</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n</span><span class="w"> </span><span class="nv">$s</span><span class="w"> </span>SUB<span class="w"> </span><span class="nv">$n_cols</span><span class="w"> </span>DIV<span class="w"> </span>CEIL<span class="w"> </span><span class="nv">$max_rows</span><span class="w"> </span><span class="nv">MIN</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">H</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n_rows_to_go</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>ADD<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>tt.lines<span class="w"> </span>tt.symbols<span class="w"> </span>tt.text<span class="w"> </span>tt.bars
-<span class="w">	</span>touch<span class="w"> </span>tt.lines<span class="w"> </span>tt.symbols<span class="w"> </span>tt.text<span class="w"> </span>tt.bars
-<span class="w">	</span><span class="nv">c</span><span class="o">=</span><span class="m">0</span>
-<span class="w">	</span><span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$c</span><span class="w"> </span>-lt<span class="w"> </span><span class="nv">$n_cols</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">		</span><span class="nv">c</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$c</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">		</span>cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt;&gt; tt.lines</span>
-<span class="s">&gt; vertical line</span>
-<span class="s">$c	0</span>
-<span class="s">$c	$H</span>
-<span class="s">EOF</span>
-<span class="w">	</span><span class="k">done</span>
-<span class="w">	</span><span class="nv">r</span><span class="o">=</span><span class="m">0</span>
-<span class="w">	</span><span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$r</span><span class="w"> </span>-lt<span class="w"> </span><span class="nv">$n_rows_to_go</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w">			</span><span class="c1"># Loop over the rows that will fit this page</span>
-<span class="w">		</span><span class="nv">r</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$r</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">		</span><span class="nv">yt</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n_rows_to_go</span><span class="w"> </span><span class="nv">$r</span><span class="w"> </span>SUB<span class="w"> </span><span class="m">1</span>.0<span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>ADD<span class="w"> </span>MUL<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>MUL<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">		</span><span class="nv">ys</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$yt</span><span class="w"> </span><span class="m">1</span>.0<span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>ADD<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>MUL<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">		</span><span class="nv">ysb</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$ys</span><span class="w"> </span><span class="m">0</span>.5<span class="w"> </span><span class="nv">SUB</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">		</span><span class="nv">ytb</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$yt</span><span class="w"> </span><span class="m">0</span>.5<span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>MUL<span class="w"> </span><span class="nv">SUB</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">		</span>cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt;&gt; tt.lines</span>
-<span class="s">&gt; base of symbol line</span>
-<span class="s">0	$ysb</span>
-<span class="s">$n_cols	$ysb</span>
-<span class="s">&gt; base of text line</span>
-<span class="s">0	$ytb</span>
-<span class="s">$n_cols	$ytb</span>
-<span class="s">EOF</span>
-<span class="w">		</span><span class="nv">c</span><span class="o">=</span><span class="m">0</span>
-<span class="w">		</span><span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$c</span><span class="w"> </span>-lt<span class="w"> </span><span class="nv">$n_cols</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$s</span><span class="w"> </span>-lt<span class="w"> </span><span class="nv">$n</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w">	</span><span class="c1"># Loop over this row, but watch for end of symbols</span>
-<span class="w">			</span><span class="nv">c</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$c</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">			</span><span class="nv">s</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$s</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">			</span><span class="nv">x</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$c</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>SUB<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">			</span><span class="nv">symbol</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">s</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$x</span><span class="s2"> </span><span class="nv">$ys</span><span class="s2"> k</span><span class="si">${</span><span class="nv">symbol</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>tt.symbols
-<span class="w">			</span><span class="nv">name</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$symbol</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;a-z&#39;</span><span class="w"> </span><span class="s1">&#39;A-Z&#39;</span><span class="k">)</span>
-<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$x</span><span class="s2"> </span><span class="nv">$yt</span><span class="s2"> </span><span class="nv">$name</span><span class="s2">&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>tt.text
-<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$x</span><span class="s2"> </span><span class="nv">$yt</span><span class="s2"> </span><span class="nv">$width</span><span class="s2"> </span><span class="nv">$dy</span><span class="s2">&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>tt.bars
-<span class="w">		</span><span class="k">done</span>
-<span class="w">	</span><span class="k">done</span>
-<span class="w">	</span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_N_<span class="nv">$p</span>
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/<span class="nv">$n_cols</span>/0/<span class="nv">$H</span><span class="w"> </span>-Jx<span class="si">${</span><span class="nv">width</span><span class="si">}</span>i<span class="w"> </span>tt.lines<span class="w"> </span>-Wthick<span class="w"> </span>-B0
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-S<span class="si">${</span><span class="nv">width</span><span class="si">}</span>i<span class="w"> </span>-W0.5p<span class="w"> </span>tt.symbols<span class="w">  </span>-Ggray
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sri<span class="w"> </span>-Gblack<span class="w"> </span>tt.bars
-<span class="w">	</span><span class="c1"># Shorten the spelling of QR_TRANSPARENT to QR_TRANSP to fit the figure</span>
-<span class="w">	</span>sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/TRANSPARENT/TRANSP/&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>tt.text<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f<span class="si">${</span><span class="nv">fs</span><span class="si">}</span>p,white
-<span class="w">	</span>gmt<span class="w"> </span>end<span class="w"> </span>show
-<span class="k">done</span>
-</pre></div>
-</div>
-</div>
 <p>You may find it convenient to examine some of these and use them as a
 starting point for your own design; they can be found in GMT’s
 share/custom directory.  In addition to the ones listed in Figure <a class="reference internal" href="#custom-symbols"><span class="std std-ref">Custom symbols</span></a>
@@ -764,8 +690,8 @@ levels deep), e.g.,</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

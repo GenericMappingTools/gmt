@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>17. Of Colors and Color Legends &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>17. Of Colors and Color Legends &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -147,7 +150,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -212,272 +215,32 @@ authors:</p>
 <figure class="align-center" id="id2">
 <span id="cpt-files-a"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1a.png"><img alt="../_images/GMT_App_M_1a.png" src="../_images/GMT_App_M_1a.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">The standard 46 CPTs supported by GMT.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+<p><span class="caption-text">The standard CPTs supported by GMT.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>--show-sharedir<span class="k">)</span>
-
-sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/&quot;//g&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h<span class="w"> </span><span class="p">|</span><span class="w"> </span>egrep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;cyclic|ategorical|cmocean|SCM|srtm&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-r<span class="w"> </span>&gt;<span class="w"> </span>tt.lis
-cat<span class="w"> </span><span class="s">&lt;&lt;- EOF &gt;&gt; tt.lis</span>
-<span class="s">gmt/categorical</span>
-<span class="s">gmt/paired</span>
-<span class="s">EOF</span>
-<span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>tt.lis<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-<span class="nb">let</span><span class="w"> </span><span class="nv">n2</span><span class="o">=</span>n/2
-<span class="nv">dy</span><span class="o">=</span><span class="m">0</span>.6
-<span class="nv">y0</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>MUL<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-
-gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_M_1a
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_PEN<span class="w"> </span>thinner<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>8p<span class="w"> </span>MAP_TICK_LENGTH_PRIMARY<span class="w"> </span><span class="m">0</span>.1i<span class="w"> </span>MAP_ANNOT_OFFSET_PRIMARY<span class="w"> </span><span class="m">0</span>.04i
-gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/6.1/0/<span class="nv">$y0</span><span class="w"> </span>-Jx1i<span class="w"> </span>-B0
-
-<span class="nb">let</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="m">1</span>
-<span class="nv">y</span><span class="o">=</span><span class="m">0</span>.375
-<span class="nv">y2</span><span class="o">=</span><span class="m">0</span>.25
-<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$i</span><span class="w"> </span>-le<span class="w"> </span><span class="nv">$n</span><span class="w"> </span><span class="o">]</span>
-<span class="k">do</span>
-<span class="w">	</span><span class="nv">j</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$i</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">left</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">j</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">	</span><span class="nv">right</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Doing </span><span class="si">${</span><span class="nv">left</span><span class="si">}</span><span class="s2"> and </span><span class="si">${</span><span class="nv">right</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="si">${</span><span class="nv">left</span><span class="si">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;gmt/paired&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="si">${</span><span class="nv">left</span><span class="si">}</span><span class="w"> </span>-T1/13/1<span class="w"> </span>&gt;<span class="w"> </span>tt.left.cpt
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="si">${</span><span class="nv">right</span><span class="si">}</span><span class="w"> </span>-T1/13/1<span class="w"> </span>&gt;<span class="w"> </span>tt.right.cpt
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC<span class="w"> </span>-Ctt.left.cpt<span class="w"> </span>-B0
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx4.50i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC<span class="w"> </span>-Ctt.right.cpt<span class="w"> </span>-B0
-<span class="w">	</span><span class="k">else</span>
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.left.cpt
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.left2.cpt
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.right.cpt
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.right2.cpt
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.left.cpt<span class="w"> </span>-B0
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx4.50i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.right.cpt<span class="w"> </span>-B0
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.left2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx4.50i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.right2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot default range for left CPT</span>
-<span class="w">			</span>grep<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{printf &quot;2.9 %g %s\n&quot;, &quot;&#39;</span><span class="nv">$y</span><span class="s1">&#39;&quot;, $4}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f6p,Helvetica+jRB<span class="w"> </span>-D0/0.025i<span class="w"> </span>-N
-<span class="w">		</span><span class="k">fi</span>
-<span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>HARD_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot hard hinge symbol for left CPT</span>
-<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="m">1</span>.55<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gblack<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">		</span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>SOFT_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot soft hinge symbol for left CPT</span>
-<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="m">1</span>.55<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">		</span><span class="k">fi</span>
-<span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot default range for left CPT</span>
-<span class="w">			</span>grep<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{printf &quot;5.85 %g %s\n&quot;, &quot;&#39;</span><span class="nv">$y</span><span class="s1">&#39;&quot;, $4}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f6p,Helvetica+jRB<span class="w"> </span>-D0/0.025i<span class="w"> </span>-N
-<span class="w">		</span><span class="k">fi</span>
-<span class="w">		</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>HARD_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot hard hinge symbol for right CPT</span>
-<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="m">4</span>.50<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gblack<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">		</span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>SOFT_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot soft hinge symbol for right CPT</span>
-<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="m">4</span>.50<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">		</span><span class="k">fi</span>
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-D0/0.05i<span class="w"> </span>-F+f9p,Helvetica-Bold+jBC<span class="w"> </span><span class="s">&lt;&lt;- END</span>
-<span class="s">	1.55 $y ${left}</span>
-<span class="s">	4.50 $y ${right}</span>
-<span class="s">	END</span>
-<span class="w">	</span><span class="nv">i</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$i</span><span class="w"> </span>+<span class="w"> </span><span class="m">2</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y2</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="k">done</span>
-rm<span class="w"> </span>-f<span class="w"> </span>tt.*
-gmt<span class="w"> </span>end<span class="w"> </span>show
-</pre></div>
-</div>
-</div>
 <figure class="align-center" id="id3">
 <span id="cpt-files-b"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1b.png"><img alt="../_images/GMT_App_M_1b.png" src="../_images/GMT_App_M_1b.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">The 30 scientific color maps by Fabio Crameri supported by GMT.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+<p><span class="caption-text">The color maps (v8.0.1) by Fabio Crameri supported by GMT. Only the non-cyclic and non-categorical variants are shown here.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>--show-sharedir<span class="k">)</span>
-
-sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/&quot;//g&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h<span class="w"> </span><span class="p">|</span><span class="w"> </span>egrep<span class="w"> </span>SCM<span class="w"> </span><span class="p">|</span><span class="w"> </span>egrep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;categorical|cyclic&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-r<span class="w"> </span>&gt;<span class="w"> </span>tt.lis
-
-<span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>tt.lis<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-<span class="nb">let</span><span class="w"> </span><span class="nv">n2</span><span class="o">=</span>n/2
-<span class="nb">let</span><span class="w"> </span><span class="nv">n2</span><span class="o">=</span>n
-<span class="nv">dy</span><span class="o">=</span><span class="m">0</span>.6
-<span class="nv">y0</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>MUL<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>MUL<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-
-gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_M_1b
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_PEN<span class="w"> </span>thinner<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>8p<span class="w"> </span>MAP_TICK_LENGTH_PRIMARY<span class="w"> </span><span class="m">0</span>.1i<span class="w"> </span>MAP_ANNOT_OFFSET_PRIMARY<span class="w"> </span><span class="m">0</span>.04i
-gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/6.1/0/<span class="nv">$y0</span><span class="w"> </span>-Jx1i<span class="w"> </span>-B0
-
-<span class="nv">i</span><span class="o">=</span><span class="m">1</span>
-<span class="nv">y</span><span class="o">=</span><span class="m">0</span>.375
-<span class="nv">y2</span><span class="o">=</span><span class="m">0</span>.25
-<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$i</span><span class="w"> </span>-le<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span><span class="o">]</span>
-<span class="k">do</span>
-<span class="w">	</span><span class="nv">j1</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$i</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">j2</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$i</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">left</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">j1</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">	</span><span class="nv">right</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">j2</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.left.cpt
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.left2.cpt
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.right.cpt
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.right2.cpt
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.left.cpt<span class="w"> </span>-B0
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx4.50i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.right.cpt<span class="w"> </span>-B0
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.left2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx4.50i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.right2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-D0/0.05i<span class="w"> </span>-F+f9p,Helvetica-Bold+jBC<span class="w"> </span><span class="s">&lt;&lt;- END</span>
-<span class="s">	1.55 $y ${left}</span>
-<span class="s">	4.50 $y ${right}</span>
-<span class="s">	END</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>HARD_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot hard hinge symbol for left CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">1</span>.55<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gblack<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>SOFT_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot soft hinge symbol for left CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">1</span>.55<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>HARD_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot hard hinge symbol for right CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">4</span>.50<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gblack<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>SOFT_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot soft hinge symbol for right CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">4</span>.50<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span><span class="nv">i</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$i</span><span class="w"> </span>+<span class="w"> </span><span class="m">2</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y2</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="k">done</span>
-rm<span class="w"> </span>-f<span class="w"> </span>tt.*
-gmt<span class="w"> </span>end<span class="w"> </span>show
-</pre></div>
-</div>
-</div>
 <figure class="align-center" id="id4">
 <span id="cpt-files-c"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1c.png"><img alt="../_images/GMT_App_M_1c.png" src="../_images/GMT_App_M_1c.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">The 7 cyclic color maps (those ending in “O” are the cyclic
-scientific color maps by Fabio Crameri) supported by GMT.
+<p><span class="caption-text">The categorical (top row) and cyclic color maps supported by GMT. Those starting with “SCM” are the cyclic
+scientific color maps by Fabio Crameri; those stating with “cmocean” are cyclic color maps by Kristen M. Thyng.
 <strong>Note</strong>: Any GMT colormap can be made cyclic by running <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>
 with the <strong>-Ww</strong> option (wrapped = cyclic).</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>--show-sharedir<span class="k">)</span>
-
-sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/&quot;//g&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h<span class="w"> </span><span class="p">|</span><span class="w"> </span>egrep<span class="w"> </span>cyclic<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-r<span class="w"> </span>&gt;<span class="w"> </span>tt.lis
-
-<span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>tt.lis<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-<span class="nb">let</span><span class="w"> </span><span class="nv">n2</span><span class="o">=</span>n/2
-<span class="nb">let</span><span class="w"> </span><span class="nv">n2</span><span class="o">=</span>n
-<span class="nv">dy</span><span class="o">=</span><span class="m">0</span>.6
-<span class="nv">y0</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>MUL<span class="w"> </span><span class="m">0</span>.5<span class="w"> </span>MUL<span class="w"> </span><span class="m">0</span>.25<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-
-gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_M_1c
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_PEN<span class="w"> </span>thinner<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>8p<span class="w"> </span>MAP_TICK_LENGTH_PRIMARY<span class="w"> </span><span class="m">0</span>.1i<span class="w"> </span>MAP_ANNOT_OFFSET_PRIMARY<span class="w"> </span><span class="m">0</span>.04i
-gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/6.1/0/<span class="nv">$y0</span><span class="w"> </span>-Jx1i<span class="w"> </span>-B0
-
-<span class="nv">i</span><span class="o">=</span><span class="m">1</span>
-<span class="nv">y</span><span class="o">=</span><span class="m">0</span>.375
-<span class="nv">y2</span><span class="o">=</span><span class="m">0</span>.25
-<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$i</span><span class="w"> </span>-le<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span><span class="o">]</span>
-<span class="k">do</span>
-<span class="w">	</span><span class="nv">j2</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$i</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">right</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">j2</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="w"> </span>&lt;<span class="w"> </span><span class="si">${</span><span class="nv">n2</span><span class="si">}</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">		</span><span class="nv">j1</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span>-<span class="w"> </span><span class="nv">$i</span><span class="k">)</span>
-<span class="w">		</span><span class="nv">left</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">j1</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.left.cpt
-<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.left2.cpt
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC<span class="w"> </span>-Ctt.left.cpt<span class="w"> </span>-B0
-<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC<span class="w"> </span>-Ctt.left2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">1</span>.55<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="si">${</span><span class="nv">left</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-D0/0.05i<span class="w"> </span>-F+f9p,Helvetica-Bold+jBC
-<span class="w">		</span><span class="nv">x</span><span class="o">=</span><span class="m">4</span>.50
-<span class="w">	</span><span class="k">else</span>
-<span class="w">		</span><span class="nv">x</span><span class="o">=</span><span class="m">3</span>.05
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.right.cpt
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.right2.cpt
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx<span class="si">${</span><span class="nv">x</span><span class="si">}</span>i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC<span class="w"> </span>-Ctt.right.cpt<span class="w"> </span>-B0
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx<span class="si">${</span><span class="nv">x</span><span class="si">}</span>i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC<span class="w"> </span>-Ctt.right2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">x</span><span class="si">}</span><span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="si">${</span><span class="nv">right</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-D0/0.05i<span class="w"> </span>-F+f9p,Helvetica-Bold+jBC
-<span class="w">	</span><span class="nv">i</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$i</span><span class="w"> </span>+<span class="w"> </span><span class="m">2</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y2</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="k">done</span>
-rm<span class="w"> </span>-f<span class="w"> </span>tt.*
-gmt<span class="w"> </span>end<span class="w"> </span>show
-</pre></div>
-</div>
-</div>
 <figure class="align-center" id="id5">
 <span id="cpt-files-d"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1d.png"><img alt="../_images/GMT_App_M_1d.png" src="../_images/GMT_App_M_1d.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">The 22 color maps from cmocean by Kristen M. Thyng supported by GMT.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+<p><span class="caption-text">The color maps from cmocean by Kristen M. Thyng supported by GMT.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>--show-sharedir<span class="k">)</span>
-
-sed<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;s/&quot;//g&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h<span class="w"> </span><span class="p">|</span><span class="w"> </span>egrep<span class="w"> </span>cmocean<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-r<span class="w"> </span>&gt;<span class="w"> </span>tt.lis
-
-<span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span>tt.lis<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="k">)</span>
-<span class="nb">let</span><span class="w"> </span><span class="nv">n2</span><span class="o">=</span>n/2
-<span class="nv">dy</span><span class="o">=</span><span class="m">0</span>.6
-<span class="nv">y0</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$n2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span>MUL<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-
-gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_M_1d
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_PEN<span class="w"> </span>thinner<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>8p<span class="w"> </span>MAP_TICK_LENGTH_PRIMARY<span class="w"> </span><span class="m">0</span>.1i<span class="w"> </span>MAP_ANNOT_OFFSET_PRIMARY<span class="w"> </span><span class="m">0</span>.04i
-gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/6.1/0/<span class="nv">$y0</span><span class="w"> </span>-Jx1i<span class="w"> </span>-B0
-
-<span class="nb">let</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="m">1</span>
-<span class="nv">y</span><span class="o">=</span><span class="m">0</span>.375
-<span class="nv">y2</span><span class="o">=</span><span class="m">0</span>.25
-<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$i</span><span class="w"> </span>-le<span class="w"> </span><span class="nv">$n</span><span class="w"> </span><span class="o">]</span>
-<span class="k">do</span>
-<span class="w">	</span><span class="nv">j</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$i</span><span class="w"> </span>+<span class="w"> </span><span class="m">1</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">left</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">j</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">	</span><span class="nv">right</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span>p<span class="w"> </span>tt.lis<span class="k">)</span>
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.left.cpt
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$left</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.left2.cpt
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1<span class="w"> </span>&gt;<span class="w"> </span>tt.right.cpt
-<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-C<span class="nv">$right</span><span class="w"> </span>-T-1/1/0.25<span class="w"> </span>&gt;<span class="w"> </span>tt.right2.cpt
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.left.cpt<span class="w"> </span>-B0
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx4.50i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.right.cpt<span class="w"> </span>-B0
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx1.55i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.left2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Dx4.50i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e<span class="w"> </span>-Ctt.right2.cpt<span class="w"> </span>-Bf0.25
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-D0/0.05i<span class="w"> </span>-F+f9p,Helvetica-Bold+jBC<span class="w"> </span><span class="s">&lt;&lt;- END</span>
-<span class="s">	1.55 $y ${left}</span>
-<span class="s">	4.50 $y ${right}</span>
-<span class="s">	END</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot default range for left CPT</span>
-<span class="w">		</span>grep<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{printf &quot;2.9 %g %s\n&quot;, &quot;&#39;</span><span class="nv">$y</span><span class="s1">&#39;&quot;, $4}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f6p,Helvetica+jRB<span class="w"> </span>-D0/0.025i<span class="w"> </span>-N
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>HARD_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot hard hinge symbol for left CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">1</span>.55<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gblack<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>SOFT_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot soft hinge symbol for left CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">1</span>.55<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot default range for left CPT</span>
-<span class="w">		</span>grep<span class="w"> </span>RANGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{printf &quot;5.85 %g %s\n&quot;, &quot;&#39;</span><span class="nv">$y</span><span class="s1">&#39;&quot;, $4}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f6p,Helvetica+jRB<span class="w"> </span>-D0/0.025i<span class="w"> </span>-N
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>HARD_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot hard hinge symbol for right CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">4</span>.50<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gblack<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-c<span class="w"> </span>SOFT_HINGE<span class="w"> </span><span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c1"># Plot soft hinge symbol for right CPT</span>
-<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="m">4</span>.50<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-St0.2c<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>-D0/-0.29i
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span><span class="nv">i</span><span class="o">=</span><span class="k">$(</span>expr<span class="w"> </span><span class="nv">$i</span><span class="w"> </span>+<span class="w"> </span><span class="m">2</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="w">	</span><span class="nv">y2</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>math<span class="w"> </span>-Q<span class="w"> </span><span class="nv">$y2</span><span class="w"> </span><span class="nv">$dy</span><span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="k">)</span>
-<span class="k">done</span>
-rm<span class="w"> </span>-f<span class="w"> </span>tt.*
-gmt<span class="w"> </span>end<span class="w"> </span>show
-</pre></div>
-</div>
-</div>
 <p>For additional color tables, visit
-<a class="reference external" href="http://soliton.vm.bytemark.co.uk/pub/cpt-city/">cpt-city</a> and
+<a class="reference external" href="http://www.seaviewsensing.com/pub/cpt-city/">cpt-city</a> and
 <a class="reference external" href="http://www.fabiocrameri.ch/colourmaps.php">Scientific Colour-Maps</a>.</p>
 </section>
 <section id="labeled-and-non-equidistant-color-legends">
@@ -503,47 +266,6 @@ annotation code to <strong>B</strong>.</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="../_images/GMT_App_M_2.png"><img alt="../_images/GMT_App_M_2.png" src="../_images/GMT_App_M_2.png" style="width: 600px;" /></a>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_M_2
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>10p<span class="w"> </span>PROJ_LENGTH_UNIT<span class="w"> </span>cm<span class="w"> </span>PS_MEDIA<span class="w"> </span>11ix8.5i
-
-
-cat<span class="w"> </span>&gt;<span class="w"> </span>ages.cpt<span class="w"> </span><span class="s">&lt;&lt;END</span>
-<span class="s">0	197	0	255	23	197	0	255	;Neogene</span>
-<span class="s">23	81	0	255	66	81	0	255	;Paleogene</span>
-<span class="s">66	0	35	255	146	0	35	255	;Cretaceous</span>
-<span class="s">146	0	151	255	200	0	151	255	;Jurassic</span>
-<span class="s">200	0	255	244	251	0	255	244	;Triassic</span>
-<span class="s">251	0	255	127	299	0	255	127	;Permian</span>
-<span class="s">299	0	255	11	359	0	255	11	;Carboniferous</span>
-<span class="s">359	104	255	0	416	104	255	0	;Devonian</span>
-<span class="s">416	220	255	0	444	220	255	0	;Silurian</span>
-<span class="s">444	255	174	0	488	255	174	0	;Ordovician</span>
-<span class="s">488	255	58	0	542	255	58	0	;Cambrian;Precambrian</span>
-<span class="s">B	black</span>
-<span class="s">F	white</span>
-<span class="s">END</span>
-
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cages.cpt<span class="w">  </span>-Dx00/13+w-8/0.5+jML+ef
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cages.cpt<span class="w">  </span>-Dx04/13+w-8/0.5+jML+ef<span class="w"> </span>-L
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cages.cpt<span class="w">  </span>-Dx08/13+w-8/0.5+jML+ef<span class="w"> </span>-L0.0
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cages.cpt<span class="w">  </span>-Dx12/13+w-8/0.5+jML+ef<span class="w"> </span>-L0.1
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cages.cpt<span class="w">  </span>-Dx16/13+w08/0.5+jML+ef<span class="w"> </span>-L
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cages.cpt<span class="w">  </span>-Dx20/13+w08/0.5+jML+ef<span class="w"> </span>-L0.1
-
-sed<span class="w"> </span><span class="s1">&#39;s/;.*$//&#39;</span><span class="w"> </span>ages.cpt<span class="w"> </span>&gt;<span class="w"> </span>years.cpt
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cyears.cpt<span class="w"> </span>-Dx00/04+w08/0.5+jML+ef
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cyears.cpt<span class="w"> </span>-Dx04/04+w-8/0.5+jML+ef<span class="w"> </span>-L
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cyears.cpt<span class="w"> </span>-Dx08/04+w-8/0.5+jML+ef<span class="w"> </span>-L0.0
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cyears.cpt<span class="w"> </span>-Dx12/04+w-8/0.5+jML+ef<span class="w"> </span>-L0.1
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cyears.cpt<span class="w"> </span>-Dx16/04+w-8/0.5+jML+ef<span class="w"> </span>-Li
-gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cyears.cpt<span class="w"> </span>-Dx20/04+w-8/0.5+jML+ef<span class="w"> </span>-Li0.1
-gmt<span class="w"> </span>end<span class="w"> </span>show
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 
@@ -558,8 +280,8 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

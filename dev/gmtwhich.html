@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmtwhich &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>which &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,14 +33,14 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="grd2cpt" href="grd2cpt.html" />
-    <link rel="prev" title="gmtvector" href="gmtvector.html" />
+    <link rel="prev" title="vector" href="gmtvector.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -120,7 +123,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -140,7 +143,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
-      <li class="breadcrumb-item active">gmtwhich</li>
+      <li class="breadcrumb-item active">which</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gmtwhich.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -150,23 +153,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="index-0"></span><section id="gmtwhich">
-<h1>gmtwhich<a class="headerlink" href="#gmtwhich" title="Link to this heading"></a></h1>
+  <span class="target" id="index-0"></span><section id="which">
+<h1>which<a class="headerlink" href="#which" title="Link to this heading"></a></h1>
 <p>Find full path to specified files</p>
 <section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
-<p><strong>gmt which</strong> <em>files</em> [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ] [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>] ] [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ] [ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>gmt which</strong> <em>files</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
 <p><strong>which</strong> reports the paths to the files given on the command
 line. We look for the file in (1) the current directory,
-(2) in $GMT_USERDIR (if defined), (3) in $GMT_DATADIR (if defined), or
-(4) in $GMT_CACHEDIR (if defined). If
+(2) in <strong>$GMT_USERDIR</strong> (if defined), (3) in <strong>$GMT_DATADIR</strong> (if defined), or
+(4) in <strong>$GMT_CACHEDIR</strong> (if defined). If
 found we print the path name to the file, just the directory (see
-<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>), or a confirmation (see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). The $GMT_USERDIR and
-$GMT_DATADIR environment variables can be comma-separated list of
+<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>), or a confirmation (see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). The <strong>$GMT_USERDIR</strong> and
+<strong>$GMT_DATADIR</strong> environment variables can be comma-separated list of
 directories, and we search recursively down any directory that ends with
 / (i.e., /export/data is a single directory whereas /export/data/ will
 be searched recursively.)  If the file is in the current directory then
@@ -198,19 +207,21 @@ the files.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>]</dt><dd><p>If a file argument is a downloadable file (either a complete URL, an &#64;file for
+<dt><strong>-G</strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>]</dt><dd><p>If a file is downloadable (either a complete URL, an &#64;file for
 downloading from the GMT data server, or &#64;earth_relief_xxy or any other of the
 remote datasets at <a class="reference external" href="https://www.generic-mapping-tools.org/remote-datasets/">https://www.generic-mapping-tools.org/remote-datasets/</a>)
-we will try to download the file if it is not found in your local data or cache dirs.
-By default [<strong>-Gl</strong>] we download to the current directory. Append <strong>a</strong> to
-place files in the appropriate folder under the user directory (this is where
-GMT normally places downloaded files), <strong>c</strong> to place it in the user cache directory,
-or <strong>u</strong> for the user data directory instead (i.e., ignoring any subdirectory
-structure).</p>
+we will try to download the file if it is not found in your local data or cache dirs.</p>
+<ul class="simple">
+<li><p><strong>a</strong> - Place files in the appropriate folder under the user directory (this is where
+GMT normally places downloaded files).</p></li>
+<li><p><strong>c</strong> - Download to the user cache directory.</p></li>
+<li><p><strong>l</strong> - Download to the current directory [Default].</p></li>
+<li><p><strong>u</strong> - Download to the user data directory (i.e., ignoring any subdirectory structure).</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -232,17 +243,17 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </pre></div>
 </div>
 <p>To download the 10 arc-minute global relief file from the GMT data server, use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>which<span class="w"> </span>-Ga<span class="w"> </span>@earth_relief_10m
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>which<span class="w"> </span>-Ga<span class="w"> </span>@earth_relief_10m_g
 </pre></div>
 </div>
 <p>which will print the path (after downloading if not already present).  The file will
-be placed in the appropriate folder under the user’s GMT_USERDIR.  To obtain a GMT
+be placed in the appropriate folder under the user’s <strong>$GMT_USERDIR</strong>.  To obtain a GMT
 example or test file from the GMT data server, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>which<span class="w"> </span>-Gc<span class="w"> </span>@hotspots.txt
 </pre></div>
 </div>
 <p>which will print the path (after downloading if not already present).  The file will
-be placed in the user’s GMT_CACHEDIR directory.</p>
+be placed in the user’s <strong>$GMT_CACHEDIR</strong> directory.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
@@ -254,15 +265,15 @@ be placed in the user’s GMT_CACHEDIR directory.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gmtvector.html" class="btn btn-neutral float-left" title="gmtvector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gmtvector.html" class="btn btn-neutral float-left" title="vector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="grd2cpt.html" class="btn btn-neutral float-right" title="grd2cpt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

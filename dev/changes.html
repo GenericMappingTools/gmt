@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>Changelog &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -203,7 +206,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -255,7 +258,7 @@ bug fixes! Here are the general updates included in 6.5:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="batch.html"><span class="doc">batch</span></a>: Allow -F to set a more specific naming template (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6934">#6934</a>)</p></li>
 <li><p><a class="reference internal" href="batch.html"><span class="doc">batch</span></a>: Let -D drop the mandatory moving of product files (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6933">#6933</a>)</p></li>
-<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a>: Augment with -N+i to treat each point individually (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7747">#7747</a>)</p></li>
+<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a>: Augment with -N+i to treat each point individually (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7747">#7747</a>)</p></li>
 <li><p><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a>: Let -E extract a vertical slice from a 3-D cube (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7961">#7961</a>)</p></li>
 <li><p><a class="reference internal" href="movie.html"><span class="doc">movie</span></a>: Let -A handle addition of audio track (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7461">#7461</a>)</p></li>
 <li><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>: Add option to transpose a dataset (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7478">#7478</a>)</p></li>
@@ -265,7 +268,7 @@ bug fixes! Here are the general updates included in 6.5:</p>
 <section id="supplement-updates-in-gmt-6-5">
 <h3>Supplement updates in GMT 6.5<a class="headerlink" href="#supplement-updates-in-gmt-6-5" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p>New supplement modules for the Global Seafloor Fabric and Magnetic Lineations (<a class="reference external" href="https://http://www.soest.hawaii.edu/PT/GSFML/">https://http://www.soest.hawaii.edu/PT/GSFML/</a>)</p></li>
+<li><p>New supplement modules for the Global Seafloor Fabric and Magnetic Lineations (<a class="reference external" href="https://www.soest.hawaii.edu/PT/GSFML/">https://www.soest.hawaii.edu/PT/GSFML/</a>)</p></li>
 <li><p>New supplement to plot symbols for the wind direction and wind speed</p></li>
 <li><p>New supplement modules <strong>grdshake</strong> and <strong>grdvs30</strong> to build shake-maps</p></li>
 </ul>
@@ -279,9 +282,9 @@ bug fixes! Here are the general updates included in 6.5:</p>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Default to color bars with gaps for categorical CPTs (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7831">#7831</a>)</p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Make sure only low and high contributes to decimal count in -S+r (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7730">#7730</a>)</p></li>
 <li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a>: Enhance the curves to do linear, quadratic or cosine ramp (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7680">#7680</a>)</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>: Allow trailing text to be kept for output (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7759">#7759</a>)</p></li>
-<li><p><a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a> Add modifier +hheight to set logo height instead of width (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7458">#7458</a>)</p></li>
-<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a>: Add modifier +h[k|s] to -Z to pick z-value from segment header (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7309">#7309</a>)</p></li>
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>: Allow trailing text to be kept for output (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7759">#7759</a>)</p></li>
+<li><p><a class="reference internal" href="gmtlogo.html"><span class="doc">logo</span></a> Add modifier +hheight to set logo height instead of width (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7458">#7458</a>)</p></li>
+<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">select</span></a>: Add modifier +h[k|s] to -Z to pick z-value from segment header (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7309">#7309</a>)</p></li>
 <li><p><a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a>: Enhance -Sa -Sb with modifier +e for equality (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7858">#7858</a>)</p></li>
 <li><p><a class="reference internal" href="grdmix.html"><span class="doc">grdmix</span></a>: Add -C[cpt] to build an image directly from a grid and a CPT (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8193">#8193</a>)</p></li>
 <li><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>: Allow processing byte images without indexed colors, via CPT (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7827">#7827</a>)</p></li>
@@ -370,7 +373,7 @@ bug fixes! Here are the general updates included in 6.4:</p>
 <section id="new-core-module-features-in-gmt-6-4">
 <h3>New Core Module Features in GMT 6.4<a class="headerlink" href="#new-core-module-features-in-gmt-6-4" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a>: Let -W extend segments from one of both ends (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6255">#6255</a>)</p></li>
+<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a>: Let -W extend segments from one of both ends (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6255">#6255</a>)</p></li>
 <li><p><a class="reference internal" href="grdfill.html"><span class="doc">grdfill</span></a>: Add grid sampling as new algorithm (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6678">#6678</a>)</p></li>
 <li><p><a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>: Enhanced node determination for polygon input (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6289">#6289</a>)</p></li>
 </ul>
@@ -388,7 +391,7 @@ bug fixes! Here are the general updates included in 6.4:</p>
 <h3>Enhancements in GMT 6.4<a class="headerlink" href="#enhancements-in-gmt-6-4" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="contour.html"><span class="doc">contour</span></a>, <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>: Allow contour files to only list contour level (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6522">#6522</a>)</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>: Add operators DEG2KM and KM2DEG (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6177">#6177</a>)</p></li>
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>: Add operators DEG2KM and KM2DEG (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6177">#6177</a>)</p></li>
 <li><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>: Introduce directives -Mc and -Mf (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6767">#6767</a>)</p></li>
 <li><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>: Let -Q+zvalue set the transparent pixel indirectly (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6232">#6232</a>)</p></li>
 <li><p><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a>: Add -Wo for oblique domain in degrees (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6474">#6474</a>)</p></li>
@@ -446,7 +449,7 @@ bug fixes! Here are the general updates included in 6.3:</p>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Allow colorbar length and/or width to be given in percentages (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5775">#5775</a>)</p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Handle CPTs with transparency (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5328">#5328</a>)</p></li>
 <li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a>: Support temporal color changes (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5695">#5695</a>)</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>: Improve -Q behavior (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5362">#5362</a>)</p></li>
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>: Improve -Q behavior (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5362">#5362</a>)</p></li>
 <li><p><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> and <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a>: Add suitable shorthands for creating month and day labels (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5201">#5201</a>)</p></li>
 <li><p><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a>: Let -L have ability to only set one limit (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5317">#5317</a>)</p></li>
 <li><p><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>: Add option -L to limit output to a single vector (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5705">#5705</a>)</p></li>
@@ -484,7 +487,7 @@ bug fixes! Here are the general updates included in 6.3:</p>
 <li><p>Allow trailing comments in custom symbol files (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5610">#5610</a>)</p></li>
 <li><p>Let -d set starting column via modifier (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5966">#5966</a>)</p></li>
 <li><p>Let -f<em>col</em> explicitly set start of input trailing text (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5370">#5370</a>)</p></li>
-<li><p>Let multi-layer geotiff files be cut via <em>gdal_translate</em> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5819">#5819</a>)</p></li>
+<li><p>Let multi-layer GeoTIFF files be cut via <em>gdal_translate</em> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5819">#5819</a>)</p></li>
 </ul>
 </section>
 <section id="documentation-updates-in-gmt-6-3">
@@ -541,7 +544,7 @@ add support for subtitles.</p></li>
 <section id="new-modules-in-gmt-6-2">
 <h3>New Modules in GMT 6.2:<a class="headerlink" href="#new-modules-in-gmt-6-2" title="Link to this heading"></a></h3>
 <ol class="arabic simple">
-<li><p><a class="reference internal" href="gmtbinstats.html"><span class="doc">gmtbinstats</span></a>: Bin spatial data and determine statistics per bin, with support for both hexagonal and rectangular tiling.</p></li>
+<li><p><a class="reference internal" href="gmtbinstats.html"><span class="doc">binstats</span></a>: Bin spatial data and determine statistics per bin, with support for both hexagonal and rectangular tiling.</p></li>
 </ol>
 </section>
 <section id="new-core-module-features-in-gmt-6-2">
@@ -551,8 +554,8 @@ add support for subtitles.</p></li>
 slanted annotations with <strong>-S</strong>.</p></li>
 <li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a>: New <strong>-Z</strong> option to animate geodesy and seismology symbols; New <strong>-H</strong> option to enable text label
 boxes; Support plotting lines as series of closely spaced circles.</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>: New <strong>VPDF</strong> operator.</p></li>
-<li><p><a class="reference internal" href="gmtsplit.html"><span class="doc">gmtsplit</span></a>: New name for previous module splitxyz.</p></li>
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>: New <strong>VPDF</strong> operator.</p></li>
+<li><p><a class="reference internal" href="gmtsplit.html"><span class="doc">split</span></a>: New name for previous module splitxyz.</p></li>
 <li><p><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>: New modifier for the <strong>-W</strong> option to set the length unit used.</p></li>
 <li><p><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a>: New <strong>-F</strong> option to clip a grid based on a polygon.</p></li>
 <li><p><a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a>: New <strong>-Q</strong> option for no wavenumber operations.</p></li>
@@ -643,11 +646,11 @@ capabilities for annotating azimuths, depths or radii.</p></li>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>: Ignore the user’s <em>gmt.conf</em> files normally included by using <strong>-C</strong>.</p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Option <strong>-S</strong> has been enhanced to handle bar appearance when <strong>-B</strong> is not used.</p></li>
-<li><p><a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a>: Options <strong>-D</strong>, <strong>-I</strong>, <strong>-N</strong>, and <strong>-Q</strong> handle download and query of remote data sets.</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>: New operators <strong>RGB2HSV</strong> and <strong>HSV2RGB</strong> for color manipulation.</p></li>
-<li><p><a class="reference internal" href="gmtregress.html"><span class="doc">gmtregress</span></a>: Let <strong>-A</strong> also be used to limit angles considered for LMS regressions.</p></li>
-<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a>: New directive <strong>-Sb</strong> computes buffers around lines (via the optional GEOS library).</p></li>
-<li><p><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a>: Add vector operator <strong>-Tt</strong> that translates points by given distance in given direction.</p></li>
+<li><p><a class="reference internal" href="gmtget.html"><span class="doc">get</span></a>: Options <strong>-D</strong>, <strong>-I</strong>, <strong>-N</strong>, and <strong>-Q</strong> handle download and query of remote data sets.</p></li>
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>: New operators <strong>RGB2HSV</strong> and <strong>HSV2RGB</strong> for color manipulation.</p></li>
+<li><p><a class="reference internal" href="gmtregress.html"><span class="doc">regress</span></a>: Let <strong>-A</strong> also be used to limit angles considered for LMS regressions.</p></li>
+<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a>: New directive <strong>-Sb</strong> computes buffers around lines (via the optional GEOS library).</p></li>
+<li><p><a class="reference internal" href="gmtvector.html"><span class="doc">vector</span></a>: Add vector operator <strong>-Tt</strong> that translates points by given distance in given direction.</p></li>
 <li><p><a class="reference internal" href="grd2kml.html"><span class="doc">grd2kml</span></a>: New option <strong>-W</strong> for adding contour overlays. Also rebuilt for global grids as well as
 to write PNG or JPG directly (depending on transparency) without going via <em>PostScript</em> conversion (only
 required if <strong>-W</strong> is used).</p></li>
@@ -806,7 +809,7 @@ its placement.</p></li>
 write the resulting CPT to standard output (by default they write a hidden CPT that modern mode
 modules know where to find automatically).  <strong>makecpt</strong> also has a new option <strong>-S</strong> to create a
 symmetric color table given the range in a data file given via <strong>-T</strong>.</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> has a new operator <strong>PHI</strong> that computes the
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a> has a new operator <strong>PHI</strong> that computes the
 golden ratio.  We now allow <strong>-Cx</strong> and <strong>-Cy</strong> to represent <strong>-C</strong>0 and <strong>-C</strong> 1.</p></li>
 <li><p><a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> also has a new operator <strong>PHI</strong> that computes the
 golden ratio, as well as <strong>NODE</strong> and <strong>NODEP</strong> operators, and added more
@@ -831,7 +834,7 @@ having to make separate calls to <a class="reference internal" href="grdmask.htm
 has a directive <strong>m</strong> to select Flat Earth scaling via the mean latitude.</p></li>
 <li><p>The block-modules <a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a>, <a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a>, and <a class="reference internal" href="blockmode.html"><span class="doc">blockmode</span></a> have new options
 <strong>-A</strong> and <strong>-G</strong> which allow them to write one or more grids directly.</p></li>
-<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> has a new option <strong>-a</strong> which allows it to report aspatial column names, and
+<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">info</span></a> has a new option <strong>-a</strong> which allows it to report aspatial column names, and
 <strong>-Ib</strong> to output the boundary polygon for the data.</p></li>
 <li><p><a class="reference internal" href="supplements/spotter/backtracker.html"><span class="doc">backtracker</span></a> can now do reconstruction given individual hotspot
 drift histories.  We also added <strong>-M</strong> for fractional stage rotations.</p></li>
@@ -839,12 +842,12 @@ drift histories.  We also added <strong>-M</strong> for fractional stage rotatio
 <li><p><a class="reference internal" href="supplements/spotter/polespotter.html"><span class="doc">polespotter</span></a> has a new option <strong>-Cx</strong><em>file</em>.</p></li>
 <li><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> has a new option <strong>-H</strong> for automatic sub-pixel rendering and scaling. Under
 modern mode we also have option <strong>-M</strong> for sandwiching a PostScript plot between two other plots.</p></li>
-<li><p>We added modifiers <strong>+a</strong> and <strong>+i</strong> to option <strong>-Z</strong> in <a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a>.</p></li>
+<li><p>We added modifiers <strong>+a</strong> and <strong>+i</strong> to option <strong>-Z</strong> in <a class="reference internal" href="gmtselect.html"><span class="doc">select</span></a>.</p></li>
 <li><p><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a> has new option <strong>-ZN</strong> to strip off outside rows and cols that are all NaN.</p></li>
 <li><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> now accepts <strong>-o</strong> when <strong>-Cn</strong> is in effect.</p></li>
 <li><p>Enable <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> <strong>-L</strong> to do Cartesian projection scales, even vertical.</p></li>
 <li><p>Improve the vertical scale bar for <a class="reference internal" href="wiggle.html"><span class="doc">wiggle</span></a> as well.</p></li>
-<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> has new option <strong>-W</strong> that attempts to convert trailing text to numbers, if possible.
+<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">convert</span></a> has new option <strong>-W</strong> that attempts to convert trailing text to numbers, if possible.
 Append modifier <strong>+n</strong> to suppress NaN columns.  We also added <strong>-N</strong><em>column</em>[<strong>+a</strong>|<strong>d</strong>] to
 sort a table based on specified <em>column</em>.  Finally, <strong>-EM</strong><em>stride</em> is similar to <strong>-Em</strong> but it will
 always include the last point.</p></li>
@@ -953,14 +956,14 @@ will require the use of the new (and standard) syntax.</p></li>
 files and cache directories via the new commands
 <strong>gmt clear</strong> <em>all</em>|<em>history</em>|<em>conf</em>|<em>cache</em>.</p></li>
 <li><p><a class="reference internal" href="gmt2kml.html"><span class="doc">gmt2kml</span></a> adds option <strong>-Fw</strong> for drawing wiggles along track.</p></li>
-<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> adds option <strong>-F</strong> for reporting the number of tables,
+<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">info</span></a> adds option <strong>-F</strong> for reporting the number of tables,
 segments, records, headers, etc.</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> will convert all plot dimensions given on the command line
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a> will convert all plot dimensions given on the command line
 to the prevailing length unit set via <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>.
 This allows you to combine measurements like 12c, 4i, and 72p. The module
 also has a new <strong>SORT</strong> operator for sorting columns and <strong>RMSW</strong> for weighted
 root-mean-square.</p></li>
-<li><p><a class="reference internal" href="gmtwhich.html"><span class="doc">gmtwhich</span></a> <strong>-G</strong> will download a file from the internet (as discussed
+<li><p><a class="reference internal" href="gmtwhich.html"><span class="doc">which</span></a> <strong>-G</strong> will download a file from the internet (as discussed
 above) before reporting the path to the file (which will then be in the
 user’s cache directory).</p></li>
 <li><p><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a> can now write weights equal to the area each node represents
@@ -1113,23 +1116,23 @@ uncertainties instead of weights and compute weight = 1/sigma.</p></li>
 <li><p><a class="reference internal" href="filter1d.html"><span class="doc">filter1d</span></a>: can now compute high-pass filtered output via a new
 <strong>+h</strong> modifier to the filter settings, similar to existing capability
 in <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>.</p></li>
-<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> has a new option (<strong>-F</strong>) for line segmentation and
+<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">convert</span></a> has a new option (<strong>-F</strong>) for line segmentation and
 network configuration. Also, the <strong>-D</strong> option has a new modifier <strong>+o</strong>
 that sets the origin used for the numbering of tables and segments.</p></li>
-<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> has a new option <strong>-L</strong> for finding the common bounds
+<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">info</span></a> has a new option <strong>-L</strong> for finding the common bounds
 across multiple files or segments.  Also, the <strong>-T</strong> option has been
 modified (while still being backwards compatible) to allow <em>dz</em> to be
 optional, with modifiers <strong>+s</strong> forcing a symmetric range and <strong>+a</strong>
 offering <em>alpha</em>-trimming of the tails before estimating the range.</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> has gained new operators <strong>VAR</strong>,
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a> has gained new operators <strong>VAR</strong>,
 <strong>RMS</strong>, <strong>DENAN</strong>, as well as the weighted statistical operators
 <strong>LMSSCLW</strong>, <strong>MADW</strong>, <strong>MEANW</strong>, <strong>MEDIANW</strong>, <strong>MODEW</strong>, <strong>PQUANTW</strong>,
 <strong>STDW</strong>, and <strong>VARW</strong>.  Finally, we added a <strong>SORT</strong> operator that lets
 you sort an entire table in ascending or descending order based on the
 values in a selected column.</p></li>
-<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a> has a new option <strong>-G</strong> for selecting based on a mask grid.
+<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">select</span></a> has a new option <strong>-G</strong> for selecting based on a mask grid.
 Points falling in bins whose grid nodes are non-zero are selected (or not if <strong>-Ig</strong>)</p></li>
-<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a> has two new modifiers for the <strong>-Q</strong> option that allow
+<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a> has two new modifiers for the <strong>-Q</strong> option that allow
 output segments to be limited based on the segment length (or area for
 polygons) as well as sorting the output in ascending or descending order.</p></li>
 <li><p><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> existing <strong>-F</strong> option now takes a new modifier <strong>+c</strong>
@@ -1200,10 +1203,10 @@ Here is a summary of these changes in six key areas:</p>
 <section id="new-modules-in-gmt-5-2">
 <h3>New modules in GMT 5.2<a class="headerlink" href="#new-modules-in-gmt-5-2" title="Link to this heading"></a></h3>
 <p>There are two new modules in the core system:</p>
-<p><a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a> is modeled after the shell script with the same
+<p><a class="reference internal" href="gmtlogo.html"><span class="doc">logo</span></a> is modeled after the shell script with the same
 name but is now a regular C module that can be used to add the
 GMT logo to maps and posters.</p>
-<p><a class="reference internal" href="gmtregress.html"><span class="doc">gmtregress</span></a> determines linear regressions for data sets using
+<p><a class="reference internal" href="gmtregress.html"><span class="doc">regress</span></a> determines linear regressions for data sets using
 a variety of misfit norms and regression modes.</p>
 <p>Four new modules have also been added to the <em>potential</em> supplement:</p>
 <dl class="simple">
@@ -1338,11 +1341,11 @@ changes to existing syntax will be backwards compatible:</p>
 form of coordinates only (no text report) and you may choose which items to
 return by appending suitable flags.</p></li>
 <li><p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> now has a --show-cores option that reports the available cores.</p></li>
-<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> adds a <strong>-C</strong> option that can be used to eliminate
+<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">convert</span></a> adds a <strong>-C</strong> option that can be used to eliminate
 segments on output based on the number of records it contains.  We also
 added a <strong>-F</strong> option to create line segments from an input data sets using
 a variety of connectivity modes.</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> adds a long list of new operators.  We have the operator <strong>BPDF</strong> for binomial probability distribution and
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a> adds a long list of new operators.  We have the operator <strong>BPDF</strong> for binomial probability distribution and
 <strong>BCDF</strong> for the cumulative binomial distribution function.  Due to confusion with
 other probability distributions we have introduced a series of new operator names
 (but honor backwards compatibility).  Listing the pdf and cdf for each distribution,
@@ -1361,7 +1364,7 @@ normalized coordinates from <strong>Tn</strong> to <strong>TNORM</strong> (but t
 operator <strong>POINT</strong> which reads a data table and places the mean x and mean y on the stack.
 Finally, we added new hyperbolic and inverse hyperbolic functions <strong>COTH</strong> and <strong>ACOTH</strong>,
 <strong>SECH</strong> and <strong>ASECH</strong>, and <strong>CSCH</strong> and <strong>ACSCH</strong>.</p></li>
-<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a> now lets you specify Flat Earth or Geodesic distance calculations
+<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a> now lets you specify Flat Earth or Geodesic distance calculations
 for line lengths via <strong>-Q</strong>.</p></li>
 <li><p><a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a> relaxes the <strong>-W</strong> restriction on only one output grid
 and adds the new mode <strong>-Wz</strong> to write the weight*zsum grid.</p></li>
@@ -1526,25 +1529,25 @@ be abbreviated, e.g., “gmt gmtconvert” may be called as “gmt convert”.</
 <dt><a class="reference internal" href="gmt2kml.html"><span class="doc">gmt2kml</span></a></dt><dd><p>A <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> -like tool to produce KML overlays for Google Earth. Previously
 found in the misc supplement.</p>
 </dd>
-<dt><a class="reference internal" href="gmtconnect.html"><span class="doc">gmtconnect</span></a></dt><dd><p>Connect individual lines whose end points match within given tolerance.
+<dt><a class="reference internal" href="gmtconnect.html"><span class="doc">connect</span></a></dt><dd><p>Connect individual lines whose end points match within given tolerance.
 Previously known as gmtstitch in the misc supplement (this name is recognized
 when GMT is running in compatibility mode).</p>
 </dd>
-<dt><a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a></dt><dd><p>Return the values of the specified GMT defaults.  Previously only
+<dt><a class="reference internal" href="gmtget.html"><span class="doc">get</span></a></dt><dd><p>Return the values of the specified GMT defaults.  Previously only
 implemented as a shell script and thus not available on all platforms.</p>
 </dd>
-<dt><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a></dt><dd><p>Report information about data tables. Previously known by the name minmax
+<dt><a class="reference internal" href="gmtinfo.html"><span class="doc">info</span></a></dt><dd><p>Report information about data tables. Previously known by the name minmax
 (this name is still recognized when GMT is running in compatibility mode).</p>
 </dd>
-<dt><a class="reference internal" href="gmtsimplify.html"><span class="doc">gmtsimplify</span></a></dt><dd><p>A line-reduction tool for coastlines and similar lines. Previously found
+<dt><a class="reference internal" href="gmtsimplify.html"><span class="doc">simplify</span></a></dt><dd><p>A line-reduction tool for coastlines and similar lines. Previously found
 in the misc supplement under the name gmtdp (this name is recognized when
 GMT is running in compatibility mode).</p>
 </dd>
-<dt><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a></dt><dd><p>Perform various geospatial operations on lines and polygons.</p>
+<dt><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a></dt><dd><p>Perform various geospatial operations on lines and polygons.</p>
 </dd>
-<dt><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a></dt><dd><p>Perform basic vector manipulation in 2-D and 3-D.</p>
+<dt><a class="reference internal" href="gmtvector.html"><span class="doc">vector</span></a></dt><dd><p>Perform basic vector manipulation in 2-D and 3-D.</p>
 </dd>
-<dt><a class="reference internal" href="gmtwhich.html"><span class="doc">gmtwhich</span></a></dt><dd><p>Return the full path to specified data files.</p>
+<dt><a class="reference internal" href="gmtwhich.html"><span class="doc">which</span></a></dt><dd><p>Return the full path to specified data files.</p>
 </dd>
 <dt>grdraster</dt><dd><p>Extracts subsets from large global grids.  Previously
 found in the dbase supplement.</p>
@@ -1743,18 +1746,18 @@ output source id for median value.</p></li>
 <li><p><a class="reference internal" href="blockmode.html"><span class="doc">blockmode</span></a> added <strong>-Er</strong>[-] but
 for modal value. Added <strong>-Es</strong> to read and output source id for modal
 value.</p></li>
-<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> now has optional PCRE (regular expression) support,
+<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">convert</span></a> now has optional PCRE (regular expression) support,
 as well as a new option to select a subset of segments specified by
 segment running numbers (<strong>-Q</strong>) and improved options to extract a
 subset of records (<strong>-E</strong>) and support for a list of search strings
 via <strong>-S+f</strong><em>patternfile</em>.</p></li>
-<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a> has new option <strong>-A</strong> to
+<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">info</span></a> has new option <strong>-A</strong> to
 select what group to report on (all input, per file, or per segment).
 Also, use <strong>-If</strong> to report an extended region optimized for fastest results in FFTs.
 and <strong>-Is</strong> to report an extended region optimized for fastest results in <a class="reference internal" href="surface.html"><span class="doc">surface</span></a>.
 Finally, new option <strong>-D</strong>[<em>inc</em>] to align regions found via <strong>-I</strong> with the center
 of the data.</p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> with <strong>-N</strong><em>ncol</em> and input
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a> with <strong>-N</strong><em>ncol</em> and input
 files will add extra blank columns, if needed.  A new option <strong>-E</strong>
 sets the minimum eigenvalue used by operators LSQFIT and SVDFIT.
 Option <strong>-L</strong> applies operators on a per-segment basis instead of
@@ -1763,7 +1766,7 @@ operators have been added (BITAND, BITLEFT, BITNOT, BITOR, BITRIGHT,
 BITTEST, BITXOR, DIFF, IFELSE, ISFINITE, SVDFIT, TAPER).  Finally,
 we have implemented user macros for long or commonly used expressions,
 as well as ability to store and recall using named variables.</p></li>
-<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a> Takes <strong>-E</strong> to indicate if points exactly on a polygon
+<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">select</span></a> Takes <strong>-E</strong> to indicate if points exactly on a polygon
 boundary are inside or outside, and <strong>-Z</strong> can now be extended to apply
 to other columns than the third.</p></li>
 <li><p><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> takes <strong>-F</strong> to specify output color model and <strong>-G</strong> to
@@ -1925,8 +1928,8 @@ simply process their PostScript files via <a class="reference internal" href="ps
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

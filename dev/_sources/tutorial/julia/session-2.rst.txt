@@ -38,11 +38,11 @@ colorbar                 Plot gray scale or color scale bar
 text                     Plot text strings
 ======================== ====================================================================
 
-Plotting lines and symbols, `plot <https://www.generic-mapping-tools.org/GMT.jl/dev/plot/>`_ is one of the most frequently
+Plotting lines and symbols, `plot <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot>`_ is one of the most frequently
 used modules in GMT. In addition to the common command line switches
 it has numerous specific options, and expects different file formats
 depending on what action has been selected. These circumstances make
-`plot <https://www.generic-mapping-tools.org/GMT.jl/dev/plot/>`_ harder to master than most GMT tools. The table below
+`plot <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot>`_ harder to master than most GMT tools. The table below
 shows an abbreviated list of the options:
 
 ================================================================== ===================================================================
@@ -123,7 +123,8 @@ us are shown in the table below:
 | **marker**\ ="y-dash"              | vertical dash; *size* is length of dash                                                   |
 +------------------------------------+-------------------------------------------------------------------------------------------+
 
-The symbol option in `plot <https://www.generic-mapping-tools.org/GMT.jl/dev/plot/>`_. Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
+The symbol option in `plot <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot>`_.
+Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
 will fit inside a circle of given diameter. Upper case symbols (**A, C, D, G, H, I, N, S, T, X**)
 will have area equal to that of a circle of given diameter.
 
@@ -215,8 +216,8 @@ Exercises:
 #. Try using a predefined pattern.
 
 A common question is : "How can I plot symbols connected by a line
-with plot?". The surprising answer is that we must call `plot <https://www.generic-mapping-tools.org/GMT.jl/dev/plot/>`_ twice.
-While this sounds cumbersome there is a reason for this:  Basically,
+with plot?". The surprising answer is that we must call `plot <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot>`_
+twice.  While this sounds cumbersome there is a reason for this:  Basically,
 polygons need to be kept in memory since they may need to be clipped,
 hence computer memory places a limit on how large polygons we may plot.
 Symbols, on the other hand, can be plotted one at a time so there
@@ -240,7 +241,7 @@ instead of symbols over the line, as here.
 
    Result of GMT Tutorial example 8
 
-Our final `plot <https://www.generic-mapping-tools.org/GMT.jl/dev/plot/>`_ example involves a more complicated scenario in
+Our final `plot <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot>`_ example involves a more complicated scenario in
 which we want to plot the epicenters of several earthquakes over the background of a coastline basemap. We want the symbols
 to have a size that reflects the magnitude of the earthquakes, and that their color should reflect the depth of the hypocenter.
 The first few lines in the remote tut_quakes.ngdc looks like this:
@@ -255,7 +256,7 @@ The first few lines in the remote tut_quakes.ngdc looks like this:
 Thus the file has three header records (including the blank line), but we are only interested in columns
 5, 4, 6, and 7. In addition to extract those columns we must also scale the magnitudes into symbols sizes
 in centimeters. Given their range it looks like multiplying the magnitude by 0.1 will work well for symbol
-sizes in cm. Reformatting this file to comply with the `plot <https://www.generic-mapping-tools.org/GMT.jl/dev/plot/>`_
+sizes in cm. Reformatting this file to comply with the `plot <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot>`_
 input format can be done in a number of ways. Here, we simply use the common column selection option **incol**
 and its :ref:`scaling/offset capabilities <-icols_full>`. To skip the first 3 header records and then select
 the 5th, 4rd, 6th, and 7th column and scale the 7th column by 0.1, we would use
@@ -314,7 +315,7 @@ Plotting text strings
 ---------------------
 
 In many situations we need to annotate plots or maps with text strings;
-in GMT this is done using `text <https://www.generic-mapping-tools.org/GMT.jl/dev/text/>`_. Apart from the common
+in GMT this is done using `text <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/text>`_. Apart from the common
 switches, there are 8 options that are particularly useful.
 
 ===================================================================== ===================================================
@@ -330,7 +331,8 @@ Option                                                                Purpose
 **pen**\ =\ *pen*                                                     Draw the outline of text box
 ===================================================================== ===================================================
 
-The input data to `text <https://www.generic-mapping-tools.org/GMT.jl/dev/text/>`_ is expected to contain the following information:
+The input data to `text <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/text>`_
+is expected to contain the following information:
 
    ::
 
@@ -366,7 +368,7 @@ A chart of octal codes can be found in Appendix F in the GMT
 Technical Reference. For accented European characters you must
 set :term:`PS_CHAR_ENCODING` to ISOLatin1 in your :doc:`/gmt.conf` file.
 
-We will demonstrate `text <https://www.generic-mapping-tools.org/GMT.jl/dev/text/>`_ with the following script:
+We will demonstrate `text <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/text>`_ with the following script:
 
 .. code-block:: julia
 

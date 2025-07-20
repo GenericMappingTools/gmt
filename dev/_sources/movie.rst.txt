@@ -13,13 +13,13 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt movie** *mainscript*
-|-C|\ *canvas*
+|-C|\ *canvassize*
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-A|\ *audiofile*\ [**+e**] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
-[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
+[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+i**\ *options*][**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
@@ -73,6 +73,8 @@ Required Arguments
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ **x**\ *height*\ **x**\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
+    Alternatively, give dimensions in pixels and append modifiers **+c** or **+i** to indicate that *dpu* is
+    per cm or per inches.
     
     .. _tbl-presets:
 
@@ -107,7 +109,7 @@ Required Arguments
 .. _-T:
 
 **-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
-    Either specify how many image frames to make, create a one-column data set width values from *min*
+    Either specify how many image frames to make, create a one-column data set with values from *min*
     to *max* every *inc* , or supply a file with a set of parameters, one record (i.e., row) per frame.
     The values in the columns will be available to the *mainscript* as named variables **MOVIE_COL0**,
     **MOVIE_COL1**, etc., while any trailing text can be accessed via the variable **MOVIE_TEXT**. The
@@ -162,14 +164,16 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**]
+**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+i**\ *options*][**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**][**+v**]
     Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
     *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  If just
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
     all; this requires |-M|.  Several modifiers are available:
 
+    - **+i** may be used to add additional FFmpeg encoding settings for the input file (in quotes if more
+      than one word).
     - **+l** turns on looping for *gif* animations; optionally append how many times to repeat [infinite].
-    - **+o** may be used to add additional FFmpeg encoding settings for *mp4* and *webm* (in quotes if more
+    - **+o** may be used to add additional FFmpeg encoding settings for the output file (*mp4* or *webm*; in quotes if more
       than one word).
     - **+s** creates a crude animated *gif* provided either a *mp4* or *webm* product has been selected. You
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
@@ -432,7 +436,7 @@ recommended that any static part of the movie be considered either a static back
 a static foreground (to be made once by *foreground*; see **-Sf**); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
-the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
+the variables **MOVIE_WIDTH** or **MOVIE_HEIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
 exact canvas dimensions.
 
 External *PostScript* Layers
@@ -468,7 +472,7 @@ able to verify the latter by viewing a transparent webm movie in Chrome. Animate
 transparent PNGs as well and here each additional frame accumulate in the final movie. Experts may create
 transparent PNGs and create movies in professional tools that support a movie alpha channel.
 
-. _Audio:
+.. _Audio:
 
 Adding an Audio Track
 ---------------------
@@ -684,6 +688,11 @@ numerous frames at the same time it is not unusual to get failures in **movie** 
 We refer you to this helpful
 `article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
 for various solutions. 
+
+References
+-------------
+
+Wessel, P., Esteban, F., & Delaviel-Anger, G. (2024). The Generic Mapping Tools and Animations for the Masses. Geochemistry, Geophysics, Geosystems, 25(6). https://doi.org/10.1029/2024GC011545
 
 See Also
 --------

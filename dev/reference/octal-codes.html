@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>11. Chart of Octal Codes for Characters &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>11. Chart of Octal Codes for Characters &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -147,7 +150,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -192,260 +195,6 @@ characters (shown in the light green boxes) you need to set
 <p><span class="caption-text">Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rm<span class="w"> </span>-f<span class="w"> </span>gmt.conf<span class="w">	</span><span class="c1"># We cannot have that set yet, will do later.</span>
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.txt</span>
-<span class="s">3		1	2	3	4	5	6	7</span>
-<span class="s">4	0	1	2	3	4	5	6	7</span>
-<span class="s">5	0	1	2	3	4	5	6	7</span>
-<span class="s">6	0	1	2	3	4	5	6	7</span>
-<span class="s">7	0	1	2	3	4	5	6	7</span>
-<span class="s">8	0	1	2	3	4	5	6	7</span>
-<span class="s">9	0	1	2	3	4	5	6	7</span>
-<span class="s">10	0	1	2	3	4	5	6	7</span>
-<span class="s">11	0	1	2	3	4	5	6	7</span>
-<span class="s">12	0	1	2	3	4	5	6	7</span>
-<span class="s">13	0	1	2	3	4	5	6	7</span>
-<span class="s">14	0	1	2	3	4	5	6	7</span>
-<span class="s">15	0	1	2	3	4	5	6	7</span>
-<span class="s">16	0	1	2	3	4	5	6	7</span>
-<span class="s">17	0	1	2	3	4	5	6	7</span>
-<span class="s">18	0	1	2	3	4	5	6	7</span>
-<span class="s">19	0	1	2	3	4	5	6	7</span>
-<span class="s">20		1	2	3	4	5	6	7</span>
-<span class="s">21	0	1	2	3	4	5	6	7</span>
-<span class="s">22	0	1	2	3	4	5	6	7</span>
-<span class="s">23	0	1	2	3	4	5	6	7</span>
-<span class="s">24	0	1	2	3	4	5	6	7</span>
-<span class="s">25	0	1	2	3	4	5	6	7</span>
-<span class="s">26	0	1	2	3	4	5	6	7</span>
-<span class="s">27	0	1	2	3	4	5	6	7</span>
-<span class="s">28	0	1	2	3	4	5	6	7</span>
-<span class="s">29	0	1	2	3	4	5	6	7</span>
-<span class="s">30	0	1	2	3	4	5	6	7</span>
-<span class="s">31	0	1	2	3	4	5	6	7</span>
-<span class="s">EOF</span>
-
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.awk</span>
-<span class="s">BEGIN {</span>
-<span class="s">	printf &quot;0.5 2.5 10p,4 octal\n&quot;</span>
-<span class="s">	for (i = 0; i &lt; 8; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g 2.5 10p,4 %d\n&quot;, i + 1.5, i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">{</span>
-<span class="s">	printf &quot;0.5 %g 10p,4 \\\\\\\%02ox\n&quot;, \$1+0.5, \$1</span>
-<span class="s">	for (i = 2; i &lt;= NF; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g %g 10p,4 \\\\%02o%o\n&quot;, \$i+1.5, \$1+0.5, \$1, \$i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-
-<span class="nv">$AWK</span><span class="w"> </span>-f<span class="w"> </span>tt.awk<span class="w"> </span>tt.txt<span class="w"> </span>&gt;<span class="w"> </span>tt.d
-
-gmt<span class="w"> </span>begin
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_PEN<span class="w"> </span>thick<span class="w"> </span>FONT_TITLE<span class="w"> </span>14p
-
-<span class="w">	</span>gmt<span class="w"> </span>figure<span class="w"> </span>stand+<span class="w"> </span>png<span class="w"> </span>A,E600
-
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PS_CHAR_ENCODING<span class="w"> </span>Standard+
-
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/9/2/32<span class="w"> </span>-Jx0.345i/-0.21i<span class="w"> </span>-BN+tStandard+<span class="w"> </span>-Glightred<span class="w"> </span>-Y0.0<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">1	4</span>
-<span class="s">2	4</span>
-<span class="s">2	3</span>
-<span class="s">1	3</span>
-<span class="s">&gt;</span>
-<span class="s">1	21</span>
-<span class="s">2	21</span>
-<span class="s">2	20</span>
-<span class="s">1	20</span>
-<span class="s">EOF</span>
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Glightgreen<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">2	4</span>
-<span class="s">9	4</span>
-<span class="s">9	3</span>
-<span class="s">2	3</span>
-<span class="s">&gt;</span>
-<span class="s">8	16</span>
-<span class="s">9	16</span>
-<span class="s">9	15</span>
-<span class="s">8	15</span>
-<span class="s">&gt;</span>
-<span class="s">1	20</span>
-<span class="s">9	20</span>
-<span class="s">9	16</span>
-<span class="s">1	16</span>
-<span class="s">&gt;</span>
-<span class="s">1	23</span>
-<span class="s">2	23</span>
-<span class="s">2	22</span>
-<span class="s">1	22</span>
-<span class="s">&gt;</span>
-<span class="s">6	23</span>
-<span class="s">7	23</span>
-<span class="s">7	22</span>
-<span class="s">6	22</span>
-<span class="s">&gt;</span>
-<span class="s">7	24</span>
-<span class="s">8	24</span>
-<span class="s">8	23</span>
-<span class="s">7	23</span>
-<span class="s">&gt;</span>
-<span class="s">1	25</span>
-<span class="s">2	25</span>
-<span class="s">2	24</span>
-<span class="s">1	24</span>
-<span class="s">&gt;</span>
-<span class="s">2	26</span>
-<span class="s">3	26</span>
-<span class="s">3	25</span>
-<span class="s">2	25</span>
-<span class="s">&gt;</span>
-<span class="s">5	26</span>
-<span class="s">6	26</span>
-<span class="s">6	25</span>
-<span class="s">5	25</span>
-<span class="s">&gt;</span>
-<span class="s">2	27</span>
-<span class="s">9	27</span>
-<span class="s">9	26</span>
-<span class="s">2	26</span>
-<span class="s">&gt;</span>
-<span class="s">1	28</span>
-<span class="s">9	28</span>
-<span class="s">9	27</span>
-<span class="s">1	27</span>
-<span class="s">&gt;</span>
-<span class="s">1	29</span>
-<span class="s">2	29</span>
-<span class="s">2	28</span>
-<span class="s">1	28</span>
-<span class="s">&gt;</span>
-<span class="s">3	29</span>
-<span class="s">4	29</span>
-<span class="s">4	28</span>
-<span class="s">3	28</span>
-<span class="s">&gt;</span>
-<span class="s">5	29</span>
-<span class="s">9	29</span>
-<span class="s">9	28</span>
-<span class="s">5	28</span>
-<span class="s">&gt;</span>
-<span class="s">1	30</span>
-<span class="s">2	30</span>
-<span class="s">2	29</span>
-<span class="s">1	29</span>
-<span class="s">&gt;</span>
-<span class="s">5	30</span>
-<span class="s">9	30</span>
-<span class="s">9	29</span>
-<span class="s">5	29</span>
-<span class="s">&gt;</span>
-<span class="s">1	31</span>
-<span class="s">2	31</span>
-<span class="s">2	30</span>
-<span class="s">1	30</span>
-<span class="s">&gt;</span>
-<span class="s">3	31</span>
-<span class="s">6	31</span>
-<span class="s">6	30</span>
-<span class="s">3	30</span>
-<span class="s">&gt;</span>
-<span class="s">7	31</span>
-<span class="s">9	31</span>
-<span class="s">9	30</span>
-<span class="s">7	30</span>
-<span class="s">&gt;</span>
-<span class="s">1	32</span>
-<span class="s">2	32</span>
-<span class="s">2	31</span>
-<span class="s">1	31</span>
-<span class="s">&gt;</span>
-<span class="s">5	32</span>
-<span class="s">9	32</span>
-<span class="s">9	31</span>
-<span class="s">5	31</span>
-<span class="s">EOF</span>
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>tt.d<span class="w"> </span>-F+f
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Bg1<span class="w"> </span>-Wthick<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">0	3</span>
-<span class="s">9	3</span>
-<span class="s">&gt;</span>
-<span class="s">1	2</span>
-<span class="s">1	32</span>
-<span class="s">EOF</span>
-
-<span class="w">	</span>gmt<span class="w"> </span>figure<span class="w"> </span>iso+<span class="w"> </span>png<span class="w"> </span>A,E600
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PS_CHAR_ENCODING<span class="w"> </span>ISOLatin1+
-
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/9/2/32<span class="w"> </span>-Jx0.345i/-0.21i<span class="w"> </span>-BN+tISOLatin1+<span class="w"> </span>-Glightred<span class="w"> </span>-Y0.0<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">1	4</span>
-<span class="s">2	4</span>
-<span class="s">2	3</span>
-<span class="s">1	3</span>
-<span class="s">&gt;</span>
-<span class="s">1	21</span>
-<span class="s">2	21</span>
-<span class="s">2	20</span>
-<span class="s">1	20</span>
-<span class="s">EOF</span>
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Glightgreen<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">2	4</span>
-<span class="s">9	4</span>
-<span class="s">9	3</span>
-<span class="s">2	3</span>
-<span class="s">&gt;</span>
-<span class="s">8	16</span>
-<span class="s">9	16</span>
-<span class="s">9	15</span>
-<span class="s">8	15</span>
-<span class="s">&gt;</span>
-<span class="s">1	18</span>
-<span class="s">9	18</span>
-<span class="s">9	16</span>
-<span class="s">1	16</span>
-<span class="s">&gt;</span>
-<span class="s">2	20</span>
-<span class="s">3	20</span>
-<span class="s">3	19</span>
-<span class="s">2	19</span>
-<span class="s">&gt;</span>
-<span class="s">5	20</span>
-<span class="s">6	20</span>
-<span class="s">6	19</span>
-<span class="s">5	19</span>
-<span class="s">EOF</span>
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>tt.d<span class="w"> </span>-F+f
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Bg1<span class="w"> </span>-Wthick<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">0	3</span>
-<span class="s">9	3</span>
-<span class="s">&gt;</span>
-<span class="s">1	2</span>
-<span class="s">1	32</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>end
-
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>-Du<span class="w"> </span>PS_CHAR_ENCODING<span class="w"> </span>ISOLatin1+<span class="w"> </span>GMT_GRAPHICS_FORMAT<span class="w"> </span>ps
-gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_F_stand+_iso+
-<span class="w">	</span>gmt<span class="w"> </span>image<span class="w"> </span>stand+.png<span class="w"> </span>-Dx0/0+r600
-<span class="w">	</span>gmt<span class="w"> </span>image<span class="w"> </span>iso+.png<span class="w"> </span>-Dx0/0+r600<span class="w"> </span>-X3.2i
-gmt<span class="w"> </span>end<span class="w"> </span>show
-rm<span class="w"> </span>stand+.png<span class="w"> </span>iso+.png<span class="w"> </span>tt.awk<span class="w"> </span>tt.d<span class="w"> </span>tt.txt
-</pre></div>
-</div>
-</div>
 <p>The chart for the Symbol character set (GMT font number 12) and Pifont
 ZapfDingbats character set (font number 34) are presented in
 Figure <a class="reference internal" href="#octal-codes-symbol-zap"><span class="std std-ref">Octal codes for Symbol and ZapfDingbats</span></a> below. The octal code
@@ -461,215 +210,10 @@ firmware will not know about the euro).</p>
 <p><span class="caption-text">Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_F_symbol_dingbats
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_PEN<span class="w"> </span>thick<span class="w"> </span>FONT_TITLE<span class="w"> </span>14p
-
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PS_CHAR_ENCODING<span class="w"> </span>ISOLatin1+
-
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.txt</span>
-<span class="s">4	0	1	2	3	4	5	6	7</span>
-<span class="s">5	0	1	2	3	4	5	6	7</span>
-<span class="s">6	0	1	2	3	4	5	6	7</span>
-<span class="s">7	0	1	2	3	4	5	6	7</span>
-<span class="s">8	0	1	2	3	4	5	6	7</span>
-<span class="s">9	0	1	2	3	4	5	6	7</span>
-<span class="s">10	0	1	2	3	4	5	6	7</span>
-<span class="s">11	0	1	2	3	4	5	6	7</span>
-<span class="s">12	0	1	2	3	4	5	6	7</span>
-<span class="s">13	0	1	2	3	4	5	6	7</span>
-<span class="s">14	0	1	2	3	4	5	6	7</span>
-<span class="s">15	0	1	2	3	4	5	6</span>
-<span class="s">EOF</span>
-
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.awk</span>
-<span class="s">BEGIN {</span>
-<span class="s">	printf &quot;0.5 3.5 10p,4 octal\n&quot;</span>
-<span class="s">	for (i = 0; i &lt; 8; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g 3.5 10p,4 %d\n&quot;, i + 1.5, i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">{</span>
-<span class="s">	printf &quot;0.5 %g 10p,4 \\\\\\\%02ox\n&quot;, \$1+0.5, \$1</span>
-<span class="s">	for (i = 2; i &lt;= NF; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g %g 10p,12 \\\\%02o%o\n&quot;, \$i+1.5, \$1+0.5, \$1, \$i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-
-<span class="nv">$AWK</span><span class="w"> </span>-f<span class="w"> </span>tt.awk<span class="w"> </span>tt.txt<span class="w"> </span>&gt;<span class="w"> </span>tt.d
-gmt<span class="w"> </span>plot<span class="w"> </span>-R0/9/3/16<span class="w"> </span>-Jx0.345i/-0.21i<span class="w"> </span>-BN+tSymbol<span class="w"> </span>-Glightgreen<span class="w"> </span>-Y2.58i<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">8	16</span>
-<span class="s">9	16</span>
-<span class="s">9	15</span>
-<span class="s">8	15</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>text<span class="w"> </span>tt.d<span class="w"> </span>-F+f
-gmt<span class="w"> </span>plot<span class="w"> </span>-Bg1<span class="w"> </span>-Wthick<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">0	4</span>
-<span class="s">9	4</span>
-<span class="s">&gt;</span>
-<span class="s">1	3</span>
-<span class="s">1	16</span>
-<span class="s">EOF</span>
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.txt</span>
-<span class="s">20	0	1	2	3	4	5	6	7</span>
-<span class="s">21	0	1	2	3	4	5	6	7</span>
-<span class="s">22	0	1	2	3	4	5	6	7</span>
-<span class="s">23	0	1	2	3	4	5	6	7</span>
-<span class="s">24	0	1	2	3	4	5	6	7</span>
-<span class="s">25	0	1	2	3	4	5	6	7</span>
-<span class="s">26	0	1	2	3	4	5	6	7</span>
-<span class="s">27	0	1	2	3	4	5	6	7</span>
-<span class="s">28	0	1	2	3	4	5	6	7</span>
-<span class="s">29	0	1	2	3	4	5	6	7</span>
-<span class="s">30	0	1	2	3	4	5	6	7</span>
-<span class="s">31	0	1	2	3	4	5	6</span>
-<span class="s">EOF</span>
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.awk</span>
-<span class="s">{</span>
-<span class="s">	printf &quot;0.5 %g 10p,4 \\\\\\\%02ox\n&quot;, \$1+0.5, \$1</span>
-<span class="s">	for (i = 2; i &lt;= NF; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g %g 10p,12 \\\\%02o%o\n&quot;, \$i+1.5, \$1+0.5, \$1, \$i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-
-<span class="nv">$AWK</span><span class="w"> </span>-f<span class="w"> </span>tt.awk<span class="w"> </span>tt.txt<span class="w"> </span>&gt;<span class="w"> </span>tt.d
-gmt<span class="w"> </span>plot<span class="w"> </span>-R0/9/20/32<span class="w"> </span>-Glightgreen<span class="w"> </span>-Y-2.58i<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">8	32</span>
-<span class="s">9	32</span>
-<span class="s">9	31</span>
-<span class="s">8	31</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>text<span class="w"> </span>tt.d<span class="w"> </span>-F+f
-gmt<span class="w"> </span>plot<span class="w"> </span>-Bg1<span class="w"> </span>-Wthick<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">1	20</span>
-<span class="s">1	32</span>
-<span class="s">EOF</span>
-
-
-
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.txt</span>
-<span class="s">4	0	1	2	3	4	5	6	7</span>
-<span class="s">5	0	1	2	3	4	5	6	7</span>
-<span class="s">6	0	1	2	3	4	5	6	7</span>
-<span class="s">7	0	1	2	3	4	5	6	7</span>
-<span class="s">8	0	1	2	3	4	5	6	7</span>
-<span class="s">9	0	1	2	3	4	5	6	7</span>
-<span class="s">10	0	1	2	3	4	5	6	7</span>
-<span class="s">11	0	1	2	3	4	5	6	7</span>
-<span class="s">12	0	1	2	3	4	5	6	7</span>
-<span class="s">13	0	1	2	3	4	5	6	7</span>
-<span class="s">14	0	1	2	3	4	5	6	7</span>
-<span class="s">15	0	1	2	3	4	5	6</span>
-<span class="s">EOF</span>
-
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.awk</span>
-<span class="s">BEGIN {</span>
-<span class="s">	printf &quot;0.5 3.5 10p,4 octal\n&quot;</span>
-<span class="s">	for (i = 0; i &lt; 8; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g 3.5 10p,4 %d\n&quot;, i + 1.5, i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">{</span>
-<span class="s">	printf &quot;0.5 %g 10p,4 \\\\\\\%02ox\n&quot;, \$1+0.5, \$1</span>
-<span class="s">	for (i = 2; i &lt;= NF; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g %g 10p,34 \\\\%02o%o\n&quot;, \$i+1.5, \$1+0.5, \$1, \$i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-
-<span class="nv">$AWK</span><span class="w"> </span>-f<span class="w"> </span>tt.awk<span class="w"> </span>tt.txt<span class="w"> </span>&gt;<span class="w"> </span>tt.d
-
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PS_CHAR_ENCODING<span class="w"> </span>ISOLatin1+
-
-gmt<span class="w"> </span>plot<span class="w"> </span>-R0/9/3/16<span class="w"> </span>-Jx0.345i/-0.21i<span class="w"> </span>-BN+tZapfDingbats<span class="w"> </span>-Glightgreen<span class="w"> </span>-X3.2i<span class="w"> </span>-Y2.58i<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">8	16</span>
-<span class="s">9	16</span>
-<span class="s">9	15</span>
-<span class="s">8	15</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>text<span class="w"> </span>tt.d<span class="w"> </span>-F+f
-gmt<span class="w"> </span>plot<span class="w"> </span>-Bg1<span class="w"> </span>-Wthick<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">0	4</span>
-<span class="s">9	4</span>
-<span class="s">&gt;</span>
-<span class="s">1	3</span>
-<span class="s">1	16</span>
-<span class="s">EOF</span>
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.txt</span>
-<span class="s">20		1	2	3	4	5	6	7</span>
-<span class="s">21	0	1	2	3	4	5	6	7</span>
-<span class="s">22	0	1	2	3	4	5	6	7</span>
-<span class="s">23	0	1	2	3	4	5	6	7</span>
-<span class="s">24	0	1	2	3	4	5	6	7</span>
-<span class="s">25	0	1	2	3	4	5	6	7</span>
-<span class="s">26	0	1	2	3	4	5	6	7</span>
-<span class="s">27	0	1	2	3	4	5	6	7</span>
-<span class="s">28	0	1	2	3	4	5	6	7</span>
-<span class="s">29	0	1	2	3	4	5	6	7</span>
-<span class="s">30	0	1	2	3	4	5	6	7</span>
-<span class="s">31	0	1	2	3	4	5	6</span>
-<span class="s">EOF</span>
-
-cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; tt.awk</span>
-<span class="s">{</span>
-<span class="s">	printf &quot;0.5 %g 10p,4 \\\\\\\%02ox\n&quot;, \$1+0.5, \$1</span>
-<span class="s">	for (i = 2; i &lt;= NF; i++)</span>
-<span class="s">	{</span>
-<span class="s">		printf &quot;%g %g 10p,34 \\\\%02o%o\n&quot;, \$i+1.5, \$1+0.5, \$1, \$i</span>
-<span class="s">	}</span>
-<span class="s">}</span>
-<span class="s">EOF</span>
-
-<span class="nv">$AWK</span><span class="w"> </span>-f<span class="w"> </span>tt.awk<span class="w"> </span>tt.txt<span class="w"> </span>&gt;<span class="w"> </span>tt.d
-gmt<span class="w"> </span>plot<span class="w"> </span>-R0/9/20/32<span class="w"> </span>-Glightgreen<span class="w"> </span>-Y-2.58i<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">1	21</span>
-<span class="s">2	21</span>
-<span class="s">2	20</span>
-<span class="s">1	20</span>
-<span class="s">&gt;</span>
-<span class="s">8	32</span>
-<span class="s">9	32</span>
-<span class="s">9	31</span>
-<span class="s">8	31</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>text<span class="w"> </span>tt.d<span class="w"> </span>-F+f
-gmt<span class="w"> </span>plot<span class="w"> </span>-Bg1<span class="w"> </span>-Wthick<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
-<span class="s">&gt;</span>
-<span class="s">1	20</span>
-<span class="s">1	32</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>end<span class="w"> </span>show
-</pre></div>
-</div>
-</div>
 <section id="footnote">
 <h2><span class="section-number">11.1. </span>Footnote<a class="headerlink" href="#footnote" title="Link to this heading"></a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id2" role="note">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">29</a><span class="fn-bracket">]</span></span>
 <p>If you chose SI units during the installation then the default
 encoding is ISOLatin1+, otherwise it is Standard+.</p>
@@ -689,8 +233,8 @@ encoding is ISOLatin1+, otherwise it is Standard+.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

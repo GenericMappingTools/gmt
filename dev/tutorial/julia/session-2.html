@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Two &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <title>Session Two &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,11 +74,28 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../bash/index.html">Tutorial in Bash</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorial in Julia</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="session-1.html">Session One</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Session Two</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#general-information">General Information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plotting-text-strings">Plotting text strings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="session-3.html">Session Three</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session-4.html">Session Four</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials for PyGMT</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://doi.org/10.1002/2016GC006723">Tutorials for GMT/Mex</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -121,7 +140,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -241,11 +260,11 @@ how to select a data domain and boundary annotations.</p>
 </tr>
 </tbody>
 </table>
-<p>Plotting lines and symbols, <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/plot/">plot</a> is one of the most frequently
+<p>Plotting lines and symbols, <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot">plot</a> is one of the most frequently
 used modules in GMT. In addition to the common command line switches
 it has numerous specific options, and expects different file formats
 depending on what action has been selected. These circumstances make
-<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/plot/">plot</a> harder to master than most GMT tools. The table below
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot">plot</a> harder to master than most GMT tools. The table below
 shows an abbreviated list of the options:</p>
 <table class="docutils align-default">
 <thead>
@@ -377,7 +396,8 @@ us are shown in the table below:</p>
 </tr>
 </tbody>
 </table>
-<p>The symbol option in <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/plot/">plot</a>. Lower case symbols (<strong>a, c, d, g, h, i, n, s, t, x</strong>)
+<p>The symbol option in <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot">plot</a>.
+Lower case symbols (<strong>a, c, d, g, h, i, n, s, t, x</strong>)
 will fit inside a circle of given diameter. Upper case symbols (<strong>A, C, D, G, H, I, N, S, T, X</strong>)
 will have area equal to that of a circle of given diameter.</p>
 <p>Because some symbols require more input data than others, and because the size of symbols as well as their color
@@ -415,7 +435,7 @@ the <a class="reference internal" href="../../reference/features.html#gmt-genera
 GMT Technical Reference before experimenting
 with the examples below.</p>
 <p>Examples:</p>
-<p>We will start off using the file tut_data.txt in your directory. Using the GMT utility <a class="reference internal" href="../../gmtinfo.html"><span class="doc">gmtinfo</span></a>
+<p>We will start off using the file tut_data.txt in your directory. Using the GMT utility <a class="reference internal" href="../../gmtinfo.html"><span class="doc">info</span></a>
 we find the extent of the data region:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtinfo<span class="o">(</span><span class="s2">&quot;@tut_data.txt&quot;</span><span class="o">)</span>
@@ -456,8 +476,8 @@ try the following:</p>
 <li><p>Try using a predefined pattern.</p></li>
 </ol>
 <p>A common question is : “How can I plot symbols connected by a line
-with plot?”. The surprising answer is that we must call <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/plot/">plot</a> twice.
-While this sounds cumbersome there is a reason for this:  Basically,
+with plot?”. The surprising answer is that we must call <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot">plot</a>
+twice.  While this sounds cumbersome there is a reason for this:  Basically,
 polygons need to be kept in memory since they may need to be clipped,
 hence computer memory places a limit on how large polygons we may plot.
 Symbols, on the other hand, can be plotted one at a time so there
@@ -478,7 +498,7 @@ instead of symbols over the line, as here.</p>
 <p><span class="caption-text">Result of GMT Tutorial example 8</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<p>Our final <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/plot/">plot</a> example involves a more complicated scenario in
+<p>Our final <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot">plot</a> example involves a more complicated scenario in
 which we want to plot the epicenters of several earthquakes over the background of a coastline basemap. We want the symbols
 to have a size that reflects the magnitude of the earthquakes, and that their color should reflect the depth of the hypocenter.
 The first few lines in the remote tut_quakes.ngdc looks like this:</p>
@@ -493,7 +513,7 @@ Year<span class="w">  </span>Mo<span class="w">  </span>Da<span class="w">  </sp
 <p>Thus the file has three header records (including the blank line), but we are only interested in columns
 5, 4, 6, and 7. In addition to extract those columns we must also scale the magnitudes into symbols sizes
 in centimeters. Given their range it looks like multiplying the magnitude by 0.1 will work well for symbol
-sizes in cm. Reformatting this file to comply with the <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/plot/">plot</a>
+sizes in cm. Reformatting this file to comply with the <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/plot">plot</a>
 input format can be done in a number of ways. Here, we simply use the common column selection option <strong>incol</strong>
 and its <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">scaling/offset capabilities</span></a>. To skip the first 3 header records and then select
 the 5th, 4rd, 6th, and 7th column and scale the 7th column by 0.1, we would use</p>
@@ -547,7 +567,7 @@ sizes are interpreted to be in cm. Your plot should look like <a class="referenc
 <section id="plotting-text-strings">
 <h2>Plotting text strings<a class="headerlink" href="#plotting-text-strings" title="Link to this heading"></a></h2>
 <p>In many situations we need to annotate plots or maps with text strings;
-in GMT this is done using <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/text/">text</a>. Apart from the common
+in GMT this is done using <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/text">text</a>. Apart from the common
 switches, there are 8 options that are particularly useful.</p>
 <table class="docutils align-default">
 <thead>
@@ -582,7 +602,8 @@ switches, there are 8 options that are particularly useful.</p>
 </tr>
 </tbody>
 </table>
-<p>The input data to <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/text/">text</a> is expected to contain the following information:</p>
+<p>The input data to <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/text">text</a>
+is expected to contain the following information:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="w"> </span>x<span class="w">   </span>y<span class="w"> </span><span class="o">]</span><span class="w">  </span><span class="o">[</span><span class="w"> </span>font<span class="o">]</span><span class="w">  </span><span class="o">[</span><span class="w"> </span>angle<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>justify<span class="w"> </span><span class="o">]</span><span class="w">   </span>my<span class="w"> </span>text
 </pre></div>
@@ -639,7 +660,7 @@ used anywhere in GMT, including in arguments to the <strong>frame</strong> optio
 A chart of octal codes can be found in Appendix F in the GMT
 Technical Reference. For accented European characters you must
 set <a class="reference internal" href="../../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> to ISOLatin1 in your <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> file.</p>
-<p>We will demonstrate <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/text/">text</a> with the following script:</p>
+<p>We will demonstrate <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/text">text</a> with the following script:</p>
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">text_record</span><span class="p">(</span>
 <span class="w">   </span><span class="mi">1</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="n">It</span><span class="o">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">P</span><span class="nd">@al</span><span class="p">,</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">Pal!</span>
 <span class="w">   </span><span class="mi">1</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="n">Try</span><span class="w"> </span><span class="nd">@%</span><span class="mi">33</span><span class="o">%</span><span class="n">ZapfChancery</span><span class="nd">@%</span><span class="o">%</span><span class="w"> </span><span class="n">today</span>
@@ -721,8 +742,8 @@ set <a class="reference internal" href="../../gmt.conf.html#term-PS_CHAR_ENCODIN
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

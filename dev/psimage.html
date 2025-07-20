@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>psimage &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>psimage &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -120,7 +123,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -204,7 +207,7 @@ file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.</p>
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl id="d">
@@ -213,7 +216,7 @@ file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.</p>
 <li><p><strong>g</strong> - Append <em>lon</em>/<em>lat</em> for <a class="reference internal" href="reference/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
 <li><p><strong>j</strong> - Append <em>code</em> to <strong>j</strong> or  <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char <a class="reference internal" href="reference/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set. Upper case means justify on the outside.</p></li>
 <li><p><strong>n</strong> - Append <em>xn</em>/<em>yn</em> for <a class="reference internal" href="reference/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
-<li><p><strong>x</strong> - Append <em>x</em>/<em>y</em> for <a class="reference internal" href="reference/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>point).</p></li>
+<li><p><strong>x</strong> - Append <em>x</em>/<em>y</em> for <a class="reference internal" href="reference/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint).</p></li>
 </ul>
 <p>By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
 can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
@@ -240,8 +243,8 @@ revert to the default dpi [<a class="reference internal" href="gmt.conf.html#ter
 modifiers can be appended to <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, with additional explanation and examples provided in the <a class="reference internal" href="reference/features.html#background-panel"><span class="std std-ref">The background panel</span></a>
 cookbook section:</p>
 <ul class="simple">
-<li><p><strong>+c</strong> - Set <em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> and <em>gap</em> gives a uniform <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> gives separate
-<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the <em>x</em>- and <em>y</em>- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> gives
+<li><p><strong>+c</strong> - Set <em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em>. Here, <em>gap</em> gives a uniform <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> give separate
+<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the <em>x</em>- and <em>y</em>- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> give
 individual <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> between the map embellishment and the border for each side.</p></li>
 <li><p><strong>+g</strong> - Give <em>fill</em> to fill the box with a color specified by <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> [default is no fill].</p></li>
 <li><p><strong>+i</strong> - Draw a secondary, inner border border outline [[<em>gap</em>/]<em>pen</em>]. Optionally, append the
@@ -283,26 +286,26 @@ YIQ-transformation.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. (Used only with <strong>-p</strong>) <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. (Used only with <strong>-p</strong>) <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <blockquote>
 <div><p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
 </div></blockquote>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -379,7 +382,7 @@ to be 2.5 cm wide, use:</p>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
-<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">logo</span></a>
 <a class="reference internal" href="pslegend.html"><span class="doc">pslegend</span></a>, <a class="reference internal" href="psscale.html"><span class="doc">psscale</span></a>
 <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
 </section>
@@ -396,8 +399,8 @@ to be 2.5 cm wide, use:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

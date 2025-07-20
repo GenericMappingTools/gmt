@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdmath &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>grdmath &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -121,7 +124,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -214,7 +217,7 @@ If not a file, it is interpreted as a numerical constant or a
 special symbol (see below).</p>
 </dd>
 <dt><em>outgrid</em></dt><dd><p>The name of a 2-D grid file that will hold the final result. (See
-<a class="reference internal" href="supplements/windbarbs/grdbarb.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
 </dd>
 </dl>
 </section>
@@ -242,7 +245,7 @@ own Antarctica (with islands) coastline).</p></li>
 corresponding full-resolution feature is less than <em>percent</em>.</p></li>
 <li><p><strong>+r</strong> - Only select river-lakes and exclude regular lakes.</p></li>
 </ul>
-<p>See <a class="reference internal" href="pscoast.html#gshhg-information"><span class="std std-ref">GSHHG Information</span></a> below for more details. (<a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> is only relevant to the <strong>LDISTG</strong> operator)</p>
+<p>See <a class="reference internal" href="pscoast.html#gshhg-information"><span class="std std-ref">GSHHG Information</span></a> below for more details. (<a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> is only relevant to the <strong>LDISTG</strong> operator).</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -269,7 +272,7 @@ Choose among:</p>
 <li><p><strong>s</strong> - Indicate arc seconds</p></li>
 </ul>
 <p>If one of <strong>e</strong> (meter), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical
-mile) or <strong>u</strong> (US survey foot), the the increment will be
+mile) or <strong>u</strong> (US survey foot), the increment will be
 converted to the equivalent degrees longitude at the middle latitude
 of the region  (the conversion depends on <a class="reference internal" href="gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If
 <em>y_inc</em> is not given or given but set to 0 it will be reset equal to <em>x_inc</em>;
@@ -305,7 +308,7 @@ manipulated [Default will insist that each grid domain is within
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -318,7 +321,7 @@ follow <a class="reference internal" href="#s"><span><strong>-S</strong></span><
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -364,7 +367,9 @@ only applies to the data files needed by operators <strong>LDIST</strong>,
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms (OpenMP required).</p>
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms. Multi-threaded behavior is enabled by default.
+That covers the modules that implement the OpenMP API (required at compiling stage) and GThreads (Glib)
+for the grdfilter module.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -1560,7 +1565,7 @@ and output arguments.</p>
 <td><p>1.6180339… (golden ratio)</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>EPS_F</strong></p></td>
-<td><p>1.192092896e-07 (single precision epsilon</p></td>
+<td><p>1.192092896e-07 (single precision epsilon)</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>XMIN</strong></p></td>
 <td><p>Minimum <em>x</em> value</p></td>
@@ -1673,14 +1678,15 @@ directory (i.e., ./LOG).</p></li>
 <li><p>Piping of files is not allowed.</p></li>
 <li><p>The stack depth limit is hard-wired to 100.</p></li>
 <li><p>All functions expecting a positive radius (e.g., <strong>LOG</strong>, <strong>KEI</strong>,
-etc.) are passed the absolute value of their argument. (9) The bitwise
-operators (<strong>BITAND</strong>, <strong>BITLEFT</strong>, <strong>BITNOT</strong>, <strong>BITOR</strong>, <strong>BITRIGHT</strong>,
-<strong>BITTEST</strong>, and <strong>BITXOR</strong>) convert a grid’s single precision values to
-unsigned 32-bit ints to perform the bitwise operations. Consequently,
-the largest whole integer value that can be stored in a float grid is
-2^24 or 16,777,216. Any higher result will be masked to fit in the lower
-24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
-bitwise operators return NaN if given NaN arguments or bit-settings &lt;= 0.</p></li>
+etc.) are passed the absolute value of their argument.</p></li>
+<li><p>The bitwise operators (<strong>BITAND</strong>, <strong>BITLEFT</strong>, <strong>BITNOT</strong>, <strong>BITOR</strong>,
+<strong>BITRIGHT</strong>, <strong>BITTEST</strong>, and <strong>BITXOR</strong>) convert a grid’s single
+precision values to unsigned 32-bit ints to perform the bitwise
+operations. Consequently, the largest whole integer value that can be
+stored in a float grid is 2^24 or 16,777,216. Any higher result will be
+masked to fit in the lower 24 bits. Thus, bit operations are effectively
+limited to 24 bit. All bitwise operators return NaN if given NaN
+arguments or bit-settings &lt;= 0.</p></li>
 <li><p>When OpenMP support is compiled in, a few operators will take advantage
 of the ability to spread the load onto several cores.  At present, the
 list of such operators is: <strong>LDIST</strong>, <strong>LDIST2</strong>, <strong>PDIST</strong>, <strong>PDIST2</strong>,
@@ -1844,7 +1850,7 @@ where we store and recall the normalized radial arguments in radians by:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-R0/10/0/10<span class="w"> </span>-I0.25<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">5</span><span class="w"> </span>CDIST<span class="w"> </span><span class="m">2</span><span class="w"> </span>MUL<span class="w"> </span>PI<span class="w"> </span>MUL<span class="w"> </span><span class="m">5</span><span class="w"> </span>DIV<span class="w"> </span>STO@r<span class="w"> </span>COS<span class="w"> </span>@r<span class="w"> </span>SIN<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>wave.nc
 </pre></div>
 </div>
-<p>To create a dumb file saved as a 32 bits float GeoTiff using GDAL, run:</p>
+<p>To create a dumb file saved as a 32 bits float GeoTIFF using GDAL, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-Rd<span class="w"> </span>-I10<span class="w"> </span>X<span class="w"> </span>Y<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lixo.tiff<span class="o">=</span>gd:GTiff
 </pre></div>
 </div>
@@ -1858,7 +1864,7 @@ per node of all the grids matching the name model_*.grd using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>model_*.grd<span class="w"> </span>-S<span class="w"> </span><span class="nv">STD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>std_of_models.grd
 </pre></div>
 </div>
-<p>To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use:</p>
+<p>To create a GeoTIFF with resolution 0.5x0.5 degrees with distances in km from the coast line, use:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-RNO,IS<span class="w"> </span>-Dc<span class="w"> </span>-I.5<span class="w"> </span><span class="nv">LDISTG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>distance.tif<span class="o">=</span>gd:GTIFF
 </pre></div>
 </div>
@@ -1886,7 +1892,7 @@ To learn more about RPN or postfix, watch this YouTube video explanation:</p>
 </iframe></div></section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
-<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>,
 <a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>, <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>,
 <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>, <a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p>
 </section>
@@ -1903,8 +1909,8 @@ To learn more about RPN or postfix, watch this YouTube video explanation:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

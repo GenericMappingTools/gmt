@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Two &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <title>Session Two &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,11 +74,28 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorial in Bash</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="session-1.html">Session One</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Session Two</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#general-information">General Information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plotting-text-strings">Plotting text strings</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="session-3.html">Session Three</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session-4.html">Session Four</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../julia/index.html">Tutorial in Julia</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials for PyGMT</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://doi.org/10.1002/2016GC006723">Tutorials for GMT/Mex</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -121,7 +140,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -430,7 +449,7 @@ GMT Technical Reference before experimenting
 with the examples below.</p>
 <p>Examples:</p>
 <p>We will start off using the file tut_data.txt in your directory.
-Using the GMT utility <a class="reference internal" href="../../gmtinfo.html"><span class="doc">gmtinfo</span></a> we find the extent of the
+Using the GMT utility <a class="reference internal" href="../../gmtinfo.html"><span class="doc">info</span></a> we find the extent of the
 data region:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>info<span class="w"> </span>@tut_data.txt
@@ -455,7 +474,6 @@ dashed pen.</p></li>
 </ol>
 <p>To simply plot the data as a line we choose no symbol and specify a pen thickness instead:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_7
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@tut_data.txt<span class="w"> </span>-R0/6/0/6<span class="w"> </span>-Jx1i<span class="w"> </span>-B<span class="w"> </span>-Wthinner
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -481,7 +499,6 @@ Symbols, on the other hand, can be plotted one at a time so there
 is no limit to how many symbols one may plot.  Therefore, to connect
 symbols with a line we must use the overlay approach:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_8
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@tut_data.txt<span class="w"> </span>-R0/6/0/6<span class="w"> </span>-Jx1i<span class="w"> </span>-B<span class="w"> </span>-Wthinner
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@tut_data.txt<span class="w"> </span>-W<span class="w"> </span>-Si0.2i
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -550,7 +567,6 @@ to consult the <a class="reference internal" href="../../reference/features.html
 This color table was generated as part of the script (below).</p>
 <p>We may now complete our example using the Mercator projection:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_9
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cred,green,blue<span class="w"> </span>-T0,100,300,10000
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R130/150/35/50<span class="w"> </span>-JM6i<span class="w"> </span>-B<span class="w"> </span>-Ggray
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@tut_quakes.ngdc<span class="w"> </span>-Wfaint<span class="w"> </span>-i4,3,5,6+s0.1<span class="w"> </span>-h3<span class="w"> </span>-Scc<span class="w"> </span>-C
@@ -676,7 +692,6 @@ Technical Reference.  For accented European characters you must
 set <a class="reference internal" href="../../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> to ISOLatin1 in your <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> file.</p>
 <p>We will demonstrate <a class="reference internal" href="../../text.html"><span class="doc">text</span></a> with the following script:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_10
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-R0/7/0/5<span class="w"> </span>-Jx1i<span class="w"> </span>-B<span class="w"> </span>-F+f30p,Times-Roman,DarkOrange+jBL<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">1  1  It&#39;s P@al, not Pal!</span>
 <span class="s">1  2  Try @%33%ZapfChancery@%% today</span>
@@ -762,8 +777,8 @@ Your plot should look like <a class="reference internal" href="#gmt-tut-10"><spa
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

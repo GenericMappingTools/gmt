@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>8. GMT File Formats &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>8. GMT File Formats &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -162,7 +165,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -313,10 +316,10 @@ for ocean and atmosphere research. Sticking to this convention allows
 GMT to read gridded data provided by other institutes and other
 programs. Conversely, other general domain programs will be able to read
 grids created by GMT. COARDS is a subset of a more extensive
-convention for netCDF data called CF-1.5 (Climate and Forecast, version
-1.5). Hence, GMT grids are also automatically CF-1.5-compliant.
-However, since CF-1.5 has more general application than COARDS, not all
-CF-1.5 compliant netCDF files can be read by GMT.</p>
+convention for netCDF data called CF-1.7 (Climate and Forecast, version
+1.7). Hence, GMT grids are also automatically CF-1.7-compliant.
+However, since CF-1.7 has more general application than COARDS, not all
+CF-1.7 compliant netCDF files can be read by GMT.</p>
 <p>The netCDF grid file in GMT has several attributes (See Table
 <a class="reference internal" href="#tbl-netcdf-format"><span class="std std-ref">netcdf-format</span></a>) to describe the content. The routine
 that deals with netCDF grid files is sufficiently flexible so that grid files
@@ -332,7 +335,7 @@ slightly deviating from the standards used by GMT can also be read.</p>
 <td><p><em>Global attributes</em></p></td>
 </tr>
 <tr class="row-odd"><td><p>Conventions</p></td>
-<td><p>COARDS, CF-1.5 (optional)</p></td>
+<td><p>COARDS, CF-1.7 (optional)</p></td>
 </tr>
 <tr class="row-even"><td><p>title</p></td>
 <td><p>Title (optional)</p></td>
@@ -428,7 +431,7 @@ export your grids in the old classic format.  This can be achieved by setting
 <ul class="simple">
 <li><p><a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/performance/index.html">Unidata NetCDF Workshop: NetCDF Formats and Performance</a></p></li>
 <li><p><a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/nc4chunking/WhatIsChunking.html">Unidata NetCDF Workshop: What is Chunking?</a></p></li>
-<li><p><a class="reference external" href="http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf">HDF NetCDF-4 Performance Report</a></p></li>
+<li><p><a class="reference external" href="https://support.hdfgroup.org/archive/support/pubs/papers/2008-06_netcdf4_perf_report.pdf">HDF NetCDF-4 Performance Report</a></p></li>
 </ul>
 </section>
 <section id="gridline-and-pixel-node-registration">
@@ -457,12 +460,12 @@ pixel-registered grid can be 1x1 (storing a single value), while a
 gridline-registered grid cannot be smaller than 2x2.</p>
 </section>
 <section id="boundary-conditions-for-operations-on-grids">
-<h3><span class="section-number">8.2.4. </span>Boundary Conditions for operations on grids<a class="headerlink" href="#boundary-conditions-for-operations-on-grids" title="Link to this heading"></a></h3>
+<span id="grid-boundary-conditions"></span><h3><span class="section-number">8.2.4. </span>Boundary Conditions for operations on grids<a class="headerlink" href="#boundary-conditions-for-operations-on-grids" title="Link to this heading"></a></h3>
 <p>GMT has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
 <a class="reference internal" href="../grdsample.html"><span class="doc">grdsample</span></a>, <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a>,
 <a class="reference internal" href="../grdtrack.html"><span class="doc">grdtrack</span></a>, <a class="reference internal" href="../nearneighbor.html"><span class="doc">nearneighbor</span></a>, and
-<a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a>, to name a few. The desired
+<a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a>, to name a few). The desired
 condition can be set with the common GMT option <strong>-n</strong>; see Section
 <a class="reference internal" href="options.html#option-n"><span class="std std-ref">Grid interpolation parameters: The -n option</span></a>. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
@@ -695,8 +698,8 @@ translated into the right raster format.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

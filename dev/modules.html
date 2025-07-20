@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modules &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>Modules &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,9 +33,10 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -59,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -149,7 +153,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -206,6 +210,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a></p></li>
 <li><p><a class="reference internal" href="batch.html"><span class="doc">batch</span></a></p></li>
 <li><p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a></p></li>
+<li><p><a class="reference internal" href="gmtbinstats.html"><span class="doc">binstats</span></a></p></li>
 <li><p><a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a></p></li>
 <li><p><a class="reference internal" href="blockmedian.html"><span class="doc">blockmedian</span></a></p></li>
 <li><p><a class="reference internal" href="blockmode.html"><span class="doc">blockmode</span></a></p></li>
@@ -213,35 +218,21 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="clip.html"><span class="doc">clip</span></a></p></li>
 <li><p><a class="reference internal" href="coast.html"><span class="doc">coast</span></a></p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a></p></li>
+<li><p><a class="reference internal" href="gmtconnect.html"><span class="doc">connect</span></a></p></li>
 <li><p><a class="reference internal" href="contour.html"><span class="doc">contour</span></a></p></li>
+<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">convert</span></a></p></li>
+<li><p><a class="reference internal" href="gmtdefaults.html"><span class="doc">defaults</span></a></p></li>
 <li><p><a class="reference internal" href="dimfilter.html"><span class="doc">dimfilter</span></a></p></li>
 <li><p><a class="reference internal" href="docs.html"><span class="doc">docs</span></a></p></li>
+</ul>
+</td><td><ul class="simple">
 <li><p><a class="reference internal" href="end.html"><span class="doc">end</span></a></p></li>
 <li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a></p></li>
 <li><p><a class="reference internal" href="figure.html"><span class="doc">figure</span></a></p></li>
 <li><p><a class="reference internal" href="filter1d.html"><span class="doc">filter1d</span></a></p></li>
-</ul>
-</td><td><ul class="simple">
 <li><p><a class="reference internal" href="fitcircle.html"><span class="doc">fitcircle</span></a></p></li>
+<li><p><a class="reference internal" href="gmtget.html"><span class="doc">get</span></a></p></li>
 <li><p><a class="reference internal" href="gmt2kml.html"><span class="doc">gmt2kml</span></a></p></li>
-<li><p><a class="reference internal" href="gmtbinstats.html"><span class="doc">gmtbinstats</span></a></p></li>
-<li><p><a class="reference internal" href="gmtconnect.html"><span class="doc">gmtconnect</span></a></p></li>
-<li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a></p></li>
-<li><p><a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a></p></li>
-<li><p><a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a></p></li>
-<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a></p></li>
-<li><p><a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a></p></li>
-<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a></p></li>
-<li><p><a class="reference internal" href="gmtregress.html"><span class="doc">gmtregress</span></a></p></li>
-<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a></p></li>
-<li><p><a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a></p></li>
-<li><p><a class="reference internal" href="gmtsimplify.html"><span class="doc">gmtsimplify</span></a></p></li>
-<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a></p></li>
-<li><p><a class="reference internal" href="gmtsplit.html"><span class="doc">gmtsplit</span></a></p></li>
-<li><p><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a></p></li>
-</ul>
-</td><td><ul class="simple">
-<li><p><a class="reference internal" href="gmtwhich.html"><span class="doc">gmtwhich</span></a></p></li>
 <li><p><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a></p></li>
 <li><p><a class="reference internal" href="grd2kml.html"><span class="doc">grd2kml</span></a></p></li>
 <li><p><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a></p></li>
@@ -252,13 +243,13 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a></p></li>
 <li><p><a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a></p></li>
 <li><p><a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a></p></li>
+</ul>
+</td><td><ul class="simple">
 <li><p><a class="reference internal" href="grdfill.html"><span class="doc">grdfill</span></a></p></li>
 <li><p><a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a></p></li>
 <li><p><a class="reference internal" href="grdgdal.html"><span class="doc">grdgdal</span></a></p></li>
 <li><p><a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a></p></li>
 <li><p><a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a></p></li>
-</ul>
-</td><td><ul class="simple">
 <li><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a></p></li>
 <li><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a></p></li>
 <li><p><a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a></p></li>
@@ -270,38 +261,49 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="grdproject.html"><span class="doc">grdproject</span></a></p></li>
 <li><p><a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a></p></li>
 <li><p><a class="reference internal" href="grdselect.html"><span class="doc">grdselect</span></a></p></li>
+</ul>
+</td><td><ul class="simple">
 <li><p><a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a></p></li>
 <li><p><a class="reference internal" href="grdtrend.html"><span class="doc">grdtrend</span></a></p></li>
 <li><p><a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a></p></li>
 <li><p><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a></p></li>
 <li><p><a class="reference internal" href="grdvolume.html"><span class="doc">grdvolume</span></a></p></li>
-</ul>
-</td><td><ul class="simple">
 <li><p><a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a></p></li>
 <li><p><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a></p></li>
 <li><p><a class="reference internal" href="image.html"><span class="doc">image</span></a></p></li>
+<li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">info</span></a></p></li>
 <li><p><a class="reference internal" href="inset.html"><span class="doc">inset</span></a></p></li>
 <li><p><a class="reference internal" href="kml2gmt.html"><span class="doc">kml2gmt</span></a></p></li>
 <li><p><a class="reference internal" href="legend.html"><span class="doc">legend</span></a></p></li>
+<li><p><a class="reference internal" href="gmtlogo.html"><span class="doc">logo</span></a></p></li>
 <li><p><a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a></p></li>
 <li><p><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a></p></li>
 <li><p><a class="reference internal" href="mask.html"><span class="doc">mask</span></a></p></li>
+</ul>
+</td><td><ul class="simple">
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a></p></li>
 <li><p><a class="reference internal" href="movie.html"><span class="doc">movie</span></a></p></li>
 <li><p><a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a></p></li>
 <li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a></p></li>
 <li><p><a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a></p></li>
 <li><p><a class="reference internal" href="project.html"><span class="doc">project</span></a></p></li>
 <li><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a></p></li>
+<li><p><a class="reference internal" href="gmtregress.html"><span class="doc">regress</span></a></p></li>
 <li><p><a class="reference internal" href="rose.html"><span class="doc">rose</span></a></p></li>
+<li><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a></p></li>
+<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">select</span></a></p></li>
+<li><p><a class="reference internal" href="gmtset.html"><span class="doc">set</span></a></p></li>
+<li><p><a class="reference internal" href="gmtsimplify.html"><span class="doc">simplify</span></a></p></li>
+<li><p><a class="reference internal" href="solar.html"><span class="doc">solar</span></a></p></li>
+<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a></p></li>
+<li><p><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a></p></li>
-<li><p><a class="reference internal" href="solar.html"><span class="doc">solar</span></a></p></li>
-<li><p><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a></p></li>
 <li><p><a class="reference internal" href="sph2grd.html"><span class="doc">sph2grd</span></a></p></li>
 <li><p><a class="reference internal" href="sphdistance.html"><span class="doc">sphdistance</span></a></p></li>
 <li><p><a class="reference internal" href="sphinterpolate.html"><span class="doc">sphinterpolate</span></a></p></li>
 <li><p><a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a></p></li>
+<li><p><a class="reference internal" href="gmtsplit.html"><span class="doc">split</span></a></p></li>
 <li><p><a class="reference internal" href="subplot.html"><span class="doc">subplot</span></a></p></li>
 <li><p><a class="reference internal" href="surface.html"><span class="doc">surface</span></a></p></li>
 <li><p><a class="reference internal" href="ternary.html"><span class="doc">ternary</span></a></p></li>
@@ -309,6 +311,8 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a></p></li>
 <li><p><a class="reference internal" href="trend2d.html"><span class="doc">trend2d</span></a></p></li>
 <li><p><a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a></p></li>
+<li><p><a class="reference internal" href="gmtvector.html"><span class="doc">vector</span></a></p></li>
+<li><p><a class="reference internal" href="gmtwhich.html"><span class="doc">which</span></a></p></li>
 <li><p><a class="reference internal" href="wiggle.html"><span class="doc">wiggle</span></a></p></li>
 <li><p><a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p></li>
 </ul>
@@ -327,9 +331,9 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="supplements/gsfml/fzmodeler.html"><span class="doc">fzmodeler</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/gsfml/fzprofiler.html"><span class="doc">fzprofiler</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/gsfml/mlconverter.html"><span class="doc">mlconverter</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/gshhg/gshhg.html"><span class="doc">gshhg</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="supplements/gshhg/gshhg.html"><span class="doc">gshhg</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/img/img2grd.html"><span class="doc">img2grd</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77convert.html"><span class="doc">mgd77convert</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77header.html"><span class="doc">mgd77header</span></a></p></li>
@@ -339,37 +343,38 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77manage.html"><span class="doc">mgd77manage</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77path.html"><span class="doc">mgd77path</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77sniffer.html"><span class="doc">mgd77sniffer</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/mgd77/mgd77track.html"><span class="doc">mgd77track</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="supplements/mgd77/mgd77track.html"><span class="doc">mgd77track</span></a></p></li>
-<li><p><a class="reference internal" href="supplements/potential/gmtflexure.html"><span class="doc">gmtflexure</span></a></p></li>
-<li><p><a class="reference internal" href="supplements/potential/gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/potential/gmtflexure.html"><span class="doc">flexure</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/gravfft.html"><span class="doc">gravfft</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/potential/gmtgravmag3d.html"><span class="doc">gravmag3d</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/gravprisms.html"><span class="doc">gravprisms</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/grdflexure.html"><span class="doc">grdflexure</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/grdredpol.html"><span class="doc">grdredpol</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/grdseamount.html"><span class="doc">grdseamount</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/talwani2d.html"><span class="doc">talwani2d</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/potential/talwani3d.html"><span class="doc">talwani3d</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="supplements/potential/talwani3d.html"><span class="doc">talwani3d</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/segy/segy2grd.html"><span class="doc">segy2grd</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/segy/segy.html"><span class="doc">segy</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/segy/segyz.html"><span class="doc">segyz</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/seis/coupe.html"><span class="doc">coupe</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/seis/meca.html"><span class="doc">meca</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/seis/gmtisf.html"><span class="doc">gmtisf</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/seis/polar.html"><span class="doc">polar</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/seis/sac.html"><span class="doc">sac</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/backtracker.html"><span class="doc">backtracker</span></a></p></li>
-<li><p><a class="reference internal" href="supplements/spotter/gmtpmodeler.html"><span class="doc">gmtpmodeler</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/grdrotater.html"><span class="doc">grdrotater</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/grdspotter.html"><span class="doc">grdspotter</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/hotspotter.html"><span class="doc">hotspotter</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/originater.html"><span class="doc">originater</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/spotter/gmtpmodeler.html"><span class="doc">pmodeler</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/polespotter.html"><span class="doc">polespotter</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/rotconverter.html"><span class="doc">rotconverter</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/spotter/rotsmoother.html"><span class="doc">rotsmoother</span></a></p></li>
@@ -461,29 +466,29 @@ All modules are requested via a call to the <a class="reference internal" href="
 <tr class="row-even"><td><p><a class="reference internal" href="events.html"><span class="doc">events</span></a></p></td>
 <td><p>Plot event symbols, lines, polygons and labels for one moment in time</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a></p></td>
-<td><p>Plot the GMT logo</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a></p></td>
 <td><p>Make contour map using a grid</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a></p></td>
 <td><p>Project and plot grids or images</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a></p></td>
 <td><p>Plot vector field from two component grids</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a></p></td>
 <td><p>Create 3-D perspective image or surface mesh from a grid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a></p></td>
 <td><p>Calculate and plot histograms</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="image.html"><span class="doc">image</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="image.html"><span class="doc">image</span></a></p></td>
 <td><p>Plot raster or EPS images</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="legend.html"><span class="doc">legend</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="legend.html"><span class="doc">legend</span></a></p></td>
 <td><p>Plot a legend</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtlogo.html"><span class="doc">logo</span></a></p></td>
+<td><p>Plot the GMT logo</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="mask.html"><span class="doc">mask</span></a></p></td>
 <td><p>Clip or mask map areas with no data table coverage</p></td>
@@ -498,7 +503,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <td><p>Plot a polar histogram (rose, sector, windrose diagrams)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="solar.html"><span class="doc">solar</span></a></p></td>
-<td><p>Plot day-light terminators and other sunlight parameters</p></td>
+<td><p>Plot day-night terminators and other sunlight parameters</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="ternary.html"><span class="doc">ternary</span></a></p></td>
 <td><p>Plot data on ternary diagrams</p></td>
@@ -566,17 +571,17 @@ All modules are requested via a call to the <a class="reference internal" href="
 <h2>Sampling of 1-D and 2-D data<a class="headerlink" href="#sampling-of-1-d-and-2-d-data" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtsimplify.html"><span class="doc">gmtsimplify</span></a></p></td>
-<td><p>Line reduction using the Douglas-Peucker algorithm</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a></p></td>
 <td><p>Resample a grid onto a new lattice</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a></p></td>
 <td><p>Sample one or more grids at specified locations</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a></p></td>
 <td><p>Resample 1-D table data using splines</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtsimplify.html"><span class="doc">simplify</span></a></p></td>
+<td><p>Line reduction using the Douglas-Peucker algorithm</p></td>
 </tr>
 </tbody>
 </table>
@@ -601,23 +606,23 @@ All modules are requested via a call to the <a class="reference internal" href="
 <h2>Information retrieval<a class="headerlink" href="#information-retrieval" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtdefaults.html"><span class="doc">defaults</span></a></p></td>
 <td><p>List current GMT default settings</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtget.html"><span class="doc">get</span></a></p></td>
 <td><p>Get individual GMT default settings or download data sets</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a></p></td>
-<td><p>Get information about data tables</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a></p></td>
-<td><p>Change individual GMT default settings</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a></p></td>
 <td><p>Extract information from 2-D grids or 3-D cubes</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="grdselect.html"><span class="doc">grdselect</span></a></p></td>
 <td><p>Make selections or determine common regions from 2-D grids, images or 3-D cubes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtinfo.html"><span class="doc">info</span></a></p></td>
+<td><p>Get information about data tables</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtset.html"><span class="doc">set</span></a></p></td>
+<td><p>Change individual GMT default settings</p></td>
 </tr>
 </tbody>
 </table>
@@ -626,11 +631,11 @@ All modules are requested via a call to the <a class="reference internal" href="
 <h2>Mathematical operations on tables or grids<a class="headerlink" href="#mathematical-operations-on-tables-or-grids" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a></p></td>
-<td><p>Reverse Polish Notation (RPN) calculator for data tables</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a></p></td>
 <td><p>Make GMT color palette tables</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a></p></td>
+<td><p>Reverse Polish Notation (RPN) calculator for data tables</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a></p></td>
 <td><p>Compute auto- [and cross-] spectra from one [or two] time series</p></td>
@@ -651,26 +656,14 @@ All modules are requested via a call to the <a class="reference internal" href="
 <h2>Convert or extract subsets of data<a class="headerlink" href="#convert-or-extract-subsets-of-data" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtbinstats.html"><span class="doc">gmtbinstats</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtbinstats.html"><span class="doc">binstats</span></a></p></td>
 <td><p>Bin spatial data and determine statistics per bin</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtconnect.html"><span class="doc">gmtconnect</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtconnect.html"><span class="doc">connect</span></a></p></td>
 <td><p>Connect individual lines whose end points match within tolerance</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtconvert.html"><span class="doc">convert</span></a></p></td>
 <td><p>Convert, paste, or extract columns from data tables</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a></p></td>
-<td><p>Select data table subsets based on multiple spatial criteria</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a></p></td>
-<td><p>Geospatial operations on points, lines and polygons</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtsplit.html"><span class="doc">gmtsplit</span></a></p></td>
-<td><p>Split xyz[dh] data tables into individual segments</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a></p></td>
-<td><p>Operations on Cartesian vectors in 2-D and 3-D</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="grd2kml.html"><span class="doc">grd2kml</span></a></p></td>
 <td><p>Create KML image quadtree from single grid</p></td>
@@ -690,6 +683,18 @@ All modules are requested via a call to the <a class="reference internal" href="
 <tr class="row-odd"><td><p><a class="reference internal" href="grdpaste.html"><span class="doc">grdpaste</span></a></p></td>
 <td><p>Join two grids along their common edge</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtselect.html"><span class="doc">select</span></a></p></td>
+<td><p>Select data table subsets based on multiple spatial criteria</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a></p></td>
+<td><p>Geospatial operations on points, lines and polygons</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtsplit.html"><span class="doc">split</span></a></p></td>
+<td><p>Split xyz[dh] data tables into individual segments</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtvector.html"><span class="doc">vector</span></a></p></td>
+<td><p>Operations on Cartesian vectors in 2-D and 3-D</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p></td>
 <td><p>Convert data table to a grid</p></td>
 </tr>
@@ -703,11 +708,11 @@ All modules are requested via a call to the <a class="reference internal" href="
 <tr class="row-odd"><td><p><a class="reference internal" href="fitcircle.html"><span class="doc">fitcircle</span></a></p></td>
 <td><p>Find mean position and great [or small] circle fit to points on sphere</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtregress.html"><span class="doc">gmtregress</span></a></p></td>
-<td><p>Linear regression of 1-D data sets</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="grdtrend.html"><span class="doc">grdtrend</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="grdtrend.html"><span class="doc">grdtrend</span></a></p></td>
 <td><p>Fit trend surface to grids and compute residuals</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtregress.html"><span class="doc">regress</span></a></p></td>
+<td><p>Linear regression of 1-D data sets</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a></p></td>
 <td><p>Fit [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data</p></td>
@@ -774,17 +779,17 @@ All modules are requested via a call to the <a class="reference internal" href="
 <tr class="row-odd"><td><p><a class="reference internal" href="grdgdal.html"><span class="doc">grdgdal</span></a></p></td>
 <td><p>Execute GDAL raster programs from GMT</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtwhich.html"><span class="doc">gmtwhich</span></a></p></td>
-<td><p>Find full path to specified files</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="kml2gmt.html"><span class="doc">kml2gmt</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="kml2gmt.html"><span class="doc">kml2gmt</span></a></p></td>
 <td><p>Extract GMT table data from Google Earth KML files</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="movie.html"><span class="doc">movie</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="movie.html"><span class="doc">movie</span></a></p></td>
 <td><p>Create animation sequences and movies</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a></p></td>
 <td><p>Convert [E]PS file(s) to other formats using Ghostscript</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtwhich.html"><span class="doc">which</span></a></p></td>
+<td><p>Find full path to specified files</p></td>
 </tr>
 </tbody>
 </table>
@@ -891,14 +896,14 @@ All modules are requested via a call to the <a class="reference internal" href="
 <h2>potential<a class="headerlink" href="#potential" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="supplements/potential/gmtflexure.html"><span class="doc">gmtflexure</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/potential/gmtflexure.html"><span class="doc">flexure</span></a></p></td>
 <td><p>Compute flexural deformation of 2-D loads, forces, and bending moments</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="supplements/potential/gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a></p></td>
-<td><p>Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="supplements/potential/gravfft.html"><span class="doc">gravfft</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/potential/gravfft.html"><span class="doc">gravfft</span></a></p></td>
 <td><p>Spectral calculations of gravity, isostasy, admittance, and coherence for grids</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/potential/gmtgravmag3d.html"><span class="doc">gravmag3d</span></a></p></td>
+<td><p>Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="supplements/potential/gravprisms.html"><span class="doc">gravprisms</span></a></p></td>
 <td><p>Compute geopotential anomalies over 3-D vertical prisms</p></td>
@@ -956,10 +961,13 @@ All modules are requested via a call to the <a class="reference internal" href="
 <tr class="row-even"><td><p><a class="reference internal" href="supplements/seis/sac.html"><span class="doc">sac</span></a></p></td>
 <td><p>Plot seismograms in SAC format</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="supplements/seis/grdshake.html"><span class="doc">grdshake</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/seis/gmtisf.html"><span class="doc">gmtisf</span></a></p></td>
+<td><p>Read seismicity data in the ISF formated file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/seis/grdshake.html"><span class="doc">grdshake</span></a></p></td>
 <td><p>Compute Peak Ground Acceleration/Velocity and Intensity</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="supplements/seis/grdvs30.html"><span class="doc">grdvs30</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/seis/grdvs30.html"><span class="doc">grdvs30</span></a></p></td>
 <td><p>Convert topographic slope to Vs30 velocities</p></td>
 </tr>
 </tbody>
@@ -972,23 +980,23 @@ All modules are requested via a call to the <a class="reference internal" href="
 <tr class="row-odd"><td><p><a class="reference internal" href="supplements/spotter/backtracker.html"><span class="doc">backtracker</span></a></p></td>
 <td><p>Generate forward and backward flowlines and hotspot tracks</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="supplements/spotter/gmtpmodeler.html"><span class="doc">gmtpmodeler</span></a></p></td>
-<td><p>Evaluate a plate motion model at given locations</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a></p></td>
 <td><p>Evaluate a plate motion model on a geographic grid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="supplements/spotter/grdrotater.html"><span class="doc">grdrotater</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/spotter/grdrotater.html"><span class="doc">grdrotater</span></a></p></td>
 <td><p>Finite rotation reconstruction of geographic grid</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="supplements/spotter/grdspotter.html"><span class="doc">grdspotter</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/spotter/grdspotter.html"><span class="doc">grdspotter</span></a></p></td>
 <td><p>Create CVA grid from a gravity or topography grid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="supplements/spotter/hotspotter.html"><span class="doc">hotspotter</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/spotter/hotspotter.html"><span class="doc">hotspotter</span></a></p></td>
 <td><p>Create CVA grid from seamount locations</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="supplements/spotter/originater.html"><span class="doc">originater</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/spotter/originater.html"><span class="doc">originater</span></a></p></td>
 <td><p>Associate seamounts with nearest hotspot point sources</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/spotter/gmtpmodeler.html"><span class="doc">pmodeler</span></a></p></td>
+<td><p>Evaluate a plate motion model at given locations</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="supplements/spotter/polespotter.html"><span class="doc">polespotter</span></a></p></td>
 <td><p>Find stage poles given fracture zones and abyssal hills</p></td>
@@ -1065,8 +1073,8 @@ All modules are requested via a call to the <a class="reference internal" href="
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

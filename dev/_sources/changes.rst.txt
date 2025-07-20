@@ -37,7 +37,7 @@ New Core Module Features in GMT 6.5
 Supplement updates in GMT 6.5
 -----------------------------
 
-* New supplement modules for the Global Seafloor Fabric and Magnetic Lineations (`<https://http://www.soest.hawaii.edu/PT/GSFML/>`_)
+* New supplement modules for the Global Seafloor Fabric and Magnetic Lineations (`<https://www.soest.hawaii.edu/PT/GSFML/>`_)
 * New supplement to plot symbols for the wind direction and wind speed
 * New supplement modules **grdshake** and **grdvs30** to build shake-maps
 
@@ -244,7 +244,7 @@ Enhancements in GMT 6.3
 * Allow trailing comments in custom symbol files (`#5610 <https://github.com/GenericMappingTools/gmt/pull/5610>`_)
 * Let -d set starting column via modifier (`#5966 <https://github.com/GenericMappingTools/gmt/pull/5966>`_)
 * Let -f\ *col* explicitly set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
-* Let multi-layer geotiff files be cut via *gdal_translate* (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
+* Let multi-layer GeoTIFF files be cut via *gdal_translate* (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
 
 Documentation updates in GMT 6.3
 --------------------------------

@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Three &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <title>Session Three &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,11 +74,29 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorial in Bash</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="session-1.html">Session One</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session-2.html">Session Two</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Session Three</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#contouring-gridded-data-sets">Contouring gridded data sets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gridding-of-arbitrarily-spaced-data">Gridding of arbitrarily spaced data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="session-4.html">Session Four</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../julia/index.html">Tutorial in Julia</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials for PyGMT</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://doi.org/10.1002/2016GC006723">Tutorials for GMT/Mex</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -121,7 +141,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -236,7 +256,6 @@ useful options:</p>
 interval and 250 m as contour interval.  We choose a 7-inch-wide
 Mercator plot and annotate the borders every 2°:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_11
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@earth_relief_05m<span class="w"> </span>-R-66/-60/30/35<span class="w"> </span>-JM6i<span class="w"> </span>-C250<span class="w"> </span>-A1000<span class="w"> </span>-B
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -343,7 +362,6 @@ We desire to make a 5’ by 5’ grid.  Running gmt info on &#64;tut_ship.xyz yi
 </div>
 <p>so we choose the region accordingly, and get a view of the contour map using</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_12
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>nearneighbor<span class="w"> </span>-R245/255/20/30<span class="w"> </span>-I5m<span class="w"> </span>-S40k<span class="w"> </span>-Gship.nc<span class="w"> </span>@tut_ship.xyz
 <span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>ship.nc<span class="w"> </span>-JM6i<span class="w"> </span>-B<span class="w"> </span>-C250<span class="w"> </span>-A1000
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -458,7 +476,6 @@ call to <a class="reference internal" href="../../mask.html"><span class="doc">m
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>blockmedian<span class="w"> </span>-R245/255/20/30<span class="w"> </span>-I5m<span class="w"> </span>-V<span class="w"> </span>@tut_ship.xyz<span class="w"> </span>&gt;<span class="w"> </span>ship_5m.xyz
 gmt<span class="w"> </span>surface<span class="w"> </span>ship_5m.xyz<span class="w"> </span>-R245/255/20/30<span class="w"> </span>-I5m<span class="w"> </span>-Gship.nc
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_13
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>mask<span class="w"> </span>-R245/255/20/30<span class="w"> </span>-I5m<span class="w"> </span>ship_5m.xyz<span class="w"> </span>-JM6i<span class="w"> </span>-B
 <span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>ship.nc<span class="w"> </span>-C250<span class="w"> </span>-A1000
 <span class="w">	</span>gmt<span class="w"> </span>mask<span class="w"> </span>-C
@@ -491,8 +508,8 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

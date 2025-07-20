@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Standardized command line options &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>4. Standardized command line options &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -200,7 +203,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -472,7 +475,6 @@ lower left and upper right corners.</span><a class="headerlink" href="#id11" tit
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-R
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>PLAIN<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>8p,Helvetica<span class="w"> </span>MAP_TICK_LENGTH_PRIMARY<span class="w"> </span><span class="m">0</span>.05i<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>PS_CHAR_ENCODING<span class="w"> </span>ISOLatin1+
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R-90/-70/18/35.819<span class="w"> </span>-JM2i<span class="w"> </span>-Dl<span class="w"> </span>-Glightbrown<span class="w"> </span>-Wthinnest<span class="w"> </span>-Ba10g5<span class="w"> </span>-BWsEN
@@ -549,7 +551,6 @@ and region).</p></li>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-J
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-R0/5/0/3<span class="w"> </span>-Jx1i<span class="w"> </span>-F+f+j<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">2.5	2.8	16p,Helvetica-Bold	BC	GMT PROJECTIONS</span>
 <span class="s">2	2.25	12p,Helvetica-Bold	BC	GEOGRAPHIC PROJECTIONS</span>
@@ -647,9 +648,9 @@ below along with the associated <em>parameters</em> and links to the cookbook se
 usage.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 44%" />
-<col style="width: 11%" />
-<col style="width: 44%" />
+<col style="width: 44.4%" />
+<col style="width: 11.1%" />
+<col style="width: 44.4%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Projection</p></th>
@@ -657,124 +658,124 @@ usage.</p>
 <th class="head"><p>Parameters</p></th>
 </tr>
 <tr class="row-even"><th class="head"></th>
-<th class="head"><p><strong>-J</strong> (<em>scale</em>|<em>WIDTH</em>);</p></th>
+<th class="head"><p><strong>-J</strong> (<em>scale</em>|<em>WIDTH</em>)</p></th>
 <th class="head"></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#ja"><span class="std std-ref">Lambert azimuthal equal area</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#ja"><span class="std std-ref">Lambert azimuthal equal-area projection</span></a></p></td>
 <td><p><strong>-Ja</strong>|<strong>A</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jb"><span class="std std-ref">Albers conic equal area</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jb"><span class="std std-ref">Albers conic equal-area projection</span></a></p></td>
 <td><p><strong>-Jb</strong>|<strong>B</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jc"><span class="std std-ref">Cassini cylindrical</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jc"><span class="std std-ref">Cassini projection</span></a></p></td>
 <td><p><strong>-Jc</strong>|<strong>C</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jcyl-stere"><span class="std std-ref">Cylindrical stereographic</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jcyl-stere"><span class="std std-ref">Cylindrical stereographic projection</span></a></p></td>
 <td><p><strong>-Jcyl_stere</strong>|<strong>Cyc_stere</strong></p></td>
 <td><p>[lon<sub>0</sub>[/lat<sub>0</sub>]/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jd"><span class="std std-ref">Equidistant conic</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jd"><span class="std std-ref">Equidistant conic projection</span></a></p></td>
 <td><p><strong>-Jd</strong>|<strong>D</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#je"><span class="std std-ref">Azimuthal equidistant</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#je"><span class="std std-ref">Azimuthal equidistant projection</span></a></p></td>
 <td><p><strong>-Je</strong>|<strong>E</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jf"><span class="std std-ref">Azimuthal gnomonic</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jf"><span class="std std-ref">Azimuthal gnomonic projection</span></a></p></td>
 <td><p><strong>-Jf</strong>|<strong>F</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jg"><span class="std std-ref">Azimuthal orthographic</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jg"><span class="std std-ref">Azimuthal orthographic projection</span></a></p></td>
 <td><p><strong>-Jg</strong>|<strong>G</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jg-pers"><span class="std std-ref">General perspective</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jg-pers"><span class="std std-ref">General perspective projection</span></a></p></td>
 <td><p><strong>-Jg</strong>|<strong>G</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub><em>/</em><em>scale</em>|<em>width</em>[<strong>+a</strong><em>azimuth</em>][<strong>+t</strong><em>tilt</em>][<strong>+v</strong><em>vwidth/vheight</em>][<strong>+w</strong><em>twist</em>][<strong>+z</strong><em>altitude</em>[<strong>r</strong>|<strong>R</strong>]|<strong>g</strong>]</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jh"><span class="std std-ref">Hammer equal area</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jh"><span class="std std-ref">Hammer equal-area projection</span></a></p></td>
 <td><p><strong>-Jh</strong>|<strong>H</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#ji"><span class="std std-ref">Sinusoidal equal area</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#ji"><span class="std std-ref">Sinusoidal equal-area projection</span></a></p></td>
 <td><p><strong>-Ji</strong>|<strong>I</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jj"><span class="std std-ref">Miller cylindrical</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jj"><span class="std std-ref">Miller projection</span></a></p></td>
 <td><p><strong>-Jj</strong>|<strong>J</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jk"><span class="std std-ref">Eckert IV equal area</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jk"><span class="std std-ref">Eckert IV equal-area projection</span></a></p></td>
 <td><p><strong>-Jkf</strong>|<strong>Kf</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jk"><span class="std std-ref">Eckert VI equal area</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jk"><span class="std std-ref">Eckert VI equal-area projection</span></a></p></td>
 <td><p><strong>-Jks</strong>|<strong>Ks</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jl"><span class="std std-ref">Lambert conic conformal</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jl"><span class="std std-ref">Lambert conic conformal projection</span></a></p></td>
 <td><p><strong>-Jl</strong>|<strong>L</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jm"><span class="std std-ref">Mercator cylindrical</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jm"><span class="std std-ref">Mercator projection</span></a></p></td>
 <td><p><strong>-Jm</strong>|<strong>M</strong></p></td>
 <td><p>[lon<sub>0</sub>/[lat<sub>0</sub>/]]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jn"><span class="std std-ref">Robinson</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jn"><span class="std std-ref">Robinson projection</span></a></p></td>
 <td><p><strong>-Jn</strong>|<strong>N</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jo"><span class="std std-ref">Oblique Mercator, 1: origin and azim</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jo"><span class="std std-ref">Oblique Mercator projection, 1: origin and azim</span></a></p></td>
 <td><p><strong>-Jo</strong>|<strong>O</strong><strong>a</strong>|<strong>A</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/<em>azim</em>/<em>scale</em>|<em>width</em>[<strong>+v</strong>]</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jo"><span class="std std-ref">Oblique Mercator, 2: two points</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jo"><span class="std std-ref">Oblique Mercator projection, 2: two points</span></a></p></td>
 <td><p><strong>-Jo</strong>|<strong>O</strong><strong>b</strong>|<strong>B</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>1</sub>/lat<sub>1</sub>/<em>scale</em>|<em>width</em>[<strong>+v</strong>]</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jo"><span class="std std-ref">Oblique Mercator, 3: origin and pole</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jo"><span class="std std-ref">Oblique Mercator projection, 3: origin and pole</span></a></p></td>
 <td><p><strong>-Jo</strong>|<strong>O</strong><strong>c</strong>|<strong>C</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>p</sub>/lat<sub>p</sub>/<em>scale</em>|<em>width</em>[<strong>+v</strong>]</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="coordinate-transformations.html#jp"><span class="std std-ref">Polar [azimuthal]</span></a>  (<span class="math notranslate nohighlight">\(\theta, r\)</span>) (or cylindrical)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="coordinate-transformations.html#jp"><span class="std std-ref">Polar [azimuthal]</span></a> (<span class="math notranslate nohighlight">\(\theta, r\)</span>) (or cylindrical)</p></td>
 <td><p><strong>-Jp</strong>|<strong>P</strong></p></td>
 <td><p><em>scale</em>|<em>width</em>[<strong>+a</strong>][<strong>+f</strong>[<strong>e</strong>|<strong>p</strong>|<em>radius</em>]][<strong>+k</strong><em>kind</em>][<strong>+r</strong><em>offset</em>][<strong>+t</strong><em>origin</em>][<strong>+z</strong>[<strong>p</strong>|<em>radius</em>]]</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jpoly"><span class="std std-ref">(American) polyconic</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jpoly"><span class="std std-ref">(American) polyconic projection</span></a></p></td>
 <td><p><strong>-Jpoly</strong>|<strong>Poly</strong></p></td>
 <td><p>[lon<sub>0</sub>/[lat<sub>0</sub>/]]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jq"><span class="std std-ref">Equidistant cylindrical</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jq"><span class="std std-ref">Cylindrical equidistant projection</span></a></p></td>
 <td><p><strong>-Jq</strong>|<strong>Q</strong></p></td>
 <td><p>[lon<sub>0</sub>/[lat<sub>0</sub>/]]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jr"><span class="std std-ref">Winkel Tripel</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jr"><span class="std std-ref">Winkel Tripel projection</span></a></p></td>
 <td><p><strong>-Jr</strong>|<strong>R</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#js"><span class="std std-ref">General stereographic</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#js"><span class="std std-ref">Stereographic projection</span></a></p></td>
 <td><p><strong>-Js</strong>|<strong>S</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jt"><span class="std std-ref">Transverse Mercator</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jt"><span class="std std-ref">Transverse Mercator projection</span></a></p></td>
 <td><p><strong>-Jt</strong>|<strong>T</strong></p></td>
 <td><p>lon<sub>0</sub>/[lat<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#ju"><span class="std std-ref">Universal Transverse Mercator (UTM)</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#ju"><span class="std std-ref">Universal Transverse Mercator (UTM) projection</span></a></p></td>
 <td><p><strong>-Ju</strong>|<strong>U</strong></p></td>
 <td><p><em>zone</em>/<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jv"><span class="std std-ref">Van der Grinten</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jv"><span class="std std-ref">Van der Grinten projection</span></a></p></td>
 <td><p><strong>-Jv</strong>|<strong>V</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jw"><span class="std std-ref">Mollweide</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jw"><span class="std std-ref">Mollweide projection</span></a></p></td>
 <td><p><strong>-Jw</strong>|<strong>W</strong></p></td>
 <td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
 </tr>
@@ -783,7 +784,7 @@ usage.</p>
 <td><p><strong>-Jx</strong>|<strong>X</strong></p></td>
 <td><p><em>xscale</em>|<em>width</em>[<strong>l</strong>|<strong>p</strong><em>power</em>|<strong>T</strong>|<strong>t</strong>][/<em>yscale</em>|<em>height</em>[<strong>l</strong>|<strong>p</strong><em>power</em>|<strong>T</strong>|<strong>t</strong>]][<strong>d</strong>]</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jy"><span class="std std-ref">Cylindrical equal area</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jy"><span class="std std-ref">Cylindrical equal-area projection</span></a></p></td>
 <td><p><strong>-Jy</strong>|<strong>Y</strong></p></td>
 <td><p>lon<sub>0</sub>/lat<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
 </tr>
@@ -874,7 +875,8 @@ with &#64;[ markers (or alternatively &lt;math&gt; … &lt;/math&gt;) (requires 
 <blockquote>
 <div><div class="line-block">
 <div class="line"><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>][<strong>x</strong>|<strong>y</strong>|<strong>z</strong>][<strong>+a</strong><em>angle</em>|<strong>n</strong>|<strong>p</strong>][<strong>+e</strong>[<strong>l</strong>|<strong>u</strong>]][<strong>+f</strong>][<strong>+l</strong>|<strong>L</strong><em>label</em>][<strong>+p</strong><em>prefix</em>][<strong>+s</strong>|<strong>S</strong><em>seclabel</em>][<strong>+u</strong><em>unit</em>]</div>
-<div class="line"><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>][<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>intervals</em></div>
+<div class="line"><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>][<strong>x</strong>|<strong>y</strong>|<strong>z</strong>][<strong>00</strong>|<strong>000</strong>]<em>intervals</em></div>
+<div class="line"><strong>-B0</strong></div>
 </div>
 </div></blockquote>
 <p>The following directives and modifiers can be appended to <strong>-B</strong> to control the Axes settings:</p>
@@ -905,6 +907,13 @@ addition of degree symbols, etc. is automatic and controlled by <a class="refere
 the horizontal and must be in the -90 &lt;= <em>angle</em> &lt;= 90 range. <strong>+an</strong> can be used as a shorthand for normal
 (i.e., <strong>+a</strong>90) [Default for y-axis] and <strong>+ap</strong> for parallel (i.e., <strong>+a</strong>0) annotations [Default for
 x-axis]. These defaults can be changed via <a class="reference internal" href="../gmt.conf.html#term-MAP_ANNOT_ORTHO"><span class="xref std std-term">MAP_ANNOT_ORTHO</span></a>.</p></li>
+<li><p><strong>0</strong> This will suppress all annotations and tick marks. Useful when you want to plot a map without any
+annotations, grid or ticks but still want to plot a frame using a line with set by <a class="reference internal" href="../gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>.</p></li>
+<li><p><strong>00</strong> Plot a frame with annotations, ticks etc use a zero-width line to plot the frame (0-width lines are lines
+that remain very thin regardless of the zoom level).</p></li>
+<li><p><strong>000</strong> Plot annotations, ticks and grid lines (as choosed) but do <strong>not</strong> plot the frame lines. Note, this effect
+is only visible with _png_ and _pdf_ formats and is not guaranteed to work when selecting only a subset of the
+axes (e.g., <strong>-B000ya30g30</strong> is not working well).</p></li>
 <li><p><em>intervals</em> to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
 spacing. See <a class="reference internal" href="#option-b-int"><span class="std std-ref">Intervals Specification</span></a> for the formatting associated with this modifier.</p></li>
 </ul>
@@ -1092,7 +1101,6 @@ the parameter <a class="reference internal" href="../gmt.conf.html#term-FORMAT_G
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_geo_1
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_GEO_MAP<span class="w"> </span>ddd:mm:ssF
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-1/2/0/0.4<span class="w"> </span>-JM3i<span class="w"> </span>-Ba1f15mg5m<span class="w"> </span>-BS
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sv2p+e+a60<span class="w"> </span>-W0.5p<span class="w"> </span>-Gblack<span class="w"> </span>-Y-0.35i<span class="w"> </span>-N<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
@@ -1127,7 +1135,6 @@ attributes for grid lines and grid crosses, see Figure <a class="reference inter
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_geo_2
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_GEO_MAP<span class="w"> </span>ddd:mm:ssF<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-2/1/0/0.35<span class="w"> </span>-JM4i<span class="w"> </span>-Bpa15mf5mg5m<span class="w"> </span>-BwSe<span class="w"> </span>-Bs1f30mg15m<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>fancy-rounded<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>--MAP_GRID_PEN_PRIMARY<span class="o">=</span>thinnest,black,.<span class="w"> </span>--MAP_GRID_CROSS_SIZE_SECONDARY<span class="o">=</span><span class="m">0</span>.1i<span class="w"> </span><span class="se">\</span>
@@ -1183,7 +1190,6 @@ optional. For this example we used <code class="docutils literal notranslate"><s
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_linear
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/12/0/0.95<span class="w"> </span>-JX7.5c/0.75c<span class="w"> </span>-Ba4f2g1+lFrequency+u<span class="s2">&quot; %&quot;</span><span class="w"> </span>-BS
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sv2p+e+a60<span class="w"> </span>-W0.5p<span class="w"> </span>-Gblack<span class="w"> </span>-Y0.25c<span class="w"> </span>-N<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">2 0 0 0.5</span>
@@ -1213,7 +1219,7 @@ intervals using multiples or fractions of <span class="math notranslate nohighli
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-4/2/0/1<span class="w"> </span>-Jx2.5c<span class="w"> </span>-Bxapi3fpi6<span class="w"> </span>-BS<span class="w"> </span>--GMT_THEME<span class="o">=</span>cookbook<span class="w"> </span>-view<span class="w"> </span>GMT_-B_radians
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-4/2/0/1<span class="w"> </span>-Jx2.5c<span class="w"> </span>-Bxapi3fpi6<span class="w"> </span>-BS<span class="w"> </span>-view<span class="w"> </span>GMT_-B_radians
 </pre></div>
 </div>
 </div>
@@ -1231,7 +1237,7 @@ For the y-axis only the modifier <strong>+ap</strong> for parallel is allowed.</
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2000/2020/35/45<span class="w"> </span>-JX12c<span class="w"> </span>-Bxa2f+a-30<span class="w"> </span>-BS<span class="w"> </span>--GMT_THEME<span class="o">=</span>cookbook<span class="w"> </span>-view<span class="w"> </span>GMT_-B_slanted
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2000/2020/35/45<span class="w"> </span>-JX12c<span class="w"> </span>-Bxa2f+a-30<span class="w"> </span>-BS<span class="w"> </span>-view<span class="w"> </span>GMT_-B_slanted
 </pre></div>
 </div>
 </div>
@@ -1268,7 +1274,6 @@ values as exponents, with -Ba1f2g3p.</span><a class="headerlink" href="#id18" ti
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_log
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_GRID_PEN_PRIMARY<span class="w"> </span>thinnest,.
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1/1000/0/1<span class="w"> </span>-JX7.5cl/0.6c<span class="w"> </span>-B1f2g3p+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-B1f2g3l+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS<span class="w"> </span>-Y2.15c
@@ -1302,7 +1307,6 @@ uses the corresponding unprojected values, as in -Ba3f2g1p.</span><a class="head
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_pow
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_GRID_PEN_PRIMARY<span class="w"> </span>thinnest,.
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/100/0/0.9<span class="w"> </span>-JX3ip0.5/0.25i<span class="w"> </span>-Ba3f2g1p+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Ba20f10g5+l<span class="s2">&quot;Axis Label&quot;</span><span class="w"> </span>-BS<span class="w"> </span>-Y0.85i
@@ -1324,7 +1328,6 @@ annotations are supported for all axes.</p>
 <p>Our first example shows a time period of almost two months in Spring
 2000. We want to annotate the month intervals as well as the date at the start of each week:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time1
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">FORMAT_DATE_MAP</span><span class="o">=</span>-o<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2000-4-1T/2000-5-25T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bpxa7Rf1d<span class="w"> </span>-Bsxa1O<span class="w"> </span>-BS
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1341,10 +1344,9 @@ removes leading zeros from calendar items (e.g., 02 becomes 2).</p>
 </figure>
 <p>The next example shows two different ways to annotate an axis portraying 2 days in July 1969:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time2
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-<span class="w">  </span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">&quot;o dd&quot;</span><span class="w"> </span>FORMAT_CLOCK_MAP<span class="w"> </span>hh:mm<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
-<span class="w">  </span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1969-7-21T/1969-7-23T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bpxa6Hf1h<span class="w"> </span>-Bsxa1K<span class="w"> </span>-BS
-<span class="w">  </span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Bpxa6Hf1h<span class="w"> </span>-Bsxa1D<span class="w"> </span>-BS<span class="w"> </span>-Y1.6c
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">&quot;o dd&quot;</span><span class="w"> </span>FORMAT_CLOCK_MAP<span class="w"> </span>hh:mm<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1969-7-21T/1969-7-23T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bpxa6Hf1h<span class="w"> </span>-Bsxa1K<span class="w"> </span>-BS
+<span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Bpxa6Hf1h<span class="w"> </span>-Bsxa1D<span class="w"> </span>-BS<span class="w"> </span>-Y1.6c
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
@@ -1362,7 +1364,6 @@ followed by one space and a two-digit day-of-month number.</p>
 <p>The third example (Figure <a class="reference internal" href="#cartesian-axis3"><span class="std std-ref">Cartesian time axis, example 3</span></a>) presents two years, annotating
 both the years and every 3rd month.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time3
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span>o<span class="w"> </span>FORMAT_TIME_PRIMARY_MAP<span class="w"> </span>Character<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1997T/1999T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bpxa3Of1o<span class="w"> </span>-Bsxa1Y<span class="w"> </span>-BS
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1385,7 +1386,6 @@ relative time by specifying <strong>t</strong> in the <strong>-R</strong> option
 <a class="reference internal" href="../gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a> is <strong>d</strong> (for days). We select both primary and secondary
 annotations, ask for a 12-hour clock, and let time go from right to left:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time4
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">FORMAT_CLOCK_MAP</span><span class="o">=</span>-hham<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p<span class="w"> </span>TIME_UNIT<span class="w"> </span>d
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0.2t/0.35t/0/1<span class="w"> </span>-JX-12c/0.5c<span class="w"> </span>-Bpxa15mf5m<span class="w"> </span>-Bsxa1H<span class="w"> </span>-BS
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1402,7 +1402,6 @@ shows ISO weeks with week numbers and abbreviated names of the weekdays.
 The upper uses Gregorian weeks (which start at the day chosen by
 <a class="reference internal" href="../gmt.conf.html#term-TIME_WEEK_START"><span class="xref std std-term">TIME_WEEK_START</span></a>); they do not have numbers.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time5
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span>u<span class="w"> </span>FORMAT_TIME_PRIMARY_MAP<span class="w"> </span>Character<span class="w"> </span>FORMAT_TIME_SECONDARY_MAP<span class="w"> </span>full<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1969-7-21T/1969-8-9T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bpxa1K<span class="w"> </span>-Bsxa1U<span class="w"> </span>-BS
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span>o<span class="w"> </span>TIME_WEEK_START<span class="w"> </span>Sunday<span class="w"> </span>FORMAT_TIME_SECONDARY_MAP<span class="w"> </span>Character
@@ -1420,7 +1419,6 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 1996, and we have annotated each month with an abbreviated, upper case name and
 2-digit year. Only the primary axes information is specified.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time6
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">&quot;o yy&quot;</span><span class="w"> </span>FORMAT_TIME_PRIMARY_MAP<span class="w"> </span>Abbreviated
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R1996T/1996-6T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bxa1Of1d<span class="w"> </span>-BS
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1439,7 +1437,6 @@ in order to have the two years annotated we need to allow for the annotation of
 small fractional intervals; normally such truncated interval must be at
 least half of a full interval.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_time7
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span>jjj<span class="w"> </span>TIME_INTERVAL_FRACTION<span class="w"> </span><span class="m">0</span>.05<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+9p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2000-12-15T/2001-1-15T/0/1<span class="w"> </span>-JX12c/0.5c<span class="w"> </span>-Bpxa5Df1d<span class="w"> </span>-Bsxa1Y<span class="w"> </span>-BS
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1492,7 +1489,6 @@ cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt;| yannots.txt</span>
 <span class="s">EOF</span>
 
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-B_custom
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R416/542/0/6.2831852<span class="w"> </span>-JX-12c/6c<span class="w"> </span>-Bpx25f5g25+u<span class="s2">&quot; Ma&quot;</span><span class="w"> </span>-Bpycyannots.txt<span class="w"> </span>-Bsxcxannots.txt<span class="w"> </span>-BWS+glightblue<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>--MAP_ANNOT_OFFSET_SECONDARY<span class="o">=</span>10p<span class="w"> </span>--MAP_GRID_PEN_SECONDARY<span class="o">=</span>2p
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1540,7 +1536,7 @@ environment variable <strong>TZ</strong> (generally local time).</p>
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/3/0/0.1<span class="w"> </span>-Jx1i<span class="w"> </span>-U<span class="s2">&quot;optional command string or text here&quot;</span><span class="w"> </span>-T<span class="w"> </span>--GMT_THEME<span class="o">=</span>cookbook<span class="w"> </span>-view<span class="w"> </span>GMT_-U
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/3/0/0.1<span class="w"> </span>-Jx1i<span class="w"> </span>-U<span class="s2">&quot;optional command string or text here&quot;</span><span class="w"> </span>-T<span class="w"> </span>-view<span class="w"> </span>GMT_-U
 </pre></div>
 </div>
 </div>
@@ -1608,7 +1604,6 @@ object plotted, which may be an image, logo, legend, colorbar, etc.</p>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_-XY
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/1.5/0/1.7<span class="w"> </span>-Jx1i<span class="w"> </span>-B0<span class="w"> </span>-B+glightyellow
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sv5p+e<span class="w"> </span>-W0.5p<span class="w"> </span>-Gblack<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">0.2	0.2	0	1.1</span>
@@ -1738,7 +1733,7 @@ gmt<span class="w"> </span>convert<span class="w"> </span>test.bin<span class="w
 of given <em>type</em> and <em>type</em> must be one of <strong>c</strong>, <strong>u</strong>, <strong>h</strong>, <strong>H</strong>, <strong>i</strong>, <strong>I</strong>,
 <strong>l</strong>, <strong>L</strong>, <strong>f</strong>, or <strong>d</strong> [Default] (see <a class="reference internal" href="#bi-types"><span class="std std-ref">-bi types</span></a> for descriptions).
 Force byte-swapping of a group by appending <strong>w</strong> at the end of the group.
-For a mixed-type output record, append additional comma-separated groups (no space between groups)
+For a mixed-type output record, append additional comma-separated groups (no space between groups).
 The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
@@ -1822,11 +1817,16 @@ all items from the given column and to the end of the record should be considere
 <strong>s</strong> (for string). Only the last group may set <strong>s</strong>. (2) Types <strong>T</strong> and <strong>s</strong> can only be used with ASCII data sets.</p>
 <p>Three shorthand options for common selections are available. The shorthand <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<strong>g</strong> means
 <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0x,1y (i.e., geographic coordinates), while <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<strong>c</strong> means
-<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0:1<strong>f</strong> (i.e., Cartesian coordinates). A special use of <strong>-f</strong> is to select
+<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0:1<strong>f</strong> (i.e., Cartesian coordinates). A first special use of <strong>-f</strong> is to select
 <strong>-fp</strong>[<em>unit</em>], which <em>requires</em> <strong>-J -R</strong> and lets you use <em>projected</em> map coordinates (e.g., UTM meters) as data input.
 Such coordinates are automatically inverted to longitude, latitude during the data import. Optionally, append a length
-<em>unit</em> (see table <a class="reference internal" href="features.html#tbl-distunits"><span class="std std-ref">distance units</span></a>) [default is meter]. For more information, see Sections
-<a class="reference internal" href="features.html#input-data-formats"><span class="std std-ref">Input data formats</span></a> and <a class="reference internal" href="features.html#output-data-formats"><span class="std std-ref">Output data formats</span></a>.</p>
+<em>unit</em> (see table <a class="reference internal" href="features.html#tbl-distunits"><span class="std std-ref">distance units</span></a>) [default is meter]. The second special case is to use <strong>-fa</strong>.
+We use this when reading a file whose first column is plain text (and NO date or time) followed by numeric records.
+Normally, such a file would result in a _”Selection led to no output columns”_ error because the file was interpreted
+to be made only of text (_i.,e.,_ no numbers). Or even worse, only part of the file is read. The <strong>-fa</strong> option
+forces the first column to be ignored (output as NaN) and the remaining records parsed normally. User may add the
+<strong>-i1:</strong> to fully drop that first column in reading. For more information, see Sections <a class="reference internal" href="features.html#input-data-formats"><span class="std std-ref">Input data formats</span></a>
+and <a class="reference internal" href="features.html#output-data-formats"><span class="std std-ref">Output data formats</span></a>.</p>
 </section>
 <section id="data-gap-detection-the-g-option">
 <span id="option-g"></span><h2><span class="section-number">4.13. </span>Data gap detection: The <strong>-g</strong> option<a class="headerlink" href="#data-gap-detection-the-g-option" title="Link to this heading"></a></h2>
@@ -2020,7 +2020,6 @@ octal code for a comma (\054).</p>
 <p>A simple plot with two symbols can obtain a legend by using this option and modifiers and is shown in Figure
 <a class="reference internal" href="#auto-legend"><span class="std std-ref">Auto Legend</span></a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_autolegend
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/7.2/3/7.2<span class="w"> </span>-Jx2c<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-Sc0.35c<span class="w"> </span>-Glightgreen<span class="w"> </span>-Wfaint<span class="w"> </span>-lApples+H<span class="s2">&quot;LEGEND&quot;</span>+f16p+D
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-St0.35c<span class="w"> </span>-Gorange<span class="w"> </span>-B<span class="w"> </span>-BWStr<span class="w"> </span>-lOranges
 <span class="w">	</span>gmt<span class="w"> </span>legend<span class="w"> </span>-DjTR+w3c+o0.25c<span class="w"> </span>-F+p1p+ggray95+s
@@ -2059,7 +2058,7 @@ conditions]. Append one of the following to select the type of spline used:</p>
 <li><p><strong>+a</strong> - Switch off antialiasing (where supported) [default uses antialiasing].</p></li>
 <li><p><strong>+b</strong> - Override boundary conditions used, by appending <em>g</em> for geographic, <em>p</em> for periodic, or <em>n</em> for
 natural boundary conditions. For the latter two you may append <strong>x</strong> or <strong>y</strong> to specify just one direction, otherwise
-both are assumed.</p></li>
+both are assumed. For more information see <a class="reference internal" href="file-formats.html#grid-boundary-conditions"><span class="std std-ref">Boundary Conditions for operations on grids</span></a>.</p></li>
 <li><p><strong>+c</strong> - Clip the interpolated grid to input z-min/z-max [default may exceed limits].</p></li>
 <li><p><strong>+t</strong> - Control how close to nodes with NaNs the interpolation will go based on <em>threshold</em>. A <em>threshold</em> of 1.0
 requires all (4 or 16) nodes involved in interpolation to be non-NaN. For example, 0.5 will interpolate about half
@@ -2209,7 +2208,6 @@ areas represented by the value at the node (solid circle).</span><a class="heade
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_registration
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 gmt<span class="w"> </span>plot<span class="w"> </span>-R0/3/0/3<span class="w"> </span>-JX2.5i/1.25i<span class="w"> </span>-B1g1<span class="w"> </span>-Bwesn<span class="w"> </span>-Wthinner<span class="w"> </span>-L<span class="w"> </span>-Glightred<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">0.5	1.5</span>
 <span class="s">1.5	1.5</span>
@@ -2260,13 +2258,12 @@ unlike long wavelength components (thin line), which can be interpolated (blue t
 Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
 resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
 of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-function of wavenumber <span class="math notranslate nohighlight">\(k_j\)</span> [Marks and Smith, 2007 <a class="footnote-reference brackets" href="#id10" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#id33" title="Link to this image"></a></p>
+function of wavenumber <span class="math notranslate nohighlight">\(k_j\)</span> [Marks and Smith, 2007] <a class="footnote-reference brackets" href="#id10" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#id33" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_grid2pix
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x1<span class="w"> </span>-F6i/2.5i<span class="w"> </span>-M3p<span class="w"> </span>-A+jTR+o-0.2i/0
 <span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span>
 <span class="w">		</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/7/0.02<span class="w"> </span>T<span class="w"> </span>PI<span class="w"> </span>MUL<span class="w"> </span><span class="nv">COS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/6.7/-1.5/1.7<span class="w"> </span>-W2p<span class="w"> </span>-Bx1<span class="w"> </span>-By0g10<span class="w"> </span>-BWS<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>graph<span class="w"> </span>--MAP_GRID_PEN_PRIMARY<span class="o">=</span><span class="m">0</span>.25p,-
@@ -2423,7 +2420,6 @@ absolute time (unless already set separately).</p>
 <p>To demonstrate the use of <strong>-w</strong> we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  A simple time series plot is created by</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_1
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-JX15cT/7c<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+3@+ m@+3@+/s&quot;</span><span class="w"> </span>-BWSrt+t<span class="s2">&quot;Mississippi river daily discharge&quot;</span><span class="w"> </span>-W0.25p,red<span class="w"> </span>-i0,1+s1e-3
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -2439,7 +2435,6 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 yearly coordinate so that all the years are plotted on top of a single normalized year.
 We accomplish this feature via <strong>-wy</strong> and use the prescribed 0–1 year range.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_2
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R0/1/0/50<span class="w"> </span>-JX15c/7c<span class="w"> </span>-W0.25p,red<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+3@+ m@+3@+/s&quot;</span><span class="w"> </span>-BWSrt+t<span class="s2">&quot;Mississippi river annual discharge&quot;</span><span class="w"> </span>-i0,1+s1e-3<span class="w"> </span>-wy
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -2462,7 +2457,6 @@ start of March normalized by the length of March, and then add 2.  Thus, all Mar
 any year will result in coordinates 2.00000–2.999999….. This allows us to easily make a
 histogram of monthly discharge shown in Figure <a class="reference internal" href="#gmt-cycle-3"><span class="std std-ref">Mississippi monthly discharge</span></a>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_3
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R-3/9/0/8<span class="w"> </span>-JX15c/7c<span class="w"> </span>-T1<span class="w"> </span>-Gred<span class="w"> </span>-W1p<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+6@+ m@+3@+/s&quot;</span><span class="w"> </span>-BWSrt+t<span class="s2">&quot;Average monthly discharge&quot;</span><span class="w"> </span>-Z0+w<span class="w"> </span>-i0,1+s1e-6<span class="w"> </span>-wa
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -2484,7 +2478,6 @@ Mississippi river data but read it in so that time is the <em>y</em> coordinate.
 script generates a subplot with two illustrations similar to the ones above but (basically)
 transposed:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_4
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>1x2<span class="w"> </span>-Fs8c/10c<span class="w"> </span>-BWSrt<span class="w"> </span>-T<span class="s2">&quot;Mississippi river annual discharge&quot;</span><span class="w"> </span>-A+jTR
 <span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>@mississippi.txt<span class="w"> </span>-i1+s1e-3,0<span class="w"> </span>-R0/50/0/1<span class="w"> </span>-W0.25p,blue<span class="w"> </span>-Byaf+l<span class="s2">&quot;Normalized year&quot;</span><span class="w"> </span>-Bxaf+l<span class="s2">&quot;10@+3@+ m@+3@+/s&quot;</span><span class="w"> </span>-wy+c1<span class="w"> </span>-c
 <span class="w">		</span>gmt<span class="w"> </span>histogram<span class="w"> </span>@mississippi.txt<span class="w"> </span>-R-3/9/0/8<span class="w"> </span>-T1<span class="w"> </span>-Gblue<span class="w"> </span>-W1p<span class="w"> </span>-Bxaf<span class="w"> </span>-Byaf+l<span class="s2">&quot;10@+6@+ m@+3@+/s&quot;</span><span class="w"> </span>-Z0+w<span class="w"> </span>-i0,1+s1e-6<span class="w"> </span>-A<span class="w"> </span>-wa<span class="w"> </span>-c<span class="w">  </span>--FORMAT_TIME_PRIMARY_MAP<span class="o">=</span>a
@@ -2504,7 +2497,6 @@ from September to September.</span><a class="headerlink" href="#id37" title="Lin
 tables. Because of this, we can grid the data and make an image of the wrapped
 dataset:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_5
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>xyz2grd<span class="w"> </span>@mississippi.txt<span class="w"> </span>-i0,1+s1e-3,1+s1e-3<span class="w"> </span>-wy<span class="w"> </span>-R0/1/0/50<span class="w"> </span>-I50+n<span class="w"> </span>-r<span class="w"> </span>-Gtmp.grd
 <span class="w"> 	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>tmp.grd<span class="w"> </span>-JX15c/8c<span class="w"> </span>-BWSen<span class="w"> </span>-Bxaf+l<span class="s2">&quot;Normalized year&quot;</span><span class="w"> </span>-Byaf+l<span class="s2">&quot;Discharge (10@+3@+ m@+3@+/s)&quot;</span>
 <span class="w"> 	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJRM<span class="w"> </span>-Baf
@@ -2525,7 +2517,6 @@ We will show the raw time-series, wrap it to a weekly period, make a weekly hist
 and finally present an hourly histogram.  The figure caption under Figure <a class="reference internal" href="#gmt-cycle-6"><span class="std std-ref">NY traffic</span></a>
 discusses the four panels resulting from running the script below:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cycle_6
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>TIME_WEEK_START<span class="w"> </span>Monday
 <span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-Fs15c/8c<span class="w"> </span>-M14p/6p<span class="w"> </span>-A<span class="w"> </span>-T<span class="s2">&quot;Verrazzano-Narrows Bridge @%34%\337@%% Brooklyn Traffic [2018-2020]&quot;</span><span class="w"> </span>-BWSrt
 <span class="w"> 		</span><span class="c1"># Raw time-series</span>
@@ -2592,7 +2583,7 @@ geographical grids are expected to have the longitude as first (minor) dimension
 <section id="footnotes">
 <h2><span class="section-number">4.28. </span>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading"></a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id7" role="note">
+<aside class="footnote brackets" id="id7" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">11</a><span class="fn-bracket">]</span></span>
 <p>The Gregorian Calendar is a revision of the Julian Calendar which was
 instituted in a papal bull by Pope Gregory XIII in 1582. The reason
@@ -2611,17 +2602,17 @@ came because the old and new calendars disagreed on whether 1700 was
 a leap year, so the Julian calendar had to be adjusted by one more
 day.</p>
 </aside>
-<aside class="footnote brackets" id="id8" role="note">
+<aside class="footnote brackets" id="id8" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">12</a><span class="fn-bracket">]</span></span>
 <p>While UTM coordinates clearly refer to points on the Earth, in this
 context they are considered “other”. Thus, when we refer to
 “geographical” coordinates herein we imply longitude, latitude.</p>
 </aside>
-<aside class="footnote brackets" id="id9" role="note">
+<aside class="footnote brackets" id="id9" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">13</a><span class="fn-bracket">]</span></span>
 <p>Please consult the man page for <em>printf</em> or any book on C.</p>
 </aside>
-<aside class="footnote brackets" id="id10" role="note">
+<aside class="footnote brackets" id="id10" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">14</a><span class="fn-bracket">]</span></span>
 <p>Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
 <a class="reference external" href="https://doi.org/10.1029/2006GL028857">https://doi.org/10.1029/2006GL028857</a>.</p>
@@ -2641,8 +2632,8 @@ context they are considered “other”. Thus, when we refer to
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

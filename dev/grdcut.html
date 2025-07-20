@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdcut &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>grdcut &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -120,7 +123,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -185,7 +188,7 @@ its bounding box for sub-region or set grid nodes inside or outside the polygon
 to NaN. Finally, if the input is a 3-D netCDF cube then you can make a vertical
 slice through existing nodes. <strong>Note</strong>: If the input grid is actually an image (gray-scale,
 RGB, or RGBA), then options <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> and <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> are unavailable, while for multi-layer
-Geotiff files only options <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> and <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> are supported, i.e., you can cut out
+GeoTIFF files only options <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> and <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> are supported, i.e., you can cut out
 a sub-region only (which we do via <em>gdal_translate</em> if you have multiple bands).
 Complementary to <strong>grdcut</strong> there is <a class="reference internal" href="grdpaste.html"><span class="doc">grdpaste</span></a>, which will join together
 two grid files (not images) along a common edge.</p>
@@ -231,7 +234,7 @@ the <a class="reference internal" href="reference/features.html#write-grids-imag
 for more details.</p>
 </div></blockquote>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. This defines the subregion to be cut out. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. This defines the subregion to be cut out. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 </section>
@@ -262,7 +265,7 @@ crop the grid region to reflect the bounding box of the polygon.</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See technical reference)</span></a>
 <a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
@@ -279,7 +282,7 @@ nodes on or inside the circle are contained in the subset. If
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
@@ -395,16 +398,16 @@ from the 3-D model seis3D.nc, try:</p>
 </section>
 <section id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
-<p>If the input file is a geotiff with multiple data bands then the output format will
+<p>If the input file is a GeoTIFF with multiple data bands then the output format will
 depend on your selection (if any) of the bands to keep: If you do not specify
 any bands (which means we consider all the available bands) or you select more
-than one band, then the output file can either be another geotiff (if you give
+than one band, then the output file can either be another GeoTIFF (if you give
 a .tif[f] extension) or it can be a multiband netCDF file (if you give a .nc or .grd
-extension). If you select a single band from the input geotiff then GMT will
+extension). If you select a single band from the input GeoTIFF then GMT will
 normally read that in as a single grid layer and thus write a netCDF grid (unless
 you append another grid format specifier). However, if your output filename has
-a .tif[f] extension then we will instead write it as a one-band geotiff.
-All geotiff output operations are done via GDAL’s <em>gdal_translate</em>.</p>
+a .tif[f] extension then we will instead write it as a one-band GeoTIFF.
+All GeoTIFF output operations are done via GDAL’s <em>gdal_translate</em>.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
@@ -428,8 +431,8 @@ All geotiff output operations are done via GDAL’s <em>gdal_translate</em>.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

@@ -132,10 +132,10 @@ for ocean and atmosphere research. Sticking to this convention allows
 GMT to read gridded data provided by other institutes and other
 programs. Conversely, other general domain programs will be able to read
 grids created by GMT. COARDS is a subset of a more extensive
-convention for netCDF data called CF-1.5 (Climate and Forecast, version
-1.5). Hence, GMT grids are also automatically CF-1.5-compliant.
-However, since CF-1.5 has more general application than COARDS, not all
-CF-1.5 compliant netCDF files can be read by GMT.
+convention for netCDF data called CF-1.7 (Climate and Forecast, version
+1.7). Hence, GMT grids are also automatically CF-1.7-compliant.
+However, since CF-1.7 has more general application than COARDS, not all
+CF-1.7 compliant netCDF files can be read by GMT.
 
 The netCDF grid file in GMT has several attributes (See Table
 :ref:`netcdf-format <tbl-netcdf-format>`) to describe the content. The routine
@@ -149,7 +149,7 @@ slightly deviating from the standards used by GMT can also be read.
 +======================+====================================================================+
 |                      | *Global attributes*                                                |
 +----------------------+--------------------------------------------------------------------+
-| Conventions          | COARDS, CF-1.5 (optional)                                          |
+| Conventions          | COARDS, CF-1.7 (optional)                                          |
 +----------------------+--------------------------------------------------------------------+
 | title                | Title (optional)                                                   |
 +----------------------+--------------------------------------------------------------------+
@@ -235,7 +235,7 @@ Further reading:
 
 - `Unidata NetCDF Workshop: NetCDF Formats and Performance <http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/performance/index.html>`_
 - `Unidata NetCDF Workshop: What is Chunking? <http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/nc4chunking/WhatIsChunking.html>`_
-- `HDF NetCDF-4 Performance Report <http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf>`_
+- `HDF NetCDF-4 Performance Report <https://support.hdfgroup.org/archive/support/pubs/papers/2008-06_netcdf4_perf_report.pdf>`_
 
 Gridline and Pixel node registration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -263,6 +263,8 @@ option (see Section :ref:`option_nodereg`). **Note**: The smallest
 pixel-registered grid can be 1x1 (storing a single value), while a
 gridline-registered grid cannot be smaller than 2x2.
 
+.. _grid-boundary-conditions:
+
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -270,7 +272,7 @@ GMT has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
 :doc:`/grdsample`, :doc:`/grdgradient`,
 :doc:`/grdtrack`, :doc:`/nearneighbor`, and
-:doc:`/grdview`, to name a few. The desired
+:doc:`/grdview`, to name a few). The desired
 condition can be set with the common GMT option **-n**; see Section
 :ref:`option_-n`. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region

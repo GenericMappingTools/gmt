@@ -1,9 +1,9 @@
 .. index:: ! gmtpmodeler
 .. include:: ../module_supplements_purpose.rst_
 
-***********
-gmtpmodeler
-***********
+********
+pmodeler
+********
 
 |gmtpmodeler_purpose|
 

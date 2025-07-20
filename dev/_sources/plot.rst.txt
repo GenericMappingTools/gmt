@@ -14,7 +14,7 @@ Synopsis
 
 **gmt plot** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-A|\ [**x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*\ [/*dy*] ]
@@ -59,7 +59,7 @@ If a symbol is selected and no symbol size given, then it will interpret the thi
 Symbols whose *size* is <= 0 are skipped. If no symbols are specified then the symbol code (see |-S| below) must be present as
 last column in the input. If |-S| is not used, a line connecting the data points will be drawn instead. To explicitly close
 polygons, use |-L|. Select a fill with |-G|. If |-G| is set, |-W| will control whether the polygon outline is drawn or not.
-If a symbol is selected, |-G| and |-W| determines the fill and outline/no outline, respectively.
+If a symbol is selected, |-G| and |-W| determine the fill and outline/no outline, respectively.
 
 Required Arguments
 ------------------
@@ -135,7 +135,7 @@ Optional Arguments
       using |-G|. These quantities must be stored in the columns after the (*x, y*)
       pair [or (*x, y, z*) triplet].
     - **Y** - Draw a box-and-whisker symbol (i.e., stem-and-leaf) in *y* direction.
-      Same layount as for **X**.
+      Same layout as for **X**.
 
     Several modifiers can affect the appearance of the symbols:
 
@@ -192,7 +192,7 @@ Optional Arguments
         Use the |-F| option to create various networks between input point.  Dashed lines
         indicate input ordering for the two tables, while solid lines are the resulting
         network connections. Top left is original input, while the next five reflect the results
-        of directives **ra**, **rt**, **rs**, **r**\ 10/35 and **na**.
+        of directives **pa**, **pt**, **ps**, **p**\ 10/35 and **na**.
 
 .. _-G:
 
@@ -239,7 +239,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]]
     Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
     given via one or more pairs of separate tables, each pair of tables having the same
     number of segments (which can vary from pair to pair). Thus, the order of the even
@@ -249,13 +249,13 @@ Optional Arguments
       as column 2 (i.e., third) in any number of files having three columns. Each file may
       contain any number of segments per file.
     - **s** - Same but the two curves are given via separate pairs of tables [Default].
-    
+
     Several modifiers are at your disposal:
 
     - **+g** - We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds
-      :math:`y_1(x)`. For the opposite case, append another *fill* here.  
+      :math:`y_1(x)`. For the opposite case, append another *fill* here.
     - **+l** - For the primary curve :math:`y_0(x)`, a legend label can be set via option
-      |SYN_OPT-l|. For a secondary label use this modifier to append the label.  
+      |SYN_OPT-l|. For a secondary label use this modifier to append the label.
     - **+p** - Specify a separate pen for drawing curve :math:`y_1(x)` [Default is same pen
       as :math:`y_0(x)`]. See |-W| for specifying the pen for curve :math:`y_0(x)`.
     - **+r** - Specify a pen to simply draw a line instead of a filled box in the legend, but
@@ -272,9 +272,9 @@ Optional Arguments
         :width: 600 px
         :align: center
 
-        Use the |-M| option to paint the area between curves.  intersections and NaN-gaps are
+        Use the |-M| option to paint the area between curves. Intersections and NaN-gaps are
         found and the color depends on which curve is on top. Legends can be set as filled
-        rectangles or lines with colors from the fill selections via **+r**..
+        rectangles or lines with colors from the fill selections via **+r**.
 
 .. _-N:
 
@@ -305,11 +305,11 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
-    Set pen attributes for lines or the outline of symbols [Defaults:
+    Set pen attributes for lines or the outline of symbols or polygons [Defaults:
     *width* = 0.25p, *color* = black, *style* = solid]. Modifiers can be used to change the
     appearance of the line:
 
-    - **+c** - Determine how the color from the cpt file lookup is applied to symbol 
+    - **+c** - Determine how the color from the cpt file lookup is applied to symbol
       and|or fill.  Append **l** to have the color of the line to be taken from the CPT (see
       |-C|). If instead **f** is appended then the color from the cpt file is applied
       to symbol fill.  If no argument is given the we use the color for both pen and fill.

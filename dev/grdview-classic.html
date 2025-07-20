@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdview &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>grdview &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -121,7 +124,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -190,11 +193,11 @@ on intensities provided in a separate grid file.</p>
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
 <dt><em>reliefgrid</em></dt><dd><p>2-D gridded data set to be imaged (the relief of the surface). (See
-<a class="reference internal" href="supplements/windbarbs/grdbarb.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See technical reference)</span></a>
 <a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
@@ -202,7 +205,7 @@ on intensities provided in a separate grid file.</p>
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl id="c">
@@ -237,16 +240,12 @@ by appending the desired unit code.</p></li>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>drapegrid</em> | <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_r</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_g</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_b</em></dt><dd><p>Drape the image in <em>drapegrid</em> on top of the relief provided by
+<dt><a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>drapegrid</em>|<em>drapeimage</em></dt><dd><p>Drape the surface in <em>drapegrid</em> on top of the relief provided by
 <em>reliefgrid</em>. [Default determines colors from <em>reliefgrid</em>]. Note that <strong>-Jz</strong> and
 <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> always refers to the <em>reliefgrid</em>. The <em>drapegrid</em> only
 provides the information pertaining to colors, which (if <em>drapegrid</em> is a grid) will be looked-up
-via the CPT (see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). Instead, you may give three grid files
-via separate <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> options in the specified order. These files must contain the red, green, and
-blue colors directly (in 0-255 range) and no CPT is needed. The
-<em>drapegrid</em> may be of a different resolution than the <em>reliefgrid</em>.
-Finally, <em>drapegrid</em> may be an image to be draped over the surface, in which
-case the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> option is not required.</p>
+via the CPT (see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). Instead, you may give a <em>drapeimage</em> to be draped over the surface, in which
+case the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> option is not expected.</p>
 </dd>
 </dl>
 <dl id="i">
@@ -282,22 +281,27 @@ use that value if it is less than the grid minimum value.</p>
 </dd>
 </dl>
 <dl id="q">
-<dt><strong>-Q</strong><em>args</em>[<strong>+m</strong>]</dt><dd><p>Select one of following settings. For any of these choices, you may force
-a monochrome image by appending the modifier <strong>+m</strong>. Colors are then
-converted to shades of gray using the (monochrome television) YIQ transformation</p>
-<ol class="arabic simple">
-<li><p>Specify <strong>m</strong> for mesh plot [Default], and optionally append <em>color</em> for a different mesh paint [white].</p></li>
-<li><p>Specify <strong>mx</strong> or <strong>my</strong> for waterfall plots (row or column profiles). Specify color as for plain <strong>m</strong></p></li>
-<li><p>Specify <strong>s</strong> for surface plot, and optionally append <strong>m</strong> to have mesh lines drawn on top of surface.</p></li>
-<li><p>Specify <strong>i</strong> for image plot, and optionally append the effective dots-per-unit resolution for the rasterization [Default is <a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].</p></li>
-<li><p>Specify <strong>c</strong>. Same as <strong>-Qi</strong> but will make nodes with z = NaN transparent, using the colormasking
-feature in PostScript Level 3 (the PS device must support PS Level 3).</p></li>
-</ol>
+<dt><strong>-Q</strong><strong>c</strong>|<strong>i</strong>|<strong>m</strong>[<strong>x</strong>|<strong>y</strong>]|<strong>s</strong>[<strong>m</strong>][<em>color</em>][<strong>+m</strong>]</dt><dd><p>Select one of following directives. For any of these choices:</p>
+<ul class="simple">
+<li><p><strong>c</strong> - Image plot, but will make nodes with <em>z</em> = NaN transparent, using the color-masking
+feature in PostScript Level 3. Optionally append the effective dots-per-unit resolution
+for the rasterization [Default is <a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].</p></li>
+<li><p><strong>i</strong> - Image plot. Optionally append the effective dots-per-unit resolution for the
+rasterization [Default is <a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].</p></li>
+<li><p><strong>m</strong> - Mesh plot [Default]. Optionally append <em>color</em> for a different mesh paint [white].
+For waterfall plots, append <strong>x</strong> for row or <strong>y</strong> for column profiles). Specify color as for plain <strong>m</strong>.</p></li>
+<li><p><strong>s</strong> - Surface plot. Optionally append <strong>m</strong> to have mesh lines drawn on top of surface. See <strong>-Wm</strong> for
+setting a specific mesh <em>pen</em>.</p></li>
+</ul>
+<p>A modifier can adjust the color further:</p>
+<ul class="simple">
+<li><p><strong>+m</strong> - Colors are converted to shades of gray using the (monochrome television) YIQ transformation.</p></li>
+</ul>
 <p><strong>Note</strong>: If the CPT is categorical then only <strong>-Qm</strong> is available (but see <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <blockquote>
@@ -323,11 +327,11 @@ produces a flat surface it cannot be combined with <strong>-JZ</strong> or <stro
 </dd>
 </dl>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -350,11 +354,11 @@ color = black, style = solid]. You must also select <strong>-Qm</strong> or
 </dd>
 </dl>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -521,8 +525,8 @@ then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not s
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

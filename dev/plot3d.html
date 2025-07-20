@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>plot3d &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>plot3d &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -121,7 +124,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -159,7 +162,7 @@
 <p><strong>gmt plot3d</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#jz"><span><strong>-Jz</strong></span></a></strong>|<strong>Z</strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>|<strong>r</strong>|<strong>t</strong>] ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>x</strong>|<strong>y</strong>] ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>dx</em>/<em>dy</em>[/<em>dz</em>] ]
@@ -204,7 +207,7 @@ last column in the input. If <a class="reference internal" href="#s"><span><stro
 data points will be drawn instead. To explicitly close polygons, use
 <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>. Select a fill with <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>. If <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is set, <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> will control
 whether the polygon outline is drawn or not. If a symbol is selected,
-<strong>-G</strong> and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> determines the fill and outline/no outline,
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> determine the fill and outline/no outline,
 respectively.</p>
 </section>
 <section id="required-arguments">
@@ -216,7 +219,7 @@ then we read from standard input.  </p>
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See technical reference)</span></a>
 <a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
@@ -229,7 +232,7 @@ then we read from standard input.  </p>
 will be set based on previous plotting commands. If this is the first plotting command in the
 <a class="reference internal" href="reference/features.html#gmt-modern-mode-hierarchical-levels"><span class="std std-ref">modern mode levels</span></a> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not
 provided, the region will be automatically determined based on the data in <em>table</em>
-(equivalent to using <strong>-Ra</strong>). <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+(equivalent to using <strong>-Ra</strong>). <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <blockquote>
@@ -239,24 +242,25 @@ provided, the region will be automatically determined based on the data in <em>t
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl id="a">
-<dt><strong>-A</strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>|<strong>r</strong>|<strong>t</strong>]</dt><dd><p>By default, geographic line segments are drawn as great circle arcs by resampling
+<dt><strong>-A</strong>[<strong>x</strong>|<strong>y</strong>]</dt><dd><p>By default, geographic line segments are drawn as great circle arcs by resampling
 coarse input data along such arcs. To disable this sampling and draw them as
 straight lines, use the <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> flag.  For Cartesian data, points are simply connected.
 To adjust these behaviors, append a directive:</p>
 <ul class="simple">
-<li><p><strong>m</strong> - Draw the line by first following a meridian, then a parallel.</p></li>
-<li><p><strong>p</strong> - Start following a parallel, then a meridian. (This can be practical
-to draw a line along parallels, for example).</p></li>
-<li><p><strong>r</strong> - For polar projections, draw stair-case curves whose first move is along <em>r</em>.</p></li>
-<li><p><strong>t</strong> - Same, but first move is along <em>theta</em>.</p></li>
-<li><p><strong>x</strong> - For Cartesian data, draw stair-case curves that whose first move is along <em>x</em>.</p></li>
-<li><p><strong>y</strong> - Same, but first move is along <em>y</em>.</p></li>
+<li><p><strong>x</strong> - First follow <em>x</em>, then <em>y</em> for staircase curves.</p></li>
+<li><p><strong>y</strong> - First follow <em>y</em>, then <em>x</em> for staircase curves.</p></li>
+</ul>
+<p>Here, <em>x</em> and <em>y</em> have the following meanings:</p>
+<ul class="simple">
+<li><p>For Cartesian projections, <em>x</em> and <em>y</em> are the X- and Y-axis.</p></li>
+<li><p>For gragraphic projections, <em>x</em> and <em>y</em> are parallels and meridians.</p></li>
+<li><p>For polar projections, <em>x</em> and <em>y</em> are theta and radius.</p></li>
 </ul>
 <p><strong>Note</strong>: In <a class="reference internal" href="#"><span class="doc">plot3d</span></a>, the <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> option requires constant <em>z</em>-coordinates.</p>
 </dd>
 </dl>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -364,6 +368,7 @@ orientation and two dimensions, and so on); see specifics below.  When there is 
 a single parameter we will refer to it as <em>size</em>.</p>
 <p>You can also change symbols by adding the required <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> option to any of
 your multi-segment headers.</p>
+<p class="rubric">Basic Geometries</p>
 <p>We will first outline the 14 basic geometric symbols that only require
 a <em>single</em> parameter: <em>size</em>.</p>
 <figure class="align-center" id="id1">
@@ -415,6 +420,7 @@ and their pen color from <a class="reference internal" href="#g"><span><strong>-
 symbols (but no outline).  You can override this behavior by specifying <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>,
 modify it by adjusting <a class="reference internal" href="gmt.conf.html#term-MAP_SYMBOL_PEN_SCALE"><span class="xref std std-term">MAP_SYMBOL_PEN_SCALE</span></a> [15%], or set it to zero to
 rely on pen defaults (and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>).</p>
+<p class="rubric">Complex Geometries</p>
 <p>The next collection shows five symbols that require two or more parameters, and
 some have optional modifiers to enhance the symbol appearance.</p>
 <figure class="align-center" id="id2">
@@ -495,6 +501,7 @@ if <em>da</em> is appended then we draw all radial lines separated angularly by 
 These spider-web lines are drawn using the current pen unless <strong>+p</strong><em>pen</em> is added.</p>
 </dd>
 </dl>
+<p class="rubric">Text</p>
 <p>Text is normally placed with <a class="reference internal" href="text.html"><span class="doc">text</span></a> but there are times we wish to treat a character
 of even a string as a symbol to be plotted:</p>
 <figure class="align-center" id="id3">
@@ -515,6 +522,7 @@ to select a particular font [Default is <a class="reference internal" href="gmt.
 <strong>+j</strong><em>justify</em> to change justification [CM].</p>
 </dd>
 </dl>
+<p class="rubric">Bars</p>
 <p>The next type of symbol is the horizontal or vertical bar:</p>
 <figure class="align-center" id="id4">
 <a class="reference internal image-reference" href="_images/GMT_base_symbols4.png"><img alt="_images/GMT_base_symbols4.png" src="_images/GMT_base_symbols4.png" style="width: 700px;" /></a>
@@ -562,6 +570,7 @@ Multi-band bars require <a class="reference internal" href="#c"><span><strong>-C
 Thus, input records are either (<em>x1 y x2 … xn</em>) or (<em>dx1 y dx2 … dxn</em>).</p>
 </dd>
 </dl>
+<p class="rubric">Vectors</p>
 <p>The next family of symbols are all different types of <em>vectors</em>. Apart from requiring parameters
 such as <em>length</em> and <em>direction</em> (or optionally the coordinates of the end point), we also
 offer a rich set of modifiers to customize the vector head(s).</p>
@@ -610,6 +619,7 @@ If your <em>length</em> is not in distance units but in arbitrary user units (e.
 mm/yr) then you can use the <strong>-i</strong> option to scale the corresponding column via the <strong>+s</strong><em>scale</em> modifier.</p>
 </dd>
 </dl>
+<p class="rubric">Customs</p>
 <p>The next symbol is the programmable <em>custom</em> symbol:</p>
 <figure class="align-center" id="id6">
 <a class="reference internal image-reference" href="_images/GMT_base_symbols6.png"><img alt="_images/GMT_base_symbols6.png" src="_images/GMT_base_symbols6.png" style="width: 600px;" /></a>
@@ -636,6 +646,7 @@ include the leading <strong>k</strong>. The <em>size</em> must either be given a
 (as for all other symbols) or be added to the name with the required slash.</p>
 </dd>
 </dl>
+<p class="rubric">Lines with embellishments</p>
 <p>The last group of symbols are all special <em>lines</em> with embellishments along them.
 The first symbol is called a <em>front</em> and has specific
 symbols distributed along the curve.  Typical uses are weather fronts, fault lines,
@@ -971,11 +982,11 @@ Use <strong>-SU</strong> to disable 3-D illumination.</p>
 </dl>
 </div></blockquote>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -1005,11 +1016,11 @@ or per-table basis.  The <em>width</em>, <em>style</em>, or <em>transparency</em
 </dd>
 </dl>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl id="z">
@@ -1396,8 +1407,8 @@ original polygon.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

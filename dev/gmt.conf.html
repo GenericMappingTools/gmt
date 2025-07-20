@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmt.conf &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>gmt.conf &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -120,7 +123,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -160,8 +163,8 @@ parameter values are case-insensitive unless otherwise noted. Theme-independent
 system defaults are given in brackets [default is <strong>value</strong>], with units
 specified for dimensional quantities, while theme-dependent defaults are
 outlined in the <strong>GMT_THEME</strong> <a class="reference internal" href="theme-settings.html"><span class="doc">settings table</span></a>. Most parameters
-can be changed by using <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a>, editing a <strong>gmt.conf</strong> file that can be
-acquired using <a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a>, or setting parameters on-the-fly via the
+can be changed by using <a class="reference internal" href="gmtset.html"><span class="doc">set</span></a>, editing a <strong>gmt.conf</strong> file that can be
+acquired using <a class="reference internal" href="gmtdefaults.html"><span class="doc">defaults</span></a>, or setting parameters on-the-fly via the
 <strong>--PARAMETER</strong>=<em>VALUE</em> option to any GMT program. However, a few are static
 and are only read via the <strong>gmt.conf</strong> file; these are labeled (<em>static</em>).
 Several parameters take only <strong>true</strong> or <strong>false</strong>. It is recommended that users
@@ -515,7 +518,7 @@ likewise for 6: obsolete syntax from early GMT 5 will be considered errors.</p>
 </dd>
 <dt id="term-GMT_DATA_SERVER"><strong>GMT_DATA_SERVER</strong><a class="headerlink" href="#term-GMT_DATA_SERVER" title="Link to this term"></a></dt><dd><p>Name (or URL) of a GMT data server [default is <strong>oceania</strong>]. Please set
 to the data server closest to your location for faster data download. See
-<a class="reference external" href="https://www.generic-mapping-tools.org/mirrors/">Data Server Mirrors</a>
+<a class="reference external" href="https://www.generic-mapping-tools.org/mirrors/#data-server-mirrors">Data Server Mirrors</a>
 for a list of the currently available mirrors.</p>
 </dd>
 <dt id="term-GMT_DATA_SERVER_LIMIT"><strong>GMT_DATA_SERVER_LIMIT</strong><a class="headerlink" href="#term-GMT_DATA_SERVER_LIMIT" title="Link to this term"></a></dt><dd><p>Upper limit on the size of remote file to download [default is <strong>unlimited</strong>].
@@ -884,10 +887,13 @@ selected (or <strong>w</strong>, <strong>s</strong>, <strong>l</strong>, and <st
 at any axes intersections will be suppressed.  To select another intersection point
 than the data origin you may append <strong>+o</strong><em>xorig</em>/<em>yorig</em> or the short-cut
 <strong>+oc</strong> to center the axes on the current data domain [0/0].</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/GMT_map_frame_type.png"><img alt="_images/GMT_map_frame_type.png" src="_images/GMT_map_frame_type.png" style="width: 100%;" /></a>
+</figure>
+<p>Appearance of different <strong>MAP_FRAME_TYPE</strong> settings</p>
 <div class="toggle docutils container">
 <p>Here is an example showing the appearance of different <strong>MAP_FRAME_TYPE</strong> settings.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_map_frame_type
-<span class="w">  </span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">  </span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_TAG<span class="w"> </span>12p,Helvetica-Bold
 <span class="w">  </span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x3<span class="w"> </span>-Fs4c/3.5c<span class="w"> </span>-M0.5c<span class="w"> </span>-R-5/5/-4/5<span class="w"> </span>-A+JTC+o4p/10p
 <span class="w">    </span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span>-Afancy
@@ -906,12 +912,6 @@ than the data origin you may append <strong>+o</strong><em>xorig</em>/<em>yorig<
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
 </div>
-<figure class="align-center" id="id13">
-<a class="reference internal image-reference" href="_images/GMT_map_frame_type.png"><img alt="_images/GMT_map_frame_type.png" src="_images/GMT_map_frame_type.png" style="width: 100%;" /></a>
-<figcaption>
-<p><span class="caption-text">Appearance of different <strong>MAP_FRAME_TYPE</strong> settings</span><a class="headerlink" href="#id13" title="Link to this image"></a></p>
-</figcaption>
-</figure>
 </div>
 </dd>
 <dt id="term-MAP_FRAME_WIDTH"><strong>MAP_FRAME_WIDTH</strong><a class="headerlink" href="#term-MAP_FRAME_WIDTH" title="Link to this term"></a></dt><dd><p>Width (&gt; 0) of map borders for fancy map frame [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. <strong>Note</strong>: For fancy frames, <a class="reference internal" href="#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>
@@ -1176,7 +1176,7 @@ for details [default is <strong>ISOLatin1+</strong> <em>(or Standard+)</em>]. <s
 Normally the character set is written as part of the PostScript header.
 If you need to switch to another character set for a later overlay then
 you must use <strong>--PS_CHAR_ENCODING</strong>=<em>encoding</em> on the command line
-and not via gmt <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a>.  Finally, note 6, 8, and 11 do not work
+and not via gmt <a class="reference internal" href="gmtset.html"><span class="doc">set</span></a>.  Finally, note 6, 8, and 11 do not work
 with standard fonts.</p>
 </dd>
 <dt id="term-PS_COLOR_MODEL"><strong>PS_COLOR_MODEL</strong><a class="headerlink" href="#term-PS_COLOR_MODEL" title="Link to this term"></a></dt><dd><p>Determines whether PostScript output should use <strong>RGB</strong>, <strong>HSV</strong>, <strong>CMYK</strong>,
@@ -1504,9 +1504,9 @@ correspond to 1800 through 1828 [default is <strong>1950</strong>].</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
-<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a>,
-<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a>,
-<a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a></p>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtdefaults.html"><span class="doc">defaults</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtget.html"><span class="doc">get</span></a>,
+<a class="reference internal" href="gmtset.html"><span class="doc">set</span></a></p>
 </section>
 </section>
 
@@ -1521,8 +1521,8 @@ correspond to 1800 through 1828 [default is <strong>1950</strong>].</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

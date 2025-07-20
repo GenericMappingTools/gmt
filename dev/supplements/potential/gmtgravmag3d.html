@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmtgravmag3d &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <title>gravmag3d &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -31,14 +33,14 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="gravfft" href="gravfft.html" />
-    <link rel="prev" title="gmtflexure" href="gmtflexure.html" />
+    <link rel="prev" title="flexure" href="gmtflexure.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
@@ -120,7 +123,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -140,7 +143,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../modules.html">Modules</a></li>
-      <li class="breadcrumb-item active">gmtgravmag3d</li>
+      <li class="breadcrumb-item active">gravmag3d</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/potential/gmtgravmag3d.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -150,18 +153,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="index-0"></span><section id="gmtgravmag3d">
-<h1>gmtgravmag3d<a class="headerlink" href="#gmtgravmag3d" title="Link to this heading"></a></h1>
+  <span class="target" id="index-0"></span><section id="gravmag3d">
+<h1>gravmag3d<a class="headerlink" href="#gravmag3d" title="Link to this heading"></a></h1>
 <p>Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe</p>
 <section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
-<p><strong>gmt gravmag3d</strong> <em>xyz_file</em> <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>v</strong><em>vert_file</em> OR <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>r|s</strong><em>raw_file</em> OR <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>+s</strong><em>body,params</em>
+<p><strong>gmt gravmag3d</strong> <em>xyz_file</em> <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>vert_file</em><strong>+v</strong>[<strong>+n</strong>]OR <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>raw_file</em><strong>+r|+s</strong>[<strong>+n</strong>]OR <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>+s</strong><em>body,params</em>
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>density</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>thickness</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>xy_file</em> ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>f_dec</em>/<em>f_dip</em>/<em>m_int</em>/<em>m_dec</em>/<em>m_dip</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>z_observation</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>radius</em> ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -239,48 +243,58 @@ no current way of selecting distinct densities or magnetic parameters for each b
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
-<dl class="simple" id="t">
-<dt><strong>-Tv</strong><em>vert_file</em> (must have when passing a <em>xyz_file</em>) OR <strong>-Tr|s</strong><em>raw_file</em></dt><dd><p>Gives names of a xyz and vertex (<strong>-Tv</strong><em>vert_file</em>) files defining a close surface.
+<dl id="t">
+<dt><strong>-T</strong><em>vert_file</em><strong>+v</strong>[<strong>+n</strong>] (must have when passing a <em>xyz_file</em>) OR <strong>-T</strong><em>raw_file</em><strong>+r|+s</strong>[<strong>+n</strong>]</dt><dd><p>Gives names of a xyz and vertex (<strong>-T</strong><em>vert_file</em><strong>+v</strong>) files defining a closed surface.
 The file formats correspond to the output of the <a class="reference internal" href="../../triangulate.html"><span class="doc">triangulate</span></a> program.
 The <em>xyz</em> file can have 3, 4, 5, 6 or 8 columns. In first case (3 columns) the magnetization (or density) are
 assumed constant (controlled by <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> or <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>). Following cases are: 4 columns -&gt; 4rth col magnetization intensity;
 5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
-When n columns &gt; 3 the third argument of the <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> option is ignored. A <em>raw</em> format (selected by the <strong>-Tr</strong> option)
+When n columns &gt; 3 the third argument of the <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> option is ignored. A <em>raw</em> format (selected with the <strong>-T+r</strong> option)
 is a file with N rows (one per triangle) and 9 columns corresponding to the <em>x, y, z</em> coordinates of each of the three
-vertex of each triangle. Alternatively, the <strong>-Ts</strong> option indicates that the surface file is in the ASCII STL
+vertex of each triangle. Alternatively, the <strong>-T+s</strong> option indicates that the surface file is in the ASCII STL
 (Stereo Lithographic) format. These two type of files are used to provide a closed surface.</p>
+<p>The closed surface formats (_STL_ or _raw_) are assumed to be provided with the facets (triangles) following the
+counter-clockwise order. If that is not the case, _i.e._ they are clockwise oriented, append the <strong>+n</strong> modifier to
+bring them to the expected order. However, this order may not be easy to check. In case of doubt, compute the gravity
+anomaly caused by the body and see if it has the expected signal.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
-<dt><strong>-E</strong>[<em>thickness</em>]</dt><dd><p>give layer thickness in m [Default = 0 m]. Use this option only when
+<dt><strong>-E</strong>[<em>thickness</em>]</dt><dd><p>Give layer thickness in m [Default = 0 m]. Use this option only when
 the triangles describe a non-closed surface and you want the anomaly
 of a constant thickness layer.</p>
 </dd>
 </dl>
 <dl class="simple" id="l">
-<dt><strong>-L</strong>[<em>z_observation</em>]</dt><dd><p>sets level of observation [Default = 0]. That is the height (z) at
+<dt><strong>-L</strong>[<em>z_observation</em>]</dt><dd><p>Sets level of observation [Default = 0]. That is the height (z) at
 which anomalies are computed.</p>
 </dd>
 </dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong></dt><dd><p>Use this option if the indices file (<strong>-T+v</strong>) is 1-based instead of the default (C) 0-based.
+Normally this option is useful specially when using GMT.jl or GMTMEX where indices are 1-based
+and bodies may have been created in those environments.</p>
+</dd>
+</dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong><em>radius</em></dt><dd><p>search radius in km. Triangle centroids that are further away than
+<dt><strong>-S</strong><em>radius</em></dt><dd><p>Search radius in km. Triangle centroids that are further away than
 <em>radius</em> from current output point will not be taken into account.
 Use this option to speed up computation at expenses of a less
 accurate result.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong>[<em>level</em>]</dt><dd><p>level of reference plane [Default = 0]. Use this option when the
+<dt><strong>-Z</strong>[<em>level</em>]</dt><dd><p>Level of reference plane [Default = 0]. Use this option when the
 triangles describe a non-closed surface and the volume is defined
 from each triangle and this reference level. An example will be the
 hater depth to compute a Bouguer anomaly.</p>
@@ -350,15 +364,15 @@ polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gmtflexure.html" class="btn btn-neutral float-left" title="gmtflexure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gmtflexure.html" class="btn btn-neutral float-left" title="flexure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="gravfft.html" class="btn btn-neutral float-right" title="gravfft" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

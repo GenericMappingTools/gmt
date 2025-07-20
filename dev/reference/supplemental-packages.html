@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>7. GMT Supplemental Packages &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>7. GMT Supplemental Packages &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -156,7 +159,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -277,6 +280,7 @@ The package is maintained by Joaquim Luis and Paul Wessel.</p>
 <a class="reference internal" href="../supplements/seis/meca.html"><span class="doc">meca</span></a>,
 <a class="reference internal" href="../supplements/seis/polar.html"><span class="doc">polar</span></a>,
 <a class="reference internal" href="../supplements/seis/sac.html"><span class="doc">sac</span></a>,
+<a class="reference internal" href="../supplements/seis/gmtisf.html"><span class="doc">sac</span></a>,
 <a class="reference internal" href="../supplements/seis/grdvs30.html"><span class="doc">grdvs30</span></a>, and
 <a class="reference internal" href="../supplements/seis/grdshake.html"><span class="doc">grdshake</span></a>, which are used by seismologists
 for plotting focal mechanisms (including cross-sections
@@ -340,37 +344,37 @@ Paul Wessel.</p>
 <section id="footnotes">
 <h2><span class="section-number">7.11. </span>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading"></a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id7" role="note">
+<aside class="footnote brackets" id="id7" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">23</a><span class="fn-bracket">]</span></span>
 <p>For data bases, see <a class="reference external" href="http://topex.ucsd.edu/marine_grav/mar_grav.html">http://topex.ucsd.edu/marine_grav/mar_grav.html</a>.</p>
 </aside>
-<aside class="footnote brackets" id="id8" role="note">
+<aside class="footnote brackets" id="id8" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">24</a><span class="fn-bracket">]</span></span>
 <p>The ASCII MGD77 data are available on CD-ROM from NCEI (<a class="reference external" href="http://www.ncei.noaa.gov/">http://www.ncei.noaa.gov/</a>).</p>
 </aside>
-<aside class="footnote brackets" id="id9" role="note">
+<aside class="footnote brackets" id="id9" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">25</a><span class="fn-bracket">]</span></span>
 <p>Okabe, M., 1979, Analytical expressions for gravity anomalies due to
 polyhedral bodies and translation into magnetic anomalies,
 <em>Geophysics, 44</em>, 730–741.</p>
 </aside>
-<aside class="footnote brackets" id="id10" role="note">
+<aside class="footnote brackets" id="id10" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">26</a><span class="fn-bracket">]</span></span>
 <p>Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity computations
 for two-dimensional bodies with application to the Mendocino submarine fracture zone,
 <em>J. Geophys. Res., 64</em>, 49–59.</p>
 </aside>
-<aside class="footnote brackets" id="id11" role="note">
+<aside class="footnote brackets" id="id11" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">27</a><span class="fn-bracket">]</span></span>
 <p>Talwani, M., and M. Ewing (1960), Rapid computation of gravitational attraction of
 three-dimensional bodies of arbitrary shape, <em>Geophysics, 25</em>, 203–225.</p>
 </aside>
-<aside class="footnote brackets" id="id12" role="note">
+<aside class="footnote brackets" id="id12" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">28</a><span class="fn-bracket">]</span></span>
-<p><a class="reference external" href="http://www.southampton.ac.uk/oes/research/staff/then.page">Timothy J. Henstock</a>,
+<p><a class="reference external" href="https://www.southampton.ac.uk/people/5wy8gd/professor-tim-henstock">Timothy J. Henstock</a>,
 University of Southampton</p>
 </aside>
-<aside class="footnote brackets" id="id13" role="note">
+<aside class="footnote brackets" id="id13" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>29<span class="fn-bracket">]</span></span>
 <p>Wessel, P., Matthews, K. J., Müller, R. D., Mazzoni, A., Whittaker, J. M., Myhill, R., Chandler, M. T.,
 2015, “Semiautomatic fracture zone tracking”, <em>Geochem. Geophys. Geosyst.</em>, 16 (7), 2462–2472.
@@ -391,8 +395,8 @@ University of Southampton</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

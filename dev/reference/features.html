@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3. General Features &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>3. General Features &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -213,7 +216,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -448,7 +451,7 @@ parameters and their default values can be found in the
 <a class="reference internal" href="#gmt-defaults-b"><span class="std std-ref">b</span></a>, and
 <a class="reference internal" href="#gmt-defaults-c"><span class="std std-ref">c</span></a> show the parameters that affect
 plots. You may create your own <code class="docutils literal notranslate"><span class="pre">gmt.conf</span></code> files by running
-<a class="reference internal" href="../gmtdefaults.html"><span class="doc">gmtdefaults</span></a> and then modify those
+<a class="reference internal" href="../gmtdefaults.html"><span class="doc">defaults</span></a> and then modify those
 parameters you want to change. If you want to use the parameter settings
 in another file you can do so by copying that file to the current
 directory and call it gmt.conf. This makes it easy to maintain several distinct parameter
@@ -468,7 +471,6 @@ E.g., if your <code class="docutils literal notranslate"><span class="pre">gmt.c
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_Defaults_1a
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>fancy<span class="w"> </span>FORMAT_GEO_MAP<span class="w"> </span>ddd:mm:ssF<span class="w"> </span>MAP_GRID_CROSS_SIZE_PRIMARY<span class="w"> </span><span class="m">0</span>.1i<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+8p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-X2i<span class="w"> </span>-R-60/-30/-10/10<span class="w"> </span>-JM2.25i<span class="w"> </span>-Ba10f5g5<span class="w"> </span>-BWSne+t<span class="s2">&quot;Plot Title&quot;</span>
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-N<span class="w"> </span>-F+f7p,Helvetica-Bold,blue+j<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
@@ -508,7 +510,6 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_Defaults_1b
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>plain<span class="w"> </span>FORMAT_GEO_MAP<span class="w"> </span>ddd:mm:ssF<span class="w"> </span>MAP_GRID_CROSS_SIZE_PRIMARY<span class="w"> </span>0i<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>FONT_ANNOT_PRIMARY<span class="w"> </span>+8p<span class="w"> </span>MAP_ANNOT_OBLIQUE<span class="w"> </span>anywhere<span class="w"> </span><span class="nv">MAP_FRAME_AXES</span><span class="o">=</span>WESN
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-X1.5i<span class="w"> </span>-R-90/20/-55/25+r<span class="w"> </span>-JOc-80/25.5/2/69/2.25i<span class="w"> </span>-Ba10f5g5
@@ -561,7 +562,6 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_Defaults_1c
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>plain<span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span><span class="s2">&quot;o dd&quot;</span><span class="w"> </span>FORMAT_CLOCK_MAP<span class="w"> </span>hh<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>+8p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2001-9-11T/2001-9-13T/0.01/100<span class="w"> </span>-JX2.25iT/2.25il<span class="w"> </span>-Bpxa6Hf1hg6h+l<span class="s2">&quot;x-axis label&quot;</span><span class="w"> </span>-Bpya1g3p+l<span class="s2">&quot;y-axis label&quot;</span><span class="w"> </span>-BWSne<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>-X2i<span class="w"> </span>-Bsxa1D<span class="w"> </span>-U<span class="s2">&quot;Dazed and Confused&quot;</span>+o-0.75i/-0.85i<span class="w"> </span>--GMT_LANGUAGE<span class="o">=</span>pt<span class="w"> </span><span class="se">\</span>
@@ -744,7 +744,7 @@ include premature ending of the script due to user error or bugs
 which means the final resetting does not take place (unless you write
 your script very carefully.)</p></li>
 <li><p>To permanently change some of the GMT parameters on the fly
-inside a script the <a class="reference internal" href="../gmtset.html"><span class="doc">gmtset</span></a> utility
+inside a script the <a class="reference internal" href="../gmtset.html"><span class="doc">set</span></a> utility
 can be used. E.g., to change the primary annotation font to 12 point
 Times-Bold in red we run</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>12p,Times-Bold,red
@@ -871,28 +871,16 @@ unless a full path has been specified.</p>
 <h2><span class="section-number">3.8. </span>URLs and remote files<a class="headerlink" href="#urls-and-remote-files" title="Link to this heading"></a></h2>
 <p>Three classes of files are given special treatment in GMT.</p>
 <ol class="arabic simple">
-<li><p>Some data sets are ubiquitous and used by nearly all GMT users.
-At the moment this collection is limited to Earth relief grids.  If you specify
-a grid input named <strong>&#64;earth_relief_</strong><em>res</em> on a command line then
-such a grid will automatically be downloaded from the GMT Data Server and placed
-in the <em>server</em> directory under <strong>$GMT_USERDIR</strong> [~/.gmt].  The resolution <em>res</em> allows a choice among
-15 common grid spacings: 01d, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
-30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
-11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
-as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb for the whole set, respectively). Once
-one of these grids have been downloaded any future reference will simply obtain the
-file from <strong>$GMT_USERDIR</strong> (except if explicitly removed by the user).
-<strong>Note</strong>: The 15 arc-sec data comes from the original dataset SRTM15+.
-Lower resolutions are spherically Gaussian-filtered versions of SRTM15+.
-The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
-between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
-tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
-grids and stored in subdirectories srtm1 and srtm3 under the server directory, and assembled
-into a seamless grid using <a class="reference internal" href="../grdblend.html"><span class="doc">grdblend</span></a>. A tile is only downloaded and converted
-once (unless the user cleans the data directories).</p></li>
+<li><p>GMT offers several remote global data grids that you can access via our remote file mechanism
+(e.g. <strong>&#64;earth_relief</strong>). The first time you access one of these files, GMT will download
+the file (or a subset tile) from the selected GMT server and save it to the <em>server</em> directory
+under your <strong>$GMT_USERDIR</strong> directory [~/.gmt]. Once one of these grids have been downloaded
+any future reference will simply obtain the file from <strong>$GMT_USERDIR</strong> (except if explicitly
+removed by the user). See the <a class="reference external" href="https://docs.generic-mapping-tools.org/dev/datasets/remote-data.html">Remote Datasets</a>
+section for a comprehensive list of available remote datasets and detailed information.</p></li>
 <li><p>If a file is given as a full URL, starting with <strong>http://</strong>, <strong>https://</strong>,
 or <strong>ftp://</strong>, then the file will be downloaded to the current directory and subsequently
-read from there (until removed by the user).  If the URL is actually a CGI Get
+read from there (until removed by the user). If the URL is actually a CGI Get
 command (i.e., ends in ?par=val1&amp;par2=val2…) then we download the file
 each time we encounter the URL.</p></li>
 <li><p>Demonstration files used in online documentation, example scripts, or even the
@@ -900,11 +888,11 @@ large test suite may be given in the format &#64;<em>filename</em>.  When such a
 encountered on the command line it is understood to be a short-hand representation
 of the full URL to <em>filename</em> on the GMT Cache Data site.
 Since this address may change over time we use the leading
-&#64; to simplify access to these files.  Such files will also be downloaded
+&#64; to simplify access to these files. Such files will also be downloaded
 to <a class="reference internal" href="../gmt.conf.html#term-DIR_CACHE"><span class="xref std std-term">DIR_CACHE</span></a> and subsequently read from there (until removed by the user).</p></li>
 <li><p>By default, remote files are downloaded from the SOEST data server.  However, you
 can override that selection by setting the environmental parameter <strong>$GMT_DATA_SERVER</strong> or
-the default setting for <a class="reference internal" href="../gmt.conf.html#term-GMT_DATA_SERVER"><span class="xref std std-term">GMT_DATA_SERVER</span></a>.  Alternatively, configure the CMake
+the default setting for <a class="reference internal" href="../gmt.conf.html#term-GMT_DATA_SERVER"><span class="xref std std-term">GMT_DATA_SERVER</span></a>. Alternatively, configure the CMake
 parameter GMT_DATA_SERVER at compile time.</p></li>
 <li><p>If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
 limit the size of the largest datafile to download via <a class="reference internal" href="../gmt.conf.html#term-GMT_DATA_SERVER_LIMIT"><span class="xref std std-term">GMT_DATA_SERVER_LIMIT</span></a> or
@@ -912,7 +900,7 @@ you can temporarily turn off such downloads by setting <a class="reference inter
 </ol>
 <p>The user cache (<a class="reference internal" href="../gmt.conf.html#term-DIR_CACHE"><span class="xref std std-term">DIR_CACHE</span></a>) and all its contents can be cleared any time
 via the command <strong>gmt clear cache</strong>, while the server directory with downloaded data
-can be cleared via the command <strong>gmt clear data</strong>.  Finally, when a remote file is requested
+can be cleared via the command <strong>gmt clear data</strong>. Finally, when a remote file is requested
 we also check if that file has changed at the server and re-download the updated file;
 this check is only performed no more often than once a day.</p>
 <figure class="align-center" id="id23">
@@ -924,7 +912,6 @@ this check is only performed no more often than once a day.</p>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_SRTM
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>plain
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R-180/180/-60/60<span class="w"> </span>-JQ0/15c<span class="w"> </span>-B<span class="w"> </span>-BWStr<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Glightgray<span class="w"> </span>--FORMAT_GEO_MAP<span class="o">=</span>dddF
 <span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;1	red 2 red&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>t.cpt
@@ -1201,7 +1188,6 @@ where plotted with the same width and dash-spacing (-W10p,20_20:0).</span><a cla
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cap
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;-EOF &gt; butt.txt</span>
 <span class="s">	30	50</span>
 <span class="s">	170	50</span>
@@ -1214,16 +1200,16 @@ where plotted with the same width and dash-spacing (-W10p,20_20:0).</span><a cla
 <span class="s">	30	90</span>
 <span class="s">	170	90</span>
 <span class="s">	EOF</span>
-<span class="w">	</span><span class="c1"># round</span>
+<span class="w">	</span><span class="c1"># butt</span>
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/250/0/100<span class="w"> </span>-Jx1p<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>butt<span class="w"> </span>-W10p,lightred,20_20:0<span class="w"> </span>butt.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wfaint<span class="w"> </span>butt.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc3p<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>butt.txt
-<span class="w">	</span><span class="c1"># miter</span>
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>round<span class="w"> </span>-W10p,lightblue,,20_20:0<span class="w"> </span>round.txt
+<span class="w">	</span><span class="c1"># round</span>
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>round<span class="w"> </span>-W10p,lightblue,20_20:0<span class="w"> </span>round.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wfaint<span class="w"> </span>round.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc3p<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>round.txt
-<span class="w">	</span><span class="c1"># bevel</span>
-<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>square<span class="w"> </span>-W10p,lightorange,,20_20:0<span class="w"> </span>square.txt
+<span class="w">	</span><span class="c1"># square</span>
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>square<span class="w"> </span>-W10p,lightorange,20_20:0<span class="w"> </span>square.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wfaint<span class="w"> </span>square.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sc3p<span class="w"> </span>-Gwhite<span class="w"> </span>-Wfaint<span class="w"> </span>square.txt
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f8p,Helvetica-Bold+j<span class="w"> </span>-Dj5p<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
@@ -1247,7 +1233,6 @@ the angle at the mitered joint below which we apply a bevel.</span><a class="hea
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_joint
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;-EOF &gt; round.txt</span>
 <span class="s">	1	1</span>
 <span class="s">	8	2</span>
@@ -1307,7 +1292,6 @@ different phase <em>offset</em> and color. See the <a class="reference internal"
 <span class="s">EOF</span>
 
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_linecap
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>lines.txt<span class="w"> </span>-R-0.25/5.25/-0.2/1.4<span class="w"> </span>-Jx1i<span class="w"> </span>-W4p
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>lines.txt<span class="w"> </span>-Y0.2i<span class="w"> </span>-W4p,orange,.
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>lines.txt<span class="w"> </span>-Y0.2i<span class="w"> </span>-W4p,red,9_4_2_4:2p
@@ -1340,7 +1324,6 @@ red line (1p width) illustrates the extent of the input coordinates.</span><a cl
 <span class="s">-8  85</span>
 <span class="s">END</span>
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_fatline
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-90/82/0/87+r<span class="w"> </span>-JM-45/84.5/2.5i<span class="w"> </span>-W30p<span class="w"> </span>gc.d
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-W1p,red<span class="w"> </span>gc.d
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-X3.25i<span class="w"> </span>-W30p<span class="w"> </span>gc.d<span class="w"> </span>--PS_LINE_CAP<span class="o">=</span>round<span class="w"> </span>--PS_LINE_JOIN<span class="o">=</span>round
@@ -1363,7 +1346,7 @@ by requesting a gap between these terminal points and the start and end of the
 visible line.  Do this by specifying the desired offset between the terminal point and the
 start of the visible line.  Unless you are giving distances in Cartesian data units,
 please append the distance unit, <strong>u</strong>.  Depending on your desired effect, you can append
-plot distance units (i.e., <strong>c</strong>m, <strong>i</strong>nch, <strong>p</strong>oint; Section <a class="reference internal" href="#dimension-units">Dimension units</a>)) or map distance units,
+plot distance units (i.e., <strong>c</strong>m, <strong>i</strong>nch, <strong>p</strong>oint; Section <a class="reference internal" href="#dimension-units">Dimension units</a>) or map distance units,
 such as <strong>k</strong>m, <strong>d</strong>egrees, and many other standard distance units listed in
 Section <a class="reference internal" href="#gmt-units">GMT units</a>.  If only one offset is given then it applies equally to both ends of
 the line.  Give two slash-separated distances to indicate different offsets at the
@@ -1385,7 +1368,6 @@ at the end, via <strong>-W</strong>2p<strong>+o</strong>1c/500k.</span><a class=
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-T10/30/1<span class="w"> </span>T<span class="w"> </span><span class="m">20</span><span class="w"> </span>SUB<span class="w"> </span><span class="m">10</span><span class="w"> </span>DIV<span class="w"> </span><span class="m">2</span><span class="w"> </span>POW<span class="w"> </span><span class="m">41</span>.5<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>line.txt
 
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_lineoffset
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>line.txt<span class="w"> </span>-R8/32/40/44<span class="w"> </span>-JM5i<span class="w"> </span>-Wfaint,red<span class="w"> </span>-Bxaf<span class="w"> </span>-Bya2f1<span class="w"> </span>-BWSne<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>plain
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>line.txt<span class="w"> </span>-W2p+o1c/500k
 <span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f10p+jCM+a<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
@@ -1424,7 +1406,6 @@ the projected points be interpolated by a Bezier cubic spline via <strong>-W</st
 <span class="s">EOF</span>
 
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_bezier
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>line.txt<span class="w"> </span>-R-0.25/4.25/-0.2/2.2<span class="w"> </span>-JX3i/1.25i<span class="w"> </span>-W2p
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>line.txt<span class="w"> </span>-Sc0.1i<span class="w"> </span>-Gred<span class="w"> </span>-Wfaint
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>line.txt<span class="w"> </span>-W2p+s<span class="w"> </span>-X3i
@@ -1459,7 +1440,6 @@ Note that we also prescribed the line offsets in addition to the symbol endings.
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-T10/30/1<span class="w"> </span>T<span class="w"> </span><span class="m">20</span><span class="w"> </span>SUB<span class="w"> </span><span class="m">10</span><span class="w"> </span>DIV<span class="w"> </span><span class="m">2</span><span class="w"> </span>POW<span class="w"> </span><span class="m">41</span>.5<span class="w"> </span><span class="nv">ADD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>line.txt
 
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_linearrow
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>line.txt<span class="w"> </span>-R8/32/40/44<span class="w"> </span>-JM5i<span class="w"> </span>-Wfaint,red<span class="w"> </span>-Bxaf<span class="w"> </span>-Bya2f1<span class="w"> </span>-BWSne<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>plain
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>line.txt<span class="w"> </span>-W2p+o1c/500k+vb0.2i+gred+pfaint+bc+ve0.3i+gblue+h0.5
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -1617,7 +1597,6 @@ and vertical (<strong>T</strong>op, <strong>M</strong>iddle, <strong>B</strong>o
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_pstext_justify
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="nv">B</span><span class="o">=</span><span class="m">0</span>.2
 <span class="nv">M</span><span class="o">=</span><span class="m">0</span>.38
 <span class="nv">T</span><span class="o">=</span><span class="m">0</span>.56
@@ -1704,7 +1683,6 @@ additional specification of a corner radius, <em>r</em>.</span><a class="headerl
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_pstext_clearance
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 gmt<span class="w"> </span>text<span class="w"> </span>-R0/3/-0.1/1.5<span class="w"> </span>-Jx1i<span class="w"> </span>-C0.2i+tO<span class="w"> </span>-Wthick<span class="w"> </span>-F+f36p,Helvetica-Bold<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">1.5	0.5	My Text</span>
 <span class="s">EOF</span>
@@ -2008,7 +1986,6 @@ to honor the desired range while utilizing the full color range.</span><a class=
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_hinge
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cglobe<span class="w"> </span>-T-8000/3000
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-B<span class="w"> </span>-Dx0/0+w4.5i/0.1i+h<span class="w"> </span>-W0.001
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-Cglobe<span class="w"> </span>-B<span class="w"> </span>-Dx0/0+w4.5i/0.1i+h<span class="w"> </span>-W0.001<span class="w"> </span>-Y0.5i
@@ -2053,7 +2030,6 @@ color list to have the <em>min</em> and <em>max</em> values rounded down and up 
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_colorlist
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T0,2,6<span class="w"> </span>-Cred,yellow,purple<span class="w"> </span>-Z
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-R0/4/0/4<span class="w"> </span>-Jx1i<span class="w"> </span>-C<span class="w"> </span>-Bx<span class="w"> </span>-By+l<span class="s2">&quot;d)&quot;</span><span class="w"> </span>-Dx0/0+w5i/0.2i+h+mu
 <span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;5.1 0 -T0,2,6 -Cred,yellow,purple -Z&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f12p+jLB<span class="w"> </span>-N
@@ -2093,7 +2069,6 @@ color tables are useful for highlighting small changes.</p>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cyclic
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T0/100<span class="w"> </span>-Cjet<span class="w"> </span>-Ww
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/20/0/1<span class="w"> </span>-JM5i<span class="w"> </span>-BWse<span class="w"> </span>-B
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-B<span class="w"> </span>-DJBC
@@ -2135,7 +2110,6 @@ subset of the master before scaling while the other (right) used the entire rang
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_CPTscale
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/6/0/6<span class="w"> </span>-Jx1i<span class="w"> </span>-W0.25p<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">&gt; Normal scaling of whole CPT</span>
 <span class="s">3	2.9</span>
@@ -2218,7 +2192,6 @@ arrow-heads can be specified, as well as no head at all.</span><a class="headerl
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_arrows
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/5/0/5<span class="w"> </span>-JX1.75i<span class="w"> </span>-S<span class="w"> </span>-W1.5p<span class="w"> </span>-Gred<span class="w"> </span>-B0<span class="w"> </span>--MAP_VECTOR_SHAPE<span class="o">=</span><span class="m">0</span>.5<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">0.5	0.5	4.5	0.5	v0.2i+s</span>
 <span class="s">0.5	1.5	4.5	1.5	v0.2i+s+e</span>
@@ -2268,7 +2241,6 @@ are line-drawings only and cannot be filled.</span><a class="headerlink" href="#
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_arrows_types
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/10/0/7<span class="w"> </span>-JX5.75i/1.75i<span class="w"> </span>-S<span class="w"> </span>-W1.5p<span class="w"> </span>-Gred<span class="w"> </span>-B0<span class="w"> </span>--MAP_VECTOR_SHAPE<span class="o">=</span><span class="m">0</span><span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">0.5	0.5	4.5	0.5	v0.25i+s+e+a40</span>
 <span class="s">0.5	1.5	4.5	1.5	v0.25i+s+b</span>
@@ -2461,7 +2433,6 @@ The feature is then placed such that its adjusted anchor point matches the refer
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_anchor
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/1/0/1<span class="w"> </span>-JX5i/2i<span class="w"> </span>-Ba1f0.5<span class="w"> </span>-BwSnE+gbisque
 <span class="w">	</span>gmt<span class="w"> </span>inset<span class="w"> </span>begin<span class="w"> </span>-DjTL+o0.7i/0.5i+w1.5i/0.75i<span class="w"> </span>-F+glightgreen+p1p
 <span class="w">	</span>gmt<span class="w"> </span>inset<span class="w"> </span>end
@@ -2522,17 +2493,18 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 It may be helpful to consider the analog of a boat dropping an anchor: The boat navigates to the
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
-There are four different ways to specify the reference point on a map, allowing for complete freedom
+There are five different ways to specify the reference point on a map, allowing for complete freedom
 to select any location inside or outside the map.  The reference point syntax is [<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em>;
 the five codes <strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong> refer to the five ways:</p>
+<blockquote>
+<div></div></blockquote>
 <ol class="arabic simple" id="reference-points-g">
 <li><p>[<strong>g</strong>] Specify <em>refpoint</em> using <em>data</em> coordinates, e.g., the longitude and latitude of the reference point.
 This mechanism is useful when you want to tie the location of the feature to an actual point
 best described by data coordinates.  An example of such a reference point might
-be <strong>g</strong>135W/20N.</p></li>
-</ol>
-<ol class="arabic simple" id="reference-points-j">
-<li><p>[<strong>j</strong>] Specify <em>refpoint</em> using one of the nine <em>justification codes</em>, equivalent to the justification
+be <strong>g</strong>135W/20N.</p>
+</li>
+<li id="reference-points-j"><p>[<strong>j</strong>] Specify <em>refpoint</em> using one of the nine <em>justification codes</em>, equivalent to the justification
 codes for placing text strings in <a class="reference internal" href="../text.html"><span class="doc">text</span></a>.  This mechanism is illustrated in the figure above and
 is the preferred mechanism when you just want to place the feature <strong>inside</strong> the basemap at
 one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
@@ -2541,16 +2513,14 @@ An example of such a reference point might be <strong>jTL</strong>. When used, t
 will default to the same justification, i.e., <strong>TL</strong> in this example.</p></li>
 <li><p>[<strong>J</strong>] This is the same as <strong>j</strong> except it implies that the default anchor point is the mirror opposite of the
 justification code. Thus, when using <strong>JTL</strong>, the anchor point on the map feature will default to <strong>BR</strong>.
-This is practical for features that are drawn <strong>outside</strong> of the basemap (like color bars often are).</p></li>
-</ol>
-<ol class="arabic simple" id="reference-points-x">
-<li><p>[<strong>x</strong>] Specify <em>refpoint</em> using <em>plot</em> coordinates, i.e., the distances in inches, centimeters, or
+This is practical for features that are drawn <strong>outside</strong> of the basemap (like color bars often are).</p>
+</li>
+<li id="reference-points-x"><p>[<strong>x</strong>] Specify <em>refpoint</em> using <em>plot</em> coordinates, i.e., the distances in inches, centimeters, or
 points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
 map features using familiar measurements of distance from origins. An example of such a reference
-point might be <strong>x</strong>2.75i/2c.</p></li>
-</ol>
-<ol class="arabic simple" id="reference-points-n">
-<li><p>[<strong>n</strong>] Specify <em>refpoint</em> using <em>normalized</em> coordinates, i.e., fractional coordinates between 0
+point might be <strong>x</strong>2.75i/2c.</p>
+</li>
+<li id="reference-points-n"><p>[<strong>n</strong>] Specify <em>refpoint</em> using <em>normalized</em> coordinates, i.e., fractional coordinates between 0
 and 1 in both the <em>x</em> and <em>y</em> directions.  This mechanism avoids units and is useful if you want to always
 place features at locations best referenced as fractions of the plot dimensions.
 An example of such a reference point might be <strong>n</strong>0.2/0.1.</p></li>
@@ -2626,7 +2596,6 @@ dashed box to indicate the effect of the clearance setting).</span><a class="hea
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_panel
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/2/0/1<span class="w"> </span>-JX5i/2i<span class="w"> </span>-B0
 <span class="w">	</span>gmt<span class="w"> </span>inset<span class="w"> </span>begin<span class="w"> </span>-DjTL+o0.2i+w1.75i/0.75i<span class="w"> </span>-F+glightgreen+r
 <span class="w">	</span>gmt<span class="w"> </span>inset<span class="w"> </span>end
@@ -2683,7 +2652,6 @@ while the scale on the right was placed with <strong>-Lj</strong><em>BR</em><str
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_mapscale
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/40/50/56<span class="w"> </span>-JM5i<span class="w"> </span>-B<span class="w"> </span>-LjML+c53+w1000k+f+l<span class="s2">&quot;Scale at 53@.N&quot;</span><span class="w"> </span>-F+glightcyan+c0+p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-LjBR+c53+w1000k+l+f<span class="w"> </span>-F+p1p+i+gwhite+c0.1i
 <span class="w">	</span><span class="nv">h</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>mapproject<span class="w"> </span>-Wh<span class="w"> </span>-Di<span class="k">)</span>
@@ -2742,7 +2710,7 @@ at level 3 with labels by adding <strong>+f</strong>3<strong>+l</strong>.</span>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_dir_rose
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook<span class="w"> </span>MAP_EMBELLISHMENT_MODE<span class="w"> </span>manual
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_EMBELLISHMENT_MODE<span class="w"> </span>manual
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_LABEL<span class="w"> </span>10p<span class="w"> </span>FONT_TITLE<span class="w"> </span>12p<span class="w"> </span>MAP_ANNOT_OBLIQUE<span class="w"> </span>lon_horizontal,lat_parallel
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_TITLE_OFFSET<span class="w"> </span>5p<span class="w"> </span>MAP_FRAME_WIDTH<span class="w"> </span>3p<span class="w"> </span>FORMAT_GEO_MAP<span class="w"> </span>dddF<span class="w"> </span>FONT_ANNOT_PRIMARY<span class="w"> </span>10p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-5/5/-5/5<span class="w"> </span>-Jm0.15i<span class="w"> </span>-Ba5f<span class="w"> </span>-BWSne+gazure1<span class="w"> </span>-Tdg0/0+w1i+jCM<span class="w"> </span>-X1i
@@ -2804,7 +2772,7 @@ See <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_mag_rose
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook<span class="w"> </span>MAP_EMBELLISHMENT_MODE<span class="w"> </span>manual
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_EMBELLISHMENT_MODE<span class="w"> </span>manual
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R-10/-2/12.8812380332/0.661018975345+r<span class="w"> </span>-JOc0/0/50/60/7i<span class="w"> </span>-B<span class="w"> </span>-BWSne<span class="w"> </span>-X1.25i<span class="w"> </span>--MAP_ANNOT_OBLIQUE<span class="o">=</span>lon_horizontal,lat_parallel<span class="w"> </span>--FONT_ANNOT_PRIMARY<span class="o">=</span>12p
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Tmg-2/0.5+w2.5i+d-14.5+t45/10/5+i0.25p,blue+p0.25p,red+l+jCM<span class="w"> </span><span class="se">\</span>
 <span class="w">		</span>--FONT_ANNOT_PRIMARY<span class="o">=</span>9p,Helvetica,blue<span class="w"> </span>--FONT_ANNOT_SECONDARY<span class="o">=</span>12p,Helvetica,red<span class="w"> </span>--FONT_LABEL<span class="o">=</span>14p,Times-Italic,darkgreen<span class="w"> </span>--FONT_TITLE<span class="o">=</span>24p<span class="w"> </span><span class="se">\</span>
@@ -2870,7 +2838,6 @@ colors, and used the frame-annotation machinery to add labels.  The bar was plac
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_colorbar
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-T-15/15<span class="w"> </span>-Cpolar
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/20/0/1<span class="w"> </span>-JM5i<span class="w"> </span>-BWse<span class="w"> </span>-B
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-C<span class="w"> </span>-Bx+u<span class="s2">&quot;@.&quot;</span><span class="w"> </span>-By+l@~D@~T<span class="w"> </span>-DJBC+e
@@ -2911,7 +2878,6 @@ simply used <strong>-Dx</strong>0/0<strong>+w</strong>14c<strong>+j</strong><em>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_legend
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 cat<span class="w"> </span><span class="s">&lt;&lt;EOF &gt; table.txt</span>
 <span class="s">H 24 Times-Roman Eight Largest Cities in North America</span>
 <span class="s">D 1p</span>
@@ -3050,7 +3016,6 @@ hosts the gmt server and its EPS logo is shown via <strong>-Dj</strong><em>MR</e
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_images
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>image<span class="w"> </span>@nsf1.jpg<span class="w"> </span>-R0/2/0/1<span class="w"> </span>-JX5i/1.6i<span class="w"> </span>-B0<span class="w"> </span>-DjML+w1.5i+o0.1i/0i
 <span class="w">	</span>gmt<span class="w"> </span>image<span class="w"> </span>@soest.eps<span class="w"> </span>-DjMR+o0.1i/0i+w2i
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -3060,7 +3025,7 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 </section>
 <section id="placing-a-gmt-logo-on-maps">
 <h3><span class="section-number">3.23.9. </span>Placing a GMT logo on maps<a class="headerlink" href="#placing-a-gmt-logo-on-maps" title="Link to this heading"></a></h3>
-<p>It is possible to overlay the GMT logo on maps as well, using the module <a class="reference internal" href="../gmtlogo.html"><span class="doc">gmtlogo</span></a>.
+<p>It is possible to overlay the GMT logo on maps as well, using the module <a class="reference internal" href="../gmtlogo.html"><span class="doc">logo</span></a>.
 Like other features it requires reference and anchor points and their optional adjustments via the <strong>-D</strong> option.
 In addition, we require one modifier to set the logo’s size.</p>
 <ol class="arabic simple">
@@ -3071,13 +3036,13 @@ GMT logo, append <strong>+w</strong>5c.</p></li>
 <figure class="align-center" id="id47">
 <a class="reference internal image-reference" href="../_images/GMT_coverlogo.png"><img alt="../_images/GMT_coverlogo.png" src="../_images/GMT_coverlogo.png" style="width: 300px;" /></a>
 <figcaption>
-<p><span class="caption-text">Placement of the GMT logo. The logo itself only has a size modifier but the <a class="reference internal" href="../gmtlogo.html"><span class="doc">gmtlogo</span></a>
+<p><span class="caption-text">Placement of the GMT logo. The logo itself only has a size modifier but the <a class="reference internal" href="../gmtlogo.html"><span class="doc">logo</span></a>
 module allows additional attributes such as a background map panel.</span><a class="headerlink" href="#id47" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>logo<span class="w"> </span>-Dx0/0+w5.458i<span class="w"> </span>-X0<span class="w"> </span>-Y0<span class="w"> </span>--GMT_THEME<span class="o">=</span>cookbook<span class="w"> </span>-view<span class="w"> </span>GMT_coverlogo
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>logo<span class="w"> </span>-Dx0/0+w5.458i<span class="w"> </span>-X0<span class="w"> </span>-Y0<span class="w"> </span>-view<span class="w"> </span>GMT_coverlogo
 </pre></div>
 </div>
 </div>
@@ -3123,7 +3088,6 @@ See Example <a class="reference internal" href="../gallery/ex44.html#example-44"
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_inset
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-R110E/170E/44S/9S<span class="w"> </span>-JM6i<span class="w"> </span>-B<span class="w"> </span>-BWSne<span class="w"> </span>-Wfaint<span class="w"> </span>-N2/1p<span class="w">  </span>-EAU+gbisque<span class="w"> </span>-Gbrown<span class="w"> </span>-Sazure1<span class="w"> </span>-Da<span class="w"> </span>--FORMAT_GEO_MAP<span class="o">=</span>dddF
 <span class="w">	</span>gmt<span class="w"> </span>inset<span class="w"> </span>begin<span class="w"> </span>-DjTR+w1.5i+o0.15i<span class="w"> </span>-F+gwhite+p1p+s<span class="w"> </span>-C0.05i
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Rg<span class="w"> </span>-JG120/30S/<span class="w"> </span>-Da<span class="w"> </span>-Gbrown<span class="w"> </span>-A5000<span class="w"> </span>-Bg<span class="w"> </span>-Wfaint<span class="w"> </span>-EAU+gbisque
@@ -3160,7 +3124,6 @@ module allows additional attributes such as a background map panel.</span><a cla
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_vertscale
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T-8/6/0.01<span class="w"> </span>-N3/0<span class="w"> </span>-C2<span class="w"> </span>T<span class="w"> </span><span class="m">3</span><span class="w"> </span>DIV<span class="w"> </span><span class="m">2</span><span class="w"> </span>POW<span class="w"> </span>NEG<span class="w"> </span>EXP<span class="w"> </span>T<span class="w"> </span>PI<span class="w"> </span><span class="m">2</span><span class="w"> </span>MUL<span class="w"> </span>MUL<span class="w"> </span>COS<span class="w"> </span>MUL<span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>t.txt
 <span class="w">	</span>gmt<span class="w"> </span>wiggle<span class="w"> </span>-R-10/10/-3/3<span class="w"> </span>-JM6i<span class="w"> </span>-B<span class="w"> </span>-Z100i<span class="w"> </span>-DjRM+w100+lnT<span class="w"> </span>t.txt<span class="w"> </span>-Tfaint<span class="w"> </span>-W1p<span class="w"> </span>-BWSne<span class="w"> </span>--MAP_FRAME_TYPE<span class="o">=</span>plain
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -3211,19 +3174,19 @@ approach should contact the GMT team for guidance.</p>
 <td><p><em>GMT 4 netCDF standard formats</em></p></td>
 </tr>
 <tr class="row-odd"><td><p>nb</p></td>
-<td><p>GMT netCDF format (8-bit integer, COARDS, CF-1.5)</p></td>
+<td><p>GMT netCDF format (8-bit integer, COARDS, CF-1.7)</p></td>
 </tr>
 <tr class="row-even"><td><p>ns</p></td>
-<td><p>GMT netCDF format (16-bit integer, COARDS, CF-1.5)</p></td>
+<td><p>GMT netCDF format (16-bit integer, COARDS, CF-1.7)</p></td>
 </tr>
 <tr class="row-odd"><td><p>ni</p></td>
-<td><p>GMT netCDF format (32-bit integer, COARDS, CF-1.5)</p></td>
+<td><p>GMT netCDF format (32-bit integer, COARDS, CF-1.7)</p></td>
 </tr>
 <tr class="row-even"><td><p>nf</p></td>
-<td><p>GMT netCDF format (32-bit float, COARDS, CF-1.5)</p></td>
+<td><p>GMT netCDF format (32-bit float, COARDS, CF-1.7)</p></td>
 </tr>
 <tr class="row-odd"><td><p>nd</p></td>
-<td><p>GMT netCDF format (64-bit float, COARDS, CF-1.5)</p></td>
+<td><p>GMT netCDF format (64-bit float, COARDS, CF-1.7)</p></td>
 </tr>
 <tr class="row-even"><td></td>
 <td><p><em>GMT 3 netCDF legacy formats</em></p></td>
@@ -3749,7 +3712,7 @@ determine if a value is suitable for plotting or processing (if a NaN is
 used in a calculation the result would become NaN as well). Data points
 whose values equal NaN are not normally plotted (or plotted with the
 special NaN color given in <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>). Several tools such as
-<a class="reference internal" href="../xyz2grd.html"><span class="doc">xyz2grd</span></a>, <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a>, and
+<a class="reference internal" href="../xyz2grd.html"><span class="doc">xyz2grd</span></a>, <a class="reference internal" href="../gmtmath.html"><span class="doc">math</span></a>, and
 <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a> can convert user data to NaN
 and vice versa, thus facilitating arbitrary masking and clipping of data
 sets. Note that a few computers do not have native IEEE hardware
@@ -3774,7 +3737,7 @@ skipped during reading; see Section <a class="reference internal" href="options.
 (<strong>$GMT_SHAREDIR</strong>, <strong>$GMT_DATADIR</strong>, <strong>$GMT_USERDIR</strong>, and <strong>$GMT_TMPDIR</strong>), pointing
 to folders with data files and program settings. Beginning with version
 5, some of these locations are now (also or exclusively) configurable
-with the <a class="reference internal" href="../gmtset.html"><span class="doc">gmtset</span></a> utility.
+with the <a class="reference internal" href="../gmtset.html"><span class="doc">set</span></a> utility.
 When an environment variable has an equivalent parameter in the <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> file,
 then the parameter setting will take precedence over the environment variable.</p>
 <dl class="simple">
@@ -3798,7 +3761,7 @@ name that ends in a trailing slash (/) will be searched recursively
 <dt>Variable <strong>$GMT_USERDIR</strong></dt><dd><p>may point to a directory where the user places custom configuration
 files (e.g., an alternate <code class="docutils literal notranslate"><span class="pre">coastline.conf</span></code> file, preferred default
 settings in <code class="docutils literal notranslate"><span class="pre">gmt.conf</span></code>, custom symbols and color palettes, math
-macros for <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a> and <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>, and shorthands for
+macros for <a class="reference internal" href="../gmtmath.html"><span class="doc">math</span></a> and <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>, and shorthands for
 gridfile extensions via <code class="docutils literal notranslate"><span class="pre">gmt.io</span></code>). When <strong>$GMT_USERDIR</strong> is not defined,
 then the default value <strong>$HOME</strong>/.gmt will be assumed. Users may also place their own
 data files in this directory as GMT programs will search for files
@@ -3827,38 +3790,38 @@ any of these directories.</p>
 <section id="footnotes">
 <h2><span class="section-number">3.30. </span>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading"></a></h2>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id13" role="note">
+<aside class="footnote brackets" id="id13" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">7</a><span class="fn-bracket">]</span></span>
 <p>Vicenty, T. (1975), Direct and inverse solutions of geodesics on the
 ellipsoid with application of nested equations, <em>Surv. Rev.,
 XXII(176)</em>, 88–93.</p>
 </aside>
-<aside class="footnote brackets" id="id14" role="note">
+<aside class="footnote brackets" id="id14" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">8</a><span class="fn-bracket">]</span></span>
 <p>PostScript definition. In the typesetting industry a slightly
 different definition of point (1/72.27 inch) is used, presumably to
 cause needless trouble.</p>
 </aside>
-<aside class="footnote brackets" id="id15" role="note">
+<aside class="footnote brackets" id="id15" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">9</a><span class="fn-bracket">]</span></span>
 <p>Choose between SI and US default units by modifying in the
 GMT share directory.</p>
 </aside>
-<aside class="footnote brackets" id="id16" role="note">
+<aside class="footnote brackets" id="id16" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">10</a><span class="fn-bracket">]</span></span>
 <p>To remain backwards compatible with GMT 4 we will also look for
 but only if cannot be found.</p>
 </aside>
-<aside class="footnote brackets" id="id17" role="note">
+<aside class="footnote brackets" id="id17" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">16</a><span class="fn-bracket">]</span></span>
 <p>To keep PostScript files small, such comments are by default turned
 off; see <a class="reference internal" href="../gmt.conf.html#term-PS_COMMENTS"><span class="xref std std-term">PS_COMMENTS</span></a> to enable them.</p>
 </aside>
-<aside class="footnote brackets" id="id18" role="note">
+<aside class="footnote brackets" id="id18" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">17</a><span class="fn-bracket">]</span></span>
 <p>For an overview of color systems such as HSV, see Chapter <a class="reference internal" href="colorspace.html"><span class="doc">Color Systems and Artificial Illumination</span></a>.</p>
 </aside>
-<aside class="footnote brackets" id="id19" role="note">
+<aside class="footnote brackets" id="id19" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">18</a><span class="fn-bracket">]</span></span>
 <p>Convert other graphics formats to Sun ras format using GraphicsMagick’s or ImageMagick’s <strong>convert</strong> program.</p>
 </aside>
@@ -3877,8 +3840,8 @@ off; see <a class="reference internal" href="../gmt.conf.html#term-PS_COMMENTS">
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

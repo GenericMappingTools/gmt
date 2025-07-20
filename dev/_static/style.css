@@ -18,22 +18,6 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: "normal"
 }
 
-/* style for example gallery */
-.gmtgallery li {
-	list-style: none;
-	width: 180px;
-	display: inline-grid;
-	margin-right: 15px;
-}
-
-/* style for gmt movies */
-.gmtmovie li {
-	list-style: none;
-	width: 45%;
-	display: inline-grid;
-	margin: 10px;
-}
-
 /* Set tab-width to 2 spaces */
 .highlight {
 	tab-size: 2;

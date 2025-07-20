@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mapproject &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>mapproject &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -120,7 +123,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -157,7 +160,7 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt mapproject</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>b</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>] ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>b</strong>|<strong>f</strong>|<strong>o</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>] ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>dx</em>/<em>dy</em>][<strong>+m</strong>] ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><strong>c</strong>|<strong>i</strong>|<strong>p</strong> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>datum</em>] ]
@@ -222,18 +225,16 @@ then we read from standard input.  </p>
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl id="a">
-<dt><strong>-Ab</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>]</dt><dd><p>Calculate azimuth along track <em>or</em> to the optional <em>fixed</em> point set
+<dt><strong>-Ab</strong>|<strong>f</strong>|<strong>o</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>]</dt><dd><p>Calculate azimuth along track <em>or</em> to the optional <em>fixed</em> point set
 with <em>lon0/lat0</em>.  Choose among several directives:</p>
 <ul class="simple">
 <li><p><strong>b</strong> - Calculate the back-azimuth from data points to the fixed point.</p></li>
 <li><p><strong>f</strong> - Calculate the forward azimuth from the fixed point to each data point.</p></li>
 <li><p><strong>o</strong> - Get orientations (-90/90) rather than azimuths (0/360).</p></li>
 </ul>
-<p>Upper case directives <strong>F</strong>, <strong>B</strong> or <strong>O</strong> will convert from
-geodetic to geocentric latitudes and estimate azimuth of geodesics
-(assuming the current ellipsoid is not a sphere). <strong>Note</strong>: If no fixed
-point is given then we compute the azimuth (or back-azimuth) from the
-previous point.  One modifier is available:</p>
+<p>Use the <strong>-je</strong> option to compute azimuths on the ellipsoid instead of the sphere.
+<strong>Note</strong>: If no fixed point is given then we compute the azimuth (or back-azimuth) from the
+previous point. One modifier is available:</p>
 <ul class="simple">
 <li><p><strong>+v</strong> - Obtain a <em>variable</em> 2nd point (<em>lon0</em>/<em>lat0</em>) via columns 3-4
 in the input file.</p></li>
@@ -273,9 +274,9 @@ omitted). If <em>datum</em> is - or not given we assume WGS-84.</p>
 <dl class="simple" id="f">
 <dt><strong>-F</strong>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>|<strong>c</strong>|<strong>i</strong>|<strong>p</strong>]</dt><dd><p>Force 1:1 scaling, i.e., output (or input, see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) data are in
 actual projected meters. To specify other units, append the desired
-unit (see <a class="reference internal" href="#units">Units</a>). Without <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, the output (or input, see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>)
-are in the units specified by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (but see
-<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>).</p>
+unit (see <a class="reference internal" href="#units">Units</a>). Without <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, and when using the classic <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> syntax, the output (or input, see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>)
+are in the units specified by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (but see <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>). This changes, however, to meters
+when PROJ4 syntax or EPSG is used in <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> and that regardless of <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> being used or not.</p>
 </dd>
 </dl>
 <dl id="g">
@@ -306,7 +307,7 @@ types of distances. (2) See <a class="reference internal" href="#output-order">O
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See technical reference)</span></a>
 <a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
@@ -378,33 +379,33 @@ after the inverse projection). Make sure that the
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl id="w">
 <dt><strong>-W</strong>[<strong>b</strong>|<strong>B</strong>|<strong>e</strong>|<strong>E</strong>|<strong>g</strong>|<strong>h</strong>|<strong>j</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>o</strong>|<strong>O</strong>|<strong>r</strong>|<strong>R</strong>|<strong>w</strong>|<strong>x</strong>][<strong>+n</strong>[<em>nx</em>[/<em>ny</em>]]]</dt><dd><p>Report a variety of plot dimensions or map regions in projected or geographic units.
-No input files are read. With no argument we report the map width and hight.
-The chosen unit of reported plot dimensions may be changed via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>.  For
+No input files are read. With no argument we report the map width and height.
+The chosen unit of reported plot dimensions may be changed via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>. For
 other results, select from these directives:</p>
 <ul class="simple">
 <li><p><strong>b</strong> - Get the bounding box in longitude and latitude.</p></li>
 <li><p><strong>B</strong> - Same, but get the result in -Rw/e/s/n string format returned as trailing text.</p></li>
 <li><p><strong>e</strong> - Return the coordinates of the rectangular area encompassing the non-rectangular
-area defined by your <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong></p></li>
+area defined by your <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong>.</p></li>
 <li><p><strong>E</strong> - Same, but in -Rw/e/s/n string format returned as trailing text.</p></li>
 <li><p><strong>g</strong> - Output the plot coordinates of the appended map point <em>lon</em>/<em>lat</em>.</p></li>
 <li><p><strong>h</strong> - Only output the height of the map.</p></li>
 <li><p><strong>j</strong> - Output the map coordinates of a reference point by appending its <em>code</em> (with
 standard two-character justification codes).</p></li>
 <li><p><strong>n</strong> - Same, but appended reference point <em>rx</em>/<em>ry</em> is given as normalized positions
-in the 0-1 range,.</p></li>
+in the 0-1 range.</p></li>
 <li><p><strong>o</strong> - If an oblique domain is set via <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>xmin/xmax/ymin/ymax</em><strong>+u</strong><em>unit</em> then
-return the diagonal corner coordinates in degrees (in the order <em>llx urx lly ury</em>)</p></li>
+return the diagonal corner coordinates in degrees (in the order <em>llx urx lly ury</em>).</p></li>
 <li><p><strong>O</strong> - Same, but get the equivalent <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string format returned as trailing text.</p></li>
 <li><p><strong>m</strong> - Get the rectangular region in projected plot coordinates instead.</p></li>
 <li><p><strong>M</strong> - Same, but returned in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string format returned as trailing text.</p></li>
 <li><p><strong>r</strong> - Output the rectangular domain that covers an oblique area as defined by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong>.</p></li>
-<li><p><strong>R</strong> - Same, but get the result in -R| string format returned as trailing text.</p></li>
+<li><p><strong>R</strong> - Same, but get the result in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string format returned as trailing text.</p></li>
 <li><p><strong>w</strong> - Only output the width of the map in current plot units.</p></li>
 <li><p><strong>x</strong> - Output the map coordinates of the specific plot reference point <em>px</em>/<em>py</em>.</p></li>
 </ul>
@@ -694,7 +695,7 @@ can of course be modulated further via <strong>-o</strong>.</p>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
-<a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a>,
+<a class="reference internal" href="gmtvector.html"><span class="doc">vector</span></a>,
 <a class="reference internal" href="project.html"><span class="doc">project</span></a></p>
 </section>
 <section id="references">
@@ -718,8 +719,8 @@ North-Holland Publ., ISBN: 0 444 86149 1.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

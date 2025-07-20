@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5. GMT Coordinate Transformations &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>5. GMT Coordinate Transformations &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -153,7 +156,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -216,7 +219,7 @@ plots). Below, we will use the expression <span class="math notranslate nohighli
 <span class="math notranslate nohighlight">\((x,y)\)</span> domain, and the nature of <span class="math notranslate nohighlight">\(f\)</span> itself.</p>
 <p>Two subsets of linear will be discussed separately; these are a polar (cylindrical) projection and a linear projection
 applied to geographic coordinates (with a 360° periodicity in the <em>x</em>-coordinate). We will show examples of all of these
-projections using dummy data sets created with <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a>, a “Reverse Polish Notation” (RPN) calculator that
+projections using dummy data sets created with <a class="reference internal" href="../gmtmath.html"><span class="doc">math</span></a>, a “Reverse Polish Notation” (RPN) calculator that
 operates on or creates table data:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/100/1<span class="w">  </span>T<span class="w"> </span><span class="nv">SQRT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sqrt.txt
@@ -260,7 +263,6 @@ scale and the range of the other axis. To do this, simply specify the length to 
 <p><strong>Example</strong></p>
 <p>Our <span class="math notranslate nohighlight">\(y = \sqrt{x}\)</span> data set can be plotted as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_linear
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/100/1<span class="w"> </span>T<span class="w"> </span><span class="nv">SQRT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sqrt.txt
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/100/10<span class="w"> </span>T<span class="w"> </span><span class="nv">SQRT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sqrt10.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/100/0/10<span class="w"> </span>-JX8c/4c<span class="w"> </span>-Bag<span class="w"> </span>-BWSne+gsnow<span class="w"> </span>-Wthick,blue,-<span class="w"> </span>sqrt.txt
@@ -300,7 +302,6 @@ transformation has been chosen. We do so by adding a <strong>g</strong> (for geo
 <p><strong>Example</strong></p>
 <p>A crude world map centered on 125°E can be plotted as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_linear_d
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_GRID_CROSS_SIZE_PRIMARY<span class="w"> </span><span class="m">0</span>.1i<span class="w"> </span>MAP_FRAME_TYPE<span class="w"> </span>FANCY<span class="w"> </span>FORMAT_GEO_MAP<span class="w"> </span>ddd:mm:ssF
 <span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Rg-55/305/-90/90<span class="w"> </span>-Jx0.04c<span class="w"> </span>-Bagf<span class="w"> </span>-BWSen<span class="w"> </span>-Dc<span class="w"> </span>-A1000<span class="w"> </span>-Glightbrown<span class="w"> </span>-Wthinnest<span class="w"> </span>-Slightblue
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -347,7 +348,6 @@ with <strong>-JX</strong> will prevail.</p>
 <p><strong>Example</strong></p>
 <p>A simple plot of a school week calendar can be made as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_linear_cal
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FORMAT_DATE_MAP<span class="w"> </span>o<span class="w"> </span>TIME_WEEK_START<span class="w"> </span>Sunday<span class="w"> </span><span class="nv">FORMAT_CLOCK_MAP</span><span class="o">=</span>-hham<span class="w"> </span>FORMAT_TIME_PRIMARY_MAP<span class="w"> </span>full
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R2001-9-24T/2001-9-29T/T07:0/T15:0<span class="w"> </span>-JX10c/-5c<span class="w"> </span>-Bxa1Kf1kg1d<span class="w"> </span>-Bya1Hg1h<span class="w"> </span>-BWsNe+glightyellow
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -385,7 +385,6 @@ immediately following the <em>scale</em> (or axis length) value.</p>
 <p><strong>Example</strong></p>
 <p>A plot in which the <em>x</em>-axis is logarithmic (the <em>y</em>-axis remains linear, i.e., a semi-log plot) can be made as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_log
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/100/1<span class="w"> </span>T<span class="w"> </span><span class="nv">SQRT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sqrt.txt
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/100/10<span class="w"> </span>T<span class="w"> </span><span class="nv">SQRT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sqrt10.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R1/100/0/10<span class="w"> </span>-Jx4cl/0.4c<span class="w"> </span>-Bx2g3<span class="w"> </span>-Bya2f1g2<span class="w"> </span>-BWSne+gbisque<span class="w"> </span>-Wthick,blue,-<span class="w"> </span>-h<span class="w"> </span>sqrt.txt
@@ -424,7 +423,6 @@ or <strong>-JX</strong>8i/5i.</p></li>
 <span class="math notranslate nohighlight">\(\sqrt{x}\)</span>. We indicate this scaling by appending a <strong>p</strong> followed by the desired exponent, in our case 0.5.
 Since <span class="math notranslate nohighlight">\(q = 1\)</span> we do not need to specify <strong>p</strong>1 since it is identical to the linear transformation.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_pow
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/100/1<span class="w"> </span>T<span class="w"> </span><span class="nv">SQRT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sqrt.txt
 <span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T0/100/10<span class="w"> </span>T<span class="w"> </span><span class="nv">SQRT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>sqrt10.txt
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R0/100/0/10<span class="w"> </span>-Jx0.75cp0.5/0.4c<span class="w"> </span>-Bxa1p<span class="w"> </span>-Bya2f1<span class="w"> </span>-BWSne+givory<span class="w"> </span>-Wthick<span class="w"> </span>sqrt.txt
@@ -488,7 +486,6 @@ grid files.</p>
 <p>We will use <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> to make a contour map of this data. Because the data file only contains values
 with <span class="math notranslate nohighlight">\(2 \leq r \leq 4\)</span>, a donut shaped plot appears in the example figure shown below.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_polar
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-R0/360/2/4<span class="w"> </span>-I6/0.1<span class="w"> </span>X<span class="w"> </span><span class="m">4</span><span class="w"> </span>MUL<span class="w"> </span>PI<span class="w"> </span>MUL<span class="w"> </span><span class="m">180</span><span class="w"> </span>DIV<span class="w"> </span>COS<span class="w"> </span>Y<span class="w"> </span><span class="m">2</span><span class="w"> </span>POW<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tt.nc
 <span class="w">	</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>tt.nc<span class="w"> </span>-JP8c<span class="w"> </span>-B30<span class="w"> </span>-BNs+ghoneydew<span class="w"> </span>-C2<span class="w"> </span>-S4<span class="w"> </span>--FORMAT_GEO_MAP<span class="o">=</span>+ddd
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -514,8 +511,8 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

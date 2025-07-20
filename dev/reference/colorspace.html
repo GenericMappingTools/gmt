@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>14. Color Systems and Artificial Illumination &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>14. Color Systems and Artificial Illumination &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -153,7 +156,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -201,7 +204,7 @@ have black. All of them at maximum, <em>r=g=b=255</em>, creates white.
 Your computer screen works the same way.</p>
 <p>A mix of levels of red, green, and blue creates basically any color
 imaginable. In GMT each color can be represented by the triplet
-<em>r7g7b</em>. For example, 127/255/0 (half red, full
+<em>r/g/b</em>. For example, 127/255/0 (half red, full
 green, and no blue) creates a color called chartreuse. The color sliders
 in the graphics program GIMP are an excellent way to experiment
 with colors, since they show you in advance how moving one of the color
@@ -388,7 +391,6 @@ Diamonds indicate which colors are defined in the palettes; they are fixed, the 
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_color_interpolate
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-Jx1i<span class="w"> </span>-R0/6.8/0/2.0<span class="w"> </span>-B0
 
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cpolar<span class="w"> </span>-T-1/1
@@ -469,7 +471,6 @@ cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt;&gt; t2.txt</span>
 <span class="s">0	0</span>
 <span class="s">EOF</span>
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_slope2intensity
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R2/15/1.1/8.4<span class="w"> </span>-Jx0.44444i<span class="w"> </span>-B0<span class="w"> </span>t2.txt<span class="w"> </span>-Glightgreen<span class="w"> </span>-W0.25p
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Sv14p+e+jb+h0.5<span class="w"> </span>-W1p,orange<span class="w"> </span>-Gorange<span class="w"> </span>-N<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
 <span class="s">	15	4	210	0.75i</span>
@@ -513,7 +514,7 @@ gmt<span class="w"> </span>begin<span class="w"> </span>GMT_slope2intensity
 <span class="s">	10	2.325	30	70</span>
 <span class="s">	EOF</span>
 <span class="w">	</span><span class="nb">echo</span><span class="w"> 	</span><span class="m">13</span>.7<span class="w">	</span><span class="m">6</span>.5<span class="w">	</span>-60<span class="w">	</span>14p,Helvetica,orange<span class="w">	</span>CB<span class="w">	</span>LIGHT<span class="w"> </span>SOURCE<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+a+f+j<span class="w"> </span>-Gwhite<span class="w"> </span>-C0
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+a+f+j<span class="w"> </span><span class="s">&lt;&lt;- EOF </span>
+<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-F+a+f+j<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
 <span class="s">	4.1		3.9	0	16p,Times-Roman	RB	&lt;math&gt;\\hat{\\mathbf{n}}_1&lt;/math&gt;</span>
 <span class="s">	10.7	4.1	0	16p,Times-Roman	RB	&lt;math&gt;\\hat{\\mathbf{n}}_2&lt;/math&gt;</span>
 <span class="s">	11.5	2.7	0	16p,Times-Roman	LB	&lt;math&gt;\\hat{\\mathbf{s}}&lt;/math&gt;</span>
@@ -702,7 +703,6 @@ gmt<span class="w"> </span>project<span class="w"> </span>-N<span class="w"> </s
 gmt<span class="w"> </span>project<span class="w"> </span>-N<span class="w"> </span>-Z2.6+e<span class="w"> </span>-G0.02<span class="w"> </span>-C5/0<span class="w">       </span>&gt;<span class="w"> </span>Y.d
 
 gmt<span class="w"> </span>begin<span class="w"> </span>GMT_cmyk
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-2.25/7.25/-1.8/2.75<span class="w"> </span>-Jx0.6i<span class="w"> </span>R.d<span class="w"> </span>-Gred<span class="w"> </span>-B0
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>G.d<span class="w"> </span>-Ggreen
 <span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>B.d<span class="w"> </span>-Gblue
@@ -788,8 +788,8 @@ specify the color space of your PostScript file, set
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

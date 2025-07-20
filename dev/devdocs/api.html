@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GMT C API &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>GMT C API &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -282,7 +285,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -475,7 +478,7 @@ expects.</p></li>
 <p>In version 5, the standard GMT programs are themselves simple invocations
 of the <a class="reference internal" href="../gmt.html"><span class="doc">gmt</span></a> application with the function name as argument.
 However, some of these modules, such as
-<a class="reference internal" href="../legend.html"><span class="doc">legend</span></a>, <a class="reference internal" href="../gmtconvert.html"><span class="doc">gmtconvert</span></a>,
+<a class="reference internal" href="../legend.html"><span class="doc">legend</span></a>, <a class="reference internal" href="../gmtconvert.html"><span class="doc">convert</span></a>,
 <a class="reference internal" href="../grdblend.html"><span class="doc">grdblend</span></a>,
 <a class="reference internal" href="../grdfilter.html"><span class="doc">grdfilter</span></a> and others may call several additional modules.</p>
 </section>
@@ -2563,7 +2566,7 @@ you call <a class="reference internal" href="#gmt-begin-io">GMT_Begin_IO</a>.</p
 fields in the header structures of the data resources, such as
 <a class="reference internal" href="#struct-grid"><span class="std std-ref">GMT_GRID</span></a>. For the various table resources (e.g., <a class="reference internal" href="#struct-dataset"><span class="std std-ref">GMT_DATASET</span></a>)
 these modifiers result in a specially formatted comments beginning with
-“Command: ” or “Remark: “, reflecting how this type of information is
+“Command: “ or “Remark: “, reflecting how this type of information is
 encoded in the headers.</p>
 </section>
 <section id="export-data-sets">
@@ -3294,11 +3297,11 @@ rule says that all required input data items must be listed before any
 secondary input data items, and all primary output items must be listed
 on the left hand side before any secondary output items.
 There are three situations where the parsing will need further help;
-(1) Specifying the positions of memory arguments given to <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a>,
+(1) Specifying the positions of memory arguments given to <a class="reference internal" href="../gmtmath.html"><span class="doc">math</span></a>,
 (2) specifying the positions of memory arguments given to <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>,
 and (3) using -R? when passing a memory grid to the -R option (since just -R
 means use the previous region in the command history).
-Thus, in the <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a> call we we needed to specify where
+Thus, in the <a class="reference internal" href="../gmtmath.html"><span class="doc">math</span></a> call we we needed to specify where
 the specific arguments should be placed among the operators.
 API developers will rely on <a class="reference internal" href="#gmt-open-virtualfile">GMT_Open_VirtualFile</a> to convert the
 above syntax to correct options for <a class="reference internal" href="#gmt-call-module">GMT_Call_Module</a>.
@@ -4151,20 +4154,20 @@ default data types [float for matrix and double for vector].</p>
 <section id="footnotes">
 <h3>Footnotes<a class="headerlink" href="#footnotes" title="Link to this heading"></a></h3>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id6" role="note">
+<aside class="footnote brackets" id="id6" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>or via a very confusing and ever-changing myriad of low-level library
 functions for bold programmers.</p>
 </aside>
-<aside class="footnote brackets" id="id7" role="note">
+<aside class="footnote brackets" id="id7" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Currently, C/C++, FORTRAN, MATLAB and Julia are being tested.</p>
 </aside>
-<aside class="footnote brackets" id="id8" role="note">
+<aside class="footnote brackets" id="id8" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
 <p>This may change in later releases.</p>
 </aside>
-<aside class="footnote brackets" id="id9" role="note">
+<aside class="footnote brackets" id="id9" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
 <p>However, there is no thread-support yet, so you will need to manage your
 own threads.</p>
@@ -4185,8 +4188,8 @@ own threads.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

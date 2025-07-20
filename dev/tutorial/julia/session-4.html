@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Four &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <title>Session Four &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,11 +73,31 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../bash/index.html">Tutorial in Bash</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorial in Julia</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="session-1.html">Session One</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session-2.html">Session Two</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session-3.html">Session Three</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Session Four</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cpts">CPTs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#illumination-and-intensities">Illumination and intensities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#color-images">Color images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multi-dimensional-maps">Multi-dimensional maps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perspective-views">Perspective views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials for PyGMT</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://doi.org/10.1002/2016GC006723">Tutorials for GMT/Mex</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -120,7 +142,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -169,12 +191,12 @@ experimenting further.</p>
 <ol class="arabic simple">
 <li><p>Create simple, linear color tables given a master color table
 (several are built-in) and the desired <em>z</em>-values at color boundaries
-(<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a>)</p></li>
+(<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/">makecpt</a>)</p></li>
 <li><p>Create color tables based on a master CPT color table and the histogram-equalized distribution of <em>z</em>-values
-in a gridded data file (<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/#GMT.grd2cpt">grd2cpt</a>)</p></li>
+in a gridded data file (<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grd2cpt">grd2cpt</a>)</p></li>
 </ol>
 <p>One can also make these files manually. Here we will limit our discussion to
-<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a>.
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/">makecpt</a>.
 Its main argument is the name of the master color table (a list is
 shown if you run the module with no arguments) and the equidistant
 <em>z</em>-values to go with it.  The main options are given below.</p>
@@ -207,12 +229,12 @@ makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</sp
 </pre></div>
 </div>
 </div></blockquote>
-<p>We can plot these color tables with <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/colorbar/">colorbar</a>;
+<p>We can plot these color tables with <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/colorbar/">colorbar</a>;
 the options worth mentioning here are listed below. The placement of the color bar is particularly important
 and we refer you to the <a class="reference internal" href="../../reference/features.html#gmt-embellishments"><span class="std std-ref">Plot embellishments</span></a> section for all the details. In addition,
 the <strong>frame</strong> option can be used to set the title and unit label (and optionally to set the annotation-, tick-,
 and grid-line intervals for the color bars.).  Note that the makecpt commands above are done in classic mode.
-If you run <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a> in modern mode then you usually
+If you run <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/">makecpt</a> in modern mode then you usually
 do not specify an output file via standard output since modern mode maintains what is known as the current CPT.
 However, if you must explicitly name an output CPT then you will need to add the -H option for modern mode to
 allow output to standard output.</p>
@@ -256,7 +278,7 @@ showfig<span class="o">()</span>
 </figure>
 <p>Exercises:</p>
 <ol class="arabic simple">
-<li><p>Redo the <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a> exercise using the
+<li><p>Redo the <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/makecpt/">makecpt</a> exercise using the
 master table <em>hot</em> and redo the bar plot.</p></li>
 <li><p>Try specifying <strong>frame</strong>=(annot=10, grid=5).</p></li>
 </ol>
@@ -301,7 +323,7 @@ Here, we will extract a subset of the global 30” DEM called SRTM30+:</p>
 </div></blockquote>
 <p>Using <a class="reference internal" href="../../grdinfo.html"><span class="doc">grdinfo</span></a> we find that the data ranges from about 1000m to
 about 4300m so we need to make a CPT with that range.</p>
-<p>Color images are made with <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdimage/">grdimage</a>
+<p>Color images are made with <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdimage/">grdimage</a>
 which takes the usual common command options (by default the <strong>region</strong> is taken from the data set) and a CPT;
 the main other options are:</p>
 <table class="docutils align-default">
@@ -340,7 +362,7 @@ colorbar!<span class="o">(</span><span class="nv">pos</span><span class="o">=(</
 <p>The plain color map lacks detail and fails to reveal the topographic complexity of this Rocky Mountain region.
 What it needs is artificial illumination. We want to simulate shading by a sun source in the east, hence we
 derive the required intensities from the gradients of the topography in the N90°E direction using
-<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/">grdgradient</a>.
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdgradient/">grdgradient</a>.
 Other than the required input and output filenames, the available options are</p>
 <blockquote>
 <div><table class="docutils align-default">
@@ -407,7 +429,7 @@ colorbar!<span class="o">(</span><span class="nv">pos</span><span class="o">=(</
 <p>Exercises:</p>
 <ol class="arabic simple">
 <li><p>Force a gray-shade image.</p></li>
-<li><p>Rerun <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/">grdgradient</a> with <strong>norm</strong>=1.</p></li>
+<li><p>Rerun <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdgradient/">grdgradient</a> with <strong>norm</strong>=1.</p></li>
 </ol>
 </section>
 <section id="multi-dimensional-maps">
@@ -458,7 +480,7 @@ Your plot should look like <a class="reference internal" href="#gmt-tut-17-jl"><
 <section id="perspective-views">
 <h2>Perspective views<a class="headerlink" href="#perspective-views" title="Link to this heading"></a></h2>
 <p>Our final undertaking in this tutorial is to examine three-dimensional perspective views. The GMT module that
-produces perspective views of gridded data files is <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdview/">grdview</a>.
+produces perspective views of gridded data files is <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdview/">grdview</a>.
 It can make two kinds of plots:</p>
 <ol class="arabic simple">
 <li><p>Mesh or wire-frame plot (with or without superimposed contours)</p></li>
@@ -550,7 +572,7 @@ for the final output device and let it rip.</p>
 <p>Exercises:</p>
 <ol class="arabic simple">
 <li><p>Choose another vantage point and scaling.</p></li>
-<li><p>Redo <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/">grdgradient</a> with another illumination
+<li><p>Redo <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdgradient/">grdgradient</a> with another illumination
 direction and plot again.</p></li>
 <li><p>Select a higher <em>dpi</em>, e.g., 200.</p></li>
 </ol>
@@ -569,8 +591,8 @@ direction and plot again.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

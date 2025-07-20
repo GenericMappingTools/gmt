@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>12. PostScript Fonts Used by GMT &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+  <title>12. PostScript Fonts Used by GMT &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
@@ -150,7 +153,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -192,70 +195,6 @@ usually Courier). The following is a list of the GMT fonts:</p>
 <p><span class="caption-text">The standard 35 PostScript fonts recognized by GMT.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<div class="toggle docutils container">
-<p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">dy</span><span class="o">=</span>-0.2222
-<span class="nv">y0</span><span class="o">=</span><span class="m">4</span>.3
-<span class="nv">yy</span><span class="o">=</span><span class="m">4</span>.0778
-tr<span class="w"> </span><span class="s1">&#39;&quot;,&#39;</span><span class="w"> </span><span class="s1">&#39;  &#39;</span><span class="w"> </span>&lt;<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/standard_adobe_fonts.h<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>tt.d
-gmt<span class="w"> </span>begin<span class="w"> </span>GMT_App_G
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
-gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_FRAME_PEN<span class="w"> </span>thinner
-gmt<span class="w"> </span>plot<span class="w"> </span>-R0/5.4/0/<span class="nv">$y0</span><span class="w"> </span>-Jx1i<span class="w"> </span>-B0<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<span class="s">&gt;</span>
-<span class="s">0.3	0</span>
-<span class="s">0.3	$y0</span>
-<span class="s">&gt;</span>
-<span class="s">2.7	0</span>
-<span class="s">2.7	$y0</span>
-<span class="s">&gt;</span>
-<span class="s">3	0</span>
-<span class="s">3	$y0</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>text<span class="w"> </span>-Y<span class="si">${</span><span class="nv">yy</span><span class="si">}</span>i<span class="w"> </span>-F+f10p+jBC<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<span class="s">0.15	0.05	\\043</span>
-<span class="s">1.55	0.05	Font Name</span>
-<span class="s">2.85	0.05	\\043</span>
-<span class="s">4.15	0.05	Font Name</span>
-<span class="s">EOF</span>
-gmt<span class="w"> </span>plot<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<span class="s">0	0</span>
-<span class="s">5.4	0</span>
-<span class="s">EOF</span>
-
-<span class="nb">let</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="m">1</span>
-<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$i</span><span class="w"> </span>-le<span class="w"> </span><span class="m">17</span><span class="w"> </span><span class="o">]</span>
-<span class="k">do</span>
-<span class="w">	</span><span class="nv">i1</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="nv">i</span><span class="o">-</span><span class="m">1</span><span class="w"> </span><span class="k">))</span>
-<span class="w">	</span><span class="nv">i2</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="nv">i1</span><span class="o">+</span><span class="m">17</span><span class="w"> </span><span class="k">))</span>
-<span class="w">	</span><span class="nv">k1</span><span class="o">=</span><span class="nv">$i</span>
-<span class="w">	</span><span class="nv">k2</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="nv">i</span><span class="o">+</span><span class="m">17</span><span class="w"> </span><span class="k">))</span>
-
-<span class="w">	</span><span class="nv">f1</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">k1</span><span class="si">}</span>p<span class="w"> </span>tt.d<span class="k">)</span>
-<span class="w">	</span><span class="nv">f2</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="si">${</span><span class="nv">k2</span><span class="si">}</span>p<span class="w"> </span>tt.d<span class="k">)</span>
-
-<span class="w">	</span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$i1</span><span class="w"> </span>-eq<span class="w"> </span><span class="s2">&quot;12&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">		</span><span class="nv">f1</span><span class="o">=</span><span class="s2">&quot;Symbol @%0%(Symbol)@%%&quot;</span>
-<span class="w">	</span><span class="k">fi</span>
-<span class="w">	</span><span class="nv">fn2</span><span class="o">=</span><span class="nv">$i2</span>
-<span class="w">	</span>gmt<span class="w"> </span>text<span class="w"> </span>-Y<span class="si">${</span><span class="nv">dy</span><span class="si">}</span>i<span class="w"> </span>-F+f+j<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<span class="s">0.15	0.03	10p,$i1		BC	$i1</span>
-<span class="s">0.4	0.03	10p,$i1		BL	$f1</span>
-<span class="s">2.85	0.03	10p,$fn2	BC	$i2</span>
-<span class="s">3.1	0.03	10p,$i2		BL	$f2</span>
-<span class="s">EOF</span>
-<span class="w">	</span><span class="nb">let</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span>i+1
-<span class="k">done</span>
-
-gmt<span class="w"> </span>text<span class="w"> </span>-Y<span class="si">${</span><span class="nv">dy</span><span class="si">}</span>i<span class="w"> </span>-F+f+j<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<span class="s">2.85	0.03	10p,Helvetica		BC	34</span>
-<span class="s">3.1	0.03	10p,ZapfDingbats	BL	ZapfDingbats @%0%(ZapfDingbats)@%%</span>
-<span class="s">EOF</span>
-
-gmt<span class="w"> </span>end<span class="w"> </span>show
-</pre></div>
-</div>
-</div>
 <p>For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
 charts in Chapter <a class="reference internal" href="octal-codes.html"><span class="doc">Chart of Octal Codes for Characters</span></a>. When specifying fonts in GMT, you can
 either give the entire font name <em>or</em> just the font number listed in
@@ -339,7 +278,7 @@ anymore. Use Heiko Oberdiek’s instead or crop with
 <p>Since PostScript itself does not support Unicode fonts,
 Ghostscript will re-encode the fonts on the fly. You have to make
 sure to set the correct <a class="reference internal" href="../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a>
-with <a class="reference internal" href="../gmtset.html"><span class="doc">gmtset</span></a> and save your
+with <a class="reference internal" href="../gmtset.html"><span class="doc">set</span></a> and save your
 script file with the same character encoding. Alternatively, you can
 substitute all non ASCII characters with their corresponding octal
 codes, e.g., \265 instead of μ. Note, that PostScript fonts support
@@ -360,8 +299,8 @@ only a small range of glyphs and you may have to switch the
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

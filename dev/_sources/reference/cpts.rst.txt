@@ -42,13 +42,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The standard 46 CPTs supported by GMT.
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_M_1a.txt
+   The standard CPTs supported by GMT.
 
 .. _CPT_files_b:
 
@@ -56,13 +50,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 30 scientific color maps by Fabio Crameri supported by GMT.
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_M_1b.txt
+   The color maps (v8.0.1) by Fabio Crameri supported by GMT. Only the non-cyclic and non-categorical variants are shown here.
 
 .. _CPT_files_c:
 
@@ -70,16 +58,10 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 7 cyclic color maps (those ending in "O" are the cyclic
-   scientific color maps by Fabio Crameri) supported by GMT.
+   The categorical (top row) and cyclic color maps supported by GMT. Those starting with "SCM" are the cyclic
+   scientific color maps by Fabio Crameri; those stating with "cmocean" are cyclic color maps by Kristen M. Thyng.
    **Note**: Any GMT colormap can be made cyclic by running :doc:`/makecpt`
    with the **-Ww** option (wrapped = cyclic).
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_M_1c.txt
 
 .. _CPT_files_d:
 
@@ -87,16 +69,10 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    :width: 500 px
    :align: center
 
-   The 22 color maps from cmocean by Kristen M. Thyng supported by GMT.
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_M_1d.txt
+   The color maps from cmocean by Kristen M. Thyng supported by GMT.
 
 For additional color tables, visit
-`cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
+`cpt-city <http://www.seaviewsensing.com/pub/cpt-city/>`_ and
 `Scientific Colour-Maps <http://www.fabiocrameri.ch/colourmaps.php>`_.
 
 Labeled and non-equidistant color legends
@@ -126,10 +102,3 @@ annotation code to **B**.
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
    :align: center
-
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_App_M_2.txt

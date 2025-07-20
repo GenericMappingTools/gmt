@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gravfft &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <title>gravfft &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -31,14 +33,14 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="gravprisms" href="gravprisms.html" />
-    <link rel="prev" title="gmtgravmag3d" href="gmtgravmag3d.html" />
+    <link rel="prev" title="gravmag3d" href="gmtgravmag3d.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
@@ -120,7 +123,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -162,6 +165,7 @@
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>n_terms</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>f</strong>[<strong>+s</strong>|<strong>z</strong>]|<strong>b</strong>|<strong>g</strong>|<strong>v</strong>|<strong>n</strong>|<strong>e</strong>] ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><strong>w</strong>|<strong>b</strong>|<strong>c</strong>|<strong>t</strong>|<strong>k</strong> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>mgal_at_45</em> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>params</em> ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
@@ -293,6 +297,12 @@ theoretical admittance, and <strong>t</strong> writes a fourth column with “el
 plate” theoretical admittance.</p>
 </dd>
 </dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong><em>mgal_at_45</em></dt><dd><p>Specify the value of the gravity in mili Gals at 45 degrees latitude (used to convert
+gravity anomalies to geoid heights). Default is 980619.9203 mGal (Moritz’s 1980 IGF value).
+This value needs to be changed accordingly when using data from other planets.</p>
+</dd>
+</dl>
 <dl id="n">
 <dt><strong>-N</strong>[<strong>a</strong>|<strong>f</strong>|<strong>m</strong>|<strong>r</strong>|<strong>s</strong>|<em>nx/ny</em>][<strong>+a</strong>|<strong>d</strong>|<strong>h</strong>|<strong>l</strong>][<strong>+e</strong>|<strong>n</strong>|<strong>m</strong>][<strong>+t</strong><em>width</em>][<strong>+v</strong>][<strong>+w</strong>[<em>suffix</em>]][<strong>+z</strong>[<strong>p</strong>]]</dt><dd><p>Choose or inquire about suitable grid dimensions for FFT and set
 optional parameters. Control the FFT dimension via these directives:</p>
@@ -380,7 +390,7 @@ top” model you only have to provide <em>zm</em>, but for the “loading from b
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -466,7 +476,7 @@ Moho depth. That is when the scale/offset that can be appended to the grid’s n
 comes in hand. Notice that we didn’t need to do that before because mean water
 depth was computed directly from data (notice also the negative sign of the
 offset due to the fact that <em>z</em> is positive up):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>gravfft<span class="w"> </span>bat.grd<span class="o">=</span>+o-6000<span class="w"> </span>-D600<span class="w"> </span>-Gmoho_g.grd
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>gravfft<span class="w"> </span>bat.grd+o-6000<span class="w"> </span>-D600<span class="w"> </span>-Gmoho_g.grd
 </pre></div>
 </div>
 <p>Now, subtract it from the Bouguer to obtain the MBA anomaly. That is:</p>
@@ -544,15 +554,15 @@ J. Geophys. Res., 106(B9), 19,431–19,441,
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gmtgravmag3d.html" class="btn btn-neutral float-left" title="gmtgravmag3d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gmtgravmag3d.html" class="btn btn-neutral float-left" title="gravmag3d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="gravprisms.html" class="btn btn-neutral float-right" title="gravprisms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdimage &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>grdimage &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -121,7 +124,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -212,11 +215,11 @@ PostScript.</p>
 <section id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
-<dt><em>grid</em> | <em>image</em></dt><dd><p>2-D gridded data set or image to be plotted (see <a class="reference internal" href="supplements/windbarbs/grdbarb.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+<dt><em>grid</em> | <em>image</em></dt><dd><p>2-D gridded data set or image to be plotted (see <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See technical reference)</span></a>
 <a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
@@ -231,13 +234,13 @@ GDAL driver. The <em>driver</em> is the driver code name used by GDAL; see your 
 documentation for available drivers. Append a <strong>+c</strong><em>options</em> string where <em>options</em> is a list of
 one or more concatenated number of GDAL <strong>-co</strong> options. For example, to write a GeoPDF with the
 TerraGo format use <em>=PDF+cGEO_ENCODING=OGC_BP</em>. Notes: (1) If a tiff file (.tif) is selected
-then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
+then we will write a GeoTIFF image if the GMT projection syntax translates into a PROJ syntax,
 otherwise a plain tiff file is produced. (2) Any vector elements will be lost. <strong>Note</strong>: The <strong>-B</strong>
 option is not compatible with <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> since no PostScript output is allowed.</p>
 </dd>
 </dl>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl id="c">
@@ -272,7 +275,7 @@ by appending the desired unit code.</p></li>
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong>[<strong>r</strong>]</dt><dd><p>GMT will automatically detect standard image files (Geotiff, TIFF,
+<dt><strong>-D</strong>[<strong>r</strong>]</dt><dd><p>GMT will automatically detect standard image files (GeoTIFF, TIFF,
 JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
 obscure image formats you may need to explicitly set <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, which
 specifies that the grid is in fact an image file to be read via
@@ -327,7 +330,7 @@ non-rectangular maps).</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong>[<em>color</em>][<strong>+i</strong>][<strong>+z</strong><em>value</em>]</dt><dd><p>Handle transparency or opacity for grids or images. There are four general schemes:</p>
+<dt><strong>-Q</strong>[<em>color</em>][<strong>+i</strong>][<strong>+t</strong>][<strong>+z</strong><em>value</em>]</dt><dd><p>Handle transparency or opacity for grids or images. There are four general schemes:</p>
 <ul class="simple">
 <li><p>Grid - Plain <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> will turn grid nodes with NaN values transparent in the image, using
 the color-masking feature in PostScript Level 3 (the PS device must support PS Level 3).
@@ -341,17 +344,20 @@ channel that is either 0 or 255. Default turns any pixel with alpha = 0 transpar
 transparency between 0 and 255 on a per pixel basis then the <em>PostScript</em> image operator
 cannot create true variable pixel transparency <em>t</em>. Instead, each <em>r</em>, <em>g</em>, and <em>b</em> pixel
 values are converted by <span class="math notranslate nohighlight">\(r' = t R + (1-t) r\)</span>, where <em>R</em> (and <em>G</em>, <em>B</em>) is the
-transparent color at full transparency [Default is white]. If <em>color</em> is given
-then it becomes the <em>R</em>, <em>B</em>, <em>G</em>  at full transparency. Such RGBA images will
-be approximated by <em>n_columns</em> times <em>n_rows</em> of tiny squares with variable color and
-transparency.  If <em>A</em> reflects opacity instead of transparency then you can use modifier
+transparent color at full transparency [Default is white]. If <em>color</em> is given then it
+becomes the <em>R</em>, <em>B</em>, <em>G</em>  at full transparency. This (opaque) transformation is
+actually done by default (_i.e._, no need to set <strong>-Q</strong>). If, however, a true transparency
+is wished, then use the <strong>+i</strong> modifier. Such RGBA images will be approximated by <em>n_columns</em>
+times <em>n_rows</em> of tiny squares with variable color and transparency. Given this schema, the
+PositScript created file is much larger than if <strong>+t</strong> is not used and that is why this is
+not the default behavior. If <em>A</em> reflects opacity instead of transparency then you can use modifier
 <strong>+i</strong> to invert these numbers first. See <a class="reference internal" href="#limitations-on-transparency">Limitations on transparency</a> for more discussion.
 <strong>Note</strong>: The <strong>+i</strong> modifier is not available for grids.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <blockquote>
@@ -371,19 +377,19 @@ custom pen if the default pen is not to your liking.</p>
 </dd>
 </dl>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -403,7 +409,9 @@ custom pen if the default pen is not to your liking.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms (OpenMP required).</p>
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms. Multi-threaded behavior is enabled by default.
+That covers the modules that implement the OpenMP API (required at compiling stage) and GThreads (Glib)
+for the grdfilter module.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -495,7 +503,7 @@ If no <a class="reference internal" href="#c"><span><strong>-C</strong></span></
 <section id="limitations-on-transparency">
 <h2>Limitations on transparency<a class="headerlink" href="#limitations-on-transparency" title="Link to this heading"></a></h2>
 <p>The PostScript imaging model does not support any form of transparency.  However, Adobe added
-<a class="reference external" href="https://opensource.adobe.com/dc-acrobat-sdk-docs/acrobatsdk/pdfs/acrobatsdk_pdfmark.pdf">pdfMark</a>
+<a class="reference external" href="https://opensource.adobe.com/dc-acrobat-sdk-docs/library/pdfmark/index.html">pdfMark</a>
 which allows PostScript to specify transparency but only if activated when converting PostScript
 or EPS to PDF with Adobe Distiller or GhostScript. Each graphic (e.g., polygon, line, text, image)
 can have a specified transparency. Yet, for images this is very limited: We can choose a particular
@@ -510,7 +518,7 @@ that can have individualized color <em>and</em> transparency via (up to) 255 val
 <section id="image-formats-recognized">
 <h2>Image formats recognized<a class="headerlink" href="#image-formats-recognized" title="Link to this heading"></a></h2>
 <p>We automatically recognize image formats via their magic bytes.  For formats
-that could contain either an image or a data set (e.g., geotiff) we determine
+that could contain either an image or a data set (e.g., GeoTIFF) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.</p>
 </section>
@@ -593,8 +601,8 @@ tickmarks every 5 units:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

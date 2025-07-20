@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installing GMT &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>Installing GMT &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,14 +33,14 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Illustration Gallery" href="gallery.html" />
-    <link rel="prev" title="GMT Themes" href="theme-settings.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +74,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installing GMT</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#windows">Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#macos">macOS</a><ul>
@@ -86,6 +89,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#ubuntu-debian">Ubuntu/Debian</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#archlinux">ArchLinux</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gentoo">Gentoo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nixos">NixOS</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#cross-platform-install-instructions">Cross Platform Install Instructions</a><ul>
@@ -145,7 +149,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -192,10 +196,10 @@ different operating systems. Please refer to the
 for compiling GMT source package (either stable release or development version).</p>
 <section id="windows">
 <h2>Windows<a class="headerlink" href="#windows" title="Link to this heading"></a></h2>
-<p>We provide 32 and 64 bit standalone installers (e.g.,
+<p>We provide 64 bit standalone installer (e.g.,
 gmt-6.x.x-win64.exe) in the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/releases">GitHub
 repository</a>. The
-installers come with GDAL, FFmpeg, and Ghostscript pre-installed.</p>
+installer come with GDAL, FFmpeg, and Ghostscript pre-installed.</p>
 <p>In addition to the GMT installer, you also need to download and install
 <a class="reference external" href="http://www.graphicsmagick.org/">GraphicsMagick</a> if you want to
 create animated GIFs.</p>
@@ -376,7 +380,7 @@ sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> <
 <h3>Ubuntu/Debian<a class="headerlink" href="#ubuntu-debian" title="Link to this heading"></a></h3>
 <p><strong>NOTE:</strong> The Ubuntu/Debian official repositories may provide old GMT
 versions. If you want the latest GMT 6.x release, your best bet then is
-to <a class="reference external" href="BUILDING.md">build the latest release from source</a>.</p>
+to <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md">build the latest release from source</a>.</p>
 <p>Install GMT via:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gmt<span class="w"> </span>gmt-dcw<span class="w"> </span>gmt-gshhg
 </pre></div>
@@ -403,10 +407,17 @@ in the wiki for those.</p>
 </section>
 <section id="gentoo">
 <h3>Gentoo<a class="headerlink" href="#gentoo" title="Link to this heading"></a></h3>
-<p><strong>NOTE:</strong> This may provide old GMT versions. Consider <a class="reference external" href="BUILDING.md">building from
+<p><strong>NOTE:</strong> This may provide old GMT versions. Consider <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md">building from
 source</a>.</p>
 <p>Install GMT via:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>emerge<span class="w"> </span>--verbose<span class="w"> </span>--ask<span class="w"> </span>sci-geosciences/gmt
+</pre></div>
+</div>
+</section>
+<section id="nixos">
+<h3>NixOS<a class="headerlink" href="#nixos" title="Link to this heading"></a></h3>
+<p>Install GMT by adding these packages to your system (or home-manager) configuration:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>gshhg-gmt<span class="w"> </span>dcw-gmt
 </pre></div>
 </div>
 </section>
@@ -456,20 +467,19 @@ GIFs or MP4:</p>
 <h2>FreeBSD<a class="headerlink" href="#freebsd" title="Link to this heading"></a></h2>
 <p>GMT may be installed on FreeBSD using Ports or from source.</p>
 <p><strong>NOTE:</strong> The Ports Collection may provide old GMT versions. If you want
-the latest GMT release, consider <a class="reference external" href="BUILDING.md">building the latest release from
+the latest GMT release, consider <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md">building the latest release from
 source</a>.</p>
 <section id="install-via-ports">
 <h3>Install via Ports<a class="headerlink" href="#install-via-ports" title="Link to this heading"></a></h3>
 <p>The FreeBSD Ports Collection is a diverse collection of utility and
 application software that has been ported to FreeBSD.</p>
 <p><strong>Precompiled</strong></p>
-<p>Install precompiled gmt binaries with</p>
+<p>Install precompiled gmt binaries with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pkg<span class="w"> </span>install<span class="w"> </span>gmt
 </pre></div>
 </div>
 <p><strong>Compile from Ports</strong></p>
-<p>If not done already, set up the <strong>Ports Collection</strong> See
-<a class="reference external" href="https://docs.freebsd.org/en/books/handbook/ports/#ports-using">https://docs.freebsd.org/en/books/handbook/ports/#ports-using</a>:</p>
+<p>If not done already, set up the <a class="reference external" href="https://docs.freebsd.org/en/books/handbook/ports/#ports-using">Ports Collection</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>portsnap<span class="w"> </span>fetch
 portsnap<span class="w"> </span>extract
 </pre></div>
@@ -490,15 +500,15 @@ portsnap<span class="w"> </span>extract
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="theme-settings.html" class="btn btn-neutral float-left" title="GMT Themes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="gallery.html" class="btn btn-neutral float-right" title="Illustration Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

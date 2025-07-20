@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modules (Classic Mode) &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>Modules (Classic Mode) &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,14 +33,15 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="isogmt" href="isogmt.html" />
-    <link rel="prev" title="Remote Data Sets" href="datasets/remote-data.html" />
+    <link rel="prev" title="Remote Datasets" href="datasets/remote-data.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -59,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -72,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -148,7 +152,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -216,12 +220,11 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="gmtconnect.html"><span class="doc">gmtconnect</span></a></p></li>
 <li><p><a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a></p></li>
 <li><p><a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a></p></li>
-<li><p><a class="reference internal" href="grdgdal.html"><span class="doc">grdgdal</span></a></p></li>
 <li><p><a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a></p></li>
 <li><p><a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a></p></li>
+<li><p><a class="reference internal" href="gmtlogo-classic.html"><span class="doc">gmtlogo</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="gmtlogo-classic.html"><span class="doc">gmtlogo</span></a></p></li>
 <li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a></p></li>
 <li><p><a class="reference internal" href="gmtregress.html"><span class="doc">gmtregress</span></a></p></li>
 <li><p><a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a></p></li>
@@ -236,15 +239,16 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a></p></li>
 <li><p><a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a></p></li>
 <li><p><a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a></p></li>
+<li><p><a class="reference internal" href="grdcontour-classic.html"><span class="doc">grdcontour</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="grdcontour-classic.html"><span class="doc">grdcontour</span></a></p></li>
 <li><p><a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a></p></li>
 <li><p><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a></p></li>
 <li><p><a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a></p></li>
 <li><p><a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a></p></li>
 <li><p><a class="reference internal" href="grdfill.html"><span class="doc">grdfill</span></a></p></li>
 <li><p><a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a></p></li>
+<li><p><a class="reference internal" href="grdgdal.html"><span class="doc">grdgdal</span></a></p></li>
 <li><p><a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a></p></li>
 <li><p><a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a></p></li>
 <li><p><a class="reference internal" href="grdimage-classic.html"><span class="doc">grdimage</span></a></p></li>
@@ -458,7 +462,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <td><p>Plot gray scale or color scale bar</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="pssolar.html"><span class="doc">pssolar</span></a></p></td>
-<td><p>Plot day-light terminators and other sunlight parameters</p></td>
+<td><p>Plot day-night terminators and other sunlight parameters</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="psternary.html"><span class="doc">psternary</span></a></p></td>
 <td><p>Plot data on ternary diagrams</p></td>
@@ -910,21 +914,23 @@ All modules are requested via a call to the <a class="reference internal" href="
 <h2>seis<a class="headerlink" href="#seis" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <tbody>
-<tr class="row-odd"><td colspan="2"><p><a class="reference internal" href="supplements/seis/pscoupe.html"><span class="doc">pscoupe</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/seis/pscoupe.html"><span class="doc">pscoupe</span></a></p></td>
 <td><p>Plot cross-sections of focal mechanisms</p></td>
 </tr>
-<tr class="row-even"><td colspan="2"><p><a class="reference internal" href="supplements/seis/psmeca.html"><span class="doc">psmeca</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/seis/psmeca.html"><span class="doc">psmeca</span></a></p></td>
 <td><p>Plot focal mechanisms</p></td>
 </tr>
-<tr class="row-odd"><td colspan="2"><p><a class="reference internal" href="supplements/seis/pspolar.html"><span class="doc">pspolar</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/seis/pspolar.html"><span class="doc">pspolar</span></a></p></td>
 <td><p>Plot polarities on the lower hemisphere of the focal sphere</p></td>
 </tr>
-<tr class="row-even"><td colspan="2"><p><a class="reference internal" href="supplements/seis/pssac.html"><span class="doc">pssac</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/seis/pssac.html"><span class="doc">pssac</span></a></p></td>
 <td><p>Plot seismograms in SAC format</p></td>
 </tr>
-<tr class="row-odd"><td colspan="3"><p><a class="reference internal" href="supplements/seis/grdshake.html"><span class="doc">grdshake</span></a> | Compute Peak Ground Acceleration/Velocity and Intensity</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/seis/grdshake.html"><span class="doc">grdshake</span></a></p></td>
+<td><p>Compute Peak Ground Acceleration/Velocity and Intensity</p></td>
 </tr>
-<tr class="row-even"><td colspan="3"><p><a class="reference internal" href="supplements/seis/grdvs30.html"><span class="doc">grdvs30</span></a>  | Convert topographic slope to Vs30 velocities</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="supplements/seis/grdvs30.html"><span class="doc">grdvs30</span></a></p></td>
+<td><p>Convert topographic slope to Vs30 velocities</p></td>
 </tr>
 </tbody>
 </table>
@@ -1022,15 +1028,15 @@ All modules are requested via a call to the <a class="reference internal" href="
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="datasets/remote-data.html" class="btn btn-neutral float-left" title="Remote Data Sets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="datasets/remote-data.html" class="btn btn-neutral float-left" title="Remote Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="isogmt.html" class="btn btn-neutral float-right" title="isogmt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

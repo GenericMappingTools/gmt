@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>greenspline &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>greenspline &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -121,7 +124,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -158,7 +161,7 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt greenspline</strong> [ <em>table</em> ]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grdfile</em>
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>gradfile</em><strong>+f</strong>|<strong>0</strong>|<strong>1</strong>|<strong>2</strong>|<strong>3</strong>|<strong>4</strong>|<strong>5</strong> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>gradfile</em><strong>+f</strong><strong>0</strong>|<strong>1</strong>|<strong>2</strong>|<strong>3</strong>|<strong>4</strong>|<strong>5</strong> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[[<strong>n</strong>|<strong>r</strong>|<strong>v</strong>]<em>value</em>[%]][<strong>+c</strong>][<strong>+f</strong><em>file</em>][<strong>+i</strong>][<strong>+n</strong>] ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+v</strong><em>vname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>] ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>misfitfile</em>][<strong>+r</strong><em>reportfile</em>] ]
@@ -213,7 +216,7 @@ are determined by requiring the solution to fit the observed residual data exact
 add additional <em>m</em> unknown coefficients and use the gradient of the Green’s functions to satisfy
 the <em>m</em> extra constraints:</p>
 <div class="math notranslate nohighlight">
-\[s(\mathbf{x}_k) = \nabla w(\mathbf{x}_k) = \sum_{j=1}^{n} \alpha_j \nabla g(\mathbf{x}_k; \mathbf{x}_j) \mathbf{n}_k, \quad k = 1,m\]</div>
+\[s(\mathbf{x}_k) = \nabla w(\mathbf{x}_k) \mathbf{n}_k = \sum_{j=1}^{m} \alpha_{j+n} \nabla g(\mathbf{x}_k; \mathbf{x}_j) \mathbf{n}_k, \quad k = 1,m\]</div>
 <p>where the gradient of the Green’s functions is dotted with the unit vector of the observed gradient.</p>
 <p>Finally, away from the data constraints the Green’s function must satisfy</p>
 <div class="math notranslate nohighlight">
@@ -255,7 +258,7 @@ this table is written to standard output. Ignored if <a class="reference interna
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl id="a">
-<dt><strong>-A</strong><em>gradfile</em><strong>+f</strong>|<strong>0</strong>|<strong>1</strong>|<strong>2</strong>|<strong>3</strong>|<strong>4</strong>|<strong>5</strong></dt><dd><p>The solution will partly be constrained by surface gradients
+<dt><strong>-A</strong><em>gradfile</em><strong>+f</strong><strong>0</strong>|<strong>1</strong>|<strong>2</strong>|<strong>3</strong>|<strong>4</strong>|<strong>5</strong></dt><dd><p>The solution will partly be constrained by surface gradients
 <span class="math notranslate nohighlight">\(\mathbf{v} = v \hat{\mathbf{n}}\)</span>, where <span class="math notranslate nohighlight">\(v\)</span> is the gradient
 magnitude and <span class="math notranslate nohighlight">\(\hat{\mathbf{n}}\)</span> its unit vector direction.
 The gradient direction may be specified either by Cartesian components
@@ -451,7 +454,7 @@ the need to specify options <a class="reference internal" href="#r"><span><stron
 </dd>
 </dl>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -525,7 +528,9 @@ columns (<strong>x</strong>,<em>w</em>); the number depends on the chosen dimens
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms (OpenMP required).</p>
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms. Multi-threaded behavior is enabled by default.
+That covers the modules that implement the OpenMP API (required at compiling stage) and GThreads (Glib)
+for the grdfilter module.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -542,7 +547,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </section>
 <section id="d-examples">
 <h2>1-D Examples<a class="headerlink" href="#d-examples" title="Link to this heading"></a></h2>
-<p>To resample the <em>x</em>,<em>y</em> Gaussian random data created by <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>
+<p>To resample the <em>x</em>,<em>y</em> Gaussian random data created by <a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>
 and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
 using a minimum cubic spline, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>1D
@@ -642,7 +647,7 @@ place restrictions on how large data sets you can process with
 may also control the size of <em>n</em>. For information, if <em>n</em> = 1024 then
 only 8 Mb memory is needed, but for <em>n</em> = 10240 we need 800 Mb. Note
 that <strong>greenspline</strong> is fully 64-bit compliant if compiled as such.
-For spherical data you may consider decimating using <a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a>
+For spherical data you may consider decimating using <a class="reference internal" href="gmtspatial.html"><span class="doc">spatial</span></a>
 nearest neighbor reduction.</p></li>
 <li><p>The inversion for coefficients can become numerically unstable when
 data neighbors are very close compared to the overall span of the data.
@@ -711,7 +716,7 @@ Int</em>, <strong>174</strong>, 21-28, <a class="reference external" href="https
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
-<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtmath.html"><span class="doc">math</span></a>,
 <a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a>, <a class="reference internal" href="plot.html"><span class="doc">plot</span></a>,
 <a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a>,
 <a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a>,
@@ -731,8 +736,8 @@ Int</em>, <strong>174</strong>, 21-28, <a class="reference external" href="https
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

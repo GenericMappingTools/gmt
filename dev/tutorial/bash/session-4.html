@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Four &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+  <title>Session Four &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7f64e455"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="../../_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="../../_static/design-tabs.js?v=36754332"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
@@ -59,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -71,11 +73,31 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../tutorial.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorial in Bash</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="session-1.html">Session One</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session-2.html">Session Two</a></li>
+<li class="toctree-l3"><a class="reference internal" href="session-3.html">Session Three</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Session Four</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cpts">CPTs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#illumination-and-intensities">Illumination and intensities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#color-images">Color images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multi-dimensional-maps">Multi-dimensional maps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perspective-views">Perspective views</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../julia/index.html">Tutorial in Julia</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials for PyGMT</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://doi.org/10.1002/2016GC006723">Tutorials for GMT/Mex</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -120,7 +142,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -242,7 +264,6 @@ add the <strong>-H</strong> option for modern mode to allow output to standard o
 </table>
 <p>Here is an example of four different ways of presenting the color bar:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_14
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-Crainbow<span class="w"> </span>-T-20/60/10<span class="w"> </span>&gt;<span class="w"> </span>disc.cpt
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-H<span class="w"> </span>-Crainbow<span class="w"> </span>-T-20/60<span class="w"> </span>&gt;<span class="w"> </span>cont.cpt
 <span class="w">	</span>gmt<span class="w"> </span>basemap<span class="w"> </span>-R0/6/0/9<span class="w"> </span>-Jx1i<span class="w"> </span>-B0
@@ -346,7 +367,6 @@ and a CPT; the main other options are:</p>
 <p>We want to make a plain color map with a color bar superimposed above
 the plot.  We try</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_15
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T1000/5000
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@earth_relief_30s<span class="w"> </span>-R-108/-103/35/40<span class="w"> </span>-JM6i<span class="w"> </span>-B<span class="w"> </span>-BWSnE
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJTC<span class="w"> </span>-I0.4<span class="w"> </span>-Bxa<span class="w"> </span>-By+lm
@@ -420,7 +440,6 @@ arguments to <a class="reference internal" href="../../grdgradient.html"><span c
 Given the previous CPT and our chosen <a class="reference internal" href="../../grdgradient.html"><span class="doc">grdgradient</span></a> arguments we can
 create the shaded relief image:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_16
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T1000/5000
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@earth_relief_30s<span class="w"> </span>-R-108/-103/35/40<span class="w"> </span>-I+a100+ne0.8<span class="w"> </span>-JM6i<span class="w"> </span>-B<span class="w"> </span>-BWSnE
 <span class="w">	</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJTC<span class="w"> </span>-I0.4<span class="w"> </span>-Bxa<span class="w"> </span>-By+lm
@@ -464,7 +483,6 @@ Let us focus on the temperatures in Summer (that is the third season, July throu
 September) at sea level (that is the first level). To plot these in a Mollweide projection we
 use:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_17
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cno_green<span class="w"> </span>-T-2/30/2
 <span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>-Rg<span class="w"> </span>-JW180/9i<span class="w"> </span><span class="s2">&quot;@otemp.anal1deg.nc?otemp[2,0]&quot;</span><span class="w"> </span>-Bag
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -543,7 +561,6 @@ GMT module that produces perspective views of gridded data files is
 subset of the ETOPO5 data over Bermuda and will use the ocean CPT.
 A simple mesh plot can therefore be obtained with</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_18
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>grdview<span class="w"> </span>@earth_relief_05m<span class="w"> </span>-R-66/-60/30/35<span class="w"> </span>-JM5i<span class="w"> </span>-JZ2i<span class="w"> </span>-p135/30<span class="w"> </span>-B
 gmt<span class="w"> </span>end<span class="w"> </span>show
 </pre></div>
@@ -565,7 +582,6 @@ gmt<span class="w"> </span>end<span class="w"> </span>show
 <p>We will make a perspective, color-coded view of the US Rockies
 from the southeast.  Similar to the <a class="reference internal" href="../../grdimage.html"><span class="doc">grdimage</span></a> examples, this is done using</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>GMT_tut_19
-<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_THEME<span class="w"> </span>cookbook
 <span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cdem2<span class="w"> </span>-T1000/5000
 <span class="w">	</span>gmt<span class="w"> </span>grdview<span class="w"> </span>@earth_relief_30s<span class="w"> </span>-R-108/-103/35/40<span class="w"> </span>-JM4i<span class="w"> </span>-p135/35<span class="w"> </span>-Qi50<span class="w"> </span>-I+a100+ne0.8<span class="w"> </span>-B<span class="w"> </span>-JZ0.5i
 gmt<span class="w"> </span>end<span class="w"> </span>show
@@ -603,8 +619,8 @@ appropriate <em>dpi</em> for the final output device and let it rip.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 

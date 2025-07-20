@@ -1,17 +1,19 @@
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmt &mdash; GMT 6.5.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
-      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+  <title>gmt &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
     <link rel="shortcut icon" href="_static/favicon.png"/>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
@@ -22,8 +24,8 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=7f64e455"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
@@ -31,7 +33,7 @@
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
         <script src="_static/togglebutton.js?v=4a39c7ea"></script>
-        <script src="_static/design-tabs.js?v=36754332"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.5
+                6.6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -73,6 +75,7 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
@@ -121,7 +124,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/6.5/gmt-docs-6.5.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -324,7 +327,7 @@ modules. No space between the option flag and the associated arguments.</p>
 <h3>The <strong>-B</strong> option<a class="headerlink" href="#the-b-option" title="Link to this heading"></a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="reference/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <p><strong>Description</strong></p>
@@ -404,7 +407,8 @@ with &#64;[ markers (or alternatively &lt;math&gt; … &lt;/math&gt;) (requires 
 <blockquote>
 <div><div class="line-block">
 <div class="line"><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>][<strong>x</strong>|<strong>y</strong>|<strong>z</strong>][<strong>+a</strong><em>angle</em>|<strong>n</strong>|<strong>p</strong>][<strong>+e</strong>[<strong>l</strong>|<strong>u</strong>]][<strong>+f</strong>][<strong>+l</strong>|<strong>L</strong><em>label</em>][<strong>+p</strong><em>prefix</em>][<strong>+s</strong>|<strong>S</strong><em>seclabel</em>][<strong>+u</strong><em>unit</em>]</div>
-<div class="line"><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>][<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>intervals</em></div>
+<div class="line"><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>][<strong>x</strong>|<strong>y</strong>|<strong>z</strong>][<strong>00</strong>|<strong>000</strong>]<em>intervals</em></div>
+<div class="line"><strong>-B0</strong></div>
 </div>
 </div></blockquote>
 <p>The following directives and modifiers can be appended to <strong>-B</strong> to control the Axes settings:</p>
@@ -435,6 +439,13 @@ addition of degree symbols, etc. is automatic and controlled by <a class="refere
 the horizontal and must be in the -90 &lt;= <em>angle</em> &lt;= 90 range. <strong>+an</strong> can be used as a shorthand for normal
 (i.e., <strong>+a</strong>90) [Default for y-axis] and <strong>+ap</strong> for parallel (i.e., <strong>+a</strong>0) annotations [Default for
 x-axis]. These defaults can be changed via <a class="reference internal" href="gmt.conf.html#term-MAP_ANNOT_ORTHO"><span class="xref std std-term">MAP_ANNOT_ORTHO</span></a>.</p></li>
+<li><p><strong>0</strong> This will suppress all annotations and tick marks. Useful when you want to plot a map without any
+annotations, grid or ticks but still want to plot a frame using a line with set by <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>.</p></li>
+<li><p><strong>00</strong> Plot a frame with annotations, ticks etc use a zero-width line to plot the frame (0-width lines are lines
+that remain very thin regardless of the zoom level).</p></li>
+<li><p><strong>000</strong> Plot annotations, ticks and grid lines (as choosed) but do <strong>not</strong> plot the frame lines. Note, this effect
+is only visible with _png_ and _pdf_ formats and is not guaranteed to work when selecting only a subset of the
+axes (e.g., <strong>-B000ya30g30</strong> is not working well).</p></li>
 <li><p><em>intervals</em> to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
 spacing. See <a class="reference internal" href="reference/options.html#option-b-int"><span class="std std-ref">Intervals Specification</span></a> for the formatting associated with this modifier.</p></li>
 </ul>
@@ -607,7 +618,7 @@ and <a class="reference internal" href="gmt.conf.html#term-MAP_TICK_PEN_PRIMARY"
 <h3>The <strong>-J</strong> option<a class="headerlink" href="#the-j-option" title="Link to this heading"></a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="j">
-<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="reference/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See technical reference)</span></a>
 <a class="reference internal" href="reference/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
@@ -957,10 +968,9 @@ and <strong>cs2cs</strong> programs) so users are referred to <a class="referenc
 <p>The usage of <strong>PROJ</strong> follows very closely the syntax of <strong>proj</strong> and <strong>cs2cs</strong>. The projection parameters
 are encapsulated under the <strong>-J</strong> option. Because there are normally several parameters defining a
 referencing system separated by spaces (in <strong>PROJ</strong> or <strong>GDAL</strong>) we can either use double quotes as in
-<strong>-J</strong>“<em>+proj=merc +ellps=WGS84 +units=m</em>” or just glue all parameters like in
+<strong>-J</strong>“<em>+proj=merc +ellps=WGS84 +units=m</em>“ or just glue all parameters like in
 <strong>-J</strong><em>+proj=merc+ellps=WGS84+units=m</em>.</p>
-<p>Using <a class="reference external" href="https://spatialreference.org">EPSG codes</a> is also possible (but need the setting of the <strong>GDAL_DATA</strong>
-environment variable to point to the GDAL’s <em>data</em> sub-directory). For example <strong>-JEPSG:4326</strong> sets
+<p>Using <a class="reference external" href="https://spatialreference.org">EPSG codes</a> is also possible. For example <strong>-JEPSG:4326</strong> sets
 the WGS-84 system.</p>
 <p>For <a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> and <a class="reference internal" href="grdproject.html"><span class="doc">grdproject</span></a> we can go directly from the
 referencing system A to B without the intermediate step of converting to geographic coordinates.
@@ -980,7 +990,7 @@ to provide the scale (but <strong>not</strong> the width) by appending the strin
 <h3>The <strong>-R</strong> option<a class="headerlink" href="#the-r-option" title="Link to this heading"></a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <p><strong>Description</strong></p>
@@ -1051,7 +1061,7 @@ perspective view of the plane is plotted, with no third dimension.</p>
 <h3>The <strong>-U</strong> option<a class="headerlink" href="#the-u-option" title="Link to this heading"></a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <p><strong>Description</strong></p>
@@ -1077,7 +1087,7 @@ environment variable <strong>TZ</strong> (generally local time).</p>
 <h3>The <strong>-V</strong> option<a class="headerlink" href="#the-v-option" title="Link to this heading"></a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="v">
-<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <p><strong>Description</strong></p>
@@ -1099,11 +1109,11 @@ environment variable <strong>TZ</strong> (generally local time).</p>
 <h3>The <strong>-X</strong> <strong>-Y</strong> options<a class="headerlink" href="#the-x-y-options" title="Link to this heading"></a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="x">
-<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="y">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="reference/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <p><strong>Description</strong></p>
@@ -1230,7 +1240,7 @@ gmt<span class="w"> </span>convert<span class="w"> </span>test.bin<span class="w
 of given <em>type</em> and <em>type</em> must be one of <strong>c</strong>, <strong>u</strong>, <strong>h</strong>, <strong>H</strong>, <strong>i</strong>, <strong>I</strong>,
 <strong>l</strong>, <strong>L</strong>, <strong>f</strong>, or <strong>d</strong> [Default] (see <a class="reference internal" href="reference/options.html#bi-types"><span class="std std-ref">-bi types</span></a> for descriptions).
 Force byte-swapping of a group by appending <strong>w</strong> at the end of the group.
-For a mixed-type output record, append additional comma-separated groups (no space between groups)
+For a mixed-type output record, append additional comma-separated groups (no space between groups).
 The following modifiers are supported:</p>
 <blockquote>
 <div><ul class="simple">
@@ -1313,11 +1323,16 @@ all items from the given column and to the end of the record should be considere
 <strong>s</strong> (for string). Only the last group may set <strong>s</strong>. (2) Types <strong>T</strong> and <strong>s</strong> can only be used with ASCII data sets.</p>
 <p>Three shorthand options for common selections are available. The shorthand <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<strong>g</strong> means
 <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0x,1y (i.e., geographic coordinates), while <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<strong>c</strong> means
-<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0:1<strong>f</strong> (i.e., Cartesian coordinates). A special use of <strong>-f</strong> is to select
+<strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0:1<strong>f</strong> (i.e., Cartesian coordinates). A first special use of <strong>-f</strong> is to select
 <strong>-fp</strong>[<em>unit</em>], which <em>requires</em> <strong>-J -R</strong> and lets you use <em>projected</em> map coordinates (e.g., UTM meters) as data input.
 Such coordinates are automatically inverted to longitude, latitude during the data import. Optionally, append a length
-<em>unit</em> (see table <a class="reference internal" href="reference/features.html#tbl-distunits"><span class="std std-ref">distance units</span></a>) [default is meter]. For more information, see Sections
-<a class="reference internal" href="reference/features.html#input-data-formats"><span class="std std-ref">Input data formats</span></a> and <a class="reference internal" href="reference/features.html#output-data-formats"><span class="std std-ref">Output data formats</span></a>.</p>
+<em>unit</em> (see table <a class="reference internal" href="reference/features.html#tbl-distunits"><span class="std std-ref">distance units</span></a>) [default is meter]. The second special case is to use <strong>-fa</strong>.
+We use this when reading a file whose first column is plain text (and NO date or time) followed by numeric records.
+Normally, such a file would result in a _”Selection led to no output columns”_ error because the file was interpreted
+to be made only of text (_i.,e.,_ no numbers). Or even worse, only part of the file is read. The <strong>-fa</strong> option
+forces the first column to be ignored (output as NaN) and the remaining records parsed normally. User may add the
+<strong>-i1:</strong> to fully drop that first column in reading. For more information, see Sections <a class="reference internal" href="reference/features.html#input-data-formats"><span class="std std-ref">Input data formats</span></a>
+and <a class="reference internal" href="reference/features.html#output-data-formats"><span class="std std-ref">Output data formats</span></a>.</p>
 <span class="target" id="g-full"></span></section>
 <section id="the-g-option">
 <h3>The <strong>-g</strong> option<a class="headerlink" href="#the-g-option" title="Link to this heading"></a></h3>
@@ -1505,7 +1520,7 @@ conditions]. Append one of the following to select the type of spline used:</p>
 <li><p><strong>+a</strong> - Switch off antialiasing (where supported) [default uses antialiasing].</p></li>
 <li><p><strong>+b</strong> - Override boundary conditions used, by appending <em>g</em> for geographic, <em>p</em> for periodic, or <em>n</em> for
 natural boundary conditions. For the latter two you may append <strong>x</strong> or <strong>y</strong> to specify just one direction, otherwise
-both are assumed.</p></li>
+both are assumed. For more information see <a class="reference internal" href="reference/file-formats.html#grid-boundary-conditions"><span class="std std-ref">Boundary Conditions for operations on grids</span></a>.</p></li>
 <li><p><strong>+c</strong> - Clip the interpolated grid to input z-min/z-max [default may exceed limits].</p></li>
 <li><p><strong>+t</strong> - Control how close to nodes with NaNs the interpolation will go based on <em>threshold</em>. A <em>threshold</em> of 1.0
 requires all (4 or 16) nodes involved in interpolation to be non-NaN. For example, 0.5 will interpolate about half
@@ -1966,7 +1981,7 @@ multi-layer plots.</p>
 </dl>
 <dl class="simple" id="p-full">
 <dt><strong>-P</strong></dt><dd><p>Select “Portrait” plot orientation [Default is “Landscape”; see
-<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> or <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a> to change the <a class="reference internal" href="gmt.conf.html#term-PS_PAGE_ORIENTATION"><span class="xref std std-term">PS_PAGE_ORIENTATION</span></a>
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> or <a class="reference internal" href="gmtset.html"><span class="doc">set</span></a> to change the <a class="reference internal" href="gmt.conf.html#term-PS_PAGE_ORIENTATION"><span class="xref std std-term">PS_PAGE_ORIENTATION</span></a>
 parameter, or supply <strong>--PS_PAGE_ORIENTATION=</strong><em>orientation</em> on the
 command line].</p>
 </dd>
@@ -2005,8 +2020,8 @@ GMT documentation site <a class="reference external" href="https://docs.generic-
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, The GMT Team.
-      <span class="lastupdated">Last updated on Jan 05, 2024.
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 20, 2025.
       </span></p>
   </div>
 
