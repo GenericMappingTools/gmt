@@ -135,7 +135,7 @@ Optional Arguments
       using |-G|. These quantities must be stored in the columns after the (*x, y*)
       pair [or (*x, y, z*) triplet].
     - **Y** - Draw a box-and-whisker symbol (i.e., stem-and-leaf) in *y* direction.
-      Same layount as for **X**.
+      Same layout as for **X**.
 
     Several modifiers can affect the appearance of the symbols:
 
