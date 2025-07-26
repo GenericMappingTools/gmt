@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(14) Gridding of data and trend surfaces &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(15) Gridding, contouring, and masking of unconstrained areas" href="ex15.html" />
+    <link rel="prev" title="(13) Plotting of vector fields" href="ex13.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(14) Gridding of data and trend surfaces</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex14.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gridding-of-data-and-trend-surfaces">
+<span id="example-14"></span><h1>(14) Gridding of data and trend surfaces<a class="headerlink" href="#gridding-of-data-and-trend-surfaces" title="Link to this heading"></a></h1>
+<p>This example shows how one goes from randomly spaced data points to an
+evenly sampled surface. We arrange for four panels using the <a class="reference internal" href="../subplot.html"><span class="doc">subplot</span></a>
+command.  First we plot the distribution and values of our
+raw data set (same as in Example <a class="reference internal" href="ex12.html#example-12"><span class="std std-ref">(12) Optimal triangulation of data</span></a>). We choose an equidistant grid and run
+<a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a> which preprocesses the
+data to avoid aliasing. The dashed lines indicate the logical blocks
+used by <a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a>; all points inside
+a given bin will be averaged. The logical blocks are drawn from a
+temporary file we make on the fly within the shell script. The processed
+data is then gridded with the <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a>
+program and contoured every 25 units. A most important point here is
+that <a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a>, <a class="reference internal" href="../blockmedian.html"><span class="doc">blockmedian</span></a>, or
+<a class="reference internal" href="../blockmode.html"><span class="doc">blockmode</span></a> should always be run prior
+to running <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a>, and both of these
+steps must use the same grid interval. We use
+<a class="reference internal" href="../grdtrend.html"><span class="doc">grdtrend</span></a> to fit a bicubic trend
+surface to the gridded data, contour it as well, and sample both grid
+files along a diagonal transect using
+<a class="reference internal" href="../grdtrack.html"><span class="doc">grdtrack</span></a>. The bottom panel compares
+the gridded (solid line) and bicubic trend (dashed line) along the
+transect using <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 14</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Showing simple gridding, contouring, and resampling along tracks</span>
+<span class="c1"># GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, project, text,</span>
+<span class="c1"># GMT modules:	set, plot, surface, subplot</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+gmt<span class="w"> </span>begin<span class="w"> </span>ex14
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>MAP_GRID_PEN_PRIMARY<span class="w"> </span>thinnest,-
+<span class="w">	</span><span class="c1"># calculate mean data and grids</span>
+<span class="w">	</span>gmt<span class="w"> </span>blockmean<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-R0/7/0/7<span class="w"> </span>-I1<span class="w"> </span>&gt;<span class="w"> </span>mean.xyz
+<span class="w">	</span>gmt<span class="w"> </span>surface<span class="w"> </span>mean.xyz<span class="w"> </span>-Gdata.nc
+<span class="w">	</span>gmt<span class="w"> </span>grdtrend<span class="w"> </span>data.nc<span class="w"> </span>-N10<span class="w"> </span>-Ttrend.nc
+<span class="w">	</span>gmt<span class="w"> </span>project<span class="w"> </span>-C0/0<span class="w"> </span>-E7/7<span class="w"> </span>-G0.1<span class="w"> </span>-N<span class="w"> </span>&gt;<span class="w"> </span>track
+<span class="w">	</span><span class="c1"># Sample along diagonal</span>
+<span class="w">	</span>gmt<span class="w"> </span>grdtrack<span class="w"> </span>track<span class="w"> </span>-Gdata.nc<span class="w"> </span>-o2,3<span class="w"> </span>&gt;<span class="w"> </span>data.d
+<span class="w">	</span>gmt<span class="w"> </span>grdtrack<span class="w"> </span>track<span class="w"> </span>-Gtrend.nc<span class="w"> </span>-o2,3<span class="w"> </span>&gt;<span class="w"> </span>trend.d
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Ra<span class="w"> </span>-JX15c/3.5c<span class="w"> </span>data.d<span class="w"> </span>-Wthick<span class="w"> </span>-Bx1<span class="w"> </span>-By50<span class="w"> </span>-BWSne
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>trend.d<span class="w"> </span>-Wthinner,-
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x2<span class="w"> </span>-M0.1c<span class="w"> </span>-Ff15c<span class="w"> </span>-BWSne<span class="w"> </span>-Yh+1c<span class="w"> </span>-R0/7/0/7
+<span class="w">		</span><span class="c1"># First draw network and label the nodes</span>
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-Sc0.12c<span class="w"> </span>-Gblack<span class="w"> </span>-c0,0
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>@Table_5_11.txt<span class="w"> </span>-D3p/0<span class="w"> </span>-F+f6p+jLM<span class="w"> </span>-N
+<span class="w">		</span><span class="c1"># Then draw gmt blockmean cells and label data values using one decimal</span>
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>mean.xyz<span class="w"> </span>-Ss0.12c<span class="w"> </span>-Gblack<span class="w"> </span>-c0,1
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-D11p/0<span class="w"> </span>-F+f6p+jLM+z%.1f<span class="w"> </span>-Gwhite<span class="w"> </span>-W<span class="w"> </span>-C1p<span class="w"> </span>-N<span class="w"> </span>mean.xyz
+<span class="w">		</span><span class="c1"># Then gmt surface and contour the data</span>
+<span class="w">		</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>data.nc<span class="w"> </span>-C25<span class="w"> </span>-A50<span class="w"> </span>-Gd8c<span class="w"> </span>-S4<span class="w"> </span>-c1,0
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>mean.xyz<span class="w"> </span>-Ss0.12c<span class="w"> </span>-Gblack
+<span class="w">		</span><span class="c1"># Fit bicubic trend to data and compare to gridded gmt surface</span>
+<span class="w">		</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>trend.nc<span class="w"> </span>-C25<span class="w"> </span>-A50<span class="w"> </span>-Glct/cb<span class="w"> </span>-S4<span class="w"> </span>-c1,1
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>track<span class="w"> </span>-Wthick,.
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
+gmt<span class="w"> </span>end<span class="w"> </span>show
+rm<span class="w"> </span>-f<span class="w"> </span>mean.xyz<span class="w"> </span>track<span class="w"> </span>trend.nc<span class="w"> </span>data.nc<span class="w"> </span>data.d<span class="w"> </span>trend.d
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex14.png"><img alt="../_images/ex14.png" src="../_images/ex14.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Gridding of data and trend surfaces.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex13.html" class="btn btn-neutral float-left" title="(13) Plotting of vector fields" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex15.html" class="btn btn-neutral float-right" title="(15) Gridding, contouring, and masking of unconstrained areas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

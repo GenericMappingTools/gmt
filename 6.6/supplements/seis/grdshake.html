@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdshake &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="grdvs30" href="grdvs30.html" />
+    <link rel="prev" title="gmtisf" href="gmtisf.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">grdshake</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/seis/grdshake.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdshake">
+<h1>grdshake<a class="headerlink" href="#grdshake" title="Link to this heading"></a></h1>
+<p>Compute Peak Ground Acceleration/Velocity and Intensity</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<p><strong>gmt grdshake</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
+<a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>fault.dat</em>
+<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>mag</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>a,v,i</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>mecatype</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p>Takes Vs30 velocity grid and compute the Peak Ground Acceleration/Velocity and Intensity</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><em>ingrid</em></dt><dd><p>This is the input grid file.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>This is the output grid file. If more than one component is set via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> then &lt;outgrid&gt; must contain %%s to format component code.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong><em>fault.dat</em></dt><dd><p>Name of a file with the coordinates of the fault trace.</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong><em>mag</em></dt><dd><p>Select the magnitude of the event.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><em>a,v,i</em></dt><dd><p>List of comma-separated components to be written as grids (requires <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>). Choose from, <em>a</em>(cceleration),
+<em>v</em>(elocity), <em>i</em>(ntensity) [Default is <em>i</em>].</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong><em>1</em>|<em>2</em>|<em>3</em>|<em>4</em></dt><dd><dl class="simple">
+<dt>Select the focal mechanism type (e.g. <strong>-F</strong>1 or <strong>-F</strong>2 …)</dt><dd><ul class="simple">
+<li><p>1 unknown [Default].</p></li>
+<li><p>2 strike-slip.</p></li>
+<li><p>3 normal.</p></li>
+<li><p>4 thrust.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<span class="target" id="r"></span><section id="the-r-option">
+<h3>The <strong>-R</strong> option<a class="headerlink" href="#the-r-option" title="Link to this heading"></a></h3>
+<p><strong>Syntax</strong></p>
+<dl class="simple" id="id1">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. This defines the subregion to be operated out.</p>
+</dd>
+</dl>
+<p><strong>Description</strong></p>
+<p>The <strong>-R</strong> option defines the map region or data domain of interest. It may be specified in one of several ways
+(options 1 and 3 are shown in panels a) and b) respectively of the Figure <a class="reference internal" href="../../reference/options.html#gmt-region"><span class="std std-ref">Map region</span></a>):</p>
+<ol class="arabic simple">
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>. This is the standard way to specify Cartesian data domains and
+geographic regions when using map projections where meridians and parallels are rectilinear, where <em>xmin</em>, <em>xmax</em>,
+<em>ymin</em>, and <em>ymax</em> refer to the data limits.</p></li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em><strong>+u</strong><em>unit</em>. Append <strong>+u</strong><em>unit</em> to the option 1 to specify a region in
+projected units (e.g., UTM meters) where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible
+with the chosen projection and <em>unit</em> is an allowable <a class="reference internal" href="../../reference/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]. The coordinates are relative
+to the standard longitude and latitude indicated in the projection (<strong>-J</strong>).  For projected regions centered on
+(0,0) you may use the short-hand <strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults
+to <em>halfwidth</em> if not given. This short-hand requires the <strong>+u</strong> modifier.</p></li>
+<li><p><strong>-R</strong><em>xlleft</em>/<em>ylleft</em>/<em>xuright</em>/<em>yuright</em><strong>+r</strong>. This form is useful for map projections that are oblique,
+making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
+upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a rectangular map
+even though lines of equal longitude and latitude are not straight lines.</p></li>
+<li><p><strong>-R</strong><strong>g</strong> or <strong>-R</strong><strong>d</strong>. These forms can be used to quickly specify the global domain (0/360 for <strong>-Rg</strong> and
+-180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
+<li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending on
+the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
+<a class="reference internal" href="../../reference/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
+<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
+consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2 convention</a> (e.g., -RNO) or the full
+country name (e.g., -RNorway). To select a state within a country (if available), append .state (e.g, -RUS.TX). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#dcw-collections"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of the
+collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
+<ul class="simple">
+<li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
+</ul>
+</li>
+<li><p><strong>-R</strong><em>justify</em><em>x0</em>/<em>y0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for
+left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom) (e.g., <strong>BL</strong> for lower left). The
+two character code <em>justify</em> indicates which point on a rectangular grid region the <em>x0</em>/<em>y0</em> coordinates refer to
+and the grid dimensions <em>nx</em> and <em>ny</em> are used with grid spacings given via <strong>-I</strong> to create the corresponding
+region. This method can be used when creating grids. For example, <strong>-RCM</strong><em>25</em>/<em>25</em>/<em>50</em>/<em>50</em> specifies a
+<em>50</em>x<em>50</em> grid centered on <em>25</em>,<em>25</em>.</p></li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>/<em>zmin</em>/<em>zmax</em>. This method can be used for perspective views with the <strong>-Jz</strong>
+and the <a class="reference internal" href="../../reference/options.html#option-p"><span class="std std-ref">-p</span></a> option, where the z-range (<em>zmin</em>/<em>zmax</em>) is appended to the first method to indicate
+the third dimension. This is not used for <a class="reference internal" href="../../reference/options.html#option-p"><span class="std std-ref">-p</span></a> without <strong>-Jz</strong>, in which case a perspective view of
+the place is plotted with no third dimension.</p></li>
+<li><p><strong>-Ra</strong>[<strong>uto</strong>] or <strong>-Re</strong>[<strong>xact</strong>]. Under modern mode, and for <em>plotting</em> modules only, you can automatically
+determine the region from the data used. You can either get the exact area using <strong>-Re</strong> [Default if no <strong>-R</strong>
+is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
+the data range using <strong>-Ra</strong>.</p></li>
+</ol>
+<span class="target" id="v"></span></section>
+<section id="the-v-option">
+<h3>The <strong>-V</strong> option<a class="headerlink" href="#the-v-option" title="Link to this heading"></a></h3>
+<p><strong>Syntax</strong></p>
+<dl class="simple" id="id2">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+</dd>
+</dl>
+<p><strong>Description</strong></p>
+<p>The <strong>-V</strong> option controls the verbosity mode, which determines which messages are sent to standard error. Choose among
+7 levels of verbosity; each level adds more messages:</p>
+<ul class="simple">
+<li><p><strong>q</strong> - Quiet, not even fatal error messages are produced.</p></li>
+<li><p><strong>e</strong> - Error messages only.</p></li>
+<li><p><strong>w</strong> - Warnings (by default, same as running without <strong>-V</strong>)</p></li>
+<li><p><strong>t</strong> - Timings (report runtimes for time-intensive algorithms).</p></li>
+<li><p><strong>i</strong> - Informational messages (same as <strong>-V</strong> only).</p></li>
+<li><p><strong>c</strong> - Compatibility warnings (if compiled with backward-compatibility).</p></li>
+<li><p><strong>d</strong> - Debugging messages.</p></li>
+</ul>
+<p>This option can also be set by specifying the default <a class="reference internal" href="../../gmt.conf.html#term-GMT_VERBOSE"><span class="xref std std-term">GMT_VERBOSE</span></a> as <strong>quiet</strong>, <strong>error</strong>, <strong>warning</strong>,
+<strong>timing</strong>, <strong>compat</strong>, <strong>information</strong>, or <strong>debug</strong>, in order of increased verbosity [default is <strong>warning</strong>].</p>
+<dl class="simple">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>To compute the intensity grid using the previously computed Vs30 velocities (<em>vs30.grd</em>) of an
+event with magnitude 7 occurred along a fault whose trace is coordinates are provide in the
+<em>line.dat</em> file, do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdshake<span class="w"> </span>vs30.grd<span class="w"> </span>-Gshake_intensity.grd<span class="w"> </span>-Lline.dat<span class="w"> </span>-Ci<span class="w"> </span>-M7<span class="w"> </span>-V
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="grdvs30.html"><span class="doc">grdvs30</span></a>,
+<a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gmtisf.html" class="btn btn-neutral float-left" title="gmtisf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdvs30.html" class="btn btn-neutral float-right" title="grdvs30" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

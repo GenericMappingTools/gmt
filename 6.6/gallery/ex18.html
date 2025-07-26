@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(18) Volumes and Spatial Selections &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(19) Color patterns on maps" href="ex19.html" />
+    <link rel="prev" title="(17) Images clipped by coastlines" href="ex17.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(18) Volumes and Spatial Selections</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex18.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="volumes-and-spatial-selections">
+<span id="example-18"></span><h1>(18) Volumes and Spatial Selections<a class="headerlink" href="#volumes-and-spatial-selections" title="Link to this heading"></a></h1>
+<p>To demonstrate potential usage of the programs
+<a class="reference internal" href="../gmtspatial.html"><span class="doc">gmtspatial</span></a>, <a class="reference internal" href="../grdvolume.html"><span class="doc">grdvolume</span></a> and
+<a class="reference internal" href="../gmtselect.html"><span class="doc">gmtselect</span></a> we extract a subset of the
+Sandwell &amp; Smith altimetric gravity field <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> for the northern Pacific
+and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
+and (2) are within 200 km of the Pratt seamount. We do this by dumping
+the 50 mGal contours to disk, then use gmtspatial that
+returns the mean location of the points making up each closed polygon,
+and then pass these locations to
+<a class="reference internal" href="../gmtselect.html"><span class="doc">gmtselect</span></a>, which retains only the
+points within 200 km of Pratt. We then mask out all the data outside
+this radius and use <a class="reference internal" href="../grdvolume.html"><span class="doc">grdvolume</span></a> to
+determine the combined area and (gravimetric) volumes of the chosen seamounts. Our
+illustration is presented in Figure 18 which also shows the automatic labeling
+offered by <a class="reference internal" href="../subplot.html"><span class="doc">subplot</span></a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 18</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrates volumes of grids inside contours and spatial</span>
+<span class="c1">#		selection of data</span>
+<span class="c1"># GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdimage</span>
+<span class="c1"># GMT modules:	grdmath, grdvolume, makecpt, coast, colorbar, text, plot</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+<span class="c1">#</span>
+gmt<span class="w"> </span>begin<span class="w"> </span>ex18
+<span class="w">	</span><span class="c1"># Use spherical gmt projection since SS data define on sphere</span>
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PROJ_ELLIPSOID<span class="w"> </span>Sphere<span class="w"> </span>FORMAT_FLOAT_OUT<span class="w"> </span>%g
+<span class="w">	</span><span class="c1"># Define location of Pratt seamount and the 400 km diameter</span>
+<span class="w">	</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;-142.65 56.25 400&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>pratt.txt
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x1<span class="w"> </span>-A+JTL+o0.5c<span class="w"> </span>-Fs15c/9c<span class="w"> </span>-M0.5c/1c<span class="w"> </span>-R@AK_gulf_grav.nc<span class="w"> </span>-JM14c<span class="w"> </span>-B<span class="w"> </span>-BWSne
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span>,0
+<span class="w">		</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T-60/60
+<span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-I+d
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Di<span class="w"> </span>-Ggray<span class="w"> </span>-Wthinnest
+<span class="w">		</span>gmt<span class="w"> </span>colorbar<span class="w"> </span>-DJCB+o0/1c<span class="w"> </span>-Bxaf<span class="w"> </span>-By+l<span class="s2">&quot;mGal&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>pratt.txt<span class="w"> </span>-D8p<span class="w"> </span>-F+f12p,Helvetica-Bold+jLB+tPratt
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>pratt.txt<span class="w"> </span>-SE-<span class="w"> </span>-Wthinnest
+<span class="w">		</span><span class="c1"># Then draw 10 mGal contours and overlay 50 mGal contour in green</span>
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span>,0
+<span class="w">		</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-C20
+<span class="w">		</span><span class="c1"># Save 50 mGal contours to individual files, then plot them</span>
+<span class="w">		</span>gmt<span class="w"> </span>grdcontour<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>-C10<span class="w"> </span>-L49/51<span class="w"> </span>-Dsm_%d_%c.txt
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-Wthin,green<span class="w"> </span>sm_*.txt
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Di<span class="w"> </span>-Ggray<span class="w"> </span>-Wthinnest
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>pratt.txt<span class="w"> </span>-SE-<span class="w"> </span>-Wthinnest
+<span class="w">		</span>rm<span class="w"> </span>-f<span class="w"> </span>sm_*_O.txt<span class="w">	</span><span class="c1"># Only consider the closed contours</span>
+<span class="w">		</span><span class="c1"># Now determine centers of each enclosed seamount &gt; 50 mGal but only plot</span>
+<span class="w">		</span><span class="c1"># the ones within 200 km of Pratt seamount.</span>
+<span class="w">		</span><span class="c1"># First determine mean location of each closed contour and</span>
+<span class="w">		</span><span class="c1"># add it to the file centers.txt</span>
+<span class="w">		</span>gmt<span class="w"> </span>spatial<span class="w"> </span>-Q<span class="w"> </span>-fg<span class="w"> </span>sm_*_C.txt<span class="w"> </span>&gt;<span class="w"> </span>centers.txt
+<span class="w">		</span><span class="c1"># Only plot the ones within 200 km</span>
+<span class="w">		</span>gmt<span class="w"> </span><span class="k">select</span><span class="w"> </span>-Cpratt.txt+d200k<span class="w"> </span>centers.txt<span class="w"> </span>-fg<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-SC0.1c<span class="w"> </span>-Gred<span class="w"> </span>-Wthinnest
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>-ST0.25c<span class="w"> </span>-Gyellow<span class="w"> </span>-Wthinnest<span class="w"> </span>pratt.txt
+<span class="w">		</span><span class="c1"># Then report the volume and area of these seamounts only</span>
+<span class="w">		</span><span class="c1"># by masking out data outside the 200 km-radius circle</span>
+<span class="w">		</span><span class="c1"># and then evaluate area/volume for the 50 mGal contour</span>
+<span class="w">		</span>gmt<span class="w"> </span>grdmath<span class="w"> </span>pratt.txt<span class="w"> </span>POINT<span class="w"> </span><span class="nv">SDIST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>mask.nc<span class="w"> </span>-fg
+<span class="w">		</span>gmt<span class="w"> </span>grdclip<span class="w"> </span>mask.nc<span class="w"> </span>-Sa200/NaN<span class="w"> </span>-Sb200/1<span class="w"> </span>-Gmask.nc
+<span class="w">		</span>gmt<span class="w"> </span>grdmath<span class="w"> </span>@AK_gulf_grav.nc<span class="w"> </span>mask.nc<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tmp.nc
+<span class="w">		</span><span class="nv">area</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>grdvolume<span class="w"> </span>tmp.nc<span class="w"> </span>-C50<span class="w"> </span>-Sk<span class="w"> </span>-o1<span class="k">)</span>
+<span class="w">		</span><span class="nv">volume</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>grdvolume<span class="w"> </span>tmp.nc<span class="w"> </span>-C50<span class="w"> </span>-Sk<span class="w"> </span>-o2<span class="k">)</span>
+<span class="w">		</span>gmt<span class="w"> </span>text<span class="w"> </span>-M<span class="w"> </span>-Gwhite<span class="w"> </span>-Wthin<span class="w"> </span>-Dj0.7c<span class="w"> </span>-F+f14p,Helvetica-Bold+jLB<span class="w"> </span>-C8p<span class="w"> </span><span class="s">&lt;&lt;- END</span>
+<span class="s">		&gt; -149 52.5 14p 6.6c j</span>
+<span class="s">		Volumes: $volume mGal\267km@+2@+</span>
+
+<span class="s">		Areas: $area km@+2@+</span>
+<span class="s">		END</span>
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
+gmt<span class="w"> </span>end<span class="w"> </span>show
+rm<span class="w"> </span>-f<span class="w"> </span>sm_*.txt<span class="w"> </span>tmp.nc<span class="w"> </span>mask.nc<span class="w"> </span>pratt.txt<span class="w"> </span>center*
+</pre></div>
+</div>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/ex18.png"><img alt="../_images/ex18.png" src="../_images/ex18.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Volumes and geo-spatial selections.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<section id="footnote">
+<h2>Footnote<a class="headerlink" href="#footnote" title="Link to this heading"></a></h2>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>See <a class="reference external" href="http://topex.ucsd.edu/marine_grav/mar_grav.html">http://topex.ucsd.edu/marine_grav/mar_grav.html</a>.</p>
+</aside>
+</aside>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex17.html" class="btn btn-neutral float-left" title="(17) Images clipped by coastlines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex19.html" class="btn btn-neutral float-right" title="(19) Color patterns on maps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

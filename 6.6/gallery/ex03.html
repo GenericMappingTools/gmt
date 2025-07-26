@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(3) Spectral estimation and xy-plots &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(4) A 3-D perspective mesh plot" href="ex04.html" />
+    <link rel="prev" title="(2) Image presentations" href="ex02.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(3) Spectral estimation and xy-plots</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex03.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="spectral-estimation-and-xy-plots">
+<span id="example-03"></span><h1>(3) Spectral estimation and xy-plots<a class="headerlink" href="#spectral-estimation-and-xy-plots" title="Link to this heading"></a></h1>
+<p>In this example we will show how to use the GMT programs
+<a class="reference internal" href="../fitcircle.html"><span class="doc">fitcircle</span></a>, <a class="reference internal" href="../project.html"><span class="doc">project</span></a>,
+<a class="reference internal" href="../sample1d.html"><span class="doc">sample1d</span></a>, <a class="reference internal" href="../spectrum1d.html"><span class="doc">spectrum1d</span></a>,
+and <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>. Suppose you have (<em>lon, lat,
+gravity</em>) along a satellite track in a file called <code class="docutils literal notranslate"><span class="pre">sat.xyg</span></code>, and (<em>lon, lat,
+gravity</em>) along a ship track in a file called <code class="docutils literal notranslate"><span class="pre">ship.xyg</span></code>. You want to make a
+cross-spectral analysis of these data. First, you will have to get the
+two data sets into equidistantly sampled time-series form. To do this,
+it will be convenient to project these along the great circle that best
+fits the sat track. We must use
+<a class="reference internal" href="../fitcircle.html"><span class="doc">fitcircle</span></a> to find this great circle
+and choose the L<sub>2</sub> estimates of best pole. We project the data
+using <a class="reference internal" href="../project.html"><span class="doc">project</span></a> to find out what their
+ranges are in the projected coordinate. The
+<a class="reference internal" href="../gmtinfo.html"><span class="doc">gmtinfo</span></a> utility will report the minimum
+and maximum values for multi-column ASCII tables. Use this information
+to select the range of the projected distance coordinate they have in
+common. The script computes the common range. We can then resample the projected data, and carry
+out the cross-spectral calculations, assuming that the ship is the input
+and the satellite is the output data. The final plot <code class="docutils literal notranslate"><span class="pre">example_03.ps</span></code> shows the ship and sat power
+in one diagram and the coherency on another diagram, both on the same
+page, with an auto-generated legend. Thus, the complete automated script reads:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 03</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Resample track data, do spectral analysis, and plot</span>
+<span class="c1"># GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d</span>
+<span class="c1"># 		spectrum1d, plot, subplot, legend, math</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+<span class="c1"># This example begins with data files &quot;ship_03.txt&quot; and &quot;sat_03.txt&quot; which</span>
+<span class="c1"># are measurements of a quantity &quot;g&quot; (a &quot;gravity anomaly&quot; which is an</span>
+<span class="c1"># anomalous increase or decrease in the magnitude of the acceleration</span>
+<span class="c1"># of gravity at sea level).  g is measured at a sequence of points &quot;x,y&quot;</span>
+<span class="c1"># which in this case are &quot;longitude,latitude&quot;.  The &quot;sat_03.txt&quot; data were</span>
+<span class="c1"># obtained by a satellite and the sequence of points lies almost along</span>
+<span class="c1"># a great circle.  The &quot;ship_03.txt&quot; data were obtained by a ship which</span>
+<span class="c1"># tried to follow the satellite&#39;s path but deviated from it in places.</span>
+<span class="c1"># Thus the two data sets are not measured at the same of points,</span>
+<span class="c1"># and we use various GMT tools to facilitate their comparison.</span>
+<span class="c1">#</span>
+
+gmt<span class="w"> </span>begin<span class="w"> </span>ex03
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>GMT_FFT<span class="w"> </span>kiss
+<span class="w">	</span><span class="c1"># First, we use &quot;gmt fitcircle&quot; to find the parameters of a great circle</span>
+<span class="w">	</span><span class="c1"># most closely fitting the x,y points in &quot;sat_03.txt&quot;:</span>
+<span class="w">	</span><span class="nv">cpos</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>fitcircle<span class="w"> </span>@sat_03.txt<span class="w"> </span>-L2<span class="w"> </span>-Fm<span class="w"> </span>--IO_COL_SEPARATOR<span class="o">=</span>/<span class="k">)</span>
+<span class="w">	</span><span class="nv">ppos</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>fitcircle<span class="w"> </span>@sat_03.txt<span class="w"> </span>-L2<span class="w"> </span>-Fn<span class="w"> </span>--IO_COL_SEPARATOR<span class="o">=</span>/<span class="k">)</span>
+<span class="w">	</span><span class="c1"># Now we use &quot;gmt project&quot; to project the data in both sat_03.txt and ship_03.txt</span>
+<span class="w">	</span><span class="c1"># into data.pg, where g is the same and p is the oblique longitude around</span>
+<span class="w">	</span><span class="c1"># the great circle.  We use -Q to get the p distance in kilometers, and -S</span>
+<span class="w">	</span><span class="c1"># to sort the output into increasing p values.</span>
+<span class="w">	</span>gmt<span class="w"> </span>project<span class="w">  </span>@sat_03.txt<span class="w"> </span>-C<span class="nv">$cpos</span><span class="w"> </span>-T<span class="nv">$ppos</span><span class="w"> </span>-S<span class="w"> </span>-Fpz<span class="w"> </span>-Q<span class="w"> </span>&gt;<span class="w"> </span>sat.pg
+<span class="w">	</span>gmt<span class="w"> </span>project<span class="w"> </span>@ship_03.txt<span class="w"> </span>-C<span class="nv">$cpos</span><span class="w"> </span>-T<span class="nv">$ppos</span><span class="w"> </span>-S<span class="w"> </span>-Fpz<span class="w"> </span>-Q<span class="w"> </span>&gt;<span class="w"> </span>ship.pg
+<span class="w">	</span><span class="nv">bounds</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>info<span class="w"> </span>ship.pg<span class="w"> </span>sat.pg<span class="w"> </span>-I1<span class="w"> </span>-Af<span class="w"> </span>-L<span class="w"> </span>-C<span class="w"> </span>-i0<span class="w">  </span>--IO_COL_SEPARATOR<span class="o">=</span>/<span class="k">)</span>
+<span class="w">	</span><span class="c1"># Now we can use $bounds in gmt math to make a sampling points file for gmt sample1d:</span>
+<span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T<span class="nv">$bounds</span>/1<span class="w"> </span>-N1/0<span class="w"> </span><span class="nv">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>samp.x
+<span class="w">	</span><span class="c1"># Now we can resample the gmt projected satellite data:</span>
+<span class="w">	</span>gmt<span class="w"> </span>sample1d<span class="w"> </span>sat.pg<span class="w"> </span>-Tsamp.x<span class="w"> </span>&gt;<span class="w"> </span>samp_sat.pg
+<span class="w">	</span><span class="c1"># For reasons above, we use gmt filter1d to pre-treat the ship data.  We also need to sample</span>
+<span class="w">	</span><span class="c1"># it because of the gaps &gt; 1 km we found.  So we use gmt filter1d | gmt sample1d.  We also</span>
+<span class="w">	</span><span class="c1"># use the -E on gmt filter1d to use the data all the way out to bounds :</span>
+<span class="w">	</span>gmt<span class="w"> </span>filter1d<span class="w"> </span>ship.pg<span class="w"> </span>-Fm1<span class="w"> </span>-T<span class="nv">$bounds</span>/1<span class="w"> </span>-E<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>sample1d<span class="w"> </span>-Tsamp.x<span class="w"> </span>&gt;<span class="w"> </span>samp_ship.pg
+<span class="w">	</span><span class="c1"># Now to do the cross-spectra, assuming that the ship is the input and the sat is the output</span>
+<span class="w">	</span><span class="c1"># data, we do this:</span>
+<span class="w">	</span>gmt<span class="w"> </span>convert<span class="w"> </span>-A<span class="w"> </span>samp_ship.pg<span class="w"> </span>samp_sat.pg<span class="w"> </span>-o1,3<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>spectrum1d<span class="w"> </span>-S256<span class="w"> </span>-D1<span class="w"> </span>-W<span class="w"> </span>-C<span class="w"> </span>-T
+<span class="w">	</span><span class="c1"># Time to plot spectra, use -l to build a legend</span>
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>FONT_TAG<span class="w"> </span>18p,Helvetica-Bold
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>2x1<span class="w"> </span>-M0.3c<span class="w"> </span>-Scb+l<span class="s2">&quot;Wavelength (km)&quot;</span><span class="w"> </span>-T<span class="s2">&quot;Ship and Satellite Gravity&quot;</span><span class="w"> </span>-Fs10c<span class="w"> </span>-A+jTR+o8p<span class="w"> </span>-BWeSn+g240/255/240
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">0</span>,0<span class="w"> </span>-A<span class="s2">&quot;Input Power&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.xpower<span class="w"> </span>-JX-?l/?l<span class="w"> </span>-Bxa1f3p<span class="w"> </span>-Bya1f3p+l<span class="s2">&quot;Power (mGal@+2@+km)&quot;</span><span class="w"> </span>-Gred<span class="w"> </span>-ST5p<span class="w"> </span>-R1/1000/0.1/10000<span class="w"> </span>-Ey+p0.5p<span class="w"> </span>-lShip
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.ypower<span class="w"> </span>-Gblue<span class="w"> </span>-Sc5p<span class="w"> </span>-Ey+p0.5p<span class="w"> </span>-lSatellite
+<span class="w">		</span>gmt<span class="w"> </span>legend<span class="w"> </span>-DjBL+o0.5c<span class="w"> </span>-F+gwhite+pthicker<span class="w"> </span>--FONT_ANNOT_PRIMARY<span class="o">=</span>14p,Helvetica-Bold
+<span class="w">		</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="m">1</span>,0<span class="w"> </span>-A<span class="s2">&quot;Coherency@+2@+&quot;</span>
+<span class="w">		</span>gmt<span class="w"> </span>plot<span class="w"> </span>spectrum.coh<span class="w"> </span>-JX-?l/?<span class="w"> </span>-Bxa1f3p<span class="w"> </span>-Bya0.25f0.05+l<span class="s2">&quot;Coherency@+2@+&quot;</span><span class="w"> </span>-R1/1000/0/1<span class="w"> </span>-Sc5p<span class="w"> </span>-Gpurple<span class="w"> </span>-Ey+p0.5p
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
+gmt<span class="w"> </span>end<span class="w"> </span>show
+rm<span class="w"> </span>-f<span class="w"> </span>samp*<span class="w"> </span>*.pg<span class="w"> </span>spectrum.*
+</pre></div>
+</div>
+<p>The final illustration shows that the
+ship gravity anomalies have more power than altimetry derived gravity
+for short wavelengths and that the coherency between the two signals
+improves dramatically for wavelengths &gt; 20 km.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex03.png"><img alt="../_images/ex03.png" src="../_images/ex03.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Spectral estimation and x=y-plots.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex02.html" class="btn btn-neutral float-left" title="(2) Image presentations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex04.html" class="btn btn-neutral float-right" title="(4) A 3-D perspective mesh plot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

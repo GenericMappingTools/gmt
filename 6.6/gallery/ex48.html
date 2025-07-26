@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(48) Line networks, map embellishments, and curved titles &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(49) Analysis of the Atlantic seafloor depth/age relationship" href="ex49.html" />
+    <link rel="prev" title="(47) Linear regression using different norms and types" href="ex47.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(48) Line networks, map embellishments, and curved titles</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex48.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="line-networks-map-embellishments-and-curved-titles">
+<span id="example-48"></span><h1>(48) Line networks, map embellishments, and curved titles<a class="headerlink" href="#line-networks-map-embellishments-and-curved-titles" title="Link to this heading"></a></h1>
+<p>In this example we show how the module <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>
+can be used to create a network of lines based on a file with
+just the nodes (the siz airports).  We also demonstrate how the
+lines can be shortened by (a) a given measure (here 250 km)
+and then (b) the length of the added vector heads.  The airspace
+closest to each airport is identified as spherical Voronoi
+cells by <a class="reference internal" href="../sphtriangulate.html"><span class="doc">sphtriangulate</span></a> and filled
+with transparent coloring, allowing us to see the seafloor
+texture beneath.  Finally,
+we add six local spiderweb azimuth/distance gridlines and
+set a curved plot title.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#               GMT EXAMPLE 48</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs</span>
+<span class="c1"># GMT modules:  makecpt, coast, plot, sphtriangulate, grdimate, gmtmath, text</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+<span class="c1">#</span>
+
+gmt<span class="w"> </span>begin<span class="w"> </span>ex48
+<span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;- EOF &gt; airports.txt</span>
+<span class="s">	157.8583W	21.3069N	61   300	HNL	BC	1.5c</span>
+<span class="s">	149.5585W	17.5516S	-120 120	PPT	TC	1.5c</span>
+<span class="s">	139.6917E	35.6895N	56   170	HND	RB	0.75c</span>
+<span class="s">	70.6693W	33.4489S	215  322	SCL	TL	0.6c</span>
+<span class="s">	151.2070E	33.8675S	-10  145	SYD	TR	2.1c</span>
+<span class="s">	118.2437W	34.0522N	142  306	LAX	BL	2c</span>
+<span class="s">	EOF</span>
+<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Clightgray<span class="w"> </span>-T-12000,12000<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@earth_relief_10m<span class="w"> </span>-I+a45+nt2<span class="w"> </span>-Rg<span class="w"> </span>-JG205/-10/18c
+<span class="w">	</span>gmt<span class="w"> </span>sphtriangulate<span class="w"> </span>airports.txt<span class="w"> </span>-Qv<span class="w"> </span>&gt;<span class="w"> </span>near_area.txt
+<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Ccategorical<span class="w"> </span>-T0/6/1<span class="w"> </span>-N
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>near_area.txt<span class="w"> </span>-L<span class="w"> </span>-C<span class="w"> </span>-t65
+<span class="w">	</span><span class="c1"># Make a 15 degrees by 250 km spiderweb grid around each airport</span>
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-SW2000k/250k+a250k+r15<span class="w"> </span>-W0.5p<span class="w"> </span>-Gwhite@40<span class="w"> </span>airports.txt
+<span class="w">	</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Gblack<span class="w"> </span>-A500<span class="w"> </span>-Bafg
+<span class="w">	</span><span class="c1"># Then place custom labels.</span>
+<span class="w">	</span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>lon<span class="w"> </span>lat<span class="w"> </span>az1<span class="w"> </span>az2<span class="w"> </span>label<span class="w"> </span>just<span class="w"> </span>off<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$lon</span><span class="w"> </span><span class="nv">$lat</span><span class="w"> </span><span class="nv">$label</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-DJ<span class="si">${</span><span class="nv">off</span><span class="si">}</span>+v0.5p,white<span class="w"> </span>-F+f16p+j<span class="si">${</span><span class="nv">just</span><span class="si">}</span><span class="w"> </span>-N
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$lon</span><span class="w"> </span><span class="nv">$lat</span><span class="w"> </span><span class="nv">$label</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-DJ<span class="si">${</span><span class="nv">off</span><span class="si">}</span>+v0.25p<span class="w"> </span>-F+f16p+j<span class="si">${</span><span class="nv">just</span><span class="si">}</span><span class="w"> </span>-N<span class="w"> </span>-Gwhite<span class="w"> </span>-W0.25p<span class="w"> </span>-C+tO
+<span class="w">	</span><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>airports.txt
+<span class="w">	</span><span class="c1"># Plot trimmed lines and overlay airport locations</span>
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>airports.txt<span class="w"> </span>-Fn<span class="w"> </span>-W1.5p+o250k+v0.5c+gred+h0.5
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>airports.txt<span class="w"> </span>-SE-500<span class="w"> </span>-Gorange<span class="w"> </span>-W0.25p
+<span class="w">	</span><span class="c1"># Make an arc of radius 11.5 cm from 45 to 135 degrees around map center and use it to place text</span>
+<span class="w">	</span>gmt<span class="w"> </span>math<span class="w"> </span>-T45/135/1<span class="w"> </span>T<span class="w"> </span>-C0<span class="w"> </span>COSD<span class="w"> </span>-C1<span class="w"> </span>SIND<span class="w"> </span>-Ca<span class="w"> </span><span class="m">11</span>.5<span class="w"> </span><span class="nv">MUL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>path.txt
+<span class="w">	</span><span class="c1"># Move up 9 cm so origin is at the map center</span>
+<span class="w">	</span>gmt<span class="w"> </span>plot<span class="w"> </span>-R-9/9/0/18<span class="w"> </span>-Jx1c<span class="w"> </span>-Y9c<span class="w"> </span>path.txt<span class="w"> </span>-Sqn1:+l<span class="s2">&quot;IMPORTANT PACIFIC AIRPORTS&quot;</span>+v+f32p<span class="w"> </span>-Wfaint,white<span class="w"> </span>-N
+<span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>airports.txt<span class="w"> </span>near_area.txt<span class="w"> </span>path.txt
+gmt<span class="w"> </span>end<span class="w"> </span>show
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex48.png"><img alt="../_images/ex48.png" src="../_images/ex48.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Line networks, map embellishments, and curved titles.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex47.html" class="btn btn-neutral float-left" title="(47) Linear regression using different norms and types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex49.html" class="btn btn-neutral float-right" title="(49) Analysis of the Atlantic seafloor depth/age relationship" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

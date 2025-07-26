@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A pirate &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Deprecated GMT Defaults Names" href="../../deprecated-defaults.html" />
+    <link rel="prev" title="Strike of vertical beds" href="../geology/geo-plane_vert.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+      <li class="breadcrumb-item active">A pirate</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/users-contrib-symbols/misc/pirata.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="a-pirate">
+<span id="pirata"></span><h1>A pirate<a class="headerlink" href="#a-pirate" title="Link to this heading"></a></h1>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># Definition File created by Mirone Tech</span>
+<span class="c1">#</span>
+<span class="m">0</span>.500000<span class="w">	</span><span class="m">0</span>.350000<span class="w">	</span>M<span class="w">	 </span>-G0/0/0<span class="w"> </span>-W0.5p,0/0/0
+<span class="m">0</span>.500000<span class="w">	</span>-0.350000<span class="w">	</span>D
+-0.500000<span class="w">	</span>-0.350000<span class="w">	</span>D
+-0.500000<span class="w">	</span><span class="m">0</span>.350000<span class="w">	</span>D
+<span class="m">0</span>.500000<span class="w">	</span><span class="m">0</span>.350000<span class="w">	</span>D
+
+<span class="c1">#</span>
+-0.070434<span class="w">	</span>-0.152132<span class="w">	</span>M<span class="w">	 </span>-G255/255/255<span class="w"> </span>-W0.5p,0/0/0
+-0.096651<span class="w">	</span>-0.136686<span class="w">	</span>D
+-0.123091<span class="w">	</span>-0.120386<span class="w">	</span>D
+-0.149495<span class="w">	</span>-0.103187<span class="w">	</span>D
+-0.162603<span class="w">	</span>-0.094237<span class="w">	</span>D
+-0.175605<span class="w">	</span>-0.085046<span class="w">	</span>D
+-0.188468<span class="w">	</span>-0.075609<span class="w">	</span>D
+-0.201161<span class="w">	</span>-0.065919<span class="w">	</span>D
+-0.213650<span class="w">	</span>-0.055972<span class="w">	</span>D
+-0.225904<span class="w">	</span>-0.045761<span class="w">	</span>D
+-0.237889<span class="w">	</span>-0.035282<span class="w">	</span>D
+-0.249575<span class="w">	</span>-0.024529<span class="w">	</span>D
+-0.260927<span class="w">	</span>-0.013496<span class="w">	</span>D
+-0.271915<span class="w">	</span>-0.002178<span class="w">	</span>D
+-0.282504<span class="w">	</span><span class="m">0</span>.009430<span class="w">	</span>D
+-0.292664<span class="w">	</span><span class="m">0</span>.021335<span class="w">	</span>D
+-0.302362<span class="w">	</span><span class="m">0</span>.033541<span class="w">	</span>D
+-0.311565<span class="w">	</span><span class="m">0</span>.046054<span class="w">	</span>D
+-0.320241<span class="w">	</span><span class="m">0</span>.058880<span class="w">	</span>D
+-0.328357<span class="w">	</span><span class="m">0</span>.072024<span class="w">	</span>D
+-0.335881<span class="w">	</span><span class="m">0</span>.085492<span class="w">	</span>D
+-0.342781<span class="w">	</span><span class="m">0</span>.099289<span class="w">	</span>D
+-0.349025<span class="w">	</span><span class="m">0</span>.113420<span class="w">	</span>D
+-0.354579<span class="w">	</span><span class="m">0</span>.127892<span class="w">	</span>D
+-0.359412<span class="w">	</span><span class="m">0</span>.142709<span class="w">	</span>D
+-0.363492<span class="w">	</span><span class="m">0</span>.157877<span class="w">	</span>D
+-0.366785<span class="w">	</span><span class="m">0</span>.173402<span class="w">	</span>D
+-0.352229<span class="w">	</span><span class="m">0</span>.156259<span class="w">	</span>D
+-0.337329<span class="w">	</span><span class="m">0</span>.139314<span class="w">	</span>D
+-0.322091<span class="w">	</span><span class="m">0</span>.122584<span class="w">	</span>D
+-0.306518<span class="w">	</span><span class="m">0</span>.106089<span class="w">	</span>D
+-0.290616<span class="w">	</span><span class="m">0</span>.089848<span class="w">	</span>D
+-0.274388<span class="w">	</span><span class="m">0</span>.073878<span class="w">	</span>D
+-0.257839<span class="w">	</span><span class="m">0</span>.058201<span class="w">	</span>D
+-0.240973<span class="w">	</span><span class="m">0</span>.042833<span class="w">	</span>D
+-0.223796<span class="w">	</span><span class="m">0</span>.027795<span class="w">	</span>D
+-0.206311<span class="w">	</span><span class="m">0</span>.013104<span class="w">	</span>D
+-0.188524<span class="w">	</span>-0.001219<span class="w">	</span>D
+-0.170438<span class="w">	</span>-0.015156<span class="w">	</span>D
+-0.152058<span class="w">	</span>-0.028688<span class="w">	</span>D
+-0.133389<span class="w">	</span>-0.041797<span class="w">	</span>D
+-0.114435<span class="w">	</span>-0.054463<span class="w">	</span>D
+-0.095200<span class="w">	</span>-0.066667<span class="w">	</span>D
+-0.075689<span class="w">	</span>-0.078391<span class="w">	</span>D
+-0.055907<span class="w">	</span>-0.089615<span class="w">	</span>D
+-0.035859<span class="w">	</span>-0.100322<span class="w">	</span>D
+-0.015547<span class="w">	</span>-0.110490<span class="w">	</span>D
+<span class="m">0</span>.005022<span class="w">	</span>-0.120103<span class="w">	</span>D
+<span class="m">0</span>.025844<span class="w">	</span>-0.129140<span class="w">	</span>D
+<span class="m">0</span>.046916<span class="w">	</span>-0.137584<span class="w">	</span>D
+<span class="m">0</span>.068232<span class="w">	</span>-0.145414<span class="w">	</span>D
+<span class="m">0</span>.089788<span class="w">	</span>-0.152613<span class="w">	</span>D
+<span class="m">0</span>.111579<span class="w">	</span>-0.159160<span class="w">	</span>D
+<span class="m">0</span>.133601<span class="w">	</span>-0.165039<span class="w">	</span>D
+<span class="m">0</span>.155850<span class="w">	</span>-0.170228<span class="w">	</span>D
+<span class="m">0</span>.178320<span class="w">	</span>-0.174710<span class="w">	</span>D
+<span class="m">0</span>.159911<span class="w">	</span>-0.186319<span class="w">	</span>D
+<span class="m">0</span>.154213<span class="w">	</span>-0.192428<span class="w">	</span>D
+<span class="m">0</span>.151260<span class="w">	</span>-0.197502<span class="w">	</span>D
+<span class="m">0</span>.149610<span class="w">	</span>-0.203059<span class="w">	</span>D
+<span class="m">0</span>.149309<span class="w">	</span>-0.207056<span class="w">	</span>D
+<span class="m">0</span>.149701<span class="w">	</span>-0.211308<span class="w">	</span>D
+<span class="m">0</span>.150832<span class="w">	</span>-0.215828<span class="w">	</span>D
+<span class="m">0</span>.152745<span class="w">	</span>-0.220633<span class="w">	</span>D
+<span class="m">0</span>.155488<span class="w">	</span>-0.225738<span class="w">	</span>D
+<span class="m">0</span>.024939<span class="w">	</span>-0.194235<span class="w">	</span>D
+-0.018650<span class="w">	</span>-0.176710<span class="w">	</span>D
+-0.030833<span class="w">	</span>-0.170811<span class="w">	</span>D
+-0.024920<span class="w">	</span>-0.193345<span class="w">	</span>D
+-0.036896<span class="w">	</span>-0.200709<span class="w">	</span>D
+-0.069944<span class="w">	</span>-0.212517<span class="w">	</span>D
+-0.121526<span class="w">	</span>-0.225667<span class="w">	</span>D
+-0.117553<span class="w">	</span>-0.208125<span class="w">	</span>D
+-0.120314<span class="w">	</span>-0.191992<span class="w">	</span>D
+-0.130931<span class="w">	</span>-0.175703<span class="w">	</span>D
+-0.132416<span class="w">	</span>-0.174168<span class="w">	</span>D
+-0.128533<span class="w">	</span>-0.172566<span class="w">	</span>D
+-0.121344<span class="w">	</span>-0.170617<span class="w">	</span>D
+-0.086891<span class="w">	</span>-0.164610<span class="w">	</span>D
+-0.079677<span class="w">	</span>-0.162583<span class="w">	</span>D
+-0.075772<span class="w">	</span>-0.160911<span class="w">	</span>D
+-0.074153<span class="w">	</span>-0.159958<span class="w">	</span>D
+-0.072785<span class="w">	</span>-0.158916<span class="w">	</span>D
+-0.071688<span class="w">	</span>-0.157778<span class="w">	</span>D
+-0.070884<span class="w">	</span>-0.156538<span class="w">	</span>D
+-0.070393<span class="w">	</span>-0.155189<span class="w">	</span>D
+-0.070236<span class="w">	</span>-0.153722<span class="w">	</span>D
+-0.070434<span class="w">	</span>-0.152132<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.040998<span class="w">	</span>-0.013629<span class="w">	</span>M<span class="w">	 </span>-G255/255/255<span class="w"> </span>-W0.5p,0/0/0
+-0.007083<span class="w">	</span>-0.023841<span class="w">	</span>D
+-0.018209<span class="w">	</span>-0.023601<span class="w">	</span>D
+-0.023667<span class="w">	</span>-0.022570<span class="w">	</span>D
+-0.029036<span class="w">	</span>-0.020808<span class="w">	</span>D
+-0.034303<span class="w">	</span>-0.018223<span class="w">	</span>D
+-0.039453<span class="w">	</span>-0.014720<span class="w">	</span>D
+-0.039038<span class="w">	</span>-0.011980<span class="w">	</span>D
+-0.038939<span class="w">	</span>-0.006392<span class="w">	</span>D
+-0.039750<span class="w">	</span>-0.000751<span class="w">	</span>D
+-0.041392<span class="w">	</span><span class="m">0</span>.004839<span class="w">	</span>D
+-0.043786<span class="w">	</span><span class="m">0</span>.010275<span class="w">	</span>D
+-0.048614<span class="w">	</span><span class="m">0</span>.017908<span class="w">	</span>D
+-0.054691<span class="w">	</span><span class="m">0</span>.024605<span class="w">	</span>D
+-0.059304<span class="w">	</span><span class="m">0</span>.028375<span class="w">	</span>D
+-0.064276<span class="w">	</span><span class="m">0</span>.031468<span class="w">	</span>D
+-0.069526<span class="w">	</span><span class="m">0</span>.033779<span class="w">	</span>D
+-0.074977<span class="w">	</span><span class="m">0</span>.035203<span class="w">	</span>D
+-0.077753<span class="w">	</span><span class="m">0</span>.035550<span class="w">	</span>D
+-0.080549<span class="w">	</span><span class="m">0</span>.035637<span class="w">	</span>D
+-0.083356<span class="w">	</span><span class="m">0</span>.035449<span class="w">	</span>D
+-0.086164<span class="w">	</span><span class="m">0</span>.034975<span class="w">	</span>D
+-0.088963<span class="w">	</span><span class="m">0</span>.034201<span class="w">	</span>D
+-0.091743<span class="w">	</span><span class="m">0</span>.033114<span class="w">	</span>D
+-0.096384<span class="w">	</span><span class="m">0</span>.032475<span class="w">	</span>D
+-0.104063<span class="w">	</span><span class="m">0</span>.036346<span class="w">	</span>D
+-0.117134<span class="w">	</span><span class="m">0</span>.051905<span class="w">	</span>D
+-0.121327<span class="w">	</span><span class="m">0</span>.134526<span class="w">	</span>D
+-0.121754<span class="w">	</span><span class="m">0</span>.171753<span class="w">	</span>D
+-0.113223<span class="w">	</span><span class="m">0</span>.190647<span class="w">	</span>D
+-0.102118<span class="w">	</span><span class="m">0</span>.208358<span class="w">	</span>D
+-0.088705<span class="w">	</span><span class="m">0</span>.224487<span class="w">	</span>D
+-0.073254<span class="w">	</span><span class="m">0</span>.238634<span class="w">	</span>D
+-0.056031<span class="w">	</span><span class="m">0</span>.250402<span class="w">	</span>D
+-0.041157<span class="w">	</span><span class="m">0</span>.257834<span class="w">	</span>D
+-0.023728<span class="w">	</span><span class="m">0</span>.260835<span class="w">	</span>D
+-0.005624<span class="w">	</span><span class="m">0</span>.262589<span class="w">	</span>D
+<span class="m">0</span>.006616<span class="w">	</span><span class="m">0</span>.262933<span class="w">	</span>D
+<span class="m">0</span>.018848<span class="w">	</span><span class="m">0</span>.262524<span class="w">	</span>D
+<span class="m">0</span>.030949<span class="w">	</span><span class="m">0</span>.261280<span class="w">	</span>D
+<span class="m">0</span>.036912<span class="w">	</span><span class="m">0</span>.260321<span class="w">	</span>D
+<span class="m">0</span>.042797<span class="w">	</span><span class="m">0</span>.259123<span class="w">	</span>D
+<span class="m">0</span>.048588<span class="w">	</span><span class="m">0</span>.257676<span class="w">	</span>D
+<span class="m">0</span>.054269<span class="w">	</span><span class="m">0</span>.255971<span class="w">	</span>D
+<span class="m">0</span>.059825<span class="w">	</span><span class="m">0</span>.253998<span class="w">	</span>D
+<span class="m">0</span>.065241<span class="w">	</span><span class="m">0</span>.251746<span class="w">	</span>D
+<span class="m">0</span>.070502<span class="w">	</span><span class="m">0</span>.249205<span class="w">	</span>D
+<span class="m">0</span>.075591<span class="w">	</span><span class="m">0</span>.246366<span class="w">	</span>D
+<span class="m">0</span>.080494<span class="w">	</span><span class="m">0</span>.243219<span class="w">	</span>D
+<span class="m">0</span>.085196<span class="w">	</span><span class="m">0</span>.239752<span class="w">	</span>D
+<span class="m">0</span>.089680<span class="w">	</span><span class="m">0</span>.235958<span class="w">	</span>D
+<span class="m">0</span>.093933<span class="w">	</span><span class="m">0</span>.231824<span class="w">	</span>D
+<span class="m">0</span>.097937<span class="w">	</span><span class="m">0</span>.227342<span class="w">	</span>D
+<span class="m">0</span>.101678<span class="w">	</span><span class="m">0</span>.222502<span class="w">	</span>D
+<span class="m">0</span>.105141<span class="w">	</span><span class="m">0</span>.217293<span class="w">	</span>D
+<span class="m">0</span>.108309<span class="w">	</span><span class="m">0</span>.211705<span class="w">	</span>D
+<span class="m">0</span>.111169<span class="w">	</span><span class="m">0</span>.205729<span class="w">	</span>D
+<span class="m">0</span>.115599<span class="w">	</span><span class="m">0</span>.201695<span class="w">	</span>D
+<span class="m">0</span>.119457<span class="w">	</span><span class="m">0</span>.197537<span class="w">	</span>D
+<span class="m">0</span>.122768<span class="w">	</span><span class="m">0</span>.193264<span class="w">	</span>D
+<span class="m">0</span>.125560<span class="w">	</span><span class="m">0</span>.188886<span class="w">	</span>D
+<span class="m">0</span>.127856<span class="w">	</span><span class="m">0</span>.184412<span class="w">	</span>D
+<span class="m">0</span>.129682<span class="w">	</span><span class="m">0</span>.179854<span class="w">	</span>D
+<span class="m">0</span>.131065<span class="w">	</span><span class="m">0</span>.175221<span class="w">	</span>D
+<span class="m">0</span>.132029<span class="w">	</span><span class="m">0</span>.170523<span class="w">	</span>D
+<span class="m">0</span>.132599<span class="w">	</span><span class="m">0</span>.165771<span class="w">	</span>D
+<span class="m">0</span>.132803<span class="w">	</span><span class="m">0</span>.160973<span class="w">	</span>D
+<span class="m">0</span>.132664<span class="w">	</span><span class="m">0</span>.156141<span class="w">	</span>D
+<span class="m">0</span>.132208<span class="w">	</span><span class="m">0</span>.151284<span class="w">	</span>D
+<span class="m">0</span>.131461<span class="w">	</span><span class="m">0</span>.146413<span class="w">	</span>D
+<span class="m">0</span>.129197<span class="w">	</span><span class="m">0</span>.136667<span class="w">	</span>D
+<span class="m">0</span>.126074<span class="w">	</span><span class="m">0</span>.126982<span class="w">	</span>D
+<span class="m">0</span>.115851<span class="w">	</span><span class="m">0</span>.103569<span class="w">	</span>D
+<span class="m">0</span>.104727<span class="w">	</span><span class="m">0</span>.082301<span class="w">	</span>D
+<span class="m">0</span>.100740<span class="w">	</span><span class="m">0</span>.074676<span class="w">	</span>D
+<span class="m">0</span>.122686<span class="w">	</span><span class="m">0</span>.068969<span class="w">	</span>D
+<span class="m">0</span>.120377<span class="w">	</span><span class="m">0</span>.065322<span class="w">	</span>D
+<span class="m">0</span>.117800<span class="w">	</span><span class="m">0</span>.061962<span class="w">	</span>D
+<span class="m">0</span>.114982<span class="w">	</span><span class="m">0</span>.058863<span class="w">	</span>D
+<span class="m">0</span>.111947<span class="w">	</span><span class="m">0</span>.056000<span class="w">	</span>D
+<span class="m">0</span>.105333<span class="w">	</span><span class="m">0</span>.050880<span class="w">	</span>D
+<span class="m">0</span>.090642<span class="w">	</span><span class="m">0</span>.042346<span class="w">	</span>D
+<span class="m">0</span>.064527<span class="w">	</span><span class="m">0</span>.028625<span class="w">	</span>D
+<span class="m">0</span>.057972<span class="w">	</span><span class="m">0</span>.023992<span class="w">	</span>D
+<span class="m">0</span>.054973<span class="w">	</span><span class="m">0</span>.021429<span class="w">	</span>D
+<span class="m">0</span>.052196<span class="w">	</span><span class="m">0</span>.018667<span class="w">	</span>D
+<span class="m">0</span>.049665<span class="w">	</span><span class="m">0</span>.015682<span class="w">	</span>D
+<span class="m">0</span>.047405<span class="w">	</span><span class="m">0</span>.012448<span class="w">	</span>D
+<span class="m">0</span>.045444<span class="w">	</span><span class="m">0</span>.008938<span class="w">	</span>D
+<span class="m">0</span>.043805<span class="w">	</span><span class="m">0</span>.005128<span class="w">	</span>D
+<span class="m">0</span>.042516<span class="w">	</span><span class="m">0</span>.000991<span class="w">	</span>D
+<span class="m">0</span>.041601<span class="w">	</span>-0.003497<span class="w">	</span>D
+<span class="m">0</span>.041087<span class="w">	</span>-0.008362<span class="w">	</span>D
+<span class="m">0</span>.040998<span class="w">	</span>-0.013629<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.289840<span class="w">	</span>-0.219325<span class="w">	</span>M<span class="w">	 </span>-G255/255/255<span class="w"> </span>-W0.5p,0/0/0
+<span class="m">0</span>.284013<span class="w">	</span>-0.218888<span class="w">	</span>D
+<span class="m">0</span>.275016<span class="w">	</span>-0.219693<span class="w">	</span>D
+<span class="m">0</span>.240547<span class="w">	</span>-0.227984<span class="w">	</span>D
+<span class="m">0</span>.231078<span class="w">	</span>-0.228901<span class="w">	</span>D
+<span class="m">0</span>.224825<span class="w">	</span>-0.228566<span class="w">	</span>D
+<span class="m">0</span>.221724<span class="w">	</span>-0.228043<span class="w">	</span>D
+<span class="m">0</span>.221346<span class="w">	</span>-0.224194<span class="w">	</span>D
+<span class="m">0</span>.221332<span class="w">	</span>-0.220606<span class="w">	</span>D
+<span class="m">0</span>.221664<span class="w">	</span>-0.217269<span class="w">	</span>D
+<span class="m">0</span>.222324<span class="w">	</span>-0.214172<span class="w">	</span>D
+<span class="m">0</span>.223293<span class="w">	</span>-0.211308<span class="w">	</span>D
+<span class="m">0</span>.224554<span class="w">	</span>-0.208664<span class="w">	</span>D
+<span class="m">0</span>.226088<span class="w">	</span>-0.206233<span class="w">	</span>D
+<span class="m">0</span>.227877<span class="w">	</span>-0.204004<span class="w">	</span>D
+<span class="m">0</span>.229902<span class="w">	</span>-0.201967<span class="w">	</span>D
+<span class="m">0</span>.232146<span class="w">	</span>-0.200113<span class="w">	</span>D
+<span class="m">0</span>.237215<span class="w">	</span>-0.196913<span class="w">	</span>D
+<span class="m">0</span>.242937<span class="w">	</span>-0.194327<span class="w">	</span>D
+<span class="m">0</span>.252425<span class="w">	</span>-0.191427<span class="w">	</span>D
+<span class="m">0</span>.285958<span class="w">	</span>-0.187079<span class="w">	</span>D
+<span class="m">0</span>.291919<span class="w">	</span>-0.186606<span class="w">	</span>D
+<span class="m">0</span>.333447<span class="w">	</span>-0.183066<span class="w">	</span>D
+<span class="m">0</span>.333866<span class="w">	</span>-0.186905<span class="w">	</span>D
+<span class="m">0</span>.334211<span class="w">	</span>-0.194141<span class="w">	</span>D
+<span class="m">0</span>.332496<span class="w">	</span>-0.216871<span class="w">	</span>D
+<span class="m">0</span>.330474<span class="w">	</span>-0.224572<span class="w">	</span>D
+<span class="m">0</span>.328598<span class="w">	</span>-0.228863<span class="w">	</span>D
+<span class="m">0</span>.327487<span class="w">	</span>-0.230673<span class="w">	</span>D
+<span class="m">0</span>.326253<span class="w">	</span>-0.232224<span class="w">	</span>D
+<span class="m">0</span>.324892<span class="w">	</span>-0.233487<span class="w">	</span>D
+<span class="m">0</span>.323398<span class="w">	</span>-0.234435<span class="w">	</span>D
+<span class="m">0</span>.321766<span class="w">	</span>-0.235041<span class="w">	</span>D
+<span class="m">0</span>.319991<span class="w">	</span>-0.235277<span class="w">	</span>D
+<span class="m">0</span>.318069<span class="w">	</span>-0.235117<span class="w">	</span>D
+<span class="m">0</span>.315993<span class="w">	</span>-0.234531<span class="w">	</span>D
+<span class="m">0</span>.313760<span class="w">	</span>-0.233494<span class="w">	</span>D
+<span class="m">0</span>.311363<span class="w">	</span>-0.231978<span class="w">	</span>D
+<span class="m">0</span>.308799<span class="w">	</span>-0.229955<span class="w">	</span>D
+<span class="m">0</span>.306250<span class="w">	</span>-0.227381<span class="w">	</span>D
+<span class="m">0</span>.303642<span class="w">	</span>-0.225199<span class="w">	</span>D
+<span class="m">0</span>.300980<span class="w">	</span>-0.223384<span class="w">	</span>D
+<span class="m">0</span>.298266<span class="w">	</span>-0.221912<span class="w">	</span>D
+<span class="m">0</span>.295503<span class="w">	</span>-0.220761<span class="w">	</span>D
+<span class="m">0</span>.292693<span class="w">	</span>-0.219906<span class="w">	</span>D
+<span class="m">0</span>.289840<span class="w">	</span>-0.219325<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.148074<span class="w">	</span>-0.292592<span class="w">	</span>M<span class="w">	 </span>-G255/255/255<span class="w"> </span>-W0.5p,0/0/0
+<span class="m">0</span>.144302<span class="w">	</span>-0.291620<span class="w">	</span>D
+<span class="m">0</span>.136817<span class="w">	</span>-0.288904<span class="w">	</span>D
+<span class="m">0</span>.129733<span class="w">	</span>-0.285332<span class="w">	</span>D
+<span class="m">0</span>.126462<span class="w">	</span>-0.283292<span class="w">	</span>D
+<span class="m">0</span>.123437<span class="w">	</span>-0.281118<span class="w">	</span>D
+<span class="m">0</span>.120706<span class="w">	</span>-0.278837<span class="w">	</span>D
+<span class="m">0</span>.118318<span class="w">	</span>-0.276475<span class="w">	</span>D
+<span class="m">0</span>.116321<span class="w">	</span>-0.274059<span class="w">	</span>D
+<span class="m">0</span>.114763<span class="w">	</span>-0.271615<span class="w">	</span>D
+<span class="m">0</span>.113692<span class="w">	</span>-0.269170<span class="w">	</span>D
+<span class="m">0</span>.113159<span class="w">	</span>-0.266750<span class="w">	</span>D
+<span class="m">0</span>.113209<span class="w">	</span>-0.264382<span class="w">	</span>D
+<span class="m">0</span>.113893<span class="w">	</span>-0.262093<span class="w">	</span>D
+<span class="m">0</span>.115259<span class="w">	</span>-0.259909<span class="w">	</span>D
+<span class="m">0</span>.117354<span class="w">	</span>-0.257856<span class="w">	</span>D
+<span class="m">0</span>.120228<span class="w">	</span>-0.255962<span class="w">	</span>D
+<span class="m">0</span>.123929<span class="w">	</span>-0.254253<span class="w">	</span>D
+<span class="m">0</span>.151687<span class="w">	</span>-0.258519<span class="w">	</span>D
+<span class="m">0</span>.155528<span class="w">	</span>-0.257259<span class="w">	</span>D
+<span class="m">0</span>.158833<span class="w">	</span>-0.254696<span class="w">	</span>D
+<span class="m">0</span>.160679<span class="w">	</span>-0.252126<span class="w">	</span>D
+<span class="m">0</span>.162200<span class="w">	</span>-0.248771<span class="w">	</span>D
+<span class="m">0</span>.162827<span class="w">	</span>-0.246774<span class="w">	</span>D
+<span class="m">0</span>.162819<span class="w">	</span>-0.241736<span class="w">	</span>D
+<span class="m">0</span>.163111<span class="w">	</span>-0.236841<span class="w">	</span>D
+<span class="m">0</span>.163687<span class="w">	</span>-0.232081<span class="w">	</span>D
+<span class="m">0</span>.164531<span class="w">	</span>-0.227447<span class="w">	</span>D
+<span class="m">0</span>.165626<span class="w">	</span>-0.222932<span class="w">	</span>D
+<span class="m">0</span>.168505<span class="w">	</span>-0.214226<span class="w">	</span>D
+<span class="m">0</span>.172191<span class="w">	</span>-0.205897<span class="w">	</span>D
+<span class="m">0</span>.178948<span class="w">	</span>-0.193969<span class="w">	</span>D
+<span class="m">0</span>.217579<span class="w">	</span>-0.141188<span class="w">	</span>D
+<span class="m">0</span>.224586<span class="w">	</span>-0.129120<span class="w">	</span>D
+<span class="m">0</span>.226679<span class="w">	</span>-0.128066<span class="w">	</span>D
+<span class="m">0</span>.231156<span class="w">	</span>-0.126679<span class="w">	</span>D
+<span class="m">0</span>.235880<span class="w">	</span>-0.126176<span class="w">	</span>D
+<span class="m">0</span>.240683<span class="w">	</span>-0.126467<span class="w">	</span>D
+<span class="m">0</span>.247668<span class="w">	</span>-0.128195<span class="w">	</span>D
+<span class="m">0</span>.253884<span class="w">	</span>-0.131201<span class="w">	</span>D
+<span class="m">0</span>.257321<span class="w">	</span>-0.133763<span class="w">	</span>D
+<span class="m">0</span>.259996<span class="w">	</span>-0.136667<span class="w">	</span>D
+<span class="m">0</span>.260995<span class="w">	</span>-0.138219<span class="w">	</span>D
+<span class="m">0</span>.261741<span class="w">	</span>-0.139821<span class="w">	</span>D
+<span class="m">0</span>.262212<span class="w">	</span>-0.141464<span class="w">	</span>D
+<span class="m">0</span>.262387<span class="w">	</span>-0.143136<span class="w">	</span>D
+<span class="m">0</span>.262246<span class="w">	</span>-0.144825<span class="w">	</span>D
+<span class="m">0</span>.261768<span class="w">	</span>-0.146520<span class="w">	</span>D
+<span class="m">0</span>.260930<span class="w">	</span>-0.148210<span class="w">	</span>D
+<span class="m">0</span>.259714<span class="w">	</span>-0.149883<span class="w">	</span>D
+<span class="m">0</span>.258096<span class="w">	</span>-0.151528<span class="w">	</span>D
+<span class="m">0</span>.256057<span class="w">	</span>-0.153134<span class="w">	</span>D
+<span class="m">0</span>.253575<span class="w">	</span>-0.154690<span class="w">	</span>D
+<span class="m">0</span>.250629<span class="w">	</span>-0.156183<span class="w">	</span>D
+<span class="m">0</span>.246187<span class="w">	</span>-0.159468<span class="w">	</span>D
+<span class="m">0</span>.242088<span class="w">	</span>-0.162948<span class="w">	</span>D
+<span class="m">0</span>.238307<span class="w">	</span>-0.166612<span class="w">	</span>D
+<span class="m">0</span>.234823<span class="w">	</span>-0.170444<span class="w">	</span>D
+<span class="m">0</span>.231610<span class="w">	</span>-0.174432<span class="w">	</span>D
+<span class="m">0</span>.228647<span class="w">	</span>-0.178562<span class="w">	</span>D
+<span class="m">0</span>.223372<span class="w">	</span>-0.187195<span class="w">	</span>D
+<span class="m">0</span>.216742<span class="w">	</span>-0.200874<span class="w">	</span>D
+<span class="m">0</span>.198136<span class="w">	</span>-0.248409<span class="w">	</span>D
+<span class="m">0</span>.193656<span class="w">	</span>-0.257465<span class="w">	</span>D
+<span class="m">0</span>.188487<span class="w">	</span>-0.266118<span class="w">	</span>D
+<span class="m">0</span>.185585<span class="w">	</span>-0.270261<span class="w">	</span>D
+<span class="m">0</span>.182441<span class="w">	</span>-0.274262<span class="w">	</span>D
+<span class="m">0</span>.179030<span class="w">	</span>-0.278109<span class="w">	</span>D
+<span class="m">0</span>.175330<span class="w">	</span>-0.281788<span class="w">	</span>D
+<span class="m">0</span>.174187<span class="w">	</span>-0.284946<span class="w">	</span>D
+<span class="m">0</span>.172564<span class="w">	</span>-0.287571<span class="w">	</span>D
+<span class="m">0</span>.170508<span class="w">	</span>-0.289690<span class="w">	</span>D
+<span class="m">0</span>.168068<span class="w">	</span>-0.291330<span class="w">	</span>D
+<span class="m">0</span>.165292<span class="w">	</span>-0.292518<span class="w">	</span>D
+<span class="m">0</span>.162229<span class="w">	</span>-0.293278<span class="w">	</span>D
+<span class="m">0</span>.158927<span class="w">	</span>-0.293640<span class="w">	</span>D
+<span class="m">0</span>.155435<span class="w">	</span>-0.293628<span class="w">	</span>D
+<span class="m">0</span>.151802<span class="w">	</span>-0.293270<span class="w">	</span>D
+<span class="m">0</span>.148074<span class="w">	</span>-0.292592<span class="w">	</span>D
+
+<span class="c1">#</span>
+-0.129117<span class="w">	</span>-0.286912<span class="w">	</span>M<span class="w">	 </span>-G255/255/255<span class="w"> </span>-W0.5p,0/0/0
+-0.132612<span class="w">	</span>-0.285646<span class="w">	</span>D
+-0.135982<span class="w">	</span>-0.284094<span class="w">	</span>D
+-0.139233<span class="w">	</span>-0.282277<span class="w">	</span>D
+-0.145402<span class="w">	</span>-0.277933<span class="w">	</span>D
+-0.151167<span class="w">	</span>-0.272780<span class="w">	</span>D
+-0.161675<span class="w">	</span>-0.260711<span class="w">	</span>D
+-0.182070<span class="w">	</span>-0.231042<span class="w">	</span>D
+-0.186382<span class="w">	</span>-0.230648<span class="w">	</span>D
+-0.190769<span class="w">	</span>-0.230701<span class="w">	</span>D
+-0.195225<span class="w">	</span>-0.231160<span class="w">	</span>D
+-0.199741<span class="w">	</span>-0.231982<span class="w">	</span>D
+-0.204309<span class="w">	</span>-0.233127<span class="w">	</span>D
+-0.213574<span class="w">	</span>-0.236211<span class="w">	</span>D
+-0.251184<span class="w">	</span>-0.253004<span class="w">	</span>D
+-0.260416<span class="w">	</span>-0.256633<span class="w">	</span>D
+-0.264963<span class="w">	</span>-0.258131<span class="w">	</span>D
+-0.269454<span class="w">	</span>-0.259361<span class="w">	</span>D
+-0.273882<span class="w">	</span>-0.260283<span class="w">	</span>D
+-0.278238<span class="w">	</span>-0.260853<span class="w">	</span>D
+-0.282515<span class="w">	</span>-0.261030<span class="w">	</span>D
+-0.286705<span class="w">	</span>-0.260772<span class="w">	</span>D
+-0.290801<span class="w">	</span>-0.260036<span class="w">	</span>D
+-0.294794<span class="w">	</span>-0.258781<span class="w">	</span>D
+-0.298676<span class="w">	</span>-0.256964<span class="w">	</span>D
+-0.302441<span class="w">	</span>-0.254544<span class="w">	</span>D
+-0.306080<span class="w">	</span>-0.251478<span class="w">	</span>D
+-0.309586<span class="w">	</span>-0.247724<span class="w">	</span>D
+-0.310815<span class="w">	</span>-0.244473<span class="w">	</span>D
+-0.311722<span class="w">	</span>-0.241366<span class="w">	</span>D
+-0.312319<span class="w">	</span>-0.238399<span class="w">	</span>D
+-0.312621<span class="w">	</span>-0.235566<span class="w">	</span>D
+-0.312643<span class="w">	</span>-0.232863<span class="w">	</span>D
+-0.312398<span class="w">	</span>-0.230284<span class="w">	</span>D
+-0.311901<span class="w">	</span>-0.227826<span class="w">	</span>D
+-0.311167<span class="w">	</span>-0.225483<span class="w">	</span>D
+-0.309043<span class="w">	</span>-0.221122<span class="w">	</span>D
+-0.306139<span class="w">	</span>-0.217164<span class="w">	</span>D
+-0.300572<span class="w">	</span>-0.211896<span class="w">	</span>D
+-0.278748<span class="w">	</span>-0.199691<span class="w">	</span>D
+-0.266136<span class="w">	</span>-0.194279<span class="w">	</span>D
+-0.265281<span class="w">	</span>-0.197271<span class="w">	</span>D
+-0.264719<span class="w">	</span>-0.200070<span class="w">	</span>D
+-0.264430<span class="w">	</span>-0.202688<span class="w">	</span>D
+-0.264394<span class="w">	</span>-0.205139<span class="w">	</span>D
+-0.264593<span class="w">	</span>-0.207437<span class="w">	</span>D
+-0.265617<span class="w">	</span>-0.211624<span class="w">	</span>D
+-0.268428<span class="w">	</span>-0.217080<span class="w">	</span>D
+-0.285124<span class="w">	</span>-0.235714<span class="w">	</span>D
+-0.287222<span class="w">	</span>-0.239366<span class="w">	</span>D
+-0.288712<span class="w">	</span>-0.243456<span class="w">	</span>D
+-0.289181<span class="w">	</span>-0.245697<span class="w">	</span>D
+-0.289440<span class="w">	</span>-0.248087<span class="w">	</span>D
+-0.289470<span class="w">	</span>-0.250639<span class="w">	</span>D
+-0.282132<span class="w">	</span>-0.247021<span class="w">	</span>D
+-0.275302<span class="w">	</span>-0.242738<span class="w">	</span>D
+-0.242255<span class="w">	</span>-0.213740<span class="w">	</span>D
+-0.229983<span class="w">	</span>-0.203982<span class="w">	</span>D
+-0.223365<span class="w">	</span>-0.199875<span class="w">	</span>D
+-0.216291<span class="w">	</span>-0.196474<span class="w">	</span>D
+-0.212552<span class="w">	</span>-0.195084<span class="w">	</span>D
+-0.208660<span class="w">	</span>-0.193925<span class="w">	</span>D
+-0.204603<span class="w">	</span>-0.193015<span class="w">	</span>D
+-0.200369<span class="w">	</span>-0.192372<span class="w">	</span>D
+-0.195945<span class="w">	</span>-0.192014<span class="w">	</span>D
+-0.191319<span class="w">	</span>-0.191959<span class="w">	</span>D
+-0.211732<span class="w">	</span>-0.127692<span class="w">	</span>D
+-0.205563<span class="w">	</span>-0.127066<span class="w">	</span>D
+-0.199751<span class="w">	</span>-0.127097<span class="w">	</span>D
+-0.194284<span class="w">	</span>-0.127750<span class="w">	</span>D
+-0.189148<span class="w">	</span>-0.128989<span class="w">	</span>D
+-0.184332<span class="w">	</span>-0.130780<span class="w">	</span>D
+-0.179821<span class="w">	</span>-0.133086<span class="w">	</span>D
+-0.175604<span class="w">	</span>-0.135872<span class="w">	</span>D
+-0.171667<span class="w">	</span>-0.139104<span class="w">	</span>D
+-0.167999<span class="w">	</span>-0.142746<span class="w">	</span>D
+-0.164585<span class="w">	</span>-0.146761<span class="w">	</span>D
+-0.161413<span class="w">	</span>-0.151116<span class="w">	</span>D
+-0.158471<span class="w">	</span>-0.155775<span class="w">	</span>D
+-0.155746<span class="w">	</span>-0.160702<span class="w">	</span>D
+-0.153224<span class="w">	</span>-0.165862<span class="w">	</span>D
+-0.148742<span class="w">	</span>-0.176740<span class="w">	</span>D
+-0.143227<span class="w">	</span>-0.193921<span class="w">	</span>D
+-0.136409<span class="w">	</span>-0.222503<span class="w">	</span>D
+-0.134214<span class="w">	</span>-0.233094<span class="w">	</span>D
+-0.133180<span class="w">	</span>-0.238067<span class="w">	</span>D
+-0.132170<span class="w">	</span>-0.242778<span class="w">	</span>D
+-0.131173<span class="w">	</span>-0.247192<span class="w">	</span>D
+-0.126539<span class="w">	</span>-0.247380<span class="w">	</span>D
+-0.115374<span class="w">	</span>-0.248526<span class="w">	</span>D
+-0.097439<span class="w">	</span>-0.252448<span class="w">	</span>D
+-0.092093<span class="w">	</span>-0.254418<span class="w">	</span>D
+-0.087458<span class="w">	</span>-0.256751<span class="w">	</span>D
+-0.085482<span class="w">	</span>-0.258059<span class="w">	</span>D
+-0.083772<span class="w">	</span>-0.259464<span class="w">	</span>D
+-0.082360<span class="w">	</span>-0.260970<span class="w">	</span>D
+-0.081273<span class="w">	</span>-0.262578<span class="w">	</span>D
+-0.080542<span class="w">	</span>-0.264291<span class="w">	</span>D
+-0.080197<span class="w">	</span>-0.266110<span class="w">	</span>D
+-0.080266<span class="w">	</span>-0.268040<span class="w">	</span>D
+-0.080781<span class="w">	</span>-0.270080<span class="w">	</span>D
+-0.081770<span class="w">	</span>-0.272235<span class="w">	</span>D
+-0.083263<span class="w">	</span>-0.274506<span class="w">	</span>D
+-0.085290<span class="w">	</span>-0.276896<span class="w">	</span>D
+-0.087881<span class="w">	</span>-0.279407<span class="w">	</span>D
+-0.091064<span class="w">	</span>-0.282041<span class="w">	</span>D
+-0.095950<span class="w">	</span>-0.284278<span class="w">	</span>D
+-0.100658<span class="w">	</span>-0.286043<span class="w">	</span>D
+-0.105193<span class="w">	</span>-0.287356<span class="w">	</span>D
+-0.109562<span class="w">	</span>-0.288238<span class="w">	</span>D
+-0.113770<span class="w">	</span>-0.288710<span class="w">	</span>D
+-0.117824<span class="w">	</span>-0.288792<span class="w">	</span>D
+-0.121729<span class="w">	</span>-0.288506<span class="w">	</span>D
+-0.125491<span class="w">	</span>-0.287873<span class="w">	</span>D
+-0.129117<span class="w">	</span>-0.286912<span class="w">	</span>D
+
+<span class="c1">#</span>
+-0.058391<span class="w">	</span>-0.065139<span class="w">	</span>M<span class="w">	 </span>-G255/255/255<span class="w"> </span>-W0.5p,0/0/0
+-0.063996<span class="w">	</span>-0.057971<span class="w">	</span>D
+-0.068948<span class="w">	</span>-0.050302<span class="w">	</span>D
+-0.073282<span class="w">	</span>-0.042194<span class="w">	</span>D
+-0.078701<span class="w">	</span>-0.029346<span class="w">	</span>D
+-0.084094<span class="w">	</span>-0.011266<span class="w">	</span>D
+-0.088829<span class="w">	</span><span class="m">0</span>.016871<span class="w">	</span>D
+-0.085205<span class="w">	</span><span class="m">0</span>.017229<span class="w">	</span>D
+-0.081914<span class="w">	</span><span class="m">0</span>.017204<span class="w">	</span>D
+-0.078938<span class="w">	</span><span class="m">0</span>.016818<span class="w">	</span>D
+-0.076254<span class="w">	</span><span class="m">0</span>.016095<span class="w">	</span>D
+-0.073841<span class="w">	</span><span class="m">0</span>.015055<span class="w">	</span>D
+-0.071679<span class="w">	</span><span class="m">0</span>.013722<span class="w">	</span>D
+-0.069748<span class="w">	</span><span class="m">0</span>.012118<span class="w">	</span>D
+-0.068025<span class="w">	</span><span class="m">0</span>.010266<span class="w">	</span>D
+-0.066490<span class="w">	</span><span class="m">0</span>.008187<span class="w">	</span>D
+-0.063902<span class="w">	</span><span class="m">0</span>.003441<span class="w">	</span>D
+-0.060907<span class="w">	</span>-0.004816<span class="w">	</span>D
+-0.053045<span class="w">	</span>-0.032135<span class="w">	</span>D
+-0.050454<span class="w">	</span>-0.037577<span class="w">	</span>D
+-0.048918<span class="w">	</span>-0.040077<span class="w">	</span>D
+-0.047194<span class="w">	</span>-0.042401<span class="w">	</span>D
+-0.045260<span class="w">	</span>-0.044526<span class="w">	</span>D
+-0.043096<span class="w">	</span>-0.046430<span class="w">	</span>D
+<span class="m">0</span>.033982<span class="w">	</span>-0.041737<span class="w">	</span>D
+<span class="m">0</span>.050451<span class="w">	</span>-0.045358<span class="w">	</span>D
+<span class="m">0</span>.053719<span class="w">	</span>-0.046453<span class="w">	</span>D
+<span class="m">0</span>.055850<span class="w">	</span>-0.041709<span class="w">	</span>D
+<span class="m">0</span>.058113<span class="w">	</span>-0.033482<span class="w">	</span>D
+<span class="m">0</span>.063107<span class="w">	</span>-0.003019<span class="w">	</span>D
+<span class="m">0</span>.064655<span class="w">	</span><span class="m">0</span>.002420<span class="w">	</span>D
+<span class="m">0</span>.066703<span class="w">	</span><span class="m">0</span>.007263<span class="w">	</span>D
+<span class="m">0</span>.067957<span class="w">	</span><span class="m">0</span>.009410<span class="w">	</span>D
+<span class="m">0</span>.069388<span class="w">	</span><span class="m">0</span>.011348<span class="w">	</span>D
+<span class="m">0</span>.071011<span class="w">	</span><span class="m">0</span>.013056<span class="w">	</span>D
+<span class="m">0</span>.072845<span class="w">	</span><span class="m">0</span>.014514<span class="w">	</span>D
+<span class="m">0</span>.074906<span class="w">	</span><span class="m">0</span>.015701<span class="w">	</span>D
+<span class="m">0</span>.077211<span class="w">	</span><span class="m">0</span>.016598<span class="w">	</span>D
+<span class="m">0</span>.079777<span class="w">	</span><span class="m">0</span>.017183<span class="w">	</span>D
+<span class="m">0</span>.082621<span class="w">	</span><span class="m">0</span>.017437<span class="w">	</span>D
+<span class="m">0</span>.085760<span class="w">	</span><span class="m">0</span>.017340<span class="w">	</span>D
+<span class="m">0</span>.089211<span class="w">	</span><span class="m">0</span>.016871<span class="w">	</span>D
+<span class="m">0</span>.089546<span class="w">	</span><span class="m">0</span>.010788<span class="w">	</span>D
+<span class="m">0</span>.089554<span class="w">	</span><span class="m">0</span>.004569<span class="w">	</span>D
+<span class="m">0</span>.089237<span class="w">	</span>-0.001754<span class="w">	</span>D
+<span class="m">0</span>.088602<span class="w">	</span>-0.008145<span class="w">	</span>D
+<span class="m">0</span>.087651<span class="w">	</span>-0.014572<span class="w">	</span>D
+<span class="m">0</span>.086388<span class="w">	</span>-0.021000<span class="w">	</span>D
+<span class="m">0</span>.084818<span class="w">	</span>-0.027395<span class="w">	</span>D
+<span class="m">0</span>.082945<span class="w">	</span>-0.033723<span class="w">	</span>D
+<span class="m">0</span>.080772<span class="w">	</span>-0.039952<span class="w">	</span>D
+<span class="m">0</span>.078303<span class="w">	</span>-0.046046<span class="w">	</span>D
+<span class="m">0</span>.075544<span class="w">	</span>-0.051971<span class="w">	</span>D
+<span class="m">0</span>.072497<span class="w">	</span>-0.057695<span class="w">	</span>D
+<span class="m">0</span>.069167<span class="w">	</span>-0.063183<span class="w">	</span>D
+<span class="m">0</span>.065558<span class="w">	</span>-0.068401<span class="w">	</span>D
+<span class="m">0</span>.061674<span class="w">	</span>-0.073315<span class="w">	</span>D
+<span class="m">0</span>.057518<span class="w">	</span>-0.077892<span class="w">	</span>D
+<span class="m">0</span>.053096<span class="w">	</span>-0.082098<span class="w">	</span>D
+<span class="m">0</span>.048410<span class="w">	</span>-0.085898<span class="w">	</span>D
+<span class="m">0</span>.043466<span class="w">	</span>-0.089259<span class="w">	</span>D
+<span class="m">0</span>.038266<span class="w">	</span>-0.092147<span class="w">	</span>D
+<span class="m">0</span>.032816<span class="w">	</span>-0.094528<span class="w">	</span>D
+<span class="m">0</span>.027118<span class="w">	</span>-0.096369<span class="w">	</span>D
+<span class="m">0</span>.021178<span class="w">	</span>-0.097635<span class="w">	</span>D
+<span class="m">0</span>.014999<span class="w">	</span>-0.098292<span class="w">	</span>D
+<span class="m">0</span>.008585<span class="w">	</span>-0.098307<span class="w">	</span>D
+<span class="m">0</span>.001941<span class="w">	</span>-0.097646<span class="w">	</span>D
+-0.004930<span class="w">	</span>-0.096274<span class="w">	</span>D
+-0.012024<span class="w">	</span>-0.094159<span class="w">	</span>D
+-0.019337<span class="w">	</span>-0.091265<span class="w">	</span>D
+-0.024143<span class="w">	</span>-0.089511<span class="w">	</span>D
+-0.028736<span class="w">	</span>-0.087544<span class="w">	</span>D
+-0.033123<span class="w">	</span>-0.085374<span class="w">	</span>D
+-0.037306<span class="w">	</span>-0.083009<span class="w">	</span>D
+-0.041291<span class="w">	</span>-0.080455<span class="w">	</span>D
+-0.045082<span class="w">	</span>-0.077721<span class="w">	</span>D
+-0.052098<span class="w">	</span>-0.071743<span class="w">	</span>D
+-0.058391<span class="w">	</span>-0.065139<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.073567<span class="w">	</span>-0.086719<span class="w">	</span>M<span class="w">	 </span>-G255/255/255<span class="w"> </span>-W0.5p,0/0/0
+<span class="m">0</span>.097659<span class="w">	</span>-0.070760<span class="w">	</span>D
+<span class="m">0</span>.121233<span class="w">	</span>-0.054023<span class="w">	</span>D
+<span class="m">0</span>.144294<span class="w">	</span>-0.036553<span class="w">	</span>D
+<span class="m">0</span>.166846<span class="w">	</span>-0.018394<span class="w">	</span>D
+<span class="m">0</span>.188892<span class="w">	</span><span class="m">0</span>.000410<span class="w">	</span>D
+<span class="m">0</span>.210437<span class="w">	</span><span class="m">0</span>.019815<span class="w">	</span>D
+<span class="m">0</span>.231485<span class="w">	</span><span class="m">0</span>.039777<span class="w">	</span>D
+<span class="m">0</span>.262132<span class="w">	</span><span class="m">0</span>.070665<span class="w">	</span>D
+<span class="m">0</span>.291682<span class="w">	</span><span class="m">0</span>.102557<span class="w">	</span>D
+<span class="m">0</span>.320149<span class="w">	</span><span class="m">0</span>.135303<span class="w">	</span>D
+<span class="m">0</span>.347546<span class="w">	</span><span class="m">0</span>.168752<span class="w">	</span>D
+<span class="m">0</span>.355796<span class="w">	</span><span class="m">0</span>.173561<span class="w">	</span>D
+<span class="m">0</span>.353224<span class="w">	</span><span class="m">0</span>.159286<span class="w">	</span>D
+<span class="m">0</span>.349957<span class="w">	</span><span class="m">0</span>.145288<span class="w">	</span>D
+<span class="m">0</span>.346023<span class="w">	</span><span class="m">0</span>.131564<span class="w">	</span>D
+<span class="m">0</span>.341449<span class="w">	</span><span class="m">0</span>.118111<span class="w">	</span>D
+<span class="m">0</span>.336262<span class="w">	</span><span class="m">0</span>.104926<span class="w">	</span>D
+<span class="m">0</span>.330490<span class="w">	</span><span class="m">0</span>.092007<span class="w">	</span>D
+<span class="m">0</span>.324161<span class="w">	</span><span class="m">0</span>.079351<span class="w">	</span>D
+<span class="m">0</span>.317302<span class="w">	</span><span class="m">0</span>.066955<span class="w">	</span>D
+<span class="m">0</span>.309940<span class="w">	</span><span class="m">0</span>.054816<span class="w">	</span>D
+<span class="m">0</span>.302103<span class="w">	</span><span class="m">0</span>.042932<span class="w">	</span>D
+<span class="m">0</span>.293818<span class="w">	</span><span class="m">0</span>.031299<span class="w">	</span>D
+<span class="m">0</span>.285112<span class="w">	</span><span class="m">0</span>.019915<span class="w">	</span>D
+<span class="m">0</span>.276014<span class="w">	</span><span class="m">0</span>.008777<span class="w">	</span>D
+<span class="m">0</span>.266551<span class="w">	</span>-0.002117<span class="w">	</span>D
+<span class="m">0</span>.256749<span class="w">	</span>-0.012771<span class="w">	</span>D
+<span class="m">0</span>.246637<span class="w">	</span>-0.023188<span class="w">	</span>D
+<span class="m">0</span>.236242<span class="w">	</span>-0.033369<span class="w">	</span>D
+<span class="m">0</span>.225591<span class="w">	</span>-0.043318<span class="w">	</span>D
+<span class="m">0</span>.214712<span class="w">	</span>-0.053038<span class="w">	</span>D
+<span class="m">0</span>.203632<span class="w">	</span>-0.062532<span class="w">	</span>D
+<span class="m">0</span>.192378<span class="w">	</span>-0.071802<span class="w">	</span>D
+<span class="m">0</span>.169462<span class="w">	</span>-0.089681<span class="w">	</span>D
+<span class="m">0</span>.146181<span class="w">	</span>-0.106699<span class="w">	</span>D
+<span class="m">0</span>.122756<span class="w">	</span>-0.122878<span class="w">	</span>D
+<span class="m">0</span>.099406<span class="w">	</span>-0.138240<span class="w">	</span>D
+<span class="m">0</span>.097277<span class="w">	</span>-0.137194<span class="w">	</span>D
+<span class="m">0</span>.092353<span class="w">	</span>-0.135546<span class="w">	</span>D
+<span class="m">0</span>.083686<span class="w">	</span>-0.133932<span class="w">	</span>D
+<span class="m">0</span>.051875<span class="w">	</span>-0.130556<span class="w">	</span>D
+<span class="m">0</span>.046486<span class="w">	</span>-0.129247<span class="w">	</span>D
+<span class="m">0</span>.044076<span class="w">	</span>-0.128405<span class="w">	</span>D
+<span class="m">0</span>.041891<span class="w">	</span>-0.127415<span class="w">	</span>D
+<span class="m">0</span>.039954<span class="w">	</span>-0.126261<span class="w">	</span>D
+<span class="m">0</span>.038292<span class="w">	</span>-0.124925<span class="w">	</span>D
+<span class="m">0</span>.036929<span class="w">	</span>-0.123392<span class="w">	</span>D
+<span class="m">0</span>.035891<span class="w">	</span>-0.121644<span class="w">	</span>D
+<span class="m">0</span>.035202<span class="w">	</span>-0.119665<span class="w">	</span>D
+<span class="m">0</span>.034889<span class="w">	</span>-0.117438<span class="w">	</span>D
+<span class="m">0</span>.034975<span class="w">	</span>-0.114946<span class="w">	</span>D
+<span class="m">0</span>.035488<span class="w">	</span>-0.112173<span class="w">	</span>D
+<span class="m">0</span>.036450<span class="w">	</span>-0.109102<span class="w">	</span>D
+<span class="m">0</span>.048954<span class="w">	</span>-0.101855<span class="w">	</span>D
+<span class="m">0</span>.073567<span class="w">	</span>-0.086719<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.088675<span class="w">	</span>-0.187655<span class="w">	</span>M<span class="w">	 </span>-G0/0/0<span class="w"> </span>-W0.5p,0/0/0
+<span class="m">0</span>.112186<span class="w">	</span>-0.193820<span class="w">	</span>D
+<span class="m">0</span>.123579<span class="w">	</span>-0.193549<span class="w">	</span>D
+<span class="m">0</span>.129699<span class="w">	</span>-0.191998<span class="w">	</span>D
+<span class="m">0</span>.128899<span class="w">	</span>-0.190097<span class="w">	</span>D
+<span class="m">0</span>.126756<span class="w">	</span>-0.186527<span class="w">	</span>D
+<span class="m">0</span>.123959<span class="w">	</span>-0.183276<span class="w">	</span>D
+<span class="m">0</span>.118721<span class="w">	</span>-0.179033<span class="w">	</span>D
+<span class="m">0</span>.110235<span class="w">	</span>-0.174642<span class="w">	</span>D
+<span class="m">0</span>.098158<span class="w">	</span>-0.171365<span class="w">	</span>D
+<span class="m">0</span>.085678<span class="w">	</span>-0.170776<span class="w">	</span>D
+<span class="m">0</span>.076288<span class="w">	</span>-0.172406<span class="w">	</span>D
+<span class="m">0</span>.070034<span class="w">	</span>-0.174936<span class="w">	</span>D
+<span class="m">0</span>.075277<span class="w">	</span>-0.179933<span class="w">	</span>D
+<span class="m">0</span>.088675<span class="w">	</span>-0.187655<span class="w">	</span>D
+
+<span class="c1">#</span>
+-0.076578<span class="w">	</span>-0.194792<span class="w">	</span>M<span class="w">	 </span>-G0/0/0<span class="w"> </span>-W0.5p,0/0/0
+-0.071194<span class="w">	</span>-0.193256<span class="w">	</span>D
+-0.055193<span class="w">	</span>-0.185259<span class="w">	</span>D
+-0.048787<span class="w">	</span>-0.179950<span class="w">	</span>D
+-0.046564<span class="w">	</span>-0.177159<span class="w">	</span>D
+-0.045215<span class="w">	</span>-0.174350<span class="w">	</span>D
+-0.044920<span class="w">	</span>-0.172955<span class="w">	</span>D
+-0.044907<span class="w">	</span>-0.171577<span class="w">	</span>D
+-0.045195<span class="w">	</span>-0.170221<span class="w">	</span>D
+-0.045805<span class="w">	</span>-0.168894<span class="w">	</span>D
+-0.046759<span class="w">	</span>-0.167604<span class="w">	</span>D
+-0.048077<span class="w">	</span>-0.166357<span class="w">	</span>D
+-0.049779<span class="w">	</span>-0.165159<span class="w">	</span>D
+-0.051887<span class="w">	</span>-0.164019<span class="w">	</span>D
+-0.053457<span class="w">	</span>-0.164609<span class="w">	</span>D
+-0.055292<span class="w">	</span>-0.165323<span class="w">	</span>D
+-0.057358<span class="w">	</span>-0.166151<span class="w">	</span>D
+-0.064592<span class="w">	</span>-0.169222<span class="w">	</span>D
+-0.085463<span class="w">	</span>-0.179958<span class="w">	</span>D
+-0.089554<span class="w">	</span>-0.182791<span class="w">	</span>D
+-0.091242<span class="w">	</span>-0.184175<span class="w">	</span>D
+-0.092646<span class="w">	</span>-0.185524<span class="w">	</span>D
+-0.093732<span class="w">	</span>-0.186828<span class="w">	</span>D
+-0.094464<span class="w">	</span>-0.188078<span class="w">	</span>D
+-0.094810<span class="w">	</span>-0.189263<span class="w">	</span>D
+-0.094735<span class="w">	</span>-0.190374<span class="w">	</span>D
+-0.094204<span class="w">	</span>-0.191400<span class="w">	</span>D
+-0.093183<span class="w">	</span>-0.192332<span class="w">	</span>D
+-0.091638<span class="w">	</span>-0.193159<span class="w">	</span>D
+-0.089534<span class="w">	</span>-0.193872<span class="w">	</span>D
+-0.086838<span class="w">	</span>-0.194461<span class="w">	</span>D
+-0.083515<span class="w">	</span>-0.194915<span class="w">	</span>D
+-0.079531<span class="w">	</span>-0.195226<span class="w">	</span>D
+-0.076578<span class="w">	</span>-0.194792<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.011028<span class="w">	</span>-0.160776<span class="w">	</span>M<span class="w">	 </span>-G0/0/0<span class="w"> </span>-W0.5p,0/0/0
+<span class="m">0</span>.056817<span class="w">	</span>-0.172166<span class="w">	</span>D
+<span class="m">0</span>.054063<span class="w">	</span>-0.166927<span class="w">	</span>D
+<span class="m">0</span>.050776<span class="w">	</span>-0.162424<span class="w">	</span>D
+<span class="m">0</span>.047010<span class="w">	</span>-0.158584<span class="w">	</span>D
+<span class="m">0</span>.042823<span class="w">	</span>-0.155336<span class="w">	</span>D
+<span class="m">0</span>.033411<span class="w">	</span>-0.150329<span class="w">	</span>D
+-0.012372<span class="w">	</span>-0.138945<span class="w">	</span>D
+-0.009620<span class="w">	</span>-0.144183<span class="w">	</span>D
+-0.006334<span class="w">	</span>-0.148685<span class="w">	</span>D
+-0.002569<span class="w">	</span>-0.152524<span class="w">	</span>D
+<span class="m">0</span>.001617<span class="w">	</span>-0.155771<span class="w">	</span>D
+<span class="m">0</span>.011028<span class="w">	</span>-0.160776<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.002062<span class="w">	</span><span class="m">0</span>.083489<span class="w">	</span>M<span class="w">	 </span>-G0/0/0<span class="w"> </span>-W0.5p,0/0/0
+-0.011328<span class="w">	</span><span class="m">0</span>.042492<span class="w">	</span>D
+<span class="m">0</span>.022015<span class="w">	</span><span class="m">0</span>.042466<span class="w">	</span>D
+<span class="m">0</span>.022514<span class="w">	</span><span class="m">0</span>.058581<span class="w">	</span>D
+<span class="m">0</span>.017486<span class="w">	</span><span class="m">0</span>.072306<span class="w">	</span>D
+<span class="m">0</span>.010463<span class="w">	</span><span class="m">0</span>.079334<span class="w">	</span>D
+<span class="m">0</span>.002062<span class="w">	</span><span class="m">0</span>.083489<span class="w">	</span>D
+
+<span class="c1">#</span>
+<span class="m">0</span>.027744<span class="w">	</span><span class="m">0</span>.094494<span class="w">	</span>M<span class="w">	 </span>-G0/0/0<span class="w"> </span>-W0.5p,0/0/0
+<span class="m">0</span>.047050<span class="w">	</span><span class="m">0</span>.074325<span class="w">	</span>D
+<span class="m">0</span>.052051<span class="w">	</span><span class="m">0</span>.073184<span class="w">	</span>D
+<span class="m">0</span>.056641<span class="w">	</span><span class="m">0</span>.073005<span class="w">	</span>D
+<span class="m">0</span>.060820<span class="w">	</span><span class="m">0</span>.073705<span class="w">	</span>D
+<span class="m">0</span>.064587<span class="w">	</span><span class="m">0</span>.075200<span class="w">	</span>D
+<span class="m">0</span>.067941<span class="w">	</span><span class="m">0</span>.077408<span class="w">	</span>D
+<span class="m">0</span>.070881<span class="w">	</span><span class="m">0</span>.080245<span class="w">	</span>D
+<span class="m">0</span>.073404<span class="w">	</span><span class="m">0</span>.083628<span class="w">	</span>D
+<span class="m">0</span>.075512<span class="w">	</span><span class="m">0</span>.087474<span class="w">	</span>D
+<span class="m">0</span>.077201<span class="w">	</span><span class="m">0</span>.091699<span class="w">	</span>D
+<span class="m">0</span>.078472<span class="w">	</span><span class="m">0</span>.096219<span class="w">	</span>D
+<span class="m">0</span>.079324<span class="w">	</span><span class="m">0</span>.100953<span class="w">	</span>D
+<span class="m">0</span>.079754<span class="w">	</span><span class="m">0</span>.105816<span class="w">	</span>D
+<span class="m">0</span>.079763<span class="w">	</span><span class="m">0</span>.110725<span class="w">	</span>D
+<span class="m">0</span>.079348<span class="w">	</span><span class="m">0</span>.115596<span class="w">	</span>D
+<span class="m">0</span>.078510<span class="w">	</span><span class="m">0</span>.120348<span class="w">	</span>D
+<span class="m">0</span>.077246<span class="w">	</span><span class="m">0</span>.124895<span class="w">	</span>D
+<span class="m">0</span>.075556<span class="w">	</span><span class="m">0</span>.129155<span class="w">	</span>D
+<span class="m">0</span>.073439<span class="w">	</span><span class="m">0</span>.133045<span class="w">	</span>D
+<span class="m">0</span>.070893<span class="w">	</span><span class="m">0</span>.136482<span class="w">	</span>D
+<span class="m">0</span>.067918<span class="w">	</span><span class="m">0</span>.139381<span class="w">	</span>D
+<span class="m">0</span>.064513<span class="w">	</span><span class="m">0</span>.141660<span class="w">	</span>D
+<span class="m">0</span>.060676<span class="w">	</span><span class="m">0</span>.143236<span class="w">	</span>D
+<span class="m">0</span>.056406<span class="w">	</span><span class="m">0</span>.144025<span class="w">	</span>D
+<span class="m">0</span>.051703<span class="w">	</span><span class="m">0</span>.143944<span class="w">	</span>D
+<span class="m">0</span>.046565<span class="w">	</span><span class="m">0</span>.142909<span class="w">	</span>D
+<span class="m">0</span>.040991<span class="w">	</span><span class="m">0</span>.140838<span class="w">	</span>D
+<span class="m">0</span>.034980<span class="w">	</span><span class="m">0</span>.137646<span class="w">	</span>D
+<span class="m">0</span>.028531<span class="w">	</span><span class="m">0</span>.133251<span class="w">	</span>D
+<span class="m">0</span>.021643<span class="w">	</span><span class="m">0</span>.127570<span class="w">	</span>D
+<span class="m">0</span>.021048<span class="w">	</span><span class="m">0</span>.122935<span class="w">	</span>D
+<span class="m">0</span>.021739<span class="w">	</span><span class="m">0</span>.109890<span class="w">	</span>D
+<span class="m">0</span>.027744<span class="w">	</span><span class="m">0</span>.094494<span class="w">	</span>D
+
+<span class="c1">#</span>
+-0.043960<span class="w">	</span><span class="m">0</span>.072239<span class="w">	</span>M<span class="w">	 </span>-G0/0/0<span class="w"> </span>-W0.5p,0/0/0
+-0.038665<span class="w">	</span><span class="m">0</span>.073716<span class="w">	</span>D
+-0.033745<span class="w">	</span><span class="m">0</span>.076066<span class="w">	</span>D
+-0.031484<span class="w">	</span><span class="m">0</span>.077568<span class="w">	</span>D
+-0.029387<span class="w">	</span><span class="m">0</span>.079288<span class="w">	</span>D
+-0.027478<span class="w">	</span><span class="m">0</span>.081225<span class="w">	</span>D
+-0.025779<span class="w">	</span><span class="m">0</span>.083381<span class="w">	</span>D
+-0.024315<span class="w">	</span><span class="m">0</span>.085754<span class="w">	</span>D
+-0.023109<span class="w">	</span><span class="m">0</span>.088345<span class="w">	</span>D
+-0.022184<span class="w">	</span><span class="m">0</span>.091154<span class="w">	</span>D
+-0.021564<span class="w">	</span><span class="m">0</span>.094180<span class="w">	</span>D
+-0.019751<span class="w">	</span><span class="m">0</span>.095920<span class="w">	</span>D
+-0.016757<span class="w">	</span><span class="m">0</span>.099805<span class="w">	</span>D
+-0.014580<span class="w">	</span><span class="m">0</span>.104107<span class="w">	</span>D
+-0.013191<span class="w">	</span><span class="m">0</span>.108683<span class="w">	</span>D
+-0.012561<span class="w">	</span><span class="m">0</span>.113388<span class="w">	</span>D
+-0.012659<span class="w">	</span><span class="m">0</span>.118077<span class="w">	</span>D
+-0.013455<span class="w">	</span><span class="m">0</span>.122605<span class="w">	</span>D
+-0.014920<span class="w">	</span><span class="m">0</span>.126827<span class="w">	</span>D
+-0.017025<span class="w">	</span><span class="m">0</span>.130599<span class="w">	</span>D
+-0.019739<span class="w">	</span><span class="m">0</span>.133776<span class="w">	</span>D
+-0.023033<span class="w">	</span><span class="m">0</span>.136213<span class="w">	</span>D
+-0.024888<span class="w">	</span><span class="m">0</span>.137109<span class="w">	</span>D
+-0.026877<span class="w">	</span><span class="m">0</span>.137766<span class="w">	</span>D
+-0.028996<span class="w">	</span><span class="m">0</span>.138165<span class="w">	</span>D
+-0.031241<span class="w">	</span><span class="m">0</span>.138289<span class="w">	</span>D
+-0.033609<span class="w">	</span><span class="m">0</span>.138119<span class="w">	</span>D
+-0.036096<span class="w">	</span><span class="m">0</span>.137638<span class="w">	</span>D
+-0.038698<span class="w">	</span><span class="m">0</span>.136827<span class="w">	</span>D
+-0.041412<span class="w">	</span><span class="m">0</span>.135668<span class="w">	</span>D
+-0.064246<span class="w">	</span><span class="m">0</span>.124073<span class="w">	</span>D
+-0.073753<span class="w">	</span><span class="m">0</span>.116470<span class="w">	</span>D
+-0.076949<span class="w">	</span><span class="m">0</span>.111753<span class="w">	</span>D
+-0.078293<span class="w">	</span><span class="m">0</span>.108180<span class="w">	</span>D
+-0.078901<span class="w">	</span><span class="m">0</span>.104218<span class="w">	</span>D
+-0.078682<span class="w">	</span><span class="m">0</span>.099828<span class="w">	</span>D
+-0.078233<span class="w">	</span><span class="m">0</span>.097460<span class="w">	</span>D
+-0.077543<span class="w">	</span><span class="m">0</span>.094970<span class="w">	</span>D
+-0.077260<span class="w">	</span><span class="m">0</span>.091882<span class="w">	</span>D
+-0.076648<span class="w">	</span><span class="m">0</span>.089013<span class="w">	</span>D
+-0.075730<span class="w">	</span><span class="m">0</span>.086363<span class="w">	</span>D
+-0.074531<span class="w">	</span><span class="m">0</span>.083933<span class="w">	</span>D
+-0.073073<span class="w">	</span><span class="m">0</span>.081721<span class="w">	</span>D
+-0.071380<span class="w">	</span><span class="m">0</span>.079728<span class="w">	</span>D
+-0.069475<span class="w">	</span><span class="m">0</span>.077954<span class="w">	</span>D
+-0.067383<span class="w">	</span><span class="m">0</span>.076399<span class="w">	</span>D
+-0.065126<span class="w">	</span><span class="m">0</span>.075062<span class="w">	</span>D
+-0.060211<span class="w">	</span><span class="m">0</span>.073046<span class="w">	</span>D
+-0.054920<span class="w">	</span><span class="m">0</span>.071903<span class="w">	</span>D
+-0.049441<span class="w">	</span><span class="m">0</span>.071634<span class="w">	</span>D
+-0.043960<span class="w">	</span><span class="m">0</span>.072239<span class="w">	</span>D
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../geology/geo-plane_vert.html" class="btn btn-neutral float-left" title="Strike of vertical beds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../deprecated-defaults.html" class="btn btn-neutral float-right" title="Deprecated GMT Defaults Names" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

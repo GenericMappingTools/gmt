@@ -1,0 +1,788 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Illustration Gallery &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="(1) Contour maps" href="gallery/ex01.html" />
+    <link rel="prev" title="Installing GMT" href="install.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Illustration Gallery</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="illustration-gallery">
+<span id="example-gallery"></span><h1>Illustration Gallery<a class="headerlink" href="#illustration-gallery" title="Link to this heading"></a></h1>
+<p>In this section we will be giving numerous examples of typical usage of
+GMT programs. In general, we will start with a raw data set,
+manipulate the numbers in various ways, then display the results in
+diagram or map view. The resulting plots will have in common that they
+are all made up of simpler plots that have been overlaid to create a
+complex illustration.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-4 docutils">
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex01.html"><span class="doc">(1) Contour maps</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex01.png" src="_images/ex01.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex01.html"><span class="doc">(1) Contour maps</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex02.html"><span class="doc">(2) Image presentations</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex02.png" src="_images/ex02.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex02.html"><span class="doc">(2) Image presentations</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex03.html"><span class="doc">(3) Spectral estimation and xy-plots</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex03.png" src="_images/ex03.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex03.html"><span class="doc">(3) Spectral estimation and xy-plots</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex04.html"><span class="doc">(4) A 3-D perspective mesh plot</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex04.png" src="_images/ex04.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex04.html"><span class="doc">(4) A 3-D perspective mesh plot</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex05.html"><span class="doc">(5) A 3-D illuminated surface (in bw)</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex05.png" src="_images/ex05.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex05.html"><span class="doc">(5) A 3-D illuminated surface (in bw)</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex06.html"><span class="doc">(6) Plotting of histograms</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex06.png" src="_images/ex06.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex06.html"><span class="doc">(6) Plotting of histograms</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex07.html"><span class="doc">(7) A simple location map</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex07.png" src="_images/ex07.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex07.html"><span class="doc">(7) A simple location map</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex08.html"><span class="doc">(8) A 3-D histogram</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex08.png" src="_images/ex08.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex08.html"><span class="doc">(8) A 3-D histogram</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex09.html"><span class="doc">(9) Time-series along tracks</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex09.png" src="_images/ex09.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex09.html"><span class="doc">(9) Time-series along tracks</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex10.html"><span class="doc">(10) A geographical bar graph plot</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex10.png" src="_images/ex10.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex10.html"><span class="doc">(10) A geographical bar graph plot</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex11.html"><span class="doc">(11) A 3-D RGB color cube</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex11.png" src="_images/ex11.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex11.html"><span class="doc">(11) A 3-D RGB color cube</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex12.html"><span class="doc">(12) Optimal triangulation of data</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex12.png" src="_images/ex12.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex12.html"><span class="doc">(12) Optimal triangulation of data</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex13.html"><span class="doc">(13) Plotting of vector fields</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex13.png" src="_images/ex13.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex13.html"><span class="doc">(13) Plotting of vector fields</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex14.html"><span class="doc">(14) Gridding of data and trend surfaces</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex14.png" src="_images/ex14.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex14.html"><span class="doc">(14) Gridding of data and trend surfaces</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex15.html"><span class="doc">(15) Gridding, contouring, and masking of unconstrained areas</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex15.png" src="_images/ex15.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex15.html"><span class="doc">(15) Gridding, contouring, and masking of unconstrained areas</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex16.html"><span class="doc">(16) Gridding of data, continued</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex16.png" src="_images/ex16.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex16.html"><span class="doc">(16) Gridding of data, continued</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex17.html"><span class="doc">(17) Images clipped by coastlines</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex17.png" src="_images/ex17.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex17.html"><span class="doc">(17) Images clipped by coastlines</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex18.html"><span class="doc">(18) Volumes and Spatial Selections</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex18.png" src="_images/ex18.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex18.html"><span class="doc">(18) Volumes and Spatial Selections</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex19.html"><span class="doc">(19) Color patterns on maps</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex19.png" src="_images/ex19.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex19.html"><span class="doc">(19) Color patterns on maps</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex20.html"><span class="doc">(20) Custom plot symbols</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex20.png" src="_images/ex20.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex20.html"><span class="doc">(20) Custom plot symbols</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex21.html"><span class="doc">(21) Time-series of RedHat stock price</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex21.png" src="_images/ex21.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex21.html"><span class="doc">(21) Time-series of RedHat stock price</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex22.html"><span class="doc">(22) World-wide seismicity the last month</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex22.png" src="_images/ex22.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex22.html"><span class="doc">(22) World-wide seismicity the last month</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex23.html"><span class="doc">(23) All great-circle paths lead to Rome</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex23.png" src="_images/ex23.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex23.html"><span class="doc">(23) All great-circle paths lead to Rome</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex24.html"><span class="doc">(24) Data selection based on geospatial criteria</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex24.png" src="_images/ex24.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex24.html"><span class="doc">(24) Data selection based on geospatial criteria</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex25.html"><span class="doc">(25) Global distribution of antipodes</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex25.png" src="_images/ex25.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex25.html"><span class="doc">(25) Global distribution of antipodes</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex26.html"><span class="doc">(26) General vertical perspective projection</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex26.png" src="_images/ex26.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex26.html"><span class="doc">(26) General vertical perspective projection</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex27.html"><span class="doc">(27) Plotting Sandwell/Smith Mercator img grids</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex27.png" src="_images/ex27.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex27.html"><span class="doc">(27) Plotting Sandwell/Smith Mercator img grids</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex28.html"><span class="doc">(28) Mixing UTM and geographic data sets</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex28.png" src="_images/ex28.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex28.html"><span class="doc">(28) Mixing UTM and geographic data sets</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex29.html"><span class="doc">(29) Gridding spherical surface data using splines</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex29.png" src="_images/ex29.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex29.html"><span class="doc">(29) Gridding spherical surface data using splines</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex30.html"><span class="doc">(30) Trigonometric functions plotted in graph mode</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex30.png" src="_images/ex30.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex30.html"><span class="doc">(30) Trigonometric functions plotted in graph mode</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex31.html"><span class="doc">(31) Using non-default fonts in PostScript</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex31.png" src="_images/ex31.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex31.html"><span class="doc">(31) Using non-default fonts in PostScript</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex32.html"><span class="doc">(32) Draping an image over topography</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex32.png" src="_images/ex32.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex32.html"><span class="doc">(32) Draping an image over topography</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex33.html"><span class="doc">(33) Stacking automatically generated cross-profiles</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex33.png" src="_images/ex33.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex33.html"><span class="doc">(33) Stacking automatically generated cross-profiles</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex34.html"><span class="doc">(34) Using country polygons for plotting and shading</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex34.png" src="_images/ex34.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex34.html"><span class="doc">(34) Using country polygons for plotting and shading</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex35.html"><span class="doc">(35) Spherical triangulation and distance calculations</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex35.png" src="_images/ex35.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex35.html"><span class="doc">(35) Spherical triangulation and distance calculations</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex36.html"><span class="doc">(36) Spherical gridding using Renka’s algorithms</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex36.png" src="_images/ex36.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex36.html"><span class="doc">(36) Spherical gridding using Renka’s algorithms</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex37.html"><span class="doc">(37) Spectral coherence between gravity and bathymetry grids</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex37.png" src="_images/ex37.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex37.html"><span class="doc">(37) Spectral coherence between gravity and bathymetry grids</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex38.html"><span class="doc">(38) Histogram equalization of bathymetry grids</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex38.png" src="_images/ex38.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex38.html"><span class="doc">(38) Histogram equalization of bathymetry grids</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex39.html"><span class="doc">(39) Evaluation of spherical harmonics coefficients</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex39.png" src="_images/ex39.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex39.html"><span class="doc">(39) Evaluation of spherical harmonics coefficients</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex40.html"><span class="doc">(40) Line simplification</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex40.png" src="_images/ex40.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex40.html"><span class="doc">(40) Line simplification</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex41.html"><span class="doc">(41) Legend with tables</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex41.png" src="_images/ex41.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex41.html"><span class="doc">(41) Legend with tables</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex42.html"><span class="doc">(42) Antarctica and stereographic data</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex42.png" src="_images/ex42.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex42.html"><span class="doc">(42) Antarctica and stereographic data</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex43.html"><span class="doc">(43) Robust regression and outlier detection</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex43.png" src="_images/ex43.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex43.html"><span class="doc">(43) Robust regression and outlier detection</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex44.html"><span class="doc">(44) Map insets</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex44.png" src="_images/ex44.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex44.html"><span class="doc">(44) Map insets</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex45.html"><span class="doc">(45) Trend modeling</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex45.png" src="_images/ex45.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex45.html"><span class="doc">(45) Trend modeling</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex46.html"><span class="doc">(46) Day-night terminators and other sunlight parameters</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex46.png" src="_images/ex46.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex46.html"><span class="doc">(46) Day-night terminators and other sunlight parameters</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex47.html"><span class="doc">(47) Linear regression using different norms and types</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex47.png" src="_images/ex47.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex47.html"><span class="doc">(47) Linear regression using different norms and types</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex48.html"><span class="doc">(48) Line networks, map embellishments, and curved titles</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex48.png" src="_images/ex48.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex48.html"><span class="doc">(48) Line networks, map embellishments, and curved titles</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex49.html"><span class="doc">(49) Analysis of the Atlantic seafloor depth/age relationship</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex49.png" src="_images/ex49.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex49.html"><span class="doc">(49) Analysis of the Atlantic seafloor depth/age relationship</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex50.html"><span class="doc">(50) Probability distributions</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex50.png" src="_images/ex50.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex50.html"><span class="doc">(50) Probability distributions</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex51.html"><span class="doc">(51) OpenStreetMap coastlines in GMT</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex51.png" src="_images/ex51.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex51.html"><span class="doc">(51) OpenStreetMap coastlines in GMT</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex52.html"><span class="doc">(52) Image and grid manipulation</span></a></div>
+<figure class="align-default">
+<img alt="_images/ex52.png" src="_images/ex52.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex52.html"><span class="doc">(52) Image and grid manipulation</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row sd-p-1 docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<a class="reference internal" href="gallery/ex53.html#example-53"><span class="std std-ref">(53) Building subplots and using per-country shading</span></a></div>
+<figure class="align-default">
+<img alt="https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png" src="https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png" />
+</figure>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="gallery/ex53.html"><span class="doc">(53) Building subplots and using per-country shading</span></a></div>
+</div>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="install.html" class="btn btn-neutral float-left" title="Installing GMT" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gallery/ex01.html" class="btn btn-neutral float-right" title="(1) Contour maps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

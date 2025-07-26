@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdhisteq &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdimage" href="grdimage.html" />
+    <link rel="prev" title="grdgradient" href="grdgradient.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">grdhisteq</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdhisteq.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdhisteq">
+<h1>grdhisteq<a class="headerlink" href="#grdhisteq" title="Link to this heading"></a></h1>
+<p>Perform histogram equalization for a grid</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<p><strong>gmt grdhisteq</strong> <em>ingrid</em> [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>n_cells</em> ] [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<em>file</em>] ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>norm</em>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p><strong>grdhisteq</strong> allows the user to find the data values which divide a
+given grid file into patches of equal area. One common use of
+<strong>grdhisteq</strong> is in a kind of histogram equalization of an image. In
+this application, the user might have a grid of flat topography with a
+mountain in the middle. Ordinary gray shading of this file (using
+<a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>) with a linear mapping from topography to graytone will
+result in most of the image being very dark gray, with the mountain
+being almost white. One could use <strong>grdhisteq</strong> to write to standard output or file an
+ASCII list of those data values which divide the range of the data into
+<em>n_cells</em> segments, each of which has an equal area in the image. Using
+<strong>awk</strong> or <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> one can take this output and build a CPT;
+using the CPT with <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> will result in an image with all levels
+of gray occurring equally. Alternatively, see <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a>.</p>
+<p>The second common use of <strong>grdhisteq</strong> is in writing a grid with
+statistics based on some kind of cumulative distribution function. In
+this application, the output has relative highs and lows in the same
+(<em>x, y</em>) locations as the input file, but the values are changed to reflect
+their place in some cumulative distribution. One example would be to
+find the lowest 10% of the data: Take a grid, run <strong>grdhisteq</strong> and make
+a grid using <em>n_cells</em> = 10, and then contour the result to trace the 1
+contour. This will enclose the lowest 10% of the data, regardless of
+their original values. Another example is in equalizing the output of
+<a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a>. For shading purposes it is desired that the data have a
+smooth distribution, such as a Gaussian. If you run <strong>grdhisteq</strong> on
+output from <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> and make a grid file output with the
+Gaussian option, you will have a grid whose values are distributed
+according to a Gaussian distribution with zero mean and unit variance.
+The locations of these values will correspond to the locations of the
+input; that is, the most negative output value will be in the (<em>x, y</em>)
+location of the most negative input value, and so on.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<blockquote>
+<div><p>Optionally, append =<em>ID</em> for reading a specific file
+format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
+[Default is the first 2-D grid found by GMT]. The following modifiers are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+b</strong> - Select a <em>band</em> [Default is 0].</p></li>
+<li><p><strong>+d</strong> - Divide data values by the given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em> [Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em> [Default is 1].</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Note</strong>: Any offset is added after any scaling.</p>
+</div></blockquote>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><em>n_cells</em></dt><dd><p>Sets how many cells (or divisions) of data range to make [16].</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong>[<em>file</em>]</dt><dd><p>Dump level information to <em>file</em>, or standard output if no file is provided.</p>
+</dd>
+</dl>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<blockquote>
+<div><p>Optionally, append =<em>ID</em> for writing a specific file format. The following modifiers are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with a NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em>, or append <strong>a</strong> for
+automatic range offset to preserve precision for integer grids
+[Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em>, or append <strong>a</strong> for
+automatic scaling to preserve precision for integer grids [Default
+is 1].</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Note</strong>: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
+and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
+concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
+the <a class="reference internal" href="reference/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+for more details.</p>
+</div></blockquote>
+<dl class="simple" id="n">
+<dt><strong>-N</strong>[<em>norm</em>]</dt><dd><p>Gaussian output. Use with <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> to make an output grid with
+standard normal scores. Append <em>norm</em> to force the scores to fall in
+the ±<em>norm</em> range [Default is standard normal scores].</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong></dt><dd><p>Quadratic output. Selects quadratic histogram equalization. [Default is linear].</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option will select a subsection of <em>ingrid</em> grid. If this subsection
+exceeds the boundaries of the grid, only the common region will be extracted. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To find the height intervals that divide the selected region of the remote file
+earth_relief_05m into 16 divisions of equal area:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdhisteq<span class="w"> </span>-C16<span class="w"> </span>-D<span class="w"> </span>@earth_relief_05m<span class="w"> </span>-R0/20/0/20<span class="w"> </span>&gt;<span class="w"> </span>levels.txt
+</pre></div>
+</div>
+<p>To make the poorly distributed intensities in the file raw_intens.nc
+suitable for use with <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdhisteq<span class="w"> </span>raw_intens.nc<span class="w"> </span>-Gsmooth_intens.nc<span class="w"> </span>-N<span class="w"> </span>-V
+</pre></div>
+</div>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>For geographical grids we do a weighted histogram equalization since the
+area of each node varies with latitude.</p></li>
+<li><p>If you use <strong>grdhisteq</strong> to make a Gaussian output for gradient shading
+in <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>, you should be aware of the following:
+the output will be in the range [-x, x], where x is based on the number
+of data in the input grid (nx * ny) and the cumulative Gaussian
+distribution function F(x). That is, let N = nx * ny. Then x will be
+adjusted so that F(x) = (N - 1 + 0.5)/N. Since about 68% of the values
+from a standard normal distribution fall within ±1, this will be true
+of the output grid. But if N is very large, it is possible for x to be
+greater than 4. Therefore, with the <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> program clipping
+gradients to the range [-1, 1], you will get correct shading of 68% of
+your data, while 16% of them will be clipped to -1 and 16% of them
+clipped to +1. If this makes too much of the image too light or too
+dark, you should take the output of <strong>grdhisteq</strong> and rescale it using
+<a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> and multiplying by something less than 1.0, to shrink the
+range of the values, thus bringing more than 68% of the image into the
+range [-1, 1]. Alternatively, supply a normalization factor with <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.</p></li>
+</ol>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a>,
+<a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a>,
+<a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>, <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>, <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="grdgradient.html" class="btn btn-neutral float-left" title="grdgradient" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdimage.html" class="btn btn-neutral float-right" title="grdimage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(53) Building subplots and using per-country shading &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Animation Gallery" href="../animations.html" />
+    <link rel="prev" title="(52) Image and grid manipulation" href="ex52.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(53) Building subplots and using per-country shading</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex53.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="building-subplots-and-using-per-country-shading">
+<span id="example-53"></span><h1>(53) Building subplots and using per-country shading<a class="headerlink" href="#building-subplots-and-using-per-country-shading" title="Link to this heading"></a></h1>
+<p>This example illustrates two separate effects:</p>
+<ol class="arabic simple">
+<li><p>How to automate the plotting of a large set of subplot panels
+via a simple loop that picks up panel-specific parameters from
+a configuration file.</p></li>
+<li><p>How to highlight a country using a DEM with darker ambient shading
+outside the country boundaries from DCW.</p></li>
+</ol>
+<p>We use the 6 arc-minute global relief file for these plots and show
+topographic relief in an equal-area block of 3000 by 3000 km centered
+on one of the dozen most populated cities in the world. Apart from
+the metadata for each city, all subplot panels are identical, thus
+making a simple loop over the metadata preferable to writing 12
+near-identical subplot sections.  <strong>Note</strong>: For optimal resolution
+you should switch to the 2x2 arc-minute relief data instead.</p>
+<p>We use a small table containing longitude, latitude, population
+(in millions), ISO-2 country code, and city name for the 12 cities; see
+<a class="reference external" href="https://simplemaps.com/data/world-cities">https://simplemaps.com/data/world-cities</a> for the full data set.</p>
+<p>The example script then reads one line at the time from the metadata
+file and creates a DEM map for that city, embellished with a tag
+containing the city and the population, while using the ISO-2 country
+code to set up a clip path to highlight the relief inside its boundaries
+as given by the Digital Chart of the World (DCW).
+We use the city custom symbol to indicate the location of the city at the
+center of each map.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1"># GMT_DISABLE_TEST</span>
+<span class="c1">#               GMT EXAMPLE 53</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:      Illustrate subplot with loops</span>
+<span class="c1"># GMT modules:  makecpt, subplot, set, plot, grdimage, clip, coast</span>
+<span class="c1"># Unix progs:	rm</span>
+<span class="c1">#</span>
+
+gmt<span class="w"> </span>begin<span class="w"> </span>ex53
+<span class="w">	</span>gmt<span class="w"> </span><span class="nb">set</span><span class="w"> </span>PROJ_ELLIPSOID<span class="w"> </span>Sphere<span class="w"> </span>MAP_ANNOT_OBLIQUE<span class="w"> </span>lon_horizontal,lat_parallel,tick_normal<span class="w"> </span>FONT_TAG<span class="w"> </span>10p
+<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cterra
+<span class="w">	</span><span class="nv">data</span><span class="o">=</span><span class="k">$(</span>gmt<span class="w"> </span>which<span class="w"> </span>-G<span class="w"> </span>@Top12Cities.txt<span class="k">)</span>
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>4x3<span class="w"> </span>-Fs6c<span class="w"> </span>-A+gwhite+p0.25p+o0.2c+sblack@50<span class="w"> </span>-Baf<span class="w"> </span>-R-1500/1500/-1500/1500+uk<span class="w"> </span>-X1c<span class="w"> </span>-Y0.9c
+<span class="w">		</span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>lon<span class="w"> </span>lat<span class="w"> </span>population<span class="w"> </span>iso<span class="w"> </span>name<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">			</span>gmt<span class="w"> </span>subplot<span class="w"> </span><span class="nb">set</span><span class="w"> </span>-A<span class="s2">&quot;</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">${</span><span class="nv">population</span><span class="si">}</span><span class="s2">M]&quot;</span>
+<span class="w">			</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@earth_relief_06m<span class="w"> </span>-JA<span class="si">${</span><span class="nv">lon</span><span class="si">}</span>/<span class="si">${</span><span class="nv">lat</span><span class="si">}</span>/?<span class="w"> </span>-I+m-0.5
+<span class="w">			</span>gmt<span class="w"> </span>coast<span class="w"> </span>-E<span class="si">${</span><span class="nv">iso</span><span class="si">}</span>+c
+<span class="w">			</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>@earth_relief_06m<span class="w"> </span>-JA<span class="si">${</span><span class="nv">lon</span><span class="si">}</span>/<span class="si">${</span><span class="nv">lat</span><span class="si">}</span>/?<span class="w"> </span>-I+d
+<span class="w">			</span>gmt<span class="w"> </span>clip<span class="w"> </span>-C
+<span class="w">			</span>gmt<span class="w"> </span>coast<span class="w"> </span>-E<span class="si">${</span><span class="nv">iso</span><span class="si">}</span>+pfaint<span class="w"> </span>-N1/thinner,darkred
+<span class="w">			</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">lon</span><span class="si">}</span><span class="w"> </span><span class="si">${</span><span class="nv">lat</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>plot<span class="w"> </span>-Skcity/0.25c<span class="w"> </span>-Gred<span class="w"> </span>-W0.5p<span class="w"> </span>-B0
+<span class="w">		</span><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span><span class="nv">$data</span>
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
+<span class="w">	</span>rm<span class="w"> </span>-f<span class="w"> </span>Top12Cities.txt
+gmt<span class="w"> </span>end<span class="w"> </span>show
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png"><img alt="https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png" src="https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png" style="width: 80%;" /></a>
+<figcaption>
+<p><span class="caption-text">Building subplots and using per-country shading.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex52.html" class="btn btn-neutral float-left" title="(52) Image and grid manipulation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../animations.html" class="btn btn-neutral float-right" title="Animation Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

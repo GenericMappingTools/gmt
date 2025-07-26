@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gmtcolors &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GMT Color Picker" href="color-picker.html" />
+    <link rel="prev" title="gmt.conf" href="gmt.conf.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">gmtcolors</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gmtcolors.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gmtcolors">
+<span id="index-0"></span><h1>gmtcolors<a class="headerlink" href="#gmtcolors" title="Link to this heading"></a></h1>
+<p>Explanation of color codes in GMT</p>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p>Colors can be specified in GMT as arguments to commands, generally
+as part of the <strong>-G</strong> or <strong>-W</strong> options to select polygon fill or
+outline pen. Colors are also used in color palette tables (CPTs)
+that help convert numerical values to colors.</p>
+<p>GMT allows several ways to represent a color:</p>
+<dl class="simple">
+<dt><strong>Colorname</strong></dt><dd><p>Specify one of the named colors below. All names are case-insensitive.</p>
+</dd>
+<dt><strong>R/G/B</strong></dt><dd><p>Specify <strong>R</strong>ed, <strong>G</strong>reen, and <strong>B</strong>lue levels. Each value is
+separated by a slash and is in the range from 0 (dark) to 255
+(light). This representation is used to color monitors.</p>
+</dd>
+<dt><strong>#RRGGBB</strong></dt><dd><p>Specify <strong>R</strong>ed, <strong>G</strong>reen, and <strong>B</strong>lue levels in the way
+that it is done in HTML. Use two characters for each color channel,
+ranging from 00 (dark) to FF (light). Upper and lower case are allowed.</p>
+</dd>
+<dt><strong>Graylevel</strong></dt><dd><p>For shades of gray, <strong>R</strong> = <strong>G</strong> = <strong>B</strong>, and only one number needs to be used.
+This representation is popular with black and white printers.</p>
+</dd>
+<dt><strong>H-S-V</strong></dt><dd><p>Specify <strong>H</strong>ue in the range 0 to 360 (degrees), <strong>S</strong> saturation
+between 0 (not saturated) and 1 (fully saturated), and value <strong>V</strong>
+between 0 (dark) and 1 (light). Number are separated by hyphens.
+This representation can be helpful when hue varies a lot.</p>
+</dd>
+<dt><strong>C/M/Y/K</strong></dt><dd><p>Specify <strong>C</strong>yan, <strong>M</strong>agenta, <strong>Y</strong>ellow, and blac<strong>K</strong>. Each
+number is in the range from 0 (no paint) to 100 (maximum paint). This
+representation is used by most color printers.</p>
+</dd>
+</dl>
+</section>
+<section id="list-of-colors">
+<h2>List Of Colors<a class="headerlink" href="#list-of-colors" title="Link to this heading"></a></h2>
+<p>The chart below lists the 663 unique color names that can be used in GMT.
+For an interactive color picker, see <a class="reference internal" href="color-picker.html"><span class="doc">GMT Color Picker</span></a>.</p>
+<p><strong>Download PDF versions:</strong>
+<a class="reference download internal" download="" href="_downloads/38af6960cef2a3ae56f55de966f56ad2/GMT_RGBchart.pdf"><code class="xref download docutils literal notranslate"><span class="pre">US</span> <span class="pre">tabloid</span> <span class="pre">size</span></code></a></p>
+<figure class="align-center" id="id1">
+<span id="rgbchart"></span><a class="reference internal image-reference" href="_images/GMT_RGBchart.png"><img alt="_images/GMT_RGBchart.png" src="_images/GMT_RGBchart.png" style="width: 100%;" /></a>
+<figcaption>
+<p><span class="caption-text">The 663 unique color names that can be used in GMT.
+Lower, upper, or mixed cases, as well as the british spelling of grey are allowed</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="further-information">
+<h2>Further Information<a class="headerlink" href="#further-information" title="Link to this heading"></a></h2>
+<p>For more information on the use of color, read Chapter <a class="reference internal" href="reference/colorspace.html#color-space"><span class="std std-ref">Color Systems and Artificial Illumination</span></a> of the <strong>Technical Reference</strong>.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">logo</span></a>,
+<a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>,
+<a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a>, <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>,
+<a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a>,
+<a class="reference internal" href="coast.html"><span class="doc">coast</span></a>, <a class="reference internal" href="contour.html"><span class="doc">contour</span></a>,
+<a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a>,
+<a class="reference internal" href="image.html"><span class="doc">image</span></a>, <a class="reference internal" href="legend.html"><span class="doc">legend</span></a>,
+<a class="reference internal" href="mask.html"><span class="doc">mask</span></a>, <a class="reference internal" href="rose.html"><span class="doc">rose</span></a>,
+<a class="reference internal" href="text.html"><span class="doc">text</span></a>, <a class="reference internal" href="wiggle.html"><span class="doc">wiggle</span></a>,
+<a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gmt.conf.html" class="btn btn-neutral float-left" title="gmt.conf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="color-picker.html" class="btn btn-neutral float-right" title="GMT Color Picker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

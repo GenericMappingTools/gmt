@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mgd77magref &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77manage" href="mgd77manage.html" />
+    <link rel="prev" title="mgd77list" href="mgd77list.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">mgd77magref</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/mgd77/mgd77magref.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="mgd77magref">
+<h1>mgd77magref<a class="headerlink" href="#mgd77magref" title="Link to this heading"></a></h1>
+<p>Evaluate the IGRF or CM4 magnetic field models</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<p><strong>gmt mgd77magref</strong> [ <em>inputfile</em> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>+a</strong><em>alt</em>][<strong>+t</strong><em>date</em>][<strong>+y</strong>] ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cm4file</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>Dstfile</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>f107file</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>flags</em> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>c</strong>|<strong>l</strong><em>low/high</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-b</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p><strong>mgd77magref</strong> will evaluate the IGRF or the CM4 geomagnetic models at
+the specified locations and times.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
+<p>None.</p>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
+<dl>
+<dt><em>inputfile</em></dt><dd><p>Contains the moments in space-time where we want to evaluate the
+magnetic reference field. The first two columns must contain
+longitude and latitude (however, see <strong>-:</strong> for latitude and
+longitude instead). Normally, the third and fourth columns must
+contain altitude (in km) and time, respectively, but if one or both
+of these are constant for all records they can be supplied via the
+<a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> option instead and are thus not expected in the input file.
+If no input file is given we read standard input. <br />
+A note about the CM4
+validity domain. The core field of CM4 is valid from 1960-2002.5 but
+the ionospheric and magnetospheric fields are computed after the
+<em>Dst</em> and <em>F10.7</em> coefficient files. We extended here those
+coefficient files up to 2006, which means that one can compute
+external contributions up until 2006 but the Secular Variation will
+be biased (non reliable). New indices files may be retrieved from
+from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the
+<em>Dst</em> coefficients) and
+<a class="reference external" href="http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS">http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS</a>
+(The <em>F10.7</em> index file is a MONTHPLT.ABS). <strong>Note</strong>: since the <em>Dst</em> files
+in the …/DST/ directory are still only up to 2006, for GMT4.5.3 and after
+we extended the <em>Dst</em> until August 2009 by reformatting the data in the
+preliminary file Est_Ist_index_0_mean.pli, which is at
+<a class="reference external" href="ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/">ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/</a>. But since
+this site is now also outdated, we now get the DST indices from
+<a class="reference external" href="http://wdc.kugi.kyoto-u.ac.jp/dstae/index.html">http://wdc.kugi.kyoto-u.ac.jp/dstae/index.html</a> However, for the most recent
+dates those indices are “Quick Look” (the best are the “Definitive” type).
+Because the <em>F10.7</em> from the MONTHPLT.ABS file mentioned above are apparently
+no being updated, we found another place where they are, which is:
+<a class="reference external" href="ftp://ftp.ngdc.noaa.gov/STP/space-weather/solar-data/solar-features/">ftp://ftp.ngdc.noaa.gov/STP/space-weather/solar-data/solar-features/</a>
+solar-radio/noontime-flux/penticton/penticton_absolute/listings/
+listing_drao_noontime-flux-absolute_monthly.txt</p>
+<p>Another update in January 2025. The NASA site above no longer updated its data and now we use <em>F10.7</em> data
+downloaded from <a class="reference external" href="https://celestrak.org/spacedata/SW-All.csv">https://celestrak.org/spacedata/SW-All.csv</a>  (Matlab refences this site as well). But it
+contains only daily data. Hence we computed the montly averages. However, comparing previous and computed
+averages from this site show some differences. For example the first 4 months of 2018 (replaced to in this
+update) compare like this: [609 632 608 634] (nasa) _vs_ [699 725 683 700] (celestrak).</p>
+</dd>
+</dl>
+<dl class="simple" id="a">
+<dt><strong>-A</strong>[<strong>+a</strong><em>alt</em>][<strong>+t</strong><em>date</em>][<strong>+y</strong>]</dt><dd><p>Adjusts how the input record is interpreted. Append <strong>+a</strong> to set a
+fixed <em>altitude</em> (in km) that should apply to all data records
+[Default expects <em>altitude</em> to be in the 3rd column of all records].
+Append <strong>+t</strong> to set a fixed <em>time</em> that should apply to all data
+records [Default expects <em>time</em> to be in the 4th column of all
+records]. Finally, append <strong>+y</strong> to indicate that all times are
+specified as decimal years [Default is ISO <em>date</em>T<em>colck</em> format, see
+<a class="reference internal" href="../../gmt.conf.html#term-TIME_EPOCH"><span class="xref std std-term">TIME_EPOCH</span></a>].</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><em>cm4file</em></dt><dd><p>Specify an alternate CM4 coefficient file [umdl.CM4].</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>Dstfile</em></dt><dd><p>Specify an alternate file with hourly means of the Dst index for CM4
+[Dst_all.wdc]. Alternatively, simply specify a single index to
+apply for all records.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong><em>f107file</em></dt><dd><p>Specify an alternate file with monthly means of absolute F10.7 solar
+radio flux for CM4 [F107_mon.plt]. Alternatively, simply specify a
+single flux to apply for all records.</p>
+</dd>
+</dl>
+<dl id="f">
+<dt><strong>-F</strong><em>flags</em></dt><dd><p>Selects output items; <em>flags</em> is a string made up of one or more of
+these characters:</p>
+<p><strong>r</strong> means output all input columns before adding the items below</p>
+<p><strong>t</strong> means list total field (nT).</p>
+<p><strong>h</strong> means list horizontal field (nT).</p>
+<p><strong>x</strong> means list X component (nT, positive north).</p>
+<p><strong>y</strong> means list Y component (nT, positive east).</p>
+<p><strong>z</strong> means list Z component (nT, positive down).</p>
+<p><strong>d</strong> means list declination (deg, clockwise from north).</p>
+<p><strong>i</strong> means list inclination (deg, positive down).</p>
+<p>Append one or more number to indicate the requested field contribution(s):</p>
+<p><strong>0</strong> means IGRF field (no combinations allowed)</p>
+<p><strong>1</strong> means CM4 Core field</p>
+<p><strong>2</strong> means CM4 Lithospheric field</p>
+<p><strong>3</strong> means CM4 Primary Magnetospheric field</p>
+<p><strong>4</strong> means CM4 Induced Magnetospheric field</p>
+<p><strong>5</strong> means CM4 Primary ionospheric field</p>
+<p><strong>6</strong> means CM4 Induced ionospheric field</p>
+<p><strong>7</strong> means CM4 Toroidal field</p>
+<p><strong>9</strong> means Core field from IGRF and other contributions from CM4.
+Do <strong>not</strong> use both 0 and 9.</p>
+<p>Appending several numbers (1-7) will add up the different
+contributions. For example <strong>-Ft</strong>/<strong>12</strong> computes the total field
+due to Core and Lithospheric sources. Two special cases are allowed,
+which mix which Core field from IGRF and other sources from CM4.
+<strong>-Ft</strong>/<strong>934</strong> computes Core field due to IGRF plus terms 3 and 4
+from CM4 (but you can add others). <strong>-Ft</strong>/<strong>934</strong> the same as above
+but output the field components. The data is written out in the
+order they appear in <em>flags</em> [Default is <strong>-Frthxyzdi</strong>/<strong>1</strong>]. <strong>Note</strong>:
+You can further select a subset of fields via <strong>-o</strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong></dt><dd><p>Specifies that coordinates are geocentric [geodetic].</p>
+</dd>
+</dl>
+<dl id="l">
+<dt><strong>-L</strong></dt><dd><p>Computes J field vectors from certain external sources.</p>
+<p><strong>r</strong> means output all input columns before adding the items below (all in Ampers/m).</p>
+<p><strong>t</strong> means list magnitude field.</p>
+<p><strong>x</strong> means list X component.</p>
+<p><strong>y</strong> means list Y component.</p>
+<p><strong>z</strong> means list Z or current function Psi.</p>
+<p>Append a number to indicate the requested J contribution:</p>
+<p><strong>1</strong> means Induced Magnetospheric field.</p>
+<p><strong>2</strong> means Primary ionospheric field.</p>
+<p><strong>3</strong> means Induced ionospheric field.</p>
+<p><strong>4</strong> means Poloidal field.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-Sc</strong><em>low/high</em></dt><dd><p>Limits the wavelengths of the core field contribution to the band
+indicated by the low and high spherical harmonic order [1/13].</p>
+</dd>
+<dt><strong>-Sl</strong><em>low/high</em></dt><dd><p>Limits the wavelengths of the lithosphere field contribution to the
+band indicated by the low and high spherical harmonic order [14/65].</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 4 input columns unless <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> is used].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is reflected by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="time-settings">
+<h2>Time Settings<a class="headerlink" href="#time-settings" title="Link to this heading"></a></h2>
+<p>If binary input files are used then absolute time are stored as time
+relative to the selected epoch. However, since the epoch used is not
+stored in the data files there can be problems decoding the correct
+time. The mgd77 supplement uses the Unix time system as its default;
+thus you should make sure that binary data files with time uses the same
+system (see the GMT default TIME_SYSTEM).</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>To get the CM4 Total field, Declination and Inclination due to all but
+lithospheric and toroidal field at a one point location and decimal time
+2000.0, try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span>-28<span class="w"> </span><span class="m">38</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">2000</span>.0<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>mgd77magref<span class="w"> </span>-A+y<span class="w"> </span>-Ftdi/13456
+</pre></div>
+</div>
+<p>To do the same as above but at noon (Universal Time) of first May 2001, try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span>-28<span class="w"> </span><span class="m">38</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">2001</span>-05-01T12:00:00<span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>mgd77magref<span class="w"> </span>-Ftdi/13456
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="mgd77info.html"><span class="doc">mgd77info</span></a>,
+<a class="reference internal" href="mgd77list.html"><span class="doc">mgd77list</span></a>, <a class="reference internal" href="mgd77manage.html"><span class="doc">mgd77manage</span></a>,
+<a class="reference internal" href="mgd77track.html"><span class="doc">mgd77track</span></a>, <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a></p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<p>Comprehensive Modeling of the Geomagnetic Field, see
+<a class="reference external" href="https://doi.org/10.1111/j.1365-246X.2004.02421.x">https://doi.org/10.1111/j.1365-246X.2004.02421.x</a>.</p>
+<p>The International Geomagnetic Reference Field (IGRF), see
+<a class="reference external" href="https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html">https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mgd77list.html" class="btn btn-neutral float-left" title="mgd77list" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mgd77manage.html" class="btn btn-neutral float-right" title="mgd77manage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

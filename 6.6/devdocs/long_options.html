@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Proposed Long-Options Implementation &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Proposed Refactoring Implementation" href="refactoring.html" />
+    <link rel="prev" title="GMT Enhancement Proposals" href="devdocs.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="devdocs.html">GMT Enhancement Proposals</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">1. Proposed Long-Options Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-problem">1.1. What is the problem?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#abstraction">1.2. Abstraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#implementation-details">1.3. Implementation Details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#common-options">1.3.1. Common Options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-options">1.3.2. Module Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refactoring.html">2. Proposed Refactoring Implementation</a></li>
+</ul>
+</li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="devdocs.html">GMT Enhancement Proposals</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">1. </span>Proposed Long-Options Implementation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/devdocs/long_options.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="proposed-long-options-implementation">
+<span id="long-options"></span><h1><span class="section-number">1. </span>Proposed Long-Options Implementation<a class="headerlink" href="#proposed-long-options-implementation" title="Link to this heading"></a></h1>
+<section id="what-is-the-problem">
+<h2><span class="section-number">1.1. </span>What is the problem?<a class="headerlink" href="#what-is-the-problem" title="Link to this heading"></a></h2>
+<p>Since GMT was first initiated, the modules have used a terse UNIX-inspired command-line
+syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>blockmean<span class="w"> </span>-R0/5/0/6<span class="w"> </span>-I1<span class="w"> </span>my_table.txt<span class="w"> </span>&gt;<span class="w"> </span>new_table.txt
+</pre></div>
+</div>
+<p>It is not immediately obvious to a new user what the two options means.  UNIX tools
+have the same problem, e.g., for sorting data into numerical order, one may use</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sort<span class="w"> </span>-g<span class="w"> </span>my_table.txt<span class="w"> </span>&gt;<span class="w"> </span>sorted_table.txt
+</pre></div>
+</div>
+<p>and nobody will know without reading the documentation for sort what <strong>-g</strong> means.  However, one
+can now use the equivalent command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sort<span class="w"> </span>--sort<span class="o">=</span>general-numeric<span class="w"> </span>my_table.txt<span class="w"> </span>&gt;<span class="w"> </span>sorted_table.txt
+</pre></div>
+</div>
+<p>which is pretty self-explanatory.  In the case of GMT, similar long-options alternatives will be
+implemented.  For instance, the above <a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a> command can also be written</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>blockmean<span class="w"> </span>--region<span class="o">=</span><span class="m">0</span>/5/0/6<span class="w"> </span>--increment<span class="o">=</span><span class="m">1</span><span class="w"> </span>my_table.txt<span class="w"> </span>&gt;<span class="w"> </span>new_table.txt
+</pre></div>
+</div>
+<p>which now becomes much easier to parse (for humans). Unfortunately, GMT syntax is a bit
+more complicated for many options.  Due to the inexorable growth of new capabilities,
+many options have become more complex and may have optional <em>modifiers</em> appended to them.
+Consider the common option <strong>-i</strong> that is used to specify which input columns the modules should read.  Not only
+can it select <em>which</em> columns (e.g., <strong>-i</strong>3,2,7-9), it allows optional modifiers that may be
+repeated for each column (or column group) that handles basic data transformations.  For instance,
+let us imagine that the above example needs column 3 to be used as is, but column 2 needs
+to be converted by the <span class="math notranslate nohighlight">\(\log_{10}\)</span> operator and columns 7-9 must be scaled by 10 and offset by -5.  In
+standard (short) GMT syntax we would write</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-i3,2+l,7-9+s10+o-6
+</pre></div>
+</div>
+<p>which only makes immediate sense to those who wrote the parser.  In contrast, for the
+long-format syntax it will instead be</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--read-columns<span class="o">=</span><span class="m">3</span>,2+:math:<span class="sb">`</span><span class="se">\l</span>og_<span class="o">{</span><span class="m">10</span><span class="o">}</span><span class="sb">`</span>,7-9+scale<span class="o">=</span><span class="m">10</span>+offset<span class="o">=</span>-5
+</pre></div>
+</div>
+<p>which most users might be able to decipher.</p>
+</section>
+<section id="abstraction">
+<h2><span class="section-number">1.2. </span>Abstraction<a class="headerlink" href="#abstraction" title="Link to this heading"></a></h2>
+<p>So, there are several steps needed to implement this scheme across all GMT modules:</p>
+<ol class="arabic simple">
+<li><p>Build a set of long-option to short-option equivalences for the standard GMT
+<a class="reference internal" href="../std-opts.html"><span class="doc">Common Options</span></a>. This is only about 30 options.</p></li>
+<li><p>Build sets of long-option to short-option equivalences for all the unique
+module options spread across ~150 modules (which includes the supplements).</p></li>
+</ol>
+<p>Clearly, these translation tables will need to address not only the longer <em>names</em> for the options but
+also the longer names for <em>modifiers</em>.  We can now be more abstract and state that a general
+GMT short-format option actually follows a specific syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-option<span class="o">[</span>directive<span class="o">][</span>arg<span class="o">][</span>+modifier1<span class="o">[</span>arg1<span class="o">]][</span>+modifier2<span class="o">[</span>arg2<span class="o">]][</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>where <em>option</em>, <em>directive</em>, and any <em>modifier</em> are single characters and there may be none, one,
+or more modifiers following the initial option and the
+optional <em>directive</em> (and optional <em>arg</em>).  As we saw in the case of <strong>-i</strong>, the sequence of “optional directive
+followed by optional modifiers” may in fact be repeated by separating these sequences with
+a comma.  The corresponding long-format syntax format is represented this way:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--long-option<span class="o">[=[</span>directive:<span class="o">]</span>arg<span class="o">][</span>+modifier1<span class="o">[=</span>arg1<span class="o">]][</span>+modifier2<span class="o">[=</span>arg2<span class="o">]][</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>where the key differences are</p>
+<ol class="arabic simple">
+<li><p>The <em>option</em> is a mnemonic word and not a single letter</p></li>
+<li><p>Optional directives are appended after an equal sign</p></li>
+<li><p>Optional argument are appended after an equal sign or after the directive colon.</p></li>
+<li><p>Optional <em>modifiers</em> use mnemonic words and not a single letter</p></li>
+<li><p>Optional modifier arguments are appended after another equal sign</p></li>
+</ol>
+</section>
+<section id="implementation-details">
+<h2><span class="section-number">1.3. </span>Implementation Details<a class="headerlink" href="#implementation-details" title="Link to this heading"></a></h2>
+<section id="common-options">
+<h3><span class="section-number">1.3.1. </span>Common Options<a class="headerlink" href="#common-options" title="Link to this heading"></a></h3>
+<p>The approach taken has been to create a master translation table that relates the short and long
+option syntax formats so that a function can be used to translate any general long-option
+argument to the equivalent short-option argument.  That way, we only need to call this
+function at the start of a module and do the replacement.  Then, the specific
+parsers we already have for common and module options will work as is.  This design simplifies
+the coding tremendously and only requires us to create the translation tables.
+The translations for the GMT common options are encapsulated in a single include file
+(gmt_common_longoptions.h) that populates a <em>gmt_common_kw</em> structure and looks like this:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="w">     </span><span class="o">*</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">General</span><span class="w"> </span><span class="kt">short</span><span class="o">-</span><span class="n">option</span><span class="w"> </span><span class="n">syntax</span><span class="o">:</span>
+<span class="w">     </span><span class="o">*</span><span class="w">        </span><span class="o">-&lt;</span><span class="n">short_option</span><span class="o">&gt;</span><span class="p">[</span><span class="o">&lt;</span><span class="n">short_directives</span><span class="o">&gt;</span><span class="p">][</span><span class="o">+&lt;</span><span class="n">short_modifier1</span><span class="o">&gt;</span><span class="p">[</span><span class="o">&lt;</span><span class="n">argument1</span><span class="o">&gt;</span><span class="p">]][</span><span class="o">+&lt;</span><span class="n">short_modifier2</span><span class="o">&gt;</span><span class="p">[</span><span class="o">&lt;</span><span class="n">argument2</span><span class="o">&gt;</span><span class="p">]][...]</span>
+<span class="w">     </span><span class="o">*</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">Such</span><span class="w"> </span><span class="n">an</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">correspond</span><span class="w"> </span><span class="n">exactly</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="kt">long</span><span class="o">-</span><span class="n">option</span><span class="w"> </span><span class="n">format</span><span class="o">:</span>
+<span class="w">     </span><span class="o">*</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">General</span><span class="w"> </span><span class="kt">long</span><span class="o">-</span><span class="n">option</span><span class="w"> </span><span class="n">syntax</span><span class="o">:</span>
+<span class="w">     </span><span class="o">*</span><span class="w">        </span><span class="o">--&lt;</span><span class="n">long_option</span><span class="o">&gt;</span><span class="p">[</span><span class="o">=&lt;</span><span class="n">long_directives</span><span class="o">&gt;</span><span class="p">[</span><span class="o">:&lt;</span><span class="n">arg</span><span class="o">&gt;</span><span class="p">]][</span><span class="o">+&lt;</span><span class="n">long_modifier1</span><span class="o">&gt;</span><span class="p">[</span><span class="o">:&lt;</span><span class="n">arg1</span><span class="o">&gt;</span><span class="p">]][</span><span class="o">+&lt;</span><span class="n">long_modifier2</span><span class="o">&gt;</span><span class="p">[</span><span class="o">:&lt;</span><span class="n">arg2</span><span class="o">&gt;</span><span class="p">]][...]</span>
+<span class="w">     </span><span class="o">*</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">As</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">into</span><span class="w"> </span><span class="n">module</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">DO</span><span class="w"> </span><span class="n">NOT</span><span class="w"> </span><span class="n">follow</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">template</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">most</span><span class="w"> </span><span class="n">likely</span><span class="w"> </span><span class="n">need</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">introduce</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">revised</span><span class="w"> </span><span class="n">syntax</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">allow</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">backwards</span><span class="w"> </span><span class="n">compatible</span><span class="w"> </span><span class="n">parsing</span><span class="w"> </span><span class="n">option</span><span class="p">.</span>
+<span class="w">     </span><span class="o">*</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">items</span><span class="w"> </span><span class="n">below</span><span class="w"> </span><span class="n">correspond</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">named</span><span class="w"> </span><span class="n">parameters</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">GMT_KEYWORD_DICTIONARY</span><span class="w"> </span><span class="n">structure</span><span class="o">:</span>
+<span class="w">     </span><span class="o">*</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">separator</span><span class="o">:</span><span class="w">        </span><span class="n">Indicates</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="n">accepts</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">series</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">comma</span><span class="o">-</span><span class="n">separated</span><span class="w"> </span><span class="n">items</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span><span class="w"> </span><span class="o">-</span><span class="n">i0</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="o">+</span><span class="n">s2</span><span class="p">,</span><span class="mi">8</span><span class="o">:</span><span class="mi">10</span><span class="p">,</span>
+<span class="w">     </span><span class="o">*</span><span class="w">                   </span><span class="n">where</span><span class="w"> </span><span class="n">we</span><span class="w"> </span><span class="n">give</span><span class="w"> </span><span class="n">several</span><span class="w"> </span><span class="n">column</span><span class="o">-</span><span class="n">ranges</span><span class="p">,</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">their</span><span class="w"> </span><span class="n">own</span><span class="w"> </span><span class="n">modifiers</span><span class="p">.</span><span class="w"> </span><span class="n">The</span>
+<span class="w">     </span><span class="o">*</span><span class="w">                   </span><span class="n">options</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">behave</span><span class="w"> </span><span class="n">like</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">separator</span><span class="w"> </span><span class="s">&quot;,&quot;</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="mf">0.</span><span class="w"> </span><span class="n">Another</span>
+<span class="w">     </span><span class="o">*</span><span class="w">                   </span><span class="n">separator</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">-</span><span class="n">Idx</span><span class="o">/</span><span class="n">dy</span><span class="w"> </span><span class="p">(</span><span class="n">see</span><span class="w"> </span><span class="n">GMT_I_INCREMENT_KW</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">gmt_constants</span><span class="p">.</span><span class="n">h</span><span class="p">).</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">short_option</span><span class="o">:</span><span class="w">     </span><span class="n">The</span><span class="w"> </span><span class="n">standard</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">GMT</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="n">letter</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">-</span><span class="n">R</span><span class="p">.</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">long_option</span><span class="o">:</span><span class="w">      </span><span class="n">The</span><span class="w"> </span><span class="n">corresponding</span><span class="w"> </span><span class="kt">long</span><span class="o">-</span><span class="n">format</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="n">word</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">--</span><span class="n">region</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">short_directives</span><span class="o">:</span><span class="w"> </span><span class="n">Comma</span><span class="o">-</span><span class="n">separated</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">allowable</span><span class="w"> </span><span class="n">directive</span><span class="w"> </span><span class="n">letters</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">long_directives</span><span class="o">:</span><span class="w">  </span><span class="n">Comma</span><span class="o">-</span><span class="n">separated</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">corresponding</span><span class="w"> </span><span class="n">words</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">short_modifiers</span><span class="o">:</span><span class="w">  </span><span class="n">Comma</span><span class="o">-</span><span class="n">separated</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">known</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="n">letters</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">option</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">long_modifiers</span><span class="o">:</span><span class="w">   </span><span class="n">Comma</span><span class="o">-</span><span class="n">separated</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">corresponding</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="n">words</span>
+<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="n">transproc_mask</span><span class="o">:</span><span class="w">   </span><span class="n">Indicates</span><span class="w"> </span><span class="n">via</span><span class="w"> </span><span class="n">bitwise</span><span class="o">-</span><span class="n">OR</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">various</span><span class="w"> </span><span class="n">GMT_TP_</span><span class="o">????</span><span class="w"> </span><span class="n">bitflags</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="n">unusual</span>
+<span class="w">     </span><span class="o">*</span><span class="w">                   </span><span class="n">translation</span><span class="w"> </span><span class="n">processing</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">particular</span><span class="w"> </span><span class="n">GMT_KEYWORD_DICTIONARY</span>
+<span class="w">     </span><span class="o">*</span><span class="w">                   </span><span class="n">entry</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span><span class="w"> </span><span class="n">GMT_TP_MULTIDIR</span><span class="w"> </span><span class="n">indicates</span><span class="w"> </span><span class="n">multi</span><span class="o">-</span><span class="n">directive</span><span class="w"> </span><span class="n">support</span><span class="p">.</span><span class="w"> </span><span class="n">Specify</span>
+<span class="w">     </span><span class="o">*</span><span class="w">                   </span><span class="n">GMT_TP_STANDARD</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">indicate</span><span class="w"> </span><span class="n">standard</span><span class="w"> </span><span class="n">translation</span><span class="w"> </span><span class="n">processing</span><span class="w"> </span><span class="n">with</span>
+<span class="w">     </span><span class="o">*</span><span class="w">                   </span><span class="n">no</span><span class="w"> </span><span class="n">unusual</span><span class="w"> </span><span class="n">attributes</span><span class="p">.</span>
+<span class="w">     </span><span class="o">*</span>
+</pre></div>
+</div>
+<p>Here, <em>separator</em> is a comma if more than one repetition of the sequence is allowed, otherwise
+it is 0.</p>
+</section>
+<section id="module-options">
+<h3><span class="section-number">1.3.2. </span>Module Options<a class="headerlink" href="#module-options" title="Link to this heading"></a></h3>
+<p>For the ~150 individual modules it is probably not a good idea to introduce ~150 new
+include files as was done for the common options above.  Instead, the translation structure
+can be stored directly in the module C file.  For instance, the local <em>module_kw</em> structure
+embedded in the blockmean.c module C code looks like this:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span><span class="w"> </span><span class="n">Block_Modes</span><span class="w"> </span><span class="p">{</span>
+<span class="w">	</span><span class="n">BLK_MODE_NOTSET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">	</span><span class="cm">/* No -E+p|P (or -Ep) set */</span>
+<span class="w">	</span><span class="n">BLK_MODE_OBSOLETE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">	</span><span class="cm">/* Old -Ep for backwards compatibility; assumes input weights are already set to 1/s^2 */</span>
+<span class="w">	</span><span class="n">BLK_MODE_WEIGHTED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">	</span><span class="cm">/* -E+p computes weighted z means and error propagation on weighted z mean, using input s and w = 1/s^2 */</span>
+<span class="w">	</span><span class="n">BLK_MODE_SIMPLE</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">	</span><span class="cm">/* -E+P computes simple z means and error propagation on simple z mean, using input s and w = 1/s^2 */</span>
+<span class="p">};</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="n">S_Modes</span><span class="w"> </span><span class="p">{</span>
+<span class="w">	</span><span class="n">BLK_OUT_MEAN</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">	</span><span class="cm">/* -Sm for mean value [Default] */</span>
+</pre></div>
+</div>
+<p>Given these translations we can execute long-format commands like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>blockmean<span class="w"> </span>--region<span class="o">=</span><span class="m">0</span>/20/10/56<span class="w"> </span>--increment<span class="o">=</span><span class="m">1</span><span class="w"> </span>--registration<span class="o">=</span>pixel<span class="w"> </span>--select<span class="o">=</span>sum<span class="w"> </span>data.txt<span class="w"> </span>&gt;<span class="w"> </span>sums.txt
+</pre></div>
+</div>
+<p>that will sum up all the values that fell inside each bin.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="devdocs.html" class="btn btn-neutral float-left" title="GMT Enhancement Proposals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="refactoring.html" class="btn btn-neutral float-right" title="2. Proposed Refactoring Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

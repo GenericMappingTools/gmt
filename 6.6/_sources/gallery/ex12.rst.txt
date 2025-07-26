@@ -1,0 +1,25 @@
+.. _example_12:
+
+(12) Optimal triangulation of data
+----------------------------------
+
+Our next example operates on a data
+set of topographic readings non-uniformly distributed in the plane
+(Table 5.11 in Davis: *Statistics and Data Analysis in Geology*, J.
+Wiley). We use :doc:`triangulate </triangulate>` to
+perform the optimal Delaunay triangulation, then use the output to draw
+the resulting network. We label the node numbers as well as the node
+values, and call :doc:`contour </contour>` to make a
+contour map and image directly from the raw data. Thus, in this example
+we do not actually make grid files but still are able to contour and
+image the data. We use the CPT ``topo.cpt`` (created via
+:doc:`gmtinfo </gmtinfo>` and :doc:`makecpt </makecpt>`). The script becomes:
+
+.. literalinclude:: /_verbatim/ex12.txt
+   :language: bash
+
+.. figure:: /_images/ex12.*
+   :width: 500 px
+   :align: center
+
+   Optimal triangulation of data.

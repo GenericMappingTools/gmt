@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(19) Color patterns on maps &mdash; GMT 6.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(20) Custom plot symbols" href="ex20.html" />
+    <link rel="prev" title="(18) Volumes and Spatial Selections" href="ex18.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.6
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gallery.html">Illustration Gallery</a></li>
+      <li class="breadcrumb-item active">(19) Color patterns on maps</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex19.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="color-patterns-on-maps">
+<span id="example-19"></span><h1>(19) Color patterns on maps<a class="headerlink" href="#color-patterns-on-maps" title="Link to this heading"></a></h1>
+<p>GMT supports color patterns and this example gives a few cases
+of how to use this new feature. We make a phony poster that advertises
+an international conference on GMT in Honolulu. We use
+<a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>, <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>, and
+<a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> to draw pleasing color
+backgrounds on maps, and overlay
+<a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> clip paths to have the
+patterns change at the coastlines. The middle panel demonstrates a
+simple <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> call where the built-in
+pattern # 86 is drawn at 100 dpi but with the black and white pixels
+replaced with color combinations. At the same time the ocean is filled
+with a repeating image of a circuit board (provides in PNG raster
+format). The text GMT in the center is an off-line PostScript file
+that was overlaid using <a class="reference internal" href="../image.html"><span class="doc">image</span></a>. The final panel in the 3 by 1
+<a class="reference internal" href="../subplot.html"><span class="doc">subplot</span></a> sequence repeats the top panel except that the
+land and sea images have changed places.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 19</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrates various color pattern effects for maps</span>
+<span class="c1"># GMT modules:	grdimage, grdmath, makecpt, coast, text, image, subplot</span>
+<span class="c1"># Unix progs:	echo, rm</span>
+gmt<span class="w"> </span>begin<span class="w"> </span>ex19
+<span class="w">	</span>gmt<span class="w"> </span>grdmath<span class="w"> </span>-Rd<span class="w"> </span>-I1<span class="w"> </span>-r<span class="w"> </span>Y<span class="w"> </span>COSD<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="nv">POW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lat.nc
+<span class="w">	</span>gmt<span class="w"> </span>grdmath<span class="w"> </span><span class="nv">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lon.nc
+<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Cwhite,blue<span class="w"> </span>-T0/1<span class="w"> </span>-N<span class="w"> </span>-H<span class="w"> </span>&gt;<span class="w"> </span>lat.cpt
+<span class="w">	</span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Crainbow<span class="w"> </span>-T-180/180<span class="w"> </span>-H<span class="w"> </span>&gt;<span class="w"> </span>lon.cpt
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>begin<span class="w"> </span>3x1<span class="w"> </span>-Fs16c/0<span class="w"> </span>-M0<span class="w"> </span>-Bbltr<span class="w"> </span>-Rd<span class="w"> </span>-JI0/16c
+<span class="w">		</span><span class="c1">#   First make a worldmap with graded blue oceans and rainbow continents</span>
+<span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>lat.nc<span class="w"> </span>-Clat.cpt<span class="w"> </span>-nl<span class="w"> </span>-c0,0
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-G
+<span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>lon.nc<span class="w"> </span>-Clon.cpt<span class="w"> </span>-nl
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Q
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Wthinnest
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 20 20TH INTERNATIONAL&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -10 GMT CONFERENCE&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -30 Honolulu, Hawaii, April 1, 2024&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f18p,Helvetica-Bold,green<span class="o">=</span>thinnest
+<span class="w">		</span><span class="c1">#   Then show example of color patterns and placing a PostScript image</span>
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Gp86+fred+byellow+r100<span class="w"> </span>-Sp@circuit.png+r100<span class="w"> </span>-c1,0
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 30 SILLY USES OF&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,lightgreen<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -30 COLOR PATTERNS&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,magenta<span class="o">=</span>thinner
+<span class="w">		</span>gmt<span class="w"> </span>image<span class="w"> </span>-DjCM+w7.5c<span class="w"> </span>@GMT_covertext.eps
+<span class="w">		</span><span class="c1">#   Finally repeat 1st plot but exchange the colors</span>
+<span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>lon.nc<span class="w"> </span>-Clon.cpt<span class="w"> </span>-nl<span class="w"> </span>-c2,0
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-G
+<span class="w">		</span>gmt<span class="w"> </span>grdimage<span class="w"> </span>lat.nc<span class="w"> </span>-Clat.cpt<span class="w"> </span>-nl
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Q
+<span class="w">		</span>gmt<span class="w"> </span>coast<span class="w"> </span>-Dc<span class="w"> </span>-A5000<span class="w"> </span>-Wthinnest
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 20 20TH INTERNATIONAL&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -10 GMT CONFERENCE&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f32p,Helvetica-Bold,red<span class="o">=</span>thinner
+<span class="w">		</span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;0 -30 Honolulu, Hawaii, April 1, 2024&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gmt<span class="w"> </span>text<span class="w"> </span>-F+f18p,Helvetica-Bold,green<span class="o">=</span>thinnest
+<span class="w">	</span>gmt<span class="w"> </span>subplot<span class="w"> </span>end
+gmt<span class="w"> </span>end<span class="w"> </span>show
+rm<span class="w"> </span>-f<span class="w"> </span>lat.nc<span class="w"> </span>lon.nc<span class="w"> </span>lat.cpt<span class="w"> </span>lon.cpt
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex19.png"><img alt="../_images/ex19.png" src="../_images/ex19.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Using color patterns and additional PostScript material in illustrations.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex18.html" class="btn btn-neutral float-left" title="(18) Volumes and Spatial Selections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex20.html" class="btn btn-neutral float-right" title="(20) Custom plot symbols" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 26, 2025.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
