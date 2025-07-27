@@ -91,6 +91,7 @@
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-6">New Features in GMT 6.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-5">New Features in GMT 6.5</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-core-module-features-in-gmt-6-5">New Core Module Features in GMT 6.5</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#supplement-updates-in-gmt-6-5">Supplement updates in GMT 6.5</a></li>
@@ -206,7 +207,7 @@
             
                 <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
             
-                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+                <li class="toctree-l1"><a href="/6.6/gmt-docs-6.6.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
             
         </ul>
     
@@ -237,6 +238,17 @@
              
   <section id="changelog">
 <span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="new-features-in-gmt-6-6">
+<h2>New Features in GMT 6.6<a class="headerlink" href="#new-features-in-gmt-6-6" title="Link to this heading"></a></h2>
+<p>GMT 6.6 is our first release after Paul Wessel has left us. Though we are still in a kind of orphanage state,
+the GMT development has not stopped. This release includes many bug fixes and the new and much requested
+Spilhaus map projection.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">psconvert</span></code> has a new option <strong>-!</strong> that modifies the produced PostScript file in place thus avoiding
+making a copy of it before rasterization by ghostscript.</p></li>
+<li><p>Update for IGRF 14. (#8635)</p></li>
+</ul>
+</section>
 <section id="new-features-in-gmt-6-5">
 <h2>New Features in GMT 6.5<a class="headerlink" href="#new-features-in-gmt-6-5" title="Link to this heading"></a></h2>
 <p>GMT 6.5 includes multiple new supplement modules, many new features, general code and documentation improvements, and numerous
@@ -1929,7 +1941,7 @@ simply process their PostScript files via <a class="reference internal" href="ps
 
   <div role="contentinfo">
     <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 20, 2025.
+      <span class="lastupdated">Last updated on Jul 27, 2025.
       </span></p>
   </div>
 
