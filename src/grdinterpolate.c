@@ -500,7 +500,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->S.active) {	/* Create time/depth-series and not grid output */
 		/* Since we let grdtrack read the grids we do a separate branch here and the return from the module */
-		uint64_t seg, row;
+		uint64_t seg;
 		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
 		char header[GMT_LEN256] = {""};
 		struct GMT_DATASEGMENT *Si = NULL;
