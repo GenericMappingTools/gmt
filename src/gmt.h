@@ -37,6 +37,11 @@
 extern "C" {
 #endif
 
+/* Disable warning: operands are different enum types */
+#ifdef _MSC_VER
+#pragma warning( disable : 5287 )
+#endif
+
 /*
  * We only include the basic include files needed by the API. Users may
  * need to include additional files, such as <math.h>, etc. In order to
