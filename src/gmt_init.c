@@ -12225,7 +12225,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
 			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, but silently process for backwards compatibility */
-			if (!strncmp (lower_value, "on", 3))
+			if (!strncmp (lower_value, "on", 2))
 				GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 			else if (!strncmp (lower_value, "off", 3))
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
