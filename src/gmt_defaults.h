@@ -95,7 +95,7 @@ struct GMT_DEFAULTS {
 	size_t url_size_limit;
 	unsigned int refresh_time; /* Only refresh server catalog when the local copy is this old in days) */
 	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
-	unsigned int auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-download of known files */
+	enum GMT_enum_download { GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1 } auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-download of known files */
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
