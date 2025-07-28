@@ -13,7 +13,7 @@
 
     - **+f**\ [*level*] to get a "fancy" rose, and optionally specify the *level* of fanciness. Level **1** draws
       the two principal E-W, N-S orientations, **2** adds the two intermediate NW-SE and NE-SW orientations, while **3**
-      adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW [default is **1**].  Use **+F** to
+      adds the four minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW [default is **1**]. Use **+F** to
       force the labels to be readable from the south if the projection has extensive rotation of the directions.
     - **+j**\ *justify* to set the justification :ref:`anchor point <Anchor_Point_j>`, where *justify* is a 2-character
       :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**, **C**, or **R**) and a
