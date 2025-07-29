@@ -8,6 +8,7 @@ on:
     branches:
       - master
       - 6.[0-9]+
+      - ci/win-vcpkg
     paths:
       - 'src/**'
       - 'test/**'
