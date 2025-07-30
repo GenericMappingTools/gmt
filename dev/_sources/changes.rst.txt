@@ -6,6 +6,17 @@
 Changelog
 =========
 
+New Features in GMT 6.6
+=======================
+
+GMT 6.6 is our first release after Paul Wessel has left us. Though we are still in a kind of orphanage state,
+the GMT development has not stopped. This release includes many bug fixes and the new and much requested 
+Spilhaus map projection.
+
+* ``psconvert`` has a new option **-!** that modifies the produced PostScript file in place thus avoiding
+  making a copy of it before rasterization by ghostscript.
+* Update for IGRF 14. (#8635)
+
 New Features in GMT 6.5
 =======================
 
