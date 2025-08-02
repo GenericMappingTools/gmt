@@ -57,7 +57,7 @@ Enhancements in GMT 6.5
 
 * :doc:`clear`: Allow removing any one dataset and listing directories to be deleted (`#7740 <https://github.com/GenericMappingTools/gmt/pull/7740>`_)
 * :doc:`colorbar`: Add -LI to label first and last panel with < and > (`#8246 <https://github.com/GenericMappingTools/gmt/pull/8246>`_)
-* :doc:`colorbar`: Add modifer +r to -S to only annotate the CPT limits (`#7728 <https://github.com/GenericMappingTools/gmt/pull/7728>`_)
+* :doc:`colorbar`: Add modifier +r to -S to only annotate the CPT limits (`#7728 <https://github.com/GenericMappingTools/gmt/pull/7728>`_)
 * :doc:`colorbar`: Default to color bars with gaps for categorical CPTs (`#7831 <https://github.com/GenericMappingTools/gmt/pull/7831>`_)
 * :doc:`colorbar`: Make sure only low and high contributes to decimal count in -S+r (`#7730 <https://github.com/GenericMappingTools/gmt/pull/7730>`_)
 * :doc:`events`: Enhance the curves to do linear, quadratic or cosine ramp (`#7680 <https://github.com/GenericMappingTools/gmt/pull/7680>`_)

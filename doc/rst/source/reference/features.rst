@@ -2224,7 +2224,7 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
    the map projection will be used to determine inset dimensions on the map.  For instance,
    **+w**\ 300k/200k is a 300x200 km region (which depends on the projection) while **+w**\ 5c
-   is a 5cm square box.
+   is a 5 cm square box.
 
 #. Save the location and dimensions.  For all but the simplest of map insets you will need to
    know the exact location of the resulting inset and its dimensions.  For instance, if you
