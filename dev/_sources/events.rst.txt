@@ -484,7 +484,7 @@ if your original point spacing is large, you may wish to first interpolate such 
 great circles via :doc:`sample1d` rather than subject large gaps to linear interpolation.
 **Note**: If **-Ar**\ *dpu* is used to discretize the line, then be aware that the resampling
 is affected by the current spline interpolator, controlled by :term:`GMT_INTERPOLANT`. To avoid
-any departures from straigh line segments you will need to select a linear interpolant.
+any departures from straight line segments you will need to select a linear interpolant.
 
 .. module_common_ends
 
