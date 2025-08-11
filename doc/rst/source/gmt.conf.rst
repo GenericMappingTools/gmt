@@ -765,17 +765,18 @@ MAP Parameters
         than the data origin you may append **+o**\ *xorig*/*yorig* or the short-cut
         **+oc** to center the axes on the current data domain [0/0].
 
+        .. figure:: /_images/GMT_map_frame_type.*
+           :width: 100%
+           :align: center
+
+        Appearance of different **MAP_FRAME_TYPE** settings
+
         .. toggle::
 
             Here is an example showing the appearance of different **MAP_FRAME_TYPE** settings.
 
             .. literalinclude:: /_verbatim/GMT_map_frame_type.txt
 
-            .. figure:: /_images/GMT_map_frame_type.*
-               :width: 100%
-               :align: center
-
-               Appearance of different **MAP_FRAME_TYPE** settings
 
     **MAP_FRAME_WIDTH**
         Width (> 0) of map borders for fancy map frame [default is :doc:`theme dependent

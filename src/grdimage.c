@@ -1518,7 +1518,7 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 
 	/* Determine if grid/image is to be projected */
 	need_to_project = (gmt_M_is_nonlinear_graticule (GMT) || Ctrl->E.dpi > 0);
-	if (need_to_project && GMT->current.proj.projection == GMT_PROJ4_PROJS) {
+	if (need_to_project && gmt_M_is_proj4(GMT)) {
 		if (GMT->current.proj.is_proj4)
 			if (strstr(GMT->common.J.proj4string, "longlat") || strstr(GMT->common.J.proj4string, "lonlat") || strstr(GMT->common.J.proj4string, "latlon"))
 				need_to_project = false;

@@ -456,6 +456,16 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Create profile */
+			/* Need to get dx,dy from one grid */
+			if (Ctrl->Z.active)	/* Get the first file */
+				sprintf (file, "%s", Ctrl->In.file[0]);
+			else	/* Get the first layer from 3-D cube possibly via a selected variable */
+				sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
+			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
+				Return (API->error);
+			}
+
 			char prof_args[GMT_LEN128] = {""};
 			if (!(equi_levels || Ctrl->T.active)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -E requires either equidistant levels or resampling via -T\n");
@@ -467,16 +477,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
 				Return (GMT_NOT_A_VALID_TYPE);
-
-			/* Need to get dx,dy from one grid */
-			if (Ctrl->Z.active)	/* Get the first file */
-				sprintf (file, "%s", Ctrl->In.file[0]);
-			else	/* Get the first layer from 3-D cube possibly via a selected variable */
-				sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
-			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
-				Return (API->error);
-			}
+			
 			/* Set default spacing to half the min grid spacing: */
 			Ctrl->E.step = 0.5 * MIN (Grid->header->inc[GMT_X], Grid->header->inc[GMT_Y]);
 			if (GMT_Destroy_Data (API, &Grid)) {
@@ -499,43 +500,38 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->S.active) {	/* Create time/depth-series and not grid output */
 		/* Since we let grdtrack read the grids we do a separate branch here and the return from the module */
-		uint64_t seg, row;
+		uint64_t seg;
 		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
 		char header[GMT_LEN256] = {""};
 		struct GMT_DATASEGMENT *Si = NULL;
 
 		if (Ctrl->S.file) {	/* Read a list of points, the list may have trailing text which may be activated by -S...+h */
-			if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->S.file, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
+			if ((In = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->S.file, NULL)) == NULL) {
+				GMT_Report(API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
 				Return (API->error);
 			}
 			if (Ctrl->S.header) {	/* Want to use this fixed text to add to the trailing text of all the points */
 				for (seg = 0; seg < In->n_segments; seg++) {
 					Si = In->table[0]->segment[seg];	/* Short hand to this segment */
-					if (Si->text == NULL)	/* Input file did not have any trailing text so add array now */
-						Si->text = gmt_M_memory (GMT, NULL, Si->n_rows, char *);
-					for (row = 0; row < Si->n_rows; row++) {
-						if (Si->text[row]) {	/* Already has trailing text, combine with user argument */
-							sprintf (header, "%s %s", Si->text[row], Ctrl->S.header);
-							gmt_M_str_free (Si->text[row]);
-							Si->text[row] = strdup (header);
-						}
-						else	/* Just use user argument */
-							Si->text[row] = strdup (Ctrl->S.header);
+					if (Si->text != NULL) {	/* Input file did not have any trailing text so add array now */
+						sprintf(header, "%s %s", Si->text[0], Ctrl->S.header);
+						Si->header = strdup(header);
 					}
+					else
+						Si->header = strdup(Ctrl->S.header);
 				}
 			}
 		}
 		else {	/* Single point, simplify logic below by making a 1-point dataset */
-			if ((In = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, (Ctrl->S.header) ? GMT_WITH_STRINGS : 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
+			if ((In = GMT_Create_Data(API, GMT_IS_DATASET, GMT_IS_POINT, (Ctrl->S.header) ? GMT_WITH_STRINGS : 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report(API, GMT_MSG_ERROR, "Unable to open or read file %s.\n", Ctrl->S.file);
 				Return (API->error);
 			}
 			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
 			Si->data[GMT_X][0] = Ctrl->S.x;
 			Si->data[GMT_Y][0] = Ctrl->S.y;
 			if (Ctrl->S.header)	/* Set the fixed header here via trailing text */
-				Si->text[0] = strdup (Ctrl->S.header);
+				Si->header = strdup(Ctrl->S.header);
 			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
 		}
@@ -598,11 +594,15 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				for (row = 0; row < Si->n_rows; row++, rec++) {	/* For each selected point which matches each output segment */
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
 					if (k == start_k) {	/* Set the segment header just once */
-						if (Si->text && Si->text[row])
-							sprintf (header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
-						else
-							sprintf (header, "Location %.12g,%.12g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
-						So->header = strdup (header);
+						if (Si->header && Si->header[0])
+							sprintf(header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->header);
+						else {
+							if (Si->text && Si->text[row])
+								sprintf(header, "Location %.12g,%.12g %s", Si->data[GMT_X][row], Si->data[GMT_Y][row], Si->text[row]);
+							else
+								sprintf(header, "Location %.12g,%.12g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
+						}
+						So->header = strdup(header);
 					}
 					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
 						for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
@@ -646,7 +646,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);
 			}
-			sprintf (cmd, "%s -F%s -N%d -T%s ->%s", i_file, Ctrl->F.spline, (int)(Out->n_columns - 1), Ctrl->T.string, o_file);
+			sprintf (cmd, "%s -F%s -N%d -T%s ->%s", i_file, Ctrl->F.spline, (Ctrl->S.active)? GMT_Z : (int)(Out->n_columns - 1), Ctrl->T.string, o_file);
 			if (GMT_Call_Module (API, "sample1d", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Interpolate each profile per -T */
 				Return (API->error);
 			}

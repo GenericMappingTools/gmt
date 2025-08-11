@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -47,7 +48,8 @@ Description
 
 Plots grayshaded, colored, or textured land-masses [or
 water-masses] on maps and [optionally] draws coastlines, rivers, and
-political boundaries. Alternatively, it can (1) issue clip
+political boundaries from the Global Self-consistent, Hierarchical, 
+High-resolution Geography Database (GSHHG) dataset. Alternatively, it can (1) issue clip
 paths that will contain all land or all water areas, or
 (2) dump the data to an ASCII table. The data files come
 in 5 different resolutions: (**f**)ull, (**h**)igh, (**i**)ntermediate,
@@ -101,14 +103,14 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *resolution*\ [**+f**]
-    Select the resolution of the data set to use ((**f**)ull,
+    Select the resolution of the GSHHG data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets.
     Append **+f** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
     Alternatively, choose (**a**)uto to automatically select the best
     resolution given the chosen map scale. [Default is **l** in classic mode
-    and **a** in modern mode].
+    and **a** in modern mode]. See `GSHHG five resolutions <https://github.com/GenericMappingTools/gshhg-gmt?tab=readme-ov-file#the-five-resolutions>`_ for more details.
 
 .. _-E:
 
@@ -118,7 +120,7 @@ Optional Arguments
     are supported:
 
     - Append one or more comma-separated countries using either the
-      `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
+      `2-letter ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
       (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
       state of a country (if available), e.g., US.TX for Texas.
     - Append =\ *continent* to specify a continent, using the abbreviations AF (Africa),
@@ -135,7 +137,7 @@ Optional Arguments
     - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.
     - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries or states in that continent
       or country, respectively; repeat if more than one continent or country is requested.
-    - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
+    - **+n** to list the named :ref:`DCW collections dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
       collections that contains the listed codes). All names are case-insensitive.
     - **+c** to set up an inside clip path based on your selection.
     - **+C** to set up an outside (area between selection and map boundary) clip path based on your selection.
@@ -165,7 +167,7 @@ Optional Arguments
 
     Without further options, draws a rectangular border around any map scale (|-L|) or map rose (|-T|) using
     :term:`MAP_FRAME_PEN`. Used in combination with |-L| or |-T|.  Append **l** for map scale or **t** for map rose to
-    specify which plot embellisment the |-F| parameters should be applied to [default uses the same panel parameters for
+    specify which plot embellishment the |-F| parameters should be applied to [default uses the same panel parameters for
     all selected map embellishments]. The following modifiers can be appended to |-F|, with additional explanation and
     examples provided in the :ref:`Background-panel` cookbook section:
 
@@ -173,7 +175,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ [*fill*] :ref:`(more ...) -Gfill_attrib>`
     Select filling or clipping of "dry" areas. Append the shade, color,
     or pattern; or give no argument for clipping [Default is no fill].
 
@@ -250,7 +252,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
+**-S**\ [*fill*] :ref:`(more ...) -Gfill_attrib>`
     Select filling or clipping of "wet" areas. Append the shade, color,
     or pattern; or give no argument for clipping [Default is no fill].
 
@@ -270,7 +272,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
+**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = 0.25p, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
@@ -289,6 +291,15 @@ Optional Arguments
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
+
+.. _-g:
+
+**-gD**\ *dist*
+    Short version of the global **-g** option. Here it is used to set the _dist_ distance, in map units,
+		higher then which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
+		and when line wrapping on dateline was not correctly detected. As an example of this, see for instance
+    the old issue `#3667 <https://github.com/GenericMappingTools/gmt/issues/3667>`_ that can be fixed
+    by adding **-gD**\ 1 to the command line.
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
@@ -324,7 +335,7 @@ as the `dcw-collections.txt <https://github.com/GenericMappingTools/dcw-gmt/blob
 * All tags should be at least 3 characters long.
   Either the *tag* or the *name* (if available) can be used to make selections in |-R| or |-E|.
   Use quotes if *name* consists of more than one word (e.g. *"Franco-Italian Union"*).
-* The **-E+n** option wil list the contents of the collection distributed with DCW as well
+* The **-E+n** option will list the contents of the collection distributed with DCW as well
   as any contents in ~/.gmt/dcw.conf. The latter file is consulted first and can be used to
   override same-name tag selections in the system DCW file.
 

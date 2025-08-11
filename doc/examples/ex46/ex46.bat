@@ -1,6 +1,6 @@
 REM               GMT EXAMPLE 46
 REM
-REM Purpose:      Illustrate use of solar to plot day/night terminators
+REM Purpose:      Illustrate use of solar to plot day-night terminators
 REM GMT modules:  solar, coast, plot
 REM
 

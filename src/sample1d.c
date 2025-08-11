@@ -333,7 +333,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
+EXTERN_MSC int GMT_sample1d(void *V_API, int mode, void *args) {
 	unsigned int geometry, int_mode;
 	int error = 0, result;
 
@@ -474,48 +474,50 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	nan_flag = gmt_M_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Dout->n_columns, 0U, false);
+		Tout = gmt_create_table(GMT, Din->table[tbl]->n_segments, 0, Dout->n_columns, 0U, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			if (S->n_rows < 2) {
-				GMT_Report (API, GMT_MSG_WARNING, "Table %" PRIu64 " Segment %" PRIu64 " has %" PRIu64 " record - no interpolation possible\n", tbl, seg, S->n_rows);
+				GMT_Report(API, GMT_MSG_WARNING, "Table %" PRIu64 " Segment %" PRIu64 " has %" PRIu64 " record - no interpolation possible\n", tbl, seg, S->n_rows);
 				continue;
 			}
-			gmt_M_memset (nan_flag, Din->n_columns, unsigned char);
-			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (gmt_M_is_dnan (S->data[col][row])) nan_flag[col] = true;
+			gmt_M_memset(nan_flag, Din->n_columns, unsigned char);
+			for (col = 0; col < Din->n_columns; col++)
+				for (row = 0; row < S->n_rows; row++)
+					if (gmt_M_is_dnan(S->data[col][row])) nan_flag[col] = true;
 			if (Ctrl->T.T.spatial) {	/* Need distances for path interpolation */
 				dist_in = gmt_dist_array (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, true);
-				lon = gmt_M_memory (GMT, NULL, S->n_rows, double);
-				lat = gmt_M_memory (GMT, NULL, S->n_rows, double);
-				gmt_M_memcpy (lon, S->data[GMT_X], S->n_rows, double);
-				gmt_M_memcpy (lat, S->data[GMT_Y], S->n_rows, double);
-				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->T.T.inc, Ctrl->A.mode);
-				t_out = gmt_dist_array (GMT, lon, lat, m, true);
+				lon = gmt_M_memory(GMT, NULL, S->n_rows, double);
+				lat = gmt_M_memory(GMT, NULL, S->n_rows, double);
+				gmt_M_memcpy(lon, S->data[GMT_X], S->n_rows, double);
+				gmt_M_memcpy(lat, S->data[GMT_Y], S->n_rows, double);
+				m = gmt_resample_path(GMT, &lon, &lat, S->n_rows, Ctrl->T.T.inc, Ctrl->A.mode);
+				t_out = gmt_dist_array(GMT, lon, lat, m, true);
 			}
 			else if (Ctrl->T.T.file) {	/* Get relevant t_out segment */
 				uint64_t n_outside = 0;
-				low_t  = MIN (S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
-				high_t = MAX (S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
-				t_out = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double);
+				low_t  = MIN(S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+				high_t = MAX(S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+				t_out = gmt_M_memory(GMT, NULL, Ctrl->T.T.n, double);
 				for (row = m = 0; row < Ctrl->T.T.n; row++) {
 					if (Ctrl->T.T.array[row] < low_t || Ctrl->T.T.array[row] > high_t) n_outside++;
 					t_out[m++] = Ctrl->T.T.array[row];
 				}
 				if (n_outside) {
-					GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " knot points outside range %g to %g\n", n_outside, S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+					GMT_Report(API, GMT_MSG_WARNING, "%" PRIu64 " knot points outside range %g to %g\n", n_outside, S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
 				}
 			}
 			else {	/* Generate evenly spaced output */
 				double min, max;
 				if (S->data[Ctrl->N.col][0] > S->data[Ctrl->N.col][S->n_rows-1]) {	/* t-column is monotonically decreasing */
-					min = (Ctrl->T.T.delay[GMT_X]) ? floor (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
-					max = (Ctrl->T.T.delay[GMT_Y]) ? ceil (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
+					min = (Ctrl->T.T.delay[GMT_X]) ? floor(S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
+					max = (Ctrl->T.T.delay[GMT_Y]) ? ceil(S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
 					Ctrl->T.T.reverse = true;	/* Flag we are monotonically decreasing in time for this segment */
 				}
 				else {
-					min = (Ctrl->T.T.delay[GMT_X]) ? ceil (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
-					max = (Ctrl->T.T.delay[GMT_Y]) ? floor (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
+					min = (Ctrl->T.T.delay[GMT_X]) ? ceil(S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
+					max = (Ctrl->T.T.delay[GMT_Y]) ? floor(S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
 					Ctrl->T.T.reverse = false;	/* Flag we are monotonically increasing in time for this segment */
 				}
 				if (gmt_create_array(GMT, 'T', &(Ctrl->T.T), &min, &max) != GMT_NOERROR) {

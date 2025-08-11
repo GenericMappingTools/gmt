@@ -1388,30 +1388,34 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
 
-		if (gap == 0.0) {
-			if ((flip & PSSCALE_FLIP_ANNOT) || !B_set) PSL_plotsegment (PSL, xleft, 0.0, xleft + length, 0.0);
-			if (!(flip & PSSCALE_FLIP_ANNOT) || !B_set) PSL_plotsegment (PSL, xleft, width, xleft + length, width);
-			PSL_plotsegment (PSL, xleft, 0.0, xleft, width);
-			PSL_plotsegment (PSL, xright, 0.0, xright, width);
+		if (gap == 0.0 && !GMT->current.map.frame.no_frame) {
+			if ((flip & PSSCALE_FLIP_ANNOT) || !B_set) PSL_plotsegment(PSL, xleft, 0.0, xleft + length, 0.0);
+			if (!(flip & PSSCALE_FLIP_ANNOT) || !B_set) PSL_plotsegment(PSL, xleft, width, xleft + length, width);
+			PSL_plotsegment(PSL, xleft, 0.0, xleft, width);
+			PSL_plotsegment(PSL, xright, 0.0, xright, width);
 		}
 
 		if (B_set) {	/* Used -B */
-			gmt_xy_axis2 (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE]);
+			if (!GMT->current.map.frame.no_frame)
+				gmt_xy_axis2(GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT),
+				             GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL,
+				             GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE]);
+			
 			if (A->item[GMT_GRID_UPPER].active) {
-				dx = gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_GRID_UPPER]);
+				dx = gmtlib_get_map_interval(GMT, A->type, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				if (A->type == GMT_TIME)
-					gmt_plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
+					gmt_plot_timex_grid(GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
 				else
-					gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
+					gmt_linearx_grid(GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 		}
-		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
+		else if (!GMT->current.map.frame.no_frame) {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
 
 			if (!skip_lines) {	/* First draw gridlines, unless skip_lines is true */
-				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+				gmt_setpen(GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				for (i = 0; i < n_xpos; i++)
-					PSL_plotsegment (PSL, xpos[i], 0.0, xpos[i], width);
+					PSL_plotsegment(PSL, xpos[i], 0.0, xpos[i], width);
 			}
 
 			/* Then draw annotation and frame tickmarks */

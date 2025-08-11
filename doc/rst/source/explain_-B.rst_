@@ -98,7 +98,8 @@ but you may also split this into two separate invocations for clarity, i.e.,
 
    | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+e**\ [**l**\|\ **u**]][**+f**]\
      [**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
-   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ [**00**\|\ **000**]\ *intervals*
+   | **-B0**
 
 The following directives and modifiers can be appended to **-B** to control the Axes settings:
 
@@ -111,7 +112,7 @@ The following directives and modifiers can be appended to **-B** to control the 
 - **x**\|\ **y**\|\ **z** to set which axes the modifiers apply to [default is **xy**]. If you wish to give different
   annotation intervals or labels for the various axes then you must repeat the **B** option for each axis. For a
   3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the vertical axis.
-- **+e** to give skip annotations that fall exactly at the ends of the axis.  Append **l** or **u** to only
+- **+e** to give skip annotations that fall exactly at the ends of the axis. Append **l** or **u** to only
   skip the lower or upper annotation, respectively.
 - **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffixes encoding the sign.
 - **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
@@ -128,6 +129,13 @@ The following directives and modifiers can be appended to **-B** to control the 
   the horizontal and must be in the -90 <= *angle* <= 90 range. **+an** can be used as a shorthand for normal
   (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default for
   x-axis]. These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
+- **0** This will suppress all annotations and tick marks. Useful when you want to plot a map without any
+  annotations, grid or ticks but still want to plot a frame using a line with set by :term:`MAP_FRAME_PEN`.
+- **00** Plot a frame with annotations, ticks etc use a zero-width line to plot the frame (0-width lines are lines
+  that remain very thin regardless of the zoom level).
+- **000** Plot annotations, ticks and grid lines (as chosen) but do **not** plot the frame lines. Note, this effect
+  is only visible with *png* and *pdf* formats and is not guaranteed to work when selecting only a subset of the
+  axes (e.g., **-B000ya30g30** is not working well). 
 - *intervals* to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 

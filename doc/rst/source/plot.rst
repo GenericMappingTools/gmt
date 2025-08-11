@@ -14,7 +14,7 @@ Synopsis
 
 **gmt plot** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-A|\ [**x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*\ [/*dy*] ]
@@ -135,7 +135,7 @@ Optional Arguments
       using |-G|. These quantities must be stored in the columns after the (*x, y*)
       pair [or (*x, y, z*) triplet].
     - **Y** - Draw a box-and-whisker symbol (i.e., stem-and-leaf) in *y* direction.
-      Same layount as for **X**.
+      Same layout as for **X**.
 
     Several modifiers can affect the appearance of the symbols:
 
@@ -249,13 +249,13 @@ Optional Arguments
       as column 2 (i.e., third) in any number of files having three columns. Each file may
       contain any number of segments per file.
     - **s** - Same but the two curves are given via separate pairs of tables [Default].
-    
+
     Several modifiers are at your disposal:
 
     - **+g** - We use the *fill* set via |-G| to fill the areas where :math:`y_0(x)` exceeds
-      :math:`y_1(x)`. For the opposite case, append another *fill* here.  
+      :math:`y_1(x)`. For the opposite case, append another *fill* here.
     - **+l** - For the primary curve :math:`y_0(x)`, a legend label can be set via option
-      |SYN_OPT-l|. For a secondary label use this modifier to append the label.  
+      |SYN_OPT-l|. For a secondary label use this modifier to append the label.
     - **+p** - Specify a separate pen for drawing curve :math:`y_1(x)` [Default is same pen
       as :math:`y_0(x)`]. See |-W| for specifying the pen for curve :math:`y_0(x)`.
     - **+r** - Specify a pen to simply draw a line instead of a filled box in the legend, but
@@ -305,11 +305,11 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
-    Set pen attributes for lines or the outline of symbols [Defaults:
+    Set pen attributes for lines or the outline of symbols or polygons [Defaults:
     *width* = 0.25p, *color* = black, *style* = solid]. Modifiers can be used to change the
     appearance of the line:
 
-    - **+c** - Determine how the color from the cpt file lookup is applied to symbol 
+    - **+c** - Determine how the color from the cpt file lookup is applied to symbol
       and|or fill.  Append **l** to have the color of the line to be taken from the CPT (see
       |-C|). If instead **f** is appended then the color from the cpt file is applied
       to symbol fill.  If no argument is given the we use the color for both pen and fill.

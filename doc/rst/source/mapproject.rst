@@ -14,7 +14,7 @@ Synopsis
 
 **gmt mapproject** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
-[ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
+[ |-A|\ **b**\|\ **f**\|\ **o**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*][**+m**] ]
 [ |-D|\ **c**\|\ **i**\|\ **p** ]
 [ |-E|\ [*datum*] ]
@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Ab**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**]
+**-Ab**\|\ **f**\|\ **o**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
     with *lon0/lat0*.  Choose among several directives:
 
@@ -89,11 +89,9 @@ Optional Arguments
     - **f** - Calculate the forward azimuth from the fixed point to each data point.
     - **o** - Get orientations (-90/90) rather than azimuths (0/360).
 
-    Upper case directives **F**, **B** or **O** will convert from
-    geodetic to geocentric latitudes and estimate azimuth of geodesics
-    (assuming the current ellipsoid is not a sphere). **Note**: If no fixed
-    point is given then we compute the azimuth (or back-azimuth) from the
-    previous point.  One modifier is available:
+    Use the **-je** option to compute azimuths on the ellipsoid instead of the sphere.
+    **Note**: If no fixed point is given then we compute the azimuth (or back-azimuth) from the
+    previous point. One modifier is available:
 
     - **+v** - Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns 3-4
       in the input file.

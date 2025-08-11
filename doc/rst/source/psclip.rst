@@ -14,7 +14,7 @@ Synopsis
 
 **gmt psclip** [ *table* ] |-J|\ *parameters* |-C|\ [*n*]
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-A|\ [**x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
 [ |-K| ] [ |-N| ] [ |-O| ]
 [ |-P| ] [ |-T| ]

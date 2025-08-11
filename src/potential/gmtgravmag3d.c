@@ -511,8 +511,6 @@ GMT_LOCAL int read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, str
 	int n_cols = 0, error;
 	unsigned int k, n = 0;
 	size_t n_alloc = 10 * GMT_CHUNK;
-	char line[GMT_LEN256] = {""};
-	double x1, x2, x3;
 	struct GMT_RECORD *In = NULL;
 
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 0, GMT_COL_VAR)) != GMT_NOERROR)

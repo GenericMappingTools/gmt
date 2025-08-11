@@ -815,6 +815,16 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
 			Return (GMT_NOT_A_VALID_TYPE);
+			
+		/* !!! TEMPORARY METHOD !!! */
+		/* Currently we cannot use different units in -C and -E, we have to prevent this bug first. See PR #8728 */
+		/* Check whether -C and -E use different unit */
+		if (Ctrl->C.active && Ctrl->C.unit != Ctrl->E.unit){
+			GMT_Report (API, GMT_MSG_ERROR, 
+				"Sorry but due to a current limitation options -C and -E are required to have the same unit, "
+				"but received %c (-C) and %c (-E). You must explicitly set the same unit for -C and -E.\n", Ctrl->C.unit, Ctrl->E.unit);
+			Return (GMT_RUNTIME_ERROR);
+		}
 
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
@@ -1010,9 +1020,10 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 						M->data[2+k*n_step][row] = stacked_dev[k];	/* The stacked deviation */
 						M->data[3+k*n_step][row] = stacked_lo[k];	/* The stacked low value */
 						M->data[4+k*n_step][row] = stacked_hi[k];	/* The stacked high value */
-						if (Ctrl->S.mode >= STACK_LOWER) continue;
-						M->data[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
-						M->data[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						if (Ctrl->S.mode < STACK_LOWER) {
+							M->data[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+							M->data[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						} 
 						if (n_added_cols == 0) continue;	/* No modification to profile outputs requested */
 						for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to append to */
 							col_s = colx;	/* Start over at this column */
