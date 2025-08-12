@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt sac** [ *saclist*\|\ *SACfiles* ] |-J|\ *parameters*
+**gmt sac** [ *saclist*\|\ *SACfiles* ]
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*t0/t1*] ]
@@ -20,6 +20,7 @@ Synopsis
 [ |-E|\ **a**\|\ **b**\|\ **k**\|\ **d**\|\ **n**\ [*n*]\|\ **u**\ [*n*] ]
 [ |-F|\ [**i**][**q**][**r**] ]
 [ |-G|\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*] ]
+[ |-J|\ *parameters* ]
 [ |-M|\ *size*\ [*u*][/*alpha*] ]
 [ |-Q| ]
 [ |-S|\ [**i**]\ *scale* ]
@@ -61,11 +62,6 @@ Required Arguments
     On geographic plots, the default *X* and *Y* are station longitude and latitude specified in SAC header.
     The *X* and *Y* given here will override the position determined by command line options.
     *pen*, if given, will override the pen from |-W| option for current SAC file only.
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: /explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. _-R:
 
@@ -139,6 +135,11 @@ Optional Arguments
         **+t**\ *t0/t1*: paint traces between t0 and t1 only. The reference time of *t0* and *t1* is determined by |-T| option.
 
         **+z**\ *zero*: define zero line. From *zero* to top is positive portion, from *zero* to bottom is negative portion.
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 

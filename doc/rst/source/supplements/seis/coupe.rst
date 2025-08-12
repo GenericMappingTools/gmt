@@ -14,7 +14,6 @@ Synopsis
 
 **gmt coupe**
 [ *table* ]
-|-J|\ *parameters*
 |SYN_OPT-R|
 |-A|\ **a**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+c**\ [**n**\|\ **t**]][**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
@@ -26,6 +25,7 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
+[ |-J|\ *parameters* ]
 [ |-L|\ [*pen*] ]
 [ |-N| ]
 [ |-Q| ]
@@ -71,11 +71,6 @@ Required Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: /explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. _-R:
 
@@ -228,6 +223,11 @@ Optional Arguments
     modulate the compressional fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
     data column after the required input columns determined by |-S|.
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
