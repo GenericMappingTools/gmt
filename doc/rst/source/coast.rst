@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt coast** |-J|\ *parameters*
+**gmt coast**
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
 [ |SYN_OPT-B| ]
@@ -22,6 +22,7 @@ Synopsis
 [ |-F|\ *box* ]
 [ |-G|\ [*fill*] ]
 [ |-I|\ *river*\ [/\ *pen*] ]
+[ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |-M| ]
@@ -65,11 +66,6 @@ At least one of options -C, -G, -S, -E, -I, -N, -Q and -W must be specified.
 
 Required Arguments
 ------------------
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. _-R:
 
@@ -209,6 +205,11 @@ Optional Arguments
     - R = All permanent rivers except river-lakes (1-4)
     - i = All intermittent rivers (5-7)
     - c = All canals (8-10)
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 

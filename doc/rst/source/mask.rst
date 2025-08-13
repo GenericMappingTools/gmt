@@ -14,13 +14,13 @@ Synopsis
 
 **gmt mask** [ *table* ]
 |SYN_OPT-I|
-|-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C| ]
 [ |-D|\ *dumpfile* ]
 [ |-F|\ [**l**\|\ **r**] ]
 [ |-G|\ *fill* ]
+[ |-J|\ *parameters* ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *nodegrid*\ [**+i**\|\ **o**] ]
 [ |-N| ]
@@ -71,11 +71,6 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. |Add_-J| replace:: [Not mandatory with |-D|]. |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
-
 .. |Add_-R| replace:: |Add_-R_auto_table|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -122,6 +117,11 @@ Optional Arguments
 
 **-G**\ *fill*
     Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Jz:
 

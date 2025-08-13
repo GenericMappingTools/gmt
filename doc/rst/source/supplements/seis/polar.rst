@@ -15,7 +15,6 @@ Synopsis
 **gmt polar**
 [ *table* ]
 |-D|\ *lon/lat*
-|-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ **a**\|\ **c**\|\ **d**\|\ **h**\|\ **i**\|\ **p**\|\ **s**\|\ **t**\|\ **x**\ *size*
@@ -23,6 +22,7 @@ Synopsis
 [ |-E|\ *fill* ]
 [ |-F|\ *fill* ]
 [ |-G|\ *fill* ]
+[ |-J|\ *parameters* ]
 [ |-N| ]
 [ |-Q|\ *mode*\ [*args*] ]
 [ |-T|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\[/*dy*]] ]

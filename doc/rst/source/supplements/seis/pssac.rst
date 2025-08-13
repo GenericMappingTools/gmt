@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pssac** [ *saclist*\|\ *SACfiles* ] |-J|\ *parameters*
+**gmt pssac** [ *saclist*\|\ *SACfiles* ]
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*t0/t1*] ]
@@ -20,6 +20,7 @@ Synopsis
 [ |-E|\ **a**\|\ **b**\|\ **k**\|\ **d**\|\ **n**\ [*n*]\|\ **u**\ [*n*] ]
 [ |-F|\ [**i**][**q**][**r**] ]
 [ |-G|\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*] ]
+[ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-M|\ *size*\ [*u*][/*alpha*] ]
 [ |-O| ]

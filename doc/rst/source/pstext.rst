@@ -13,7 +13,6 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt pstext** [ *textfiles* ]
-|-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|
@@ -21,6 +20,7 @@ Synopsis
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]] ]
 [ |-G|\ [*fill*][**+n**] ]
+[ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-L| ] [ |-M| ] [ |-N| ]
 [ |-O| ] [ |-P| ]

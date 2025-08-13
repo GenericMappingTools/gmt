@@ -12,12 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdvector** *grid1* *grid2* |-J|\ *parameters*
+**gmt grdvector** *grid1* *grid2*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
+[ |-J|\ *parameters* ]
 [ |-N| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [**i**\|\ **l**]\ *scale*\ [**+c**\ [[*slon*/]\ *slat*]][**+s**\ *refsize*] ]
@@ -61,11 +62,6 @@ For :math:`(x,y)`, *grid1* is expected to be the *x*\ -component, and *grid2* to
 For :math:`(r,\theta)`, *grid1* is expected to be the magnitude (:math:`r`),
 and *grid2* (:math:`\theta`), to be the azimuth (|-Z|) or direction (|-A|).
 
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
-
 Optional Arguments
 ------------------
 
@@ -98,6 +94,11 @@ Optional Arguments
     multiples of original grid spacing). Append **m** for arc minutes or
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
     multiples *multx*\ [/*multy*] directly [Default plots every node].
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-N:
 
