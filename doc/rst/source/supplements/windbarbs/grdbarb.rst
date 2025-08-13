@@ -16,12 +16,12 @@ Synopsis
 
 **grdbarb**
 *compx.nc* *compy.nc*
-**-J**\ *parameters*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
+[ |-J|\ *parameters* ] 
 [ |-N| ]
 [ |-Q|\ *length*\ [**+a**\ *angle*][**+g**\ -\|\ *fill*][**+jb**\|\ **c**\|\ **e**][**+p**\ -\|\ *pen*][**+s**\ *scale*][**+w**\ *width*] ]
 [ |SYN_OPT-R| ]
@@ -56,12 +56,6 @@ Required Arguments
     Contains the y-components of the wind field. (See :ref:`Grid File Formats
     <grd_inout_full>`).
 
-.. _-J:
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: /explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -102,6 +96,13 @@ Optional Arguments
     multiples of original grid spacing). Append **m** for arc minutes or
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
     multiples *multx*\ [/*multy*] directly [Default plots every node].
+
+.. _-J:
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_-K.rst_
 
