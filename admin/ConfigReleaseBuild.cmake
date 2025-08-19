@@ -18,7 +18,6 @@ set (DCW_ROOT "$ENV{GMT_DCW_SOURCE}")
 #set (GMT_USE_THREADS TRUE)
 set (GMT_ENABLE_OPENMP TRUE)
 
-# recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 # extra warnings
 set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")

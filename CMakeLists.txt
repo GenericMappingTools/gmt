@@ -184,11 +184,25 @@ else (SUPPL_EXTRA_DIRS)
 	set (PROTO "none")
 endif (SUPPL_EXTRA_DIRS)
 
-if (GMT_INSTALL_MODULE_LINKS)
-	set (LINKS "yes")
-else (GMT_INSTALL_MODULE_LINKS)
-	set (LINKS "no")
-endif (GMT_INSTALL_MODULE_LINKS)
+if (SUPPL_EXTRA_DIRS)
+	set (PROTO ${SUPPL_EXTRA_DIRS})
+else (SUPPL_EXTRA_DIRS)
+	set (PROTO "none")
+endif (SUPPL_EXTRA_DIRS)
+
+if (GMT_BUILD_GMTMEX)
+	set (MATLAB_APP "$ENV{MATLAB}")
+	set (MATLAB_INC "${Matlab_INCLUDE_DIRS}")
+	set (MATLAB_LIB1 "${Matlab_MEX_LIBRARY}")
+	set (MATLAB_LIB2 "${Matlab_MX_LIBRARY}")
+	set (MATLAB_EXT "${Matlab_MEX_EXTENSION}")
+else (GMT_BUILD_GMTMEX)
+	set (MATLAB_APP "not used")
+	set (MATLAB_INC "not used")
+	set (MATLAB_LIB1 "not used")
+	set (MATLAB_LIB2 "not used")
+	set (MATLAB_EXT "not used")
+endif (GMT_BUILD_GMTMEX)
 
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
@@ -242,6 +256,11 @@ message(
 	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
 	"*  Build module links         : ${LINKS}\n"
+	"*  MATLAB Application         : ${MATLAB_APP}\n"
+	"*  MATLAB include dir         : ${MATLAB_INC}\n"
+	"*  MATLAB MEX library         : ${MATLAB_LIB1}\n"
+	"*  MATLAB MX library          : ${MATLAB_LIB2}\n"
+	"*  MATLAB mex extension       : ${MATLAB_EXT}\n"
 	"*  Found Ghostscript (gs)     : ${GMT_CONFIG_GS_MESSAGE}\n"
 	"*  Found GraphicsMagick (gm)  : ${GMT_CONFIG_GM_MESSAGE}\n"
 	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"

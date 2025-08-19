@@ -25,9 +25,15 @@ install (PROGRAMS
 	gmt_links.sh
 	gmt_prepmex.sh
 	gmt_uninstall.sh
+	gmt_mexbuild.sh
 	ncdeflate
 	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	DESTINATION ${GMT_DATADIR}/tools
+	COMPONENT Runtime)
+
+install (PROGRAMS
+	gmt_mexbuild.sh
+	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
 if (NOT DEFINED BASH_COMPLETION_DIR)

@@ -57,6 +57,9 @@
 #set (GMT_EXCLUDE_BLAS TRUE)
 #set (GMT_EXCLUDE_ZLIB TRUE)
 
+# Include special gmtmex supplement for the GMT/MEX toolbox [which requires MATLAB]
+#set (GMT_BUILD_GMTMEX TRUE)
+
 # ============================================================================
 # Advanced configuration begins here.  Usually it is not necessary to edit any
 # settings below.  You should know what you are doing if you do though.  Note:
