@@ -1,0 +1,45 @@
+# Geological time scale categorical color scheme
+#
+# TIMESCALE:  GTS2012 (Gradstein et al., 2012) 
+# 
+# GIVEN ARE TOPS of PERIODS in Milliions of years before present
+#
+# Christian Heine, mailto:christian.heine@sydney.edu.au
+# 
+# LICENSE:
+# This work is licensed under a 
+# Creative Commons Attribution-ShareAlike 3.0 Unported License
+# http://creativecommons.org/licenses/by-sa/3.0/deed.en_US.
+#
+#-----------------------------------------------------------------------------
+# COLOR_MODEL = RGB
+#
+0.0     249/249/127	    2.588   249/249/127	; Quaternary
+2.588   255/230/25      23.03   255/230/25  ; Neogene
+23.03   253/154/82      66.0    253/154/82  ; Paleogene
+66.0    127/198/78      145.0   127/198/78  ; Cretaceous
+145.0   52/178/201      201.3   52/178/201  ; Jurassic
+201.3   129/43/146      252.2   129/43/146  ; Triassic
+252.2   240/64/40       298.9   240/64/40   ; Permian
+298.9   103/165/153     358.9   103/165/153 ; Carboniferous
+358.9   203/140/55      419.2   203/140/55  ; Devonian
+419.2   179/225/182     443.4   179/225/182 ; Silurian
+443.4   0/146/112       485.4     0/146/112 ; Ordovician
+485.4   127/160/86      541.0   127/160/86  ; Cambrian
+541.0   254/217/106     635     254/217/106 ; Ediacaran
+635     254/204/92      850     254/204/92  ; Cryogenian
+850     254/191/78      1000    254/191/78  ; Tonian
+1000    254/217/154     1200    254/217/154 ; Stenian
+1200    253/204/138     1400    253/204/138 ; Ectasian
+1400    253/192/122     1600    253/192/122 ; Calymmia
+1600    248/117/167     1800    248/117/167 ; Statherian
+1800    247/104/152     2050    247/104/152 ; Orosirian
+2050    247/91/137      2300    247/91/137  ; Rhyacian
+2300    247/79/124      2500    247/79/124  ; Siderian
+2500    249/155/193     2800    249/155/193 ; Neoarchean
+2800    247/104/169     3200    247/104/169 ; Mesoarchean
+3200    244/68/159      3600    244/68/159  ; Paleoarchean
+3600    218/3/127       4000    218/3/127   ; Eoarchean
+
+B	black
+F	white
