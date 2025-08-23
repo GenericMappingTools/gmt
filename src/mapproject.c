@@ -76,7 +76,8 @@ enum GMT_mp_Wcodes {	/* Support for -W parsing */
 	GMT_MP_M_MREGION = 10,	/* As 6, but return string -Rxmin/xmax/ymn/ymax */
 	GMT_MP_M_MSTRING = 11,	/* As 6 but as string */
 	GMT_MP_M_BREGION = 12,	/* Return xmin/xmax/ymn/ymax in long/lat of boundingbox */
-	GMT_MP_M_BSTRING = 13	/* As 12 but as string */
+	GMT_MP_M_BSTRING = 13,	/* As 12 but as string */
+	GMT_MP_M_SCALE   = 14	/* Return map scale */
 };
 
 enum GMT_mp_Zcodes {	/* Support for -Z parsing */
@@ -214,7 +215,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> [-Ab|f|o[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [%s] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [%s] [-S] [-T[h]<from>[/<to>]] [%s] [-W[b|B|e|E|g|h|j|m|M|n|o|O|r|R|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [%s] [-S] [-T[h]<from>[/<to>]] [%s] [-W[b|B|e|E|g|h|j|m|M|n|o|O|r|R|s|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -311,6 +312,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "O: Same as o but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "r: Print rectangular region for an oblique -R -J selection.");
 	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
+	GMT_Usage (API, 3, "s: Print the map scale.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
 	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny>]] to output the enclosing polygon instead "
@@ -713,16 +715,16 @@ static int parse(struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_
 					Ctrl->T.heights = true;	/* If false we set height = 0 */
 				}
 
-				if (strchr (&opt->arg[k], '/')) {	/* Gave from/to */
-					sscanf (&opt->arg[k], "%[^/]/%s", from, to);
+				if (strchr(&opt->arg[k], '/')) {	/* Gave from/to */
+					sscanf(&opt->arg[k], "%[^/]/%s", from, to);
 				}
 				else {	/* to not given, set to - which means WGS-84 */
-					strcpy (to, "-");
-					strncpy (from, &opt->arg[k], GMT_LEN256);
+					strcpy(to, "-");
+					strncpy(from, &opt->arg[k], GMT_LEN256);
 				}
-				n_errors += gmt_M_check_condition (GMT, gmt_set_datum (GMT, to, &Ctrl->T.to) == -1 ||
-				                                 gmt_set_datum (GMT, from, &Ctrl->T.from) == -1,
-				                                 "Option -T: Usage -T[h]<from>[/<to>]\n");
+				n_errors += gmt_M_check_condition(GMT, gmt_set_datum (GMT, to, &Ctrl->T.to) == -1 ||
+				                                  gmt_set_datum (GMT, from, &Ctrl->T.from) == -1,
+				                                  "Option -T: Usage -T[h]<from>[/<to>]\n");
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -731,9 +733,8 @@ static int parse(struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_
 					case 'w': Ctrl->W.mode = GMT_MP_M_WIDTH; break;
 					case 'h': Ctrl->W.mode = GMT_MP_M_HEIGHT; break;
 					case 'j': case 'n': case 'g': case 'x':
-						if ((Ctrl->W.refpoint = gmt_get_refpoint (GMT, opt->arg, 'W')) == NULL) {
+						if ((Ctrl->W.refpoint = gmt_get_refpoint(GMT, opt->arg, 'W')) == NULL)
 							n_errors++;
-						}
 						Ctrl->W.mode = GMT_MP_M_POINT;
 						break;
 					case 'b': Ctrl->W.mode = GMT_MP_M_BREGION; break;
@@ -746,8 +747,9 @@ static int parse(struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_
 					case 'R': Ctrl->W.mode = GMT_MP_M_RSTRING; break;
 					case 'm': Ctrl->W.mode = GMT_MP_M_MREGION; break;
 					case 'M': Ctrl->W.mode = GMT_MP_M_MSTRING; break;
+					case 's': Ctrl->W.mode = GMT_MP_M_SCALE; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[e|E|g|h|j|m|M|n|o|O|r|R|w|x]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[e|E|g|h|j|m|M|n|o|O|r|R|s|w|x]\n");
 						n_errors++;
 						break;
 				}
@@ -1216,11 +1218,18 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
 				n_output = (tmode == GMT_COL_FIX) ? 0 : 4;
 				break;
+			case GMT_MP_M_SCALE:
+				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map scale.\n");
+				w_out[GMT_X] = 1.0 / fabs(0.0254 * GMT->current.proj.scale[GMT_X]);
+				break;
 			default:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width and height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;
 				w_out[GMT_Y] = GMT->current.proj.rect[YHI] * inch_to_unit;
 				n_output = 2;
+				if (API->external)			/* For externals, report also the map i_scale*/
+					w_out[GMT_Z] = 1.0 / fabs(0.0254 * GMT->current.proj.scale[GMT_X]);
+				n_output = (API->external) ? 3 : 2;
 			break;
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
@@ -1236,22 +1245,27 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-			gmt_M_free (GMT, Out);
+			gmt_M_free(GMT, Out);
 			Return (API->error);
 		}
 		if (Ctrl->W.mode == GMT_MP_M_OSTRING || Ctrl->W.mode == GMT_MP_M_ESTRING) {
-			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg+r", w_out[XLO], w_out[YLO], w_out[XHI], w_out[YHI]);
+			sprintf(region, "-R%.16lg/%.16lg/%.16lg/%.16lg+r", w_out[XLO], w_out[YLO], w_out[XHI], w_out[YHI]);
 			Out->text = region;
 		}
 		else if (Ctrl->W.mode == GMT_MP_M_BSTRING || Ctrl->W.mode == GMT_MP_M_RSTRING || Ctrl->W.mode == GMT_MP_M_MSTRING) {
-			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
+			sprintf(region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
+			Out->text = region;
+		}
+		else if (Ctrl->W.mode == GMT_MP_M_SCALE) {
+			sprintf(region, "1:%g", w_out[GMT_X]);
 			Out->text = region;
 		}
 		else
 			Out->data = w_out;
-		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
-		gmt_M_free (GMT, Out);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
+
+		GMT_Put_Record(API, GMT_WRITE_DATA, Out);	/* Write this to output */
+		gmt_M_free(GMT, Out);
+		if (GMT_End_IO(API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);
