@@ -14,7 +14,6 @@ Synopsis
 
 **gmt psvelo**
 [ *table* ]
-|-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][/*args*][**+f**\ *font*]
 [ |-A|\ *parameters* ]
@@ -25,6 +24,7 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
+[ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-L|\ [*pen*\ [**+c**\ [**f**\|\ **l**]]] ]
 [ |-N| ] [ |-O| ] [ |-P| ]

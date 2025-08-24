@@ -14,7 +14,6 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt contour** [ *table* ]
-|-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
@@ -23,6 +22,7 @@ Synopsis
 [ |-E|\ *indexfile*\ [**+b**] ]
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
 [ |-I| ]
+[ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *pen* ]
 [ |-N| ]
@@ -69,11 +69,6 @@ Required Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. |Add_-R| replace:: |Add_-R_auto_table|
 .. include:: explain_-R.rst_
@@ -170,6 +165,11 @@ Optional Arguments
 
 **-I**
     Color the triangles using the CPT.
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 

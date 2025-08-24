@@ -13,13 +13,13 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdcontour** *ingrid*
-|-J|\ *parameters*
 [ |-A|\ [**n**\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
 [ |-D|\ *template* ]
 [ |-F|\ [**l**\|\ **r**] ]
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
+[ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ] [ |-K| ]
 [ |-L|\ *low/high*\|\ **n**\|\ **N**\|\ **P**\|\ **p** ]
 [ |-N|\ [*cpt*] ]

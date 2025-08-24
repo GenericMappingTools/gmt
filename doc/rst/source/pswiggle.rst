@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*
+**gmt pswiggle** [ *table* ] |SYN_OPT-Rz| |-Z|\ *scale*
 [ |-A|\ [*azimuth*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
@@ -20,6 +20,7 @@ Synopsis
 [ |-F|\ *panel* ]
 [ |-G|\ *fill*\ [**+n**][**+p**] ]
 [ |-I|\ *fix_az* ]
+[ |-J|\ *parameters* ] 
 [ |-K| ]
 [ |-O| ] [ |-P| ]
 [ |-T|\ *pen* ]
