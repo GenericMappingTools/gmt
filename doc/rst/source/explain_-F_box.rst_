@@ -8,7 +8,7 @@
   [default is a uniform *gap* between borders of **2p** and the :term:`MAP_DEFAULT_PEN`].
 - **+p** - append *pen* to specify different :ref:`pen <-Wpen_attrib>` attributes for the box outline.
 - **+r** - Draw a rounded rectangular borders instead of sharp with a corner radius set by *radius* (append
-  :ref:`units <plt-units>`) [defaults is **6p**].
+  :ref:`units <plt-units>`) [default is **6p**].
 - **+s** - Place an offset background shaded region behind the box. Here, *dx*/*dy* indicates the
   :ref:`shift <plt-units>` relative to the foreground frame [default is **4p**\ /**-4p**] and *shade* sets the
   :doc:`fill <gmtcolors>` style to use for shading [default is **gray50**].
