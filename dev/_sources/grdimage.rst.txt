@@ -13,7 +13,6 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdimage** *grid* \| *image*
-|-J|\ *parameters*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*section*/]\ *master*\|\ *cpt*\|\ *color*\ :math:`_1`,\ *color*\ :math:`_2`\ [,\ *color*\ :math:`_3`\ ,...]\ [**+h**\ [*hinge*]][**+i**\ *dz*][**+u**\|\ **U**\ *unit*][**+s**\ *fname*] ]
@@ -21,6 +20,7 @@ Synopsis
 [ |-E|\ [**i**\|\ *dpi*] ]
 [ |-G|\ *color*\ [**+b**\|\ **f**] ]
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
+[ |-J|\ *parameters* ]
 [ |-M| ]
 [ |-N| ]
 [ |-Q|\ [*color*][**+i**][**+t**][**+z**\ *value*] ]
@@ -78,11 +78,6 @@ Required Arguments
 *grid* \| *image*
     2-D gridded data set or image to be plotted (see :ref:`Grid File Formats
     <grd_inout_full>`).
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -143,6 +138,11 @@ Optional Arguments
 .. _-I:
 
 .. include:: explain_intense.rst_
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 
