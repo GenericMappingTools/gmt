@@ -6,7 +6,7 @@ The **-U** option
 .. _-U:
 
 **-U**\ [*label*\|\ **+c**][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+t**\ *text*]
-    Draw GMT time stamp logo on plot. |Add_-U|
+    Draw the GMT time stamp logo on the plot. |Add_-U|
 
 **Description**
 
