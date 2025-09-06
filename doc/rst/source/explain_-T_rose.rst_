@@ -59,7 +59,7 @@
       by providing three slash-separated intervals. Specify separate intervals by appending three slash-separated
       geographic intervals followed by three slash-separated magnetic intervals [default is **30**/**5**/**1**].
       **Note**: If :term:`MAP_EMBELLISHMENT_MODE` is **auto** and the compass size is smaller than 2.5 cm then the
-      interval defaults are reset to **90**/**30**/**3**/**9450**/**15**/**3**.
+      interval defaults are reset to **90**/**30**/**3**/**45**/**15**/**3**.
     - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` by *dx* and optionally *dy* (if different
       than *dx*).
     - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints).
