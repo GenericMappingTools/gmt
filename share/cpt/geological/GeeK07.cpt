@@ -1,0 +1,322 @@
+# Geological time scale categorical color scheme
+#
+# TIMESCALE: Magnetic anomalies - Gee & Kent, Treatise of Geophysics, 2007
+# 
+# From the text: Geomagnetic polarity time scale tabulated from Cande and 
+# Kent (1995), with additional short subchrons summarized by Lowrie and 
+# Kent (2004), for after the Cretaceous Normal Polarity Superchron (CNPS), 
+# which corresponds to the Cretaceous Quiet Zone, and from Channell et al. 
+# (1995) for before the CNPS. The names of chrons marked by asterisks are 
+# repeated because the reverse polarity intervals contain one or two 
+# cryptochrons that have been elevated to the status of new normal polarity 
+# subchrons.
+#
+# Christian Heine, mailto:christian.heine@sydney.edu.au
+# 22/10/13 12:49:30 PM
+#
+# Normal polarity: white
+# Reverse polarity: black
+#
+# NOTES:
+# 1) The original publication states 2.600 for the old end of Chron
+#    C2r.2r, whereas the young end of C2An.1n starts at 2.581. I 
+#    have inferred a rounding error here and set C2r.2r to 2.581.
+#
+# LICENSE: 
+# This work is licensed under a 
+# Creative Commons Attribution-ShareAlike 3.0 Unported License
+# See http://creativecommons.org/licenses/by-sa/3.0/deed.en_US for 
+# the license terms.
+# 
+#-----------------------------------------------------------------------------
+# COLOR_MODEL = RGB
+0.000   white    0.780  white ; C1n
+0.780   black  0.990   black ; C1r.1r
+0.990   white    1.070  white ; C1r.1n
+1.070   black  1.201   black ; C1r.2r.
+1.201   white    1.211  white ; C1r.2r-1n
+1.211   black  1.770   black ; C1r.2r.
+1.770   white    1.950  white ; C2n
+1.950   black  2.140   black ; C2r.1r
+2.140   white    2.150  white ; C2r.1n
+2.150   black  2.581   black ; C2r.2r 
+2.581   white    3.040  white ; C2An.1n
+3.040   black  3.110   black ; C2An.1r
+3.110   white    3.220  white ; C2An.2n
+3.220   black  3.330   black ; C2An.2r
+3.330   white    3.580  white ; C2An.3n
+3.580   black  4.180   black ; C2Ar
+4.180   white    4.290  white ; C3n.1n
+4.290   black  4.480   black ; C3n.1r
+4.480   white    4.620  white ; C3n.2n
+4.620   black  4.800   black ; C3n.2r
+4.800   white    4.890  white ; C3n.3n
+4.890   black  4.980   black ; C3n.3r
+4.980   white    5.230  white ; C3n.4n
+5.230   black  5.894   black ; C3r
+5.894   white    6.137  white ; C3An.1n
+6.137   black  6.269   black ; C3An.1r
+6.269   white    6.567  white ; C3An.2n
+6.567   black  6.935   black ; C3Ar
+6.935   white    7.091  white ; C3Bn
+7.091   black  7.135   black ; C3Br.1r
+7.135   white    7.170  white ; C3Br.1n
+7.170   black  7.341   black ; C3Br.2r
+7.341   white    7.375  white ; C3Br.2n
+7.375   black  7.432   black ; C3Br.3r
+7.432   white    7.562  white ; C4n.1n
+7.562   black  7.650   black ; C4n.1r
+7.650   white    8.072  white ; C4n.2n
+8.072   black  8.225   black ; C4r.1r
+8.225   white    8.257  white ; C4r.1n
+8.257   black  8.606   black ; C4r.2r
+8.606   white    8.664  white ; C4r.2r1n
+8.664   black  8.699   black ; C4r.2r
+8.699   white    9.025  white ; C4An
+9.025   black  9.097   black ; C4Ar.1r
+9.097   white    9.117  white ; C4Ar.1r1n
+9.117   black  9.230   black ; C4Ar.1r
+9.230   white    9.308  white ; C4Ar.1n
+9.308   black  9.580   black ; C4Ar.2r
+9.580   white    9.642  white ; C4Ar.2n
+9.642   black  9.740   black ; C4Ar.3r
+9.740   white    9.880  white ; C5n.1n
+9.880   black  9.920   black ; C5n.1r
+9.920   white    10.949 white ; C5n.2n
+10.949   black  11.052   black ; C5r.1r
+11.052  white    11.099 white ; C5r.1n
+11.099   black  11.167   black ; C5r.2r
+11.167  white    11.193 white ; C5r.2r1n
+11.193   black  11.352   black ; C5r.2r
+11.352  white    11.363 white ; C5r.2r2n
+11.363   black  11.476   black ; C5r.2r
+11.476  white    11.531 white ; C5r.2n
+11.531   black  11.555   black ; C5r.3r
+11.555  white    11.584 white ; C5r.3r1n
+11.584   black  11.935   black ; C5r.3r
+11.935  white    12.078 white ; C5An.1n
+12.078   black  12.184   black ; C5An.1r
+12.184  white    12.401 white ; C5An.2n
+12.401   black  12.678   black ; C5Ar.1r
+12.678  white    12.708 white ; C5Ar.1n
+12.708   black  12.775   black ; C5Ar.2r
+12.775  white    12.819 white ; C5Ar.2n
+12.819   black  12.991   black ; C5Ar.3r
+12.991  white    13.139 white ; C5AAn
+13.139   black  13.302   black ; C5AAr
+13.302  white    13.510 white ; C5ABn
+13.510   black  13.703   black ; C5ABr
+13.703  white    14.076 white ; C5ACn
+14.076   black  14.178   black ; C5ACr
+14.178  white    14.612 white ; C5ADn
+14.612   black  14.800   black ; C5ADr
+14.800  white    14.888 white ; C5Bn.1n
+14.888   black  15.034   black ; C5Bn.1r
+15.034  white    15.155 white ; C5Bn.2n
+15.155   black  16.014   black ; C5Br
+16.014  white    16.293 white ; C5Cn.1n
+16.293   black  16.327   black ; C5Cn.1r
+16.327  white    16.488 white ; C5Cn.2n
+16.488   black  16.556   black ; C5Cn.2r
+16.556  white    16.726 white ; C5Cn.3n
+16.726   black  17.277   black ; C5Cr
+17.277  white    17.615 white ; C5Dn
+17.615   black  17.793   black ; C5Dr
+17.793  white    17.854 white ; C5Dr1n
+17.854   black  18.281   black ; C5Dr
+18.281  white    18.781 white ; C5En
+18.781   black  19.048   black ; C5Er
+19.048  white    20.131 white ; C6n
+20.131   black  20.518   black ; C6r
+20.518  white    20.725 white ; C6An.1n
+20.725   black  20.996   black ; C6An.1r
+20.996  white    21.320 white ; C6An.2n
+21.320   black  21.768   black ; C6Ar
+21.768  white    21.859 white ; C6AAn
+21.859   black  22.151   black ; C6AAr.1r
+22.151  white    22.248 white ; C6AAr.1n
+22.248   black  22.459   black ; C6AAr.2r
+22.459  white    22.493 white ; C6AAr.2n
+22.493   black  22.588   black ; C6AAr.3r
+22.588  white    22.750 white ; C6Bn.1n
+22.750   black  22.804   black ; C6Bn.1r
+22.804  white    23.069 white ; C6Bn.2n
+23.069   black  23.353   black ; C6Br
+23.353  white    23.535 white ; C6Cn.1n
+23.535   black  23.677   black ; C6Cn.1r
+23.677  white    23.800 white ; C6Cn.2n
+23.800   black  23.999   black ; C6Cn.2r
+23.999 white  24.118 white ; C6Cn.3n
+24.118 black  24.730  black  ; C6Cr
+24.730 white  24.781 white ; C7n.1n
+24.781 black  24.835  black  ; C7n.1r
+24.835 white  25.183 white ; C7n.2n
+25.183 black  25.496  black  ; C7r
+25.496 white  25.648 white ; C7An
+25.648 black  25.678  black  ; C7Ar*
+25.678 white  25.705 white ; C7Ar	1n
+25.705 black  25.823  black  ; C7Ar*
+25.823 white  25.951 white ; C8n.1n
+25.951 black  25.992  black  ; C8n.1r
+25.992 white  26.554 white ; C8n.2n
+26.554 black  27.027  black  ; C8r
+27.027 white  27.972 white ; C9n
+27.972 black  28.283  black  ; C9r
+28.283 white  28.512 white ; C10n.1n
+28.512 black  28.578  black  ; C10n.1r
+28.578 white  28.745 white ; C10n.2n
+28.745 black  29.401  black  ; C10r
+29.401 white  29.662 white ; C11n.1n
+29.662 black  29.765  black  ; C11n.1r
+29.765 white  30.098 white ; C11n.2n
+30.098 black  30.479  black  ; C11r
+30.479 white  30.939 white ; C12n
+30.939 black  33.058  black  ; C12r
+33.058 white  33.545 white ; C13n
+33.545 black  34.655  black  ; C13r
+34.655 white  34.940 white ; C15n
+34.940 black  35.343  black  ; C15r
+35.343 white  35.526 white ; C16n.1n
+35.526 black  35.685  black  ; C16n.1r
+35.685 white  36.341 white ; C16n.2n
+36.341 black  36.618  black  ; C16r
+36.618 white  37.473 white ; C17n.1n
+37.473 black  37.604  black  ; C17n.1r
+37.604 white  37.848 white ; C17n.2n
+37.848 black  37.920  black  ; C17n.2r
+37.920 white  38.113 white ; C17n.3n
+38.113 black  38.426  black  ; C17r
+38.426 white  39.552 white ; C18n.1n
+39.552 black  39.631  black  ; C18n.1r
+39.631 white  40.130 white ; C18n.2n
+40.130 black  41.257  black  ; C18r
+41.257 white  41.521 white ; C19n
+41.521 black  42.536  black  ; C19r
+42.536 white  43.789 white ; C20n
+43.789 black  46.264  black  ; C20r
+46.264 white  47.906 white ; C21n
+47.906 black  49.037  black  ; C21r
+49.037 white  49.714 white ; C22n
+49.714 black  50.778  black  ; C22r
+50.778 white  50.946 white ; C23n.1n
+50.946 black  51.047  black  ; C23n.1r
+51.047 white  51.743 white ; C23n.2n
+51.743 black  52.364  black  ; C23r
+52.364 white  52.663 white ; C24n.1n
+52.663 black  52.757  black  ; C24n.1r
+52.757 white  52.801 white ; C24n.2n
+52.801 black  52.903  black  ; C24n.2r
+52.903 white  53.347 white ; C24n.3n
+53.347 black  55.904  black  ; C24r
+55.904 white  56.391 white ; C25n
+56.391 black  57.554  black  ; C25r
+57.554 white  57.911 white ; C26n
+57.911 black  60.920  black  ; C26r
+60.920 white  61.276 white ; C27n
+61.276 black  62.499  black  ; C27r
+62.499 white  63.634 white ; C28n
+63.634 black  63.976  black  ; C28r
+63.976 white  64.745 white ; C29n
+64.745 black  65.578  black  ; C29r
+65.578 white  67.610 white ; C30n
+67.610 black  67.735  black  ; C30r
+67.735 white  68.737 white ; C31n
+68.737 black  71.071  black  ; C31r
+71.071 white  71.338 white ; C32n.1n
+71.338 black  71.587  black  ; C32n.1r
+71.587 white  73.004 white ; C32n.2n
+73.004 black  73.291  black  ; C32r.1r
+73.291 white  73.374 white ; C32r.1n
+73.374 black  73.619  black  ; C32r.2r
+73.619 white  79.075 white ; C33n
+79.075 black  83.000  black  ; C33r
+83.00 white  120.60 white ; C34n (CNPS)
+120.60 black  121.00  black  ; CM0r
+121.00 white  123.19 white ; CM1n
+123.19 black  123.55  black  ; CM1r
+123.55 white  124.05 white ; CM2n
+124.05 black  125.67  black  ; CM3r
+125.67 white  126.57 white ; CM4n
+126.57 black  126.91  black  ; CM5r
+126.91 white  127.11 white ; CM6n
+127.11 black  127.23  black  ; CM6r
+127.23 white  127.49 white ; CM7n
+127.49 black  127.79  black  ; CM7r
+127.79 white  128.07 white ; CM8n
+128.07 black  128.34  black  ; CM8r
+128.34 white  128.62 white ; CM9n
+128.62 black  128.93  black  ; CM9r
+128.93 white  129.25 white ; CM10n
+129.25 black  129.63  black  ; CM10r
+129.63 white  129.91 white ; CM10Nn.1n
+129.91 black  129.95  black  ; CM10Nn.1r
+129.95 white  130.22 white ; CM10Nn.2n
+130.22 black  130.24  black  ; CM10Nn.2r
+130.24 white  130.49 white ; CM10Nn.3n
+130.49 black  130.84  black  ; CM10Nr
+130.84 white  131.50 white ; CM11n
+131.50 black  131.71  black  ; CM11r.1r
+131.71 white  131.73 white ; CM11r.1n
+131.73 black  131.91  black  ; CM11r.2r
+131.91 white  132.35 white ; CM11An.1n
+132.35 black  132.40  black  ; CM11An.1r
+132.40 white  132.47 white ; CM11An.2n
+132.47 black  132.55  black  ; CM11Ar
+132.55 white 132.76 white ; CM12n
+132.76 black 133.51 black ; CM12r.1r
+133.51 white 133.58 white ; CM12r.1n
+133.58 black 133.73 black ; CM12r.2r
+133.73 white 133.99 white ; CM12An
+133.99 black 134.08 black ; CM12Ar
+134.08 white 134.27 white ; CM13n
+134.27 black 134.53 black ; CM13r
+134.53 white 134.81 white ; CM14n
+134.81 black 135.57 black ; CM14r
+135.57 white 135.96 white ; CM15n
+135.96 black 136.49 black ; CM15r
+136.49 white 137.85 white ; CM16n
+137.85 black 138.50 black ; CM16r
+138.50 white 138.89 white ; CM17n
+138.89 black 140.51 black ; CM17r
+140.51 white 141.22 white ; CM18n
+141.22 black 141.63 black ; CM18r
+141.63 white 141.78 white ; CM19n.1n
+141.78 black 141.88 black ; CM19n.1r
+141.88 white 143.07 white ; CM19n
+143.07 black 143.36 black ; CM19r
+143.36 white 143.77 white ; CM20n.1n
+143.77 black 143.84 black ; CM20n.1r
+143.84 white 144.70 white ; CM20n.2n
+144.70 black 145.52 black ; CM20r
+145.52 white 146.56 white ; CM21n
+146.56 black 147.06 black ; CM21r
+147.06 white 148.57 white ; CM22n.1n
+148.57 black 148.62 black ; CM22n.1r
+148.62 white 148.67 white ; CM22n.2n
+148.67 black 148.72 black ; CM22n.2r
+148.72 white 148.79 white ; CM22n.3n
+148.79 black 149.49 black ; CM22r
+149.49 white 149.72 white ; CM22An
+149.72 black 150.04 black ; CM22Ar
+150.04 white 150.69 white ; CM23n.1n
+150.69 black 150.91 black ; CM23n.1r
+150.91 white 150.93 white ; CM23n.2n
+150.93 black 151.40 black ; CM23r
+151.40 white 151.72 white ; CM24n.1n
+151.72 black 151.98 black ; CM24n.1r
+151.98 white 152.00 white ; CM24n.2n
+152.00 black 152.15 black ; CM24r
+152.15 white 152.24 white ; CM24An
+152.24 black 152.43 black ; CM24Ar
+152.43 white 153.13 white ; CM24Bn
+153.13 black 153.43 black ; CM24Br
+153.43 white 154.00 white ; CM25n
+154.00 black 154.31 black ; CM25r
+154.31 white 155.32 white ; CM26n
+155.32 black 155.55 black ; CM26r
+155.55 white 155.80 white ; CM27n
+155.80 black 156.05 black ; CM27r
+156.05 white 156.19 white ; CM28n
+156.19 black 156.51 black ; CM28r
+156.51 white 157.27 white ; CM29n
+157.27 black 157.53 black ; CM29r

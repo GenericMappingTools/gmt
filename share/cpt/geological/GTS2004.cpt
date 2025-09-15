@@ -1,0 +1,49 @@
+# Geological time scale categorical color scheme
+# 
+# TIMESCALE: GTS2004 (Gradstein et al.,2004)
+
+# GIVEN ARE TOPS of STAGES in Milliions of years before present
+#
+# Christian Heine, mailto:christian.heine@sydney.edu.au
+# 17/11/12 9:17:14 AM
+# 
+# LICENSE:
+# This work is licensed under a 
+# Creative Commons Attribution-ShareAlike 3.0 Unported License
+# http://creativecommons.org/licenses/by-sa/3.0/deed.en_US.
+#
+#
+# TODO: Extend timescale to present
+# TODO Extend back to Archean
+#
+#-----------------------------------------------------------------------------
+# COLOR_MODEL = RGB
+#
+# 65.5	103	197	202	; Mesozoic	
+# 65.5	127	198	78	; Cretaceous
+# 65.5	166	216	74	; Upper Cretaceous 
+65.5	242	250 140	70.6	242	250 140	; Maastrichtian
+70.6	230	244	127	83.5	230	244	127	; Campanian
+83.5	179	222	83	85.8	179	222	83	; Santonian
+85.8	204	233	104	89.3	204	233	104	; Coniacian
+89.3	191	227	93	93.5	191	227	93	; Turonian
+93.5	179	222	83	99.6	179	222	83	; Cenomanian
+# 99.6	140	205	87	; Lower Cretaceous
+99.6	204	234	151	112.0	204	234	151	; Albian
+112.0 	191	228	138	125.0	191	228	138	; Aptian
+125.0	179	223	127	130.0	179	223	127	; Barremian
+130.0	166	217	117	136.4	166	217	117	; Hauterivian
+136.4	153	211	106	140.2	153	211	106	; Valangian
+140.2 	140	205	96	145.5 	140	205	96	; Berriasian
+# 145.5	52	178	201	;Jurassic 
+# 145.5	179	227	238 	; Upper Jurassic 
+145.5	217	241	247	150.8	217	241	247	; Tithonian
+150.8	204	236	244	155.7	204	236	244	; Kimmeridgian
+155.7	191	231	241	161.2	191	231	241	; Oxfordian	
+# 161.2	128	207	216	; Middle Jurassic 
+161.2	191	231	229	164.7	191	231	229	; Callovian	
+164.7	179	226	227	167.7	179	226	227	; Bathonian	
+167.7	166	221	224	171.6	166	221	224	; Bajocian	
+171.6	154	217	221	175.6	154	217	221	; Aalenian 
+B	black
+F	white

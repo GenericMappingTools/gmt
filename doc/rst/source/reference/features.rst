@@ -519,14 +519,14 @@ URLs and remote files
 
 Three classes of files are given special treatment in GMT.
 
-#. GMT offers several remote global data grids that you can access via our remote file mechanism 
+#. GMT offers several remote global data grids that you can access via our remote file mechanism
    (e.g. **@earth_relief**). The first time you access one of these files, GMT will download
-   the file (or a subset tile) from the selected GMT server and save it to the *server* directory 
-   under your **$GMT_USERDIR** directory [~/.gmt]. Once one of these grids have been downloaded 
+   the file (or a subset tile) from the selected GMT server and save it to the *server* directory
+   under your **$GMT_USERDIR** directory [~/.gmt]. Once one of these grids have been downloaded
    any future reference will simply obtain the file from **$GMT_USERDIR** (except if explicitly
-   removed by the user). See the `Remote Datasets <https://docs.generic-mapping-tools.org/dev/datasets/remote-data.html>`_ 
+   removed by the user). See the `Remote Datasets <https://docs.generic-mapping-tools.org/dev/datasets/remote-data.html>`_
    section for a comprehensive list of available remote datasets and detailed information.
-   
+
 
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to the current directory and subsequently
@@ -1007,7 +1007,7 @@ use **-G** for this task and some have several options specifying different fill
     customized, repeating images using image raster files.
     The optional **+r**\ *dpi* modifier sets the resolution of this image on the page;
     the area fill is thus made up of a series of these "tiles".  The
-    default resolution is 1200.  By specifying upper case **-GP**
+    default resolution is 300.  By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
     black areas will be interchanged (only applies to 1-bit images or
     predefined bit-image patterns). For these patterns and other 1-bit

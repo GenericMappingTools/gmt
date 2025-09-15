@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
+[ |-W|\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **s**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -246,7 +246,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
+**-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **s**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Report a variety of plot dimensions or map regions in projected or geographic units.
     No input files are read. With no argument we report the map width and height.
     The chosen unit of reported plot dimensions may be changed via |-D|. For
@@ -270,6 +270,7 @@ Optional Arguments
     - **M** - Same, but returned in |-R| string format returned as trailing text.
     - **r** - Output the rectangular domain that covers an oblique area as defined by |-R| |-J|.
     - **R** - Same, but get the result in |-R| string format returned as trailing text.
+    - **s** - Output the map scale (i_scale) in the form 1:xxxxxx.
     - **w** - Only output the width of the map in current plot units.
     - **x** - Output the map coordinates of the specific plot reference point *px*/*py*.
 

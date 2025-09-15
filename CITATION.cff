@@ -29,9 +29,12 @@ authors:
 - family-names: "Esteban"
   given-names: "Federico"
   orcid: "https://orcid.org/0000-0002-0641-7371"
+- family-names: "Fröhlich"
+  given-names: "Yvonne"
+  orcid: "https://orcid.org/0000-0002-0641-7371"
 version: 6.6.0
-doi: 10.5281/zenodo.10119499
-date-released: 2025-07-27
+doi: 10.5281/zenodo.16448627
+date-released: 2025-07-26
 license: LGPL-3.0-or-later
 repository-code: "https://github.com/GenericMappingTools/gmt"
 type: software
