@@ -23,11 +23,11 @@ jobs:
 
     steps:
     - name: Checkout the repository
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
 
     - name: Link Checker
       id: lychee
-      uses: lycheeverse/lychee-action@v2.4.0
+      uses: lycheeverse/lychee-action@v2.6.1
       with:
         # 429: Too many requests
         args: >
