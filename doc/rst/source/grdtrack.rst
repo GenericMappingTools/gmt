@@ -87,6 +87,7 @@ Required Arguments
     |-G| as many times as you have grids you wish to sample.
     Alternatively, use **-G+l**\ *list* to pass a file whose first word
     in the trailing text record will be extracted as the file names.
+    Note, this means that file must have at least one numeric column before the text holding the grid names.
     The grids are sampled and results are output in the order given.
     (See :ref:`Grid File Formats <grd_inout_full>`). **Note**: If *gridfile*
     is a remote global grid and no registration is specified then **grdtrack**
