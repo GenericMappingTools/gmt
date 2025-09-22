@@ -122,7 +122,11 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Pull baseline image data from dvc remote
-        run: dvc pull --no-run-cache
+        run: |
+          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+          dvc pull --no-run-cache
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Install GMT
         run: |

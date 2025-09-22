@@ -14,6 +14,10 @@ on:
     paths:
       - '**/*.dvc'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   dvc-diff:
     name: DVC image diff
@@ -65,7 +69,8 @@ jobs:
     # Report last updated at commit abcdef
     - name: Generate the image diff report
       env:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
       run: |
         echo -e "## Summary of changed images\n" > report.md
         echo -e "This is an auto-generated report of images that have changed on the DVC remote\n" >> report.md
@@ -74,6 +79,7 @@ jobs:
         git fetch origin master
 
         # Pull image data from cloud storage
+        dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
         dvc pull --remote origin
         dvc pull --remote origin
         dvc diff --md master HEAD >> report.md
