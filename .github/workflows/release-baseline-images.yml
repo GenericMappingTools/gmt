@@ -27,8 +27,11 @@ jobs:
 
     - name: Pull baseline image data from dvc remote
       run: |
+        dvc remote modify upstream url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
         dvc pull
         ls -lhR test/baseline/
+      env:
+        DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
     - name: Create the baseline image asset in zip format
       run: |
