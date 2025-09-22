@@ -79,7 +79,7 @@ jobs:
         git fetch origin master
 
         # Pull image data from cloud storage
-        dvc remote modify upstream url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+        dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
         dvc pull --remote origin
         dvc pull --remote origin
         dvc diff --md master HEAD >> report.md
