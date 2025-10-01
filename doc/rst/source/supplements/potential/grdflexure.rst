@@ -19,7 +19,7 @@ Synopsis
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *nu_a*\ [/*h_a*\ [**k**]/*nu_m*] ]
-[ |-H|\ *rhogrid*
+[ |-H|\ *rhogrid* ]
 [ |-L|\ *list* ]
 [ |-M|\ *tm* ]
 [ |-N|\ *params* ]

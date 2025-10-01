@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt mapproject** [ *table* ] |-J|\ *parameters*
+**gmt mapproject** [ *table* ]
 |SYN_OPT-R|
 [ |-A|\ **b**\|\ **f**\|\ **o**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*][**+m**] ]
@@ -21,6 +21,7 @@ Synopsis
 [ |-F|\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**] ]
 [ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**] ]
 [ |-I| ]
+[ |-J|\ *parameters* ]
 [ |-L|\ *table*\ [**+p**][**+u**\ *unit*] ]
 [ |-N|\ [**a**\|\ **c**\|\ **g**\|\ **m**] ]
 [ |-Q|\ [**d**\|\ **e**] ]

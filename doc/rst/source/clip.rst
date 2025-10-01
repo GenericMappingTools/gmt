@@ -12,11 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clip** [ *table* ] |-J|\ *parameters* |-C|\ [*n*]
+**gmt clip** [ *table* ] |-C|\ [*n*]
 |SYN_OPT-Rz|
 [ |-A|\ [**x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
-|-J|\ **z**\|\ **Z**\ *parameters* ]
+[ |-J|\ *parameters* ]
+[ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-N| ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
@@ -71,11 +72,6 @@ Required Arguments
     Experts may restrict the termination to just *n* of the active
     clipping path by passing that as the argument.
 
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
-
 .. |Add_-R| replace:: |Add_-R_auto_table|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -106,6 +102,11 @@ Optional Arguments
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
