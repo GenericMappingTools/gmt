@@ -46,6 +46,7 @@ Synopsis
 [ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-tv| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -358,6 +359,8 @@ Optional Arguments
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-qi.rst_
+
+.. include:: explain_-tv_full.rst_
 
 .. include:: explain_colon.rst_
 
