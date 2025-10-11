@@ -17,7 +17,7 @@ Synopsis
 [ |-G|\ [**s**] ]
 [ |-I|\ *FZid* ] 
 [ |-T|\ **c**\ |\ **g**\ |\ **o**\ |\ **s** ]
-[ GMT_V_OPT ]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
