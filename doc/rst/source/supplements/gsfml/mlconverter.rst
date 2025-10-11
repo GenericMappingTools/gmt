@@ -51,7 +51,7 @@ Optional Arguments
 
 .. _-T:
 
-**-Tc**\ |\ **g**\ |\ **o**\ |\ **s**
+**-T**\ **c**\|\ **g**\|\ **o**\|\ **s**
     Select the magnetic time scale to use.  Choose from **c** (Cande and Kent, 1995),
     **g** (Gee and Kent, 2007), **o** (Ogg, 2012), or **s** (Gradstein, 2004) [**g**].
 
