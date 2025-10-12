@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>colorbar &mdash; GMT 6.6.0 documentation</title>
+  <title>colorbar &mdash; GMT 6.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/documentation_options.js?v=9cce70e7"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.6
+                6.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -165,6 +165,7 @@
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>refpoint</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>panel</em> ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>zlo</em>/<em>zhi</em> ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>max_intens</em>|<em>low_i</em>/<em>high_i</em>] ]
 [ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
 [ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em> ]
@@ -198,8 +199,8 @@ widths. The font used for the annotations along the scale is specified by
 bar is controlled by <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_SECONDARY"><span class="xref std std-term">FONT_ANNOT_SECONDARY</span></a>. If a label along the bar is requested, it is plotted with
 <a class="reference internal" href="gmt.conf.html#term-FONT_LABEL"><span class="xref std std-term">FONT_LABEL</span></a>. But mind you that the modern mode theme scales down the size of annotations and labels
 based on the colorbar length for improved legibility. So, in modern mode scripts it might look that these
-parameter settings are not working correctly. If you may want to increase font sizes to compensate the
-scaling effect the solution is to use the online <code class="docutils literal notranslate"><span class="pre">--FONT_ANNOT_PRIMARY=...</span></code> construct.
+parameter settings are not working correctly. If you want to have full control on font sizes and overcome
+the auto-scaling, use option <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>.
 For a full overview of CPTs, see the Technical Reference section on <a class="reference internal" href="reference/features.html#cpt-section"><span class="std std-ref">Color palette tables</span></a>.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/GMT_colorbar.png"><img alt="_images/GMT_colorbar.png" src="_images/GMT_colorbar.png" style="width: 500px;" /></a>
@@ -296,7 +297,7 @@ modifiers can be appended to <a class="reference internal" href="#f"><span><stro
 cookbook section:</p>
 <ul class="simple">
 <li><p><strong>+c</strong> - Set <em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em>. Here, <em>gap</em> gives a uniform <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> give separate
-<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the <em>x</em>- and <em>y</em>- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> give
+<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the <em>x</em>- and <em>y</em>-directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> give
 individual <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> between the map embellishment and the border for each side.</p></li>
 <li><p><strong>+g</strong> - Give <em>fill</em> to fill the box with a color specified by <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> [default is no fill].</p></li>
 <li><p><strong>+i</strong> - Draw a secondary, inner border border outline [[<em>gap</em>/]<em>pen</em>]. Optionally, append the
@@ -304,7 +305,7 @@ individual <a class="reference internal" href="reference/features.html#plt-units
 [default is a uniform <em>gap</em> between borders of <strong>2p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>].</p></li>
 <li><p><strong>+p</strong> - append <em>pen</em> to specify different <a class="reference internal" href="reference/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> attributes for the box outline.</p></li>
 <li><p><strong>+r</strong> - Draw a rounded rectangular borders instead of sharp with a corner radius set by <em>radius</em> (append
-<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">units</span></a>) [defaults is <strong>6p</strong>].</p></li>
+<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">units</span></a>) [default is <strong>6p</strong>].</p></li>
 <li><p><strong>+s</strong> - Place an offset background shaded region behind the box. Here, <em>dx</em>/<em>dy</em> indicates the
 <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">shift</span></a> relative to the foreground frame [default is <strong>4p</strong>/<strong>-4p</strong>] and <em>shade</em> sets the
 <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
@@ -316,6 +317,11 @@ individual <a class="reference internal" href="reference/features.html#plt-units
 are to <em>zlo</em> and <em>zhi</em>.  If one of these equal NaN then
 we leave that end of the CPT alone.  The truncation takes place
 before the plotting.</p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong></dt><dd><p>From GMT 6.5 on, colorbar annotation fonts are auto-scaled. Use this option to prevent that effect
+and let user set fonts as they wish.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -439,7 +445,7 @@ is used then <a class="reference internal" href="#b"><span><strong>-B</strong></
 </dd>
 </dl>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on the plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -560,7 +566,7 @@ Continuous CPTs may have transparency applied to all slices, but not just some.<
 
   <div role="contentinfo">
     <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 20, 2025.
+      <span class="lastupdated">Last updated on Oct 12, 2025.
       </span></p>
   </div>
 

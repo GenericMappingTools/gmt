@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>psevents &mdash; GMT 6.6.0 documentation</title>
+  <title>psevents &mdash; GMT 6.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/documentation_options.js?v=9cce70e7"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.6
+                6.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -193,6 +193,7 @@
 [ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-qi</strong><a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="text.html#tv-full"><span class="std std-ref">transp</span></a> ]
 [ <strong>-w</strong><a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
@@ -426,7 +427,7 @@ plotting labels then <a class="reference internal" href="#s"><span><strong>-S</s
 </dd>
 </dl>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on the plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <span class="target" id="id1"></span><dl class="simple" id="v">
@@ -499,6 +500,19 @@ the corresponding classic module names.</p>
 </dl>
 <dl class="simple">
 <dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+</dd>
+</dl>
+<dl class="simple" id="tv-full">
+<dt><strong>-t</strong>[<em>transp</em>[/<em>transp2</em>]][<strong>+f</strong>][<strong>+s</strong>]</dt><dd><p>Set transparency level for an overlay, in [0-100] percent range. [Default
+is 0, i.e., opaque].  Only visible when PDF or raster format output is selected.
+Only the PNG format selection adds a transparency layer in the image (for further processing).
+If given, <em>transp</em> applies to both fill and stroke, but you can limit the transparency to
+one of them by appending <strong>+f</strong> or <strong>+s</strong> for fill or stroke, respectively.  Alternatively,
+append /<em>transp2</em> to set separate transparencies for fills and strokes.  If no transparencies
+are given then we expect to read them from the last numerical column(s).  Use the modifiers
+to indicate which one(s) we should be reading (if both are requested, fill transparency is
+expected before stroke transparency in the column order).  If just <strong>-t</strong> is given then we
+interpret it to mean <strong>-t+f</strong> for fill transparency only.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -628,7 +642,7 @@ if your original point spacing is large, you may wish to first interpolate such 
 great circles via <a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a> rather than subject large gaps to linear interpolation.
 <strong>Note</strong>: If <strong>-Ar</strong><em>dpu</em> is used to discretize the line, then be aware that the resampling
 is affected by the current spline interpolator, controlled by <a class="reference internal" href="gmt.conf.html#term-GMT_INTERPOLANT"><span class="xref std std-term">GMT_INTERPOLANT</span></a>. To avoid
-any departures from straigh line segments you will need to select a linear interpolant.</p>
+any departures from straight line segments you will need to select a linear interpolant.</p>
 </section>
 <section id="classic-mode-arguments">
 <h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Link to this heading"></a></h2>
@@ -689,7 +703,7 @@ or you specify <strong>-Ar</strong>200<strong>i</strong>.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 20, 2025.
+      <span class="lastupdated">Last updated on Oct 12, 2025.
       </span></p>
   </div>
 

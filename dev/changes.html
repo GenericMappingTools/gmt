@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; GMT 6.6.0 documentation</title>
+  <title>Changelog &mdash; GMT 6.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/documentation_options.js?v=9cce70e7"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.6
+                6.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -91,6 +91,7 @@
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-6">New Features in GMT 6.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-5">New Features in GMT 6.5</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-core-module-features-in-gmt-6-5">New Core Module Features in GMT 6.5</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#supplement-updates-in-gmt-6-5">Supplement updates in GMT 6.5</a></li>
@@ -237,6 +238,17 @@
              
   <section id="changelog">
 <span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="new-features-in-gmt-6-6">
+<h2>New Features in GMT 6.6<a class="headerlink" href="#new-features-in-gmt-6-6" title="Link to this heading"></a></h2>
+<p>GMT 6.6 is our first release after Paul Wessel has left us. Though we are still in a kind of orphanage state,
+the GMT development has not stopped. This release includes many bug fixes and the new and much requested
+Spilhaus map projection.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">psconvert</span></code> has a new option <strong>-!</strong> that modifies the produced PostScript file in place thus avoiding
+making a copy of it before rasterization by ghostscript.</p></li>
+<li><p>Update for IGRF 14. (#8635)</p></li>
+</ul>
+</section>
 <section id="new-features-in-gmt-6-5">
 <h2>New Features in GMT 6.5<a class="headerlink" href="#new-features-in-gmt-6-5" title="Link to this heading"></a></h2>
 <p>GMT 6.5 includes multiple new supplement modules, many new features, general code and documentation improvements, and numerous
@@ -278,7 +290,7 @@ bug fixes! Here are the general updates included in 6.5:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="clear.html"><span class="doc">clear</span></a>: Allow removing any one dataset and listing directories to be deleted (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7740">#7740</a>)</p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Add -LI to label first and last panel with &lt; and &gt; (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8246">#8246</a>)</p></li>
-<li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Add modifer +r to -S to only annotate the CPT limits (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7728">#7728</a>)</p></li>
+<li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Add modifier +r to -S to only annotate the CPT limits (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7728">#7728</a>)</p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Default to color bars with gaps for categorical CPTs (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7831">#7831</a>)</p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Make sure only low and high contributes to decimal count in -S+r (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7730">#7730</a>)</p></li>
 <li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a>: Enhance the curves to do linear, quadratic or cosine ramp (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/7680">#7680</a>)</p></li>
@@ -1929,7 +1941,7 @@ simply process their PostScript files via <a class="reference internal" href="ps
 
   <div role="contentinfo">
     <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 20, 2025.
+      <span class="lastupdated">Last updated on Oct 12, 2025.
       </span></p>
   </div>
 

@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>logo &mdash; GMT 6.6.0 documentation</title>
+  <title>logo &mdash; GMT 6.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/documentation_options.js?v=9cce70e7"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.6
+                6.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -219,7 +219,7 @@ modifiers can be appended to <a class="reference internal" href="#f"><span><stro
 cookbook section:</p>
 <ul class="simple">
 <li><p><strong>+c</strong> - Set <em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em>. Here, <em>gap</em> gives a uniform <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> give separate
-<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the <em>x</em>- and <em>y</em>- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> give
+<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the <em>x</em>- and <em>y</em>-directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> give
 individual <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">clearances</span></a> between the map embellishment and the border for each side.</p></li>
 <li><p><strong>+g</strong> - Give <em>fill</em> to fill the box with a color specified by <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> [default is no fill].</p></li>
 <li><p><strong>+i</strong> - Draw a secondary, inner border border outline [[<em>gap</em>/]<em>pen</em>]. Optionally, append the
@@ -227,7 +227,7 @@ individual <a class="reference internal" href="reference/features.html#plt-units
 [default is a uniform <em>gap</em> between borders of <strong>2p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>].</p></li>
 <li><p><strong>+p</strong> - append <em>pen</em> to specify different <a class="reference internal" href="reference/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> attributes for the box outline.</p></li>
 <li><p><strong>+r</strong> - Draw a rounded rectangular borders instead of sharp with a corner radius set by <em>radius</em> (append
-<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">units</span></a>) [defaults is <strong>6p</strong>].</p></li>
+<a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">units</span></a>) [default is <strong>6p</strong>].</p></li>
 <li><p><strong>+s</strong> - Place an offset background shaded region behind the box. Here, <em>dx</em>/<em>dy</em> indicates the
 <a class="reference internal" href="reference/features.html#plt-units"><span class="std std-ref">shift</span></a> relative to the foreground frame [default is <strong>4p</strong>/<strong>-4p</strong>] and <em>shade</em> sets the
 <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
@@ -248,12 +248,12 @@ individual <a class="reference internal" href="reference/features.html#plt-units
 <dl class="simple" id="s">
 <dt><strong>-S</strong>[<strong>l</strong>|<strong>n</strong>|<strong>u</strong>]</dt><dd><p>Control what is written beneath the map portion of the logo.
 Append <strong>l</strong> (or skip <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> entirely) to plot the text label “The Generic Mapping Tools”
-beneath the logo.  Append <strong>n</strong> to skip the label placement, and append
-<strong>u</strong> to place the URL to the GMT site instead [plot the label].</p>
+beneath the logo. Append <strong>n</strong> to skip the label placement, and append
+<strong>u</strong> to place the URL to the GMT website instead [plot the label].</p>
 </dd>
 </dl>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+t</strong><em>text</em>]</dt><dd><p>Draw GMT time stamp logo on the plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="reference/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -326,7 +326,7 @@ custom symbols <strong>QR</strong> or <strong>QR_transparent</strong> in <a clas
 
   <div role="contentinfo">
     <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 20, 2025.
+      <span class="lastupdated">Last updated on Oct 12, 2025.
       </span></p>
   </div>
 

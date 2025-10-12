@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mapproject &mdash; GMT 6.6.0 documentation</title>
+  <title>mapproject &mdash; GMT 6.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=ed1b3abe"></script>
+        <script src="_static/documentation_options.js?v=9cce70e7"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,7 @@
             GMT
           </a>
               <div class="version">
-                6.6
+                6.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -173,7 +173,7 @@
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>h</strong>]<em>from</em>[/<em>to</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>b</strong>|<strong>B</strong>|<strong>e</strong>|<strong>E</strong>|<strong>g</strong>|<strong>h</strong>|<strong>j</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>o</strong>|<strong>O</strong>|<strong>r</strong>|<strong>R</strong>|<strong>w</strong>|<strong>x</strong>][<strong>+n</strong>[<em>nx</em>[/<em>ny</em>]]] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>b</strong>|<strong>B</strong>|<strong>e</strong>|<strong>E</strong>|<strong>g</strong>|<strong>h</strong>|<strong>j</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>o</strong>|<strong>O</strong>|<strong>r</strong>|<strong>R</strong>|<strong>w</strong>|<strong>s</strong>|<strong>x</strong>][<strong>+n</strong>[<em>nx</em>[/<em>ny</em>]]] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<em>speed</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+f</strong>][<strong>+t</strong><em>epoch</em>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
@@ -383,7 +383,7 @@ after the inverse projection). Make sure that the
 </dd>
 </dl>
 <dl id="w">
-<dt><strong>-W</strong>[<strong>b</strong>|<strong>B</strong>|<strong>e</strong>|<strong>E</strong>|<strong>g</strong>|<strong>h</strong>|<strong>j</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>o</strong>|<strong>O</strong>|<strong>r</strong>|<strong>R</strong>|<strong>w</strong>|<strong>x</strong>][<strong>+n</strong>[<em>nx</em>[/<em>ny</em>]]]</dt><dd><p>Report a variety of plot dimensions or map regions in projected or geographic units.
+<dt><strong>-W</strong>[<strong>b</strong>|<strong>B</strong>|<strong>e</strong>|<strong>E</strong>|<strong>g</strong>|<strong>h</strong>|<strong>j</strong>|<strong>m</strong>|<strong>M</strong>|<strong>n</strong>|<strong>o</strong>|<strong>O</strong>|<strong>r</strong>|<strong>R</strong>|<strong>s</strong>|<strong>w</strong>|<strong>x</strong>][<strong>+n</strong>[<em>nx</em>[/<em>ny</em>]]]</dt><dd><p>Report a variety of plot dimensions or map regions in projected or geographic units.
 No input files are read. With no argument we report the map width and height.
 The chosen unit of reported plot dimensions may be changed via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>. For
 other results, select from these directives:</p>
@@ -406,6 +406,7 @@ return the diagonal corner coordinates in degrees (in the order <em>llx urx lly 
 <li><p><strong>M</strong> - Same, but returned in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string format returned as trailing text.</p></li>
 <li><p><strong>r</strong> - Output the rectangular domain that covers an oblique area as defined by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong>.</p></li>
 <li><p><strong>R</strong> - Same, but get the result in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string format returned as trailing text.</p></li>
+<li><p><strong>s</strong> - Output the map scale (i_scale) in the form 1:xxxxxx.</p></li>
 <li><p><strong>w</strong> - Only output the width of the map in current plot units.</p></li>
 <li><p><strong>x</strong> - Output the map coordinates of the specific plot reference point <em>px</em>/<em>py</em>.</p></li>
 </ul>
@@ -720,7 +721,7 @@ North-Holland Publ., ISBN: 0 444 86149 1.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 20, 2025.
+      <span class="lastupdated">Last updated on Oct 12, 2025.
       </span></p>
   </div>
 

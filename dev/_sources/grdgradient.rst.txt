@@ -103,13 +103,18 @@ Optional Arguments
     the azimuth and elevation of the light vector. Optionally, supply
     *ambient* [0.55], *diffuse* [0.6], *specular* [0.4], or *shine* [10],
     which are parameters that control the reflectance properties of the
-    surface. Default values are given in the brackets. Use **-Es** for a
+    surface. Default values are given in the brackets. **-Em** will use an 
+    algorithm from from an old program manipRaster by Thierry Souriot
+    which is similar to ESRI's 'hillshade' but faster.  Use **-Es** for a
     simpler Lambertian algorithm. Note that with this form you only have
     to provide azimuth and elevation. Alternatively, use **-Ep** for
     the Peucker piecewise linear approximation (simpler but faster
     algorithm; in this case the *azim* and *elev* are hardwired to 315
     and 45 degrees. This means that even if you provide other values
-    they will be ignored.)
+    they will be ignored.) Also note that the hillshade algorithms do 
+    not cast shadows. Traditional hillshade algorithms focus on calculating 
+    the local illumination of each cell based on its slope and aspect relative 
+    to a hypothetical light source. 
 
 .. _-N:
 

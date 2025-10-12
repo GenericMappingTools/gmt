@@ -460,6 +460,8 @@ GMT Miscellaneous Parameters
            - *DK*: Danish
            - *EH*: Basque
            - *ES*: Spanish
+           - *FA*: Persian
+           - *FA_ASCII*: Persian (ASCII transliteration)
            - *FI*: Finnish
            - *FR*: French
            - *GR*: Greek
