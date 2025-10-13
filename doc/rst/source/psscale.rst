@@ -18,6 +18,7 @@ Synopsis
 [ |-D|\ *refpoint* ]
 [ |-F|\ *panel* ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
+[ |-H| ]
 [ |-I|\ [*max\_intens*\|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
 [ |-K| ]
