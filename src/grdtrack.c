@@ -389,18 +389,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 					break;
 				}
-				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
+				if ((c = strstr(opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
 					char file[PATH_MAX] = {""};
 					struct GMT_DATASET *L = NULL;
 					struct GMT_DATASEGMENT *S = NULL;
 					uint64_t row;
 					if (c[2] == '\0') {	/* No list file given */
-						GMT_Report (API, GMT_MSG_ERROR, "Option -G: No listfile appended after modifier +l\n");
+						GMT_Report(API, GMT_MSG_ERROR, "Option -G: No listfile appended after modifier +l\n");
 						n_errors++;
 						break;
 					}
-					if ((L = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
-						GMT_Report (API, GMT_MSG_WARNING, "Error reading list file %s\n", &c[2]);
+					if ((L = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
+						GMT_Report(API, GMT_MSG_WARNING, "Error reading list file %s\n", &c[2]);
+						n_errors++;
+						break;
+					}
+					if (L->table[0]->n_segments == 0) {
+						GMT_Report(API, GMT_MSG_WARNING, "The list file, %s, must have at least one numeric column before the grid names.\n", &c[2]);
 						n_errors++;
 						break;
 					}

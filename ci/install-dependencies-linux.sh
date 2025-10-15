@@ -22,7 +22,7 @@ conda_packages="ghostscript=10.03.0"
 
 # optional packages
 if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
-    packages+=" libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev"
+    packages+=" libfftw3-dev libpcre2-dev liblapack-dev libglib2.0-dev"
 fi
 
 # packages for running GMT tests

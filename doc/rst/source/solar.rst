@@ -111,13 +111,13 @@ Optional Arguments
 
     - **d** - Select the day-night terminator.
     - **c** - Select civil twilight.
-    - **n** - Select nautical twilight;
+    - **n** - Select nautical twilight.
     - **a** - Select astronomical twilight.
 
     The default time is now. To select another time, use these two modifiers:
 
     - **+d** - Append *date* in ISO format, e.g, **+d**\ *2000-04-25T12:15:00*
-      to know where the day-night was at that date [Default is now]
+      to know where the day-night was at that date [Default is now].
     - **+z** - If necessary, append the time zone *TZ*. The time zone is given as an offset from UTC.
       Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
 

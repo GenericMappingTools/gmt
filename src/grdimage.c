@@ -193,7 +193,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If the image is plain (e.g., JPG, PNG, GIF) you must also give a corresponding -R.");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, -2, "If -D is used then <grid> is instead expected to be an image.");
-	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, 1, "\n-A Return a GMT raster image instead of a PostScript plot.");
@@ -229,6 +228,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
 		"To derive intensities from another grid than <grid>, give the alternative data grid with suitable modifiers.");
+	GMT_Option (API, "J-");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-M Force a monochrome (gray-scale) image.");
 	GMT_Usage (API, 1, "\n-N Do Not clip image at the map boundary.");
