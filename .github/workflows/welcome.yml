@@ -35,7 +35,7 @@ jobs:
             A few things to keep in mind:
 
             * If you need help writing tests, take a look at the existing ones for inspiration. If you don't know where to start, let us know and we'll walk you through it.
-            * All new features should be documented. It helps to write the comments below for your functions describing the it, **all** arguments, and return types before writing the code. This will help you think about your code design and results in better code.
+            * All new features should be documented. It helps to write the comments for your functions, describing what they do and **all** arguments, before writing the code. This will help you think about your code design and results in better code.
             * We are grateful that you put in the effort to do this! 🎉
 
             We hope that the contributing process will be a good experience for you. Please let us know if there is any way that it could be improved.
