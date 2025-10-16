@@ -28,7 +28,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	GMT_C_CPT_KW,
 	{ 0, 'D', "position",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "w,e,h,v,j,m,n,o,r", "size,triangles,horizontal,vertical,janchor,move_annot,nan,offset,reverse",
+	          "w,e,h,v,j,m,n,o,r", "size,triangles,horizontal,vertical,anchor,move_annot,nan,offset,reverse",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "box",
 	          "",                  "",

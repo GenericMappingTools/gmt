@@ -27,7 +27,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  transproc_mask */
 	{ 0, 'D', "position",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "r,w,j,n,o",         "dpi,width,janchor,replicate,offset",
+	          "r,w,j,n,o",         "dpi,width,anchor,replicate,offset",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "box",
 	          "",                  "",

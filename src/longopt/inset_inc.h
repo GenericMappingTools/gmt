@@ -28,7 +28,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'C', "clearance",         "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'D', "rectangle|inset_box|position",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "r,u,w,j,o",         "corners,units,width,janchor,offset",
+	          "r,u,w,j,o",         "corners,units,width,anchor,offset",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "inset_frame|box",
 	          "",                  "",

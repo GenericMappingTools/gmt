@@ -29,7 +29,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'C', "center",            "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'D', "scalebar",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "w,j,a,o,l",         "length,janchor,side,offset,label",
+	          "w,j,a,o,l",         "length,anchor,side,offset,label",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "panel",
 	          "",                  "",
