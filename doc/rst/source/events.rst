@@ -13,7 +13,6 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt events**
-|-J|\ *parameters*
 |SYN_OPT-Rz|
 |-T|\ *now*
 [ *table* ]
@@ -25,6 +24,7 @@ Synopsis
 [ |-F|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]] ]
 [ |-G|\ *color* ]
 [ |-H|\ *labelbox* ]
+[ |-J|\ *parameters* ]
 [ |-L|\ [*length*\|\ **t**] ]
 [ |-M|\ **i**\|\ **s**\|\ **t**\|\ **v**\ *val1*\ [**+c**\ *val2*] ]
 [ |-N|\ [**c**\|\ **r**] ]
@@ -86,11 +86,6 @@ Required Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -221,6 +216,11 @@ Optional Arguments
     - **+s** places an offset, background shaded box behind the text box. Here, *dx*/*dy*
       indicates the shift relative to the foreground text box [4\ **p**/-4\ **p**] and *shade* changes
       the fill used for shading [gray50]. **Note**: Modifier **+s** requires **+g** as well.
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-Jz.rst_
 

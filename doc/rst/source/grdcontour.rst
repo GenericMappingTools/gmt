@@ -13,12 +13,13 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdcontour** *ingrid*
-|-J|\ *parameters* [ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
+[ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours*\|\ *cpt* ]
 [ |-D|\ *template* ]
 [ |-F|\ [**l**\|\ **r**] ]
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
+[ |-J|\ *parameters* ]
 [ |-L|\ *low/high*\|\ **n**\|\ **N**\|\ **P**\|\ **p** ]
 [ |-N|\ [*cpt*] ]
 [ |-Q|\ [*n*\|\ *length*\ [*unit*]][**+z**] ]
@@ -57,11 +58,6 @@ Required Arguments
 .. include:: explain_grd_inout.rst_
     :start-after: ingrid-syntax-begins
     :end-before: ingrid-syntax-ends
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -158,6 +154,11 @@ Optional Arguments
 **-G**\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params*
 
 .. include:: explain_contlabel.rst_
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 

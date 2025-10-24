@@ -12,11 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt basemap** |-J|\ *parameters*
+**gmt basemap**
 |SYN_OPT-Rz|
 [ |-A|\ [*file*] ]
 [ |SYN_OPT-B| ]
 [ |-F|\ *box* ]
+[ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |-T|\ *rose* ]
@@ -42,11 +43,6 @@ specified.
 
 Required Arguments
 ------------------
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -89,6 +85,11 @@ Optional Arguments
 .. _-L:
 
 .. include:: explain_-L_scale.rst_
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 

@@ -14,7 +14,6 @@ Synopsis
 
 **gmt velo**
 [ *table* ]
-|-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][/*args*][**+f**\ *font*]
 [ |-A|\ *parameters* ]
@@ -25,6 +24,7 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
+[ |-J|\ *parameters* ]
 [ |-L|\ [*pen*\ [**+c**\ [**f**\|\ **l**]]] ]
 [ |-N| ]
 [ |SYN_OPT-U| ]
@@ -69,11 +69,6 @@ Required Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: /explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. _-R:
 
@@ -249,6 +244,11 @@ Optional Arguments
     modulate the symbol fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
     data column after the required input columns determined by |-S|.
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 

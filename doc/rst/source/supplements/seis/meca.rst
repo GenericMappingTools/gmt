@@ -13,7 +13,6 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt meca** [ *table* ]
-|-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |-A|\ [**+g**\ [*fill*]][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+s**\ [*symbol*]\ *size*] ]
@@ -25,6 +24,7 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
+[ |-J|\ *parameters* ]
 [ |-L|\ [*pen*] ]
 [ |-N| ]
 [ |-T|\ [*plane*]\ [**+p**\ *pen*] ]
@@ -56,11 +56,6 @@ Required Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: /explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. _-R:
 
@@ -163,6 +158,11 @@ Optional Arguments
     modulate the compressional fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
     data column after the required input columns determined by |-S|.
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 

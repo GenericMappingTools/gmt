@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt plot** [ *table* ] |-J|\ *parameters*
+**gmt plot** [ *table* ]
 |SYN_OPT-Rz|
 [ |-A|\ [**x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
@@ -23,6 +23,7 @@ Synopsis
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
+[ |-J|\ *parameters* ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
 [ |-M|\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]] ]
 [ |-N|\ [**c**\|\ **r**] ]
@@ -66,11 +67,6 @@ Required Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
-
-.. |Add_-J| replace:: |Add_-J_links|
-.. include:: explain_-J.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. |Add_-R| replace:: |Add_-R_auto_table|
 .. include:: explain_-R.rst_
@@ -221,6 +217,11 @@ Optional Arguments
     modulate the fill color by simulating illumination [none]. If no intensity
     is provided we will instead read *intens* from the first data column after
     the symbol parameters (if given).
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
