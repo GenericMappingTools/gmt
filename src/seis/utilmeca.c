@@ -910,13 +910,21 @@ void meca_axe2dc (struct SEIS_AXIS T, struct SEIS_AXIS P, struct SEIS_NODAL_PLAN
 	}
 	if (p2 < 0.0) p2 += 360.0;
 
-	NP1->dip = d1; NP1->str = p1;
-	NP2->dip = d2; NP2->str = p2;
+    NP1->dip = d1; NP1->str = p1;
+    NP2->dip = d2; NP2->str = p2;
 
-	im = 1;
-	if (P.dip > T.dip) im = -1;
-	NP1->rake = meca_computed_rake2 (NP2->str, NP2->dip, NP1->str, NP1->dip, im);
-	NP2->rake = meca_computed_rake2 (NP1->str, NP1->dip, NP2->str, NP2->dip, im);
+    /* Epsilon-aware tie-break: avoid quadrant swap when P.dip ≈ T.dip */
+    if (P.dip > T.dip + SEIS_EPSILON) {
+        im = -1;
+    } else if (P.dip < T.dip - SEIS_EPSILON) {
+        im = 1;
+    } else {
+        /* |P.dip - T.dip| <= SEIS_EPSILON: deterministic choice */
+        im = -1;
+    }
+
+    NP1->rake = meca_computed_rake2 (NP2->str, NP2->dip, NP1->str, NP1->dip, im);
+    NP2->rake = meca_computed_rake2 (NP1->str, NP1->dip, NP2->str, NP2->dip, im);
 }
 
 void meca_dc2axe (st_me meca, struct SEIS_AXIS *T, struct SEIS_AXIS *N, struct SEIS_AXIS *P) {
