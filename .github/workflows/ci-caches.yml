@@ -103,7 +103,7 @@ jobs:
 
       # Upload the downloaded files as artifacts to GitHub
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: gmt-cache
           path: ~/.gmt/static
@@ -124,7 +124,7 @@ jobs:
           COASTLINEDIR: ${{ env.COASTLINEDIR }}
 
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coastline-cache
           path: ${{ env.COASTLINEDIR }}
@@ -141,7 +141,7 @@ jobs:
         run: bash ci/install-dependencies-windows.sh
 
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: vcpkg-cache
           # VCPKG_INSTALLATION_ROOT is C:\vcpkg
