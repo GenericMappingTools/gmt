@@ -913,7 +913,7 @@ void meca_axe2dc (struct SEIS_AXIS T, struct SEIS_AXIS P, struct SEIS_NODAL_PLAN
     NP1->dip = d1; NP1->str = p1;
     NP2->dip = d2; NP2->str = p2;
 
-    /* Epsilon-aware tie-break: avoid quadrant swap when P.dip is almost equal T.dip */
+    /* avoid quadrant swap when P.dip is almost equal T.dip */
     if (P.dip > T.dip + SEIS_EPSILON) {
         im = -1;
     } else if (P.dip < T.dip - SEIS_EPSILON) {
