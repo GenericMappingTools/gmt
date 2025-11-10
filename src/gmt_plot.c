@@ -10714,7 +10714,11 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
 		struct stat buf;
 		int *fd = source;
-		if (fstat (*fd, &buf)) {
+#ifdef _WIN64									/* In lack of a clever solution, this is a hack for issue 8825 */
+		if (_fstat64(*fd, &buf)) {
+#else
+		if (fstat(*fd, &buf)) {
+#endif
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
 			return (NULL);
 		}
