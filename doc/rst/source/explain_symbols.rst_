@@ -268,7 +268,8 @@
 
         There are three classes of vectors: Cartesian (left), circular (center) and geographic (right).
         While their use is slightly different, they all share common modifiers that affect how
-        they are displayed (And see also :ref:`Technical reference - Drawing of Vectors<reference/features:The Drawing of Vectors>`)
+        they are displayed.
+        See also :ref:`Technical reference - Drawing of Vectors<reference/features:The Drawing of Vectors>`.
 
     **-Sm**\ *size*\ [**+**\ *vecmodifiers*]
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
