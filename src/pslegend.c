@@ -129,7 +129,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<specfile>] -D%s[+w<width>[/<height>]][+l<spacing>]%s [%s] [-F%s] "
+	GMT_Usage (API, 0, "usage: %s [<specfile>] -D%s[+w<width>[/<height>]][+j<justify>][+l<spacing>]%s [%s] [-F%s] "
 		"[%s] [-M[<items>]] %s%s%s[%s] [-S<scale>] [-T<file>] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]\n",
 		name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT,
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
