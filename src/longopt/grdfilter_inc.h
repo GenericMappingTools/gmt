@@ -34,7 +34,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	GMT_G_OUTGRID_KW,
 	GMT_I_INCREMENT_KW,
 	{ 0, 'N', "nans",
-	          "i,p,r",             "ignore,coregnan,anynan",
+	          "i,p,r",             "ignore,preserve,replace",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	{ 0, 'T', "toggle_registration|toggle",         "", "", "", "", GMT_TP_STANDARD },
