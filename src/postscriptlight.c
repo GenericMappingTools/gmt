@@ -3990,6 +3990,7 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 		case PSL_INVTRIANGLE:	/* Inverted triangle */
 		case PSL_OCTAGON:	/* Octagon */
 		case PSL_PENTAGON:	/* Pentagon */
+		case PSL_SPHERE:	/* Sphere */
 		case PSL_SQUARE:	/* Square */
 		case PSL_TRIANGLE:	/* Triangle */
 			PSL_command (PSL, "%d %d %d S%c\n", psl_iz (PSL, 0.5 * size[0]), psl_ix (PSL, x), psl_iy (PSL, y), (char)symbol);
