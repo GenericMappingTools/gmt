@@ -295,9 +295,9 @@ Optional Arguments
 .. _-g:
 
 **-gD**\ *dist*
-    Short version of the global **-g** option. Here it is used to set the _dist_ distance, in map units,
-		higher then which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
-		and when line wrapping on dateline was not correctly detected. As an example of this, see for instance
+    Short version of the global **-g** option. Here it is used to set the *dist* distance, in map units,
+    higher than which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
+    and when line wrapping on dateline was not correctly detected. As an example of this, see for instance
     the old issue `#3667 <https://github.com/GenericMappingTools/gmt/issues/3667>`_ that can be fixed
     by adding **-gD**\ 1 to the command line.
 
