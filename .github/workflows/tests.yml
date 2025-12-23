@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.0
 
       - name: Setup vcpkg (Windows)
         run: gh run download -n vcpkg-cache -D C:/vcpkg/installed/

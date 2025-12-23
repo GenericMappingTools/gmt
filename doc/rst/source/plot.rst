@@ -323,6 +323,7 @@ Optional Arguments
       **b** (beginning) or **e** (end) to add a vector at only one end [Default is shared specs for both end of the line].
       **Note** - Because **+v** may take additional modifiers it must necessarily be given
       at the end of the pen specification. See the `Vector Attributes`_ for more information or such modifiers.
+      See also :ref:`Technical reference - Drawing of Vectors<reference/features:The Drawing of Vectors>`
     - **+z** - If |-Z| is set, assign pen color via **-C**\ *cpt* and the *z*-values obtained
       (same if transparency is set via |-Z|).  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then
       we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment

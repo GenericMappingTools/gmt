@@ -36,7 +36,7 @@ gmt $m $l2s --outgrid=/somefile=nf+divide:10+nan:-999+offset:6 >> $b
 gmt $m $l2s --outgrid=/otherfile+offset:a >> $b
 gmt $m $l2s --outgrid=/otherfile+scale:100+gdal >> $b
 gmt $m $l2s --increment=12+exact/15+number >> $b
-gmt $m $l2s --nans=ignore --nans=coregnan --nans=anynan >> $b
+gmt $m $l2s --nans=ignore --nans=preserve --nans=replace >> $b
 gmt $m $l2s --toggle_registration --toggle >> $b
 
 diff $a $b --strip-trailing-cr > fail
