@@ -17213,7 +17213,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 		}
 	}
-	else if (text[0] == 'Q') {	/* Sphere symbol with optional modifiers for light position, flat color, or no fill */
+	else if (text[0] == 'P') {	/* Sphere symbol with optional modifiers for light position, flat color, or no fill */
 		char arg[GMT_LEN64] = {""};
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbol size with no +<modifiers> at the end */
 		if (n == 1) {	/* No modifiers or no size given */
@@ -17845,7 +17845,6 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
-		case 'P':
 		case 'p':
 			p->symbol = PSL_DOT;
 			if (p->size_x == 0.0 && !p->read_size) {	/* User forgot to set size */
@@ -17853,14 +17852,14 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				check = false;
 			}
 			break;
-		case 'Q':	/* Sphere symbol: -SQ<size>[+a<azim>][+e<elev>][+f][+n] */
+		case 'P':	/* Sphere symbol: -SP<size>[+a<azim>][+e<elev>][+f][+n] */
 			p->symbol = PSL_SPHERE;
 			/* Set default light position: center (perpendicular to viewing plane) */
-			p->SQ_lx = 0.0;
-			p->SQ_ly = 0.0;
-			p->SQ_light_set = false;
-			p->SQ_flat = false;
-			p->SQ_no_fill = false;
+			p->SP_lx = 0.0;
+			p->SP_ly = 0.0;
+			p->SP_light_set = false;
+			p->SP_flat = false;
+			p->SP_no_fill = false;
 			/* Process +a, +e, +f, and +n modifiers */
 			{
 				double azimuth = 0.0, elevation = 90.0;	/* Default values: centered light */
@@ -17876,7 +17875,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 									got_azim = true;
 								}
 								else {
-									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SQ: +a modifier requires azimuth value\n");
+									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SP: +a modifier requires azimuth value\n");
 									decode_error++;
 								}
 								break;
@@ -17886,23 +17885,23 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 									got_elev = true;
 								}
 								else {
-									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SQ: +e modifier requires elevation value\n");
+									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SP: +e modifier requires elevation value\n");
 									decode_error++;
 								}
 								break;
 							case 'f':	/* Flat/constant color (no gradient) */
-								p->SQ_flat = true;
+								p->SP_flat = true;
 								break;
 							case 'n':	/* No fill (outline only) */
-								p->SQ_no_fill = true;
+								p->SP_no_fill = true;
 								break;
 						}
 					}
 					if (got_azim || got_elev) {	/* Convert azimuth/elevation to x,y light position */
 						double radius = cosd(elevation);
-						p->SQ_lx = radius * sind(azimuth);
-						p->SQ_ly = radius * cosd(azimuth);
-						p->SQ_light_set = true;
+						p->SP_lx = radius * sind(azimuth);
+						p->SP_ly = radius * cosd(azimuth);
+						p->SP_light_set = true;
 					}
 				}
 			}

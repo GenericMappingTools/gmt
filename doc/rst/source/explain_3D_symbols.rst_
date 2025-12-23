@@ -32,7 +32,7 @@
         The facet colors will be modified to simulate shading.
         Use **-SU** to disable 3-D illumination.
 
-    **-SQ**\ *size*\ [**c**\|\ **i**\|\ **p**][**+a**\ *azimuth*][**+e**\ *elevation*][**+f**][**+n**]
+    **-SP**\ *size*\ [**c**\|\ **i**\|\ **p**][**+a**\ *azimuth*][**+e**\ *elevation*][**+f**][**+n**]
         Sphere (3-D) with diameter *size* [Default unit is **c** (cm)].
         The sphere is rendered with a radial gradient from white at the light source
         to the fill color (**-G**) at the opposite side, creating a 3-D appearance.
