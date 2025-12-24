@@ -1302,9 +1302,11 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 
 	if (Ctrl->T.active) {	/* Evaluate solution for equidistant spacing instead of at the input locations */
 		unsigned int bad = 0;	/* Must check for conflict between -T and -F settings */
-		for (col = 0; col < n_columns; col++) if (!Ctrl->T.no_eval && strchr ("yrzw", (int)Ctrl->F.col[col])) {
-			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Cannot include %c when -T is in effect\n", (int)Ctrl->F.col[col]);
-			bad++;
+		for (col = 0; col < n_columns; col++) {
+			if (!Ctrl->T.no_eval && strchr("yrzw", (int)Ctrl->F.col[col])) {
+				GMT_Report(API, GMT_MSG_ERROR, "Option -F: Cannot include %c when -T is in effect\n", (int)Ctrl->F.col[col]);
+				bad++;
+			}
 		}
 		if (bad) Return (GMT_RUNTIME_ERROR);
 		if (Ctrl->T.T.set == 3 && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
