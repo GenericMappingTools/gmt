@@ -111,7 +111,7 @@ Optional Arguments
 
     .. include:: explain_refpoint.rst_
 
-    Append **+w** followed by the *length* or the scale bar in data (*z*) units.
+    Append **+w** followed by the *length* of the scale bar in data (*z*) units.
     By default, the anchor point on the scale is assumed to be the middle left corner (ML), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,

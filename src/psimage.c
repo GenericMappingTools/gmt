@@ -500,16 +500,28 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		if (I->colormap != NULL) {	/* Image has a color map */
 			/* Convert colormap from integer to unsigned char and count colors */
 			n = gmt_unpack_rgbcolors (GMT, I, colormap);	/* colormap will be RGBARGBA... */
-			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G, or catch selection for transparency */
-				if (Ctrl->G.rgb[PSIMAGE_TRA][0] != -2) {
-					GMT_Report (API, GMT_MSG_WARNING, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");
-				}
-				for (unsigned int k = PSIMAGE_BGD; k <= PSIMAGE_FGD; k++) {
-					if (Ctrl->G.rgb[k][0] == -1) {	/* Want this color to be transparent */
-						has_trans = 1; r = colormap[4*k]; g = colormap[1+4*k]; b = colormap[2+4*k];
+			if (n == 2) {	/* 2-color palette image */
+				/* Handle -I (invert) by swapping colormap entries */
+				if (Ctrl->I.active) {
+					unsigned char tmp[4];
+					for (size_t m = 0; m < 4; m++) {
+						tmp[m] = colormap[m];
+						colormap[m] = colormap[4+m];
+						colormap[4+m] = tmp[m];
 					}
-					else if (Ctrl->G.rgb[k][0] >= 0)	/* If we changed this color, update it, else use what was given in the colormap */
-						for (n = 0; n < 3; n++) colormap[n+4*k] = gmt_M_u255(Ctrl->G.rgb[k][n]);	/* Do not override the A entry, just R/G/B */
+				}
+				/* Replace back or fore-ground color with color given in -G, or catch selection for transparency */
+				if (Ctrl->G.active) {
+					if (Ctrl->G.rgb[PSIMAGE_TRA][0] != -2) {
+						GMT_Report (API, GMT_MSG_WARNING, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");
+					}
+					for (unsigned int k = PSIMAGE_BGD; k <= PSIMAGE_FGD; k++) {
+						if (Ctrl->G.rgb[k][0] == -1) {	/* Want this color to be transparent */
+							has_trans = 1; r = colormap[4*k]; g = colormap[1+4*k]; b = colormap[2+4*k];
+						}
+						else if (Ctrl->G.rgb[k][0] >= 0)	/* If we changed this color, update it, else use what was given in the colormap */
+							for (size_t m = 0; m < 3; m++) colormap[m+4*k] = gmt_M_u255(Ctrl->G.rgb[k][m]);	/* Do not override the A entry, just R/G/B */
+					}
 				}
 			}
 			if (!Ctrl->G.active) has_trans = psimage_find_unique_color (GMT, colormap, n, &r, &g, &b);
