@@ -1905,8 +1905,16 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						break;
 					case PSL_SPHERE:	/* Case created by Claude.ai */
 						gmt_plane_perspective(GMT, GMT_Z, data[i].z);
-						if (S.SP_light_set)	/* Output custom light position for sphere */
-							PSL_command(PSL, "/SP_lx %.12g def /SP_ly %.12g def\n", S.SP_lx, S.SP_ly);
+						if (S.SP_light_set) {	/* Calculate and output custom light position for sphere */
+							/* Simple model: azimuth controls horizontal, elevation controls vertical */
+							/* Relative to viewing direction */
+							double dazim = GMT->current.proj.z_project.view_azimuth - S.SP_light_az;
+							if (dazim > 90) dazim = 90.0;		/* Do let illum from the hidden hemisphere */
+							if (dazim < -90) dazim = -90.0;
+							double SP_lx_proj = sind(dazim);
+							double SP_ly_proj = sind(S.SP_light_el - GMT->current.proj.z_project.view_elevation);
+							PSL_command(PSL, "/SP_lx %.12g def /SP_ly %.12g def\n", SP_lx_proj, SP_ly_proj);
+						}
 						if (S.SP_flat)	/* Output flat/constant color flag for sphere */
 							PSL_command(PSL, "/SP_flat true def\n");
 						if (S.SP_no_fill)	/* Output no-fill flag for sphere */

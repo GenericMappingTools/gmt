@@ -17897,10 +17897,10 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 								break;
 						}
 					}
-					if (got_azim || got_elev) {	/* Convert azimuth/elevation to x,y light position */
-						double radius = cosd(elevation);
-						p->SP_lx = radius * sind(azimuth);
-						p->SP_ly = radius * cosd(azimuth);
+					if (got_azim || got_elev) {	/* Store light azimuth/elevation for later projection */
+						/* Store the light direction - will be projected to 2D at drawing time */
+						p->SP_light_az = azimuth;
+						p->SP_light_el = elevation;
 						p->SP_light_set = true;
 					}
 				}

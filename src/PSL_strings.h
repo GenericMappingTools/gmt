@@ -1046,7 +1046,7 @@ static char *PSL_prologue_str =
 "  xc_SP yc_SP matrix currentmatrix transform /yc_SP_user edef /xc_SP_user edef\n"
 "  radius_SP 0 matrix currentmatrix dtransform dup mul exch dup mul add sqrt /radius_SP_user edef\n"
 "  /SP_lx where {pop /SP_lx_orig SP_lx def /SP_ly_orig SP_ly def} {/SP_lx_orig 0.0 def /SP_ly_orig 0.0 def} ifelse\n"
-"  radius_SP_user SP_lx_orig mul radius_SP_user SP_ly_orig mul matrix currentmatrix dtransform /SP_ly_user edef /SP_lx_user edef\n"
+"  radius_SP_user SP_lx_orig mul /SP_lx_user edef  radius_SP_user SP_ly_orig mul /SP_ly_user edef\n"
 "  matrix setmatrix\n"
 "  SP_no_fill {\n"
 "    % No fill (outline only, drawn separately in C code)\n"
