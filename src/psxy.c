@@ -74,6 +74,7 @@ struct PSXY_CTRL {
 		bool set_color;
 		bool gradient;
 		bool smooth;	/* Use Gouraud shading instead of subdivision */
+		bool direct;	/* Direct color specification instead of CPT */
 		unsigned int sequential;
 		struct GMT_FILL fill;
 	} G;
@@ -943,14 +944,28 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if (strncmp (opt->arg, "+z", 2U) == 0)
 					Ctrl->G.set_color = true;
+				else if (strncmp (opt->arg, "+gcs", 4U) == 0) {
+					Ctrl->G.gradient = true;
+					Ctrl->G.direct = true;		/* Direct colors */
+					Ctrl->G.smooth = true;		/* Gouraud shading */
+					Ctrl->G.active = true;
+				}
+				else if (strncmp (opt->arg, "+gc", 3U) == 0) {
+					Ctrl->G.gradient = true;
+					Ctrl->G.direct = true;		/* Direct colors */
+					Ctrl->G.smooth = false;		/* Subdivision */
+					Ctrl->G.active = true;
+				}
 				else if (strncmp (opt->arg, "+gs", 3U) == 0) {
 					Ctrl->G.gradient = true;
-					Ctrl->G.smooth = true;	/* Use Gouraud shading */
+					Ctrl->G.direct = false;		/* CPT-based */
+					Ctrl->G.smooth = true;		/* Gouraud shading */
 					Ctrl->G.active = true;
 				}
 				else if (strncmp (opt->arg, "+g", 2U) == 0) {
 					Ctrl->G.gradient = true;
-					Ctrl->G.smooth = false;	/* Use subdivision */
+					Ctrl->G.direct = false;		/* CPT-based */
+					Ctrl->G.smooth = false;		/* Subdivision */
 					Ctrl->G.active = true;
 				}
 				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
@@ -2483,7 +2498,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 		if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols = 3;
 		else if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols = 4;
-		if (Ctrl->G.gradient) n_cols = 3;	/* Gradient triangles need x,y,z */
+		if (Ctrl->G.gradient && !Ctrl->G.direct) n_cols = 3;	/* CPT-based gradients: x,y,z */
+		/* For direct colors, don't force n_cols - let GMT auto-detect (can be 3 or 5 columns) */
 		conf_line = (Ctrl->L.anchor >= PSXY_POL_SYMM_DEV && Ctrl->L.anchor <= PSXY_POL_ASYMM_ENV);
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
@@ -2840,8 +2856,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				if (polygon && !no_line_clip) {	/* Want a closed polygon (with or without fill and with or without outline) */
 					/* Check if this is a gradient polygon (triangle or quad) */
 					bool gradient_done = false;
-					fprintf(stderr, "DEBUG: polygon check: gradient=%d n_rows=%llu n_cols=%llu P=%p\n", Ctrl->G.gradient, L->n_rows, L->n_columns, (void*)P);
-					if (Ctrl->G.gradient && (L->n_rows == 4 || L->n_rows == 5) && L->n_columns >= 3 && P) {
+					fprintf(stderr, "DEBUG: polygon check: gradient=%d direct=%d n_rows=%llu n_cols=%llu P=%p\n", Ctrl->G.gradient, Ctrl->G.direct, L->n_rows, L->n_columns, (void*)P);
+					if (Ctrl->G.gradient && (L->n_rows == 4 || L->n_rows == 5) && L->n_columns >= 3 && (P || Ctrl->G.direct)) {
 						double tri_rgb[9], rgb_tmp[4];
 						double plot_x[3], plot_y[3];
 
@@ -2851,13 +2867,44 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							unsigned int tri_indices[2][3] = {{0, 1, 2}, {0, 2, 3}};  /* Triangulation for quad */
 
 							for (unsigned int tri = 0; tri < n_triangles; tri++) {
-								/* Get RGB colors from z-values via CPT for this triangle */
+								/* Get RGB colors for this triangle */
 								for (unsigned int k = 0; k < 3; k++) {
 									unsigned int idx = tri_indices[tri][k];
-									gmt_get_rgb_from_z (GMT, P, L->data[2][idx], rgb_tmp);
-									tri_rgb[k * 3 + 0] = rgb_tmp[0];
-									tri_rgb[k * 3 + 1] = rgb_tmp[1];
-									tri_rgb[k * 3 + 2] = rgb_tmp[2];
+									if (Ctrl->G.direct) {
+										/* Direct color specification */
+										if (L->n_columns == 5) {
+											/* Separate R G B columns: x y r g b */
+											tri_rgb[k * 3 + 0] = L->data[2][idx] / 255.0;  /* R */
+											tri_rgb[k * 3 + 1] = L->data[3][idx] / 255.0;  /* G */
+											tri_rgb[k * 3 + 2] = L->data[4][idx] / 255.0;  /* B */
+										}
+										else if (L->text) {
+											/* Color string: x y colorstring (stored in L->text) */
+											char *color_str = L->text[idx];
+											if (color_str && gmt_getrgb (GMT, color_str, rgb_tmp) == 0) {
+												tri_rgb[k * 3 + 0] = gmt_M_is255(rgb_tmp[0]);
+												tri_rgb[k * 3 + 1] = gmt_M_is255(rgb_tmp[1]);
+												tri_rgb[k * 3 + 2] = gmt_M_is255(rgb_tmp[2]);
+											}
+											else {
+												/* Failed to parse, use black */
+												tri_rgb[k * 3 + 0] = tri_rgb[k * 3 + 1] = tri_rgb[k * 3 + 2] = 0.0;
+												GMT_Report (API, GMT_MSG_WARNING, "Failed to parse color '%s', using black\n", color_str ? color_str : "NULL");
+											}
+										}
+										else {
+											/* No text data available, use black */
+											tri_rgb[k * 3 + 0] = tri_rgb[k * 3 + 1] = tri_rgb[k * 3 + 2] = 0.0;
+											GMT_Report (API, GMT_MSG_WARNING, "No color data found, using black\n");
+										}
+									}
+									else {
+										/* CPT-based: look up z-value */
+										gmt_get_rgb_from_z (GMT, P, L->data[2][idx], rgb_tmp);
+										tri_rgb[k * 3 + 0] = rgb_tmp[0];
+										tri_rgb[k * 3 + 1] = rgb_tmp[1];
+										tri_rgb[k * 3 + 2] = rgb_tmp[2];
+									}
 								}
 
 								/* Copy coordinates (PSL expects inches, not points!) */
