@@ -238,7 +238,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "-(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse, "
 		"(f)ront, octa(g)on, (h)exagon (i)nvtriangle, (j)rotated rectangle, "
 		"(k)ustom, (l)etter, (m)athangle, pe(n)tagon, c(o)lumn, (p)oint, "
-		"s(Q)here, (q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle, "
+		"s(P)here, (q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle, "
 		"c(u)be, (v)ector, (w)edge, (x)cross, (y)dash, (z)dash, or "
 		"=(geovector, i.e., great or small circle vectors).");
 
