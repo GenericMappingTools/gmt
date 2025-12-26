@@ -20,7 +20,7 @@ Synopsis
 [ |-D|\ *dx*\ [/*dy*] ]
 [ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **p**][**a**\|\ **s**\|\ **t**\|\ **r**\|\ *refpoint*] ]
-[ |-G|\ *fill*\|\ **+z** ]
+[ |-G|\ *fill*\|\ **+g**\|\ **+z** ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
@@ -196,7 +196,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*\|\ **+z**\|\ **+g** :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ *fill*\|\ **+g**\|\ **+z** :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that this module will search for |-G| and |-W| strings in all the
     segment headers and let any values thus found over-ride the command line settings.

@@ -1155,13 +1155,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 	if (Ctrl->T.active && (GMT->common.B.active[GMT_PRIMARY] == false && GMT->common.B.active[GMT_SECONDARY] == false))
 		Ctrl->no_RJ_needed = true;	/* Not plotting any data or frame that needs -R -J */
 
-	if (Ctrl->G.smooth && Ctrl->N.active) {
-		GMT_Report(API, GMT_MSG_WARNING, "Option -G+g (Gouraud shading) is (almost) incompatible with -N. The problem is that "
-		           "apparently the 'shfill' postscript operator prevents a correct detection of the BoundingBox by Ghostscript "
-		           "and that results in an incapacity to correctly convert to raster formats and cropping the white sapces, "
-		           "or even fail the conversion in modern mode.\n");
-	}
-
 	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.set_transp != 1 && !Ctrl->C.active, "Option -Z: No CPT given via -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Option -C: No CPT given\n");

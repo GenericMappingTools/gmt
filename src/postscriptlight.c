@@ -4858,6 +4858,8 @@ int PSL_plotgradienttriangle(struct PSL_CTRL *PSL, double *x, double *y, double 
 	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
 	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
 	 * steps: number of subdivisions (higher = smoother, slower)
+	 * 
+	 * Writen by Claude.ai
 	 */
 
 	int i, j;
@@ -4979,6 +4981,8 @@ int PSL_plotgradienttriangle_gouraud(struct PSL_CTRL *PSL, double *x, double *y,
 	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
 	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
 	 * This uses PostScript Level 2/3 shading for perfectly smooth gradients
+	 * 
+	 * Writen by Claude.ai
 	 */
 
 	int i;
@@ -4992,6 +4996,10 @@ int PSL_plotgradienttriangle_gouraud(struct PSL_CTRL *PSL, double *x, double *y,
 
 	PSL_comment(PSL, "Begin Gouraud shaded triangle\n");
 	PSL_command(PSL, "gsave\n");
+	/* Set clipping path to triangle to constrain shfill and establish bounding box */
+	PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L closepath clip",
+		x_pts[0], y_pts[0], x_pts[1], y_pts[1], x_pts[2], y_pts[2]);
+
 
 	/* Create Type 4 (Free-Form Gouraud) shading dictionary */
 	PSL_command(PSL, "<<\n");
