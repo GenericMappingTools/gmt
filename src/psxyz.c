@@ -238,7 +238,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "-(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse, "
 		"(f)ront, octa(g)on, (h)exagon (i)nvtriangle, (j)rotated rectangle, "
 		"(k)ustom, (l)etter, (m)athangle, pe(n)tagon, c(o)lumn, (p)oint, "
-		"(q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle, "
+		"s(P)here, (q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle, "
 		"c(u)be, (v)ector, (w)edge, (x)cross, (y)dash, (z)dash, or "
 		"=(geovector, i.e., great or small circle vectors).");
 
@@ -275,6 +275,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Usage (API, 2, "\n%s 3-D Cube: Give <size> as the length of all sides; append q if <size> "
 		"is a quantity in x-units.", GMT_LINE_BULLET);
+
+	GMT_Usage (API, 2, "\n%s 3-D Sphere: Give <size> as sphere diameter [Default unit is cm]. "
+		"Sphere is rendered with radial gradient shading from white at light source to fill color. Modifiers:", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "+a Set light source azimuth [0, from the right].");
+	GMT_Usage (API, 3, "+e Set light source elevation [90, perpendicular to viewing plane].");
+	GMT_Usage (API, 3, "+f Use flat/constant fill color (no gradient shading).");
+	GMT_Usage (API, 3, "+n Draw outline only (no fill). Outline color from -W.");
 
 	GMT_Usage (API, 2, "\n%s Ellipse: If not given, we read direction, major, and minor axis from columns 4-6. "
 		"If -SE rather than -Se is selected, %s will expect azimuth, and "
@@ -1048,6 +1055,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && S.symbol != PSL_WEDGE && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
+	if (S.symbol == PSL_SPHERE && !fill_active && !S.SP_no_fill) {	/* Sphere needs a default fill for 3D shading */
+		current_fill.rgb[0] = current_fill.rgb[1] = current_fill.rgb[2] = 0.5;	/* Black */
+		fill_active = true;
+	}
 
 	if (Ctrl->D.active) {
 		/* Shift the plot a bit. This is a bit frustrating, since the only way to do this
@@ -1891,6 +1902,31 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					case PSL_RNDRECT:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, data[i].symbol);
+						break;
+					case PSL_SPHERE:	/* Case created by Claude.ai */
+						gmt_plane_perspective(GMT, GMT_Z, data[i].z);
+						if (S.SP_light_set) {	/* Calculate and output custom light position for sphere */
+							/* Simple model: azimuth controls horizontal, elevation controls vertical */
+							/* Relative to viewing direction */
+							double dazim = GMT->current.proj.z_project.view_azimuth - S.SP_light_az;
+							if (dazim > 90) dazim = 90.0;		/* Do let illum from the hidden hemisphere */
+							if (dazim < -90) dazim = -90.0;
+							double SP_lx_proj = sind(dazim);
+							double SP_ly_proj = sind(S.SP_light_el - GMT->current.proj.z_project.view_elevation);
+							PSL_command(PSL, "/SP_lx %.12g def /SP_ly %.12g def\n", SP_lx_proj, SP_ly_proj);
+						}
+						if (S.SP_flat)	/* Output flat/constant color flag for sphere */
+							PSL_command(PSL, "/SP_flat true def\n");
+						if (S.SP_no_fill)	/* Output no-fill flag for sphere */
+							PSL_command(PSL, "/SP_no_fill true def\n");
+						PSL_plotsymbol(PSL, xpos[item], data[i].y, data[i].dim, data[i].symbol);
+						/* Draw outline circle in user space using pen color */
+						if (data[i].outline) {
+							/* The 1/4 factor was obtained by trial-and-error. Couldn't find the true logic. (JL) */
+							PSL_command(PSL, "V /DeviceRGB setcolorspace matrix setmatrix %s "
+								"xc_SP_user yc_SP_user T N 0 0 radius_SP_user 0 360 arc S U\n",
+								PSL_makepen(PSL, (1.0/4.0) * data[i].p.width, data[i].p.rgb, data[i].p.style, data[i].p.offset));
+						}
 						break;
 					case PSL_ELLIPSE:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);

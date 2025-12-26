@@ -623,7 +623,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 2, "\n%s Basic geometric symbol. Append one:", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "-(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse, "
 		"(f)ront, octa(g)on, (h)exagon, (i)nvtriangle, (j)rotated rectangle, "
-		"(k)ustom, (l)etter, (m)athangle, pe(n)tagon, (p)oint, (q)uoted line, (r)ectangle, "
+		"(k)ustom, (l)etter, (m)athangle, pe(n)tagon, (p)oint, s(Q)here, (q)uoted line, (r)ectangle, "
 		"(R)ounded rectangle, (s)quare, (t)riangle, (v)ector, (w)edge, (x)cross, (y)dash, or "
 		"=(geovector, i.e., great or small circle vectors) or ~(decorated line).");
 	GMT_Usage (API, -3, "If no size is specified, then the 3rd column must have sizes. "

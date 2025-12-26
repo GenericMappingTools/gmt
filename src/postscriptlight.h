@@ -69,6 +69,7 @@ extern "C" {
 #define PSL_MARC		((int)'m')
 #define PSL_PENTAGON		((int)'n')
 #define PSL_DOT			((int)'p')
+#define PSL_SPHERE		((int)'P')
 #define PSL_RECT		((int)'r')
 #define PSL_RNDRECT		((int)'R')
 #define PSL_SQUARE		((int)'s')

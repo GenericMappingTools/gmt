@@ -190,6 +190,15 @@ struct GMT_SYMBOL {
 	struct GMT_FRONTLINE f;	/* parameters needed for a front */
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */
 
+	/* These apply to sphere symbols */
+	double SP_lx;		/* Light source x position for sphere symbol [0.0] */
+	double SP_ly;		/* Light source y position for sphere symbol [0.0] */
+	double SP_light_az;	/* Light source azimuth for sphere symbol [0.0] */
+	double SP_light_el;	/* Light source elevation for sphere symbol [0.0] */
+	bool SP_light_set;	/* true if +a or +e modifier was used to set light position */
+	bool SP_flat;		/* true if +f modifier was used to disable gradient (flat/solid color) */
+	bool SP_no_fill;	/* true if +n modifier was used to draw outline only (no fill) */
+
 	struct GMT_CONTOUR G;	/* For quoted lines */
 	struct GMT_DECORATE D;	/* For decorated lines */
 };
