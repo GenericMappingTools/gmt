@@ -4970,7 +4970,7 @@ int PSL_plotgradienttriangle(struct PSL_CTRL *PSL, double *x, double *y, double 
 	return (PSL_NO_ERROR);
 }
 
-int PSL_plotgradienttriangle_gouraud (struct PSL_CTRL *PSL, double *x, double *y, double *rgb) {
+int PSL_plotgradienttriangle_gouraud(struct PSL_CTRL *PSL, double *x, double *y, double *rgb) {
 	/* Draw triangle with smooth Gouraud shading using PostScript Type 4 shading
 	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
 	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
@@ -4986,16 +4986,16 @@ int PSL_plotgradienttriangle_gouraud (struct PSL_CTRL *PSL, double *x, double *y
 		y_pts[i] = y[i] * PSL->internal.dpu;
 	}
 
-	PSL_comment (PSL, "Begin Gouraud shaded triangle\n");
-	PSL_command (PSL, "gsave\n");
+	PSL_comment(PSL, "Begin Gouraud shaded triangle\n");
+	PSL_command(PSL, "gsave\n");
 
 	/* Create Type 4 (Free-Form Gouraud) shading dictionary */
-	PSL_command (PSL, "<<\n");
-	PSL_command (PSL, "  /ShadingType 4\n");
-	PSL_command (PSL, "  /ColorSpace /DeviceRGB\n");
-	PSL_command (PSL, "  /BitsPerCoordinate 16\n");
-	PSL_command (PSL, "  /BitsPerComponent 8\n");
-	PSL_command (PSL, "  /BitsPerFlag 8\n");
+	PSL_command(PSL, "<<\n");
+	PSL_command(PSL, "  /ShadingType 4\n");
+	PSL_command(PSL, "  /ColorSpace /DeviceRGB\n");
+	PSL_command(PSL, "  /BitsPerCoordinate 16\n");
+	PSL_command(PSL, "  /BitsPerComponent 8\n");
+	PSL_command(PSL, "  /BitsPerFlag 8\n");
 
 	/* Decode arrays map from integer coordinates to actual coordinate ranges */
 	/* Find bounding box */
@@ -5007,8 +5007,8 @@ int PSL_plotgradienttriangle_gouraud (struct PSL_CTRL *PSL, double *x, double *y
 		if (y_pts[i] > ymax) ymax = y_pts[i];
 	}
 
-	PSL_command (PSL, "  /Decode [%.4f %.4f %.4f %.4f 0 1 0 1 0 1]\n", xmin, xmax, ymin, ymax);
-	PSL_command (PSL, "  /DataSource <\n");
+	PSL_command(PSL, "  /Decode [%.4f %.4f %.4f %.4f 0 1 0 1 0 1]\n", xmin, xmax, ymin, ymax);
+	PSL_command(PSL, "  /DataSource <\n");
 
 	/* Write triangle data as hex string */
 	/* Flag 0 = start new triangle, then coordinates (x,y) scaled to 0-65535, then RGB scaled to 0-255 */
@@ -5020,15 +5020,15 @@ int PSL_plotgradienttriangle_gouraud (struct PSL_CTRL *PSL, double *x, double *y
 		unsigned int g = (unsigned int)(rgb[i*3 + 1] * 255.0 + 0.5);
 		unsigned int b = (unsigned int)(rgb[i*3 + 2] * 255.0 + 0.5);
 
-		PSL_command (PSL, "    %02X %04X %04X %02X%02X%02X\n", flag, x_scaled, y_scaled, r, g, b);
+		PSL_command(PSL, "    %02X %04X %04X %02X%02X%02X\n", flag, x_scaled, y_scaled, r, g, b);
 	}
 
-	PSL_command (PSL, "  >\n");
-	PSL_command (PSL, ">>\n");
-	PSL_command (PSL, "shfill\n");
+	PSL_command(PSL, "  >\n");
+	PSL_command(PSL, ">>\n");
+	PSL_command(PSL, "shfill\n");
 
-	PSL_command (PSL, "grestore\n");
-	PSL_comment (PSL, "End Gouraud shaded triangle\n");
+	PSL_command(PSL, "grestore\n");
+	PSL_comment(PSL, "End Gouraud shaded triangle\n");
 
 	return (PSL_NO_ERROR);
 }

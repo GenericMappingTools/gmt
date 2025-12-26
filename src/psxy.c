@@ -1155,6 +1155,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 	if (Ctrl->T.active && (GMT->common.B.active[GMT_PRIMARY] == false && GMT->common.B.active[GMT_SECONDARY] == false))
 		Ctrl->no_RJ_needed = true;	/* Not plotting any data or frame that needs -R -J */
 
+	if (Ctrl->G.smooth && Ctrl->N.active) {
+		GMT_Report(API, GMT_MSG_WARNING, "Option -G+g (Gouraud shading) is (almost) incompatible with -N. The problem is that "
+		           "apparently the 'shfill' postscript operator prevents a correct detection of the BoundingBox by Ghostscript "
+		           "and that results in an incapacity to correctly convert to raster formats and cropping the white sapces, "
+		           "or even fail the conversion in modern mode.\n");
+	}
+
 	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.set_transp != 1 && !Ctrl->C.active, "Option -Z: No CPT given via -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.file == NULL || Ctrl->C.file[0] == '\0'), "Option -C: No CPT given\n");
@@ -2858,10 +2865,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 				}
 
-				if (polygon && !no_line_clip) {	/* Want a closed polygon (with or without fill and with or without outline) */
-					/* Check if this is a gradient polygon (triangle or quad) */
-					bool gradient_done = false;
-
+				/* Handle gradient polygons (works for both clipped and non-clipped paths) */
+				bool gradient_done = false;
+				if (polygon && Ctrl->G.gradient) {
 					/* Auto-detect gradient format based on GMT's column count */
 					if (Ctrl->G.gradient) {
 						if (L->n_columns == 5) {
@@ -2890,8 +2896,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						double tri_rgb[9], rgb_tmp[4];
 						double plot_x[3], plot_y[3];
 
-						/* Project to map coordinates */
-						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) > 0 && GMT->current.plot.n >= 3) {
+						/* Project to map coordinates (use cart_to_xy if no clipping) */
+						if (no_line_clip)
+							GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows);
+						else
+							GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows);
+
+						if (GMT->current.plot.n > 0 && GMT->current.plot.n >= 3) {
 							/* Check if polygon is closed (last vertex == first vertex) */
 							bool closed = (L->data[GMT_X][0] == L->data[GMT_X][L->n_rows-1] &&
 							               L->data[GMT_Y][0] == L->data[GMT_Y][L->n_rows-1]);
@@ -3168,55 +3179,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						if (Ctrl->L.outline) gmt_setpen(GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
 					if (no_line_clip) {	/* Draw line or polygon without border clipping at all */
-						if ((GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
-						if (outline_active) gmt_setpen (GMT, &current_pen);	/* Select separate pen for polygon outline */
-						if (Ctrl->G.active) {	/* Specify the fill, possibly set outline */
+						/* Skip projection if gradient already handled it */
+						if (!gradient_done && (GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
+						if (outline_active && !gradient_done) gmt_setpen (GMT, &current_pen);	/* Select separate pen for polygon outline */
+						if (Ctrl->G.active && !gradient_done) {	/* Specify the fill (skip if gradient already drawn) */
 							gmt_setfill (GMT, &current_fill, outline_active);
-							/* DEBUG gradient */
-							if (Ctrl->G.gradient) {
-								GMT_Report (API, GMT_MSG_WARNING, "Gradient: n=%d seg_ncols=%d table_ncols=%d nrows=%d\n",
-									GMT->current.plot.n, L->n_columns, D->table[tbl]->n_columns, L->n_rows);
-								/* Try to access z from original table/segment */
-								if (D->table[tbl]->n_columns >= 3 && L->n_rows >= 3) {
-									struct GMT_DATASEGMENT *orig_seg = D->table[tbl]->segment[seg];
-									if (orig_seg->n_columns >= 3) {
-										GMT_Report (API, GMT_MSG_WARNING, "Z-values from orig seg: z[0]=%g z[1]=%g z[2]=%g\n",
-											orig_seg->data[2][0], orig_seg->data[2][1], orig_seg->data[2][2]);
-									}
-								}
-							}
-							if (Ctrl->G.gradient && (GMT->current.plot.n == 3 || GMT->current.plot.n == 4) && D->table[tbl]->segment[seg]->n_columns >= 3 && L->n_rows >= 3 && P) {
-								/* Draw gradient-filled triangle */
-								double tri_rgb[9], rgb_tmp[4];
-								double plot_x[3], plot_y[3];
-								struct GMT_DATASEGMENT *S_orig = D->table[tbl]->segment[seg];
-
-								/* Get RGB colors from z-values via CPT */
-								for (unsigned int k = 0; k < 3; k++) {
-									gmt_get_rgb_from_z (GMT, P, S_orig->data[2][k], rgb_tmp);
-									tri_rgb[k * 3 + 0] = gmt_M_is255(rgb_tmp[0]);
-									tri_rgb[k * 3 + 1] = gmt_M_is255(rgb_tmp[1]);
-									tri_rgb[k * 3 + 2] = gmt_M_is255(rgb_tmp[2]);
-								}
-
-								/* Convert to PostScript points */
-								for (unsigned int k = 0; k < 3; k++) {
-									plot_x[k] = GMT->current.plot.x[k] * GMT->session.u2u[GMT_INCH][GMT_PT];
-									plot_y[k] = GMT->current.plot.y[k] * GMT->session.u2u[GMT_INCH][GMT_PT];
-								}
-
-								/* Draw gradient */
-								if (Ctrl->G.smooth)
-									PSL_plotgradienttriangle_gouraud(PSL, plot_x, plot_y, tri_rgb);
-								else
-									PSL_plotgradienttriangle(PSL, plot_x, plot_y, tri_rgb, 50);
-
-								/* Optionally draw outline */
-								if (outline_active) {
-									PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, 3);
-								}
-							}
-							else {
+							{
 								PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
 							}
 						}
