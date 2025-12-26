@@ -196,7 +196,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*\|\ **+z** :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ *fill*\|\ **+z**\|\ **+g** :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that this module will search for |-G| and |-W| strings in all the
     segment headers and let any values thus found over-ride the command line settings.
@@ -205,6 +205,19 @@ Optional Arguments
     *fill* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the fill colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  Any *transparency* setting is unchanged.
+
+    **+g**
+        Enable vertex-based color gradients for polygons using Gouraud shading.
+        This modifier automatically detects the input data format and supports three formats:
+
+        1. **RGB format**: *x y r g b* where RGB values are in the range 0-255.
+        2. **Color name format**: *x y colorname* where *colorname* can be a named color (e.g., "red", "blue"),
+           hex color (e.g., "#FF0000"), or slash-separated RGB (e.g., "255/0/0").
+        3. **CPT format**: *x y z* where *z* values are mapped to colors via the CPT specified with |-C|.
+
+        Polygons with any number of vertices are supported and automatically triangulated using a fan triangulation
+        from the first vertex. Each vertex gets its own color, and Gouraud shading creates smooth color gradients
+        across the polygon faces. Use |-W| to add an outline to the gradient polygons.
 
 .. _-H:
 
@@ -454,6 +467,35 @@ vector components given in user units, and these user units should be converted
 to cm given the scale 3.60::
 
     gmt plot -R20/40/-20/0 -JM6i -Sv0.15i+e+z3.6c -Gred -W0.25p -Baf data.txt -pdf map
+
+To plot a triangle with smooth color gradients using RGB values directly::
+
+    cat << EOF > triangle.txt
+    0 0 255 0 0
+    3 0 0 255 0
+    1.5 2.6 0 0 255
+    EOF
+    gmt plot triangle.txt -R-1/4/-1/3 -JX10c -G+g -W0.5p,black -Baf -png gradient
+
+Or using color names for a quadrilateral::
+
+    cat << EOF > square.txt
+    0 0 red
+    2 0 yellow
+    2 2 green
+    0 2 blue
+    EOF
+    gmt plot square.txt -R-0.5/2.5/-0.5/2.5 -JX10c -G+g -W1p -Baf -png gradient
+
+Or using a CPT file with z-values::
+
+    gmt makecpt -Chot -T0/100 > temp.cpt
+    cat << EOF > triangle_z.txt
+    0 0 0
+    3 0 50
+    1.5 2.6 100
+    EOF
+    gmt plot triangle_z.txt -R-1/4/-1/3 -JX10c -G+g -Ctemp.cpt -W0.5p -Baf -png gradient
 
 .. include:: plot_notes.rst_
 

@@ -4849,7 +4849,7 @@ int PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, int n) {
 	return (PSL_NO_ERROR);
 }
 
-int PSL_plotgradienttriangle (struct PSL_CTRL *PSL, double *x, double *y, double *rgb, int steps) {
+int PSL_plotgradienttriangle(struct PSL_CTRL *PSL, double *x, double *y, double *rgb, int steps) {
 	/* Draw triangle with smooth vertex color gradient using barycentric interpolation
 	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
 	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
@@ -4876,8 +4876,8 @@ int PSL_plotgradienttriangle (struct PSL_CTRL *PSL, double *x, double *y, double
 
 	step_inv = 1.0 / steps;
 
-	PSL_comment (PSL, "Begin gradient triangle\n");
-	PSL_command (PSL, "gsave\n");
+	PSL_comment(PSL, "Begin gradient triangle\n");
+	PSL_command(PSL, "gsave\n");
 
 	/* Subdivide triangle into micro-triangles using barycentric coordinates */
 	for (i = 0; i < steps; i++) {
@@ -4931,12 +4931,11 @@ int PSL_plotgradienttriangle (struct PSL_CTRL *PSL, double *x, double *y, double
 						pb4 = u4 * rgb[2] + v4 * rgb[5] + w4 * rgb[8];
 
 						/* Draw first micro-triangle: p1-p2-p4 */
-						PSL_command (PSL, "%.6f %.6f %.6f C\n",
+						PSL_command(PSL, "%.6f %.6f %.6f C\n",
 							(pr1 + pr2 + pr4) / 3.0,
 							(pg1 + pg2 + pg4) / 3.0,
 							(pb1 + pb2 + pb4) / 3.0);
-						PSL_command (PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n",
-							px1, py1, px2, py2, px4, py4);
+						PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n", px1, py1, px2, py2, px4, py4);
 					}
 
 					/* Check third corner for second micro-triangle */
@@ -4953,12 +4952,11 @@ int PSL_plotgradienttriangle (struct PSL_CTRL *PSL, double *x, double *y, double
 
 						if (s4 + t4 <= 1.0) {  /* Already computed p4 */
 							/* Draw second micro-triangle: p2-p3-p4 */
-							PSL_command (PSL, "%.6f %.6f %.6f C\n",
+							PSL_command(PSL, "%.6f %.6f %.6f C\n",
 								(pr2 + pr3 + pr4) / 3.0,
 								(pg2 + pg3 + pg4) / 3.0,
 								(pb2 + pb3 + pb4) / 3.0);
-							PSL_command (PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n",
-								px2, py2, px3, py3, px4, py4);
+							PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n", px2, py2, px3, py3, px4, py4);
 						}
 					}
 				}
@@ -4966,8 +4964,8 @@ int PSL_plotgradienttriangle (struct PSL_CTRL *PSL, double *x, double *y, double
 		}
 	}
 
-	PSL_command (PSL, "grestore\n");
-	PSL_comment (PSL, "End gradient triangle\n");
+	PSL_command(PSL, "grestore\n");
+	PSL_comment(PSL, "End gradient triangle\n");
 
 	return (PSL_NO_ERROR);
 }
