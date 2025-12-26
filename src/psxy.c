@@ -944,28 +944,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if (strncmp (opt->arg, "+z", 2U) == 0)
 					Ctrl->G.set_color = true;
-				else if (strncmp (opt->arg, "+gcs", 4U) == 0) {
+				else if (strncmp (opt->arg, "+gt", 3U) == 0) {
 					Ctrl->G.gradient = true;
-					Ctrl->G.direct = true;		/* Direct colors */
-					Ctrl->G.smooth = true;		/* Gouraud shading */
-					Ctrl->G.active = true;
-				}
-				else if (strncmp (opt->arg, "+gc", 3U) == 0) {
-					Ctrl->G.gradient = true;
-					Ctrl->G.direct = true;		/* Direct colors */
-					Ctrl->G.smooth = false;		/* Subdivision */
-					Ctrl->G.active = true;
-				}
-				else if (strncmp (opt->arg, "+gs", 3U) == 0) {
-					Ctrl->G.gradient = true;
-					Ctrl->G.direct = false;		/* CPT-based */
-					Ctrl->G.smooth = true;		/* Gouraud shading */
+					Ctrl->G.smooth = false;		/* Subdivision/triangulation, format auto-detected */
 					Ctrl->G.active = true;
 				}
 				else if (strncmp (opt->arg, "+g", 2U) == 0) {
 					Ctrl->G.gradient = true;
-					Ctrl->G.direct = false;		/* CPT-based */
-					Ctrl->G.smooth = false;		/* Subdivision */
+					Ctrl->G.smooth = true;		/* Gouraud shading (default), format auto-detected */
 					Ctrl->G.active = true;
 				}
 				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
@@ -2498,15 +2484,64 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 		if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols = 3;
 		else if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols = 4;
-		if (Ctrl->G.gradient && !Ctrl->G.direct) n_cols = 3;	/* CPT-based gradients: x,y,z */
-		/* For direct colors, don't force n_cols - let GMT auto-detect (can be 3 or 5 columns) */
+		bool need_text = false;	/* Flag for color string format requiring text reading */
+		if (Ctrl->G.gradient) {
+			/* Auto-detect format: 'x y z' (CPT), 'x y r g b' (RGB), or 'x y colorstring' */
+			/* Try reading first line to detect format */
+			FILE *fp = NULL;
+			char line[GMT_BUFSIZ];
+			bool format_detected = false;
+			struct GMT_OPTION *opt = NULL;
+
+			/* Find input file in options list (look for option without leading dash) */
+			for (opt = options; opt; opt = opt->next) {
+				if (opt->option == GMT_OPT_INFILE) {
+					fp = fopen (opt->arg, "r");
+					break;
+				}
+			}
+
+			if (fp) {
+				/* Read lines until we find a data line (skip comments) */
+				while (fgets(line, GMT_BUFSIZ, fp)) {
+					if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and empty lines */
+					/* Try to parse as 5 or 3 numeric values */
+					double v[5];
+					int n_read = sscanf(line, "%lf %lf %lf %lf %lf", &v[0], &v[1], &v[2], &v[3], &v[4]);
+					if (n_read == 5) {
+						n_cols = 5;	/* RGB format: x y r g b */
+						Ctrl->G.direct = true;
+						need_text = false;
+					}
+					else if (n_read == 3) {
+						n_cols = 3;	/* CPT format: x y z */
+						Ctrl->G.direct = false;
+						need_text = false;
+					}
+					else {
+						n_cols = 2;	/* Color string format: x y colorstring */
+						Ctrl->G.direct = true;
+						need_text = true;
+					}
+					format_detected = true;
+					break;
+				}
+				fclose (fp);
+			}
+			if (!format_detected) {
+				/* Couldn't detect format, default to CPT */
+				n_cols = 3;
+				Ctrl->G.direct = false;
+				need_text = false;
+			}
+		}
 		conf_line = (Ctrl->L.anchor >= PSXY_POL_SYMM_DEV && Ctrl->L.anchor <= PSXY_POL_ASYMM_ENV);
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+		if (GMT_Init_IO(API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-			/* We don't want trailing text because we may need to resample lines below */
+		if ((error = GMT_Set_Columns(API, GMT_IN, (unsigned int)n_cols, need_text ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			/* We don't want trailing text because we may need to resample lines below, except for direct color strings */
 			Return (API->error);
 		}
 		if ((S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE) && S.G.segmentize) {	/* Special quoted/decorated line where each point-pair should be considered a line segment */
@@ -2856,8 +2891,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				if (polygon && !no_line_clip) {	/* Want a closed polygon (with or without fill and with or without outline) */
 					/* Check if this is a gradient polygon (triangle or quad) */
 					bool gradient_done = false;
-					fprintf(stderr, "DEBUG: polygon check: gradient=%d direct=%d n_rows=%llu n_cols=%llu P=%p\n", Ctrl->G.gradient, Ctrl->G.direct, L->n_rows, L->n_columns, (void*)P);
-					if (Ctrl->G.gradient && (L->n_rows == 4 || L->n_rows == 5) && L->n_columns >= 3 && (P || Ctrl->G.direct)) {
+
+					/* Error check: CPT mode requires a color palette */
+					if (Ctrl->G.gradient && !Ctrl->G.direct && P == NULL) {
+						GMT_Report(API, GMT_MSG_ERROR, "Gradient option -G+g detected CPT format (x y z) but no color palette provided. Use -C<cpt> to specify a color palette.\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+
+					/* For gradients: need enough vertices AND either CPT or direct colors */
+					if (Ctrl->G.gradient && (L->n_rows == 4 || L->n_rows == 5) &&
+					    ((Ctrl->G.direct && L->n_columns >= 2) || (!Ctrl->G.direct && L->n_columns >= 3 && P))) {
 						double tri_rgb[9], rgb_tmp[4];
 						double plot_x[3], plot_y[3];
 
@@ -2881,21 +2924,23 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 										else if (L->text) {
 											/* Color string: x y colorstring (stored in L->text) */
 											char *color_str = L->text[idx];
-											if (color_str && gmt_getrgb (GMT, color_str, rgb_tmp) == 0) {
-												tri_rgb[k * 3 + 0] = gmt_M_is255(rgb_tmp[0]);
-												tri_rgb[k * 3 + 1] = gmt_M_is255(rgb_tmp[1]);
-												tri_rgb[k * 3 + 2] = gmt_M_is255(rgb_tmp[2]);
+											int parse_result = gmt_getrgb (GMT, color_str, rgb_tmp);
+											if (color_str && parse_result == 0) {
+												/* gmt_getrgb returns 0-1 range, use directly */
+												tri_rgb[k * 3 + 0] = rgb_tmp[0];
+												tri_rgb[k * 3 + 1] = rgb_tmp[1];
+												tri_rgb[k * 3 + 2] = rgb_tmp[2];
 											}
 											else {
 												/* Failed to parse, use black */
 												tri_rgb[k * 3 + 0] = tri_rgb[k * 3 + 1] = tri_rgb[k * 3 + 2] = 0.0;
-												GMT_Report (API, GMT_MSG_WARNING, "Failed to parse color '%s', using black\n", color_str ? color_str : "NULL");
+												GMT_Report(API, GMT_MSG_WARNING, "Failed to parse color '%s', using black\n", color_str ? color_str : "NULL");
 											}
 										}
 										else {
 											/* No text data available, use black */
 											tri_rgb[k * 3 + 0] = tri_rgb[k * 3 + 1] = tri_rgb[k * 3 + 2] = 0.0;
-											GMT_Report (API, GMT_MSG_WARNING, "No color data found, using black\n");
+											GMT_Report(API, GMT_MSG_WARNING, "No color data found, using black\n");
 										}
 									}
 									else {
