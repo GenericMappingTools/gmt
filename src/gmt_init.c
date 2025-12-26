@@ -17118,7 +17118,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	unsigned int ju, col;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
-	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpQqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopQqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
 		p->base = GMT->session.d_NaN;
@@ -17211,6 +17211,28 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					col_off++;
 				}
 			}
+		}
+	}
+	else if (text[0] == 'P') {	/* Sphere symbol with optional modifiers for light position, flat color, or no fill */
+		char arg[GMT_LEN64] = {""};
+		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbol size with no +<modifiers> at the end */
+		if (n == 1) {	/* No modifiers or no size given */
+			if (text[1] && text[1] != '+') {
+				/* Gave size without modifiers */
+				strncpy (arg, &text[1], GMT_LEN64-1);
+			}
+		}
+		if (arg[0] && arg[0] != '+') {	/* Need to get size */
+			if (cmd) p->read_size_cmd = false;
+			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, arg);
+			check = false;
+		}
+		else if (!text[1] || text[1] == '+') {	/* No size given */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			if (p->size_x == 0.0)
+				col_off++;
+			if (cmd) p->read_size_cmd = true;
 		}
 	}
 	else if (strchr (GMT_VECTOR_CODES, text[0])) {
@@ -17823,12 +17845,65 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
-		case 'P':
 		case 'p':
 			p->symbol = PSL_DOT;
 			if (p->size_x == 0.0 && !p->read_size) {	/* User forgot to set size */
 				p->size_x = GMT_DOT_SIZE;
 				check = false;
+			}
+			break;
+		case 'P':	/* Sphere symbol: -SP<size>[+a<azim>][+e<elev>][+f][+n] */
+			p->symbol = PSL_SPHERE;
+			/* Set default light position: center (perpendicular to viewing plane) */
+			p->SP_lx = 0.0;
+			p->SP_ly = 0.0;
+			p->SP_light_set = false;
+			p->SP_flat = false;
+			p->SP_no_fill = false;
+			/* Process +a, +e, +f, and +n modifiers */
+			{
+				double azimuth = 0.0, elevation = 90.0;	/* Default values: centered light */
+				bool got_azim = false, got_elev = false;
+				char mod[GMT_LEN64] = {""};
+				unsigned int pos = 0, error = 0;
+				if ((c = strchr(text, '+'))) {	/* Got modifiers */
+					while (gmt_getmodopt(GMT, 'S', c, "aefn", &pos, mod, &error) && error == 0) {
+						switch (mod[0]) {
+							case 'a':	/* Azimuth */
+								if (mod[1]) {
+									azimuth = atof(&mod[1]);
+									got_azim = true;
+								}
+								else {
+									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SP: +a modifier requires azimuth value\n");
+									decode_error++;
+								}
+								break;
+							case 'e':	/* Elevation */
+								if (mod[1]) {
+									elevation = atof(&mod[1]);
+									got_elev = true;
+								}
+								else {
+									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SP: +e modifier requires elevation value\n");
+									decode_error++;
+								}
+								break;
+							case 'f':	/* Flat/constant color (no gradient) */
+								p->SP_flat = true;
+								break;
+							case 'n':	/* No fill (outline only) */
+								p->SP_no_fill = true;
+								break;
+						}
+					}
+					if (got_azim || got_elev) {	/* Store light azimuth/elevation for later projection */
+						/* Store the light direction - will be projected to 2D at drawing time */
+						p->SP_light_az = azimuth;
+						p->SP_light_el = elevation;
+						p->SP_light_set = true;
+					}
+				}
 			}
 			break;
 		case 'q':	/* Quoted lines: -Sq[d|n|l|s|x]<info>[:<labelinfo>] */

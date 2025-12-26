@@ -3995,6 +3995,10 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 			PSL_command (PSL, "%d %d %d S%c\n", psl_iz (PSL, 0.5 * size[0]), psl_ix (PSL, x), psl_iy (PSL, y), (char)symbol);
 			break;
 
+	case PSL_SPHERE:	/* Sphere */
+		PSL_command (PSL, "%d %d %d SPhere\n", psl_iz (PSL, 0.5 * size[0]), psl_ix (PSL, x), psl_iy (PSL, y));
+		break;
+
 		/* Multi-parameter fillable symbols */
 
 		case PSL_WEDGE:		/* A wedge or pie-slice. size[0] = radius, size[1..2] = azimuth range of arc */
