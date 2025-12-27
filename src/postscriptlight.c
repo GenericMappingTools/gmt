@@ -4853,6 +4853,198 @@ int PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, int n) {
 	return (PSL_NO_ERROR);
 }
 
+int PSL_plotgradienttriangle(struct PSL_CTRL *PSL, double *x, double *y, double *rgb, int steps) {
+	/* Draw triangle with smooth vertex color gradient using barycentric interpolation
+	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
+	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
+	 * steps: number of subdivisions (higher = smoother, slower)
+	 * 
+	 * Writen by Claude.ai
+	 */
+
+	int i, j;
+	double s, t;
+	double s1, t1, s2, t2, s3, t3, s4, t4;
+	double u1, v1, w1, u2, v2, w2, u3, v3, w3, u4, v4, w4;
+	double px1, py1, px2, py2, px3, py3, px4, py4;
+	double pr1, pg1, pb1, pr2, pg2, pb2, pr3, pg3, pb3, pr4, pg4, pb4;
+	double step_inv;
+	double x_pts[3], y_pts[3];
+
+	if (steps <= 0) steps = 50;   /* Default quality */
+	if (steps > 200) steps = 200; /* Limit maximum */
+
+	/* Convert inches to points */
+	for (i = 0; i < 3; i++) {
+		x_pts[i] = x[i] * PSL->internal.dpu;
+		y_pts[i] = y[i] * PSL->internal.dpu;
+	}
+
+	step_inv = 1.0 / steps;
+
+	PSL_comment(PSL, "Begin gradient triangle\n");
+	PSL_command(PSL, "gsave\n");
+
+	/* Subdivide triangle into micro-triangles using barycentric coordinates */
+	for (i = 0; i < steps; i++) {
+		t = i * step_inv;
+		for (j = 0; j < steps; j++) {
+			s = j * step_inv;
+
+			/* Barycentric coordinates for 4 corners of sub-quad */
+			s1 = s;            t1 = t;
+			s2 = s + step_inv; t2 = t;
+			s3 = s + step_inv; t3 = t + step_inv;
+			s4 = s;            t4 = t + step_inv;
+
+			/* Check if first corner is inside triangle */
+			if (s1 + t1 <= 1.0) {
+				u1 = 1.0 - s1 - t1;
+				v1 = s1;
+				w1 = t1;
+
+				/* Interpolate position */
+				px1 = u1 * x_pts[0] + v1 * x_pts[1] + w1 * x_pts[2];
+				py1 = u1 * y_pts[0] + v1 * y_pts[1] + w1 * y_pts[2];
+
+				/* Interpolate color */
+				pr1 = u1 * rgb[0] + v1 * rgb[3] + w1 * rgb[6];
+				pg1 = u1 * rgb[1] + v1 * rgb[4] + w1 * rgb[7];
+				pb1 = u1 * rgb[2] + v1 * rgb[5] + w1 * rgb[8];
+
+				/* Check second corner */
+				if (s2 + t2 <= 1.0) {
+					u2 = 1.0 - s2 - t2;
+					v2 = s2;
+					w2 = t2;
+
+					px2 = u2 * x_pts[0] + v2 * x_pts[1] + w2 * x_pts[2];
+					py2 = u2 * y_pts[0] + v2 * y_pts[1] + w2 * y_pts[2];
+					pr2 = u2 * rgb[0] + v2 * rgb[3] + w2 * rgb[6];
+					pg2 = u2 * rgb[1] + v2 * rgb[4] + w2 * rgb[7];
+					pb2 = u2 * rgb[2] + v2 * rgb[5] + w2 * rgb[8];
+
+					/* Check fourth corner */
+					if (s4 + t4 <= 1.0) {
+						u4 = 1.0 - s4 - t4;
+						v4 = s4;
+						w4 = t4;
+
+						px4 = u4 * x_pts[0] + v4 * x_pts[1] + w4 * x_pts[2];
+						py4 = u4 * y_pts[0] + v4 * y_pts[1] + w4 * y_pts[2];
+						pr4 = u4 * rgb[0] + v4 * rgb[3] + w4 * rgb[6];
+						pg4 = u4 * rgb[1] + v4 * rgb[4] + w4 * rgb[7];
+						pb4 = u4 * rgb[2] + v4 * rgb[5] + w4 * rgb[8];
+
+						/* Draw first micro-triangle: p1-p2-p4 */
+						PSL_command(PSL, "%.6f %.6f %.6f C\n",
+							(pr1 + pr2 + pr4) / 3.0,
+							(pg1 + pg2 + pg4) / 3.0,
+							(pb1 + pb2 + pb4) / 3.0);
+						PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n", px1, py1, px2, py2, px4, py4);
+					}
+
+					/* Check third corner for second micro-triangle */
+					if (s3 + t3 <= 1.0) {
+						u3 = 1.0 - s3 - t3;
+						v3 = s3;
+						w3 = t3;
+
+						px3 = u3 * x_pts[0] + v3 * x_pts[1] + w3 * x_pts[2];
+						py3 = u3 * y_pts[0] + v3 * y_pts[1] + w3 * y_pts[2];
+						pr3 = u3 * rgb[0] + v3 * rgb[3] + w3 * rgb[6];
+						pg3 = u3 * rgb[1] + v3 * rgb[4] + w3 * rgb[7];
+						pb3 = u3 * rgb[2] + v3 * rgb[5] + w3 * rgb[8];
+
+						if (s4 + t4 <= 1.0) {  /* Already computed p4 */
+							/* Draw second micro-triangle: p2-p3-p4 */
+							PSL_command(PSL, "%.6f %.6f %.6f C\n",
+								(pr2 + pr3 + pr4) / 3.0,
+								(pg2 + pg3 + pg4) / 3.0,
+								(pb2 + pb3 + pb4) / 3.0);
+							PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n", px2, py2, px3, py3, px4, py4);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	PSL_command(PSL, "grestore\n");
+	PSL_comment(PSL, "End gradient triangle\n");
+
+	return (PSL_NO_ERROR);
+}
+
+int PSL_plotgradienttriangle_gouraud(struct PSL_CTRL *PSL, double *x, double *y, double *rgb) {
+	/* Draw triangle with smooth Gouraud shading using PostScript Type 4 shading
+	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
+	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
+	 * This uses PostScript Level 2/3 shading for perfectly smooth gradients
+	 * 
+	 * Writen by Claude.ai
+	 */
+
+	int i;
+	double x_pts[3], y_pts[3];
+
+	/* Convert inches to points */
+	for (i = 0; i < 3; i++) {
+		x_pts[i] = x[i] * PSL->internal.dpu;
+		y_pts[i] = y[i] * PSL->internal.dpu;
+	}
+
+	PSL_comment(PSL, "Begin Gouraud shaded triangle\n");
+	PSL_command(PSL, "gsave\n");
+	/* Set clipping path to triangle to constrain shfill and establish bounding box */
+	PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L closepath clip",
+		x_pts[0], y_pts[0], x_pts[1], y_pts[1], x_pts[2], y_pts[2]);
+
+
+	/* Create Type 4 (Free-Form Gouraud) shading dictionary */
+	PSL_command(PSL, "<<\n");
+	PSL_command(PSL, "  /ShadingType 4\n");
+	PSL_command(PSL, "  /ColorSpace /DeviceRGB\n");
+	PSL_command(PSL, "  /BitsPerCoordinate 16\n");
+	PSL_command(PSL, "  /BitsPerComponent 8\n");
+	PSL_command(PSL, "  /BitsPerFlag 8\n");
+
+	/* Decode arrays map from integer coordinates to actual coordinate ranges */
+	/* Find bounding box */
+	double xmin = x_pts[0], xmax = x_pts[0], ymin = y_pts[0], ymax = y_pts[0];
+	for (i = 1; i < 3; i++) {
+		if (x_pts[i] < xmin) xmin = x_pts[i];
+		if (x_pts[i] > xmax) xmax = x_pts[i];
+		if (y_pts[i] < ymin) ymin = y_pts[i];
+		if (y_pts[i] > ymax) ymax = y_pts[i];
+	}
+
+	PSL_command(PSL, "  /Decode [%.4f %.4f %.4f %.4f 0 1 0 1 0 1]\n", xmin, xmax, ymin, ymax);
+	PSL_command(PSL, "  /DataSource <\n");
+
+	/* Write triangle data as hex string */
+	/* Flag 0 = start new triangle, then coordinates (x,y) scaled to 0-65535, then RGB scaled to 0-255 */
+	for (i = 0; i < 3; i++) {
+		unsigned int flag = 0;  /* Start new triangle with vertex 0 */
+		unsigned int x_scaled = (unsigned int)((x_pts[i] - xmin) / (xmax - xmin) * 65535.0 + 0.5);
+		unsigned int y_scaled = (unsigned int)((y_pts[i] - ymin) / (ymax - ymin) * 65535.0 + 0.5);
+		unsigned int r = (unsigned int)(rgb[i*3 + 0] * 255.0 + 0.5);
+		unsigned int g = (unsigned int)(rgb[i*3 + 1] * 255.0 + 0.5);
+		unsigned int b = (unsigned int)(rgb[i*3 + 2] * 255.0 + 0.5);
+
+		PSL_command(PSL, "    %02X %04X %04X %02X%02X%02X\n", flag, x_scaled, y_scaled, r, g, b);
+	}
+
+	PSL_command(PSL, "  >\n");
+	PSL_command(PSL, ">>\n");
+	PSL_command(PSL, "shfill\n");
+
+	PSL_command(PSL, "grestore\n");
+	PSL_comment(PSL, "End Gouraud shaded triangle\n");
+
+	return (PSL_NO_ERROR);
+}
+
 int PSL_setexec (struct PSL_CTRL *PSL, int action) {
 	/* Enables of disables the execution of a PSL_plot_completion function at start of a PSL_plotinit overlay */
 	PSL->current.complete = (action) ? 1 : 0;

@@ -72,6 +72,9 @@ struct PSXY_CTRL {
 	struct PSXY_G {	/* -G<fill>|+z */
 		bool active;
 		bool set_color;
+		bool gradient;
+		bool smooth;	/* Use Gouraud shading instead of subdivision */
+		bool direct;	/* Direct color specification instead of CPT */
 		unsigned int sequential;
 		struct GMT_FILL fill;
 	} G;
@@ -576,6 +579,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Usage (API, -2, "The -G option can be present in all segment headers (not with -S). "
 		"To assign fill color via -Z, give -G+z).");
+	GMT_Usage (API, 3, "+g Enable vertex-based color gradients for polygons using Gouraud shading.");
+	GMT_Usage (API, -3, "Input data formats: (1) x y r g b (RGB values 0-255), (2) x y colorname, or (3) x y z with -C<cpt>.");
+	GMT_Usage (API, -3, "Requires at least 3 vertices per polygon. Use -W to add outline.");
+	GMT_Usage (API, 3, "+gt Same as +g but reserved for future subdivision algorithm [currently uses Gouraud].");
 	GMT_Usage (API, 1, "\n-H[<scale>]");
 	GMT_Usage (API, -2, "Scale symbol sizes (set via -S or input column) by factors read from scale column. "
 		"The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.");
@@ -941,6 +948,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if (strncmp (opt->arg, "+z", 2U) == 0)
 					Ctrl->G.set_color = true;
+				else if (strncmp (opt->arg, "+gt", 3U) == 0) {
+					Ctrl->G.gradient = true;
+					Ctrl->G.smooth = false;		/* Subdivision/triangulation, format auto-detected */
+					Ctrl->G.active = true;
+				}
+				else if (strncmp (opt->arg, "+g", 2U) == 0) {
+					Ctrl->G.gradient = true;
+					Ctrl->G.smooth = true;		/* Gouraud shading (default), format auto-detected */
+					Ctrl->G.active = true;
+				}
 				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " "); n_errors++;
 				}
@@ -1123,6 +1140,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 
 	if (Ctrl->G.set_color && !Ctrl->L.polygon) {	/* Otherwise -G+z -Z and open polylines would color only the outline */
 		Ctrl->L.active = Ctrl->L.polygon = true;
+	}
+	if (Ctrl->G.gradient && !Ctrl->L.polygon) {	/* Same for gradient triangles */
+		Ctrl->L.active = Ctrl->L.polygon = true;
+	}
+	if (Ctrl->G.gradient) {	/* Gradient triangles need x,y,z columns */
+		gmt_set_cols (GMT, GMT_IN, 3);
 	}
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
@@ -2465,14 +2488,31 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 		if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols = 3;
 		else if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols = 4;
+		bool need_text = false;	/* Flag for color string format requiring text reading */
+		bool skip_set_columns = false;
+		if (Ctrl->G.gradient) {
+			/* For gradients, don't force column count - let GMT read all available columns
+			 * and enable text for color name support */
+			need_text = true;
+			skip_set_columns = true;	/* Skip GMT_Set_Columns to let GMT auto-detect */
+		}
 		conf_line = (Ctrl->L.anchor >= PSXY_POL_SYMM_DEV && Ctrl->L.anchor <= PSXY_POL_ASYMM_ENV);
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+		if (GMT_Init_IO(API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-			/* We don't want trailing text because we may need to resample lines below */
-			Return (API->error);
+		if (skip_set_columns && need_text) {
+			/* For gradients: read 5 columns with text - GMT will read what's available and set L->n_columns correctly */
+			GMT->current.io.max_cols_to_read = 0;		/* Do not make any assumptions about max columns */
+			if ((error = GMT_Set_Columns(API, GMT_IN, 0, GMT_COL_VAR)) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+		else if (!skip_set_columns) {
+			if ((error = GMT_Set_Columns(API, GMT_IN, (unsigned int)n_cols, need_text ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+				/* We don't want trailing text because we may need to resample lines below, except for gradients */
+				Return (API->error);
+			}
 		}
 		if ((S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE) && S.G.segmentize) {	/* Special quoted/decorated line where each point-pair should be considered a line segment */
 			struct GMT_SEGMENTIZE S;
@@ -2560,6 +2600,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
 		if (Ctrl->G.set_color) polygon = true;
+		if (Ctrl->G.gradient) polygon = true;
 
 		if (Ctrl->M.active && !Ctrl->M.constant) {	/* Must check input matches requirements */
 			if (Ctrl->M.mode == GMT_CURVES_SEPARATE) {
@@ -2817,9 +2858,122 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 				}
 
-				if (polygon && !no_line_clip) {	/* Want a closed polygon (with or without fill and with or without outline) */
-					gmt_setfill (GMT, &current_fill, outline_setting);
-					gmt_geo_polygons (GMT, L);
+				/* Handle gradient polygons (works for both clipped and non-clipped paths) */
+				bool gradient_done = false;
+				if (polygon && Ctrl->G.gradient) {
+					/* Auto-detect gradient format based on GMT's column count */
+					if (Ctrl->G.gradient) {
+						if (L->n_columns == 5) {
+							/* RGB format: x y r g b */
+							Ctrl->G.direct = true;
+						}
+						else if (L->n_columns == 2 && L->text && L->text[0]) {
+							/* Color string format: x y colorname (L->n_columns counts text as column 3) */
+							Ctrl->G.direct = true;
+						}
+						else if (L->n_columns == 3) {
+							/* CPT format: x y z (3 numeric columns) */
+							Ctrl->G.direct = false;
+						}
+					}
+
+					/* Error check: CPT mode requires a color palette */
+					if (Ctrl->G.gradient && !Ctrl->G.direct && P == NULL) {
+						GMT_Report(API, GMT_MSG_ERROR, "Gradient option -G+g detected CPT format (x y z) but no color palette provided. Use -C<cpt> to specify a color palette.\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+
+					/* For gradients: need at least 3 vertices AND appropriate data format */
+					if (Ctrl->G.gradient && L->n_rows >= 3 &&
+					    ((L->n_columns == 5 && Ctrl->G.direct) || (L->n_columns == 3 && !Ctrl->G.direct && P) || (L->n_columns == 2 && L->text && Ctrl->G.direct))) {
+						double tri_rgb[9], rgb_tmp[4];
+						double plot_x[3], plot_y[3];
+
+						/* Project to map coordinates (use cart_to_xy if no clipping) */
+						if (no_line_clip)
+							GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows);
+						else
+							GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows);
+
+						if (GMT->current.plot.n > 0 && GMT->current.plot.n >= 3) {
+							/* Check if polygon is closed (last vertex == first vertex) */
+							bool closed = (L->data[GMT_X][0] == L->data[GMT_X][L->n_rows-1] &&
+							               L->data[GMT_Y][0] == L->data[GMT_Y][L->n_rows-1]);
+							unsigned int n_unique = closed ? L->n_rows - 1 : L->n_rows;
+
+							/* Error check: need at least 3 unique vertices */
+							if (n_unique < 3) {
+								GMT_Report(API, GMT_MSG_ERROR, "Gradient polygons require at least 3 vertices (found %u)\n", n_unique);
+								Return (GMT_RUNTIME_ERROR);
+							}
+
+							/* Fan triangulation from first vertex */
+							unsigned int n_triangles = n_unique - 2;
+
+							for (unsigned int tri = 0; tri < n_triangles; tri++) {
+								/* Triangle i uses vertices: 0, i+1, i+2 */
+								unsigned int tri_indices[3] = {0, tri + 1, tri + 2};
+								/* Get RGB colors for this triangle */
+								for (unsigned int k = 0; k < 3; k++) {
+									unsigned int idx = tri_indices[k];
+									if (Ctrl->G.direct && L->n_columns == 5) {
+										/* RGB from columns: x y r g b */
+										tri_rgb[k * 3 + 0] = L->data[2][idx] / 255.0;
+										tri_rgb[k * 3 + 1] = L->data[3][idx] / 255.0;
+										tri_rgb[k * 3 + 2] = L->data[4][idx] / 255.0;
+									}
+									else if (Ctrl->G.direct && L->n_columns == 2 && L->text && L->text[idx]) {
+										/* Color name from text (n_columns==2 for x,y + text field) */
+										if (gmt_getrgb(GMT, L->text[idx], rgb_tmp) == 0) {
+											tri_rgb[k * 3 + 0] = rgb_tmp[0];
+											tri_rgb[k * 3 + 1] = rgb_tmp[1];
+											tri_rgb[k * 3 + 2] = rgb_tmp[2];
+										}
+										else {
+											tri_rgb[k * 3 + 0] = tri_rgb[k * 3 + 1] = tri_rgb[k * 3 + 2] = 0.0;
+											GMT_Report(API, GMT_MSG_WARNING, "Failed to parse color '%s', using black\n", L->text[idx]);
+										}
+									}
+									else if (!Ctrl->G.direct && L->n_columns == 3) {
+										/* CPT-based: z from column 3 */
+										gmt_get_rgb_from_z(GMT, P, L->data[2][idx], rgb_tmp);
+										tri_rgb[k * 3 + 0] = rgb_tmp[0];
+										tri_rgb[k * 3 + 1] = rgb_tmp[1];
+										tri_rgb[k * 3 + 2] = rgb_tmp[2];
+									}
+									else {
+										/* Fallback */
+										tri_rgb[k * 3 + 0] = tri_rgb[k * 3 + 1] = tri_rgb[k * 3 + 2] = 0.0;
+									}
+								}
+
+								/* Copy coordinates (PSL expects inches, not points!) */
+								for (unsigned int k = 0; k < 3; k++) {
+									unsigned int idx = tri_indices[k];
+									plot_x[k] = GMT->current.plot.x[idx];
+									plot_y[k] = GMT->current.plot.y[idx];
+								}
+
+								/* Draw gradient */
+								if (Ctrl->G.smooth)
+									PSL_plotgradienttriangle_gouraud(PSL, plot_x, plot_y, tri_rgb);
+								else
+									PSL_plotgradienttriangle(PSL, plot_x, plot_y, tri_rgb, 50);
+							}
+
+							gradient_done = true;
+
+							/* Optionally draw outline */
+							if (outline_setting) {
+								gmt_setpen(GMT, &current_pen);
+								PSL_plotpolygon(PSL, GMT->current.plot.x, GMT->current.plot.y, L->n_rows);
+							}
+						}
+					}
+					if (!gradient_done) {
+						gmt_setfill(GMT, &current_fill, outline_setting);
+						gmt_geo_polygons(GMT, L);
+					}
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					bool closed, split = false;
@@ -2973,20 +3127,59 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						else
 							GMT->current.plot.n = gmt_cart_to_xy_line (GMT,  GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end);
 						if (Ctrl->L.outline) gmt_setpen (GMT, &Ctrl->L.pen);	/* Select separate pen for polygon outline */
-						if (Ctrl->G.active)	/* Specify the fill, possibly set outline */
+						if (Ctrl->G.active) {	/* Specify the fill, possibly set outline */
 							gmt_setfill (GMT, &current_fill, Ctrl->L.outline);
-						else	/* No fill, just outline */
-							gmt_setfill (GMT, NULL, Ctrl->L.outline);
-						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+							/* Check if gradient triangle */
+							if (Ctrl->G.gradient && (GMT->current.plot.n == 3 || GMT->current.plot.n == 4) && D->table[tbl]->segment[seg]->n_columns >= 3 && L->n_rows >= 3 && P) {
+								double tri_rgb[9], rgb_tmp[4];
+								double plot_x[3], plot_y[3];
+								struct GMT_DATASEGMENT *S_orig = D->table[tbl]->segment[seg];
+
+								/* Get RGB colors from z-values via CPT */
+								for (unsigned int k = 0; k < 3; k++) {
+									gmt_get_rgb_from_z(GMT, P, S_orig->data[2][k], rgb_tmp);
+									tri_rgb[k * 3 + 0] = gmt_M_is255(rgb_tmp[0]);
+									tri_rgb[k * 3 + 1] = gmt_M_is255(rgb_tmp[1]);
+									tri_rgb[k * 3 + 2] = gmt_M_is255(rgb_tmp[2]);
+								}
+
+								/* Convert to PostScript points */
+								for (unsigned int k = 0; k < 3; k++) {
+									plot_x[k] = GMT->current.plot.x[k] * GMT->session.u2u[GMT_INCH][GMT_PT];
+									plot_y[k] = GMT->current.plot.y[k] * GMT->session.u2u[GMT_INCH][GMT_PT];
+								}
+
+								/* Draw gradient */
+								if (Ctrl->G.smooth)
+									PSL_plotgradienttriangle_gouraud(PSL, plot_x, plot_y, tri_rgb);
+								else
+									PSL_plotgradienttriangle(PSL, plot_x, plot_y, tri_rgb, 50);
+
+								/* Optionally draw outline */
+								if (Ctrl->L.outline) {
+									PSL_plotpolygon(PSL, GMT->current.plot.x, GMT->current.plot.y, (GMT->current.plot.n == 4) ? 3 : (int)GMT->current.plot.n);
+								}
+							}
+							else {
+								PSL_plotpolygon(PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+							}
+						}
+						else {	/* No fill, just outline */
+							gmt_setfill(GMT, NULL, Ctrl->L.outline);
+							PSL_plotpolygon(PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+						}
 						if (!Ctrl->W.active) draw_line = false;	/* Did not want to actually draw the main line */
-						if (Ctrl->L.outline) gmt_setpen (GMT, &current_pen);	/* Reset the pen to what -W indicates */
+						if (Ctrl->L.outline) gmt_setpen(GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
 					if (no_line_clip) {	/* Draw line or polygon without border clipping at all */
-						if ((GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
-						if (outline_active) gmt_setpen (GMT, &current_pen);	/* Select separate pen for polygon outline */
-						if (Ctrl->G.active) {	/* Specify the fill, possibly set outline */
+						/* Skip projection if gradient already handled it */
+						if (!gradient_done && (GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
+						if (outline_active && !gradient_done) gmt_setpen (GMT, &current_pen);	/* Select separate pen for polygon outline */
+						if (Ctrl->G.active && !gradient_done) {	/* Specify the fill (skip if gradient already drawn) */
 							gmt_setfill (GMT, &current_fill, outline_active);
-							PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+							{
+								PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+							}
 						}
 						else {	/* No fill but may still be a polygon */
 							gmt_setfill (GMT, NULL, outline_active);

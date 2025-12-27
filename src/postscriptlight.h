@@ -477,6 +477,8 @@ EXTERN_MSC int PSL_plotparagraphbox (struct PSL_CTRL *PSL, double x, double y, d
 EXTERN_MSC int PSL_plotpoint (struct PSL_CTRL *PSL, double x, double y, int pen);
 EXTERN_MSC int PSL_plotbox (struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1);
 EXTERN_MSC int PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, int n);
+EXTERN_MSC int PSL_plotgradienttriangle (struct PSL_CTRL *PSL, double *x, double *y, double *rgb, int steps);
+EXTERN_MSC int PSL_plotgradienttriangle_gouraud (struct PSL_CTRL *PSL, double *x, double *y, double *rgb);
 EXTERN_MSC int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1);
 EXTERN_MSC int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double param[], int symbol);
 EXTERN_MSC int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, int justify, int mode);
