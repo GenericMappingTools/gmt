@@ -212,7 +212,7 @@ Optional Arguments
 
         1. **RGB format**: *x y r g b* where RGB values are in the range 0-255.
         2. **Color name format**: *x y colorname* where *colorname* can be a named color (e.g., "red", "blue"),
-           hex color (e.g., "#FF0000"), or slash-separated RGB (e.g., "255/0/0").
+           hex color (e.g., "#FF0000"), slash-separated RGB (e.g., "255/0/0"), H-S-V or C/M/Y/K formats.
         3. **CPT format**: *x y z* where *z* values are mapped to colors via the CPT specified with |-C|.
 
         Polygons with any number of vertices are supported and automatically triangulated using a fan triangulation
