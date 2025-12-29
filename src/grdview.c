@@ -59,10 +59,9 @@
 
 #define GRDVIEW_MESH		0	/* Default */
 #define GRDVIEW_SURF		1
-#define GRDVIEW_GOURAUD		2
-#define GRDVIEW_IMAGE		3
-#define GRDVIEW_WATERFALL_X	4
-#define GRDVIEW_WATERFALL_Y	5
+#define GRDVIEW_IMAGE		2
+#define GRDVIEW_WATERFALL_X	3
+#define GRDVIEW_WATERFALL_Y	4
 
 struct GRDVIEW_CTRL {
 	struct GRDVIEW_In {
@@ -106,8 +105,8 @@ struct GRDVIEW_CTRL {
 		bool gouraud;		/* Enable vertex-based color gradients */
 		bool cpt;
 		int outline;
-		unsigned int mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
-		unsigned int diagonal;	/* 0=0-2, 1=1-3, 2=adaptive */
+		int mode;			/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
+		int diagonal;		/* 0=0-2, 1=adaptive */
 		double dpi;
 		struct GMT_FILL fill;
 	} Q;
@@ -296,7 +295,7 @@ GMT_LOCAL void grdview_add_node (bool used[], double x[], double y[], double z[]
 GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P,
                                           struct GMT_GRID *I, double *xmesh, double *ymesh,
                                           gmt_grdfloat *Z_vert, uint64_t ij, int *ij_inc,
-                                          bool use_intensity, bool monochrome, unsigned int diagonal) {
+                                          bool use_intensity, bool monochrome, int diagonal) {
 	/* Paint a single grid tile using vertex-based Gouraud shading
 	 * xmesh, ymesh: projected 2D coordinates of 4 tile corners [already projected]
 	 * Z_vert: z-values at 4 tile corners
@@ -304,7 +303,7 @@ GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL 
 	 * ij_inc: offsets to access 4 tile corners [0, 1, 1-mx, -mx]
 	 * use_intensity: apply illumination from grid I
 	 * monochrome: convert to grayscale
-	 * diagonal: 0=0-2, 1=1-3, 2=adaptive
+	 * diagonal: 0=0-2, 1=adaptive
 	 */
 	double rgb_vert[12], rgb_tri[9];
 	double x_tri[3], y_tri[3];
@@ -329,11 +328,11 @@ GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL 
 	}
 
 	/* Determine triangle vertex indices based on diagonal choice */
-	if (diagonal == 1) {  /* Use 1-3 diagonal */
-		indices[0] = 0; indices[1] = 1; indices[2] = 3;  /* Triangle 1 */
-		indices[3] = 1; indices[4] = 2; indices[5] = 3;  /* Triangle 2 */
+	if (diagonal == 0) {  /* Use 0-2 diagonal */
+		indices[0] = 0; indices[1] = 1; indices[2] = 2;  /* Triangle 1 */
+		indices[3] = 0; indices[4] = 2; indices[5] = 3;  /* Triangle 2 */
 	}
-	else if (diagonal == 2) {  /* Adaptive - choose based on z-variance */
+	else {		/* Adaptive - choose based on z-variance */
 		double var_02 = fabs(Z_vert[0] - Z_vert[2]);
 		double var_13 = fabs(Z_vert[1] - Z_vert[3]);
 		if (var_13 < var_02) {  /* Use 1-3 diagonal */
@@ -344,10 +343,6 @@ GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL 
 			indices[0] = 0; indices[1] = 1; indices[2] = 2;
 			indices[3] = 0; indices[4] = 2; indices[5] = 3;
 		}
-	}
-	else {  /* Default: Use 0-2 diagonal */
-		indices[0] = 0; indices[1] = 1; indices[2] = 2;  /* Triangle 1 */
-		indices[3] = 0; indices[4] = 2; indices[5] = 3;  /* Triangle 2 */
 	}
 
 	/* Render Triangle 1 */
@@ -742,7 +737,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					case 'g':	/* Gouraud-shaded surface */
 						Ctrl->Q.mode = GRDVIEW_SURF;
 						Ctrl->Q.gouraud = true;
-						Ctrl->Q.cpt = true;
+						Ctrl->Q.cpt = true;		/* Will need a CPT */
+						if (opt->arg[1] == 'm') Ctrl->Q.outline = 1;
+						if (opt->arg[1] == 'd') Ctrl->Q.diagonal = 1;
 						break;
 					case 'i':	/* Image with clipmask */
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
@@ -767,7 +764,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						if (opt->arg[n+1]) {	/* Appended /<color> or just <color> */
 							k = ((opt->arg[n+1] == '/') ? 2 : 1) + n;
 							n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
-							                                 "Option -Qm: To give mesh color, use -Qm[x|y]<color>\n");
+							                                   "Option -Qm: To give mesh color, use -Qm[x|y]<color>\n");
 						}
 						break;
 					case 's':	/* Color without contours */
