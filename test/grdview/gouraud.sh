@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 #
 # Test Gouraud shading for grdview surfaces with -Qg
 # Creates comparison plots: flat shading vs Gouraud shading

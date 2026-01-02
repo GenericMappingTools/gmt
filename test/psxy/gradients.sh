@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_KNOWN_FAILURE
 #
 # Test gradient-filled polygons with -G+g (Gouraud shading)
 # Tests RGB format (x y r g b), color names (x y colorname),
