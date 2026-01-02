@@ -19,7 +19,7 @@ Synopsis
 [ |-I|\ [*file*\|\ *intens*\|\ **+a**\ *azimuth*][**+d**][**+m**\ *ambient*][**+n**\ *args*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ [*level*]\ [**+g**\ *fill*] ]
-[ |-Q|\ **c**\|\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\ [*color*][**+m**] ]
+[ |-Q|\ **c**\|\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\|\ **g**\ [**m**]\ [*color*][**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
@@ -101,7 +101,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ **c**\|\ **i**\|\ **m**\ [**x**\|\ **y**]\|\ **s**\ [**m**]\ [*color*][**+m**]
+**-Q**\ **c**|\ **g**[**m**][**a**]|\ **i**|\ **m**\ [**x**|\ **y**]|\ **s**\ [**m**]\ [*color*][**+m**]
     Select one of following directives. For any of these choices:
 
     - **c** - Image plot, but will make nodes with *z* = NaN transparent, using the color-masking
@@ -110,9 +110,15 @@ Optional Arguments
     - **i** - Image plot. Optionally append the effective dots-per-unit resolution for the
       rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
     - **m** - Mesh plot [Default]. Optionally append *color* for a different mesh paint [white].
-      For waterfall plots, append **x** for row or **y** for column profiles). Specify color as for plain **m**.
+      For waterfall plots, append **x** for row or **y** for column profiles. Specify color as for plain **m**.
     - **s** - Surface plot. Optionally append **m** to have mesh lines drawn on top of surface. See **-Wm** for
       setting a specific mesh *pen*.
+    - **g** - Gouraud-shaded surface with smooth vertex-based color gradients. Optionally append **m** to draw mesh lines
+      on top of the surface. Append **a** to use alternate diagonal when splitting tiles into triangles.
+      Gouraud shading produces smoother color transitions than **-Qs** and generates significantly smaller
+      and faster PostScript files. The **-Qs** option should be used though when precise color transitions
+      are required at contour levels (to do a `contourf` type figure. See **-Wc**) because the Gouraud-shaded
+      doesn't cut the tiles along the contour lines as **-Qs** does.
 
     A modifier can adjust the color further:
 
