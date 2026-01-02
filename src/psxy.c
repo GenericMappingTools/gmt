@@ -2863,18 +2863,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				if (polygon && Ctrl->G.gradient) {
 					/* Auto-detect gradient format based on GMT's column count */
 					if (Ctrl->G.gradient) {
-						if (L->n_columns == 5) {
-							/* RGB format: x y r g b */
+						if (L->n_columns == 5)  /* RGB format: x y r g b */
 							Ctrl->G.direct = true;
-						}
-						else if (L->n_columns == 2 && L->text && L->text[0]) {
-							/* Color string format: x y colorname (L->n_columns counts text as column 3) */
+						else if (L->n_columns == 2 && L->text && L->text[0]) /* Color string format: x y colorname (L->n_columns counts text as column 3) */
 							Ctrl->G.direct = true;
-						}
-						else if (L->n_columns == 3) {
-							/* CPT format: x y z (3 numeric columns) */
+						else if (L->n_columns == 3)  /* CPT format: x y z (3 numeric columns) */
 							Ctrl->G.direct = false;
-						}
 					}
 
 					/* Error check: CPT mode requires a color palette */
@@ -2886,8 +2880,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					/* For gradients: need at least 3 vertices AND appropriate data format */
 					if (Ctrl->G.gradient && L->n_rows >= 3 &&
 					    ((L->n_columns == 5 && Ctrl->G.direct) || (L->n_columns == 3 && !Ctrl->G.direct && P) || (L->n_columns == 2 && L->text && Ctrl->G.direct))) {
-						double tri_rgb[9], rgb_tmp[4];
-						double plot_x[3], plot_y[3];
+						double tri_rgb[9], rgb_tmp[4], plot_x[3], plot_y[3];
 
 						/* Project to map coordinates (use cart_to_xy if no clipping) */
 						if (no_line_clip)
@@ -2934,15 +2927,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 											GMT_Report(API, GMT_MSG_WARNING, "Failed to parse color '%s', using black\n", L->text[idx]);
 										}
 									}
-									else if (!Ctrl->G.direct && L->n_columns == 3) {
-										/* CPT-based: z from column 3 */
+									else if (!Ctrl->G.direct && L->n_columns == 3) { /* CPT-based: z from column 3 */
 										gmt_get_rgb_from_z(GMT, P, L->data[2][idx], rgb_tmp);
 										tri_rgb[k * 3 + 0] = rgb_tmp[0];
 										tri_rgb[k * 3 + 1] = rgb_tmp[1];
 										tri_rgb[k * 3 + 2] = rgb_tmp[2];
 									}
-									else {
-										/* Fallback */
+									else {		/* Fallback */
 										tri_rgb[k * 3 + 0] = tri_rgb[k * 3 + 1] = tri_rgb[k * 3 + 2] = 0.0;
 									}
 								}
@@ -2974,6 +2965,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						gmt_setfill(GMT, &current_fill, outline_setting);
 						gmt_geo_polygons(GMT, L);
 					}
+				}
+				else if (polygon && !no_line_clip) {	/* Want a closed polygon (with or without fill and with or without outline) */
+					gmt_setfill (GMT, &current_fill, outline_setting);
+					gmt_geo_polygons (GMT, L);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					bool closed, split = false;
