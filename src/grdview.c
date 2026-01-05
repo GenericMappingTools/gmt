@@ -504,7 +504,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C%s] [-G<drapegrid>|<drapeimage>] "
-		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Qc|i|m[x|y]|s[<color>][+m]] [%s] [-S<smooth>] "
+		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Qc|g[m|a]|i|m[x|y]|s[<color>][+m]] [%s] [-S<smooth>] "
 		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_B_OPT, CPT_OPT_ARGS, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -542,13 +542,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "c: Transform polygons to raster-image via scanline conversion. Append effective <dpu> [%lg%c]. "
 		"Set PS Level 3 color-masking for nodes with z = NaN.",
 		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
+	GMT_Usage (API, 3, "g: Gouraud-shaded surface with smooth vertex-based color gradients. Append m to draw mesh-lines. Append a for alternate diagonal algorithm.");
 	GMT_Usage (API, 3, "i: As c but no color-masking. Append effective <dpu> [%lg%c].",
 		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	GMT_Usage (API, 3, "m: Mesh plot [Default]. Append <color> for mesh paint [%s]. "
 		"Alternatively, append x or y for row or column \"waterfall\" profiles.",
 		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Usage (API, 3, "s: Colored or shaded surface. Optionally, append m to draw mesh-lines on the surface.");
-	GMT_Usage (API, 3, "g: Gouraud-shaded surface with smooth vertex-based color gradients. Append m to draw mesh-lines. Append a for alternate diagonal.");
+	GMT_Usage (API, 3, "t: Paint tiles without color interpolation. Good for categorical data.");
 	GMT_Usage (API, -2, "Color may be further adjusted by a modifier:");
 	GMT_Usage (API, 3, "+m Force a monochrome image using the YIQ transformation.");
 	GMT_Option (API, "R");
@@ -733,10 +734,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						Ctrl->Q.cpt = true;	/* Will need a CPT */
 						Ctrl->Q.mask = true;
 						break;
-					case 't':	/* Image without color interpolation */
-						Ctrl->Q.special = true;
-						Ctrl->Q.cpt = true;	/* Will need a CPT */
-						/* Intentionally fall through - to 'i' */
 					case 'g':	/* Gouraud-shaded surface */
 						Ctrl->Q.mode = GRDVIEW_SURF;
 						Ctrl->Q.gouraud = true;
@@ -744,9 +741,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						if (opt->arg[1] == 'm') Ctrl->Q.outline = 1;
 						if (opt->arg[1] == 'a') Ctrl->Q.diagonal = 1;
 						break;
+					case 't':	/* Image without color interpolation */
+						Ctrl->Q.special = true;
+						/* Intentionally fall through - to 'i' */
 					case 'i':	/* Image with clipmask */
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
-						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = grdview_get_dpi (&opt->arg[1]);
+						if (opt->arg[1] && isdigit((int)opt->arg[1])) Ctrl->Q.dpi = grdview_get_dpi(&opt->arg[1]);
 						Ctrl->Q.cpt = true;	/* Will need a CPT */
 						break;
 					case 'm':	/* Mesh plot */
