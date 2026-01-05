@@ -54,7 +54,7 @@ jobs:
           - name: Linux
             os: ubuntu-latest
           - name: macOS
-            os: macos-13 # macos-14 use M1 chips, which causes many failures
+            os: macos-15-intel # macos-14 use M1 chips, which causes many failures
           - name: Windows
             os: windows-latest
 
