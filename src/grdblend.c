@@ -216,7 +216,7 @@ GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsign
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HHG = NULL;
 
-	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ] = {""}, res[4] = {""};
+	char *sense[2] = {"normal", "inverse"}, buffer[PATH_MAX] = {""}, res[4] = {""};
 	static char *V_level = GMT_VERBOSE_CODES;
 	char Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""};
 	double wesn[4], sub = 0.0;
@@ -439,15 +439,23 @@ GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsign
 			/* The goal below is to come up with a wesn that a proper subset of the output grid while still not
 			 * exceeding the bounds of the current tile grid. The wesn below will be compatible with the output grid
 			 * but is not compatible with the input grid.  grdsample will make the adjustment */
+
+			/* Tinny roundoff differences between wesn and t->wesn could cause jumps of one grid step and being
+			  responsible for what's reported in the forum topic (issue #8576)
+			  https://forum.generic-mapping-tools.org/t/lines-appear-when-the-resolution-is-increased/6011/3
+			  For percaution we limit the adjustment to be within half a grid increment and apply only x|y_min.
+			*/
 			k = (unsigned int)rint ((MAX (h->wesn[XLO], t->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XLO] = h->wesn[XLO] + k * h->inc[GMT_X];
-			while (wesn[XLO] < t->wesn[XLO]) wesn[XLO] += t->inc[GMT_X];	/* Make sure we are not outside this grid */
+			//while (wesn[XLO] < t->wesn[XLO]) wesn[XLO] += t->inc[GMT_X];	/* Make sure we are not outside this grid */
+			while ((wesn[XLO] - t->wesn[XLO]) < -t->inc[GMT_X] / 2) wesn[XLO] += t->inc[GMT_X];
 			k = (unsigned int)rint ((MIN (h->wesn[XHI], t->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
 			wesn[XHI] = h->wesn[XLO] + k * h->inc[GMT_X];
 			while (wesn[XHI] > t->wesn[XHI]) wesn[XHI] -= t->inc[GMT_X];	/* Make sure we are not outside this grid */
 			k = (unsigned int)rint ((MAX (h->wesn[YLO], t->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YLO] = h->wesn[YLO] + k * h->inc[GMT_Y];
-			while (wesn[YLO] < t->wesn[YLO]) wesn[YLO] += t->inc[GMT_Y];	/* Make sure we are not outside this grid */
+			//while (wesn[YLO] < t->wesn[YLO]) wesn[YLO] += t->inc[GMT_Y];	/* Make sure we are not outside this grid */
+			while ((wesn[YLO] - t->wesn[YLO]) < -t->inc[GMT_Y] / 2) wesn[YLO] += t->inc[GMT_Y];	/* Make sure we are not outside this grid */
 			k = (unsigned int)rint  ((MIN (h->wesn[YHI], t->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
 			wesn[YHI] = h->wesn[YLO] + k * h->inc[GMT_Y];
 			while (wesn[YHI] > t->wesn[YHI]) wesn[YHI] -= t->inc[GMT_Y];	/* Make sure we are not outside this grid */
@@ -469,8 +477,13 @@ GMT_LOCAL int grdblend_init_blend_job(struct GMT_CTRL *GMT, char **files, unsign
 			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
 			GMT->common.V.active = false;	/* Since we will parse again below */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
-
-				if (gmt_get_tempname (GMT->parent, "grdblend_resampled", ".nc", buffer))
+				char template[GMT_LEN32] = {""};
+				/* We need different template name be cause MSVC is shamelessly ignoring what it states in the _mktemp_s man page 
+				  https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/mktemp-s-wmktemp-s?view=msvc-170*
+				  and returns the same temp name over and over again causing that the sampled grids overwrite each other
+				*/
+				sprintf(template, "grdblend_resampled_%d", n);
+				if (gmt_get_tempname (GMT->parent, template, ".nc", buffer))
 					return GMT_RUNTIME_ERROR;
 				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, res,
 				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
@@ -1038,12 +1051,14 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 						/* Last case BLEND_LAST is always true in that we always update z[col] */
 					}
 					switch (Ctrl->C.sign) {	/* Check if sign of input grid should be considered in decision */
-						case -1: if (first_grid) {z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
-							 else if (blend[k].z[kk] > 0.0) continue;	/* Only pick grids value if negative or zero */
-							 break;
-						case +1: if (first_grid) { z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
-							 else if (blend[k].z[kk] < 0.0) continue;	/* Only pick grids value if positive or zero */
-							 break;
+						case -1:
+							if (first_grid) {z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
+							else if (blend[k].z[kk] > 0.0) continue;	/* Only pick grids value if negative or zero */
+							break;
+						case +1:
+							if (first_grid) { z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
+							else if (blend[k].z[kk] < 0.0) continue;	/* Only pick grids value if positive or zero */
+							break;
 						default: break;						/* Always use the grid value */
 
 					}
