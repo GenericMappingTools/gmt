@@ -3095,7 +3095,7 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	}
 
 	PSL_comment(PSL, "End of map frame\n");
-	if (!PSL->internal.comments) PSL_command(PSL, "\n%%End of map fram\n");
+	if (!PSL->internal.comments) PSL_command(PSL, "\n%%End of map frame\n");
 }
 
 /* gmt_map_basemap will create a basemap for the given area.
