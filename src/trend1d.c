@@ -628,6 +628,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-I[<confidence>]");
 	GMT_Usage (API, -2, "Iteratively Increase the number of model parameters, to a max of <n_model> so long as the "
 		"reduction in variance is significant at the <confidence> level [0.51].");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n]");
+	GMT_Usage (API, -2, "Evaluate model at the equidistant points implied by the arguments. "
+		"If only -T<inc>[+i|n] is given we reset <min> and <max> to the extreme x-values "
+		"for each segment.");
+	GMT_Usage (API, 3, "+n Note that <inc> is the number of t-values to produce instead of increment.");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, -2, "For absolute time data, append a valid time unit (%s) to the increment. "
+		"Alternatively, give a file with output times in the first column, or a comma-separated list. "
+		"Use -T0 to bypass model evaluation entirely "
+		"[Default uses locations of input data to evaluate the model].", GMT_TIME_UNITS_DISPLAY);
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W[+s|w]");
 	GMT_Usage (API, -2, " Weighted input given, weights in 3rd column [Default is unweighted]. Select modifier:");
@@ -946,12 +956,15 @@ EXTERN_MSC int GMT_trend1d (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+		double *c_copy = NULL;
 		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_INFORMATION, format, n_model, rank, c_chisq);
 		if (!Ctrl->model_parameters) {	/* Only give verbose feedback on coefficients if not requested as output */
+			c_copy = gmt_M_memory (GMT, NULL, n_model, double);
+			gmt_M_memcpy (c_copy, c_model, n_model, double);
 			if (Ctrl->N.M.type & 1) {	/* Has polynomial component */
 				if (Ctrl->N.M.chebyshev)
-					trend1d_cheb_to_pol (GMT, c_model, Ctrl->N.M.n_poly, xmin, xmax, 1);
+					trend1d_cheb_to_pol (GMT, c_copy, Ctrl->N.M.n_poly, xmin, xmax, 1);
 				sprintf (format, "Model Coefficients  (Polynomial");
 			}
 			if (Ctrl->N.M.type & 2)	/* Has Fourier components */
@@ -959,8 +972,9 @@ EXTERN_MSC int GMT_trend1d (void *V_API, int mode, void *args) {
 			strcat (format, "): ");
 			GMT_Report (API, GMT_MSG_INFORMATION, format);
 			sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
-			for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
+			for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_copy[i]);
 			GMT_Message (API, GMT_TIME_NONE, "\n");
+			gmt_M_free (GMT, c_copy);
 		}
 	}
 
