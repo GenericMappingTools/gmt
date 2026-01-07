@@ -518,6 +518,9 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 		&& gmtgrdio_eq (wesn[YLO], header->wesn[YLO], header->inc[GMT_Y]) && gmtgrdio_eq (wesn[YHI], header->wesn[YHI], header->inc[GMT_Y]))
 		return (false);	/* Subset equals whole area */
 	gmt_M_memcpy (P->wesn, wesn, 4, double);			/* Copy the subset boundaries */
+
+	if (!GMT->common.R.active[RSET]) GMT->common.R.active[RSET] = true;	/* This happens when we read a file with a wesn but no -R is set */
+
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (false);	/* No padding requested */
 	if (!GMT->current.io.grid_padding) return (false);	/* Not requested */
 
