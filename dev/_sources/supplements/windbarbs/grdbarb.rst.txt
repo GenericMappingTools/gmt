@@ -103,8 +103,6 @@ Optional Arguments
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
     multiples *multx*\ [/*multy*] directly [Default plots every node].
 
-.. include:: ../../explain_-K.rst_
-
 .. _-N:
 
 **-N**

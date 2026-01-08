@@ -17,6 +17,7 @@ Synopsis
 |-N|\ [**p**\|\ **P**\|\ **f**\|\ **F**\|\ **c**\|\ **C**\|\ **s**\|\ **S**\|\ **x**]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
 [ |-C|\ *condition_number* ]
 [ |-I|\ [*confidence_level*] ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+s**] ]
 [ |SYN_OPT-b| ]
@@ -119,6 +120,14 @@ Optional Arguments
     model terms are added in the order they were given in |-N| so you
     should place the most important terms first.
 
+.. _-T:
+
+**-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+    Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
+    **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
+    To skip the model evaluation entirely, simply provide **-T**\ 0.
+    For details on array creation, see `Generate 1-D Array`_.
+ 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
