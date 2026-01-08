@@ -44,4 +44,4 @@
         - **+n** - Draw outline only (no fill).
 
         The outline pen is controlled by **-W**. If no fill color is specified via **-G**,
-        the sphere defaults to black.
+        the sphere defaults to gray.
