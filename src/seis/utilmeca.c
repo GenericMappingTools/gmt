@@ -914,7 +914,9 @@ void meca_axe2dc (struct SEIS_AXIS T, struct SEIS_AXIS P, struct SEIS_NODAL_PLAN
 	NP2->dip = d2; NP2->str = p2;
 
 	im = 1;
-	if (P.dip > T.dip) im = -1;
+	// Logic: Use Normal fault (im=-1) if P dip > T dip
+	// OR if dips are equal (e.g., 45 deg) BUT not zero (Strike Slip case P=T=0)
+	if (P.dip > T.dip || (fabs(P.dip - T.dip) < SEIS_EPSILON && P.dip > SEIS_EPSILON)) im = -1;
 	NP1->rake = meca_computed_rake2 (NP2->str, NP2->dip, NP1->str, NP1->dip, im);
 	NP2->rake = meca_computed_rake2 (NP1->str, NP1->dip, NP2->str, NP2->dip, im);
 }
