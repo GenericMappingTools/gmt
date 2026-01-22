@@ -302,27 +302,27 @@ with a radius of 50 km and height of 5000 m::
 To compute elastic plate flexure from the load *smt.nc*,
 for a 10 km thick plate with typical densities, try::
 
-    gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035
+    gmt grdflexure smt.nc -Gflex.nc -E10k -D3300/2700/1035
 
 To see how in-plane stresses affect the result, we use |-A|.  Remember that we need to depth-
 integrated forces, not pressures, hence we try::
 
-    gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035 -A-4e11/2e11/-1e12
+    gmt grdflexure smt.nc -Gflex.nc -E10k -D3300/2700/1035 -A-4e11/2e11/-1e12
 
 To compute viscoelastic plate flexure from the load *smt.nc*,
 for a 20 km thick plate with typical densities and a Maxwell time of 40kyr, try::
 
-    gmt grdflexure smt.nc -Gflex.nc -E20k -D2700/3300/1035 -M40k
+    gmt grdflexure smt.nc -Gflex.nc -E20k -D3300/2700/1035 -M40k
 
 To compute firmoviscous plate flexure from the load *smt.nc*,
 for a 15 km thick plate with typical densities overlying a viscous mantle with viscosity 2e21, try::
 
-    gmt grdflexure smt.nc -Gflex.nc -E15k -D2700/3300/1035 -F2e21
+    gmt grdflexure smt.nc -Gflex.nc -E15k -D3300/2700/1035 -F2e21
 
 To compute the general linear viscoelastic plate flexure from the load *smt.nc*,
 for an initial Te of 40 km and a final Te of 15 km  with typical densities and a Maxwell time of 100 kyr, try::
 
-    gmt grdflexure smt.nc -Gflex.nc -E40k/15k -D2700/3300/1035 -M100k
+    gmt grdflexure smt.nc -Gflex.nc -E40k/15k -D3300/2700/1035 -M100k
 
 To just compute the firmoviscous response functions using the specified rheological values, try::
 
