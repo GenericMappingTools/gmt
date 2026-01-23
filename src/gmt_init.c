@@ -17118,7 +17118,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	unsigned int ju, col;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
-	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpQqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopQqRrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpPqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopPqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
 		p->base = GMT->session.d_NaN;
@@ -17215,16 +17215,15 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (text[0] == 'P') {	/* Sphere symbol with optional modifiers for light position, flat color, or no fill */
 		char arg[GMT_LEN64] = {""};
-		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbol size with no +<modifiers> at the end */
+		n = sscanf(text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbol size with no +<modifiers> at the end */
 		if (n == 1) {	/* No modifiers or no size given */
-			if (text[1] && text[1] != '+') {
-				/* Gave size without modifiers */
-				strncpy (arg, &text[1], GMT_LEN64-1);
+			if (text[1] && text[1] != '+') {			/* Gave size without modifiers */
+				strncpy(arg, &text[1], GMT_LEN64-1);
 			}
 		}
 		if (arg[0] && arg[0] != '+') {	/* Need to get size */
 			if (cmd) p->read_size_cmd = false;
-			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, arg);
+			p->size_x = p->given_size_x = gmt_M_to_inch(GMT, arg);
 			check = false;
 		}
 		else if (!text[1] || text[1] == '+') {	/* No size given */
