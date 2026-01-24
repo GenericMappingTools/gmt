@@ -464,7 +464,7 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, new_CN_codes = false;
 	bool dtype_is_float = false, ALL = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
-	char yname[GMT_LEN16] = {""}, code[GMT_LEN32] = {""}, state[GMT_LEN16] = {""}, datatype[GMT_LEN8] = {""};
+	char yname[GMT_LEN16] = {""}, code[GMT_LEN512] = {""}, state[GMT_LEN16] = {""}, datatype[GMT_LEN8] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""}, dcw_name[GMT_LEN256] = {""};
 	char version[GMT_LEN32] = {""}, gmtversion[GMT_LEN32] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
 	char label[GMT_LEN256] = {""}, header[GMT_LEN256] = {""}, ISO[GMT_LEN8] = {""};
@@ -482,7 +482,7 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 
 	for (j = ks = 0; j < F->n_items; j++) {
 		if (!F->item[j]->codes || F->item[j]->codes[0] == '\0') continue;
-		if (F->item[j]->codes && strlen(F->item[j]->codes) > 30) {	/* This also protects from a crash due to 'code' overflow. */
+		if (F->item[j]->codes && strlen(F->item[j]->codes) > GMT_LEN512) {	/* This also protects from a crash due to 'code' overflow. */
 			GMT_Report(GMT->parent, GMT_MSG_ERROR, "Code \"%s\" too long (> 30). We don't have that long codes\n", F->item[j]->codes);
 			continue;
 		}
