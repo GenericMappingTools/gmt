@@ -15121,7 +15121,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 	 * 	2 : Found a list-request +l, +L, or +n.  Not plotting or region desired.
 	 */
 	char p[GMT_LEN256] = {""}, *c = NULL;
-	char e_code[GMT_LEN256] = {""}, r_opt[GMT_LEN128] = {""};
+	char e_code[GMT_LEN512] = {""}, r_opt[GMT_LEN128] = {""};
 	unsigned int pos, n_errors = 0, answer = 0;
 	struct GMT_OPTION *E = options;
 
@@ -15131,7 +15131,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 			c[0] = '\0';	/* Temporarily hide the modifiers */
 		if (r_code[0]) strcat (r_code, ",");	/* Accumulate all codes across multiple -E options */
 		strcat (r_code, E->arg);	/* Append country codes only */
-		strncpy (e_code, E->arg, GMT_LEN256-1);	/* Duplicate country codes only */
+		strncpy (e_code, E->arg, GMT_LEN512-1);	/* Duplicate country codes only */
 		if (c) {	/* Now process the modifiers */
 			c[0] = '+';	/* Unhide the modifiers */
 			pos = 0;	/* Initialize position counter for this string */
