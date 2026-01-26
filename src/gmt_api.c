@@ -13106,7 +13106,7 @@ GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_O
 #define api_not_required_io(key) ((key == API_PRIMARY_INPUT || key == API_SECONDARY_INPUT) ? API_SECONDARY_INPUT : API_SECONDARY_OUTPUT)	/* Returns the optional input or output flag */
 
 /*! . */
-struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, int n_in, struct GMT_OPTION **head, unsigned int *n) {
+struct GMT_RESOURCE *GMT_Encode_Options(void *V_API, const char *module_name, int n_in, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required given the module options.
 	 * It is only used to assist developers of external APIs, such as the MATLAB, Julia, Python, R, and others.
 	 * "Keys" referred to below is the unique combination given near the top of every module via the macro
@@ -13220,7 +13220,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
 	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN256] = {""}, type = 0;
-	char module[GMT_LEN32] = {""}, argument[PATH_MAX] = {""}, strip_colon_opt = 0;
+	char module[GMT_LEN32] = {""}, argument[GMT_BUFSIZ] = {""}, strip_colon_opt = 0;
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */
