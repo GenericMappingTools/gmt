@@ -4,7 +4,7 @@
 # Key test cases: dip=90° (vertical) and rake=180° trigger NaN in projection
 #
 
-gmt begin psmeca_radius png
+gmt begin psmeca_radius ps
 	gmt basemap -R0/12/0/6 -JM20c -B1 -BWSen
 
 	echo 3 4.5 0 30 75 180 5 S30 D75 R180 | gmt meca -Sa3c -N -L -T
