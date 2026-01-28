@@ -14883,6 +14883,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:", *file = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
+	struct GMT_IMAGE *I = NULL;
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
@@ -14901,6 +14902,20 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 					*aspect = ((G->header->wesn[XHI]-G->header->wesn[XLO]) >= (G->header->wesn[YHI]-G->header->wesn[YLO])) ? 1 : -1;
 				if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
 			}
+			break;
+
+		case GMT_IS_IMAGE:
+			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
+			file = opt->arg;
+			if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_IS_IMAGE|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+				return API->error;	/* Failure to read image header */
+			gmt_M_memcpy (wesn, I->header->wesn, 4, double);	/* Copy over the image region */
+			HH = gmt_get_H_hidden (I->header);
+			if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use image w/e/s/n to round to nearest reasonable multiples */
+			if (I->header->x_units[0] && I->header->y_units[0] && !strcmp (I->header->x_units, I->header->y_units))	/* Want constant scale */
+				*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
+			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary image structure */
 			break;
 
 		case GMT_IS_DATASET:
