@@ -14867,7 +14867,7 @@ void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to ne
 	}
 }
 
-GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], int *aspect) {
+GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], int *aspect) {
 	/* Determines the data region by examining the input data.  This could be a grid or datasets.  The
 	 * latter may be one or many files, or none, meaning we must capture stdin.  If we do, then we must
 	 * add that temporary file to the module's options, otherwise we cannot read the data a 2nd time.
@@ -14878,6 +14878,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	bool geo;
 	bool is_PS, is_oneliner;
 	struct GMT_GRID *G = NULL;
+	struct GMT_IMAGE *I = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
 	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:", *file = NULL;
@@ -14885,21 +14886,60 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 
 	switch (family) {
 		case GMT_IS_GRID:
-			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
-			if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
+			if ((opt = GMT_Find_Option(API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
+			if ((k_data = gmt_remote_dataset_id(API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
 				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
 			}
 			else {	/* Must read the grid header */
+#if 0
+				/* This an attempt to fix issue #8878 where grdimage fails to get the region from a image.
+				   However, this code still fails once every other time it is run and the other produces an odd
+				   bad figure. Leaving it here for now in case it can be fixed in a future attempt.
+				*/
+				int in_ID = GMT_NOTSET, item = GMT_NOTSET, pad[4];
+				struct GMTAPI_DATA_OBJECT *S_obj = NULL; 
 				file = opt->arg;
 				if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
-				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+
+				in_ID = GMT_Register_IO(API, family, GMT_IS_FILE, GMT_IS_SURFACE, GMT_IN, wesn, file);
+				if ((item = gmtlib_validate_id(API, GMT_NOTSET, in_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) {
+					gmt_M_str_free (file);
+					return API->error;
+				}
+				S_obj = API->object[item];	/* Current object */
+				gmt_M_memcpy(pad, API->GMT->current.io.pad, 4, int);		/* Save to later restore */
+				gmt_M_memcpy(API->GMT->current.io.pad, S_obj->orig_pad, 4, int);	/* Crucial for gmtapi_import_image() at line #4927 not return too soon */
+				if (S_obj->family == GMT_IS_IMAGE) {
+					if ((I = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+						return API->error;	/* Failure to read grid header */
+					gmt_M_memcpy(wesn, I->header->wesn, 4, double);	/* Copy over the image's region */
+					HH = gmt_get_H_hidden(I->header);
+					if (!exact) gmt_round_wesn(wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+					if (I->header->x_units[0] && I->header->y_units[0] && !strcmp(I->header->x_units, I->header->y_units))	/* Want constant scale */
+						*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
+					if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+				}
+				else {
+					if ((G = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
+						return API->error;	/* Failure to read grid header */
+					gmt_M_memcpy(wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
+					HH = gmt_get_H_hidden(G->header);
+					if (!exact) gmt_round_wesn(wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+					if (G->header->x_units[0] && G->header->y_units[0] && !strcmp(G->header->x_units, G->header->y_units))	/* Want constant scale */
+						*aspect = ((G->header->wesn[XHI]-G->header->wesn[XLO]) >= (G->header->wesn[YHI]-G->header->wesn[YLO])) ? 1 : -1;
+					if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+				}
+				gmt_M_memcpy(API->GMT->current.io.pad, pad, 4, int);		/* Restore the pad */
+			}
+#endif
+				if ((G = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
 					return API->error;	/* Failure to read grid header */
-				gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
-				HH = gmt_get_H_hidden (G->header);
-				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
-				if (G->header->x_units[0] && G->header->y_units[0] && !strcmp (G->header->x_units, G->header->y_units))	/* Want constant scale */
+				gmt_M_memcpy(wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
+				HH = gmt_get_H_hidden(G->header);
+				if (!exact) gmt_round_wesn(wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+				if (G->header->x_units[0] && G->header->y_units[0] && !strcmp(G->header->x_units, G->header->y_units))	/* Want constant scale */
 					*aspect = ((G->header->wesn[XHI]-G->header->wesn[XLO]) >= (G->header->wesn[YHI]-G->header->wesn[YLO])) ? 1 : -1;
-				if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+				if (GMT_Destroy_Data(API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
 			}
 			break;
 
