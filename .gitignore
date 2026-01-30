@@ -1,6 +1,7 @@
 build
 ?build
 ?build-mp
+Testing
 .*~
 cmake/ConfigUser.cmake
 cmake/ConfigUserAdvanced.cmake
@@ -12,6 +13,8 @@ src/newsuppl*
 doc/examples/**/*.mp4
 doc/examples/**/*.png
 doc/examples/**/*.gif
+test/**/*.ps
+!test/**/*.ps.dvc
 .vscode
 cmake/ConfigUser.cmake.orig
 cmake/ConfigUserAdvanced.cmake.orig
