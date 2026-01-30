@@ -4924,7 +4924,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			if (!gmtapi_adjust_grdpadding (I_obj->header, GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G_obj->data to allow for padding, then rearrange rows, but only if item was allocated by GMT */
 			IH = gmt_get_I_hidden (I_obj);
-			if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
+			if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY && !(mode & GMT_CONTAINER_ONLY)) return_null (API, GMT_PADDING_NOT_ALLOWED);
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_image: Add pad\n");
 #if 0
 			gmt_grd_pad_on (GMT, image, GMT->current.io.pad);

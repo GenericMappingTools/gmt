@@ -18,3 +18,4 @@ test/**/*.ps
 .vscode
 cmake/ConfigUser.cmake.orig
 cmake/ConfigUserAdvanced.cmake.orig
+/install/
