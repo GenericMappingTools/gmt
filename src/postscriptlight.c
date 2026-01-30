@@ -5166,12 +5166,27 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	if (PSL_eq (rgb[0], -2.0) || PSL_eq (rgb[0], -1.0)) return (PSL_NO_ERROR);	/* Settings to be ignored */
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
 
-	/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
-	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0))
+	/* Guard: When setting stroke or fill with transparency, preserve the other channel's transparency */
+	if (!PSL_eq (rgb[3], 0.0) && (mode == PSL_IS_STROKE || mode == PSL_IS_FILL)) {
+		double transp[2], rgb_copy[4];
+		/* Preserve current transparencies and update only the relevant channel */
+		transp[PSL_FILL_TRANSP] = (mode == PSL_IS_FILL) ? rgb[3] : PSL->current.rgb[PSL_IS_FILL][3];
+		transp[PSL_PEN_TRANSP]  = (mode == PSL_IS_STROKE) ? rgb[3] : PSL->current.rgb[PSL_IS_STROKE][3];
+		/* Set transparency explicitly for both channels */
+		PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transp[PSL_FILL_TRANSP], 1.0 - transp[PSL_PEN_TRANSP], PSL->current.transparency_mode);
+		/* Make a copy with transparency zeroed out for psl_putcolor to avoid double-setting */
+		PSL_rgb_copy (rgb_copy, rgb);
+		rgb_copy[3] = 0.0;
+		PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb_copy, 0));
+	}
+	else {
+		/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
+		if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0))
 			PSL_command (PSL, "%.12g %.12g /Normal PSL_transp ", PSL->init.transparencies[PSL_FILL_TRANSP], PSL->init.transparencies[PSL_PEN_TRANSP]);
 
-	/* Then, finally, set the color using psl_putcolor */
-	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
+		/* Then, finally, set the color using psl_putcolor */
+		PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
+	}
 
 	/* Update the current stroke/fill color information */
 
