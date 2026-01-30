@@ -15,3 +15,4 @@ doc/examples/**/*.gif
 .vscode
 cmake/ConfigUser.cmake.orig
 cmake/ConfigUserAdvanced.cmake.orig
+/install/

@@ -15056,11 +15056,23 @@ GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const ch
 	struct GMT_OPTION *opt = NULL;
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};
 	char region[GMT_LEN256] = {""};
-	int err = GMT_NOERROR;
+	int err = GMT_NOERROR, family = GMT_IS_GRID;
 	gmt_M_unused(args);
 
 	/* Here we know the module is using a grid to get -R implicitly */
-	if ((err = gmtinit_get_region_from_data (API, GMT_IS_GRID, exact, options, wesn, &API->GMT->common.R.aspect)))
+	/* First check if the input file is an image */
+	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) != NULL) {
+		char *ext = strrchr (opt->arg, '.');
+		if (ext) {
+			/* Check for common image extensions */
+			if (strcmp (ext, ".tif") == 0 || strcmp (ext, ".tiff") == 0 || strcmp (ext, ".png") == 0 ||
+			    strcmp (ext, ".jpg") == 0 || strcmp (ext, ".jpeg") == 0 || strcmp (ext, ".bmp") == 0 ||
+			    strcmp (ext, ".gif") == 0) {
+				family = GMT_IS_IMAGE;
+			}
+		}
+	}
+	if ((err = gmtinit_get_region_from_data (API, family, exact, options, wesn, &API->GMT->common.R.aspect)))
 		return err;
 
 	snprintf (region, GMT_LEN256, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
