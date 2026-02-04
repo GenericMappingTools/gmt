@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash -ex
+#!/usr/bin/env bash
 # GMT modern mode bash template
 # Date:    2026-01-21T12:44:22
 # User:    solarsmith
