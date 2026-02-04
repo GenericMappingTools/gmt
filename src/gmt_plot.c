@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -3095,7 +3095,7 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	}
 
 	PSL_comment(PSL, "End of map frame\n");
-	if (!PSL->internal.comments) PSL_command(PSL, "\n%%End of map fram\n");
+	if (!PSL->internal.comments) PSL_command(PSL, "\n%%End of map frame\n");
 }
 
 /* gmt_map_basemap will create a basemap for the given area.
@@ -10714,7 +10714,11 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
 		struct stat buf;
 		int *fd = source;
-		if (fstat (*fd, &buf)) {
+#ifdef _WIN64									/* In lack of a clever solution, this is a hack for issue 8825 */
+		if (_fstat64(*fd, &buf)) {
+#else
+		if (fstat(*fd, &buf)) {
+#endif
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
 			return (NULL);
 		}

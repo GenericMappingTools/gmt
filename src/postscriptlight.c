@@ -3995,6 +3995,10 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 			PSL_command (PSL, "%d %d %d S%c\n", psl_iz (PSL, 0.5 * size[0]), psl_ix (PSL, x), psl_iy (PSL, y), (char)symbol);
 			break;
 
+	case PSL_SPHERE:	/* Sphere */
+		PSL_command (PSL, "%d %d %d SPhere\n", psl_iz (PSL, 0.5 * size[0]), psl_ix (PSL, x), psl_iy (PSL, y));
+		break;
+
 		/* Multi-parameter fillable symbols */
 
 		case PSL_WEDGE:		/* A wedge or pie-slice. size[0] = radius, size[1..2] = azimuth range of arc */
@@ -4849,6 +4853,196 @@ int PSL_plotpolygon (struct PSL_CTRL *PSL, double *x, double *y, int n) {
 	return (PSL_NO_ERROR);
 }
 
+int PSL_plotgradienttriangle(struct PSL_CTRL *PSL, double *x, double *y, double *rgb, int steps) {
+	/* Draw triangle with smooth vertex color gradient using barycentric interpolation
+	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
+	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
+	 * steps: number of subdivisions (higher = smoother, slower)
+	 * 
+	 * Writen by Claude.ai
+	 */
+
+	int i, j;
+	double s, t;
+	double s1, t1, s2, t2, s3, t3, s4, t4;
+	double u1, v1, w1, u2, v2, w2, u3, v3, w3, u4, v4, w4;
+	double px1, py1, px2, py2, px3, py3, px4, py4;
+	double pr1, pg1, pb1, pr2, pg2, pb2, pr3, pg3, pb3, pr4, pg4, pb4;
+	double step_inv;
+	double x_pts[3], y_pts[3];
+
+	if (steps <= 0) steps = 50;   /* Default quality */
+	if (steps > 200) steps = 200; /* Limit maximum */
+
+	/* Convert inches to points */
+	for (i = 0; i < 3; i++) {
+		x_pts[i] = x[i] * PSL->internal.dpu;
+		y_pts[i] = y[i] * PSL->internal.dpu;
+	}
+
+	step_inv = 1.0 / steps;
+
+	PSL_comment(PSL, "Begin gradient triangle\n");
+	PSL_command(PSL, "gsave\n");
+
+	/* Subdivide triangle into micro-triangles using barycentric coordinates */
+	for (i = 0; i < steps; i++) {
+		t = i * step_inv;
+		for (j = 0; j < steps; j++) {
+			s = j * step_inv;
+
+			/* Barycentric coordinates for 4 corners of sub-quad */
+			s1 = s;            t1 = t;
+			s2 = s + step_inv; t2 = t;
+			s3 = s + step_inv; t3 = t + step_inv;
+			s4 = s;            t4 = t + step_inv;
+
+			/* Check if first corner is inside triangle */
+			if (s1 + t1 <= 1.0) {
+				u1 = 1.0 - s1 - t1;
+				v1 = s1;
+				w1 = t1;
+
+				/* Interpolate position */
+				px1 = u1 * x_pts[0] + v1 * x_pts[1] + w1 * x_pts[2];
+				py1 = u1 * y_pts[0] + v1 * y_pts[1] + w1 * y_pts[2];
+
+				/* Interpolate color */
+				pr1 = u1 * rgb[0] + v1 * rgb[3] + w1 * rgb[6];
+				pg1 = u1 * rgb[1] + v1 * rgb[4] + w1 * rgb[7];
+				pb1 = u1 * rgb[2] + v1 * rgb[5] + w1 * rgb[8];
+
+				/* Check second corner */
+				if (s2 + t2 <= 1.0) {
+					u2 = 1.0 - s2 - t2;
+					v2 = s2;
+					w2 = t2;
+
+					px2 = u2 * x_pts[0] + v2 * x_pts[1] + w2 * x_pts[2];
+					py2 = u2 * y_pts[0] + v2 * y_pts[1] + w2 * y_pts[2];
+					pr2 = u2 * rgb[0] + v2 * rgb[3] + w2 * rgb[6];
+					pg2 = u2 * rgb[1] + v2 * rgb[4] + w2 * rgb[7];
+					pb2 = u2 * rgb[2] + v2 * rgb[5] + w2 * rgb[8];
+
+					/* Check fourth corner */
+					if (s4 + t4 <= 1.0) {
+						u4 = 1.0 - s4 - t4;
+						v4 = s4;
+						w4 = t4;
+
+						px4 = u4 * x_pts[0] + v4 * x_pts[1] + w4 * x_pts[2];
+						py4 = u4 * y_pts[0] + v4 * y_pts[1] + w4 * y_pts[2];
+						pr4 = u4 * rgb[0] + v4 * rgb[3] + w4 * rgb[6];
+						pg4 = u4 * rgb[1] + v4 * rgb[4] + w4 * rgb[7];
+						pb4 = u4 * rgb[2] + v4 * rgb[5] + w4 * rgb[8];
+
+						/* Draw first micro-triangle: p1-p2-p4 */
+						PSL_command(PSL, "%.6f %.6f %.6f C\n",
+							(pr1 + pr2 + pr4) / 3.0,
+							(pg1 + pg2 + pg4) / 3.0,
+							(pb1 + pb2 + pb4) / 3.0);
+						PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n", px1, py1, px2, py2, px4, py4);
+					}
+
+					/* Check third corner for second micro-triangle */
+					if (s3 + t3 <= 1.0) {
+						u3 = 1.0 - s3 - t3;
+						v3 = s3;
+						w3 = t3;
+
+						px3 = u3 * x_pts[0] + v3 * x_pts[1] + w3 * x_pts[2];
+						py3 = u3 * y_pts[0] + v3 * y_pts[1] + w3 * y_pts[2];
+						pr3 = u3 * rgb[0] + v3 * rgb[3] + w3 * rgb[6];
+						pg3 = u3 * rgb[1] + v3 * rgb[4] + w3 * rgb[7];
+						pb3 = u3 * rgb[2] + v3 * rgb[5] + w3 * rgb[8];
+
+						if (s4 + t4 <= 1.0) {  /* Already computed p4 */
+							/* Draw second micro-triangle: p2-p3-p4 */
+							PSL_command(PSL, "%.6f %.6f %.6f C\n",
+								(pr2 + pr3 + pr4) / 3.0,
+								(pg2 + pg3 + pg4) / 3.0,
+								(pb2 + pb3 + pb4) / 3.0);
+							PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L P F\n", px2, py2, px3, py3, px4, py4);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	PSL_command(PSL, "grestore\n");
+	PSL_comment(PSL, "End gradient triangle\n");
+
+	return (PSL_NO_ERROR);
+}
+
+int PSL_plotgradienttriangle_gouraud(struct PSL_CTRL *PSL, double *x, double *y, double *rgb) {
+	/* Draw triangle with smooth Gouraud shading using PostScript Type 4 shading
+	 * x, y: arrays of 3 coordinates (in inches, will be converted to points)
+	 * rgb: array of 9 values [r1 g1 b1 r2 g2 b2 r3 g3 b3], each 0.0-1.0
+	 * This uses PostScript Level 2/3 shading for perfectly smooth gradients
+	 *
+	 * Optimized: /GT procedure with proper variable handling
+	 * Written by Claude.ai
+	 */
+
+	int i;
+	double x_pts[3], y_pts[3];
+
+	/* Convert inches to points */
+	for (i = 0; i < 3; i++) {
+		x_pts[i] = x[i] * PSL->internal.dpu;
+		y_pts[i] = y[i] * PSL->internal.dpu;
+	}
+
+	/* Define Gouraud Triangle procedure once */
+	static int gt_defined = 0;
+	if (!gt_defined) {
+		PSL_command(PSL, "/GT {\n");
+		PSL_command(PSL, "  /data exch def /ymax exch def /ymin exch def /xmax exch def /xmin exch def\n");
+		PSL_command(PSL, "  << /ShadingType 4 /ColorSpace /DeviceRGB\n");
+		PSL_command(PSL, "     /BitsPerCoordinate 16 /BitsPerComponent 8 /BitsPerFlag 8\n");
+		PSL_command(PSL, "     /Decode [xmin xmax ymin ymax 0 1 0 1 0 1]\n");
+		PSL_command(PSL, "     /DataSource data >>\n");
+		PSL_command(PSL, "  shfill\n");
+		PSL_command(PSL, "} def\n");
+		gt_defined = 1;
+	}
+
+	PSL_comment(PSL, "Begin Gouraud shaded triangle\n");
+	PSL_command(PSL, "gsave\n");
+	PSL_command(PSL, "N %.4f %.4f M %.4f %.4f L %.4f %.4f L closepath clip\n",
+		x_pts[0], y_pts[0], x_pts[1], y_pts[1], x_pts[2], y_pts[2]);
+
+	/* Find bounding box */
+	double xmin = x_pts[0], xmax = x_pts[0], ymin = y_pts[0], ymax = y_pts[0];
+	for (i = 1; i < 3; i++) {
+		if (x_pts[i] < xmin) xmin = x_pts[i];
+		if (x_pts[i] > xmax) xmax = x_pts[i];
+		if (y_pts[i] < ymin) ymin = y_pts[i];
+		if (y_pts[i] > ymax) ymax = y_pts[i];
+	}
+
+	/* Push parameters onto stack: xmin xmax ymin ymax <data> */
+	PSL_command(PSL, "%.4f %.4f %.4f %.4f <", xmin, xmax, ymin, ymax);
+	for (i = 0; i < 3; i++) {
+		unsigned int flag = 0;
+		unsigned int x_scaled = (unsigned int)((x_pts[i] - xmin) / (xmax - xmin) * 65535.0 + 0.5);
+		unsigned int y_scaled = (unsigned int)((y_pts[i] - ymin) / (ymax - ymin) * 65535.0 + 0.5);
+		unsigned int r = (unsigned int)(rgb[i*3 + 0] * 255.0 + 0.5);
+		unsigned int g = (unsigned int)(rgb[i*3 + 1] * 255.0 + 0.5);
+		unsigned int b = (unsigned int)(rgb[i*3 + 2] * 255.0 + 0.5);
+
+		PSL_command(PSL, " %02X%04X%04X%02X%02X%02X", flag, x_scaled, y_scaled, r, g, b);
+	}
+	PSL_command(PSL, "> GT\n");
+
+	PSL_command(PSL, "grestore\n");
+	PSL_comment(PSL, "End Gouraud shaded triangle\n");
+
+	return (PSL_NO_ERROR);
+}
+
 int PSL_setexec (struct PSL_CTRL *PSL, int action) {
 	/* Enables of disables the execution of a PSL_plot_completion function at start of a PSL_plotinit overlay */
 	PSL->current.complete = (action) ? 1 : 0;
@@ -4972,12 +5166,27 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	if (PSL_eq (rgb[0], -2.0) || PSL_eq (rgb[0], -1.0)) return (PSL_NO_ERROR);	/* Settings to be ignored */
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
 
-	/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
-	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0))
+	/* Guard: When setting stroke or fill with transparency, preserve the other channel's transparency */
+	if (!PSL_eq (rgb[3], 0.0) && (mode == PSL_IS_STROKE || mode == PSL_IS_FILL)) {
+		double transp[2], rgb_copy[4];
+		/* Preserve current transparencies and update only the relevant channel */
+		transp[PSL_FILL_TRANSP] = (mode == PSL_IS_FILL) ? rgb[3] : PSL->current.rgb[PSL_IS_FILL][3];
+		transp[PSL_PEN_TRANSP]  = (mode == PSL_IS_STROKE) ? rgb[3] : PSL->current.rgb[PSL_IS_STROKE][3];
+		/* Set transparency explicitly for both channels */
+		PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transp[PSL_FILL_TRANSP], 1.0 - transp[PSL_PEN_TRANSP], PSL->current.transparency_mode);
+		/* Make a copy with transparency zeroed out for psl_putcolor to avoid double-setting */
+		PSL_rgb_copy (rgb_copy, rgb);
+		rgb_copy[3] = 0.0;
+		PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb_copy, 0));
+	}
+	else {
+		/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
+		if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0))
 			PSL_command (PSL, "%.12g %.12g /Normal PSL_transp ", PSL->init.transparencies[PSL_FILL_TRANSP], PSL->init.transparencies[PSL_PEN_TRANSP]);
 
-	/* Then, finally, set the color using psl_putcolor */
-	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
+		/* Then, finally, set the color using psl_putcolor */
+		PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
+	}
 
 	/* Update the current stroke/fill color information */
 

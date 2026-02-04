@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -464,7 +464,7 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, new_CN_codes = false;
 	bool dtype_is_float = false, ALL = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
-	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""}, datatype[GMT_LEN8] = {""};
+	char yname[GMT_LEN16] = {""}, code[GMT_LEN512] = {""}, state[GMT_LEN16] = {""}, datatype[GMT_LEN8] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""}, dcw_name[GMT_LEN256] = {""};
 	char version[GMT_LEN32] = {""}, gmtversion[GMT_LEN32] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
 	char label[GMT_LEN256] = {""}, header[GMT_LEN256] = {""}, ISO[GMT_LEN8] = {""};
@@ -482,6 +482,10 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 
 	for (j = ks = 0; j < F->n_items; j++) {
 		if (!F->item[j]->codes || F->item[j]->codes[0] == '\0') continue;
+		if (F->item[j]->codes && strlen(F->item[j]->codes) > GMT_LEN512) {	/* This also protects from a crash due to 'code' overflow. */
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "Code \"%s\" too long (> 30). We don't have that long codes\n", F->item[j]->codes);
+			continue;
+		}
 		ks++;	/* Gave some codes */
 	}
 	if (ks == 0) return NULL;	/* No countries requested */
@@ -731,7 +735,7 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 		else {
 			snprintf(TAG, GMT_LEN16, "%s", GMT_DCW_country[k].code);
 			if (F->mode & GMT_DCW_ZHEADER)
-				snprintf(msg, GMT_BUFSIZ, "-Z%s %s\n", TAG, GMT_DCW_country[k].name);
+				snprintf(msg, GMT_BUFSIZ, "-Z%s %s (%s)\n", TAG, GMT_DCW_country[k].name, GMT_DCW_country[k].continent);
 			else
 				snprintf(msg, GMT_BUFSIZ, "%s\n", GMT_DCW_country[k].name);
 		}
@@ -867,10 +871,13 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 			P->n_rows = last - first + 1;	/* Number of points in this segment */
 			P->data[GMT_X] = &lon[first];
 			P->data[GMT_Y] = &lat[first];
-			sprintf(label, " %s Segment %" PRIu64, msg, seg);
+			if (GMT->parent->external && F->mode & GMT_DCW_ZHEADER)
+				sprintf(label, " %s", msg);
+			else
+				sprintf(label, " %s Segment %" PRIu64, msg, seg);
 			header[0] = '\0';
 			if (hole)
-				strcat (header, "-Ph");
+				strcat(header, "-Ph");
 
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
 				strcat(header, label);

@@ -54,13 +54,13 @@ jobs:
           - name: Linux
             os: ubuntu-latest
           - name: macOS
-            os: macos-13 # macos-14 use M1 chips, which causes many failures
+            os: macos-15-intel # macos-14 use M1 chips, which causes many failures
           - name: Windows
             os: windows-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.1
 
       - name: Setup vcpkg (Windows)
         run: gh run download -n vcpkg-cache -D C:/vcpkg/installed/
@@ -170,14 +170,14 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Upload build directory if failed
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: BuildDirectory-${{ runner.os }}
           path: build/
         if: failure()
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5.5.1
+        uses: codecov/codecov-action@v5.5.2
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:

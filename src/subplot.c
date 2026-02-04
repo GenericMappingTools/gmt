@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -772,34 +772,38 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			}
 		}
 		if (!Bframe) {	/* No override, examine the default frame setting instead */
-			gmt_set_undefined_axes (GMT, true);	/* We cannot have MAP_FRAME_AXES=auto in subplot during -B parsing, so do the update now */
-			if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides via -Sr, so set to SN */
-				strcpy (Ctrl->S[GMT_X].axes, "SN");
-			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
-				if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[px++] = 'S';
-				else if (strchr (GMT->current.setting.map_frame_axes, 's')) Ctrl->S[GMT_X].axes[px++] = 's';
-				else if (strchr (GMT->current.setting.map_frame_axes, 'b')) Ctrl->S[GMT_X].axes[px++] = 'b';
-				if (strchr (GMT->current.setting.map_frame_axes, 'N')) Ctrl->S[GMT_X].axes[px++] = 'N';
-				else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[px++] = 'n';
-				else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[px++] = 't';
-			}
-			if (Ctrl->S[GMT_Y].active)	/* Automatic selection of column sides via -Sc, so set to WE */
-				strcpy (Ctrl->S[GMT_Y].axes, "WE");
-			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
-				if (strchr (GMT->current.setting.map_frame_axes, 'W')) Ctrl->S[GMT_Y].axes[py++] = 'W';
-				else if (strchr (GMT->current.setting.map_frame_axes, 'w')) Ctrl->S[GMT_Y].axes[py++] = 'w';
-				else if (strchr (GMT->current.setting.map_frame_axes, 'l')) Ctrl->S[GMT_Y].axes[py++] = 'l';
-				if (strchr (GMT->current.setting.map_frame_axes, 'E')) Ctrl->S[GMT_Y].axes[py++] = 'E';
-				else if (strchr (GMT->current.setting.map_frame_axes, 'e')) Ctrl->S[GMT_Y].axes[py++] = 'e';
-				else if (strchr (GMT->current.setting.map_frame_axes, 'r')) Ctrl->S[GMT_Y].axes[py++] = 'r';
-			}
-			/* Update MAP_FRAME_AXES for this subplot settings */
-			if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) {
-				char axes[GMT_LEN32] = {""};
-				strcpy (axes, Ctrl->S[GMT_X].axes);
-				strcat (axes, Ctrl->S[GMT_Y].axes);
-				strcat (axes, "Z");
-				gmtlib_setparameter (GMT, "MAP_FRAME_AXES", axes, true);
+			bool is_polar_or_azim = false;
+			gmt_set_undefined_axes (GMT, true);	/* Don't set MAP_FRAME_AXES=auto in subplot during -B parsing */
+			if (GMT->current.proj.projection == GMT_POLAR || (gmt_M_is_azimuthal (GMT) && doubleAlmostEqual (GMT->current.proj.pars[1], -90.0))) is_polar_or_azim = true;
+			if (!is_polar_or_azim) {	/* Only override axes for non-polar/non-azimuthal projections */
+				if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides via -Sr, so set to SN */
+					strcpy (Ctrl->S[GMT_X].axes, "SN");
+				else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
+					if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[px++] = 'S';
+					else if (strchr (GMT->current.setting.map_frame_axes, 's')) Ctrl->S[GMT_X].axes[px++] = 's';
+					else if (strchr (GMT->current.setting.map_frame_axes, 'b')) Ctrl->S[GMT_X].axes[px++] = 'b';
+					if (strchr (GMT->current.setting.map_frame_axes, 'N')) Ctrl->S[GMT_X].axes[px++] = 'N';
+					else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[px++] = 'n';
+					else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[px++] = 't';
+				}
+				if (Ctrl->S[GMT_Y].active)	/* Automatic selection of column sides via -Sc, so set to WE */
+					strcpy (Ctrl->S[GMT_Y].axes, "WE");
+				else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
+					if (strchr (GMT->current.setting.map_frame_axes, 'W')) Ctrl->S[GMT_Y].axes[py++] = 'W';
+					else if (strchr (GMT->current.setting.map_frame_axes, 'w')) Ctrl->S[GMT_Y].axes[py++] = 'w';
+					else if (strchr (GMT->current.setting.map_frame_axes, 'l')) Ctrl->S[GMT_Y].axes[py++] = 'l';
+					if (strchr (GMT->current.setting.map_frame_axes, 'E')) Ctrl->S[GMT_Y].axes[py++] = 'E';
+					else if (strchr (GMT->current.setting.map_frame_axes, 'e')) Ctrl->S[GMT_Y].axes[py++] = 'e';
+					else if (strchr (GMT->current.setting.map_frame_axes, 'r')) Ctrl->S[GMT_Y].axes[py++] = 'r';
+				}
+				/* Update MAP_FRAME_AXES for this subplot settings */
+				if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) {
+					char axes[GMT_LEN32] = {""};
+					strcpy (axes, Ctrl->S[GMT_X].axes);
+					strcat (axes, Ctrl->S[GMT_Y].axes);
+					strcat (axes, "Z");
+					gmtlib_setparameter (GMT, "MAP_FRAME_AXES", axes, true);
+				}
 			}
 		}
 		if (Ctrl->S[GMT_X].b == NULL) Ctrl->S[GMT_X].b = strdup ("af");	/* Default is -Baf if not set */

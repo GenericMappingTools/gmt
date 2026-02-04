@@ -1,4 +1,13 @@
-# Workflow to validify the consistency of the codes
+# Validate the consistency of the codes.
+#
+# It checks:
+#
+# 1. PSL_strings.h is up-to-date
+# 2. gmt_enum_dict.h is up-to-date
+# 3. Module purposes are up-to-date
+# 4. GMT_VERSION_YEAR matches the current year
+# 5. Bash scripts have executable permissions
+# 6. Bash scripts have correct shebang (#!/usr/bin/env bash)
 
 on:
   push:
@@ -25,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.1
 
       - name: Check PSL_strings.h
         run: |
@@ -56,25 +65,21 @@ jobs:
 
       - name: Check execute permission of bash scripts
         run: |
-          error=0
-          echo "Following bash scripts may not have execute permission:"
-          # exclude share/tools/gmt_functions.sh
-          for file in $(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh"); do
-            if [[ ! -x "$file" ]]; then
-              ((++error))
-              echo "$error: $file"
-            fi
-          done
-          exit $error
+          scripts=$(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh" ! -executable)
+          if [[ -n "$scripts" ]]; then
+            echo "Following bash scripts do not have execute permission:"
+            echo "$scripts"
+            exit 1
+          fi
 
       - name: Check shebang of bash scripts
         run: |
           error=0
-          echo "Following bash scripts don't start with the shebang '#!/usr/bin/env bash'"
+          echo "Checking shebang in bash scripts..."
           for file in $(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh" ! -path "./test/invalidate_modules.sh"); do
-            if [[ "$(head -n1 $file)" != "#!/usr/bin/env bash" ]]; then
+            if [[ "$(head -n1 "$file")" != '#!/usr/bin/env bash' ]]; then
               ((++error))
-              echo "$error: $file"
+              echo "$file: incorrect shebang '$(head -n1 "$file")'"
             fi
           done
-          exit $error
+          if [[ $error -gt 0 ]]; then echo "Found $error files with incorrect shebang"; exit 1; fi

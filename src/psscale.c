@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -101,6 +101,9 @@ struct PSSCALE_CTRL {
 		bool active;
 		double z_low, z_high;
 	} G;
+	struct PSSCALE_H {	/* -H */
+		bool active;
+	} H;
 	struct PSSCALE_I {	/* -I[<intens>|<min_i>/<max_i>] */
 		bool active;
 		double min, max;
@@ -167,13 +170,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallo
 	gmt_M_free (GMT, C);
 }
 
-static int usage (struct GMTAPI_CTRL *API, int level) {
+static int usage(struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psscale synopsis and optionally full usage information */
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n|N[<txt>]]%s[+r]] "
-		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
+		"[-F%s] [-G<zlo>/<zhi>] [-H] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i|I][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
 		"[-S[+a<angle>][+c|n][+r][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
 			name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT,
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -210,6 +213,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-G<zlo>/<zhi>");
 	GMT_Usage (API, -2, "Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>. "
 		"To accept one of the incoming limits, set that limit to NaN.");
+	GMT_Usage (API, 1, "\n-H");
+	GMT_Usage (API, -2, "From GMT 6.5 on, colorbar annotation fonts are auto-scaled. Use this option to prevent that and let user set them as they wish.");
 	GMT_Usage (API, 1, "\n-I[<max_intens>|<low_i>/<high_i>]");
 	GMT_Usage (API, -2, "Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0]. "
 		"Alternatively, specify <lower>/<upper> intensity values.");
@@ -365,6 +370,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
 				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Option -G: Both of zlo/zhi cannot be NaN\n");
+				break;
+			case 'H':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -993,20 +1001,27 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 
 	/* Scale parameters to sqrt of the ratio of color bar length to default map dimension of 15 cm */
-	scale_down = sqrt (MAX (fabs (Ctrl->D.R.dim[GMT_X]), fabs (Ctrl->D.R.dim[GMT_Y])) / (15.0 / 2.54));
-	GMT->current.setting.font_annot[GMT_PRIMARY].size *= scale_down;
-	GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale_down;
-	GMT->current.setting.font_label.size *= scale_down;
-	GMT->current.setting.map_frame_pen.width *= scale_down;
-	GMT->current.setting.map_tick_pen[GMT_PRIMARY].width *= scale_down;
-	GMT->current.setting.map_tick_pen[GMT_SECONDARY].width *= scale_down;
-	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] *= scale_down;
-	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] *= scale_down;
-	GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale_down;
-	GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale_down;
-	GMT->current.setting.map_label_offset[GMT_X] *= scale_down;
-	GMT->current.setting.map_label_offset[GMT_Y] *= scale_down;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar parameters scaled by %lg\n", scale_down);
+
+	/* The condition bellow should be changed to "if (Ctrl->H.active && strcmp(GMT->current.setting.theme, "classic"))"
+	   because auto-scaling is not part of classic mode. But that would break not only compat with 6.5-6.6
+	   but also a ton of CI tests, so I'm leaving this just as a comment so far.
+	*/
+	if (!Ctrl->H.active) {		/* Do auto-scaling */
+		scale_down = sqrt(MAX(fabs(Ctrl->D.R.dim[GMT_X]), fabs(Ctrl->D.R.dim[GMT_Y])) / (15.0 / 2.54));
+		GMT->current.setting.font_annot[GMT_PRIMARY].size *= scale_down;
+		GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale_down;
+		GMT->current.setting.font_label.size *= scale_down;
+		GMT->current.setting.map_frame_pen.width *= scale_down;
+		GMT->current.setting.map_tick_pen[GMT_PRIMARY].width *= scale_down;
+		GMT->current.setting.map_tick_pen[GMT_SECONDARY].width *= scale_down;
+		GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] *= scale_down;
+		GMT->current.setting.map_tick_length[GMT_TICK_UPPER] *= scale_down;
+		GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale_down;
+		GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale_down;
+		GMT->current.setting.map_label_offset[GMT_X] *= scale_down;
+		GMT->current.setting.map_label_offset[GMT_Y] *= scale_down;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar parameters scaled by %lg\n", scale_down);
+	}
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 

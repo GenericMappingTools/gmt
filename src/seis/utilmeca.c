@@ -130,9 +130,14 @@ static double utilmeca_proj_radius(double str1, double dip1, double str) {
 
 	   Genevieve Patau
 	*/
-	double dip, r;
+	double dip, r, s_dphi;
 
-	dip = atan (tand (dip1) * sind (str - str1));
+	s_dphi = sind (str - str1);
+	/* Force to lower hemisphere for numerical safety (loop 0-180) and snap to zero */
+	s_dphi = fabs (s_dphi);
+	if (s_dphi < 1.0e-10) s_dphi = 0.0;
+
+	dip = atan2 (sind (dip1) * s_dphi, cosd (dip1));
 	r = sqrt (2.) * sin (M_PI_4 - dip / 2.);
 	return (r);
 }
@@ -914,7 +919,9 @@ void meca_axe2dc (struct SEIS_AXIS T, struct SEIS_AXIS P, struct SEIS_NODAL_PLAN
 	NP2->dip = d2; NP2->str = p2;
 
 	im = 1;
-	if (P.dip > T.dip) im = -1;
+	/* Logic: Use Normal fault (im=-1) if P dip > T dip*/
+	/* OR if dips are equal (e.g., 45 deg) BUT not zero (Strike Slip case P=T=0) */
+	if (P.dip > T.dip || (fabs(P.dip - T.dip) < SEIS_EPSILON && P.dip > SEIS_EPSILON)) im = -1;
 	NP1->rake = meca_computed_rake2 (NP2->str, NP2->dip, NP1->str, NP1->dip, im);
 	NP2->rake = meca_computed_rake2 (NP1->str, NP1->dip, NP2->str, NP2->dip, im);
 }

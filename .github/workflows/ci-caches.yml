@@ -103,7 +103,7 @@ jobs:
 
       # Upload the downloaded files as artifacts to GitHub
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: gmt-cache
           path: ~/.gmt/static
@@ -116,7 +116,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.1
 
       - name: Download GSHHG and DCW datasets
         run: bash ci/download-coastlines.sh
@@ -124,7 +124,7 @@ jobs:
           COASTLINEDIR: ${{ env.COASTLINEDIR }}
 
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coastline-cache
           path: ${{ env.COASTLINEDIR }}
@@ -135,13 +135,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.1
 
       - name: Install vcpkg libraries
         run: bash ci/install-dependencies-windows.sh
 
       - name: Upload artifacts to GitHub
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: vcpkg-cache
           # VCPKG_INSTALLATION_ROOT is C:\vcpkg

@@ -71,6 +71,36 @@
 /Sp {N 3 -1 roll 0 360 arc fs N}!
 % Patch fill: x1 y1 ... xn yn n
 /SP {M {D} repeat FO}!
+% Sphere with 3D shading: radius xc yc
+/SPhere {/yc_SP edef /xc_SP edef /radius_SP edef
+  /SP_flat where {pop} {/SP_flat false def} ifelse
+  /SP_no_fill where {pop} {/SP_no_fill false def} ifelse
+  gsave
+  xc_SP yc_SP matrix currentmatrix transform /yc_SP_user edef /xc_SP_user edef
+  radius_SP 0 matrix currentmatrix dtransform dup mul exch dup mul add sqrt /radius_SP_user edef
+  /SP_lx where {pop /SP_lx_orig SP_lx def /SP_ly_orig SP_ly def} {/SP_lx_orig 0.0 def /SP_ly_orig 0.0 def} ifelse
+  radius_SP_user SP_lx_orig mul /SP_lx_user edef
+  radius_SP_user SP_ly_orig mul /SP_ly_user edef
+  matrix setmatrix
+  SP_no_fill {
+    % No fill (outline only, drawn separately in C code)
+  } {
+    fc
+    SP_flat {
+      % Flat/constant color (no gradient)
+      xc_SP_user yc_SP_user T N 0 0 radius_SP_user 0 360 arc fill
+    } {
+      % 3D gradient shading
+      currentrgbcolor /B_SP edef /G_SP edef /R_SP edef
+      xc_SP_user yc_SP_user T N 0 0 radius_SP_user 0 360 arc
+      /Pattern setcolorspace
+      << /PatternType 2 /Shading << /ShadingType 3 /ColorSpace /DeviceRGB
+      /Coords [SP_lx_user SP_ly_user 0 0 0 radius_SP_user] /Function <<
+      /FunctionType 2 /Domain [0 1] /C0 [1 1 1] /C1 [R_SP G_SP B_SP] /N 1 >> >>
+      >> matrix makepattern setcolor fill
+    } ifelse
+  } ifelse
+  grestore}!
 % Rectangle: height width xc yc
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 % Rounded rectangle: height width radius xc yc

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -5699,7 +5699,7 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 	/* Need to strip off any valid, trailing modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
 
-	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use exactly as is */
+	if (strstr(filename, "/=tiled_") || strstr(filename, "\\=tiled_"))	/* Special list with remote tiles, use exactly as is */
 		strncpy (file, filename, PATH_MAX-1);
 	else	/* Strip off netCDF3-D grid extensions to make sure we get a valid file name */
 		sscanf (filename, "%[^=?]", file);
