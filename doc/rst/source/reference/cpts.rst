@@ -72,7 +72,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    The color maps from cmocean by Kristen M. Thyng supported by GMT.
 
 For additional color tables, visit
-`cpt-city <http://www.seaviewsensing.com/pub/cpt-city/>`_ and
+`cpt-city <https://phillips.shef.ac.uk/pub/cpt-city/>`_ and
 `Scientific Colour-Maps <http://www.fabiocrameri.ch/colourmaps.php>`_.
 
 Labeled and non-equidistant color legends
