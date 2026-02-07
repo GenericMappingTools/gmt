@@ -1,0 +1,6 @@
+outs:
+- md5: c873e415f4a84299be8e6e58400fce9c.dir
+  nfiles: 1
+  path: postscriptlight
+  size: 95061
+  hash: md5
