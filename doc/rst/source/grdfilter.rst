@@ -94,11 +94,13 @@ Required Arguments
     - (**g**) Gaussian: Weights are given by the Gaussian function, where
       *width* is 6 times the conventional Gaussian sigma.
     - (**f**) Custom: Weights are given by the precomputed values in the
-      filter weight grid file *weight*, which must have odd dimensions;
+      filter weight grid file *weight*; append the name of the weight grid in the
+      form of **-Ff**\ *weight*. The grid must have odd dimensions;
       also requires **-D0** and output spacing must match input spacing or
       be integer multiples.
     - (**o**) Operator: Weights are given by the precomputed values in the
-      filter weight grid file *weight*, which must have odd dimensions;
+      filter weight grid file *weight*; append the name of the weight grid in the
+      form of **-Fo**\ *weight*. The grid must have odd dimensions;
       also requires **-D0** and output spacing must match input spacing or
       be integer multiples. Weights are assumed to sum to zero so no
       accumulation of weight sums and normalization will be done.
