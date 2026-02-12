@@ -52,27 +52,23 @@ Required Arguments
 .. _-D:
 
 **-D**\ *flag*
-    Distance *flag* tells how grid (*x, y*) relates to filter *width* as
-    follows:
+    Distance *flag* tells how grid (*x, y*) relates to filter *width* as follows:
 
-    - *flag* = p: grid (px,py) with *width* an odd number of pixels;
-      Cartesian distances.
-    - *flag* = 0: grid (*x, y*) same units as *width*, Cartesian distances.
-    - *flag* = 1: grid (*x, y*) in degrees, *width* in km, Cartesian
-      distances.
-    - *flag* = 2: grid (*x, y*) in degrees, *width* in km, dx scaled by
-      cos(middle y), Cartesian distances.
+    ====== =========================== ===================== =======================================
+    Flag   Grid (x,y)                  Width                 Distance Calculation
+    ====== =========================== ===================== =======================================
+    **p**  Pixels (px, py)             Odd number of pixels  Cartesian
+    **0**  Same units as *width*       Any                   Cartesian
+    **1**  Degrees                     km                    Cartesian
+    **2**  Degrees                     km                    Cartesian, dx scaled by cos(middle y)
+    **3**  Degrees                     km                    Cartesian, dx scaled by cos(y) per row
+    **4**  Degrees                     km                    Spherical (great circle)
+    **5**  Mercator **-Jm1** img units km                    Spherical
+    ====== =========================== ===================== =======================================
 
-    The above options are fastest because they allow weight matrix to be
-    computed only once. The next three options are slower because they
-    recompute weights for each latitude.
-
-    - *flag* = 3: grid (*x, y*) in degrees, *width* in km, dx scaled by
-      cosine(y), Cartesian distance calculation.
-    - *flag* = 4: grid (*x, y*) in degrees, *width* in km, Spherical distance
-      calculation.
-    - *flag* = 5: grid (*x, y*) in Mercator **-Jm**\ 1 img units, *width* in
-      km, Spherical distance calculation.
+    Flags **p**, **0**, **1**, and **2** are fastest because they allow weight matrix to
+    be computed only once. The other flags are slower because they recompute weights for
+    each latitude.
 
 .. _-F:
 
@@ -94,11 +90,13 @@ Required Arguments
     - (**g**) Gaussian: Weights are given by the Gaussian function, where
       *width* is 6 times the conventional Gaussian sigma.
     - (**f**) Custom: Weights are given by the precomputed values in the
-      filter weight grid file *weight*, which must have odd dimensions;
+      filter weight grid file *weight*; append the name of the weight grid in the
+      form of **-Ff**\ *weight*. The grid must have odd dimensions;
       also requires **-D0** and output spacing must match input spacing or
       be integer multiples.
     - (**o**) Operator: Weights are given by the precomputed values in the
-      filter weight grid file *weight*, which must have odd dimensions;
+      filter weight grid file *weight*; append the name of the weight grid in the
+      form of **-Fo**\ *weight*. The grid must have odd dimensions;
       also requires **-D0** and output spacing must match input spacing or
       be integer multiples. Weights are assumed to sum to zero so no
       accumulation of weight sums and normalization will be done.

@@ -14911,7 +14911,7 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 				gmt_M_memcpy(pad, API->GMT->current.io.pad, 4, int);		/* Save to later restore */
 				gmt_M_memcpy(API->GMT->current.io.pad, S_obj->orig_pad, 4, int);	/* Crucial for gmtapi_import_image() at line #4927 not return too soon */
 				if (S_obj->family == GMT_IS_IMAGE) {
-					if ((I = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+					if ((I = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
 						return API->error;	/* Failure to read grid header */
 					gmt_M_memcpy(wesn, I->header->wesn, 4, double);	/* Copy over the image's region */
 					HH = gmt_get_H_hidden(I->header);
@@ -14933,6 +14933,8 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 				gmt_M_memcpy(API->GMT->current.io.pad, pad, 4, int);		/* Restore the pad */
 			}
 #endif
+				file = opt->arg;
+				if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
 				if ((G = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
 					return API->error;	/* Failure to read grid header */
 				gmt_M_memcpy(wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
