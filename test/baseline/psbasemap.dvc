@@ -1,5 +1,6 @@
 outs:
-- md5: d844a65d237eeb5ecd27b79fb325c08f.dir
-  nfiles: 56
+- md5: 6f6177c3673dc054c5489c208a9d072a.dir
+  nfiles: 57
   path: psbasemap
   hash: md5
+  size: 2936773

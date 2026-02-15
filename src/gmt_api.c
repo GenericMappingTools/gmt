@@ -5632,9 +5632,19 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				return_null (API, GMT_OBJECT_NOT_FOUND);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing grid data from user memory location\n");
 #ifdef DOUBLE_PRECISION_GRID
-			G_obj->data = M_obj->data.f8;
+			if ((mode & GMT_DATA_ONLY) && G_obj->data && G_obj->data != M_obj->data.f8)
+				gmt_M_memcpy (G_obj->data, M_obj->data.f8, G_obj->header->size, gmt_grdfloat);
+			else
+				G_obj->data = M_obj->data.f8;
 #else
-			G_obj->data = M_obj->data.f4;
+			if ((mode & GMT_DATA_ONLY) && G_obj->data && G_obj->data != M_obj->data.f4) {
+				struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G_obj->header);
+				size_t stride = HH->stride ? HH->stride : G_obj->header->n_columns;
+				float *dest = G_obj->data + HH->data_offset;
+				for (size_t row = 0; row < M_obj->n_rows; row++)
+					gmt_M_memcpy (dest + row * stride, M_obj->data.f4 + row * M_obj->n_columns, M_obj->n_columns, gmt_grdfloat);
+			} else
+				G_obj->data = M_obj->data.f4;
 #endif
 			GH = gmt_get_G_hidden (G_obj);
 			MH = gmt_get_M_hidden (M_obj);
