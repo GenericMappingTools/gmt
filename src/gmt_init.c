@@ -14884,7 +14884,6 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:", *file = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
-	struct GMT_IMAGE *I = NULL;
 	switch (family) {
 		case GMT_IS_GRID:
 			if ((opt = GMT_Find_Option(API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
@@ -14949,15 +14948,34 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 		case GMT_IS_IMAGE:
 			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
 			file = opt->arg;
-			if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
-			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_IS_IMAGE|GMT_IO_RESET, NULL, file, NULL)) == NULL)
-				return API->error;	/* Failure to read image header */
-			gmt_M_memcpy (wesn, I->header->wesn, 4, double);	/* Copy over the image region */
-			HH = gmt_get_H_hidden (I->header);
-			if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use image w/e/s/n to round to nearest reasonable multiples */
-			if (I->header->x_units[0] && I->header->y_units[0] && !strcmp (I->header->x_units, I->header->y_units))	/* Want constant scale */
-				*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
-			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary image structure */
+			if (gmt_M_file_is_memory (file)) {
+				/* For memory files, directly access the already-loaded image object */
+				int object_ID, obj_item;
+				struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+				if (sscanf (&file[GMTAPI_OBJECT_ID_START], "%d", &object_ID) != 1) return GMT_OBJECT_NOT_FOUND;
+				if ((obj_item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) return GMT_OBJECT_NOT_FOUND;
+				S_obj = API->object[obj_item];
+				if (S_obj == NULL || S_obj->resource == NULL) return GMT_PTR_IS_NULL;
+				I = (struct GMT_IMAGE *)S_obj->resource;
+				gmt_M_memcpy (wesn, I->header->wesn, 4, double);	/* Copy over the image region */
+				HH = gmt_get_H_hidden (I->header);
+				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use image w/e/s/n to round to nearest reasonable multiples */
+				if (I->header->x_units[0] && I->header->y_units[0] && !strcmp (I->header->x_units, I->header->y_units))	/* Want constant scale */
+					*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
+				/* Don't destroy the image - it's a reference to the original */
+			}
+			else {
+				/* For regular files, read the image header */
+				if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
+				if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_IS_IMAGE|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+					return API->error;	/* Failure to read image header */
+				gmt_M_memcpy (wesn, I->header->wesn, 4, double);	/* Copy over the image region */
+				HH = gmt_get_H_hidden (I->header);
+				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use image w/e/s/n to round to nearest reasonable multiples */
+				if (I->header->x_units[0] && I->header->y_units[0] && !strcmp (I->header->x_units, I->header->y_units))	/* Want constant scale */
+					*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
+				if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary image structure */
+			}
 			break;
 
 		case GMT_IS_DATASET:
@@ -15104,13 +15122,19 @@ GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const ch
 	/* Here we know the module is using a grid to get -R implicitly */
 	/* First check if the input file is an image */
 	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) != NULL) {
-		char *ext = strrchr (opt->arg, '.');
-		if (ext) {
+		/* Check for pre-loaded image in memory (virtual filename has family code 'I') */
+		if (gmt_M_memfile_is_image (opt->arg)) {
+			family = GMT_IS_IMAGE;
+		}
+		else {
 			/* Check for common image extensions */
-			if (strcmp (ext, ".tif") == 0 || strcmp (ext, ".tiff") == 0 || strcmp (ext, ".png") == 0 ||
-			    strcmp (ext, ".jpg") == 0 || strcmp (ext, ".jpeg") == 0 || strcmp (ext, ".bmp") == 0 ||
-			    strcmp (ext, ".gif") == 0) {
-				family = GMT_IS_IMAGE;
+			char *ext = strrchr (opt->arg, '.');
+			if (ext) {
+				if (strcmp (ext, ".tif") == 0 || strcmp (ext, ".tiff") == 0 || strcmp (ext, ".png") == 0 ||
+				    strcmp (ext, ".jpg") == 0 || strcmp (ext, ".jpeg") == 0 || strcmp (ext, ".bmp") == 0 ||
+				    strcmp (ext, ".gif") == 0) {
+					family = GMT_IS_IMAGE;
+				}
 			}
 		}
 	}
