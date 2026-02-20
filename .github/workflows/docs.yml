@@ -57,7 +57,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       - name: Setup vcpkg (Windows)
         run: gh run download -n vcpkg-cache -D C:/vcpkg/installed/
@@ -138,7 +138,7 @@ jobs:
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Checkout the gh-pages branch in a separate folder
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           ref: gh-pages
           # Checkout to this folder instead of the current one
