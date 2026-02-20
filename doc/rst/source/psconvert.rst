@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt psconvert** *psfiles*
-[ |-A|\ [**+r**][**+u**] ]
+[ |-A|\ [**+i**][**+r**][**+u**] ]
 [ |-C|\ *gs_option* ]
 [ |-D|\ *outdir* ]
 [ |-E|\ *resolution* ]
@@ -65,10 +65,13 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+r**][**+u**]
+**-A**\ [**+i**][**+r**][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Two modifiers may be used as well:
 
+    - **+i** - Report the adjusted BoundingBox, position in paper and return, that is:
+      width, height, x0, y0, x1, y1. All in cm. Note that this ignores the effect of the
+      |-H| and |-I| options, which are applied after the BoundingBox is computed.
     - **+r** - We *round* the HighResBoundingBox instead of using the ``ceil`` function.
       This is going against Adobe Law but can be useful when creating very small images
       where the difference of one pixel might matter. If |-V| is used we also report
