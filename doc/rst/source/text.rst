@@ -51,7 +51,7 @@ Description
 orientation. Various map projections are provided, with the option to
 draw and annotate the map boundaries.
 
-For a list of all fonts recognized by GMT see :doc:`postscript-fonts`.
+For a list of all fonts recognized by GMT see :ref:`PostScript Fonts Used by GMT <postscript-fonts>`.
 Greek characters, subscript, superscript, and small
 caps are supported as follows:
 
