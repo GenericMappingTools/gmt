@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=1ae7504c"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -167,7 +167,7 @@
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>dx</em>[/<em>dy</em>] ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>x</strong>|<strong>y</strong>|<strong>X</strong>|<strong>Y</strong>][<strong>+a</strong>|<strong>A</strong>][<strong>+cl</strong>|<strong>f</strong>][<strong>+n</strong>][<strong>+w</strong><em>width</em>[/<em>cap</em>]][<strong>+p</strong><em>pen</em>] ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>c</strong>|<strong>n</strong>|<strong>p</strong>][<strong>a</strong>|<strong>s</strong>|<strong>t</strong>|<strong>r</strong>|<em>refpoint</em>] ]
-[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em>|<strong>+z</strong> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em>|<strong>+g</strong>|<strong>+z</strong> ]
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>[<em>scale</em>] ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>intens</em>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>+b</strong>|<strong>d</strong>|<strong>D</strong>][<strong>+xl</strong>|<strong>r</strong>|<em>x0</em>][<strong>+yb</strong>|<strong>t</strong>|<em>y0</em>][<strong>+p</strong><em>pen</em>] ]
@@ -352,8 +352,8 @@ of directives <strong>pa</strong>, <strong>pt</strong>, <strong>ps</strong>, <st
 </figure>
 </dd>
 </dl>
-<dl class="simple" id="g">
-<dt><strong>-G</strong><em>fill</em>|<strong>+z</strong> <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select color or pattern for filling of symbols or polygons [Default is no fill].
+<dl id="g">
+<dt><strong>-G</strong><em>fill</em>|<strong>+g</strong>|<strong>+z</strong> <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select color or pattern for filling of symbols or polygons [Default is no fill].
 Note that this module will search for <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> strings in all the
 segment headers and let any values thus found over-ride the command line settings.
 If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is set, use <strong>-G+z</strong> to assign fill color via <strong>-C</strong><em>cpt</em> and the
@@ -361,6 +361,20 @@ If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a><
 <em>fill</em> = <em>auto</em>[<em>-segment</em>] or <em>auto-table</em> then
 we will cycle through the fill colors implied by <a class="reference internal" href="gmt.conf.html#term-COLOR_SET"><span class="xref std std-term">COLOR_SET</span></a> and change on a per-segment
 or per-table basis.  Any <em>transparency</em> setting is unchanged.</p>
+<dl>
+<dt><strong>+g</strong></dt><dd><p>Enable vertex-based color gradients for polygons using Gouraud shading.
+This modifier automatically detects the input data format and supports three formats:</p>
+<ol class="arabic simple">
+<li><p><strong>RGB format</strong>: <em>x y r g b</em> where RGB values are in the range 0-255.</p></li>
+<li><p><strong>Color name format</strong>: <em>x y colorname</em> where <em>colorname</em> can be a named color (e.g., “red”, “blue”),
+hex color (e.g., “#FF0000”), slash-separated RGB (e.g., “255/0/0”), H-S-V or C/M/Y/K formats.</p></li>
+<li><p><strong>CPT format</strong>: <em>x y z</em> where <em>z</em> values are mapped to colors via the CPT specified with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.</p></li>
+</ol>
+<p>Polygons with any number of vertices are supported and automatically triangulated using a fan triangulation
+from the first vertex. Each vertex gets its own color, and Gouraud shading creates smooth color gradients
+across the polygon faces. Use <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> to add an outline to the gradient polygons.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="simple" id="h">
@@ -699,7 +713,8 @@ offer a rich set of modifiers to customize the vector head(s).</p>
 <figcaption>
 <p><span class="caption-text">There are three classes of vectors: Cartesian (left), circular (center) and geographic (right).
 While their use is slightly different, they all share common modifiers that affect how
-they are displayed.</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+they are displayed.
+See also <a class="reference internal" href="reference/features.html#the-drawing-of-vectors"><span class="std std-ref">Technical reference - Drawing of Vectors</span></a>.</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <dl class="simple">
@@ -1092,7 +1107,8 @@ line should have different offsets.</p></li>
 <li><p><strong>+v</strong> - Given [<strong>b</strong>|<strong>e</strong>]<em>vspecs</em>, we place a vector head at the ends of the lines. Prepend
 <strong>b</strong> (beginning) or <strong>e</strong> (end) to add a vector at only one end [Default is shared specs for both end of the line].
 <strong>Note</strong> - Because <strong>+v</strong> may take additional modifiers it must necessarily be given
-at the end of the pen specification. See the <a class="reference internal" href="#vector-attributes">Vector Attributes</a> for more information or such modifiers.</p></li>
+at the end of the pen specification. See the <a class="reference internal" href="#vector-attributes">Vector Attributes</a> for more information or such modifiers.
+See also <a class="reference internal" href="reference/features.html#the-drawing-of-vectors"><span class="std std-ref">Technical reference - Drawing of Vectors</span></a></p></li>
 <li><p><strong>+z</strong> - If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is set, assign pen color via <strong>-C</strong><em>cpt</em> and the <em>z</em>-values obtained
 (same if transparency is set via <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>).  Finally, if pen <em>color</em> = <em>auto</em>[<em>-segment</em>] or <em>auto-table</em> then
 we will cycle through the pen colors implied by <a class="reference internal" href="gmt.conf.html#term-COLOR_SET"><span class="xref std std-term">COLOR_SET</span></a> and change on a per-segment
@@ -1407,6 +1423,35 @@ to cm given the scale 3.60:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>plot<span class="w"> </span>-R20/40/-20/0<span class="w"> </span>-JM6i<span class="w"> </span>-Sv0.15i+e+z3.6c<span class="w"> </span>-Gred<span class="w"> </span>-W0.25p<span class="w"> </span>-Baf<span class="w"> </span>data.txt<span class="w"> </span>-pdf<span class="w"> </span>map
 </pre></div>
 </div>
+<p>To plot a triangle with smooth color gradients using RGB values directly:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; triangle.txt</span>
+<span class="s">0 0 255 0 0</span>
+<span class="s">3 0 0 255 0</span>
+<span class="s">1.5 2.6 0 0 255</span>
+<span class="s">EOF</span>
+gmt<span class="w"> </span>plot<span class="w"> </span>triangle.txt<span class="w"> </span>-R-1/4/-1/3<span class="w"> </span>-JX10c<span class="w"> </span>-G+g<span class="w"> </span>-W0.5p,black<span class="w"> </span>-Baf<span class="w"> </span>-png<span class="w"> </span>gradient
+</pre></div>
+</div>
+<p>Or using color names for a quadrilateral:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; square.txt</span>
+<span class="s">0 0 red</span>
+<span class="s">2 0 yellow</span>
+<span class="s">2 2 green</span>
+<span class="s">0 2 blue</span>
+<span class="s">EOF</span>
+gmt<span class="w"> </span>plot<span class="w"> </span>square.txt<span class="w"> </span>-R-0.5/2.5/-0.5/2.5<span class="w"> </span>-JX10c<span class="w"> </span>-G+g<span class="w"> </span>-W1p<span class="w"> </span>-Baf<span class="w"> </span>-png<span class="w"> </span>gradient
+</pre></div>
+</div>
+<p>Or using a CPT file with z-values:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>makecpt<span class="w"> </span>-Chot<span class="w"> </span>-T0/100<span class="w"> </span>&gt;<span class="w"> </span>temp.cpt
+cat<span class="w"> </span><span class="s">&lt;&lt; EOF &gt; triangle_z.txt</span>
+<span class="s">0 0 0</span>
+<span class="s">3 0 50</span>
+<span class="s">1.5 2.6 100</span>
+<span class="s">EOF</span>
+gmt<span class="w"> </span>plot<span class="w"> </span>triangle_z.txt<span class="w"> </span>-R-1/4/-1/3<span class="w"> </span>-JX10c<span class="w"> </span>-G+g<span class="w"> </span>-Ctemp.cpt<span class="w"> </span>-W0.5p<span class="w"> </span>-Baf<span class="w"> </span>-png<span class="w"> </span>gradient
+</pre></div>
+</div>
 </section>
 <section id="segment-header-parsing">
 <h2>Segment Header Parsing<a class="headerlink" href="#segment-header-parsing" title="Link to this heading"></a></h2>
@@ -1540,8 +1585,8 @@ via the <strong>+S</strong> modifier.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Feb 21, 2026.
       </span></p>
   </div>
 

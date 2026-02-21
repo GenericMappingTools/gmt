@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=1ae7504c"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -204,7 +204,8 @@ specify fill of water-areas then the latter will be transparent (i.e.,
 earlier graphics drawn in those areas will not be overwritten).
 Likewise, if the water-areas are painted and no land fill is set then
 the land-areas will be transparent. A map projection must be supplied.
-At least one of options -C, -G, -S, -E, -I, -N, -Q and -W must be specified.</p>
+At least one of options <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>, <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>, <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>, <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>, <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>, <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>
+must be specified.</p>
 </section>
 <section id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
@@ -348,7 +349,7 @@ can be located anywhere.</p></li>
 <li><p><strong>+L</strong> to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.</p></li>
 <li><p><strong>+l</strong>|<strong>+L</strong> to <strong>-E</strong>=<em>continent</em> or <strong>-E</strong><em>code</em> to only list countries or states in that continent
 or country, respectively; repeat if more than one continent or country is requested.</p></li>
-<li><p><strong>+n</strong> to list the named <span class="xref std std-ref">DCW collections dcw-collections&gt;</span> or regions (<strong>-E</strong><em>code</em><strong>+n</strong> will list
+<li><p><strong>+n</strong> to list the named <a class="reference internal" href="#dcw-collections"><span class="std std-ref">DCW collections</span></a> or regions (<strong>-E</strong><em>code</em><strong>+n</strong> will list
 collections that contains the listed codes). All names are case-insensitive.</p></li>
 <li><p><strong>+c</strong> to set up an inside clip path based on your selection.</p></li>
 <li><p><strong>+C</strong> to set up an outside (area between selection and map boundary) clip path based on your selection.</p></li>
@@ -396,7 +397,7 @@ individual <a class="reference internal" href="reference/features.html#plt-units
 </ul>
 </div></blockquote>
 <dl class="simple" id="g">
-<dt><strong>-G</strong>[<em>fill</em>] <span class="xref std std-ref">(more …) -Gfill_attrib&gt;</span></dt><dd><p>Select filling or clipping of “dry” areas. Append the shade, color,
+<dt><strong>-G</strong>[<em>fill</em>] <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select filling or clipping of “dry” areas. Append the shade, color,
 or pattern; or give no argument for clipping [Default is no fill].</p>
 </dd>
 </dl>
@@ -504,7 +505,7 @@ often as necessary.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong>[<em>fill</em>] <span class="xref std std-ref">(more …) -Gfill_attrib&gt;</span></dt><dd><p>Select filling or clipping of “wet” areas. Append the shade, color,
+<dt><strong>-S</strong>[<em>fill</em>] <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select filling or clipping of “wet” areas. Append the shade, color,
 or pattern; or give no argument for clipping [Default is no fill].</p>
 </dd>
 </dl>
@@ -590,7 +591,7 @@ or append unit % for a size in percentage of map width [15%].</p></li>
 </dd>
 </dl>
 <dl class="simple" id="w">
-<dt><strong>-W</strong>[[<em>level</em>/]<em>pen</em>] <span class="xref std std-ref">(more …) set-pens&gt;</span></dt><dd><p>Draw shorelines [Default is no shorelines]. Append pen attributes
+<dt><strong>-W</strong>[[<em>level</em>/]<em>pen</em>] <a class="reference internal" href="gmt.html#set-pens"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw shorelines [Default is no shorelines]. Append pen attributes
 [Defaults: width = 0.25p, color = black, style = solid] which
 apply to all four levels. To set the pen for each level differently,
 prepend <em>level</em>/, where <em>level</em> is 1-4 and represent coastline,
@@ -615,13 +616,11 @@ listed will not be drawn [Default draws all levels; but see <a class="reference 
 <dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>][<strong>+c</strong><em>col</em>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </p>
 </dd>
 </dl>
-<dl id="id1">
-<dt><strong>-gD</strong><em>dist</em></dt><dd><dl class="simple">
-<dt>Short version of the global <strong>-g</strong> option. Here it is used to set the _dist_ distance, in map units,</dt><dd><p>higher then which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
-and when line wrapping on dateline was not correctly detected. As an example of this, see for instance</p>
-</dd>
-</dl>
-<p>the old issue <a class="reference external" href="https://github.com/GenericMappingTools/gmt/issues/3667">#3667</a> that can be fixed
+<dl class="simple" id="id1">
+<dt><strong>-gD</strong><em>dist</em></dt><dd><p>Short version of the global <strong>-g</strong> option. Here it is used to set the <em>dist</em> distance, in map units,
+higher than which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
+and when line wrapping on dateline was not correctly detected. As an example of this, see for instance
+the old issue <a class="reference external" href="https://github.com/GenericMappingTools/gmt/issues/3667">#3667</a> that can be fixed
 by adding <strong>-gD</strong>1 to the command line.</p>
 </dd>
 </dl>
@@ -805,8 +804,8 @@ from us to use such figures in journals, for instance.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Feb 21, 2026.
       </span></p>
   </div>
 

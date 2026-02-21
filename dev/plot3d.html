@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=1ae7504c"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -166,7 +166,7 @@
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>dx</em>/<em>dy</em>[/<em>dz</em>] ]
-[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em>|<strong>+z</strong> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em>|<strong>+g</strong>|<strong>+z</strong> ]
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>[<em>scale</em>] ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>intens</em>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>+b</strong>|<strong>d</strong>|<strong>D</strong>][<strong>+xl</strong>|<strong>r</strong>|<em>x0</em>][<strong>+yl</strong>|<strong>r</strong>|<em>y0</em>][<strong>+p</strong><em>pen</em>] ]
@@ -287,14 +287,28 @@ argument is given then we select the current CPT.</p>
 units from <strong>c</strong>|<strong>i</strong>|<strong>p</strong> to each value.</p>
 </dd>
 </dl>
-<dl class="simple" id="g">
-<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select color or pattern for filling of symbols or polygons [Default is no fill].
+<dl id="g">
+<dt><strong>-G</strong><em>fill</em>|<strong>+g</strong>|<strong>+z</strong> <a class="reference internal" href="reference/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select color or pattern for filling of symbols or polygons [Default is no fill].
 Note that the module will search for <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> strings in all the
 segment headers and let any values thus found over-ride the command line settings.
 If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is set, use <strong>-G+z</strong> to assign fill color via <strong>-C</strong><em>cpt</em> and the
 <em>z</em>-values obtained.  Finally, if <em>fill</em> = <em>auto</em>[<em>-segment</em>] or <em>auto-table</em> then
 we will cycle through the fill colors implied by <a class="reference internal" href="gmt.conf.html#term-COLOR_SET"><span class="xref std std-term">COLOR_SET</span></a> and change on a per-segment
 or per-table basis.  Any <em>transparency</em> setting is unchanged.</p>
+<dl>
+<dt><strong>+g</strong></dt><dd><p>Enable vertex-based color gradients for polygons using Gouraud shading.
+This modifier automatically detects the input data format and supports three formats:</p>
+<ol class="arabic simple">
+<li><p><strong>RGB format</strong>: <em>x y z r g b</em> where RGB values are in the range 0-255.</p></li>
+<li><p><strong>Color name format</strong>: <em>x y z colorname</em> where <em>colorname</em> can be a named color (e.g., “red”, “blue”),
+hex color (e.g., “#FF0000”), slash-separated RGB (e.g., “255/0/0”), H-S-V or C/M/Y/K formats.</p></li>
+<li><p><strong>CPT format</strong>: <em>x y z value</em> where <em>value</em> is mapped to colors via the CPT specified with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.</p></li>
+</ol>
+<p>Polygons with any number of vertices are supported and automatically triangulated using a fan triangulation
+from the first vertex. Each vertex gets its own color, and Gouraud shading creates smooth color gradients
+across the polygon faces. Use <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> to add an outline to the gradient polygons.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="simple" id="h">
@@ -579,7 +593,8 @@ offer a rich set of modifiers to customize the vector head(s).</p>
 <figcaption>
 <p><span class="caption-text">There are three classes of vectors: Cartesian (left), circular (center) and geographic (right).
 While their use is slightly different, they all share common modifiers that affect how
-they are displayed.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+they are displayed.
+See also <a class="reference internal" href="reference/features.html#the-drawing-of-vectors"><span class="std std-ref">Technical reference - Drawing of Vectors</span></a>.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <dl class="simple">
@@ -958,7 +973,7 @@ of uniform color (upper case <strong>U</strong> and <strong>O</strong>). The col
 be a multiband symbol using the <strong>+v</strong>|<strong>i</strong> modifiers.</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<dl class="simple">
+<dl>
 <dt><strong>-So</strong><em>size</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>q</strong>][<strong>+b</strong>|<strong>B</strong>[<em>base</em>]][<strong>+v</strong>|<strong>i</strong><em>nz</em>]</dt><dd><p>c<strong>o</strong>lumn (3-D) extending from <em>base</em> to <em>z</em>.  The <em>size</em> sets base width
 (Use <em>xsize/ysize</em> if they are not the same).  Append <strong>q</strong> if <em>size</em> is a quantity in the users’ x-units
 [Default is plot-distance units].  If no <em>size</em> is given we expect both <em>xsize</em>
@@ -978,6 +993,19 @@ Thus, input records are either (<em>x y z1 z2 … zn</em>) or (<em>x y dz1 dz2 �
 <strong>q</strong> if <em>size</em> is a quantity in x-units [Default is plot-distance units].
 The facet colors will be modified to simulate shading.
 Use <strong>-SU</strong> to disable 3-D illumination.</p>
+</dd>
+<dt><strong>-SP</strong><em>size</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>][<strong>+a</strong><em>azimuth</em>][<strong>+e</strong><em>elevation</em>][<strong>+f</strong>][<strong>+n</strong>]</dt><dd><p>Sphere (3-D) with diameter <em>size</em> [Default unit is <strong>c</strong> (cm)].
+The sphere is rendered with a radial gradient from white at the light source
+to the fill color (<strong>-G</strong>) at the opposite side, creating a 3-D appearance.
+Modifiers:</p>
+<ul class="simple">
+<li><p><strong>+a</strong><em>azimuth</em> - Set light source azimuth [default: 0, from the right].</p></li>
+<li><p><strong>+e</strong><em>elevation</em> - Set light source elevation [default: 90, perpendicular to viewing plane].</p></li>
+<li><p><strong>+f</strong> - Use flat/constant fill color (no gradient shading).</p></li>
+<li><p><strong>+n</strong> - Draw outline only (no fill).</p></li>
+</ul>
+<p>The outline pen is controlled by <strong>-W</strong>. If no fill color is specified via <strong>-G</strong>,
+the sphere defaults to gray.</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -1407,8 +1435,8 @@ original polygon.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Feb 21, 2026.
       </span></p>
   </div>
 

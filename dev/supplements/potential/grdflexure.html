@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/togglebutton.js?v=1ae7504c"></script>
         <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -496,27 +496,27 @@ with a radius of 50 km and height of 5000 m:</p>
 </div>
 <p>To compute elastic plate flexure from the load <em>smt.nc</em>,
 for a 10 km thick plate with typical densities, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E10k<span class="w"> </span>-D2700/3300/1035
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E10k<span class="w"> </span>-D3300/2700/1035
 </pre></div>
 </div>
 <p>To see how in-plane stresses affect the result, we use <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>.  Remember that we need to depth-
 integrated forces, not pressures, hence we try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E10k<span class="w"> </span>-D2700/3300/1035<span class="w"> </span>-A-4e11/2e11/-1e12
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E10k<span class="w"> </span>-D3300/2700/1035<span class="w"> </span>-A-4e11/2e11/-1e12
 </pre></div>
 </div>
 <p>To compute viscoelastic plate flexure from the load <em>smt.nc</em>,
 for a 20 km thick plate with typical densities and a Maxwell time of 40kyr, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E20k<span class="w"> </span>-D2700/3300/1035<span class="w"> </span>-M40k
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E20k<span class="w"> </span>-D3300/2700/1035<span class="w"> </span>-M40k
 </pre></div>
 </div>
 <p>To compute firmoviscous plate flexure from the load <em>smt.nc</em>,
 for a 15 km thick plate with typical densities overlying a viscous mantle with viscosity 2e21, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E15k<span class="w"> </span>-D2700/3300/1035<span class="w"> </span>-F2e21
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E15k<span class="w"> </span>-D3300/2700/1035<span class="w"> </span>-F2e21
 </pre></div>
 </div>
 <p>To compute the general linear viscoelastic plate flexure from the load <em>smt.nc</em>,
 for an initial Te of 40 km and a final Te of 15 km  with typical densities and a Maxwell time of 100 kyr, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E40k/15k<span class="w"> </span>-D2700/3300/1035<span class="w"> </span>-M100k
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdflexure<span class="w"> </span>smt.nc<span class="w"> </span>-Gflex.nc<span class="w"> </span>-E40k/15k<span class="w"> </span>-D3300/2700/1035<span class="w"> </span>-M100k
 </pre></div>
 </div>
 <p>To just compute the firmoviscous response functions using the specified rheological values, try:</p>
@@ -670,8 +670,8 @@ J. Geophys. Res., 106(B9), 19,431-19,441,
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Feb 21, 2026.
       </span></p>
   </div>
 

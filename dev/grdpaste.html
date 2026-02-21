@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=1ae7504c"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -158,8 +158,8 @@
 <p>Join two grids along their common edge</p>
 <section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
-<p><strong>gmt grdpaste</strong> <em>file_a.nc file_b.nc</em>
-<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outfile.nc</em>
+<p><strong>gmt grdpaste</strong> <em>grid_a grid_b</em>
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
@@ -168,9 +168,9 @@
 </section>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
-<p><strong>grdpaste</strong> will combine <em>file_a.nc</em> and <em>file_b.nc</em> into
-<em>outfile.nc</em> by pasting them together along their common edge. Files
-<em>file_a.nc</em> and <em>file_b.nc</em> must have the same grid spacings and registration, and must have one
+<p><strong>grdpaste</strong> will combine <em>grid_a</em> and <em>grid_b</em> into
+<em>outgrid</em> by pasting them together along their common edge. Files
+<em>grid_a</em> and <em>grid_b</em> must have the same grid spacings and registration, and must have one
 edge in common. If in doubt, check with <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a> and use <a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a>
 and/or <a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a> if necessary to prepare the edge joint. <strong>Note</strong>: For
 geographical grids, you may have to use <strong>-f</strong> to handle periodic longitudes
@@ -180,13 +180,13 @@ For stitching multiple grids, see <a class="reference internal" href="grdblend.h
 <section id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
 <dl class="simple">
-<dt><em>file_a.nc</em></dt><dd><p>One of two files to be pasted together.</p>
+<dt><em>grid_a</em></dt><dd><p>One of two files to be pasted together.</p>
 </dd>
-<dt><em>file_b.nc</em></dt><dd><p>The other of two files to be pasted together.</p>
+<dt><em>grid_b</em></dt><dd><p>The other of two files to be pasted together.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>outfile.nc</em></dt><dd><p>The name for the combined output. (See <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p>The name for the combined output. (See <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
 </dd>
 </dl>
 </section>
@@ -195,7 +195,7 @@ For stitching multiple grids, see <a class="reference internal" href="grdblend.h
 <dl class="simple" id="s">
 <dt><strong>-S</strong></dt><dd><p>Just prints a code number and a description of the sides at which the grids are pasted.
 No pasting actually happens. -G is ignored. This option is useful for externals that want to
-reimplement the grdpaste utility since it doesn’t work form them (<em>e.g.</em> Julia and GMTMEX).</p>
+reimplement the grdpaste utility since it doesn’t work for them (<em>e.g.</em> Julia and GMTMEX).</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -225,10 +225,10 @@ The examples that use remote files (file names starting with <code class="docuti
 can be cut and pasted into your terminal for testing.
 Other commands requiring input files are just dummy examples of the types
 of uses that are common but cannot be run verbatim as written.</p>
-<p>Suppose file_a.nc is 150E - 180E and 0 - 30N, and file_b.nc is 150E -
-180E, -30S - 0, then you can make outfile.nc which will be 150 - 180 and
+<p>Suppose grid_a.nc is 150E - 180E and 0 - 30N, and grid_b.nc is 150E -
+180E, -30S - 0, then you can make outgrid.nc which will be 150 - 180 and
 -30S - 30N by:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdpaste<span class="w"> </span>file_a.nc<span class="w"> </span>file_b.nc<span class="w"> </span>-Goutfile.nc<span class="w"> </span>-V<span class="w"> </span>-fg
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdpaste<span class="w"> </span>grid_a.nc<span class="w"> </span>grid_b.nc<span class="w"> </span>-Goutgrid.nc<span class="w"> </span>-V<span class="w"> </span>-fg
 </pre></div>
 </div>
 </section>
@@ -253,8 +253,8 @@ of uses that are common but cannot be run verbatim as written.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Feb 21, 2026.
       </span></p>
   </div>
 

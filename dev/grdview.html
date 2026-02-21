@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=1ae7504c"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -166,7 +166,7 @@
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>file</em>|<em>intens</em>|<strong>+a</strong><em>azimuth</em>][<strong>+d</strong>][<strong>+m</strong><em>ambient</em>][<strong>+n</strong><em>args</em>] ]
 [ <a class="reference internal" href="#jz"><span><strong>-Jz</strong></span></a></strong>|<strong>Z</strong><em>parameters</em> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>level</em>][<strong>+g</strong><em>fill</em>] ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>c</strong>|<strong>i</strong>|<strong>m</strong>[<strong>x</strong>|<strong>y</strong>]|<strong>s</strong>[<strong>m</strong>][<em>color</em>][<strong>+m</strong>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>c</strong>|<strong>g</strong>[<strong>m</strong>]<strong>i</strong>|<strong>m</strong>[<strong>x</strong>|<strong>y</strong>]|<strong>s</strong>[<strong>m</strong>]|[<em>color</em>][<strong>+m</strong>]<strong>t</strong> ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>smooth</em> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>+o</strong>[<em>pen</em>]][<strong>+s</strong>] ]
@@ -282,17 +282,25 @@ use that value if it is less than the grid minimum value.</p>
 </dd>
 </dl>
 <dl id="q">
-<dt><strong>-Q</strong><strong>c</strong>|<strong>i</strong>|<strong>m</strong>[<strong>x</strong>|<strong>y</strong>]|<strong>s</strong>[<strong>m</strong>][<em>color</em>][<strong>+m</strong>]</dt><dd><p>Select one of following directives. For any of these choices:</p>
+<dt><strong>-Q</strong><strong>c</strong>|<strong>g</strong>[<strong>m</strong>]<strong>i</strong>|<strong>m</strong>[<strong>x</strong>|<strong>y</strong>]|<strong>s</strong>[<strong>m</strong>]|[<em>color</em>][<strong>+m</strong>]<strong>t</strong></dt><dd><p>Select one of following directives. For any of these choices:</p>
 <ul class="simple">
 <li><p><strong>c</strong> - Image plot, but will make nodes with <em>z</em> = NaN transparent, using the color-masking
 feature in PostScript Level 3. Optionally append the effective dots-per-unit resolution
 for the rasterization [Default is <a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].</p></li>
+<li><p><strong>g</strong> - Gouraud-shaded surface with smooth vertex-based color gradients. Optionally append <strong>m</strong> to draw mesh lines
+on top of the surface. Append <strong>a</strong> to use alternate diagonal when splitting tiles into triangles.
+Gouraud shading produces smoother color transitions than <strong>-Qs</strong> and generates significantly smaller
+and faster PostScript files. The <strong>-Qs</strong> option should be used though when precise color transitions
+are required at contour levels (to do a <cite>contourf</cite> type figure. See <strong>-Wc</strong>) because the Gouraud-shaded
+doesn’t cut the tiles along the contour lines as <strong>-Qs</strong> does.</p></li>
 <li><p><strong>i</strong> - Image plot. Optionally append the effective dots-per-unit resolution for the
 rasterization [Default is <a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].</p></li>
 <li><p><strong>m</strong> - Mesh plot [Default]. Optionally append <em>color</em> for a different mesh paint [white].
-For waterfall plots, append <strong>x</strong> for row or <strong>y</strong> for column profiles). Specify color as for plain <strong>m</strong>.</p></li>
+For waterfall plots, append <strong>x</strong> for row or <strong>y</strong> for column profiles. Specify color as for plain <strong>m</strong>.</p></li>
 <li><p><strong>s</strong> - Surface plot. Optionally append <strong>m</strong> to have mesh lines drawn on top of surface. See <strong>-Wm</strong> for
 setting a specific mesh <em>pen</em>.</p></li>
+<li><p><strong>t</strong> - Paint tiles without color interpolation. Good for categorical data. Optionally append the effective
+dots-per-unit resolution for the rasterization [Default is <a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].</p></li>
 </ul>
 <p>A modifier can adjust the color further:</p>
 <ul class="simple">
@@ -502,8 +510,8 @@ then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not s
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Feb 21, 2026.
       </span></p>
   </div>
 

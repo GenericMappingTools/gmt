@@ -19,7 +19,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ [*dx*\ [/*dy*]][**+to**\|\ **O**\|\ **c**\|\ **C**] ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
-[ |-F|\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]] ]
+[ |-F|\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*]\|\ **t**\ *text*\|\ **z**\ [*format*]] ]
 [ |-G|\ [*fill*][**+n**] ]
 [ |-L| ] [ |-M| ] [ |-N| ]
 [ |-Q|\ **l**\|\ **u** ]
@@ -51,6 +51,7 @@ Description
 orientation. Various map projections are provided, with the option to
 draw and annotate the map boundaries.
 
+For a list of all fonts recognized by GMT see :doc:`reference/postscript-fonts`.
 Greek characters, subscript, superscript, and small
 caps are supported as follows:
 
@@ -209,7 +210,7 @@ Optional Arguments
     - **+z** - Format incoming *z* values to a string using the supplied *format* 
       [if not appended we use :term:`FORMAT_FLOAT_MAP`].
 
-    **Notes**: |-F|\ **+h**\|\ **l**\|\ **r**\|\ **t**\| **z** can't be used with |-M|.
+    **Notes**: |-F|\ **+h**\|\ **l**\|\ **r**\|\ **t**\|\ **z** can't be used with |-M|.
 
     **Notes**: (1) If |-Z| is in effect then the *z* value used for formatting is in the
     4th, not 3rd column. If you only want a specific word from the trailing text and
