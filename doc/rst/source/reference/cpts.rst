@@ -20,7 +20,7 @@ Black and white triangles indicate which tables have hard or soft hinges,
 respectively. Some CPTs have a default *z*-range while others are dynamic.
 Default ranges, if available, are indicated on the top-right of the scales.
 
-The color maps are subdivided into a number of sections relating to their source. This avoids name clashes and improves recognision of the color maps as well as their
+The color maps are subdivided into a number of sections relating to their source. This avoids name clashes and improves recognition of the color maps as well as their
 authors:
 
 * **gmt**: color maps originally produced by the GMT authors and available in GMT for a long time;

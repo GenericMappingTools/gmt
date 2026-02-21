@@ -1,5 +1,5 @@
 PostScript Fonts Used by GMT
-==============================
+============================
 
 GMT uses the standard 35 fonts that come with most
 PostScript laserwriters. If your printer does not support some of
