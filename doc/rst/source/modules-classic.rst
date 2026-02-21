@@ -98,7 +98,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     psconvert
     psevents
     pshistogram
-    psimage
+    psimage <image>
     pslegend
     psmask
     psrose
@@ -265,7 +265,7 @@ Core Modules
     - :doc:`psconvert`
     - :doc:`psevents`
     - :doc:`pshistogram`
-    - :doc:`psimage`
+    - :doc:`psimage <image>`
     - :doc:`pslegend`
     - :doc:`psmask`
     - :doc:`psrose`
@@ -397,7 +397,7 @@ Plotting
 +-------------------------------+-----------------------+
 | :doc:`pshistogram`            | |pshistogram_purpose| |
 +-------------------------------+-----------------------+
-| :doc:`psimage`                | |psimage_purpose|     |
+| :doc:`psimage <image>`        | |psimage_purpose|     |
 +-------------------------------+-----------------------+
 | :doc:`pslegend`               | |pslegend_purpose|    |
 +-------------------------------+-----------------------+
