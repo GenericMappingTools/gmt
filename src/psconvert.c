@@ -37,7 +37,7 @@
 #define THIS_MODULE_MODERN_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using Ghostscript"
-#define THIS_MODULE_KEYS	"<X{+,FI)"
+#define THIS_MODULE_KEYS	"<X{+,FI),AD)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
@@ -97,9 +97,10 @@ struct PSCONVERT_CTRL {
 	struct PSCONVERT_In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct PSCONVERT_A {             /* -A[+r][+u] */
+	struct PSCONVERT_A {             /* -A[+i][+r][+u] */
 		bool active;
 		bool crop;	/* Round HiRes BB instead of ceil (+r) */
+		bool only_BB;	/* Only reports Width/Height of HiRes BB */
 		bool round;	/* Round HiRes BB instead of ceil (+r) */
 		bool strip;	/* Remove the -U time-stamp (+u)*/
 		bool media;	/* If true we must crop to current media size in PS_MEDIA. Only issued indirectly by gmt end */
@@ -259,6 +260,8 @@ GMT_LOCAL int psconvert_parse_new_A_settings (struct GMT_CTRL *GMT, char *arg, s
 	gmt_M_unused (GMT);
 	Ctrl->A.crop = true;
 
+	if (strstr (arg, "i"))
+		Ctrl->A.only_BB = true;
 	if (strstr (arg, "r"))
 		Ctrl->A.round = true;
 	if (strstr (arg, "u"))
@@ -447,6 +450,8 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 		strncat (I_option, &arg[k], j-k);	/* Append margin argument */
 	}
 	/* These are newer -A modifiers */
+	if (gmt_get_modifier (arg, 'i', string))	/* Just report the width/height of High-res BB*/
+		strcat (A_option, "+i");
 	if (gmt_get_modifier (arg, 'r', string))
 		strcat (A_option, "+r");
 	if (gmt_get_modifier (arg, 'u', string))
@@ -667,7 +672,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *Z = (API->GMT->current.setting.run_mode == GMT_CLASSIC) ? " [-Z]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
+	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+i][+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
 		"[-N[+f<fade>][+g<backfill>][+k<fadefill>][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
 		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s [-!]"
@@ -683,8 +688,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (API->external)
 		GMT_Usage (API, -2, "Note: To access the current internal GMT plot, specify <psfiles> as \"=\".");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A[+r][+u]");
+	GMT_Usage (API, 1, "\n-A[+i][+r][+u]");
 	GMT_Usage (API, -2, "Adjust the BoundingBox to the minimum required by the image contents. Optional modifiers:");
+	GMT_Usage (API, 3, "+i Report the adjusted BoundingBox, position in paper and return.");
 	GMT_Usage (API, 3, "+r Force rounding of HighRes BoundingBox instead of ceil.");
 	GMT_Usage (API, 3, "+u Strip out time-stamps (produced by GMT -U options).");
 	GMT_Usage (API, 1, "\n-C<gs_option>");
@@ -2082,8 +2088,8 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 				/* We only use the High resolution BB */
 				if ((strstr(line,"%%HiResBoundingBox:"))) {
 					sscanf (&line[19], "%s %s %s %s", c1, c2, c3, c4);
-					x0 = atof (c1);		y0 = atof (c2);
-					x1 = atof (c3);		y1 = atof (c4);
+					x0 = atof(c1);		y0 = atof(c2);
+					x1 = atof(c3);		y1 = atof(c4);
 					x0 -= Ctrl->I.margin[XLO];	x1 += Ctrl->I.margin[XHI];	/* If not given, margin = 0/0/0/0 */
 					y0 -= Ctrl->I.margin[YLO];	y1 += Ctrl->I.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
@@ -2136,6 +2142,29 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 				Return(GMT_RUNTIME_ERROR);
 			}
 			if (got_BB) GMT_Report(API, GMT_MSG_INFORMATION, "[%g %g %g %g]...\n", x0, y0, x1, y1);
+			if (Ctrl->A.only_BB) {		/* Output the Width, Height and position on page and return. */
+				double out[6];
+				struct GMT_RECORD *Out = NULL;
+
+				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, NULL) != GMT_NOERROR) {	/* Establishes data output */
+					Return (API->error);
+				}
+				if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+					Return (API->error);
+				}
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 6, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
+				
+				Out = gmt_new_record(GMT, out, NULL);
+				out[0] = (x1-x0) * 2.54/72.0;		out[1] = (y1-y0) * 2.54/72.0;	out[2] = x0 * 2.54/72.0;
+				out[3] = y0 * 2.54/72.0;			out[4] = x1 * 2.54/72.0;		out[5] = y1 * 2.54/72.0;
+				GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+				
+				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+					Return (API->error);
+				}
+				
+				Return(GMT_OK);
+			}
 		}
 
 		/* Open temporary file to be processed by Ghostscript. When -Te or -TE is used, tmp_file is for keeps */
