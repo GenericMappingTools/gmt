@@ -20,7 +20,7 @@ Black and white triangles indicate which tables have hard or soft hinges,
 respectively. Some CPTs have a default *z*-range while others are dynamic.
 Default ranges, if available, are indicated on the top-right of the scales.
 
-The color maps are subdivided into a number of sections relating to their source. This avoids name clashes and improves recognision of the color maps as well as their
+The color maps are subdivided into a number of sections relating to their source. This avoids name clashes and improves recognition of the color maps as well as their
 authors:
 
 * **gmt**: color maps originally produced by the GMT authors and available in GMT for a long time;
@@ -72,7 +72,7 @@ Color maps can be selected in various of the GMT tools using **-C**\ [*section*/
    The color maps from cmocean by Kristen M. Thyng supported by GMT.
 
 For additional color tables, visit
-`cpt-city <http://www.seaviewsensing.com/pub/cpt-city/>`_ and
+`cpt-city <https://phillips.shef.ac.uk/pub/cpt-city/>`_ and
 `Scientific Colour-Maps <http://www.fabiocrameri.ch/colourmaps.php>`_.
 
 Labeled and non-equidistant color legends

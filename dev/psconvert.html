@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=1ae7504c"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -159,7 +159,7 @@
 <section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
 <p><strong>gmt psconvert</strong> <em>psfiles</em>
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>+r</strong>][<strong>+u</strong>] ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>+i</strong>][<strong>+r</strong>][<strong>+u</strong>] ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>gs_option</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>outdir</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>resolution</em> ]
@@ -172,7 +172,7 @@
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>+f</strong><em>fade</em>][<strong>+g</strong><em>background</em>][<strong>+k</strong><em>fadecolor</em>][<strong>+p</strong>[<em>pen</em>]] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>g</strong>|<strong>p</strong>|<strong>t</strong>][1|2|4] ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
-[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>b</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>F</strong>|<strong>j</strong>|<strong>g</strong>|<strong>G</strong>|<strong>m</strong>|<strong>s</strong>|<strong>t</strong>[<strong>+m</strong>][<strong>+q</strong><em>quality</em>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>b</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>F</strong>|<strong>j</strong>|<strong>g</strong>|<strong>G</strong>|<strong>m</strong>|<strong>t</strong>[<strong>+m</strong>][<strong>+q</strong><em>quality</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>+a</strong><em>altmode</em>[<em>alt</em>]][<strong>+c</strong>][<strong>+f</strong><em>minfade/maxfade</em>][<strong>+g</strong>][<strong>+k</strong>][<strong>+l</strong><em>minLOD/maxLOD</em>][<strong>+n</strong><em>layername</em>][<strong>+o</strong><em>foldername</em>][<strong>+t</strong><em>docname</em>][<strong>+u</strong><em>URL</em>] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
@@ -208,9 +208,12 @@ directory.</p>
 <section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong>[<strong>+r</strong>][<strong>+u</strong>]</dt><dd><p>Adjust the BoundingBox and HiResBoundingBox to the minimum required
+<dt><strong>-A</strong>[<strong>+i</strong>][<strong>+r</strong>][<strong>+u</strong>]</dt><dd><p>Adjust the BoundingBox and HiResBoundingBox to the minimum required
 by the image content. Two modifiers may be used as well:</p>
 <ul class="simple">
+<li><p><strong>+i</strong> - Report the adjusted BoundingBox, position in paper and return, that is:
+width, height, x0, y0, x1, y1. All in cm. Note that this ignores the effect of the
+<a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> options, which are applied after the BoundingBox is computed.</p></li>
 <li><p><strong>+r</strong> - We <em>round</em> the HighResBoundingBox instead of using the <code class="docutils literal notranslate"><span class="pre">ceil</span></code> function.
 This is going against Adobe Law but can be useful when creating very small images
 where the difference of one pixel might matter. If <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong> is used we also report
@@ -583,8 +586,8 @@ use it.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Mar 02, 2026.
       </span></p>
   </div>
 
