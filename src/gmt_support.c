@@ -17352,6 +17352,11 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			}
 		}
 		justify = gmt_just_decode (GMT, txt_x, PSL_MC);
+		if (justify == -99) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Invalid justification code %s after %c\n", option, txt_x, arg[0]);
+			gmt_M_str_free (arg);
+			return NULL;
+		}
 	}
 	else {	/* Must worry about leading + signs in the numbers that might confuse us w.r.t. modifiers */
 		/* E.g., -Dg123.3/+19+jTL we don't want to trip up on +19 as modifier! */
