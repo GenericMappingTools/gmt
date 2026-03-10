@@ -14917,8 +14917,8 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	gmt_M_unused(GMT);
 	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
 	sincosdegree (angle, &s, &c);
-	xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
-	yy = (1 - (just/4)) * dy * f;	/* Smart shift in x */
+	xx = (just % 4 == 2 ? 1 : (2 - (just % 4))) * dx * f;	/* Smart shift in x; use +dx if horizontally centered */
+	yy = (just / 4 == 1 ? 1 : (1 - (just / 4))) * dy * f;	/* Smart shift in y; use +dy if vertically centered */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
 	*y_shift += s * xx + c * yy;
 }
