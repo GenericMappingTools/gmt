@@ -116,9 +116,11 @@ Optional Arguments
     **c** (symmetrical confidence interval on the regression; see |-C|
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
-    As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the 12 model
-    parameters *npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective*. **Note**:
-    *R* is only set when **-Ey** is selected.
+    As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the 13 model
+    parameters *npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective p_value*.
+    **Note**: *R* is only set when **-Ey** is selected.  The *p_value* tests the null hypothesis
+    that the slope is zero (i.e., no linear relationship) using a two-tailed Student's *t*-test
+    derived from the coefficient of determination *R*.
 
 .. _-N:
 
@@ -217,7 +219,8 @@ The output segment header will contain all the various statistics we compute for
 These are in order: *N* (number of points), *x0* (weighted mean x), *y0* (weighted mean y),
 *angle* (of line), *E* (misfit), *slope*, *intercept*, *sigma_slope*, and *sigma_intercept*.  For the
 standard regression (**-Ey**) we also report the Pearsonian correlation (*r*) and
-coefficient of determination (*R*). We end with the effective number of measurements, :math:`n_{eff}`.
+coefficient of determination (*R*). We end with the effective number of measurements, :math:`n_{eff}`,
+and the *p-value* for the regression (two-tailed test of the null hypothesis that the slope is zero).
 
 For weighted data and the calculation of squared regression misfit to minimize (**-N2**), we use
 
