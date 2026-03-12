@@ -535,7 +535,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 
 	lbl[0] = (I->txt[0]) ? I->txt[0] : def[0];
 	lbl[1] = (I->txt[1]) ? I->txt[1] : def[1];
-	/* The x/y coordinates in SAVE in original coordinates */
+	/* The x/y coordinates in SAVE in original coordinates and hence are closed polygons in lon/lat (if geographic) */
 
 	for (pol = 0; pol < n; pol++) {	/* Set y min/max for polar caps */
 		if (abs (save[pol].kind) < 3) continue;	/* Skip all but polar caps */
@@ -670,8 +670,13 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 			continue;
 		}
 
-		way = gmt_polygon_centroid (GMT, xp, yp, np, &save[pol].xlabel, &save[pol].ylabel);	/* -1 is CCW, +1 is CW */
 		/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
+		way = gmt_polygon_centroid (GMT, xp, yp, np, &save[pol].xlabel, &save[pol].ylabel);	/* -1 is CCW, +1 is CW */
+		if (way == GMT_POL_IS_CW) {	/* So far this has been found to be the wrong way so we switch */
+			/* See https://github.com/GenericMappingTools/gmt/issues/6080 which used way as is for 13000 km contour */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_polygon_centroid found CW polygon (by mistake?), switch to CCW\n");
+			way = GMT_POL_IS_CCW;
+		}
 
 		if (mode & 1) {	/* Tick the innermost contour */
 			x_back = xp[np-1];	/* Last point along contour */
