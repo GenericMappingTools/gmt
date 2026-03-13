@@ -14912,14 +14912,15 @@ int gmt_just_decode (struct GMT_CTRL *GMT, char *key, int def) {
 
 /*! . */
 void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx, double dy, double *x_shift, double *y_shift, unsigned int mode) {
-	/* mode = 2: Assume a radius offset so that corner shifts are adjusted by 1/sqrt(2) */
+	/* mode = 2: Assume a radius offset so that corner shifts are adjusted by 1/sqrt(2)
+	 * mode = 3/4: Same as 1/2, but for pstext -Dj/-DJ where MC gets a default offset direction */
 	double s, c, xx, yy, f;
+	bool pstext_dj = (mode == 3 || mode == 4);
 	gmt_M_unused(GMT);
-	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
+	f = (mode == 2 || mode == 4) ? 1.0 / M_SQRT2 : 1.0;
 	sincosdegree (angle, &s, &c);
-	/* For MC (just=6): both just%4==2 (horizontally centered) and just/4==1 (vertically centered),
-	 * so xx=0 and yy=0, making -Dj ineffective. Use default offset direction for MC only. */
-	if (just % 4 == 2 && just / 4 == 1) {	/* MC: fully centered, use default offset */
+	/* For pstext -Dj/-DJ and MC (just=6), both smart terms would otherwise be zero. */
+	if (pstext_dj && just % 4 == 2 && just / 4 == 1) {	/* MC: use default offset */
 		xx = dx * f;
 		yy = dy * f;
 	}
