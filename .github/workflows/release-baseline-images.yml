@@ -26,12 +26,21 @@ jobs:
       uses: iterative/setup-dvc@v2
 
     - name: Pull baseline image data from dvc remote
+      id: dvc-pull
+      continue-on-error: true
       run: |
         dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-        dvc pull
-        ls -lhR test/baseline/
+        dvc pull --remote origin --no-run-cache
       env:
         DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+    - name: Download DVC cache from GitHub Artifacts and restore baseline image data
+      if: steps.dvc-pull.outcome == 'failure'
+      run: |
+        gh run download -n dvc-cache -D .dvc/cache/
+        dvc checkout --force
+      env:
+        GH_TOKEN: ${{ github.token }}
 
     - name: Create the baseline image asset in zip format
       run: |

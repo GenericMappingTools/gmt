@@ -33,6 +33,24 @@ jobs:
     - name: Setup data version control (DVC)
       uses: iterative/setup-dvc@v2
 
+    - name: Pull baseline image data from dvc remote
+      id: dvc-pull
+      continue-on-error: true
+      env:
+        DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+      run: |
+        dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+        dvc pull --remote origin --no-run-cache
+        dvc pull --remote origin --no-run-cache
+
+    - name: Download DVC cache from GitHub Artifacts and restore baseline image data
+      if: steps.dvc-pull.outcome == 'failure'
+      run: |
+        gh run download -n dvc-cache -D .dvc/cache/
+        dvc checkout --force
+      env:
+        GH_TOKEN: ${{ github.token }}
+
     - name: Setup continuous machine learning (CML)
       uses: iterative/setup-cml@v3
 
@@ -78,10 +96,6 @@ jobs:
         # Fetch the master branch
         git fetch origin master
 
-        # Pull image data from cloud storage
-        dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-        dvc pull --remote origin
-        dvc pull --remote origin
         dvc diff --md master HEAD >> report.md
 
         # Get just the filename of the added and modified image from the report
@@ -93,10 +107,14 @@ jobs:
         mkdir -p newbaseline/doc/examples && cp -r doc/examples/images newbaseline/doc/examples/
         mkdir -p newbaseline/doc/scripts && cp -r doc/scripts/images newbaseline/doc/scripts/
         rm -r test/baseline/**/*.ps doc/examples/images/*.ps doc/scripts/images/*.ps
-        # Pull images in the master branch from cloud storage
+        # Restore images for the master branch, using the DVC remote when available.
         git checkout master
-        dvc pull --remote origin
-        dvc pull --remote origin
+        if ! dvc pull --remote origin --no-run-cache; then
+          dvc checkout --force
+        fi
+        if ! dvc pull --remote origin --no-run-cache; then
+          dvc checkout --force
+        fi
 
         # Append each image to the markdown report
         echo -e "## Image diff(s)\n" >> report.md
