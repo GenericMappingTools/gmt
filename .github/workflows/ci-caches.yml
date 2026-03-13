@@ -4,10 +4,19 @@
 # 1. GMT remote data for building documentation and running tests
 # 2. GMT GSHHG and DCW datasets
 # 3. vcpkg libraries on Windows
+# 4. DVC-tracked baseline images for tests and docs
 #
 name: GMT CI Caches
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'test/baseline/*.dvc'
+      - 'doc/examples/images/*.dvc'
+      - 'doc/scripts/images/*.dvc'
+      - '.github/workflows/ci-caches.yml'
   pull_request:
     # Make any changes to the following files to refresh the cache in PRs
     paths:
@@ -25,6 +34,7 @@ jobs:
   data_cache:
     name: Cache GMT data
     runs-on: macos-latest
+    if: github.event_name != 'push'
     defaults:
       run:
         shell: bash -l {0}
@@ -111,12 +121,13 @@ jobs:
   coastline_cache:
     name: Cache GSHHG and DCW datasets
     runs-on: ubuntu-latest
+    if: github.event_name != 'push'
     env:
       COASTLINEDIR: ${{ github.workspace }}/coastline
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       - name: Download GSHHG and DCW datasets
         run: bash ci/download-coastlines.sh
@@ -132,10 +143,11 @@ jobs:
   vcpkg_cache:
     name: Cache vcpkg libraries
     runs-on: windows-latest
+    if: github.event_name != 'push'
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       - name: Install vcpkg libraries
         run: bash ci/install-dependencies-windows.sh
@@ -146,3 +158,33 @@ jobs:
           name: vcpkg-cache
           # VCPKG_INSTALLATION_ROOT is C:\vcpkg
           path: C:\vcpkg\installed\
+
+  dvc_cache:
+    name: Cache DVC baseline images
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup data version control (DVC)
+        uses: iterative/setup-dvc@v2
+
+      - name: Pull baseline image data from dvc remote
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+          dvc pull --remote origin --no-run-cache --verbose
+
+      - name: Upload DVC cache as artifacts to GitHub
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: dvc-cache
+          include-hidden-files: true
+          path: .dvc/cache/
