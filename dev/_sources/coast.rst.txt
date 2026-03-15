@@ -61,7 +61,8 @@ specify fill of water-areas then the latter will be transparent (i.e.,
 earlier graphics drawn in those areas will not be overwritten).
 Likewise, if the water-areas are painted and no land fill is set then
 the land-areas will be transparent. A map projection must be supplied. 
-At least one of options -C, -G, -S, -E, -I, -N, -Q and -W must be specified.
+At least one of options |-C|, |-G|, |-S|, |-E|, |-I|, |-N|, |-Q| and |-W|
+must be specified.
 
 Required Arguments
 ------------------
@@ -137,7 +138,7 @@ Optional Arguments
     - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.
     - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries or states in that continent
       or country, respectively; repeat if more than one continent or country is requested.
-    - **+n** to list the named :ref:`DCW collections dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
+    - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
       collections that contains the listed codes). All names are case-insensitive.
     - **+c** to set up an inside clip path based on your selection.
     - **+C** to set up an outside (area between selection and map boundary) clip path based on your selection.
@@ -175,7 +176,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*fill*] :ref:`(more ...) -Gfill_attrib>`
+**-G**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "dry" areas. Append the shade, color,
     or pattern; or give no argument for clipping [Default is no fill].
 
@@ -252,7 +253,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*fill*] :ref:`(more ...) -Gfill_attrib>`
+**-S**\ [*fill*] :ref:`(more ...) <-Gfill_attrib>`
     Select filling or clipping of "wet" areas. Append the shade, color,
     or pattern; or give no argument for clipping [Default is no fill].
 
@@ -272,7 +273,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) set-pens>`
+**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = 0.25p, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
@@ -295,9 +296,9 @@ Optional Arguments
 .. _-g:
 
 **-gD**\ *dist*
-    Short version of the global **-g** option. Here it is used to set the _dist_ distance, in map units,
-		higher then which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
-		and when line wrapping on dateline was not correctly detected. As an example of this, see for instance
+    Short version of the global **-g** option. Here it is used to set the *dist* distance, in map units,
+    higher than which we consider to have a gap. Useful for the Spilhaus projection (though we automatically set it)
+    and when line wrapping on dateline was not correctly detected. As an example of this, see for instance
     the old issue `#3667 <https://github.com/GenericMappingTools/gmt/issues/3667>`_ that can be fixed
     by adding **-gD**\ 1 to the command line.
 

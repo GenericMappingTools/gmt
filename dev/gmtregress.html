@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=1ae7504c"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -257,9 +257,11 @@ For <strong>-Er</strong> the sum of the green areas is minimized instead.</span>
 <strong>c</strong> (symmetrical confidence interval on the regression; see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>
 for specifying the level), <strong>z</strong> (standardized residuals or so-called <em>z-scores</em>) and <strong>w</strong> (outlier weights 0 or 1; for
 <strong>-Nw</strong> these are the Reweighted Least Squares weights) [<strong>xymrczw</strong>].
-As an alternative to evaluating the model, just give <strong>-Fp</strong> and we instead write a single record with the 12 model
-parameters <em>npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective</em>. <strong>Note</strong>:
-<em>R</em> is only set when <strong>-Ey</strong> is selected.</p>
+As an alternative to evaluating the model, just give <strong>-Fp</strong> and we instead write a single record with the 13 model
+parameters <em>npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective p_value</em>.
+<strong>Note</strong>: <em>R</em> is only set when <strong>-Ey</strong> is selected.  The <em>p_value</em> tests the null hypothesis
+that the slope is zero (i.e., no linear relationship) using a two-tailed Student’s <em>t</em>-test
+derived from the coefficient of determination <em>R</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -496,7 +498,8 @@ Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust 
 These are in order: <em>N</em> (number of points), <em>x0</em> (weighted mean x), <em>y0</em> (weighted mean y),
 <em>angle</em> (of line), <em>E</em> (misfit), <em>slope</em>, <em>intercept</em>, <em>sigma_slope</em>, and <em>sigma_intercept</em>.  For the
 standard regression (<strong>-Ey</strong>) we also report the Pearsonian correlation (<em>r</em>) and
-coefficient of determination (<em>R</em>). We end with the effective number of measurements, <span class="math notranslate nohighlight">\(n_{eff}\)</span>.</p>
+coefficient of determination (<em>R</em>). We end with the effective number of measurements, <span class="math notranslate nohighlight">\(n_{eff}\)</span>,
+and the <em>p-value</em> for the regression (two-tailed test of the null hypothesis that the slope is zero).</p>
 <p>For weighted data and the calculation of squared regression misfit to minimize (<strong>-N2</strong>), we use</p>
 <div class="math notranslate nohighlight">
 \[E_2(\nu) = \frac{\sum_{i=1}^n w_i e_i^2}{\sum_{i=1}^n w_i} \frac{n_{eff}}{n_{eff}-2},\]</div>
@@ -584,8 +587,8 @@ equations for the slope, intercept, and standard errors of the best straight lin
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Mar 15, 2026.
       </span></p>
   </div>
 
