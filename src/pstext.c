@@ -186,8 +186,12 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		gmt_setpen (GMT, &(T->vecpen));
 		PSL_plotsegment (PSL, x, y, x + T->x_offset, y + T->y_offset);
 	}
-	if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
-		gmt_smart_justify (GMT, T->block_justify, T->paragraph_angle, T->x_offset, T->y_offset, &x, &y, Ctrl->D.justify + 2);
+	if (Ctrl->D.justify) {	/* Smart offset according to justification (from Dave Huang) */
+		if (T->block_justify == PSL_MC)	/* MC gives zero shift in smart justify, use simple offset */
+			x += T->x_offset,	y += T->y_offset;
+		else
+			gmt_smart_justify (GMT, T->block_justify, T->paragraph_angle, T->x_offset, T->y_offset, &x, &y, Ctrl->D.justify);
+	}
 	else
 		x += T->x_offset,	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
@@ -937,8 +941,14 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 		}
 		if (add) {
-			if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
-				gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify + 2);
+			if (Ctrl->D.justify) {	/* Smart offset according to justification (from Dave Huang) */
+				if (T.block_justify == PSL_MC) {	/* MC gives zero shift in smart justify, use simple offset */
+					plot_x += T.x_offset;
+					plot_y += T.y_offset;
+				}
+				else
+					gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify);
+			}
 			else {	/* Default hard offset */
 				plot_x += T.x_offset;
 				plot_y += T.y_offset;
@@ -1350,8 +1360,14 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 			}
 			if (add) {
-				if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
-					gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify + 2);
+				if (Ctrl->D.justify) {	/* Smart offset according to justification (from Dave Huang) */
+					if (T.block_justify == PSL_MC) {	/* MC gives zero shift in smart justify, use simple offset */
+						plot_x += T.x_offset;
+						plot_y += T.y_offset;
+					}
+					else
+						gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify);
+				}
 				else {	/* Default hard offset */
 					plot_x += T.x_offset;
 					plot_y += T.y_offset;

@@ -14912,22 +14912,13 @@ int gmt_just_decode (struct GMT_CTRL *GMT, char *key, int def) {
 
 /*! . */
 void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx, double dy, double *x_shift, double *y_shift, unsigned int mode) {
-	/* mode = 2: Assume a radius offset so that corner shifts are adjusted by 1/sqrt(2)
-	 * mode = 3/4: Same as 1/2, but for pstext -Dj/-DJ where MC gets a default offset direction */
+	/* mode = 2: Assume a radius offset so that corner shifts are adjusted by 1/sqrt(2) */
 	double s, c, xx, yy, f;
-	bool pstext_dj = (mode == 3 || mode == 4);
 	gmt_M_unused(GMT);
-	f = (mode == 2 || mode == 4) ? 1.0 / M_SQRT2 : 1.0;
+	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
 	sincosdegree (angle, &s, &c);
-	/* For pstext -Dj/-DJ and MC (just=6), both smart terms would otherwise be zero. */
-	if (pstext_dj && just % 4 == 2 && just / 4 == 1) {	/* MC: use default offset */
-		xx = dx * f;
-		yy = dy * f;
-	}
-	else {
-		xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
-		yy = (1 - (just/4)) * dy * f;	/* Smart shift in y */
-	}
+	xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
+	yy = (1 - (just/4)) * dy * f;	/* Smart shift in y */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
 	*y_shift += s * xx + c * yy;
 }
