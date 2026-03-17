@@ -486,8 +486,10 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *ifile) {
 	/* Must handle the use of srtm_relief vs earth_relief for the 01s and 03s data */
 	if (strncmp (&ifile[pos], "srtm_relief_0", 13U) == 0)	/* Gave strm special name */
 		sprintf (file, "earth_%s", &ifile[pos+5]);	/* Replace srtm with earth */
-	else	/* Just copy as is from pos */
-		strcpy (file, &ifile[pos]);
+	else {	/* Just copy as is from pos */
+		strncpy (file, &ifile[pos], PATH_MAX - 1);
+		file[PATH_MAX - 1] = '\0';
+	}
 	key = bsearch (file, API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	if (key) {	/* Make sure we actually got a real hit since file = "earth" will find a key starting with "earth****" */
 		char *ckey = strrchr (key->file, '.');		/* Find location of the start of the key file extension (or NULL if no extension) */
