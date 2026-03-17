@@ -14919,16 +14919,15 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	gmt_M_unused(GMT);
 	f = (mode == 2 || mode == 4) ? 1.0 / M_SQRT2 : 1.0;
 	sincosdegree (angle, &s, &c);
-	if (mode >= 3 && just == PSL_MC) {	/* MC: use simple offset (no corner adjustment for center) */
-		xx = dx;
-		yy = dy;
-	}
-	else {
-		xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
-		yy = (1 - (just/4)) * dy * f;	/* Smart shift in y */
-	}
-	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
-	*y_shift += s * xx + c * yy;
+	if (mode >= 3 && just == PSL_MC) {
+	 *x_shift += dx;
+        *y_shift += dy;
+        return;
+    }
+    xx = (2 - (just%4)) * dx * f;
+    yy = (1 - (just/4)) * dy * f;
+    *x_shift += c * xx - s * yy
+    *y_shift += s * xx + c * yy
 }
 
 /*! . */
