@@ -14919,6 +14919,7 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	gmt_M_unused(GMT);
 	f = (mode == 2 || mode == 4) ? 1.0 / M_SQRT2 : 1.0;
 	sincosdegree (angle, &s, &c);
+
 	if (mode >= 3 && just == PSL_MC) {
 	 *x_shift += dx;
         *y_shift += dy;
