@@ -14921,14 +14921,15 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	sincosdegree (angle, &s, &c);
 
 	if (mode >= 3 && just == PSL_MC) {
-	 *x_shift += dx;
-        *y_shift += dy;
-        return;
-    }
-    xx = (2 - (just%4)) * dx * f;
-    yy = (1 - (just/4)) * dy * f;
-    *x_shift += c * xx - s * yy
-    *y_shift += s * xx + c * yy
+		/* For MC justification, apply offset directly with rotation */
+		*x_shift += c * dx - s * dy;
+		*y_shift += s * dx + c * dy;
+		return;
+	}
+	xx = (2 - (just%4)) * dx * f;
+	yy = (1 - (just/4)) * dy * f;
+	*x_shift += c * xx - s * yy;
+	*y_shift += s * xx + c * yy;
 }
 
 /*! . */
