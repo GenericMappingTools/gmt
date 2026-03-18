@@ -54,7 +54,6 @@ jobs:
           --exclude ^https://www.researchgate.net/
           --exclude ^https://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml
           --exclude ^http://my.server.com/images$
-          --verbose
           **/*.rst
           **/*.rst_
           **/*.md
