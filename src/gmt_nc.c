@@ -918,8 +918,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		   coordinates are wrong and the difference overflows the [-90 90] lat interval and as a consequece projections
 		   breake because they fail sanity checks. See issue https://github.com/GenericMappingTools/gmt/issues/8930
 		*/
-		if (((header->wesn[YHI] - header->wesn[YLO] - 180) < header->inc[GMT_Y] * 1e-2) &&
-		    ((header->wesn[XHI] - header->wesn[XLO] - 360) < header->inc[GMT_X] * 1e-2) &&
+		if ((fabs(header->wesn[YHI] - header->wesn[YLO] - 180) < header->inc[GMT_Y] * 1e-2) &&
+		    (fabs(header->wesn[XHI] - header->wesn[XLO] - 360) < header->inc[GMT_X] * 1e-2) &&
 		    (fabs(header->wesn[YHI] - 90.0) < header->inc[GMT_Y] * 1e-4 || fabs(90.0 - header->wesn[YLO]) < header->inc[GMT_Y] * 1e-4)) {
 			header->wesn[YLO] = -90.0, header->wesn[YHI] = 90.0;
 			/* If any case of this happens to not fall into the [-180 180] or [0 360] range, the shit in longituds will remain. */
