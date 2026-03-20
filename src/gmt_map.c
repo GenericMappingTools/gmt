@@ -10130,7 +10130,7 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	 * To avoid some downstream problems we make sure that if circle crosses Greenwhich or Dateline that
 	 * we insert a point at lon = 0 and/or lon = 180. I imagine that in the worst-case scenario we could
 	 * cross those lines twice each, hence I allocate 4 more spaces than needed. */
-	double P[3], X[3], N[3], R[3][3], xlat, dlon, xx, yy, x, y, last_x = 0.0, last_y = 0.0, dx;
+	double P[3], X[3], N[3], R[3][3], xlat, xlon, dlon, xx, yy, x, y, last_x = 0.0, last_y = 0.0, dx;
 	uint64_t k, n;
 	struct GMT_DATASEGMENT *S = NULL;
 	if (m < 2) return NULL;
@@ -10139,8 +10139,23 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	plat = gmt_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */
 	gmt_geo_to_cart (GMT, plat, plon, P, true);		/* Get pole vector P */
 	xlat = (plat > 0.0) ? plat - colat : plat + colat;	/* Starting point along meridian through P but colat degrees away */
+	/* When colat > 90° (as with all twilight terminators) and plat is near zero (equinox, SolarDec ≈ 0), xlat exceeds ±90° 
+	* and becomes an invalid latitude. gmt_geo_to_cart then produces the same degenerate generating vector X for all four 
+	* terminator types regardless of their different colat values, causing all small circles to collapse to the same curve. 
+ 	* Fix: wrap around the pole by reflecting the latitude and shifting longitude 180°. 
+	* The angular distance from P to X is preserved exactly. See: https://github.com/GenericMappingTools/gmt/issues/8936 */
+	xlon = plon;
+	if (xlat > 90.0) {
+		xlat = 180.0 - xlat;
+		xlon += 180.0;
+	if (xlon > 180.0) xlon -= 360.0;
+	} else if (xlat < -90.0) {
+		xlat = -180.0 - xlat;
+		xlon += 180.0;
+	if (xlon > 180.0) xlon -= 360.0;
+	}
 	xlat = gmt_lat_swap (GMT, xlat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
-	gmt_geo_to_cart (GMT, xlat, plon, X, true);		/* Generating vector X we will rotate about P */
+	gmt_geo_to_cart (GMT, xlat, xlon, X, true);		/* Generating vector X we will rotate about P */  
 	dlon = 360.0 / (m - 1);					/* Point spacing along the small circle in oblique longitude degrees */
 	for (k = n = 0; k < m; k++, n++) {	/* Given how dlon was set we end up closing the polygon exactly */
 		gmt_make_rot_matrix2 (GMT, P, k * dlon, R);	/* Rotation matrix about P for this increment in oblique longitude */
