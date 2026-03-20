@@ -10148,14 +10148,15 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	if (xlat > 90.0) {
 		xlat = 180.0 - xlat;
 		xlon += 180.0;
-	if (xlon > 180.0) xlon -= 360.0;
-	} else if (xlat < -90.0) {
+		if (xlon > 180.0) xlon -= 360.0;
+		}
+		else if (xlat < -90.0) {
 		xlat = -180.0 - xlat;
 		xlon += 180.0;
-	if (xlon > 180.0) xlon -= 360.0;
+		if (xlon > 180.0) xlon -= 360.0;
 	}
 	xlat = gmt_lat_swap (GMT, xlat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
-	gmt_geo_to_cart (GMT, xlat, xlon, X, true);		/* Generating vector X we will rotate about P */  
+	gmt_geo_to_cart (GMT, xlat, xlon, X, true);		/* Generating vector X we will rotate about P */
 	dlon = 360.0 / (m - 1);					/* Point spacing along the small circle in oblique longitude degrees */
 	for (k = n = 0; k < m; k++, n++) {	/* Given how dlon was set we end up closing the polygon exactly */
 		gmt_make_rot_matrix2 (GMT, P, k * dlon, R);	/* Rotation matrix about P for this increment in oblique longitude */
