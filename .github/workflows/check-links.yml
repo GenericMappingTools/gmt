@@ -15,6 +15,9 @@ on:
   schedule:
     - cron: '0 12 * * 0'
 
+permissions:
+  issues: write
+
 jobs:
   check_links:
     name: Check Links
@@ -29,27 +32,28 @@ jobs:
       id: lychee
       uses: lycheeverse/lychee-action@v2.8.0
       with:
+        fail: false  # Don't fail action on broken links
+        output: /tmp/lychee-out.md
+        # 200: OK
         # 429: Too many requests
         args: >
-          --accept 429
+          --accept 200,429
           --exclude ^ftp://
-          --exclude ^https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$
-          --exclude ^https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$
-          --exclude ^http://maps.google.com/mapfiles/kml/$
           --exclude ^http://aa.usno.navy.mil/faq/docs/lawyers.php$
-          --exclude ^uhttp://my.server.com/images$
-          --exclude ^-W@weight.png$
-          --exclude ^http://topex.ucsd.edu/marine_grav/mar_grav.html
-          --exclude ^https://topex.ucsd.edu/sandwell/
-          --exclude ^http://topex.ucsd.edu
-          --exclude ^https://doi.org
-          --exclude ^https://www.researchgate.net/
-          --exclude ^http://www.eumetsat.int
+          --exclude ^http://maps.google.com/mapfiles/kml/$
           --exclude ^http://nsis.sourceforge.io
-          --exclude ^https://www.ethnologue.com
+          --exclude ^http://topex.ucsd.edu
+          --exclude ^http://topex.ucsd.edu/marine_grav/mar_grav.html
+          --exclude ^http://www.eumetsat.int
+          --exclude ^https://doi.org
+          --exclude ^https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$
+          --exclude ^https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$
           --exclude ^https://linux.die.net/man/3/printf
+          --exclude ^https://topex.ucsd.edu/sandwell/
+          --exclude ^https://www.ethnologue.com
+          --exclude ^https://www.researchgate.net/
           --exclude ^https://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml
-          --verbose
+          --exclude ^http://my.server.com/images$
           **/*.rst
           **/*.rst_
           **/*.md
@@ -59,9 +63,10 @@ jobs:
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
     - name: Create Issue From File
-      if: env.lychee_exit_code != 0
+      if: github.event_name != 'workflow_dispatch' && steps.lychee.outputs.exit_code != 0
       run: |
-        title="Link Checker Report on ${{ steps.date.outputs.date }}"
-        gh issue create --title "$title" --body-file ./lychee/out.md
+        title="Link Checker Report on ${CURRENT_DATE}"
+        gh issue create --title "$title" --body-file /tmp/lychee-out.md
       env:
         GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        CURRENT_DATE: ${{ steps.date.outputs.date }}

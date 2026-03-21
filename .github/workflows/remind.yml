@@ -11,8 +11,14 @@ on:
   schedule:
     - cron: '0 0 1 */6 *'
 
+permissions:
+  contents: read
+  issues: write
+
+
 jobs:
   review-known-failures:
+    name: Review Known Failures
     runs-on: ubuntu-latest
 
     steps:

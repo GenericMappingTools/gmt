@@ -2475,7 +2475,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	}
 	else {	/* Line/polygon part */
 		uint64_t seg, seg_out = 0, n_new, n_cols = (Ctrl->M.mode == GMT_CURVES_COREGISTERED) ? 3 : 2;
-		bool duplicate, resampled, conf_line = false, no_line_clip = (Ctrl->N.active && S.symbol == GMT_SYMBOL_LINE);
+		bool duplicate, resampled, conf_line = false;
+		bool no_line_clip = (Ctrl->N.active && (S.symbol == GMT_SYMBOL_LINE || S.symbol == GMT_SYMBOL_QUOTED_LINE ||
+		                                        S.symbol == GMT_SYMBOL_DECORATED_LINE));
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 		struct GMT_PALETTE *A = NULL;
 		struct GMT_DATASET_HIDDEN *DH = NULL;
@@ -2967,16 +2969,18 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 				}
 				else if (polygon && !no_line_clip) {	/* Want a closed polygon (with or without fill and with or without outline) */
-					gmt_setfill (GMT, &current_fill, outline_setting);
-					gmt_geo_polygons (GMT, L);
+					gmt_setfill(GMT, &current_fill, outline_setting);
+					gmt_geo_polygons(GMT, L);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					bool closed, split = false;
 					uint64_t k0;
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
+					GMT->current.plot.n = gmt_geo_to_xy_line(GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows);
+					if (GMT->current.plot.n == 0) continue;
 					S.G.line_pen = current_pen;
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
-					for (k0 = 0; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] & PSL_MOVE) split = true;
+					for (k0 = 0; !split && k0 < GMT->current.plot.n; k0++)
+						if (GMT->current.plot.pen[k0] & PSL_MOVE) split = true;
 					if (split) {	/* Must write out separate sections via gmt_hold_contour */
 						uint64_t k1, n_section;
 						size_t n_alloc;
@@ -3008,10 +3012,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Decorated lines are dealt with by the contour machinery */
 					bool split = false;
 					uint64_t k0;
-					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
+					GMT->current.plot.n = gmt_geo_to_xy_line(GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows);
+					if (GMT->current.plot.n == 0) continue;
 					if (!S.D.invisible) gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
-					for (k0 = 1; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] & PSL_MOVE) split = true;
+					for (k0 = 1; !split && k0 < GMT->current.plot.n; k0++)
+						if (GMT->current.plot.pen[k0] & PSL_MOVE) split = true;
 					if (split) {	/* Must write out separate sections via gmt_hold_contour */
 						uint64_t k1, n_section;
 						size_t n_alloc;

@@ -207,8 +207,9 @@ set (GMT_ENABLE_OPENMP TRUE)
 # Uncomment the following line to enable running tests of the GMT supplements
 #set (DO_SUPPLEMENT_TESTS ON)
 
-# Uncomment the following line if you need to run the full tests suite using
-# the gmtserver "static" distribution instead of the default server.
+# Uncomment the following line if you need to override the default data server
+# for tests. When DO_TESTS is ON, the default "oceania" server is changed to
+# "static" automatically unless you set GMT_DATA_SERVER explicitly.
 # set (GMT_DATA_SERVER "static")
 
 # List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules

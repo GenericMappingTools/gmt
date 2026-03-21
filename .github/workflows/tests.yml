@@ -21,6 +21,7 @@ on:
       - 'doc/examples/**'
       - 'doc/scripts/**'
       - '.github/workflows/tests.yml'
+  workflow_dispatch:
 
 defaults:
   run:
