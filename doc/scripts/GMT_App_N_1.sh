@@ -62,8 +62,7 @@ EOF
 			x=$(gmt math -Q $c 1 SUB 0.5 ADD =)
 			symbol=$(sed -n ${s}p tt.lis)
 			echo "$x $ys k${symbol}" >> tt.symbols
-			name=$(echo $symbol | tr 'a-z' 'A-Z')
-			echo "$x $yt $name" >> tt.text
+			echo "$x $yt $symbol" >> tt.text
 			echo "$x $yt $width $dy" >> tt.bars
 		done
 	done
@@ -71,7 +70,7 @@ EOF
 	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0
 	gmt plot -S${width}i -W0.5p tt.symbols  -Ggray
 	gmt plot -Sri -Gblack tt.bars
-	# Shorten the spelling of QR_TRANSPARENT to QR_TRANSP to fit the figure
-	sed -e 's/TRANSPARENT/TRANSP/' < tt.text | gmt text -F+f${fs}p,white
+	# Shorten the spelling of QR_transparent to QR_transp to fit the figure
+	sed -e 's/transparent/transp/' < tt.text | gmt text -F+f${fs}p,white
 	gmt end show
 done

@@ -1329,7 +1329,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				depth = in[GMT_Z];
 
 				if (!pscoupe_dans_coupe (in[GMT_X], in[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
-					Ctrl->A.PREF.dip, Ctrl->A.p_length, Ctrl->A.p_width, &distance, &n_dep) && !Ctrl->N.active)
+					Ctrl->A.PREF.dip, Ctrl->A.p_length, Ctrl->A.p_width, &distance, &n_dep) )
 					continue;
 
 				xy[GMT_X] = distance;

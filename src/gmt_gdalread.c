@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1041,7 +1041,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	/* The following assumes that all bands have the same PixelSize, data type. Otherwise ... */
 	hBand = GDALGetRasterBand(hDataset, first_layer);
-	nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
+	nPixelSize = GDALGetDataTypeSizeBytes(GDALGetRasterDataType(hBand));
 
 	if (jump) {
 		nBufXSize[0] = XDim / jump;

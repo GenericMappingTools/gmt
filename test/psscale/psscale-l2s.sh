@@ -33,8 +33,8 @@ EOF
 gmt $m $l2s --cpt=file --cmap=other/file >> $b
 gmt $m $l2s --position=10/20/2/3+size:200/100+triangles:b6+horizontal >> $b
 gmt $m $l2s --position=mapcoords:1/-0.5+vertical+nan+reverse >> $b
-gmt $m $l2s --position=inside:BR+janchor:LT+move_annot:aclu >> $b
-gmt $m $l2s --position=outside:BR+anchoroffset:1/2 >> $b
+gmt $m $l2s --position=inside:BR+anchor:LT+move_annot:aclu >> $b
+gmt $m $l2s --position=outside:BR+offset:1/2 >> $b
 gmt $m $l2s --position=boxcoords:0/0 --position=plotcoords:5/5 >> $b
 gmt $m $l2s --box+clearance:10+fill:red+inner:4p/black >> $b
 gmt $m $l2s --box+pen:2p+radius:1p+shade:1/2/gray >> $b

@@ -81,7 +81,7 @@ the *m* extra constraints:
 
 .. math::
 
-    s(\mathbf{x}_k) = \nabla w(\mathbf{x}_k) = \sum_{j=1}^{n} \alpha_j \nabla g(\mathbf{x}_k; \mathbf{x}_j) \mathbf{n}_k, \quad k = 1,m
+    s(\mathbf{x}_k) = \nabla w(\mathbf{x}_k) \mathbf{n}_k = \sum_{j=1}^{m} \alpha_{j+n} \nabla g(\mathbf{x}_k; \mathbf{x}_j) \mathbf{n}_k, \quad k = 1,m
 
 where the gradient of the Green's functions is dotted with the unit vector of the observed gradient.
 

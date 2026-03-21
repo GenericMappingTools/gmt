@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,8 @@ enum GMT_mp_Wcodes {	/* Support for -W parsing */
 	GMT_MP_M_MREGION = 10,	/* As 6, but return string -Rxmin/xmax/ymn/ymax */
 	GMT_MP_M_MSTRING = 11,	/* As 6 but as string */
 	GMT_MP_M_BREGION = 12,	/* Return xmin/xmax/ymn/ymax in long/lat of boundingbox */
-	GMT_MP_M_BSTRING = 13	/* As 12 but as string */
+	GMT_MP_M_BSTRING = 13,	/* As 12 but as string */
+	GMT_MP_M_SCALE   = 14	/* Return map scale */
 };
 
 enum GMT_mp_Zcodes {	/* Support for -Z parsing */
@@ -212,9 +213,9 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <table> [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
+	GMT_Usage (API, 0, "usage: %s <table> [-Ab|f|o[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [%s] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [%s] [-S] [-T[h]<from>[/<to>]] [%s] [-W[b|B|e|E|g|h|j|m|M|n|o|O|r|R|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [%s] [-S] [-T[h]<from>[/<to>]] [%s] [-W[b|B|e|E|g|h|j|m|M|n|o|O|r|R|s|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -228,17 +229,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]");
+	GMT_Usage (API, 1, "\n-Ab|f|o[<lon0>/<lat0>][+v]");
 	GMT_Usage (API, -2, "Calculate azimuths from previous point in the input data with -Af. If <lon0>/<lat0> "
 		"is provided, then all azimuths are computed with respect to that point. Select directive:");
 	GMT_Usage (API, 3, "b: Calculate back-azimuths from data to previous or the specified point on the sphere.");
-	GMT_Usage (API, 3, "B: Calculate back-azimuths from data to previous or the specified point on the ellipsoid.");
 	GMT_Usage (API, 3, "f: Calculate azimuths from data to previous or the specified point on the sphere.");
-	GMT_Usage (API, 3, "F: Calculate back-azimuths from data to previous or the specified point on the ellipsoid.");
 	GMT_Usage (API, 3, "o: Calculate orientations (-90/90) instead of azimuths (0/360) on the sphere.");
-	GMT_Usage (API, 3, "O: Calculate orientations (-90/90) instead of azimuths (0/360) on the ellipsoid.");
 	GMT_Usage (API, -2, "Append +v to obtain variable <lon0> <lat0> points from input columns 3-4 instead. "
 		"If -R -J are given then we compute Cartesian angles after projecting the coordinates.");
+	GMT_Usage (API, -2, "Use -je option to do the computations on the ellipsoid instead of the sphere.");
 	GMT_Usage (API, 1, "\n-C[<dx></dy>][+m]");
 	GMT_Usage (API, -2, "Get projected coordinates relative to projection center [Default is relative to lower left corner]. "
 		"Optionally append <dx></dy> to add (or subtract if -I) (i.e., false easting and northing) [0/0]. "
@@ -313,6 +312,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "O: Same as o but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "r: Print rectangular region for an oblique -R -J selection.");
 	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
+	GMT_Usage (API, 3, "s: Print the map scale.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
 	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny>]] to output the enclosing polygon instead "
@@ -473,7 +473,7 @@ GMT_LOCAL unsigned int mapproject_old_G_parser (struct GMT_CTRL *GMT, char *arg,
 	return (n_errors);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mapproject and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -715,16 +715,16 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 					Ctrl->T.heights = true;	/* If false we set height = 0 */
 				}
 
-				if (strchr (&opt->arg[k], '/')) {	/* Gave from/to */
-					sscanf (&opt->arg[k], "%[^/]/%s", from, to);
+				if (strchr(&opt->arg[k], '/')) {	/* Gave from/to */
+					sscanf(&opt->arg[k], "%[^/]/%s", from, to);
 				}
 				else {	/* to not given, set to - which means WGS-84 */
-					strcpy (to, "-");
-					strncpy (from, &opt->arg[k], GMT_LEN256);
+					strcpy(to, "-");
+					strncpy(from, &opt->arg[k], GMT_LEN256);
 				}
-				n_errors += gmt_M_check_condition (GMT, gmt_set_datum (GMT, to, &Ctrl->T.to) == -1 ||
-				                                 gmt_set_datum (GMT, from, &Ctrl->T.from) == -1,
-				                                 "Option -T: Usage -T[h]<from>[/<to>]\n");
+				n_errors += gmt_M_check_condition(GMT, gmt_set_datum (GMT, to, &Ctrl->T.to) == -1 ||
+				                                  gmt_set_datum (GMT, from, &Ctrl->T.from) == -1,
+				                                  "Option -T: Usage -T[h]<from>[/<to>]\n");
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -733,9 +733,8 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 					case 'w': Ctrl->W.mode = GMT_MP_M_WIDTH; break;
 					case 'h': Ctrl->W.mode = GMT_MP_M_HEIGHT; break;
 					case 'j': case 'n': case 'g': case 'x':
-						if ((Ctrl->W.refpoint = gmt_get_refpoint (GMT, opt->arg, 'W')) == NULL) {
+						if ((Ctrl->W.refpoint = gmt_get_refpoint(GMT, opt->arg, 'W')) == NULL)
 							n_errors++;
-						}
 						Ctrl->W.mode = GMT_MP_M_POINT;
 						break;
 					case 'b': Ctrl->W.mode = GMT_MP_M_BREGION; break;
@@ -748,8 +747,9 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 					case 'R': Ctrl->W.mode = GMT_MP_M_RSTRING; break;
 					case 'm': Ctrl->W.mode = GMT_MP_M_MREGION; break;
 					case 'M': Ctrl->W.mode = GMT_MP_M_MSTRING; break;
+					case 's': Ctrl->W.mode = GMT_MP_M_SCALE; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[e|E|g|h|j|m|M|n|o|O|r|R|w|x]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[e|E|g|h|j|m|M|n|o|O|r|R|s|w|x]\n");
 						n_errors++;
 						break;
 				}
@@ -810,6 +810,16 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 	}
 
 	if (n_errors) return GMT_PARSE_ERROR;	/* Might as well return here since otherwise we may get some false warnings from below as well */
+
+	/* -AF|B will fail if input is not detected as geog (unfortunally easy happens). On the other hand,
+	   it ignores the -j option. This patch will force the input to be recognized as geographic. And allows
+	   as to drop the upper case directives (old stuff?) in favor of -j alone.
+	*/
+	if (Ctrl->A.active && (Ctrl->A.geodesic || (GMT->common.j.active && GMT->common.j.mode >= GMT_GREATCIRCLE))) {
+		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
+		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+		if (GMT->common.j.mode == GMT_GEODESIC) Ctrl->A.geodesic = true;	/* If -je set Ctrl->A.geodesic to avoid annoying warning */
+	}
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 	no_JR_needed = (Ctrl->A.active || Ctrl->E.active || Ctrl->G.active || Ctrl->L.active || Ctrl->N.active || Ctrl->Z.active);
@@ -1208,11 +1218,18 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
 				n_output = (tmode == GMT_COL_FIX) ? 0 : 4;
 				break;
+			case GMT_MP_M_SCALE:
+				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map scale.\n");
+				w_out[GMT_X] = 1.0 / fabs(0.0254 * GMT->current.proj.scale[GMT_X]);
+				break;
 			default:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width and height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;
 				w_out[GMT_Y] = GMT->current.proj.rect[YHI] * inch_to_unit;
 				n_output = 2;
+				if (API->external)			/* For externals, report also the map i_scale*/
+					w_out[GMT_Z] = 1.0 / fabs(0.0254 * GMT->current.proj.scale[GMT_X]);
+				n_output = (API->external) ? 3 : 2;
 			break;
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
@@ -1228,22 +1245,27 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-			gmt_M_free (GMT, Out);
+			gmt_M_free(GMT, Out);
 			Return (API->error);
 		}
 		if (Ctrl->W.mode == GMT_MP_M_OSTRING || Ctrl->W.mode == GMT_MP_M_ESTRING) {
-			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg+r", w_out[XLO], w_out[YLO], w_out[XHI], w_out[YHI]);
+			sprintf(region, "-R%.16lg/%.16lg/%.16lg/%.16lg+r", w_out[XLO], w_out[YLO], w_out[XHI], w_out[YHI]);
 			Out->text = region;
 		}
 		else if (Ctrl->W.mode == GMT_MP_M_BSTRING || Ctrl->W.mode == GMT_MP_M_RSTRING || Ctrl->W.mode == GMT_MP_M_MSTRING) {
-			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
+			sprintf(region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
+			Out->text = region;
+		}
+		else if (Ctrl->W.mode == GMT_MP_M_SCALE) {
+			sprintf(region, "1:%g", w_out[GMT_X]);
 			Out->text = region;
 		}
 		else
 			Out->data = w_out;
-		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
-		gmt_M_free (GMT, Out);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
+
+		GMT_Put_Record(API, GMT_WRITE_DATA, Out);	/* Write this to output */
+		gmt_M_free(GMT, Out);
+		if (GMT_End_IO(API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);

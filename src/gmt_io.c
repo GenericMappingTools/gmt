@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -5700,7 +5700,7 @@ char *gmt_get_filename (struct GMTAPI_CTRL *API, const char* filename, const cha
 	/* Need to strip off any valid, trailing modifiers and netCDF specifications that may be part of filename */
 	char file[PATH_MAX] = {""}, *c = NULL, *clean_file = NULL;
 
-	if (strstr (filename, "/=tiled_"))	/* Special list with remote tiles, use exactly as is */
+	if (strstr(filename, "/=tiled_") || strstr(filename, "\\=tiled_"))	/* Special list with remote tiles, use exactly as is */
 		strncpy (file, filename, PATH_MAX-1);
 	else	/* Strip off netCDF3-D grid extensions to make sure we get a valid file name */
 		sscanf (filename, "%[^=?]", file);
@@ -9210,7 +9210,7 @@ void gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool fr
 		for (unsigned int k = 0; k < V->n_headers; k++) gmt_M_str_free (V->header[k]);
 		gmt_M_free (GMT, V->header);
 	}
-	gmt_M_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
+	gmt_M_free_aligned (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
 	gmt_M_free (GMT, V->type);
 	gmt_M_free (GMT, VH->alloc_mode);
 	gmt_M_free (GMT, V->hidden);
@@ -10137,7 +10137,7 @@ unsigned int gmtlib_is_time (struct GMT_CTRL *GMT, char *text) {
 		gmt_strrepc (string, p[k], ' ');	/* Replace date separators with space */
 	if (n_colon)
 		gmt_strrepc (string, ':', ' ');	/* Replace time separators with space */
-	if ((n_dash >= 1 && n_slash == 0) || (n_dash == 0 && n_slash >= 1)) {
+	if (((n_dash >= 1 && n_slash == 0) || (n_dash == 0 && n_slash >= 1)) || (n_dash == 0 && n_slash == 0 && string[L] == 'T')) {
 		/* Apart from random junk SHIT 5 6 7:X:Hello!, Possibilities are:
 		 *	1.  yyyy mm dd[T][hh.xxx|:mm.xx|:ss.xx]  Full date and possibly time
 		 *	2.  yyyy jjj[T][hh.xxx|:mm.xx|:ss.xx]  Julian day and possibly time

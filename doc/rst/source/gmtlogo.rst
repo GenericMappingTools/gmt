@@ -103,8 +103,8 @@ Optional Arguments
 **-S**\ [**l**\|\ **n**\|\ **u**]
     Control what is written beneath the map portion of the logo.
     Append **l** (or skip |-S| entirely) to plot the text label "The Generic Mapping Tools"
-    beneath the logo.  Append **n** to skip the label placement, and append
-    **u** to place the URL to the GMT site instead [plot the label].
+    beneath the logo. Append **n** to skip the label placement, and append
+    **u** to place the URL to the GMT website instead [plot the label].
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_

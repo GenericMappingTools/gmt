@@ -34,7 +34,7 @@ Append modifier **+a** to specify that *all* the criteria must be met [default i
 
 One of the following modifiers can be appended:
 
-- **+n** - Specify that the previous value minus the current column value must exceed *gap* for a break to be imposed.
+- **+n** - Specify that the previous value minus the current value must exceed *gap* for a break to be imposed.
 - **+p** - Specify that the current value minus the previous value must exceed *gap* for a break to be imposed.
 
 Default imposes breaks based on the absolute value of the difference between the current and previous value.

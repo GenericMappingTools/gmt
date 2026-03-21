@@ -54,7 +54,7 @@ solving the differential equation (away from data points)
 
     (1 - t) \nabla ^2(z) + t \nabla (z) = 0,
 
-where *t* is a tension factor between 0 and 1, and :math:`\nabla` indicates the
+where *t* is a tension factor between 0 and 1, and :math:`\nabla^2` indicates the
 2-D Cartesian Laplacian operator. Here, *t* = 0 gives the "minimum curvature" solution.
 Minimum curvature can cause undesired oscillations and false local maxima or minima
 [See *Smith and Wessel*\ , 1990], and you may wish to use *t* > 0 to suppress these

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -4971,23 +4971,29 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	GMT->current.map.frame.axis[GMT_Z].angle = 0.0;	/* Default is plotting normal to axis for Z, i.e., will look horizontal on the plot */
 	GMT->current.map.frame.axis[GMT_Z].use_angle = true;
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt_handle5_plussign (GMT, text, GMT_AXIS_MODIFIERS, 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
+	gmt_handle5_plussign(GMT, text, GMT_AXIS_MODIFIERS, 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +e, +f, +p, +S|s or +u */
-	while (text[k] && !(text[k] == '+' && strchr (GMT_AXIS_MODIFIERS, text[k+1]))) k++;
+	while (text[k] && !(text[k] == '+' && strchr(GMT_AXIS_MODIFIERS, text[k+1]))) k++;
 	gmt_M_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
-	gmt_handle5_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
+	gmt_handle5_plussign(GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
-		if (!side[no]) continue;	/* Except we did not specify this axis */
+		if (!side[no]) continue;		/* Except we did not specify this axis */
 		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
-		if (text[0] == '0' && !text[1]) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
-			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
+		if (no == 0 && !strncmp(text, "000", 3)) {		/* Understand format '000' to mean "no frame but keep annots, ticks etc" */
+			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* A no-frame fancy would be super complicated */
+			GMT->current.setting.map_frame_pen.rgb[3] = 1.0;	/* Since it is very hard to no plot the axis, just make it transparent. */
+		}
+		else if ((text[0] == '0' && !text[1]) || !strncmp(text, "00", 2)) {	 /* Understand format '00' to mean zero line width frame. */
+			GMT->current.map.frame.draw = true;			/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
 			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
-			GMT->current.map.frame.set[no] = true;	/* Since we want this axis drawn */
-			continue;
+			GMT->current.map.frame.set[no] = true;		/* Since we want this axis drawn */
+			if (no == 0 && !strncmp(text, "00", 2))
+				GMT->current.setting.map_frame_pen.width = 0;	/* Understand format '00' to mean "draw the frame with a 0 width line */
+			if (!text[1] || !text[2]) continue;			/* Only -B0 or -B00*/
 		}
 
 		if (mod) {	/* Process the given axis modifiers */
@@ -12219,7 +12225,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
 			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, but silently process for backwards compatibility */
-			if (!strncmp (lower_value, "on", 3))
+			if (!strncmp (lower_value, "on", 2))
 				GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 			else if (!strncmp (lower_value, "off", 3))
 				GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
@@ -14861,7 +14867,7 @@ void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to ne
 	}
 }
 
-GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], int *aspect) {
+GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], int *aspect) {
 	/* Determines the data region by examining the input data.  This could be a grid or datasets.  The
 	 * latter may be one or many files, or none, meaning we must capture stdin.  If we do, then we must
 	 * add that temporary file to the module's options, otherwise we cannot read the data a 2nd time.
@@ -14872,6 +14878,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 	bool geo;
 	bool is_PS, is_oneliner;
 	struct GMT_GRID *G = NULL;
+	struct GMT_IMAGE *I = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
 	char virt_file[GMT_VF_LEN] = {""}, tmpfile[PATH_MAX] = {""}, *list = "bfi:", *file = NULL;
@@ -14879,21 +14886,95 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 
 	switch (family) {
 		case GMT_IS_GRID:
-			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
-			if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
+			if ((opt = GMT_Find_Option(API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
+			if ((k_data = gmt_remote_dataset_id(API, opt->arg)) != GMT_NOTSET) {	/* This is a remote grid so -Rd */
 				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = -90.0;	wesn[YHI] = +90.0;
 			}
 			else {	/* Must read the grid header */
+#if 0
+				/* This an attempt to fix issue #8878 where grdimage fails to get the region from a image.
+				   However, this code still fails once every other time it is run and the other produces an odd
+				   bad figure. Leaving it here for now in case it can be fixed in a future attempt.
+				*/
+				int in_ID = GMT_NOTSET, item = GMT_NOTSET, pad[4];
+				struct GMTAPI_DATA_OBJECT *S_obj = NULL; 
 				file = opt->arg;
 				if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
-				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+
+				in_ID = GMT_Register_IO(API, family, GMT_IS_FILE, GMT_IS_SURFACE, GMT_IN, wesn, file);
+				if ((item = gmtlib_validate_id(API, GMT_NOTSET, in_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) {
+					gmt_M_str_free (file);
+					return API->error;
+				}
+				S_obj = API->object[item];	/* Current object */
+				gmt_M_memcpy(pad, API->GMT->current.io.pad, 4, int);		/* Save to later restore */
+				gmt_M_memcpy(API->GMT->current.io.pad, S_obj->orig_pad, 4, int);	/* Crucial for gmtapi_import_image() at line #4927 not return too soon */
+				if (S_obj->family == GMT_IS_IMAGE) {
+					if ((I = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
+						return API->error;	/* Failure to read grid header */
+					gmt_M_memcpy(wesn, I->header->wesn, 4, double);	/* Copy over the image's region */
+					HH = gmt_get_H_hidden(I->header);
+					if (!exact) gmt_round_wesn(wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+					if (I->header->x_units[0] && I->header->y_units[0] && !strcmp(I->header->x_units, I->header->y_units))	/* Want constant scale */
+						*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
+					if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+				}
+				else {
+					if ((G = GMT_Read_Data(API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL)
+						return API->error;	/* Failure to read grid header */
+					gmt_M_memcpy(wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
+					HH = gmt_get_H_hidden(G->header);
+					if (!exact) gmt_round_wesn(wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+					if (G->header->x_units[0] && G->header->y_units[0] && !strcmp(G->header->x_units, G->header->y_units))	/* Want constant scale */
+						*aspect = ((G->header->wesn[XHI]-G->header->wesn[XLO]) >= (G->header->wesn[YHI]-G->header->wesn[YLO])) ? 1 : -1;
+					if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+				}
+				gmt_M_memcpy(API->GMT->current.io.pad, pad, 4, int);		/* Restore the pad */
+			}
+#endif
+				file = opt->arg;
+				if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
+				if ((G = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_IO_RESET, NULL, file, NULL)) == NULL)
 					return API->error;	/* Failure to read grid header */
-				gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
-				HH = gmt_get_H_hidden (G->header);
-				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
-				if (G->header->x_units[0] && G->header->y_units[0] && !strcmp (G->header->x_units, G->header->y_units))	/* Want constant scale */
+				gmt_M_memcpy(wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
+				HH = gmt_get_H_hidden(G->header);
+				if (!exact) gmt_round_wesn(wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+				if (G->header->x_units[0] && G->header->y_units[0] && !strcmp(G->header->x_units, G->header->y_units))	/* Want constant scale */
 					*aspect = ((G->header->wesn[XHI]-G->header->wesn[XLO]) >= (G->header->wesn[YHI]-G->header->wesn[YLO])) ? 1 : -1;
-				if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+				if (GMT_Destroy_Data(API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
+			}
+			break;
+
+		case GMT_IS_IMAGE:
+			if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) == NULL) return GMT_NO_INPUT;	/* Got no input argument*/
+			file = opt->arg;
+			if (gmt_M_file_is_memory (file)) {
+				/* For memory files, directly access the already-loaded image object */
+				int object_ID, obj_item;
+				struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+				if (sscanf (&file[GMTAPI_OBJECT_ID_START], "%d", &object_ID) != 1) return GMT_OBJECT_NOT_FOUND;
+				if ((obj_item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) return GMT_OBJECT_NOT_FOUND;
+				S_obj = API->object[obj_item];
+				if (S_obj == NULL || S_obj->resource == NULL) return GMT_PTR_IS_NULL;
+				I = (struct GMT_IMAGE *)S_obj->resource;
+				gmt_M_memcpy (wesn, I->header->wesn, 4, double);	/* Copy over the image region */
+				HH = gmt_get_H_hidden (I->header);
+				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use image w/e/s/n to round to nearest reasonable multiples */
+				if (I->header->x_units[0] && I->header->y_units[0] && !strcmp (I->header->x_units, I->header->y_units))	/* Want constant scale */
+					*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
+				/* Don't destroy the image - it's a reference to the original */
+			}
+			else {
+				/* For regular files, read the image header */
+				if (gmt_access (API->GMT, file, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
+				if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_IS_IMAGE|GMT_IO_RESET, NULL, file, NULL)) == NULL)
+					return API->error;	/* Failure to read image header */
+				gmt_M_memcpy (wesn, I->header->wesn, 4, double);	/* Copy over the image region */
+				HH = gmt_get_H_hidden (I->header);
+				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use image w/e/s/n to round to nearest reasonable multiples */
+				if (I->header->x_units[0] && I->header->y_units[0] && !strcmp (I->header->x_units, I->header->y_units))	/* Want constant scale */
+					*aspect = ((I->header->wesn[XHI]-I->header->wesn[XLO]) >= (I->header->wesn[YHI]-I->header->wesn[YLO])) ? 1 : -1;
+				if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary image structure */
 			}
 			break;
 
@@ -15035,11 +15116,29 @@ GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const ch
 	struct GMT_OPTION *opt = NULL;
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};
 	char region[GMT_LEN256] = {""};
-	int err = GMT_NOERROR;
+	int err = GMT_NOERROR, family = GMT_IS_GRID;
 	gmt_M_unused(args);
 
 	/* Here we know the module is using a grid to get -R implicitly */
-	if ((err = gmtinit_get_region_from_data (API, GMT_IS_GRID, exact, options, wesn, &API->GMT->common.R.aspect)))
+	/* First check if the input file is an image */
+	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options)) != NULL) {
+		/* Check for pre-loaded image in memory (virtual filename has family code 'I') */
+		if (gmt_M_memfile_is_image (opt->arg)) {
+			family = GMT_IS_IMAGE;
+		}
+		else {
+			/* Check for common image extensions */
+			char *ext = strrchr (opt->arg, '.');
+			if (ext) {
+				if (strcmp (ext, ".tif") == 0 || strcmp (ext, ".tiff") == 0 || strcmp (ext, ".png") == 0 ||
+				    strcmp (ext, ".jpg") == 0 || strcmp (ext, ".jpeg") == 0 || strcmp (ext, ".bmp") == 0 ||
+				    strcmp (ext, ".gif") == 0) {
+					family = GMT_IS_IMAGE;
+				}
+			}
+		}
+	}
+	if ((err = gmtinit_get_region_from_data (API, family, exact, options, wesn, &API->GMT->common.R.aspect)))
 		return err;
 
 	snprintf (region, GMT_LEN256, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
@@ -15115,7 +15214,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 	 * 	2 : Found a list-request +l, +L, or +n.  Not plotting or region desired.
 	 */
 	char p[GMT_LEN256] = {""}, *c = NULL;
-	char e_code[GMT_LEN256] = {""}, r_opt[GMT_LEN128] = {""};
+	char e_code[GMT_LEN512] = {""}, r_opt[GMT_LEN128] = {""};
 	unsigned int pos, n_errors = 0, answer = 0;
 	struct GMT_OPTION *E = options;
 
@@ -15125,7 +15224,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 			c[0] = '\0';	/* Temporarily hide the modifiers */
 		if (r_code[0]) strcat (r_code, ",");	/* Accumulate all codes across multiple -E options */
 		strcat (r_code, E->arg);	/* Append country codes only */
-		strncpy (e_code, E->arg, GMT_LEN256-1);	/* Duplicate country codes only */
+		strncpy (e_code, E->arg, GMT_LEN512-1);	/* Duplicate country codes only */
 		if (c) {	/* Now process the modifiers */
 			c[0] = '+';	/* Unhide the modifiers */
 			pos = 0;	/* Initialize position counter for this string */
@@ -16453,6 +16552,7 @@ void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	if (!GMT->common.R.active[RSET]) return;	/* No -R given, presumably use whole grid or image */
 	if (!(gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]))) return;	/* Gave -Rd or -Rg so need to probe more*/
 	if (gmt_M_is_azimuthal (GMT) && doubleAlmostEqual (fabs (GMT->current.proj.lat0), 90.0) && !GMT->common.R.oblique) return;	/* Nothing to do */
+	if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) return;		/* This is one is square */
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Save the region we were given */
 
  	if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* Set up projection */
@@ -17111,7 +17211,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	unsigned int ju, col;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
-	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpPqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopPqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
 		p->base = GMT->session.d_NaN;
@@ -17204,6 +17304,27 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					col_off++;
 				}
 			}
+		}
+	}
+	else if (text[0] == 'P') {	/* Sphere symbol with optional modifiers for light position, flat color, or no fill */
+		char arg[GMT_LEN64] = {""};
+		n = sscanf(text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbol size with no +<modifiers> at the end */
+		if (n == 1) {	/* No modifiers or no size given */
+			if (text[1] && text[1] != '+') {			/* Gave size without modifiers */
+				strncpy(arg, &text[1], GMT_LEN64-1);
+			}
+		}
+		if (arg[0] && arg[0] != '+') {	/* Need to get size */
+			if (cmd) p->read_size_cmd = false;
+			p->size_x = p->given_size_x = gmt_M_to_inch(GMT, arg);
+			check = false;
+		}
+		else if (!text[1] || text[1] == '+') {	/* No size given */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			if (p->size_x == 0.0)
+				col_off++;
+			if (cmd) p->read_size_cmd = true;
 		}
 	}
 	else if (strchr (GMT_VECTOR_CODES, text[0])) {
@@ -17816,12 +17937,65 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
-		case 'P':
 		case 'p':
 			p->symbol = PSL_DOT;
 			if (p->size_x == 0.0 && !p->read_size) {	/* User forgot to set size */
 				p->size_x = GMT_DOT_SIZE;
 				check = false;
+			}
+			break;
+		case 'P':	/* Sphere symbol: -SP<size>[+a<azim>][+e<elev>][+f][+n] */
+			p->symbol = PSL_SPHERE;
+			/* Set default light position: center (perpendicular to viewing plane) */
+			p->SP_lx = 0.0;
+			p->SP_ly = 0.0;
+			p->SP_light_set = false;
+			p->SP_flat = false;
+			p->SP_no_fill = false;
+			/* Process +a, +e, +f, and +n modifiers */
+			{
+				double azimuth = 0.0, elevation = 90.0;	/* Default values: centered light */
+				bool got_azim = false, got_elev = false;
+				char mod[GMT_LEN64] = {""};
+				unsigned int pos = 0, error = 0;
+				if ((c = strchr(text, '+'))) {	/* Got modifiers */
+					while (gmt_getmodopt(GMT, 'S', c, "aefn", &pos, mod, &error) && error == 0) {
+						switch (mod[0]) {
+							case 'a':	/* Azimuth */
+								if (mod[1]) {
+									azimuth = atof(&mod[1]);
+									got_azim = true;
+								}
+								else {
+									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SP: +a modifier requires azimuth value\n");
+									decode_error++;
+								}
+								break;
+							case 'e':	/* Elevation */
+								if (mod[1]) {
+									elevation = atof(&mod[1]);
+									got_elev = true;
+								}
+								else {
+									GMT_Report(GMT->parent, GMT_MSG_ERROR, "Option -SP: +e modifier requires elevation value\n");
+									decode_error++;
+								}
+								break;
+							case 'f':	/* Flat/constant color (no gradient) */
+								p->SP_flat = true;
+								break;
+							case 'n':	/* No fill (outline only) */
+								p->SP_no_fill = true;
+								break;
+						}
+					}
+					if (got_azim || got_elev) {	/* Store light azimuth/elevation for later projection */
+						/* Store the light direction - will be projected to 2D at drawing time */
+						p->SP_light_az = azimuth;
+						p->SP_light_el = elevation;
+						p->SP_light_set = true;
+					}
+				}
 			}
 			break;
 		case 'q':	/* Quoted lines: -Sq[d|n|l|s|x]<info>[:<labelinfo>] */
@@ -18541,12 +18715,14 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				}
 				if (GMT->current.gdal_read_in.hCT_fwd) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
 				if (GMT->current.gdal_read_in.hCT_inv) OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
-				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation (GMT, source, dest);
-				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation (GMT, dest, source);
-				GMT->current.proj.projection      = GMT_PROJ4_PROJS;		/* This now make it use the proj4 lib */
+				GMT->current.gdal_read_in.hCT_fwd = gmt_OGRCoordinateTransformation(GMT, source, dest);
+				GMT->current.gdal_read_in.hCT_inv = gmt_OGRCoordinateTransformation(GMT, dest, source);
+				GMT->current.proj.projection = strstr(dest, "spilhaus") ? GMT_PROJ4_SPILHAUS : GMT_PROJ4_PROJS;	/* Special case for spilhaus */
 				GMT->common.J.active = true;
 				if (GMT->current.gdal_read_in.hCT_fwd == NULL || GMT->current.gdal_read_in.hCT_inv == NULL)
 					error = 1;
+				else if (error && strstr(dest, "+proj="))	/* In this case it arrived here with error = 1 */
+					error = 0;
 			}
 			else {	/* Horizontal map projection */
 				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Option -J given more than once\n") ||
@@ -19561,7 +19737,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""}, device_extra[GMT_LEN8] = {""}, *do_gray[2] = {"", "+m"};
 	char *copy = NULL, *ptr = NULL, *format = NULL, *c = NULL;
 	struct GMT_FIGURE *fig = NULL;
-	bool not_PS, auto_size;
+	bool not_PS = true, auto_size;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16], jpeg_quality = GMT_JPEG_DEF_QUALITY, monochrome = 0;
 	unsigned int pos = 0;
 	double legend_width = 0.0, legend_scale = 1.0;
@@ -19575,6 +19751,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
 	}
+
 	if ((n_figs = gmtinit_read_figures (API->GMT, 2, &fig)) == GMT_NOTSET) {	/* Auto-insert the hidden gmt_0.ps- file which may not have been used */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to open gmt.figures for reading\n");
 		return GMT_ERROR_ON_FOPEN;
@@ -19585,6 +19762,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	for (k = 0; k < n_figs; k++) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
+		
 		/* Go through the format list and build array for -T arguments */
 		nf = gmtinit_get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode, &jpeg_quality, &monochrome);
 		if (n_orig && k) {	/* Specified one or more figs via gmt figure so must switch to the current figure and update the history */
@@ -19595,22 +19773,27 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
 		}
+		
 		copy = strdup (fig[k].formats);	ptr = copy;
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
 			format = strsep (&ptr, ",");	/* Name of next format as user specified it */
 			device_extra[0] = '\0';	/* Reset device arguments */
 			if (fmt[f] == 'j' && jpeg_quality != GMT_JPEG_DEF_QUALITY)
 				sprintf (device_extra, "+q%d", jpeg_quality);	/* Need to pass quality modifier */
+			
 			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
 			snprintf (cmd, GMT_BUFSIZ, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
+			
 			if (access (cmd, F_OK)) {	/* No such file, check if the fully baked file is there instead */
 				mark = '+';	/* This is the last char in extension for a fully-baked GMT PostScript file */
 				snprintf (cmd, GMT_BUFSIZ, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
 				if (access (cmd, F_OK)) {	/* No such file ether, give up; warn if a fig set via gmt figure (k > 0) and it is not the movie_background case which may not have a plot to go with it */
-					if (k && strcmp (fig[k].prefix, "movie_background")) GMT_Report (API, GMT_MSG_WARNING, "Figure # %d (%s) was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, fig[k].prefix);
+					if (k && strcmp (fig[k].prefix, "movie_background"))
+						GMT_Report (API, GMT_MSG_WARNING, "Figure # %d (%s) was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, fig[k].prefix);
 					continue;
 				}
 			}
+			
 			if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 				/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
 				bool active = API->GMT->common.l.active;	/* Must temporarily turn off -l since should not be passed to legend and plot */
@@ -19635,11 +19818,14 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			else	/* Place products in current directory */
 				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, do_gray[monochrome], fig[k].prefix);
+			
 			gmt_filename_get (fig[k].prefix);
-			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
+			auto_size = gmtinit_check_if_autosize (API, fig[k].ID);	/* Determine if the PostScript file has auto size (32767x32767) enabled */
+			/* Next line is risky. See comments on line #9014 of gmt_plot.c/gmt_plotinit() */
+			if (!auto_size) not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS and a explicit paper size was set. */
+
 			dir[0] = '\0';	/* No directory via D<dir> convert option */
-			auto_size = gmtinit_check_if_autosize (API, fig[k].ID);	/* Determine if the PostScript file has auto size enabled */
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
@@ -19672,6 +19858,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
 				strcat (cmd, " -A");
+			
 			GMT_Report (API, GMT_MSG_DEBUG, "psconvert: %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to call psconvert\n");
@@ -19679,6 +19866,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				gmt_M_str_free (copy);
 				return error;
 			}
+			
 			if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U)) {	/* Must rename file to have .jpeg or .tiff extensions */
 				/* Since psconvert cannot tell from j and t if the extensions should be 3 or 4 characters... */
 				char old_name[PATH_MAX] = {""}, new_name[PATH_MAX] = {""}, ext[GMT_LEN8] = {""};

@@ -19,10 +19,10 @@ cat << EOF > $a
 EOF
 
 # module-specific longopts
-gmt $m $l2s --position=user:10/20+width:5 --position=map:1/2+height:2 >> $b
-gmt $m $l2s --position=justify:TR+justify:BL --position=mirror:TR >> $b
-gmt $m $l2s --position=normalize:0.5/0.4+offset:1/2 >> $b
-gmt $m $l2s --position=plot:3/4+justify:BL >> $b
+gmt $m $l2s --position=mapcoords:10/20+width:5 --position=mapcoords:1/2+height:2 >> $b
+gmt $m $l2s --position=inside:TR+anchor:BL --position=outside:TR >> $b
+gmt $m $l2s --position=boxcoords:0.5/0.4+offset:1/2 >> $b
+gmt $m $l2s --position=plotcoords:3/4+anchor:BL >> $b
 gmt $m $l2s --border+clearance:0.1 --box+fill:red --box+inner:1 >> $b
 gmt $m $l2s --border+pen:2p --border+radius:0.5 --box+shade:1/1/green >> $b
 gmt $m $l2s --label=standard --style=none --style=url >> $b

@@ -519,14 +519,14 @@ URLs and remote files
 
 Three classes of files are given special treatment in GMT.
 
-#. GMT offers several remote global data grids that you can access via our remote file mechanism 
+#. GMT offers several remote global data grids that you can access via our remote file mechanism
    (e.g. **@earth_relief**). The first time you access one of these files, GMT will download
-   the file (or a subset tile) from the selected GMT server and save it to the *server* directory 
-   under your **$GMT_USERDIR** directory [~/.gmt]. Once one of these grids have been downloaded 
+   the file (or a subset tile) from the selected GMT server and save it to the *server* directory
+   under your **$GMT_USERDIR** directory [~/.gmt]. Once one of these grids have been downloaded
    any future reference will simply obtain the file from **$GMT_USERDIR** (except if explicitly
-   removed by the user). See the `Remote Datasets <https://docs.generic-mapping-tools.org/dev/datasets/remote-data.html>`_ 
+   removed by the user). See the `Remote Datasets <https://docs.generic-mapping-tools.org/dev/datasets/remote-data.html>`_
    section for a comprehensive list of available remote datasets and detailed information.
-   
+
 
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to the current directory and subsequently
@@ -1007,7 +1007,7 @@ use **-G** for this task and some have several options specifying different fill
     customized, repeating images using image raster files.
     The optional **+r**\ *dpi* modifier sets the resolution of this image on the page;
     the area fill is thus made up of a series of these "tiles".  The
-    default resolution is 1200.  By specifying upper case **-GP**
+    default resolution is 300.  By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
     black areas will be interchanged (only applies to 1-bit images or
     predefined bit-image patterns). For these patterns and other 1-bit
@@ -1761,18 +1761,18 @@ Placing a feature on the map means selecting a *reference* point somewhere on th
 It may be helpful to consider the analog of a boat dropping an anchor: The boat navigates to the
 reference point and then, depending on where on the boat the anchor is located, moves so that the
 anchor connection point overlies the reference point, then drops the anchor.
-There are four different ways to specify the reference point on a map, allowing for complete freedom
+There are five different ways to specify the reference point on a map, allowing for complete freedom
 to select any location inside or outside the map.  The reference point syntax is [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*;
 the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
 
-.. _Reference_Points_g:
+   .. _Reference_Points_g:
 
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the reference point.
    This mechanism is useful when you want to tie the location of the feature to an actual point
    best described by data coordinates.  An example of such a reference point might
    be **g**\ 135W/20N.
 
-.. _Reference_Points_j:
+   .. _Reference_Points_j:
 
 #. [**j**] Specify *refpoint* using one of the nine *justification codes*, equivalent to the justification
    codes for placing text strings in :doc:`/text`.  This mechanism is illustrated in the figure above and
@@ -1786,14 +1786,14 @@ the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
    justification code. Thus, when using **JTL**\, the anchor point on the map feature will default to **BR**.
    This is practical for features that are drawn **outside** of the basemap (like color bars often are).
 
-.. _Reference_Points_x:
+   .. _Reference_Points_x:
 
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
    points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
    map features using familiar measurements of distance from origins. An example of such a reference
    point might be **x**\ 2.75i/2c.
 
-.. _Reference_Points_n:
+   .. _Reference_Points_n:
 
 #. [**n**] Specify *refpoint* using *normalized* coordinates, i.e., fractional coordinates between 0
    and 1 in both the *x* and *y* directions.  This mechanism avoids units and is useful if you want to always
@@ -2224,7 +2224,7 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
    the map projection will be used to determine inset dimensions on the map.  For instance,
    **+w**\ 300k/200k is a 300x200 km region (which depends on the projection) while **+w**\ 5c
-   is a 5cm square box.
+   is a 5 cm square box.
 
 #. Save the location and dimensions.  For all but the simplest of map insets you will need to
    know the exact location of the resulting inset and its dimensions.  For instance, if you

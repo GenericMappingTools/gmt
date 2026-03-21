@@ -87,6 +87,7 @@ Required Arguments
     |-G| as many times as you have grids you wish to sample.
     Alternatively, use **-G+l**\ *list* to pass a file whose first word
     in the trailing text record will be extracted as the file names.
+    Note, this means that file must have at least one numeric column before the text holding the grid names.
     The grids are sampled and results are output in the order given.
     (See :ref:`Grid File Formats <grd_inout_full>`). **Note**: If *gridfile*
     is a remote global grid and no registration is specified then **grdtrack**
@@ -139,6 +140,9 @@ Optional Arguments
     counter-clockwise.  Finally, you can use **+f** to set a fixed azimuth
     for all profiles. **Note**: If |-C| is set and *spacing* is given then
     that sampling scheme overrules any modifier set in |-E|.
+    Currently, there is a bug when |-C| and |-E| use different units 
+    (see PR `#8728 <https://github.com/GenericMappingTools/gmt/pull/8728>`_ ).
+    If you use both, please manually specify the same unit for each.
 
 .. _-D:
 
@@ -197,7 +201,7 @@ Optional Arguments
     values to all cross-profiles. **+d** : Append stack deviations to
     all cross-profiles. **+r** : Append data residuals (data - stack) to
     all cross-profiles. **+s**\ [*file*] : Save stacked profile to
-    *file* [grdtrack_stacked_profile.txt]. **+c**\ *fact* : Compute
+    *file* [stacked_profile.txt]. **+c**\ *fact* : Compute
     uncertainty envelope on stacked profile as ±\ *fact* \*\ *deviation* [2].
     **Notes**: (1) Deviations depend on *method* and are standard deviation (**a**), L1
     scale, i.e., 1.4826 \* median absolute deviation (MAD) (for **m** and **p**),

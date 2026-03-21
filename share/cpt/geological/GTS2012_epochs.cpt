@@ -1,0 +1,86 @@
+# Geological time scale categorical color scheme
+#
+# TIMESCALE:  GTS2012 (Gradstein et al. ,2012) 
+# 
+# GIVEN ARE TOPS of EPOCHS in Milliions of years before present
+#
+# Christian Heine, mailto:christian.heine@sydney.edu.au
+# 4/11/13 10:16:04 PM
+# 
+# LICENSE:
+# This work is licensed under a 
+# Creative Commons Attribution-ShareAlike 3.0 Unported License
+# http://creativecommons.org/licenses/by-sa/3.0/deed.en_US.
+#
+# EXPLANATIONS:
+# 
+# - A * behind the name means that the age is given as approximate time.
+#
+#
+# TODO Extend from Precambrian to Archean
+#-----------------------------------------------------------------------------
+# COLOR_MODEL = RGB
+
+# Cenozoic
+#   Quarternary
+0.0000  254/242/236 0.0117  254/242/236 ; Holocene
+0.0117  255/242/174 2.588   255/242/174 ; Pleistocene
+2.588   255/255/153 5.333   255/255/153 ; Pliocene
+5.333   255/255/0   23.03   255/255/0   ; Miocene
+23.03   253/192/122 33.09   253/192/122 ; Oligocene
+33.09   253/180/108 56.0    253/180/108 ; Eocene
+56.0    253/167/95  66.0    253/167/95  ; Paleocene
+# 66.0	103	197	202	; Mesozoic	
+# 66.0	127	198	78	; Cretaceous
+66.0    166/216/74  100.5   166/216/74  ; Upper Cretaceous 
+100.5   140/205/87  145.0   140/205/87  ; Lower Cretaceous
+# Jurassic
+145.0   179/227/238 163.5   179/227/238 ; Upper Jurassic 
+163.5   128/207/216 174.1   128/207/216 ; Middle Jurassic 
+174.1   66/174/208  201.3   66/174/208  ; Lower Jurassic
+# Triassic
+201.3   189/140/195 235.0   189/140/195 ; Upper Triassic* 
+235.0   177/104/177 247.2   177/104/177 ; Middle Triassic*
+247.2   152/57/153  252.2   152/57/153  ; Lower Triassic
+# Permian
+252.2   251/167/148 259.9   251/167/148 ; Lopingian   
+259.9   251/116/92  272.3   251/116/92  ; Guadalupian 
+272.3   239/88/69   298.9   239/88/69   ; Cisuralian  
+# Carboniferous
+298.9   153/194/181 323.3   153/194/181 ; Pennsylvanian   
+323.3   103/143/102 358.9   103/143/102 ; Mississippian   
+# Devonian
+358.9   241/225/157 382.7   241/225/157 ; Upper Devonian  
+382.7   241/200/104 393.3   241/200/104 ; Middle Devonian 
+393.3   241/200/104 419.2   241/200/104 ; Lower Devonian 
+# Silurian
+419.2   230/245/225 423.0   230/245/225 ; Pridoli 
+423.0   191/230/207 427.4   191/230/207 ; Ludlow 
+427.4   179/225/194 433.4   179/225/194 ; Wenlock 
+433.4   153/215/179 443.4   153/215/179 ; Llandovery 
+# Ordovician
+443.4   127/202/147 458.4   127/202/147 ; Upper Ordovician 
+458.4   77/180/126  470.0   77/180/126  ; Middle Ordovician
+470.0   26/157/111  485.4   26/157/111  ; Lower Ordovician
+# Cambrian
+485.4   179/224/149 497.0   179/224/149 ; Furongian*
+497.0   166/207/134 509.0   166/207/134 ; Series 3*
+509.0   153/192/120 521.0   153/192/120 ; Series 2*
+521.0   140/176/108 541.0   140/176/108 ; Terreneuvian 
+# Precambrian
+# 254/217/106     254/217/106     ; Ediacaran   
+# 254/204/92      254/204/92      ; Cryogenian 
+# 254/191/78      254/191/78      ; Tonian 
+# 254/217/154     254/217/154     ; Stenian 
+# 253/204/138     253/204/138     ; Ectasian 
+# 253/192/122     253/192/122     ; Calymmia 
+# 248/117/167     248/117/167     ; Statherian 
+# 247/104/152     247/104/152     ; Orosirian 
+# 247/91/137      247/91/137      ; Rhyacian 
+# 247/79/124      247/79/124      ; Siderian 
+# 250/167/200     250/167/200     ; Neoarchean 
+# 248/129/181     248/129/181     ; Mesoarchean 
+# 246/104/178     246/104/178     ; Paleoarchean 
+# 230/29/140      230/29/140      ; Eoarchean 
+
+

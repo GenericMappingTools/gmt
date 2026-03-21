@@ -24,8 +24,8 @@ EOF
 # module-specific longopts
 gmt $m $l2s --azimuth=30 >> $b
 gmt $m $l2s --center=6 >> $b
-gmt $m $l2s --scalebar=mapcoords:-10/-10+length:12 --scalebar=inside:RM+janchor:CB >> $b
-gmt $m $l2s --scalebar=outside:CB+side:l --scalebar=boxcoords:0.2/0.5+anchoroffset:5/10 >> $b
+gmt $m $l2s --scalebar=mapcoords:-10/-10+length:12 --scalebar=inside:RM+anchor:CB >> $b
+gmt $m $l2s --scalebar=outside:CB+side:l --scalebar=boxcoords:0.2/0.5+offset:5/10 >> $b
 gmt $m $l2s --scalebar=plotcoords:3/3+label:YourLbl >> $b
 #gmt $m $l2s --panel+clearance:0.1/0.2+fill:OldLace --panel+inner:0.1c/3p,red,.- >> $b
 #gmt $m $l2s --panel+pen:1p,yellow,4_8_5_8:2p --panel+radius:3p >> $b

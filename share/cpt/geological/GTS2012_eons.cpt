@@ -1,0 +1,24 @@
+# Geological time scale categorical color scheme
+#
+# TIMESCALE:  GTS2012 (Gradstein et al., 2012) 
+# 
+# GIVEN ARE TOPS of EONS in Milliions of years before present
+#
+# Christian Heine, mailto:christian.heine@sydney.edu.au
+# 
+# LICENSE:
+# This work is licensed under a 
+# Creative Commons Attribution-ShareAlike 3.0 Unported License
+# http://creativecommons.org/licenses/by-sa/3.0/deed.en_US.
+#
+#-----------------------------------------------------------------------------
+# COLOR_MODEL = RGB
+#
+#
+0.0     154/217/221     541.0  154/217/221 ; Phanerozoic
+541.0   247/53/99       2500   247/53/99   ; Proterozoic
+2500    240/4/127       4000   240/4/127   ; Archean
+4000    174/2/126       4600   174/2/126   ; Hadean
+
+B	black
+F	white

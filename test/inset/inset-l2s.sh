@@ -26,8 +26,8 @@ gmt begin
 gmt $m $l2s --clearance=w25 >> $b
 gmt $m $l2s --rectangle=10/20/2/3+corners+units:i >> $b
 gmt $m $l2s --inset_box=mapcoords:1/-0.5+width:7 >> $b
-gmt $m $l2s --position=inside:BR+janchor:LT >> $b
-gmt $m $l2s --rectangle=outside:BR+anchoroffset:1/2 >> $b
+gmt $m $l2s --position=inside:BR+anchor:LT >> $b
+gmt $m $l2s --rectangle=outside:BR+offset:1/2 >> $b
 gmt $m $l2s --rectangle=boxcoords:0/0 --rectangle=plotcoords:5/5 >> $b
 gmt $m $l2s --inset_frame+clearance:10+fill:red+inner:4p/black >> $b
 gmt $m $l2s --box+pen:2p+radius:1p+shade:1/2/gray >> $b

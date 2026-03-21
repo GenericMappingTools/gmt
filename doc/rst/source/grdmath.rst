@@ -224,7 +224,7 @@ Operator        Args   Returns                                                  
 **CSC**         1 1    Cosecant of A (A in radians)                                                                    Calculus
 **CSCD**        1 1    Cosecant of A (A in degrees)                                                                    Calculus
 **CUMSUM**      2 1    Cumulative sum per row (B=±1|3) or column (B=±2|4) in A. Sign of B sets summation direction     Arithmetic
-**CURV**        1 1    Curvature of A (Laplacian)                                                                      Calculus
+**CURV**        1 1    Curvature of A (Laplacian, :math:`\nabla^2`)                                                    Calculus
 **D2DX2**       1 1    d^2(A)/dx^2 2nd derivative                                                                      Calculus
 **D2DY2**       1 1    d^2(A)/dy^2 2nd derivative                                                                      Calculus
 **D2DXY**       1 1    d^2(A)/dxdy 2nd derivative                                                                      Calculus

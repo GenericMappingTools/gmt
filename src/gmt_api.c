@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -5632,9 +5632,19 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				return_null (API, GMT_OBJECT_NOT_FOUND);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing grid data from user memory location\n");
 #ifdef DOUBLE_PRECISION_GRID
-			G_obj->data = M_obj->data.f8;
+			if ((mode & GMT_DATA_ONLY) && G_obj->data && G_obj->data != M_obj->data.f8)
+				gmt_M_memcpy (G_obj->data, M_obj->data.f8, G_obj->header->size, gmt_grdfloat);
+			else
+				G_obj->data = M_obj->data.f8;
 #else
-			G_obj->data = M_obj->data.f4;
+			if ((mode & GMT_DATA_ONLY) && G_obj->data && G_obj->data != M_obj->data.f4) {
+				struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G_obj->header);
+				size_t stride = HH->stride ? HH->stride : G_obj->header->n_columns;
+				float *dest = G_obj->data + HH->data_offset;
+				for (size_t row = 0; row < M_obj->n_rows; row++)
+					gmt_M_memcpy (dest + row * stride, M_obj->data.f4 + row * M_obj->n_columns, M_obj->n_columns, gmt_grdfloat);
+			} else
+				G_obj->data = M_obj->data.f4;
 #endif
 			GH = gmt_get_G_hidden (G_obj);
 			MH = gmt_get_M_hidden (M_obj);
@@ -13106,7 +13116,7 @@ GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_O
 #define api_not_required_io(key) ((key == API_PRIMARY_INPUT || key == API_SECONDARY_INPUT) ? API_SECONDARY_INPUT : API_SECONDARY_OUTPUT)	/* Returns the optional input or output flag */
 
 /*! . */
-struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, int n_in, struct GMT_OPTION **head, unsigned int *n) {
+struct GMT_RESOURCE *GMT_Encode_Options(void *V_API, const char *module_name, int n_in, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required given the module options.
 	 * It is only used to assist developers of external APIs, such as the MATLAB, Julia, Python, R, and others.
 	 * "Keys" referred to below is the unique combination given near the top of every module via the macro
@@ -13220,7 +13230,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
 	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN256] = {""}, type = 0;
-	char module[GMT_LEN32] = {""}, argument[PATH_MAX] = {""}, strip_colon_opt = 0;
+	char module[GMT_LEN32] = {""}, argument[GMT_BUFSIZ] = {""}, strip_colon_opt = 0;
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
 	struct GMT_RESOURCE *info = NULL;	/* Our return array of n_items info structures */

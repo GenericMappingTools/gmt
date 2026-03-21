@@ -581,7 +581,7 @@ To add two plot dimensions of different units, we can run
 
 ::
 
-    length=$(gmt math -Q 15c 2i SUB =)
+    length=$(gmt math -Q 15c 2i ADD =)
 
 To compute the ratio of two plot dimensions of different units, we select *non-dimensional* output and run
 

@@ -111,7 +111,7 @@ Optional Arguments
     Sets the *out/edge/in* that will be assigned to nodes that are
     *out*\ side the polygons, on the *edge*, or *in*\ side. Values can
     be any number, including the textstring NaN [Default is 0/0/1].
-    Optionally, use **Nz** to set polygon insides to the z-value
+    Optionally, use **-Nz** to set polygon insides to the z-value
     obtained from the data (either segment header **-Z**\ *zval*,
     **-L**\ *header* or via **-a**\ Z=\ *name*); use **-NZ** to consider
     the polygon boundary as part of the inside. Alternatively, use

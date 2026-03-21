@@ -85,7 +85,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2025 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
+Copyright (c) 1991-2026 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -129,7 +129,7 @@ GMT provides several color maps from these sources:
 
 - [SCM (Scientific Color Maps)](https://www.fabiocrameri.ch/visualisation.php)
 - [cmocean](https://github.com/kthyng/cmocean-gmt)
-- [cpt-city](http://www.seaviewsensing.com/pub/cpt-city/)
+- [cpt-city](https://phillips.shef.ac.uk/pub/cpt-city/)
 - [google](https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html)
 - [matlab](https://www.mathworks.com/help/matlab/colors-1.html)
 - [matplotlib](https://matplotlib.org/stable/tutorials/colors/colormaps.html)

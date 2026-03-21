@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	{ 0, 'C', "clearance",         "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'D', "rectangle|inset_box|position",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "r,u,w,j,o",         "corners,units,width,janchor,anchoroffset",
+	          "r,u,w,j,o",         "corners,units,width,anchor,offset",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "inset_frame|box",
 	          "",                  "",

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -193,7 +193,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If the image is plain (e.g., JPG, PNG, GIF) you must also give a corresponding -R.");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, -2, "If -D is used then <grid> is instead expected to be an image.");
-	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, 1, "\n-A Return a GMT raster image instead of a PostScript plot.");
@@ -229,6 +228,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
 		"To derive intensities from another grid than <grid>, give the alternative data grid with suitable modifiers.");
+	GMT_Option (API, "J-");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-M Force a monochrome (gray-scale) image.");
 	GMT_Usage (API, 1, "\n-N Do Not clip image at the map boundary.");
@@ -1518,7 +1518,7 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 
 	/* Determine if grid/image is to be projected */
 	need_to_project = (gmt_M_is_nonlinear_graticule (GMT) || Ctrl->E.dpi > 0);
-	if (need_to_project && GMT->current.proj.projection == GMT_PROJ4_PROJS) {
+	if (need_to_project && gmt_M_is_proj4(GMT)) {
 		if (GMT->current.proj.is_proj4)
 			if (strstr(GMT->common.J.proj4string, "longlat") || strstr(GMT->common.J.proj4string, "lonlat") || strstr(GMT->common.J.proj4string, "latlon"))
 				need_to_project = false;

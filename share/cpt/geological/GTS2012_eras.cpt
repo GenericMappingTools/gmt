@@ -1,0 +1,30 @@
+# Geological time scale categorical color scheme
+#
+# TIMESCALE:  GTS2012 (Gradstein et al., 2012) 
+# 
+# GIVEN ARE TOPS of ERAS in Milliions of years before present
+#
+# Christian Heine, mailto:christian.heine@sydney.edu.au
+# 17/11/12 9:17:14 AM
+# 
+# LICENSE:
+# This work is licensed under a 
+# Creative Commons Attribution-ShareAlike 3.0 Unported License
+# http://creativecommons.org/licenses/by-sa/3.0/deed.en_US.
+#
+#-----------------------------------------------------------------------------
+# COLOR_MODEL = RGB
+#
+0.0     242/249/29      66.0    242/249/29	; Cenozoic
+66.0    103/197/202     252.2   103/197/202	; Mesozoic
+252.2   153/192/141     541.0   153/192/141	; Paleozoic
+541.0   254/179/66      1000    254/179/66	; Neoproterozoic
+1000    253/180/98      1600    253/180/98	; Mesoproterozoic
+1600    247/67/112      2500    247/67/112	; Paleoproterozoic
+2500    249/155/193     2800    249/155/193 ; Neoarchean
+2800    247/104/169     3200    247/104/169 ; Mesoarchean
+3200    244/68/159      3600    244/68/159  ; Paleoarchean
+3600    218/3/127       4000    218/3/127   ; Eoarchean
+
+B	black
+F	white

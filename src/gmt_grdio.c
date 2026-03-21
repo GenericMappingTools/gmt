@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -518,6 +518,9 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 		&& gmtgrdio_eq (wesn[YLO], header->wesn[YLO], header->inc[GMT_Y]) && gmtgrdio_eq (wesn[YHI], header->wesn[YHI], header->inc[GMT_Y]))
 		return (false);	/* Subset equals whole area */
 	gmt_M_memcpy (P->wesn, wesn, 4, double);			/* Copy the subset boundaries */
+
+	if (!GMT->common.R.active[RSET]) GMT->common.R.active[RSET] = true;	/* This happens when we read a file with a wesn but no -R is set */
+
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (false);	/* No padding requested */
 	if (!GMT->current.io.grid_padding) return (false);	/* Not requested */
 
@@ -2236,7 +2239,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 	}
 }
 
-void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
+void gmt_grd_shift(struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 	/* Rotate geographical, global grid in e-w direction
 	 * This function will shift a grid by shift degrees.
 	 * It is only called when we know the grid is geographic. */
@@ -2266,8 +2269,10 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 		G->header->wesn[XHI] += 360.0;
 	}
 	else if (G->header->wesn[XHI] > 360.0) {
-		G->header->wesn[XLO] -= 360.0;
-		G->header->wesn[XHI] -= 360.0;
+		while (G->header->wesn[XHI] > 360.0) {	/* Make sure we are in the range [0,360] */
+			G->header->wesn[XLO] -= 180.0;
+			G->header->wesn[XHI] -= 180.0;
+		}
 	}
 
 	gridline = (width < (int)G->header->n_columns);	/* Gridline-registrered grids will have width = n_columns-1, pixel grids have width = n_columns */

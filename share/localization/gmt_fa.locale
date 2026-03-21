@@ -1,0 +1,37 @@
+# GMT Time language file for FA (Persian) mode [FA]
+# UTF-8. Week list starts on Sunday regardless of TIME_WEEK_START.
+# Keep ZWNJ (U+200C) in سه‌شنبه and پنج‌شنبه.
+
+#-------------------------------------------------
+# Monthnames, with 3-char and 1-char abbreviations (Gregorian)
+M	1	ژانویه		ژان	ژ
+M	2	فوریه		فور	ف
+M	3	مارس		مار	م
+M	4	آوریل		آور	آ
+M	5	مه		مه	م
+M	6	ژوئن		ژوئن	ژ
+M	7	ژوئیه		ژوئی	ژ
+M	8	اوت		اوت	ا
+M	9	سپتامبر		سپت	س
+M	10	اکتبر		اکت	ا
+M	11	نوامبر		نوا	ن
+M	12	دسامبر		دسا	د
+
+# Name and abbreviations for the word Week
+U	1	هفته		هف	ه
+
+# Weeknames, with 3-char and 1-char abbreviations
+# (List starts on Sunday regardless of TIME_WEEK_START)
+W	1	یکشنبه		یک	ی
+W	2	دوشنبه		دو	د
+W	3	سه‌شنبه		سه	س
+W	4	چهارشنبه	چه	چ
+W	5	پنج‌شنبه	پن	پ
+W	6	جمعه		جم	ج
+W	7	شنبه		شن	ش
+
+# Compass directions (full names Persian; map-edge & rose abbreviations Latin to match common map usage)
+C	1	غرب		W	W
+C	2	شرق		E	E
+C	3	جنوب		S	S
+C	4	شمال		N	N

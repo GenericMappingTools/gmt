@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,11 @@
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
+#endif
+
+/* Disable warning: operands are different enum types */
+#ifdef _MSC_VER
+#pragma warning( disable : 5287 )
 #endif
 
 /*

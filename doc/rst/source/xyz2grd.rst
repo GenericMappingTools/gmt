@@ -239,7 +239,7 @@ swap the byte-order with
 
   gmt xyz2grd floats.bin -Snew_floats.bin -V -Zf
 
-To make a pixel node registrated tiff of the number of data points
+To make a pixel node registered tiff of the number of data points
 that is assigned to each node in a cartesian data set, use
 
 ::

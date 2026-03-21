@@ -46,6 +46,7 @@ Synopsis
 [ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-tv| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -359,6 +360,8 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
+.. include:: explain_-tv_full.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -484,7 +487,7 @@ if your original point spacing is large, you may wish to first interpolate such 
 great circles via :doc:`sample1d` rather than subject large gaps to linear interpolation.
 **Note**: If **-Ar**\ *dpu* is used to discretize the line, then be aware that the resampling
 is affected by the current spline interpolator, controlled by :term:`GMT_INTERPOLANT`. To avoid
-any departures from straigh line segments you will need to select a linear interpolant.
+any departures from straight line segments you will need to select a linear interpolant.
 
 .. module_common_ends
 

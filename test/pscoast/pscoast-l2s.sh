@@ -39,8 +39,8 @@ gmt $m $l2s --land=#00fafa >> $b
 gmt $m $l2s --rivers=0/0.3p,red >> $b
 gmt $m $l2s --zaxis=scale:20 --zaxis=width:8 >> $b
 gmt $m $l2s --mapscale=mapcoords:1/-0.5+length:7n --mapscale=inside:6+align:l >> $b
-gmt $m $l2s --mapscale=outside:4/2+loc:3/4+fancy --mapscale=outside:40+janchor:LT >> $b
-gmt $m $l2s --mapscale=boxcoords:0/0+label:MyLbl --mapscale=boxcoords:10/1+anchoroffset:1/2 >> $b
+gmt $m $l2s --mapscale=outside:4/2+loc:3/4+fancy --mapscale=outside:40+anchor:LT >> $b
+gmt $m $l2s --mapscale=boxcoords:0/0+label:MyLbl --mapscale=boxcoords:10/1+offset:1/2 >> $b
 gmt $m $l2s --mapscale=plotcoords:5/5+units --mapscale=plotcoords:2+vertical >> $b
 gmt $m $l2s --dump >> $b
 #gmt $m $l2s --borders=national:3p,red --borders=state:1p,yellow >> $b

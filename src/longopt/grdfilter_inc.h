@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	GMT_G_OUTGRID_KW,
 	GMT_I_INCREMENT_KW,
 	{ 0, 'N', "nans",
-	          "i,p,r",             "ignore,coregnan,anynan",
+	          "i,p,r",             "ignore,preserve,replace",
 	          "",                  "",
 		  GMT_TP_STANDARD },
 	{ 0, 'T', "toggle_registration|toggle",         "", "", "", "", GMT_TP_STANDARD },

@@ -1,5 +1,6 @@
 outs:
-- md5: 9b43a20da87f87f52574a2276b1231f8.dir
-  nfiles: 5
+- md5: 2333b3a57c35d4dba11ffb1d01dd7fa4.dir
+  nfiles: 6
   path: psimage
   hash: md5
+  size: 1096404

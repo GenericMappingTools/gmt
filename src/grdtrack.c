@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -389,18 +389,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 					break;
 				}
-				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
+				if ((c = strstr(opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
 					char file[PATH_MAX] = {""};
 					struct GMT_DATASET *L = NULL;
 					struct GMT_DATASEGMENT *S = NULL;
 					uint64_t row;
 					if (c[2] == '\0') {	/* No list file given */
-						GMT_Report (API, GMT_MSG_ERROR, "Option -G: No listfile appended after modifier +l\n");
+						GMT_Report(API, GMT_MSG_ERROR, "Option -G: No listfile appended after modifier +l\n");
 						n_errors++;
 						break;
 					}
-					if ((L = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
-						GMT_Report (API, GMT_MSG_WARNING, "Error reading list file %s\n", &c[2]);
+					if ((L = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
+						GMT_Report(API, GMT_MSG_WARNING, "Error reading list file %s\n", &c[2]);
+						n_errors++;
+						break;
+					}
+					if (L->table[0]->n_segments == 0) {
+						GMT_Report(API, GMT_MSG_WARNING, "The list file, %s, must have at least one numeric column before the grid names.\n", &c[2]);
 						n_errors++;
 						break;
 					}
@@ -815,6 +820,16 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize the distance unit and scaling */
 			Return (GMT_NOT_A_VALID_TYPE);
+			
+		/* !!! TEMPORARY METHOD !!! */
+		/* Currently we cannot use different units in -C and -E, we have to prevent this bug first. See PR #8728 */
+		/* Check whether -C and -E use different unit */
+		if (Ctrl->C.active && Ctrl->C.unit != Ctrl->E.unit){
+			GMT_Report (API, GMT_MSG_ERROR, 
+				"Sorry but due to a current limitation options -C and -E are required to have the same unit, "
+				"but received %c (-C) and %c (-E). You must explicitly set the same unit for -C and -E.\n", Ctrl->C.unit, Ctrl->E.unit);
+			Return (GMT_RUNTIME_ERROR);
+		}
 
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
@@ -1010,9 +1025,10 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 						M->data[2+k*n_step][row] = stacked_dev[k];	/* The stacked deviation */
 						M->data[3+k*n_step][row] = stacked_lo[k];	/* The stacked low value */
 						M->data[4+k*n_step][row] = stacked_hi[k];	/* The stacked high value */
-						if (Ctrl->S.mode >= STACK_LOWER) continue;
-						M->data[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
-						M->data[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						if (Ctrl->S.mode < STACK_LOWER) {
+							M->data[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+							M->data[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
+						} 
 						if (n_added_cols == 0) continue;	/* No modification to profile outputs requested */
 						for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to append to */
 							col_s = colx;	/* Start over at this column */

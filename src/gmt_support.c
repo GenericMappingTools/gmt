@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -11348,8 +11348,8 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 
-	if (strstr (args, "+c")) continuous = true;	/* Want to add distances to the output */
-	if (strstr (args, "+d")) get_distances = true;	/* Want to join abutting profiles */
+	if (strstr (args, "+c")) continuous = true;	/* Want to join abutting profiles */
+	if (strstr (args, "+d")) get_distances = true;	/* Want to add distances to the output */
 	if (strstr (args, "+g")) gridline_units = true;	/* Want degree longitudes or latitudes along a gridline */
 	if (strstr (args, "+p")) parallel = true;	/* Want to sample along a parallel */
 	if (strstr (args, "+x")) GMT->current.map.loxodrome = true;	/* Want to sample along a rhumbline */
@@ -11543,8 +11543,10 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			else {	/* Copy over but avoid repeating the joint */
 				gmt_M_memcpy (&(prev_S->data[GMT_X][start]), &(S->data[GMT_X][1]), add, double);
 				gmt_M_memcpy (&(prev_S->data[GMT_Y][start]), &(S->data[GMT_Y][1]), add, double);
-				gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
-				for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
+				if(get_distances){
+					gmt_M_memcpy (&(prev_S->data[GMT_Z][start]), &(S->data[GMT_Z][1]), add, double);
+					for (rec = start; rec < prev_S->n_rows; rec++) prev_S->data[GMT_Z][rec] += prev_S->data[GMT_Z][start-1];
+				}
 				gmt_free_segment (GMT, &S);	/* Done with this guy */
 				S = prev_S;
 			}
@@ -14916,7 +14918,7 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
 	sincosdegree (angle, &s, &c);
 	xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
-	yy = (1 - (just/4)) * dy * f;	/* Smart shift in x */
+	yy = (1 - (just/4)) * dy * f;	/* Smart shift in y */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
 	*y_shift += s * xx + c * yy;
 }
@@ -17350,6 +17352,11 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			}
 		}
 		justify = gmt_just_decode (GMT, txt_x, PSL_MC);
+		if (justify == PSL_BAD_VALUE) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Invalid justification code %s after %c\n", option, txt_x, arg[0]);
+			gmt_M_str_free (arg);
+			return NULL;
+		}
 	}
 	else {	/* Must worry about leading + signs in the numbers that might confuse us w.r.t. modifiers */
 		/* E.g., -Dg123.3/+19+jTL we don't want to trip up on +19 as modifier! */

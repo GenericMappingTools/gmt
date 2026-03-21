@@ -1,0 +1,123 @@
+# Geological time scale categorical color scheme
+#
+# TIMESCALE:  GTS2012 (Gradstein et al. ,2012)
+#
+# Christian Heine, mailto:chhei@paleoearthlabs.org
+#
+# LICENSE:
+# This work is licensed under a
+# Creative Commons Attribution-ShareAlike 3.0 Unported License
+# See http://creativecommons.org/licenses/by-sa/3.0/deed.en_US for
+# the license terms.
+#
+# TODO Extend back to Archean
+# TODO Error margins? Does this require a new cpt?
+#-----------------------------------------------------------------------------
+# COLOR_MODEL = RGB
+#
+# Phanerozoic
+# Cenozoic
+# Quarternary
+0.0		254/242/236	 0.0117	254/242/236	; Holocene
+0.0117	255/255/115	 0.126	255/255/115	; Upper Pleistocene
+0.126	255/242/211	 0.781	255/242/211	; Middle Pleistocene
+0.781	255/242/199	 1.806	255/242/199	; Calabrian
+1.806	255/242/186	 2.588	255/242/186	; Gelasian
+# Neogene
+# Pliocene
+2.588	255/237/179	 3.600	255/237/179	; Piacenzian
+3.600	255/255/191	 5.333	255/255/191	; Zanclean
+# Miocene
+5.333	255/255/179	 7.246	255/255/179	; Messinian
+7.246	255/255/102	 11.621	255/255/102	; Tortonian
+11.621	255/255/89	 13.821	255/255/89	; Serravallian
+13.821	255/255/77	 15.97	255/255/77	; Langhian
+15.97	255/255/65	 20.44	255/255/65	; Burdigalian
+20.44	255/255/51	 23.03	255/255/51	; Aquitanian
+# Oligocene
+23.03	254/230/170	 28.1	254/230/170	; Chattian
+28.1	254/217/154	 33.9	254/217/154	; Rupelian
+# Eocene
+33.9	253/205/161	 38.0	253/205/161	; Priabonian
+38.0	252/167/115	 41.3	252/167/115	; Bartonian
+41.3	253/191/111	 47.8	253/191/111	; Lutetian
+47.8	254/191/101	 56.0	254/191/101	; Ypresian
+# Paleocene
+56.0	253/192/145	 59.2	253/192/145	; Thanetian
+59.2	252/180/130	 61.6	252/180/130	; Selandian
+61.6	253/180/98	 66.0	253/180/98	; Danian
+# 66.0	103	197	202	; Mesozoic
+# 66.0	127	198	78	; Cretaceous
+# 66.0	166	216	74	; Upper Cretaceous
+66.0	242/250/140	72.1	242/250/140	; Maastrichtian
+72.1	230/244/127	83.6	230/244/127	; Campanian
+83.6	217/239/116	86.3	217/239/116	; Santonian
+86.3	204/233/104	89.8	204/233/104	; Coniacian
+89.8	191/227/93	93.9	191/227/93	; Turonian
+93.9	179/222/83	100.5	179/222/83	; Cenomanian
+# 100.5	140	205	87	; Lower Cretaceous
+100.5	204/234/151	113.0	204/234/151	; Albian
+113.0 	191/228/138	125.0	191/228/138	; Aptian
+125.0	179/223/127	129.4	179/223/127	; Barremian
+129.4	166/217/117	132.9	166/217/117	; Hauterivian
+132.9	153/211/106	139.8	153/211/106	; Valangian
+139.8 	140/205/96	145.0 	140/205/96	; Berriasian
+# 145.0	52	178	201	;Jurassic
+# 145.0	179	227	238 	; Upper Jurassic
+145.0	217/241/247	152.1	217/241/247	; Tithonian
+152.1	204/236/244	157.3	204/236/244	; Kimmeridgian
+157.3	191/231/241	163.5	191/231/241	; Oxfordian
+# 163.5	128	207	216	; Middle Jurassic
+163.5	191/231/229	166.1	191/231/229	; Callovian
+166.1	179/226/227	168.3	179/226/227	; Bathonian
+168.3	166/221/224	170.3	166/221/224	; Bajocian
+170.3	154/217/221	174.1	154/217/221	; Aalenian
+# 66/174/208 ; Lower Jurassic
+174.1	153/206/227	182.7	153/206/227	; Toarcian
+182.7	128/197/221	190.8	128/197/221	; Pliensbachian
+190.8	103/188/216	199.3	103/188/216	; Sinemurian
+199.3	78/179/211	201.3	78/179/211	; Hettangian
+# ; Triassic
+# 189/140/195 ; Upper Triassic
+201.3	227/185/219	208.5	227/185/219	; Rhaetian
+208.5	214/170/211	228.0	214/170/211	; Norian
+228.0	201/155/203	235.0	201/155/203	; Carnian
+# 177/104/177  ; Middle Triassic
+235.0	201/131/191	242.0	201/131/191	; Ladinian
+242.0	188/117/183	247.2	188/117/183	; Anisian
+# 247.2 152/57/153 251.2	152/57/153 ; Lower Triassic
+247.2	176/81/165	251.2	176/81/165	; Olenekian
+251.2	164/70/159	252.2	164/70/159	; Induan
+# 240/64/40 ; Permian
+# 251/167/148 ; Lopingian
+252.2   252/192/178 254.2   252/192/178 ; Changhsingian
+254.2   252/180/162 259.9   252/180/162 ; Wuchiapingian
+# 251/116/92 ; Guadalupian
+259.9   251/154/133 265.1   251/154/133 ; Capitanian
+265.1   251/141/118 268.8   251/141/118 ; Wordian
+268.8   251/128/105 272.3   251/128/105 ; Roadian
+# 239/88/69 ; Cisuralian
+272.3   227/135/118 279.3   227/135/118 ; Kungurian
+279.3   227/123/104 290.1   227/123/104 ; Artinskian
+290.1   227/111/92  295.5   227/111/92  ; Sakmarian
+295.5   227/99/80   298.9   227/99/80   ; Asselian
+# 103/165/153 ; Carboniferous
+# 153/194/181 ; Pennsylvanian
+# 191/208/186 ; Upper Pensylvanian
+# 204/212/199 298.9 Gzhelian
+# 191/208/197 303.7 Kasimovian
+# Middle Pensylvanian 166/199/183
+# 179/203/185 307.0 Moscovian
+# Lower Pensylvanian
+# 315.2
+# 153/194/181 323.2 Bashkirian
+# Mississippian   103/143/102
+#     Upper Mississippian 179/190/108
+# 191/194/107 330.9 Serpukhovia
+# Middle Mississippian    153/180/108
+# 166/185/108 346.7 Visean
+# Lower Mississippian
+# 140/176/108 358.9 Tournaisian
+
+B	black
+F	white

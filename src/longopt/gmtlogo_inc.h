@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          short_modifiers,     long_modifiers,
 		  transproc_mask */
 	{ 0, 'D', "position",
-	          "g,j,J,n,x",         "user|map,justify,mirror,normalize,plot",
-	          "w,h,j,o",           "width,height,justify,offset",
+	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
+	          "w,h,j,o",           "width,height,anchor,offset",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "border|box",
 	          "",                  "",

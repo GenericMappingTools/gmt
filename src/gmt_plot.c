@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -850,7 +850,7 @@ GMT_LOCAL void gmtplot_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < ny; i++) {
-		if (gmt_M_y_is_lat (GMT, GMT_IN))
+		if (gmt_M_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)
 			gmtplot_map_latline (GMT, PSL, y[i], w, e);
 		else {
 			gmt_geo_to_xy (GMT, w, y[i], &x1, &y1);
@@ -3029,7 +3029,8 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	if ((way = gmtlib_adjust_we_if_central_lon_set (GMT, &w, &e)))
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "W/E boundaries shifted by %d\n", way * 360);
 
-	PSL_comment (PSL, "Start of map frame\n");
+	if (!PSL->internal.comments) PSL_command(PSL, "\n%%Start of map frame\n");
+	PSL_comment(PSL, "Start of map frame\n");
 
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
@@ -3088,8 +3089,13 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 		case GMT_VANGRINTEN:
 			gmtplot_basic_map_boundary (GMT, PSL, w, e, s, n);
 			break;
+		case GMT_PROJ4_SPILHAUS:
+			gmtplot_linear_map_boundary(GMT, PSL, w, e, s, n);
+			break;
 	}
-	PSL_comment (PSL, "End of map frame\n");
+
+	PSL_comment(PSL, "End of map frame\n");
+	if (!PSL->internal.comments) PSL_command(PSL, "\n%%End of map frame\n");
 }
 
 /* gmt_map_basemap will create a basemap for the given area.
@@ -8307,7 +8313,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos, char *e
 			//strcat(opt_J, "0/");
 	}
 
-	else	/* We don't return yet because we may have a +width/+scale to parse */
+	else 	/* We don't return yet because we may have a +width/+scale to parse */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "This projection '%s' is not natively supported in GMT\n", prjcode);
 
 #if 0
@@ -8989,7 +8995,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Running in PS mode %s\n", ps_mode[GMT->current.setting.run_mode]);
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
-		bool wants_PS;
+		bool wants_PS = false;
 		double paper_margin = GMT_PAPER_MARGIN_AUTO;
 
 		if (gmtlib_fixed_paper_size (GMT->parent)) {	/* Must honor paper size and regular margin */
@@ -9008,9 +9014,15 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			GMT->parent->error = GMT_ERROR_ON_FOPEN;
 			return NULL;
 		}
-		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
+
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
+		/* Next line would let modern mode use "auto" paper size (the 11 m wall-size) to correctly crop also a PS
+		   file (currently it sets the A4 size as default), but that breaks all modern mode tests. It also terribly
+		   slows down the tests when the -! option is built in to be the default (The /DPS_NO_DUP) */
+		//if (!auto_media) wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output AND set paper size. */
+
+		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		if (wants_PS && !O_active) {	/* Requesting a new PostScript file in modern mode */
 			if (auto_media) {	/* Cannot use "auto" if requesting a PostScript file */
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "You should specify a paper size when requesting a PostScript file.\n");
@@ -10702,7 +10714,11 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
 		struct stat buf;
 		int *fd = source;
-		if (fstat (*fd, &buf)) {
+#ifdef _WIN64									/* In lack of a clever solution, this is a hack for issue 8825 */
+		if (_fstat64(*fd, &buf)) {
+#else
+		if (fstat(*fd, &buf)) {
+#endif
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
 			return (NULL);
 		}

@@ -18,6 +18,7 @@ Synopsis
 [ |-D|\ *refpoint* ]
 [ |-F|\ *panel* ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
+[ |-H| ]
 [ |-I|\ [*max\_intens*\|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
@@ -54,8 +55,8 @@ widths. The font used for the annotations along the scale is specified by
 bar is controlled by :term:`FONT_ANNOT_SECONDARY`. If a label along the bar is requested, it is plotted with
 :term:`FONT_LABEL`. But mind you that the modern mode theme scales down the size of annotations and labels
 based on the colorbar length for improved legibility. So, in modern mode scripts it might look that these
-parameter settings are not working correctly. If you may want to increase font sizes to compensate the
-scaling effect the solution is to use the online ``--FONT_ANNOT_PRIMARY=...`` construct.
+parameter settings are not working correctly. If you want to have full control on font sizes and overcome
+the auto-scaling, use option |-H|.
 For a full overview of CPTs, see the Technical Reference section on :ref:`Color palette tables <CPT_section>`.
 
 .. figure:: /_images/GMT_colorbar.*
@@ -161,6 +162,12 @@ Optional Arguments
     are to *zlo* and *zhi*.  If one of these equal NaN then
     we leave that end of the CPT alone.  The truncation takes place
     before the plotting.
+
+.. _-H:
+
+**-H**
+    From GMT 6.5 on, colorbar annotation fonts are auto-scaled. Use this option to prevent that effect
+    and let user set fonts as they wish.
 
 .. _-I:
 

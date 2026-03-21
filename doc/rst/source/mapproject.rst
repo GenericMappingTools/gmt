@@ -14,7 +14,7 @@ Synopsis
 
 **gmt mapproject** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
-[ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
+[ |-A|\ **b**\|\ **f**\|\ **o**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*][**+m**] ]
 [ |-D|\ **c**\|\ **i**\|\ **p** ]
 [ |-E|\ [*datum*] ]
@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
+[ |-W|\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **s**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -81,7 +81,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Ab**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**]
+**-Ab**\|\ **f**\|\ **o**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
     with *lon0/lat0*.  Choose among several directives:
 
@@ -89,11 +89,9 @@ Optional Arguments
     - **f** - Calculate the forward azimuth from the fixed point to each data point.
     - **o** - Get orientations (-90/90) rather than azimuths (0/360).
 
-    Upper case directives **F**, **B** or **O** will convert from
-    geodetic to geocentric latitudes and estimate azimuth of geodesics
-    (assuming the current ellipsoid is not a sphere). **Note**: If no fixed
-    point is given then we compute the azimuth (or back-azimuth) from the
-    previous point.  One modifier is available:
+    Use the **-je** option to compute azimuths on the ellipsoid instead of the sphere.
+    **Note**: If no fixed point is given then we compute the azimuth (or back-azimuth) from the
+    previous point. One modifier is available:
 
     - **+v** - Obtain a *variable* 2nd point (*lon0*/*lat0*) via columns 3-4
       in the input file.
@@ -248,7 +246,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
+**-W**\ [**b**\|\ **B**\|\ **e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **m**\|\ **M**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **s**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Report a variety of plot dimensions or map regions in projected or geographic units.
     No input files are read. With no argument we report the map width and height.
     The chosen unit of reported plot dimensions may be changed via |-D|. For
@@ -272,6 +270,7 @@ Optional Arguments
     - **M** - Same, but returned in |-R| string format returned as trailing text.
     - **r** - Output the rectangular domain that covers an oblique area as defined by |-R| |-J|.
     - **R** - Same, but get the result in |-R| string format returned as trailing text.
+    - **s** - Output the map scale (i_scale) in the form 1:xxxxxx.
     - **w** - Only output the width of the map in current plot units.
     - **x** - Output the map coordinates of the specific plot reference point *px*/*py*.
 

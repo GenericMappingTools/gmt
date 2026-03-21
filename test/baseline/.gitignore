@@ -55,7 +55,6 @@
 /pscontour
 /psclip
 /project
-/postscriptlight
 /ogr
 /nearneighbor
 /movie
@@ -91,3 +90,4 @@
 /fitcircle
 /filter1d
 /windbarbs
+/postscriptlight

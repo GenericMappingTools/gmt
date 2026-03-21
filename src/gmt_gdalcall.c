@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2025 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2026 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -184,7 +184,7 @@ GMT_LOCAL int save_grid_with_GMT(struct GMT_CTRL *GMT, GDALDatasetH hDstDS, stru
 	GDALRasterBandH	hBand;
 
 	hBand = GDALGetRasterBand(hDstDS, 1);
-	nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
+	nPixelSize = GDALGetDataTypeSizeBytes(GDALGetRasterDataType(hBand));
 	nXSize = GDALGetRasterXSize(hDstDS);
 	nYSize = GDALGetRasterYSize(hDstDS);
 

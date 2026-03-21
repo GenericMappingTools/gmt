@@ -54,13 +54,13 @@ jobs:
           - name: Linux
             os: ubuntu-latest
           - name: macOS
-            os: macos-13 # macos-14 use M1 chips, which causes many failures
+            os: macos-15-intel # macos-14 use M1 chips, which causes many failures
           - name: Windows
             os: windows-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
 
       - name: Setup vcpkg (Windows)
         run: gh run download -n vcpkg-cache -D C:/vcpkg/installed/
@@ -122,7 +122,21 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Pull baseline image data from dvc remote
-        run: dvc pull --no-run-cache
+        id: dvc-pull
+        continue-on-error: true
+        run: |
+          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+          dvc pull --remote origin --no-run-cache
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+      - name: Download DVC cache from GitHub Artifacts and restore baseline image data
+        if: steps.dvc-pull.outcome == 'failure'
+        run: |
+          gh run download -n dvc-cache -D .dvc/cache/
+          dvc checkout --force
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Install GMT
         run: |
@@ -166,14 +180,14 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Upload build directory if failed
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: BuildDirectory-${{ runner.os }}
           path: build/
         if: failure()
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5.4.0
+        uses: codecov/codecov-action@v5.5.2
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
