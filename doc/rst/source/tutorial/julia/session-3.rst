@@ -26,9 +26,9 @@ The file contains bathymetry for the Bermuda region and has depth values from -5
 
 As with previous plot commands we need to set up the map projection with **proj**. Here, however, we do not have
 to specify the region since that is by default assumed to be the extent of the grid file. To generate any plot we
-will in addition need to supply information about which contours to draw. Unfortunately,
-`grdcontour <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdcontour>`_ is a complicated module with too
-many options. We put a positive spin on this situation by touting its flexibility. Here are the most useful options:
+will in addition need to supply information about which contours to draw. Unfortunately, :doc:`/grdcontour` is a 
+complicated module with too many options. We put a positive spin on this situation by touting its flexibility.
+Here are the most useful options:
 
   +-----------------------------------------------------------------+----------------------------------------------------------------------+
   | Option                                                          |  Purpose                                                             |
@@ -201,9 +201,7 @@ Preprocessing
 
 The :doc:`/surface` module assumes that the data have been preprocessed to eliminate aliasing,
 hence we must ensure that this step is completed prior to gridding. GMT comes with three preprocessors, called
-`blockmean <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/blockmean>`_,
-`blockmedian <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/blockmedian/>`_, and
-`blockmode <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/blockmode/>`_. The first averages values inside the
+:doc:`/blockmean`, :doc:`/blockmedian`, and :doc:`/blockmode`. The first averages values inside the
 grid-spacing boxes, the second returns median values, wile the latter returns modal values. As a rule of thumb,
 we use means for most smooth data (such as potential fields) and medians (or modes) for rough, non-Gaussian data
 (such as topography). In addition to the required **region** and **inc** switches, these preprocessors all take
@@ -223,7 +221,7 @@ The output data can now be used with surface::
 
     G = surface(D, region=(245,255,20,30), inc="5m", verbose=true);
 
-If you rerun `grdcontour <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/grdcontour/>`_ on the new grid file
+If you rerun :doc:`/grdcontour` on the new grid file 
 (try it!) you will notice a big difference compared to the grid made by :doc:`/nearneighbor`: since surface is a
 global method it will evaluate the solution at all nodes, even if there are no data constraints. There are numerous
 options available to us at this point:

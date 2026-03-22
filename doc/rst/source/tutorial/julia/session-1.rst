@@ -91,8 +91,7 @@ Laboratory Exercises
 
 We will begin our adventure by making some simple plot axes and coastline basemaps. We will do this in order
 to introduce the all-important common options **frame**, **proj**, and **region** and to familiarize ourselves
-with a few selected GMT projections. The GMT modules we will utilize are :doc:`/basemap` and
-`basemap <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast/>`_.
+with a few selected GMT projections. The GMT modules we will utilize are :doc:`/basemap` and :doc:`/coast`.
 Please consult their manual pages for reference.
 
 Linear projection
@@ -165,8 +164,8 @@ projections offered by GMT; here we will only have time to focus on one such pro
 
 **proj=:merc**
 
-To make coastline maps we use `coast <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast/>`_ which automatically
-will access the GMT coastline, river and border data base derived from the GSHHG database [See *Wessel and Smith*, 1996].
+To make coastline maps we use :doc:`/coast` which automatically will access the GMT coastline, river and border
+data base derived from the GSHHG database [See *Wessel and Smith*, 1996].
 In addition to the common switches we may need to use some of several coast-specific options:
 
 ============== ================================================================================================
