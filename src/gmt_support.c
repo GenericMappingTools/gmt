@@ -10711,7 +10711,15 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 					bad++;
 				break;
 			case 'l':	/* Exact Label specification */
-				strncpy (G->label, &p[1], GMT_BUFSIZ-1);
+				if (p[1] == '"' || p[1] == '\'') {	/* Strip surrounding quotes from label */
+					char q = p[1];
+					L = strlen (&p[2]);
+					if (L > 0 && p[2 + L - 1] == q) L--;	/* Exclude trailing quote */
+					strncpy (G->label, &p[2], MIN(L, GMT_BUFSIZ-1));
+					G->label[MIN(L, GMT_BUFSIZ-1)] = '\0';
+				}
+				else
+					strncpy (G->label, &p[1], GMT_BUFSIZ-1);
 				G->label_type = GMT_LABEL_IS_CONSTANT;
 				break;
 

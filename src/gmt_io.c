@@ -7831,8 +7831,22 @@ bool gmt_parse_segment_item (struct GMT_CTRL *GMT, char *in_string, char *patter
 		sscanf (++t, "%[^\"]", out_string);
 	else if (t[0] == '\'')	/* Single quoted argument, must scan from next character until terminal quote */
 		sscanf (++t, "%[^\']", out_string);
-	else	/* Scan until next white space; stop also when there is leading white space, indicating no argument at all! */
-		sscanf (t, "%[^ \t]", out_string);
+	else {	/* Scan until next unquoted white space; stop also when there is leading white space, indicating no argument at all! */
+		size_t i = 0;
+		bool in_quote = false;
+		char quote_char = 0;
+		while (t[i] && (in_quote || (t[i] != ' ' && t[i] != '\t'))) {
+			if (!in_quote && (t[i] == '"' || t[i] == '\'')) {
+				in_quote = true;
+				quote_char = t[i];
+			}
+			else if (in_quote && t[i] == quote_char)
+				in_quote = false;
+			out_string[i] = t[i];
+			i++;
+		}
+		out_string[i] = '\0';
+	}
 	return (true);
 }
 

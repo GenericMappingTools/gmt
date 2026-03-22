@@ -2784,6 +2784,19 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						else if (S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE || S.symbol == GMT_SYMBOL_FRONT)
 							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
+						else if (s_args[0] == 'q' || s_args[0] == '~' || s_args[0] == 'f') {	/* Create new front, quoted, or decorated line from segment header */
+							if ((error = gmt_parse_symbol_option (GMT, s_args, &S, 0, false))) {
+								Return (error);
+							}
+							if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
+								if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (GMT_RUNTIME_ERROR);
+								penset_OK = false;
+							}
+							else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
+								if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (GMT_RUNTIME_ERROR);
+							}
+							if (change & 1) change -= 1;
+						}
 						else	/* Probably just junk -S in header */
 							GMT_Report (API, GMT_MSG_INFORMATION, "Segment header contained -S%s - ignored\n", s_args);
 					}
