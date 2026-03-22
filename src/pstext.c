@@ -937,7 +937,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 		}
 		if (add) {
-			if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
+			if (Ctrl->D.justify && !(Ctrl->D.justify == 1 && T.block_justify == PSL_MC))	/* Smart offset according to justification (from Dave Huang) */
 				gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify + 2);
 			else {	/* Default hard offset */
 				plot_x += T.x_offset;
@@ -1350,7 +1350,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 			}
 			if (add) {
-				if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
+				if (Ctrl->D.justify && !(Ctrl->D.justify == 1 && T.block_justify == PSL_MC))	/* Smart offset according to justification (from Dave Huang) */
 					gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify + 2);
 				else {	/* Default hard offset */
 					plot_x += T.x_offset;
