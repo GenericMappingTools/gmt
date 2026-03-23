@@ -159,18 +159,17 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl(struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);
-	gmt_M_str_free (C->A.file);
-	gmt_M_str_free (C->C.file);
-	gmt_M_str_free (C->C.savecpt);
-	gmt_M_str_free (C->I.file);
-	gmt_M_str_free (C->I.azimuth);
-	gmt_M_str_free (C->I.ambient);
-	gmt_M_str_free (C->I.method);
-	gmt_M_str_free (C->Out.file);
-	gmt_M_free (GMT, C);
+	gmt_M_str_free(C->In.file);
+	gmt_M_str_free(C->A.file);
+	gmt_M_str_free(C->C.file);
+	gmt_M_str_free(C->I.file);
+	gmt_M_str_free(C->I.azimuth);
+	gmt_M_str_free(C->I.ambient);
+	gmt_M_str_free(C->I.method);
+	gmt_M_str_free(C->Out.file);
+	gmt_M_free(GMT, C);
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
