@@ -91,7 +91,8 @@ Laboratory Exercises
 
 We will begin our adventure by making some simple plot axes and coastline basemaps. We will do this in order
 to introduce the all-important common options **frame**, **proj**, and **region** and to familiarize ourselves
-with a few selected GMT projections. The GMT modules we will utilize are :doc:`/basemap` and
+with a few selected GMT projections. The GMT modules we will utilize are
+`basemap <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/basemap>`_ and
 `coast <https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast>`_.
 Please consult their manual pages for reference.
 
