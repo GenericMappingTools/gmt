@@ -318,7 +318,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 			Ctrl->D.width = 2.0;
 	}
 	else if (Ctrl->D.height > 0.0) {	/* Cannot specify both dimensions since aspect is fixed */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->D.width > 0.0, "Option -D+w|+h modifiers: Cannot set both width and height since aspecf is fixed!\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.width > 0.0, "Option -D+w|+h modifiers: Cannot set both width and height since aspect is fixed!\n");
 	}
 	if (Ctrl->D.refpoint && Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT) {	/* Anything other than -Dx need -R -J; other cases don't */
 		static char *kind = GMT_REFPOINT_CODES;	/* The five types of refpoint specifications */

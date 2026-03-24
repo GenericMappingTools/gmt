@@ -58,7 +58,8 @@ enum GMT_enum_regress {
 	GMTREGRESS_CORR		= 9,
 	GMTREGRESS_MISFTY	= 10,
 	GMTREGRESS_N_EFF	= 11,
-	GMTREGRESS_NPAR		= 12,
+	GMTREGRESS_PVALUE	= 12,
+	GMTREGRESS_NPAR		= 13,
 	GMTREGRESS_NPAR_MAIN	= 4,
 	GMTREGRESS_OUTPUT_GOOD  = 1,
 	GMTREGRESS_OUTPUT_BAD   = 2};
@@ -180,7 +181,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: Cannot use y|r|z|w with -T. With -T, x means locations implied by -T "
 		"Default is %s].", GMTREGRESS_FARGS);
 	GMT_Usage (API, -2, "Alternatively, choose -Fp to output only the model parameters: "
-		"N meanX meanY angle misfit slope icept sigma_slope sigma_icept r R N_effective");
+		"N meanX meanY angle misfit slope icept sigma_slope sigma_icept r R N_effective p_value");
 	GMT_Usage (API, 1, "\n-N1|2|r|w");
 	GMT_Usage (API, -2, "Append desired misfit norm; choose from:");
 	GMT_Usage (API, 3, "1: L-1 measure (mean absolute residuals).");
@@ -218,7 +219,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse(struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtregress and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -1065,7 +1066,7 @@ GMT_LOCAL bool gmtregress_is_outlier (struct GMTREGRESS_Z *Z, double z) {
 	return (outlier);
 }
 
-GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *range, double *par, unsigned int mode, struct GMTREGRESS_Z *Z) {
+GMT_LOCAL double *gmtregress_do_regression(struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *range, double *par, unsigned int mode, struct GMTREGRESS_Z *Z) {
 	/* Solves for the best regression of (x_in, y_in) given the current settings.
 	 * mode is only 1 when called to do RLS after the initial LMS regression returns. */
 
@@ -1199,6 +1200,73 @@ GMT_LOCAL double * gmtregress_do_regression (struct GMT_CTRL *GMT, double *x_in,
 			if (made[col]) gmt_M_free (GMT, www[col]);
 	}
 	return (z);	/* Return those z-scores, calling unit must free this array when done */
+}
+
+GMT_LOCAL double gmtregress_pvalue (struct GMT_CTRL *GMT, double *par, uint64_t n) {
+	/*
+	* gmtregress_pvalue.c - Compute the p-value for a linear regression.
+	*
+	* The p-value tests the null hypothesis that the slope is zero (no linear
+	* relationship).  It is computed from the t-statistic derived from R^2:
+	*
+	*   t = sqrt(R^2 * (n - 2) / (1 - R^2))
+	*   p = 2 * P(T <= -|t|)   (two-tailed test)
+	*
+	* where n is the number of data points and R^2 is the coefficient of
+	* determination (par[GMTREGRESS_R] in gmtregress).
+	*
+	* The CDF of Student's t-distribution is already available in GMT as
+	* gmt_t_cdf() declared in gmt_prototypes.h and defined in gmt_stat.c.
+	*
+	* This logic is adapted from the tpvalue() function in trend1d_m.c (in Mirone),
+	* which itself was inspired on MATLAB's corrcoef function.
+	*
+	* Author:	Joaquim Luis, but reworked cleanly by Claude
+	* Date:	MAR-2026
+
+	 * par[GMTREGRESS_R] = coefficient of determination R^2 (called R in gmtregress).
+	 * n = number of data points.
+	 *
+	 * Returns the p-value, or NaN if it cannot be computed.
+	 */
+
+	uint64_t df;
+	double R2, t_stat, p_value;
+
+	if (n <= 2) {	/* Not enough degrees of freedom */
+		GMT_Report(GMT->parent, GMT_MSG_WARNING, "gmtregress_pvalue: n <= 2, cannot compute p-value.\n");
+		return GMT->session.d_NaN;
+	}
+
+	R2 = par[GMTREGRESS_R];	/* Coefficient of determination */
+	df = n - 2;			/* Degrees of freedom */
+
+	if (gmt_M_is_dnan(R2)) {	/* R^2 not available */
+		GMT_Report(GMT->parent, GMT_MSG_WARNING, "gmtregress_pvalue: R^2 is NaN, cannot compute p-value.\n");
+		return GMT->session.d_NaN;
+	}
+
+	if (R2 < 0.0) R2 = 0.0;	/* Clamp: can happen with certain regression types */
+	if (R2 >= 1.0)			/* Perfect fit => p-value is 0 */
+		return (0.0);
+
+	/* Compute the t-statistic: t = sqrt(R^2 * (n-2) / (1 - R^2)) */
+	t_stat = sqrt(R2 * (double)df / (1.0 - R2));
+
+	/* Two-tailed p-value: p = 2 * P(T <= -|t|) = 2 * (1 - P(T <= |t|))
+	 * gmt_t_cdf(GMT, t, nu) returns CDF = P(T <= t), so for positive t_stat:
+	 *   P(T <= -t_stat) = 1 - P(T <= t_stat) = 1 - gmt_t_cdf(GMT, t_stat, df)
+	 * and the two-tailed p-value = 2 * (1 - gmt_t_cdf(GMT, t_stat, df))
+	 */
+	p_value = 2.0 * (1.0 - gmt_t_cdf(GMT, t_stat, df));
+
+	/* Clamp to [0, 1] to guard against floating-point noise */
+	if (p_value < 0.0)
+		p_value = 0.0;
+	else if (p_value > 1.0)
+		p_value = 1.0;
+
+	return p_value;
 }
 
 /* Must free allocated memory before returning */
@@ -1379,6 +1447,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 			else {	/* Here we are solving for the best regression */
 				bool outlier = false;
 				double *z_score = gmtregress_do_regression (GMT, S->data[GMT_X], S->data[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, range, par, 0, &Ctrl->Z);	/* The heavy work happens here */
+				par[GMTREGRESS_PVALUE] = gmtregress_pvalue (GMT, par, S->n_rows);	/* Compute p-value from R^2 */
 				if (Ctrl->F.param) {	/* Just print the model parameters */
 					out[0] = (double)S->n_rows;
 					out[1] = par[GMTREGRESS_XMEAN];
@@ -1392,18 +1461,19 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 					out[9] = par[GMTREGRESS_CORR];
 					out[10] = par[GMTREGRESS_R];	/* Only defined if we are doing regression on y */
 					out[11] = par[GMTREGRESS_N_EFF];
-					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
+					out[12] = gmtregress_pvalue(GMT, par, S->n_rows);	/* p-value of the regression */
+					GMT_Put_Record(API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 				}
 				else {
 					/* Make segment header with the findings for best regression */
 					if (Ctrl->E.mode == GMTREGRESS_Y)	/* Can include Pearsonian correlation and R */
-						snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g N_eff: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
-							par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R], par[GMTREGRESS_N_EFF]);
+						snprintf(buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g N_eff: %g p_value: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+							par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R], par[GMTREGRESS_N_EFF], par[GMTREGRESS_PVALUE]);
 					else
-							snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g N_eff: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
-						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_N_EFF]);
-					GMT_Report (API, GMT_MSG_INFORMATION, "%s\n", buffer);	/* Report results if verbose */
-					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
+							snprintf(buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g N_eff: %g p_value: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_N_EFF], par[GMTREGRESS_PVALUE]);
+					GMT_Report(API, GMT_MSG_INFORMATION, "%s\n", buffer);	/* Report results if verbose */
+					GMT_Put_Record(API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
 
 					if (Ctrl->F.band)	/* For confidence band we need the student-T scale given the significance level and degrees of freedom */
 						t_scale = fabs (gmt_tcrit (GMT, 0.5 * (1.0 - Ctrl->C.value), S->n_rows - 2.0));

@@ -57,7 +57,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       - name: Setup vcpkg (Windows)
         run: gh run download -n vcpkg-cache -D C:/vcpkg/installed/
@@ -82,11 +82,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Pull baseline image data from dvc remote
+        id: dvc-pull
+        continue-on-error: true
         run: |
           dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-          dvc pull --no-run-cache
+          dvc pull --remote origin --no-run-cache
         env:
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+      - name: Download DVC cache from GitHub Artifacts and restore baseline image data
+        if: steps.dvc-pull.outcome == 'failure'
+        run: |
+          gh run download -n dvc-cache -D .dvc/cache/
+          dvc checkout --force
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Configure GMT
         run: |
@@ -138,7 +148,7 @@ jobs:
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Checkout the gh-pages branch in a separate folder
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           ref: gh-pages
           # Checkout to this folder instead of the current one

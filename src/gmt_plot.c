@@ -850,7 +850,7 @@ GMT_LOCAL void gmtplot_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	double x1, y1, x2, y2;
 
 	for (i = 0; i < ny; i++) {
-		if (gmt_M_y_is_lat (GMT, GMT_IN))
+		if (gmt_M_y_is_lat (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)
 			gmtplot_map_latline (GMT, PSL, y[i], w, e);
 		else {
 			gmt_geo_to_xy (GMT, w, y[i], &x1, &y1);

@@ -5217,8 +5217,9 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 		if (!fd) {	/* No, was not a netCDF file */
 			if ((c = gmt_getdatapath (GMT, &filename[first], path, R_OK)) != NULL) {	/* Got the file path */
 				char *ext = gmt_get_ext (c);	/* Get pointer to extension (or NULL if no extension) */
-				if (ext && mode[0] == 'r' && !strncmp (ext, "shp", 3U)) {	/* Got a shapefile for reading */
-					/* We will do a system call to ogr2ogr in order to read the shapefile */
+				if (ext && mode[0] == 'r' && (!strncasecmp (ext, "shp", 3U) || !strncasecmp(ext, "geojson", 7U) || !strncasecmp(ext, "json", 4U) )) {
+					/* Got a shapefile or geojson file for reading */
+					/* We will do a system call to ogr2ogr to convert it to OGR_GMT format */
 					char cmd[GMT_BUFSIZ+GMT_LEN256] = {""};
 					int error = 0;
 					if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
@@ -7831,8 +7832,22 @@ bool gmt_parse_segment_item (struct GMT_CTRL *GMT, char *in_string, char *patter
 		sscanf (++t, "%[^\"]", out_string);
 	else if (t[0] == '\'')	/* Single quoted argument, must scan from next character until terminal quote */
 		sscanf (++t, "%[^\']", out_string);
-	else	/* Scan until next white space; stop also when there is leading white space, indicating no argument at all! */
-		sscanf (t, "%[^ \t]", out_string);
+	else {	/* Scan until next unquoted white space; stop also when there is leading white space, indicating no argument at all! */
+		size_t i = 0;
+		bool in_quote = false;
+		char quote_char = 0;
+		while (t[i] && (in_quote || (t[i] != ' ' && t[i] != '\t'))) {
+			if (!in_quote && (t[i] == '"' || t[i] == '\'')) {
+				in_quote = true;
+				quote_char = t[i];
+			}
+			else if (in_quote && t[i] == quote_char)
+				in_quote = false;
+			out_string[i] = t[i];
+			i++;
+		}
+		out_string[i] = '\0';
+	}
 	return (true);
 }
 

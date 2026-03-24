@@ -176,7 +176,7 @@ Data Files
 ----------
 
 The data files read by gshhg are the native binary polygon files,
-available from `NCEI Shoreline Coastline Resources <https://www.ngdc.noaa.gov/mgg/shorelines/>`_ or
+available from `NCEI Shoreline Coastline Resources <https://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html>`_ or
 the `SOEST GSHHG Site <https://www.soest.hawaii.edu/pwessel/gshhg>`_. Note that these
 are different from the netCDF-formatted files used by GMT in the
 modules :doc:`gmtselect </gmtselect>`, :doc:`grdlandmask </grdlandmask>`,

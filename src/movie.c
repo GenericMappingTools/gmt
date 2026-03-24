@@ -2430,7 +2430,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		gmt_set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
 		if (Ctrl->In.mode == GMT_DOS_MODE)
 			gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
-		fprintf (fp, "%s %s.%s %s\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, Ctrl->M.format, topdir);	/* Move master plot up to top dir */
+		{	/* File extension is always lowercase per psconvert */
+			char format_lc[GMT_LEN32] = {""};
+			strncpy (format_lc, Ctrl->M.format, GMT_LEN32-1);
+			gmt_str_tolower (format_lc);
+			fprintf (fp, "%s %s.%s %s\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, format_lc, topdir);	/* Move master plot up to top dir */
+		}
 		if (Ctrl->In.mode == GMT_DOS_MODE)
 			gmt_strrepc (topdir, '\\', '/');	/* Revert */
 		fprintf (fp, "cd ..\n");	/* cd up to workdir */
@@ -2457,7 +2462,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
 		if (Ctrl->M.view) {	/* Play the movie master frame via gmt docs */
-			snprintf (cmd, PATH_MAX, "%s/%s.%s", topdir, Ctrl->N.prefix, Ctrl->M.format);
+			char format_lc[GMT_LEN32] = {""};
+			strncpy (format_lc, Ctrl->M.format, GMT_LEN32-1);
+			gmt_str_tolower (format_lc);
+			snprintf (cmd, PATH_MAX, "%s/%s.%s", topdir, Ctrl->N.prefix, format_lc);
 			gmt_filename_set (cmd);	/* Protect filename spaces by substitution */
 			if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to call docs\n");

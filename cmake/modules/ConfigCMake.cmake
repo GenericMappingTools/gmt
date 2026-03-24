@@ -231,6 +231,13 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 	set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT SUPPORT_EXEC_IN_BINARY_DIR)
 
+# Tests should use the static data server by default unless the user explicitly set
+# GMT_DATA_SERVER to something else.
+if (DO_TESTS AND GMT_DATA_SERVER STREQUAL "oceania")
+	message (STATUS "Setting GMT_DATA_SERVER to 'static' for tests")
+	set (GMT_DATA_SERVER "static")
+endif (DO_TESTS AND GMT_DATA_SERVER STREQUAL "oceania")
+
 # Some tests are known to fail, and can be excluded from the test by adding
 # the comment "# GMT_KNOWN_FAILURE".
 if (NOT DEFINED GMT_ENABLE_KNOWN2FAIL)

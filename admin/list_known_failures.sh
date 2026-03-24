@@ -8,7 +8,7 @@ if [ ! -d cmake ]; then
     exit 1
 fi
 
-known_failures=$(grep -rl "GMT_KNOWN_FAILURE" test/**/*.sh doc/**/*.sh)
+known_failures=$(grep -rl --include='*.sh' 'GMT_KNOWN_FAILURE' test doc)
 if [ -n "$known_failures" ]; then
     echo "The following tests are marked as GMT_KNOWN_FAILURE and need review:"
     echo ""

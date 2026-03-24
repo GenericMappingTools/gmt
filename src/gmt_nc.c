@@ -913,6 +913,22 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		gmt_M_free (GMT, xy);	/* Done with the array */
 
+		/* This bit is a hack to deal with extremly annoying fact that NASA MODIS grids keep having wrong coordinates.
+		   The difference are minute, probably originated from a flot64/float32 roundoff shit, but the fact is that their
+		   coordinates are wrong and the difference overflows the [-90 90] lat interval and as a consequece projections
+		   breake because they fail sanity checks. See issue https://github.com/GenericMappingTools/gmt/issues/8930
+		*/
+		if ((fabs(header->wesn[YHI] - header->wesn[YLO] - 180) < header->inc[GMT_Y] * 1e-2) &&
+		    (fabs(header->wesn[XHI] - header->wesn[XLO] - 360) < header->inc[GMT_X] * 1e-2) &&
+		    (fabs(header->wesn[YHI] - 90.0) < header->inc[GMT_Y] * 1e-4 || fabs(90.0 - header->wesn[YLO]) < header->inc[GMT_Y] * 1e-4)) {
+			header->wesn[YLO] = -90.0, header->wesn[YHI] = 90.0;
+			/* If any case of this happens to not fall into the [-180 180] or [0 360] range, the shit in longituds will remain. */
+			if (rint(header->wesn[XLO]) == -180.0) {header->wesn[XLO] = -180.0;	header->wesn[XHI] = 180.0;}
+			if (rint(header->wesn[XHI]) == 0.0) {header->wesn[XLO] = 0.0;	header->wesn[XHI] = 360.0;}
+			header->inc[GMT_Y] = (header->wesn[YHI] - header->wesn[YLO]) / (header->n_rows - !header->registration);
+			header->inc[GMT_X] = (header->wesn[XHI] - header->wesn[XLO]) / (header->n_columns - !header->registration);
+		}
+
 		/* Get information about z variable */
 		gmtnc_get_units (GMT, ncid, z_id, header->z_units);
 		if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;

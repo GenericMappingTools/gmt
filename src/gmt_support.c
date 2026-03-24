@@ -10711,7 +10711,15 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 					bad++;
 				break;
 			case 'l':	/* Exact Label specification */
-				strncpy (G->label, &p[1], GMT_BUFSIZ-1);
+				if (p[1] == '"' || p[1] == '\'') {	/* Strip surrounding quotes from label */
+					char q = p[1];
+					L = strlen (&p[2]);
+					if (L > 0 && p[2 + L - 1] == q) L--;	/* Exclude trailing quote */
+					strncpy (G->label, &p[2], MIN(L, GMT_BUFSIZ-1));
+					G->label[MIN(L, GMT_BUFSIZ-1)] = '\0';
+				}
+				else
+					strncpy (G->label, &p[1], GMT_BUFSIZ-1);
 				G->label_type = GMT_LABEL_IS_CONSTANT;
 				break;
 
@@ -14918,7 +14926,7 @@ void gmt_smart_justify (struct GMT_CTRL *GMT, int just, double angle, double dx,
 	f = (mode == 2) ? 1.0 / M_SQRT2 : 1.0;
 	sincosdegree (angle, &s, &c);
 	xx = (2 - (just%4)) * dx * f;	/* Smart shift in x */
-	yy = (1 - (just/4)) * dy * f;	/* Smart shift in x */
+	yy = (1 - (just/4)) * dy * f;	/* Smart shift in y */
 	*x_shift += c * xx - s * yy;	/* Must account for angle of label */
 	*y_shift += s * xx + c * yy;
 }
@@ -17352,6 +17360,11 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			}
 		}
 		justify = gmt_just_decode (GMT, txt_x, PSL_MC);
+		if (justify == PSL_BAD_VALUE) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Invalid justification code %s after %c\n", option, txt_x, arg[0]);
+			gmt_M_str_free (arg);
+			return NULL;
+		}
 	}
 	else {	/* Must worry about leading + signs in the numbers that might confuse us w.r.t. modifiers */
 		/* E.g., -Dg123.3/+19+jTL we don't want to trip up on +19 as modifier! */
