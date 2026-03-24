@@ -143,32 +143,47 @@ PSL_pathtextdict begin
 						% same point.
 
 /setchar					% ``setchar'' sets the next
-  { /char str charcount 1 getinterval def	% character in the string along
+						% character in the string along
 						% the path and then updates the
 						% amount of path we have
 						% exhausted.
-    /charcount charcount 1 add def		% Increment the character count.
-    /charwidth char stringwidth pop def		% Find the width of the character.
-    V cpx cpy itransform T			% Translate to the current
+  { charcount 1 add str length lt		% Check if at least 2 chars remain
+    {str charcount get 64 eq str charcount 1 add get 126 eq and} {false} ifelse
+    {	% Found @~ escape: skip it, toggle font, no rendering
+      /charcount charcount 2 add def
+      /psl_ct_sym psl_ct_sym not def
+      psl_ct_sym {
+        /psl_ct_origfont currentfont def
+        /Symbol findfont PSL_get_fontsize scalefont setfont
+      } {
+        psl_ct_origfont setfont
+      } ifelse
+    }
+    {	% Normal character rendering
+      /char str charcount 1 getinterval def
+      /charcount charcount 1 add def
+      /charwidth char stringwidth pop def
+      V cpx cpy itransform T			% Translate to the current
 						% position in user space.
-      dy dx atan R				% Rotate the x-axis to coincide
+        dy dx atan R				% Rotate the x-axis to coincide
 						% with the current segment.
-      0 justy M
-      PSL_font_F {  % Show text normally, if requested
-        char show}
-      if
-      PSL_font_FO { % Fill first then outline, if requested
-        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
-      } if
-      PSL_font_OF { % Outline text then fill, if requested
-        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
-      } if
-      0 justy neg G currentpoint transform
-      /cpy exch def /cpx exch def		% Update the current position
-    						% before we restore ourselves to
+        0 justy M
+        PSL_font_F {  % Show text normally, if requested
+          char show}
+        if
+        PSL_font_FO { % Fill first then outline, if requested
+          currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+        } if
+        PSL_font_OF { % Outline text then fill, if requested
+          currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+        } if
+        0 justy neg G currentpoint transform
+        /cpy exch def /cpx exch def		% Update the current position
+      						% before we restore ourselves to
 						% the untransformed state.
-    U /setdist setdist charwidth add def	% Increment the distance we have
-  } def						% covered by setting characters.
+      U /setdist setdist charwidth add def	% Increment the distance we have
+    } ifelse					% covered by setting characters.
+  } def
 end
 
 % PSL LABEL CLIP FUNCTIONS
@@ -313,7 +328,7 @@ end
   0 1 PSL_m1
   { /i exch def
     PSL_fnt_tmp i get cvx exec					% Get and set this label's font attributes
-    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put	% Compute width and store in the array
+    PSL_width_tmp i PSL_str_tmp i get PSL_label_sw put	% Compute width and store in the array
   } for
 } def
 
@@ -452,6 +467,7 @@ end
     PSL_drawbox		% Want to draw outline of box
     {V PSL_setboxpen S U} if N
   } if
+  /psl_ct_sym false def
   PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 
@@ -606,6 +622,110 @@ end
   PSL_eoclip N					% Set the new clip path, increment clip counter and clear path
 } def
 
+% Escape-aware label rendering procedures.
+% These handle the @~ escape sequence (Symbol font toggle) in label strings.
+% When @~ is found, the string is split into segments that alternate between
+% the current font and the Symbol font at the same size.
+
+/PSL_split_esc {	% (string) PSL_split_esc => array of substrings split on @~
+  /psl_src exch def
+  /psl_parts 20 array def
+  /psl_np 0 def
+  /psl_pos 0 def
+  {
+    /psl_found false def
+    psl_pos 1 psl_src length 2 sub {
+      /psl_i exch def
+      psl_src psl_i get 64 eq			% '@' = ASCII 64
+      psl_src psl_i 1 add get 126 eq and	% '~' = ASCII 126
+      {
+        psl_parts psl_np psl_src psl_pos psl_i psl_pos sub getinterval put
+        /psl_np psl_np 1 add def
+        /psl_pos psl_i 2 add def
+        /psl_found true def
+        exit
+      } if
+    } for
+    psl_found not {exit} if
+  } loop
+  psl_pos psl_src length lt {
+    psl_parts psl_np psl_src psl_pos psl_src length psl_pos sub getinterval put
+    /psl_np psl_np 1 add def
+  } if
+  psl_parts 0 psl_np getinterval
+} def
+
+/PSL_has_esc {	% (string) PSL_has_esc => bool  -- true if string contains @~
+  /psl_ts exch def
+  /psl_he false def
+  0 1 psl_ts length 2 sub {
+    /psl_ti exch def
+    psl_ts psl_ti get 64 eq psl_ts psl_ti 1 add get 126 eq and
+    {/psl_he true def exit} if
+  } for
+  psl_he
+} def
+
+/PSL_get_fontsize {	% => fontsize  -- extract size from current font
+  currentfont /FontMatrix get 0 get 1000 mul
+} def
+
+/PSL_show_esc {	% (string) PSL_show_esc => --  -- show with @~ font toggling
+  PSL_split_esc
+  /psl_origfont currentfont def
+  /psl_sym false def
+  /psl_fsz PSL_get_fontsize def
+  { /psl_seg exch def
+    psl_seg length 0 gt {psl_seg show} if
+    /psl_sym psl_sym not def
+    psl_sym {/Symbol findfont psl_fsz scalefont setfont}
+            {psl_origfont setfont} ifelse
+  } forall
+  psl_origfont setfont
+} def
+
+/PSL_charpath_esc {	% (string) PSL_charpath_esc => --  -- false charpath with @~ toggling
+  PSL_split_esc
+  /psl_origfont currentfont def
+  /psl_sym false def
+  /psl_fsz PSL_get_fontsize def
+  { /psl_seg exch def
+    psl_seg length 0 gt {psl_seg false charpath} if
+    /psl_sym psl_sym not def
+    psl_sym {/Symbol findfont psl_fsz scalefont setfont}
+            {psl_origfont setfont} ifelse
+  } forall
+  psl_origfont setfont
+} def
+
+/PSL_sw_esc {	% (string) PSL_sw_esc => width  -- stringwidth with @~ toggling
+  PSL_split_esc
+  /psl_origfont currentfont def
+  /psl_sym false def
+  /psl_fsz PSL_get_fontsize def
+  /psl_tw 0 def
+  { /psl_seg exch def
+    psl_seg length 0 gt {/psl_tw psl_tw psl_seg stringwidth pop add def} if
+    /psl_sym psl_sym not def
+    psl_sym {/Symbol findfont psl_fsz scalefont setfont}
+            {psl_origfont setfont} ifelse
+  } forall
+  psl_origfont setfont
+  psl_tw
+} def
+
+/PSL_label_show {	% (string) PSL_label_show => --
+  dup PSL_has_esc {PSL_show_esc} {show} ifelse
+} def
+
+/PSL_label_charpath {	% (string) PSL_label_charpath => --
+  dup PSL_has_esc {PSL_charpath_esc} {false charpath} ifelse
+} def
+
+/PSL_label_sw {	% (string) PSL_label_sw => width
+  dup PSL_has_esc {PSL_sw_esc} {stringwidth pop} ifelse
+} def
+
 /PSL_ST_prepare_text		% Compute various dimensions and coordinates for one label
 { % The current label has index psl_k
   /psl_xp PSL_txt_x psl_k get def		% Get text placement x coordinate
@@ -617,7 +737,7 @@ end
   /PSL_just PSL_label_justify psl_k get def	% Get text justification (1-11)
   /PSL_justx PSL_just 4 mod 1 sub 2 div neg def % This is 0, -0.5, or -1 for relative x-shift 
   /PSL_justy PSL_just 4 idiv 2 div neg def	% This is 0, -0.5, or -1 for relative y-shift 
-  /psl_SW psl_label stringwidth pop def		% Width of current label space
+  /psl_SW psl_label PSL_label_sw def		% Width of current label space
   /psl_boxW psl_SW PSL_gap_x 2 mul add def	% Width of current label space including clearance
   /psl_x0 psl_SW PSL_justx mul def		% (psl_x0,psl_y0) is rotated/adjusted text LL point on inside rectangle relative to psl_xp,psl_yp
   /psl_y0 PSL_justy PSL_height mul def		%
@@ -657,7 +777,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R % Set origin at text point and rotate the coordinate system to follow baseline text
     psl_SW PSL_justx mul psl_y0 M % Goto LL point on label
-    psl_label dup sd neg 0 exch G show  % Place the text, adjust vertically for any depth below baseline
+    psl_label dup sd neg 0 exch G PSL_label_show  % Place the text, adjust vertically for any depth below baseline
     U         % Undo damage to coordinate system
 } def
 
@@ -665,7 +785,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R % Set origin at text point and rotate the coordinate system to follow baseline text
     psl_SW PSL_justx mul psl_y0 M % Goto LL point on label
-    psl_label dup sd neg 0 exch G false charpath V fs U S N % Place the text, adjust vertically for any depth below baseline
+    psl_label dup sd neg 0 exch G PSL_label_charpath V fs U S N % Place the text, adjust vertically for any depth below baseline
     U         % Undo damage to coordinate system
 } def
 
@@ -673,7 +793,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R % Set origin at text point and rotate the coordinate system to follow baseline text
     psl_SW PSL_justx mul psl_y0 M % Goto LL point on label
-    psl_label dup sd neg 0 exch G false charpath V S U fs N % Place the text, adjust vertically for any depth below baseline
+    psl_label dup sd neg 0 exch G PSL_label_charpath V S U fs N % Place the text, adjust vertically for any depth below baseline
     U         % Undo damage to coordinate system
 } def
 
