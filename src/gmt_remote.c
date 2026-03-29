@@ -731,7 +731,7 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 		return NULL;
 	}
 	if (time_out) {	/* Set a timeout limit */
-		if (curl_easy_setopt (Curl, CURLOPT_TIMEOUT, time_out)) {
+		if (curl_easy_setopt (Curl, CURLOPT_TIMEOUT, (long)time_out)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to time out after %d seconds\n", time_out);
 			return NULL;
 		}

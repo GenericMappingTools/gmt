@@ -313,7 +313,7 @@ GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL 
 
 	/* Get color for each of 4 vertices */
 	for (k = 0; k < 4; k++) {
-		int index = gmt_get_rgb_from_z(GMT, P, Z_vert[k], &rgb_vert[k*3]);
+		gmt_get_rgb_from_z(GMT, P, Z_vert[k], &rgb_vert[k*3]);
 		if (k == 0)
 			PH = gmt_get_C_hidden(P);
 
