@@ -32,7 +32,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  GMT_TP_STANDARD },
 	{ 0, 'D', "offset",
 	          "j,J",               "away,corners",
-	          "v",                 "line",
+	          "f,v",               "offsets_file,line",
 		  GMT_TP_STANDARD },
 	{ 0, 'F', "attributes|attrib",
 	          "",                  "",

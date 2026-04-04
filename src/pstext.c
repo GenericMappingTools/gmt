@@ -32,7 +32,7 @@
 #define THIS_MODULE_MODERN_NAME	"text"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot or typeset text"
-#define THIS_MODULE_KEYS	"<D{,>X},>DL"
+#define THIS_MODULE_KEYS	"<D{,DD(=f,>X},>DL"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYaefhpqtxyw" GMT_OPT("Ec")
 
@@ -60,12 +60,14 @@ struct PSTEXT_CTRL {
 		double dx, dy;
 		char mode;
 	} C;
-	struct PSTEXT_D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
+	struct PSTEXT_D {	/* -D[j|J]<dx>[/<dy>][+f<file>][+v[<pen>]] */
 		bool active;
 		bool line;
+		bool variable;	/* True if per-record offsets are read from +f<file> */
 		int justify;
 		double dx, dy;
 		struct GMT_PEN pen;
+		char *file;		/* Name of file with per-record dx,dy offsets */
 	} D;
 	struct PSTEXT_F {	/* -F[+c+f<fontinfo>+a<angle>+j<justification>+l|h|r|z|t] */
 		bool active;
@@ -160,6 +162,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->D.file);
 	gmt_M_str_free (C->F.text);
 	gmt_M_free (GMT, C);
 }
@@ -292,7 +295,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>[/<dy>]][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>[/<dy>]][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+f<file>][+v[<pen>]]] "
 		"[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] %s "
 		"[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Ql|u] [-S[<dx>/<dy>/][<shade>]] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
 		"[%s] %s[%s] [%s] [%s] [-it<word>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -349,10 +352,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "C: Convex rectangle (requires -M).");
 	GMT_Usage (API, 3, "o: Rectangle [Default].");
 	GMT_Usage (API, 3, "O: Rectangle with rounded corners.");
-	GMT_Usage (API, 1, "\n-D[j|J]<dx>[/<dy>][+v[<pen>]]");
+	GMT_Usage (API, 1, "\n-D[j|J]<dx>[/<dy>][+f<file>][+v[<pen>]]");
 	GMT_Usage (API, -2, "Add <dx>,<dy> to the text origin AFTER projecting with -J. If <dy> is not given it equals <dx> [0/0]. "
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
-		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifier:");
+		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifiers:");
+	GMT_Usage (API, 3, "+f: Read per-record offsets (dx dy) from <file> (two columns in current distance units); overrides fixed <dx>/<dy>.");
 	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
@@ -453,22 +457,41 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'D':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_M_repeated_module_option(API, Ctrl->D.active);
 				k = 0;
 				if (opt->arg[k] == 'j') { Ctrl->D.justify = 1, k++; }
 				else if (opt->arg[k] == 'J') { Ctrl->D.justify = 2, k++; }
+				/* Check for +f<file> modifier (per-record variable offsets); extract before other parsing */
+				if ((c = strstr(&opt->arg[k], "+f"))) {
+					char *end = strchr (&c[2], '+');	/* Look for next modifier (+v) after filename */
+					if (end) {	/* Another modifier follows after +f<file> */
+						char saved = *end;
+						*end = '\0';
+						Ctrl->D.file = strdup(&c[2]);
+						*end = saved;
+						memmove(c, end, strlen(end) + 1);	/* Remove +f<file> from option string */
+					}
+					else {
+						Ctrl->D.file = strdup(&c[2]);
+						c[0] = '\0';	/* Truncate option string at +f */
+					}
+					Ctrl->D.variable = true;
+				}
+				/* Handle +v modifier (new-style or old-style) */
 				for (j = k; opt->arg[j] && opt->arg[j] != 'v'; j++);
 				if (opt->arg[j] == 'v') {	/* Want to draw a line from point to offset point */
 					Ctrl->D.line = true;
-					n_errors += gmt_M_check_condition (GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Option -D: Give pen after +v\n");
+					n_errors += gmt_M_check_condition(GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Option -D: Give pen after +v\n");
 					if (opt->arg[j-1] == '+')	/* New-style syntax */
 						opt->arg[j-1] = 0;
 					else
 						opt->arg[j] = 0;
 				}
 				j = sscanf (&opt->arg[k], "%[^/]/%s", txt_a, txt_b);
-				Ctrl->D.dx = gmt_M_to_inch (GMT, txt_a);
-				Ctrl->D.dy = (j == 2) ? gmt_M_to_inch (GMT, txt_b) : Ctrl->D.dx;
+				if (j >= 1 && txt_a[0]) {	/* Have explicit dx[/dy] */
+					Ctrl->D.dx = gmt_M_to_inch(GMT, txt_a);
+					Ctrl->D.dy = (j == 2) ? gmt_M_to_inch(GMT, txt_b) : Ctrl->D.dx;
+				}
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -708,7 +731,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Option -C: clearances cannot be negative!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0  && Ctrl->C.mode != 'o', "Option -C: Non-rectangular text boxes require a non-zero clearance\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "-D<x/y>v requires one nonzero <x/y>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line && !Ctrl->D.variable, "-D<x/y>v requires one nonzero <x/y>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Option -Q: Use l or u for lower/upper-case.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Option -Gc: Cannot be used with -M.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Option -Gc: Cannot be used with -W.\n");
@@ -824,6 +847,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols, z_col = GMT_Z, n_skipped = 0;
 
 	size_t n_alloc = 0;
+	uint64_t n_D_offsets = 0, d_rec_no = 0;
+	double *D_off_x = NULL, *D_off_y = NULL;
 
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
@@ -892,7 +917,30 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 		Ctrl->F.font.size = GMT->current.setting.font_annot[GMT_PRIMARY].size;
 
 	pstext_load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
+	if (Ctrl->D.variable) {	/* Read per-record offsets from file */
+		uint64_t tbl, seg, row;
+		double unit_scale = GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+		struct GMT_DATASET *D_file = NULL;
+		if ((D_file = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT,
+		        GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL)
+			Return (API->error);
+		for (tbl = 0; tbl < D_file->n_tables; tbl++)
+			for (seg = 0; seg < D_file->table[tbl]->n_segments; seg++)
+				n_D_offsets += D_file->table[tbl]->segment[seg]->n_rows;
+		D_off_x = gmt_M_memory (GMT, NULL, n_D_offsets, double);
+		D_off_y = gmt_M_memory (GMT, NULL, n_D_offsets, double);
+		n_D_offsets = 0;
+		for (tbl = 0; tbl < D_file->n_tables; tbl++)
+			for (seg = 0; seg < D_file->table[tbl]->n_segments; seg++)
+				for (row = 0; row < D_file->table[tbl]->segment[seg]->n_rows; row++, n_D_offsets++) {
+					D_off_x[n_D_offsets] = D_file->table[tbl]->segment[seg]->data[GMT_X][row] * unit_scale;
+					D_off_y[n_D_offsets] = D_file->table[tbl]->segment[seg]->data[GMT_Y][row] * unit_scale;
+				}
+		if (GMT_Destroy_Data (API, &D_file) != GMT_NOERROR)
+			Return (API->error);
+	}
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
+	if (Ctrl->D.variable) add = 1;	/* Variable offsets always enable displacement */
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
 	if (!(Ctrl->N.active || Ctrl->Z.active)) {
@@ -937,11 +985,13 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 		}
 		if (add) {
+			double xoff = (Ctrl->D.variable && n_D_offsets > 0) ? D_off_x[0] : T.x_offset;
+			double yoff = (Ctrl->D.variable && n_D_offsets > 0) ? D_off_y[0] : T.y_offset;
 			if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
-				gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify);
+				gmt_smart_justify(GMT, T.block_justify, T.paragraph_angle, xoff, yoff, &plot_x, &plot_y, Ctrl->D.justify);
 			else {	/* Default hard offset */
-				plot_x += T.x_offset;
-				plot_y += T.y_offset;
+				plot_x += xoff;
+				plot_y += yoff;
 			}
 			xx[1] = plot_x;	yy[1] = plot_y;
 		}
@@ -1350,14 +1400,17 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				else if (T.paragraph_angle < -90.0) T.paragraph_angle += 180.0;
 			}
 			if (add) {
+				double xoff = (Ctrl->D.variable && d_rec_no < n_D_offsets) ? D_off_x[d_rec_no] : T.x_offset;
+				double yoff = (Ctrl->D.variable && d_rec_no < n_D_offsets) ? D_off_y[d_rec_no] : T.y_offset;
 				if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
-					gmt_smart_justify (GMT, T.block_justify, T.paragraph_angle, T.x_offset, T.y_offset, &plot_x, &plot_y, Ctrl->D.justify);
+					gmt_smart_justify(GMT, T.block_justify, T.paragraph_angle, xoff, yoff, &plot_x, &plot_y, Ctrl->D.justify);
 				else {	/* Default hard offset */
-					plot_x += T.x_offset;
-					plot_y += T.y_offset;
+					plot_x += xoff;
+					plot_y += yoff;
 				}
 				xx[1] = plot_x;	yy[1] = plot_y;
 			}
+			if (Ctrl->D.variable) d_rec_no++;
 			n_paragraphs++;
 
 			if (GMT->common.t.variable)	{	/* Update the transparencies for current string (if -t was given) */
@@ -1518,6 +1571,10 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
 
+	if (Ctrl->D.variable) {
+		gmt_M_free(GMT, D_off_x);
+		gmt_M_free(GMT, D_off_y);
+	}
 	Return (GMT_NOERROR);
 }
 
