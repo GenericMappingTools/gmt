@@ -159,22 +159,23 @@ Optional Arguments
 
     - **o** - Straight rectangle [Default].
     - **O** - Set a rounded rectangle.
-    - **c** - (Paragraph mode (|-M| only) selects a concave rectangle.
-    - **C** - (Paragraph mode (|-M| only) selects a convex rectangle.
+    - **c** - Paragraph mode (|-M| only) selects a concave rectangle.
+    - **C** - Paragraph mode (|-M| only) selects a convex rectangle.
 
 .. _-D:
 
-**-D**\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]]
+**-D**\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+f**\ *offsets_file*][**+v**\ [*pen*]]
     Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Prepend
     an optional directive:
-    
+
     - **j** - Offset the text away from the point instead (i.e., the
       text justification will determine the direction of the shift).
     - **J** - Shorten diagonal offsets at corners by :math:`\sqrt{2}`.
-
-    Optionally, append the modifier:
-
+    - **+f** - Read per-record (*dx*, *dy*) offsets from *offsets_file* instead
+      of using the single fixed *dx*\ [/*dy*] value. The file must have two
+      columns, one offset pair per text record, in the same order as the input
+      data. Values are in the current length unit [:term:`PROJ_LENGTH_UNIT`].
     - **+v** - Draw a line from the original point to the shifted point;
       append a *pen* to change the attributes for this line.  **Note**:
       The **-Dj**\|\ **J** selection cannot be used with paragraph mode (|-M|).
