@@ -259,11 +259,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL bool psmeca_is_old_C_option (struct GMT_CTRL *GMT, char *arg) {
-	if (strstr (arg, ".cpt")) return false;	/* Clearly a CPT file given */
-	if (strstr (arg, "+s") || strchr (arg, 'P')) return true;	/* Clearly setting the circle diameter in old -C */
+	if (strstr(arg, ".cpt")) return false;	/* Clearly a CPT file given */
+	if (strstr(arg, "+s") || strchr(arg, 'P')) return true;	/* Clearly setting the circle diameter in old -C */
 	if (GMT->current.setting.run_mode == GMT_CLASSIC && arg[0] == '\0') return true;	/* A blank -C in classic mode is clearly the old -C with no settings */
-	if (arg[0]) return true;	/* Whatever this is, it is for -A to deal with */
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Option -C: Must assume under modern mode that -C here means use current CPT\n");
+	if (arg[0] && !gmt_is_cpt_master(GMT, arg)) return true;	/* Whatever this is, it is for -A to deal with */
+	GMT_Report(GMT->parent, GMT_MSG_INFORMATION, "Option -C: Must assume under modern mode that -C here means use current CPT\n");
 	return false;	/* This assumes nobody would use just -C in modern mode but actually mean the old -C */
 }
 
@@ -707,6 +707,27 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	if (D->n_records == 0)
 		GMT_Report (API, GMT_MSG_WARNING, "No data records provided\n");
+
+	if (Ctrl->C.active && !Ctrl->O2.active && CPT) {
+		/* Resample the CPT to span the actual depth range of the events to be plotted */
+		double dep_min = DBL_MAX, dep_max = -DBL_MAX, d;
+		for (tbl = 0; tbl < D->n_tables; tbl++)
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++)
+				for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
+					d = D->table[tbl]->segment[seg]->data[GMT_Z][row];
+					if (gmt_M_is_dnan(d) || d < Ctrl->D.depmin || d > Ctrl->D.depmax) continue;
+					if (d < dep_min) dep_min = d;
+					if (d > dep_max) dep_max = d;
+				}
+		if (dep_min < dep_max) {
+			unsigned int k;
+			double *z_new = gmt_M_memory(GMT, NULL, CPT->n_colors + 1, double);
+			for (k = 0; k <= CPT->n_colors; k++)
+				z_new[k] = dep_min + k * (dep_max - dep_min) / CPT->n_colors;
+			CPT = gmt_sample_cpt(GMT, CPT, z_new, (int)(CPT->n_colors + 1), CPT->is_continuous, false, false, false);
+			gmt_M_free(GMT, z_new);
+		}
+	}
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
