@@ -2279,11 +2279,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								v4_rgb = current_fill.rgb;
 							else
 								v4_rgb = GMT->session.no_rgb;
-							if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
+							if (v4_outline) gmt_setpen(GMT, &Ctrl->W.pen);
 							if (S.v.status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
 							dim[PSL_VEC_HEAD_SHAPE] = GMT->current.setting.map_vector_shape;
 							dim[PSL_VEC_HEAD_WIDTH] *= 0.5;	/* Since it was double in the parsing */
-							psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
+							psl_vector_v4(PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
 						}
 						else {	/* Current vector model */
 							dim[PSL_VEC_HEAD_SHAPE]      = S.v.v_shape;
@@ -2293,7 +2293,51 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[PSL_VEC_TRIM_BEGIN]      = (double)S.v.v_trim[0];
 							dim[PSL_VEC_TRIM_END]        = (double)S.v.v_trim[1];
 							dim[PSL_VEC_HEAD_PENWIDTH]   = s * headpen_width;	/* Possibly shrunk head pen width */
-							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
+							if (Ctrl->A.active && (Ctrl->A.mode == GMT_STAIRS_X || Ctrl->A.mode == GMT_STAIRS_Y)) {
+								/* Broken (right-angle elbow) arrow: two legs meeting at a corner point.
+								 * Round line caps are used so each leg's semicircular endpoint fills the
+								 * outer-corner gap that butt caps would leave at the elbow. */
+								double elbow_x, elbow_y, leg1_length, leg2_length, s1, s2;
+								unsigned int leg1_status, leg2_status;
+								if (Ctrl->A.mode == GMT_STAIRS_X) {	/* Horizontal first, then vertical */
+									elbow_x = x_2;		elbow_y = plot_y;
+								}
+								else {			/* GMT_STAIRS_Y: vertical first, then horizontal */
+									elbow_x = xpos[item];	elbow_y = y_2;
+								}
+								leg1_length = hypot(elbow_x - xpos[item], elbow_y - plot_y);
+								leg2_length = hypot(x_2 - elbow_x, y_2 - elbow_y);
+								s1 = gmt_get_vector_shrinking(GMT, &(S.v), data_magnitude, leg1_length);
+								s2 = gmt_get_vector_shrinking(GMT, &(S.v), data_magnitude, leg2_length);
+								PSL_setlinecap(PSL, PSL_ROUND_CAP);	/* Round ends fill the elbow corner */
+								/* Leg 1: tail → elbow.  Keep begin-head (if any); no end-head. */
+								leg1_status = S.v.status & ~(PSL_VEC_END | PSL_VEC_END_L | PSL_VEC_END_R | PSL_VEC_OFF_END);
+								dim[PSL_VEC_XTIP]          = elbow_x;
+								dim[PSL_VEC_YTIP]          = elbow_y;
+								dim[PSL_VEC_TAIL_WIDTH]    = s1 * S.v.v_width;
+								dim[PSL_VEC_HEAD_LENGTH]   = s1 * S.v.h_length;
+								dim[PSL_VEC_HEAD_WIDTH]    = s1 * S.v.h_width;
+								dim[PSL_VEC_HEAD_PENWIDTH] = s1 * headpen_width;
+								dim[PSL_VEC_TRIM_BEGIN]    = (double)S.v.v_trim[0];
+								dim[PSL_VEC_TRIM_END]      = 0.0;
+								dim[PSL_VEC_STATUS]        = (double)leg1_status;
+								PSL_plotsymbol(PSL, xpos[item], plot_y, dim, PSL_VECTOR);
+								/* Leg 2: elbow → tip.  Keep end-head (if any); no begin-head. */
+								leg2_status = S.v.status & ~(PSL_VEC_BEGIN | PSL_VEC_BEGIN_L | PSL_VEC_BEGIN_R | PSL_VEC_OFF_BEGIN);
+								dim[PSL_VEC_XTIP]          = x_2;
+								dim[PSL_VEC_YTIP]          = y_2;
+								dim[PSL_VEC_TAIL_WIDTH]    = s2 * S.v.v_width;
+								dim[PSL_VEC_HEAD_LENGTH]   = s2 * S.v.h_length;
+								dim[PSL_VEC_HEAD_WIDTH]    = s2 * S.v.h_width;
+								dim[PSL_VEC_HEAD_PENWIDTH] = s2 * headpen_width;
+								dim[PSL_VEC_TRIM_BEGIN]    = 0.0;
+								dim[PSL_VEC_TRIM_END]      = (double)S.v.v_trim[1];
+								dim[PSL_VEC_STATUS]        = (double)leg2_status;
+								PSL_plotsymbol(PSL, elbow_x, elbow_y, dim, PSL_VECTOR);
+								PSL_setlinecap(PSL, PSL_BUTT_CAP);	/* Restore default */
+							}
+							else
+								PSL_plotsymbol(PSL, xpos[item], plot_y, dim, PSL_VECTOR);
 						}
 						break;
 					case GMT_SYMBOL_GEOVECTOR:

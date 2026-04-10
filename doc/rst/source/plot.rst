@@ -468,6 +468,14 @@ to cm given the scale 3.60::
 
     gmt plot -R20/40/-20/0 -JM6i -Sv0.15i+e+z3.6c -Gred -W0.25p -Baf data.txt -pdf map
 
+To draw the same Cartesian vectors as broken (right-angle elbow) arrows, traveling
+horizontally first and then vertically to reach the tip, use |-A|\ **x**::
+
+    gmt plot -R0/50/-50/50 -JX6i -Sv0.15i+e -Gred -W0.5p -Baf -Ax -pdf map << EOF
+    10 10 45 2i
+    30 -20 0 1.5i
+    EOF
+
 To plot a triangle with smooth color gradients using RGB values directly::
 
     cat << EOF > triangle.txt
