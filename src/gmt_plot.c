@@ -2520,7 +2520,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 		}
 
 		if (GMT->current.proj.z_down) {	/* Want to annotate depth rather than radius */
-			if (GMT->current.map.frame.axis[GMT_Y].file_custom)
+			if (GMT->current.map.frame.axis[GMT_Y].file_custom[0])
 				ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &tval, &label_c);
 			else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
 				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &tval);
@@ -2535,7 +2535,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 			}
 		}
 		else {				/* Annotate radius */
-			if (GMT->current.map.frame.axis[GMT_Y].file_custom)
+			if (GMT->current.map.frame.axis[GMT_Y].file_custom[0])
 				ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
 			else
 				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
