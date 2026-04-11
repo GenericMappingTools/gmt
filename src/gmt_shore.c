@@ -1255,7 +1255,11 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 	}
 
 	wet_or_dry = (dir == 1) ? 1 : 0;	/* If dir == 1 we paint the dry parts */
-	use_this_level = (high_level%2 == wet_or_dry && high_level >= c->min_level);
+	/* The min_level filter is meant to suppress small coastal features, not the ocean background.
+	 * When filling water (-S) and the bin corners are all ocean (high_level == 0), we must paint
+	 * the bin regardless of min_level, otherwise -A with low > 0 leaves ocean bins blank, producing
+	 * a grid-pattern of missing fill (see bug #8942). */
+	use_this_level = (high_level%2 == wet_or_dry && (high_level >= c->min_level || (wet_or_dry == 0 && high_level == 0)));
 
 	if (c->ns == 0 && !use_this_level) return (0);	/* No polygons for this bin */
 
