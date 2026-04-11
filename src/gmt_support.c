@@ -15740,7 +15740,7 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 }
 
 /*! . */
-unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels) {
+unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels, unsigned int which) {
 	/* Reads a file with one or more records of the form
 	 * value	types	[label]
 	 * where value is the coordinate of the tickmark, types is a combination
@@ -15748,6 +15748,7 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	 * The a|i will take a label string (or sentence).
 	 * The item argument specifies which type to consider [a|i,f,g].  We return
 	 * an array with coordinates and labels, and set interval to true if applicable.
+	 * which: 0 = primary custom file, 1 = secondary custom file.
 	 */
 	int nc, error;
 	unsigned int k = 0, save_coltype, save_max_cols_to_read;
@@ -15772,8 +15773,8 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open custom annotation file %s!\n", A->file_custom);
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom[which], NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open custom annotation file %s!\n", A->file_custom[which]);
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (0);
 	}
@@ -15826,14 +15827,17 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 }
 
 /*! . */
-unsigned int gmtlib_coordinate_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels) {
+unsigned int gmtlib_coordinate_array(struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels) {
 	unsigned int n = 0;
 
 	if (!T->active) return (0);	/* Nothing to do */
 
-	if (T->special && GMT->current.map.frame.axis[T->parent].file_custom) {	/* Want custom intervals */
-		n = gmtlib_load_custom_annot (GMT, &GMT->current.map.frame.axis[T->parent], (char)tolower((unsigned char) T->type), array, labels);
-		return (n);
+	{	/* Determine which custom file to use: uppercase T->type means secondary (1), lowercase means primary (0) */
+		unsigned int which = isupper((unsigned char)T->type) ? 1 : 0;
+		if (T->special && GMT->current.map.frame.axis[T->parent].file_custom[which]) {	/* Want custom intervals */
+			n = gmtlib_load_custom_annot(GMT, &GMT->current.map.frame.axis[T->parent], (char)tolower((unsigned char) T->type), array, labels, which);
+			return (n);
+		}
 	}
 
 	switch (GMT->current.proj.xyz_projection[T->parent]) {

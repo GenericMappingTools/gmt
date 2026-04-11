@@ -1786,7 +1786,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		}
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use gmt_xy_axis to draw a y-axis based on x parameters. */
 			void (*tmp) (struct GMT_CTRL *, double, double *) = NULL;
-			char *custum;
+			char *custum[2];
 			double wesn_cpy[4];
 
 			A = &GMT->current.map.frame.axis[GMT_X];
@@ -1804,7 +1804,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
 			/* Copy x-axis annotation and scale info to y-axis.  We don't need to undo this since gmt_end_module will restore it for us */
-			custum = GMT->current.map.frame.axis[GMT_Y].file_custom;	/* Need to remember what this was */
+			custum[0] = GMT->current.map.frame.axis[GMT_Y].file_custom[0];	/* Need to remember what this was */
+			custum[1] = GMT->current.map.frame.axis[GMT_Y].file_custom[1];
 			gmt_M_memcpy (&GMT->current.map.frame.axis[GMT_Y], &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
 			gmt_M_double_swap (GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y]);
 			gmt_M_double_swap (GMT->current.proj.origin[GMT_X], GMT->current.proj.origin[GMT_Y]);
@@ -1819,7 +1820,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			gmt_xy_axis2 (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & PSSCALE_FLIP_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE] & GMT_AXIS_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE]);
 			gmt_M_memcpy (GMT->common.R.wesn, wesn_cpy, 4U, double);	/* Must temporarily switch x and y */
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
-			GMT->current.map.frame.axis[GMT_Y].file_custom = custum;	/* Restore correct pointer */
+			GMT->current.map.frame.axis[GMT_Y].file_custom[0] = custum[0];	/* Restore correct pointers */
+			GMT->current.map.frame.axis[GMT_Y].file_custom[1] = custum[1];
 		}
 		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
 			if (!skip_lines) {	/* First draw gridlines */

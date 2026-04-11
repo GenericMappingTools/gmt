@@ -4072,7 +4072,7 @@ GMT_LOCAL int gmtinit_split_info_strings (struct GMT_CTRL *GMT, const char *in, 
 }
 
 /*! . */
-GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, int *n_int) {
+GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, int *n_int, char *filename) {
 	/* Reads a file with one or more records of the form
 	 * value	types	[label]
 	 * where value is the coordinate of the tickmark, types is a combination
@@ -4080,6 +4080,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	 * The a|i will take a label string (or sentence).
 	 * The item argument specifies which type to consider [a|i,f,g].  We return
 	 * an array with coordinates and labels, and set interval to true if applicable.
+	 * filename is the custom annotation file to read (either primary or secondary).
 	 */
 	int error, k, n_errors = 0;
 	bool save_trailing;
@@ -4099,7 +4100,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	GMT->current.io.trailing_text[GMT_IN] = true;
 	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, filename, NULL)) == NULL) {
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (1);
 	}
@@ -4119,7 +4120,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	for (row = 0; row < S->n_rows; row++) {
 		k = sscanf (S->text[row], "%s", type);
 		if (k != 1) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad format record [%s] at row %d in custom file %s.\n", S->text[row], (int)row, A->file_custom);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad format record [%s] at row %d in custom file %s.\n", S->text[row], (int)row, filename);
 			n_errors++;
 			continue;
 		}
@@ -4138,7 +4139,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 					n_int[GMT_ITEM_GRID]++;
 					break;
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized type (%c) at row %d in custom file %s.\n", type[k], (int)row, filename);
 					n_errors++;
 					break;
 			}
@@ -4146,9 +4147,9 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	}
 	GMT_Destroy_Data (GMT->parent, &D);
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processed custom annotations via %s for axis %d.\n", A->file_custom, A->id);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processed custom annotations via %s for axis %d.\n", filename, A->id);
 	if (n_int[GMT_ITEM_ANNOT] && n_int[GMT_ITEM_INTVAL]) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot mix interval and regular annotations in custom file %s.\n", filename);
 		n_errors++;
 	}
 	return (n_errors);
@@ -4315,12 +4316,13 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 
 	if (flag == 'c') {	/* Custom annotation arrangement */
 		int k, n_int[GMT_N_AXIS_ITEMS];
+		unsigned int pi = GMT->current.map.frame.primary ? 0 : 1;	/* 0 = primary, 1 = secondary */
 		char *list = "aifg";
 		if (!(gmt_access (GMT, &in[1], R_OK))) {
-			gmt_M_str_free (A->file_custom);
-			A->file_custom = strdup (&in[1]);
+			gmt_M_str_free (A->file_custom[pi]);
+			A->file_custom[pi] = strdup (&in[1]);
 			A->special = GMT_CUSTOM;
-			if (gmtinit_init_custom_annot (GMT, A, n_int)) return (GMT_NOTSET);	/* See what ticks, anots, gridlines etc are requested */
+			if (gmtinit_init_custom_annot (GMT, A, n_int, A->file_custom[pi])) return (GMT_NOTSET);	/* See what ticks, anots, gridlines etc are requested */
 			for (k = 0; k < GMT_N_AXIS_ITEMS; k++) {
 				if (n_int[k] == 0) continue;
 				flag = list[k];
@@ -4328,10 +4330,10 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 				if ((error = gmtinit_set_titem (GMT, A, "0", flag, str[axis], true)))	/* Store the findings for this segment */
 					return (error);
 			}
-			if (n_int[GMT_ITEM_ANNOT])  A->item[GMT_ANNOT_UPPER].special = true;	/* custom annotations selected */
-			if (n_int[GMT_ITEM_INTVAL]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom interval annotations selected */
-			if (n_int[GMT_ITEM_TICK])   A->item[GMT_TICK_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom tick annotations selected */
-			if (n_int[GMT_ITEM_GRID])   A->item[GMT_GRID_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom gridlines selected */
+			if (n_int[GMT_ITEM_ANNOT])  A->item[GMT_ANNOT_UPPER+pi].special = true;	/* custom annotations selected */
+			if (n_int[GMT_ITEM_INTVAL]) A->item[GMT_ANNOT_UPPER+pi].special = true;	/* custom interval annotations selected */
+			if (n_int[GMT_ITEM_TICK])   A->item[GMT_TICK_UPPER+pi].special = true;	/* custom tick annotations selected */
+			if (n_int[GMT_ITEM_GRID])   A->item[GMT_GRID_UPPER+pi].special = true;	/* custom gridlines selected */
 			if (axis == GMT_Z)
 				GMT->current.map.frame.drawz = true;
 			else

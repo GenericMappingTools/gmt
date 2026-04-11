@@ -511,7 +511,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	char secondary_label[GMT_LEN256];	/* Optionally use this label when axis is right or top */
 	char unit[GMT_LEN64];		/* Axis unit appended to annotations */
 	char prefix[GMT_LEN64];		/* Axis prefix starting all annotations */
-	char *file_custom;		/* File with custom annotations */
+	char *file_custom[2];	/* Files with custom annotations [0] = primary, [1] = secondary */
 };
 
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */

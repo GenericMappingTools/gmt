@@ -85,7 +85,7 @@ EXTERN_MSC double gmtlib_distance_type (struct GMT_CTRL *GMT, double lonS, doubl
 EXTERN_MSC bool gmtlib_genper_reset (struct GMT_CTRL *GMT, bool reset);
 EXTERN_MSC double gmtlib_left_boundary (struct GMT_CTRL *GMT, double y);
 EXTERN_MSC double gmtlib_right_boundary (struct GMT_CTRL *GMT, double y);
-EXTERN_MSC unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
+EXTERN_MSC unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels, unsigned int which);
 EXTERN_MSC int gmtlib_report_error	(void *C, int error);	/* Lives in gmt_api.c */
 EXTERN_MSC void gmtlib_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat);	/* Convert oblique lon/lat to regular lon/lat */
 EXTERN_MSC char *gmtlib_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
