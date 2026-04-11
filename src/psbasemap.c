@@ -349,8 +349,16 @@ EXTERN_MSC int GMT_basemap (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: basemap\n");
-		return (GMT_NOT_A_VALID_MODULE);
+		/* Allow -A (dump map boundary coordinates) in classic mode since it writes a dataset, not PostScript */
+		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
+		bool dump_only = false;
+		if (API->error) return (API->error);
+		dump_only = (GMT_Find_Option (API, 'A', options) != NULL);
+		gmt_M_free_options (mode);
+		if (!dump_only) {
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: basemap\n");
+			return (GMT_NOT_A_VALID_MODULE);
+		}
 	}
 	return GMT_psbasemap (V_API, mode, args);
 }
