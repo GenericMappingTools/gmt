@@ -777,10 +777,14 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 					wesn[XHI] = MIN (wesn[XHI], header->wesn[XHI]);
 				}
 				else {	/* Must worry about 360 wrapping */
-					double w = header->wesn[XLO] - 720.0, e = header->wesn[XHI] - 720.0;	/* Ensure we are far west */
-					while (e < wesn[XLO]) w += 360.0, e += 360.0;	/* Wind to the west */
-					wesn[XLO] = MAX (wesn[XLO], w);
-					wesn[XHI] = MIN (wesn[XHI], e);
+					double gw = header->wesn[XLO], ge = header->wesn[XHI];
+					if ((ge - gw) < 360.0) {	/* Not a full-globe grid - wind to alignment with current region */
+						double w = gw - 720.0, e = ge - 720.0;	/* Ensure we are far west */
+						while (e < wesn[XLO]) w += 360.0, e += 360.0;	/* Wind to the west */
+						wesn[XLO] = MAX (wesn[XLO], w);
+						wesn[XHI] = MIN (wesn[XHI], e);
+					}
+					/* else: a full-globe grid covers all longitudes - intersection leaves XLO/XHI unchanged */
 				}
 				if (wesn[XHI] <= wesn[XLO]) {	/* No common region can be found - no point to continue */
 					GMT_Report (API, GMT_MSG_WARNING, "No common area for all %ss is possible.\n", type[is_cube]);
@@ -795,10 +799,17 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 					wesn[XHI] = MAX (wesn[XHI], header->wesn[XHI]);
 				}
 				else {	/* Must worry about 360 wrapping */
-					double w = header->wesn[XLO] - 720.0, e = header->wesn[XHI] - 720.0;	/* Ensure we are far west */
-					while (e < wesn[XLO]) w += 360.0, e += 360.0;	/* Wind to the west */
-					wesn[XLO] = MIN (wesn[XLO], w);
-					wesn[XHI] = MAX (wesn[XHI], e);
+					double gw = header->wesn[XLO], ge = header->wesn[XHI];
+					if ((ge - gw) >= 360.0) {	/* Full-globe grid - union becomes full globe */
+						wesn[XLO] = gw;
+						wesn[XHI] = ge;
+					}
+					else {
+						double w = gw - 720.0, e = ge - 720.0;	/* Ensure we are far west */
+						while (e < wesn[XLO]) w += 360.0, e += 360.0;	/* Wind to the west */
+						wesn[XLO] = MIN (wesn[XLO], w);
+						wesn[XHI] = MAX (wesn[XHI], e);
+					}
 				}
 				if (is_cube) {
 					wesn[ZLO] = MIN (wesn[ZLO], U->z[0]);
