@@ -6838,12 +6838,12 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 			if (z_axis[k] == 0) continue;	/* Not drawing this vertical axis */
 			quadrant = corner_to_quadrant[k+1];	/* Given corner (k+1), return quadrant */
 			below = gmtplot_z_axis_side (GMT, k, GMT->current.proj.z_project.quadrant);
-			gmt_xyz_to_xy (GMT, nesw[(quadrant/2*2+1)%4], nesw[((quadrant+1)/2*2)%4], GMT->common.R.wesn[ZLO], &xx, &yy);
+			gmt_xyz_to_xy (GMT, nesw[(quadrant/2*2+1)%4], nesw[((quadrant+1)/2*2)%4], GMT->current.proj.zmin, &xx, &yy);
 			/* Restrict reduced azimuth to -45 to 45 range */
 			az = GMT->current.proj.z_project.view_azimuth - 90.0 - floor ((GMT->current.proj.z_project.view_azimuth - 45.0) / 90.0) * 90.0;
 			PSL_command (PSL, "/PSL_GPP matrix currentmatrix def [%.12g %.12g %.12g %.12g %.12g %.12g] concat\n",
 				cosd(az), sind(az) * GMT->current.proj.z_project.sin_el, 0.0, GMT->current.proj.z_project.cos_el, xx * PSL->internal.x2ix, yy * PSL->internal.y2iy);
-			gmt_xy_axis (GMT, 0.0, -GMT->common.R.wesn[ZLO], GMT->current.proj.zmax - GMT->current.proj.zmin, GMT->common.R.wesn[ZLO],
+			gmt_xy_axis (GMT, 0.0, 0.0, GMT->current.proj.zmax - GMT->current.proj.zmin, GMT->common.R.wesn[ZLO],
 				GMT->common.R.wesn[ZHI], &GMT->current.map.frame.axis[GMT_Z], below, GMT->current.map.frame.side[Z_SIDE]);
 			PSL_command (PSL, "PSL_GPP setmatrix\n");    /* Return to normal current transformation matrix */
 		}
