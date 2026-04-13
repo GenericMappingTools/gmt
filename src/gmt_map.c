@@ -6935,6 +6935,18 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		f = sxy * fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
 		d = fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
 		if (gmtmap_polar_az (GMT)) f /= 4;	/* Latitude range is only covering half the plot */
+		if (d == 0.0 && GMT->common.R.oblique && gmt_M_is_azimuthal (GMT)) {
+			/* When -R+r is used with an azimuthal polar projection both corner points may share
+			 * the same latitude, giving d = 0.  Use the pole-to-edge latitude range scaled by
+			 * the frame aspect ratio so that the interval is fine enough for parallels to reach
+			 * the narrower frame edges (required for W/E side annotations). */
+			double x_range = fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
+			double y_range = fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
+			double diag = hypot (x_range, y_range);
+			d = fabs (GMT->current.proj.pars[1] - GMT->common.R.wesn[YLO]);
+			if (diag > 0.0)	/* Scale by the ratio of the narrower side to the diagonal */
+				d *= MIN (x_range, y_range) / diag;
+		}
 	}
 	else {
 		f = sz * fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
