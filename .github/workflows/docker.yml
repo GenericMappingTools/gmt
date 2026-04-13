@@ -83,7 +83,7 @@ jobs:
             dnf install -y \
                 cmake ninja-build \
                 libcurl-devel netcdf-devel gdal-devel gdal \
-                fftw3-devel pcre-devel lapack-devel openblas-devel glib2-devel \
+                fftw3-devel pcre2-devel lapack-devel openblas-devel glib2-devel \
                 ghostscript openssl gh
           fi
 
