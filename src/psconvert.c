@@ -1764,8 +1764,9 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_WARNING, "The -TE option does not support the -!\n");
 	}
 	if (Ctrl->N.BB_paint || Ctrl->N.outline) {
+		if (Ctrl->O.active)
+			GMT_Report(API, GMT_MSG_WARNING, "The -N+g or -N+p options do not support the -!\n");
 		Ctrl->O.active = false;
-		GMT_Report (API, GMT_MSG_WARNING, "The -N+g or -N+p options do not support the -!\n");
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
