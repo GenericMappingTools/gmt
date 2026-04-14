@@ -6716,17 +6716,13 @@ GMT_LOCAL int gmtsupport_find_mod_syntax_start (char *arg, int k) {
 
 /*! . */
 char *gmtlib_cptfile_unitscale (struct GMTAPI_CTRL *API, char *name) {
-	/* Determine if this file ends in +u|U<unit>, with <unit> one of the valid Cartesian distance units */
-	char *c = NULL, *f = NULL;
-	size_t len = strlen (name);	/* Get length of the file name */
-	if (len < 4) return NULL;	/* Not enough space for name and modifier */
-	if ((f = gmt_strrstr (name, GMT_CPT_EXTENSION)))
-		c = gmtlib_last_valid_file_modifier (API, f, "uU");
-	else
-		c = gmtlib_last_valid_file_modifier (API, name, "uU");
-	if (c == NULL) return NULL;	/* No modifiers */
-	if (c && (f = strstr (c, "+u")) == NULL && (f = strstr (c, "+U")) == NULL) return NULL;	/* No +u or +U modifier */
-	if (strchr (GMT_LEN_UNITS2, f[2]) == NULL) return NULL;		/* Does no have a valid unit at the end */
+	/* Determine if this string contains +u|U<unit>, with <unit> one of the valid Cartesian distance units.
+	 * The name argument can be a full filename or just the modifier portion (e.g., "+Uk"). */
+	char *f = NULL;
+	gmt_M_unused (API);
+	if (strlen (name) < 3) return NULL;	/* Not enough space for +u|U<unit> modifier */
+	if ((f = strstr (name, "+u")) == NULL && (f = strstr (name, "+U")) == NULL) return NULL;	/* No +u or +U modifier */
+	if (f[2] == '\0' || strchr (GMT_LEN_UNITS2, f[2]) == NULL) return NULL;		/* Does not have a valid unit */
 	return f;	/* Return valid modifier */
 }
 
@@ -9088,6 +9084,16 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		if ((gmt_stretch_cpt (GMT, P, zmin, zmax)) == GMT_PARSE_ERROR) return (NULL);
+		if (PH->z_adjust[GMT_IN] == 2 && PH->z_mode[GMT_IN]) {	/* CPT had +U scaling applied during read, but stretch overwrote z-values.
+			 * Re-apply the unit scaling to save the current CPT with scaled z-values (e.g., km for colorbar),
+			 * then undo the scaling so the returned CPT is in meters for correct color lookup by the caller */
+			gmt_scale_cpt (GMT, P, PH->z_unit_to_meter[GMT_IN]);
+			if (GMT->parent->gwf_dir == NULL || file == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)
+				gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
+			gmt_scale_cpt (GMT, P, 1.0 / PH->z_unit_to_meter[GMT_IN]);
+			PH->z_adjust[GMT_IN] = 0;	/* Reset so scaling is not applied again */
+			return (P);
+		}
 	}
 	else if (file) {	/* Gave a CPT file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
