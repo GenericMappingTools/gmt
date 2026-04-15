@@ -6524,6 +6524,22 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		GMT->current.proj.z_project.x_off = GMT->current.proj.z_project.view_x - x;
 		GMT->current.proj.z_project.y_off = GMT->current.proj.z_project.view_y - y;
 	}
+	else if (doubleAlmostEqualZero(GMT->current.proj.z_project.view_elevation, 90.0)) {
+		/* Pure z-rotation (elevation 90 = looking straight down). Place the map centre
+		 * at (map.width/2, map.height/2) on page, so that the rotated disc/map centre
+		 * stays at the same location a non-rotated plot would produce. We cannot just
+		 * centre the bbox because perimeter sampling inflates it asymmetrically.
+		 * See issue #8794. */
+		double wx, wy, xc, yc;
+		double world_x = (gmt_M_is_geographic(GMT, GMT_IN)) ? GMT->current.proj.central_meridian : 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+		double world_y = 0.5 * (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]);
+		gmt_geo_to_xy(GMT, world_x, world_y, &wx, &wy);	/* 2-D projected coords of map centre */
+		/* Apply the rotation part of gmt_xyz_to_xy (x_off=y_off=0) to get post-rotation position of centre */
+		xc = -wx * GMT->current.proj.z_project.cos_az + wy * GMT->current.proj.z_project.sin_az;
+		yc = -(wx * GMT->current.proj.z_project.sin_az + wy * GMT->current.proj.z_project.cos_az) * GMT->current.proj.z_project.sin_el;
+		GMT->current.proj.z_project.x_off = 0.5 * GMT->current.map.width  - xc;
+		GMT->current.proj.z_project.y_off = 0.5 * GMT->current.map.height - yc;
+	}
 	else {
 		GMT->current.proj.z_project.x_off = -GMT->current.proj.z_project.xmin;
 		GMT->current.proj.z_project.y_off = -GMT->current.proj.z_project.ymin;
