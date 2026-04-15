@@ -6524,7 +6524,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		GMT->current.proj.z_project.x_off = GMT->current.proj.z_project.view_x - x;
 		GMT->current.proj.z_project.y_off = GMT->current.proj.z_project.view_y - y;
 	}
-	else if (doubleAlmostEqualZero(GMT->current.proj.z_project.view_elevation, 90.0)) {
+	else if (GMT->common.p.active && doubleAlmostEqualZero(GMT->current.proj.z_project.view_elevation, 90.0)) {
 		/* Pure z-rotation (elevation 90 = looking straight down). Place the map centre
 		 * at (map.width/2, map.height/2) on page, so that the rotated disc/map centre
 		 * stays at the same location a non-rotated plot would produce. We cannot just
