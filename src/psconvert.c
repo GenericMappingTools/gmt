@@ -2311,6 +2311,29 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			n_read_PS_lines++;
 			if (isGMT_PS && Ctrl->O.active && !found_EndProlog) {		/* The %%EndProlog marks the end of a GMT PS header */
 				found_EndProlog = (strstr(line, "%%EndProlog") != NULL);	/* Not starting the parsing before finding it saves as scanning ~700 lines */
+				if (!found_EndProlog && !strncmp(line, "%%BoundingBox:", 14) && got_BB) {
+					/* Update BoundingBox in-place for -! mode.  See #8979. */
+					double w_t = w, h_t = h;
+					size_t len = strlen(line);
+					if (Ctrl->I.resize) { w_t = Ctrl->I.new_size[0]; h_t = Ctrl->I.new_size[1]; }
+					fseek(fp, (off_t)-(len + 1), SEEK_CUR);
+					if (Ctrl->A.round)
+						sprintf(line, "%%%%BoundingBox: 0 0 %ld %ld", lrint(w_t), lrint(h_t));
+					else
+						sprintf(line, "%%%%BoundingBox: 0 0 %ld %ld", lrint(psconvert_smart_ceil(w_t)), lrint(psconvert_smart_ceil(h_t)));
+					for (size_t k = strlen(line); k < len; k++) line[k] = ' ';
+					fprintf(fp, "%s", line);	fflush(fp);
+				}
+				else if (!found_EndProlog && !strncmp(line, "%%HiResBoundingBox:", 19) && got_HRBB) {
+					/* Update HiResBoundingBox in-place for -! mode.  See #8979. */
+					double w_t = w, h_t = h;
+					size_t len = strlen(line);
+					if (Ctrl->I.resize) { w_t = Ctrl->I.new_size[0]; h_t = Ctrl->I.new_size[1]; }
+					fseek(fp, (off_t)-(len + 1), SEEK_CUR);
+					sprintf(line, "%%%%HiResBoundingBox: 0 0 %.4f %.4f", w_t, h_t);
+					for (size_t k = strlen(line); k < len; k++) line[k] = ' ';
+					fprintf(fp, "%s", line);	fflush(fp);
+				}
 				continue;
 			}
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
