@@ -799,7 +799,7 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 	 * entirely outside the region but still cut through it, we first find all possible candidates and then decide
 	 * which ones are valid crossings.  We may find 0, 1, or 2 intersections */
 
-	unsigned int n = 0, i;
+	unsigned int n = 0, i, j;
 	double d, x0, y0;
 
 	/* If wrapping is allowed: first bring both points between W and E boundaries,
@@ -880,6 +880,21 @@ GMT_LOCAL unsigned int gmtmap_wesn_crossing (struct GMT_CTRL *GMT, double lon0, 
 		gmtmap_y_wesn_corner (GMT, &clat[n]);
 		if (fabs (d) > 0.0 && clat[n] >= GMT->common.R.wesn[YLO] && clat[n] <= GMT->common.R.wesn[YHI]) n++;
 	}
+
+	if (n == 0) return (0);
+
+	/* Discard crossings on boundaries that are not real edges (e.g., the pole in
+	 * polar projections where edge[0]=false, or a pole-enclosing boundary in many
+	 * geographic projections).  Must happen before corner checks below.  See #878. */
+	for (i = j = 0; i < n; i++) {
+		if (sides[i] < 4 && !GMT->current.proj.edge[sides[i]]) continue;	/* Skip non-edge */
+		if (j < i) {
+			clon[j] = clon[i];	clat[j] = clat[i];
+			sides[j] = sides[i];
+		}
+		j++;
+	}
+	n = j;
 
 	if (n == 0) return (0);
 
