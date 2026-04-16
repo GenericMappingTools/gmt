@@ -1815,7 +1815,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 
 	gs_BB = "-q -dNOSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox -DPSL_no_pagefill"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
-	add_to_list (Ctrl->C.arg, "-dMaxBitmap=2147483647");	/* Add this as GS option to fix bug in GS */
+	if (!strstr(Ctrl->C.arg, "-dMaxBitmap")) add_to_list(Ctrl->C.arg, "-dMaxBitmap=2147483647");	/* Add this as GS option to fix bug in GS */
 
 	if (Ctrl->W.kml && !(Ctrl->T.device == GS_DEV_JPG ||
 	    Ctrl->T.device == GS_DEV_JPGG || Ctrl->T.device == GS_DEV_TIF ||
@@ -1910,7 +1910,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->N.use_ICC_profiles && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
-		add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
+		if (!strstr(Ctrl->C.arg, "-dUseFastColor")) add_to_list(Ctrl->C.arg, "-dUseFastColor=true");	/* Add only if not already there */
 
 	/* --------------------------------------------------------------------------------------------- */
 	/* ------    If a multi-page PDF file creation is requested, do it and exit.   ------------------*/
