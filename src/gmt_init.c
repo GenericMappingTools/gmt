@@ -19829,11 +19829,12 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 
 			dir[0] = '\0';	/* No directory via D<dir> convert option */
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
+				bool insitu = (strchr (fig[k].options, '!') != NULL);	/* -! means modify PS in-place, so all options must pass [#8979] */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
 					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media [deprecated] */
 					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
-					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
+					if (not_PS || insitu || p[0] == 'M') {	/* When -! is given, all options pass even for PS format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strncpy (dir, &p[1], GMT_LEN1024-1);	/* Needed in show */
@@ -19844,11 +19845,12 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				}
 			}
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
+				bool insitu = (strchr(API->GMT->current.setting.ps_convert, '!') != NULL);	/* -! means modify PS in-place [#8979] */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
 					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
 					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given */
-					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
+					if (not_PS || insitu || p[0] == 'M') {	/* When -! is given, all options pass even for PS format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */

@@ -401,7 +401,7 @@ enum GMT_time_period {
 #define GMT_CPTFILE_MODIFIERS "hiuU"
 
 /* Valid options to psconvert from figure and begin */
-#define GMT_PSCONVERT_LIST "ACDEHIMNQS"
+#define GMT_PSCONVERT_LIST "ACDEHIMNQS!"
 
 /* Valid frame setting modifiers */
 #define GMT_FRAME_MODIFIERS "bginotwxyz"
