@@ -9029,12 +9029,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			/* The tests use PS and expect an A4 (or US Letter) paper size. So in those cases we don't want to mess with the paper size.
 			   But on command line we shoul be allowed to use a -A to crop also a PS file. Pick the case with conditions bellow.
 			*/
-			/* but we'll wait for a future PR to use it because right now we still have a #define GMT_SESSION_CONVERT	"A"
-			   in gmt_modern.h and that breaks this whole idea.
-			*/
 			bool do_crop = strstr(GMT->current.setting.ps_convert, "A,") || strstr(GMT->current.setting.ps_convert, ",A") ||
 			               (strlen(GMT->current.setting.ps_convert) >= 1 && GMT->current.setting.ps_convert[0] == 'A');
-			if (auto_media) {	/* Cannot use "auto" if requesting a PostScript file */
+			if (auto_media && !do_crop) {	/* Cannot use "auto" if requesting a PostScript file */
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "You should specify a paper size when requesting a PostScript file.\n");
 				if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; better to use PS_MEDIA explicitly.\n");

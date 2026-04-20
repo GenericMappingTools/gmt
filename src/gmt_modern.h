@@ -36,7 +36,7 @@
 
 #define GMT_SESSION_NAME	"gmtsession"	/* Default prefix for single-figure modern sessions */
 #define GMT_SESSION_FORMAT	0		/* Default entry into gmt_session_format|code arrays -> PDF */
-#define GMT_SESSION_CONVERT	"A"		/* Default psconvert options in gmt figure */
+#define GMT_SESSION_CONVERT	""		/* Default psconvert options in gmt figure */
 
 /* Declarations of modern mode module names.  These functions will
  * call the classically-named modules (e.g., plot will call psxy) but
