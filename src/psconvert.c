@@ -2373,7 +2373,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 							size_t len = strlen(line);
 							if (strstr(line,"PageSize") == NULL) continue;		/* The other "setpagedevice" command. Too keep as is. */
 							fseek(fp, (off_t)-(len +1), SEEK_CUR);          	/* Seek back to start of line */
-							sprintf(line, "PSLevel 1 gt { << /PageSize [%.7g %.7g] /ImagingBBox null >> setpagedevice } if", x1-x0, y1-y0);
+							sprintf(line, "PSLevel 1 gt { << /PageSize [%.7g %.7g] /ImagingBBox null >> setpagedevice } if\n", x1-x0, y1-y0);
 							for (int i = strlen(line); i < len; i++) line[i] = ' ';	/* Fill remainings with spaces */
 							fprintf(fp, "%s", line);		fflush(fp);
 
