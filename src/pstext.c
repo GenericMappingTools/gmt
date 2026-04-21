@@ -200,6 +200,7 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
 		if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
 		if (T->boxflag & 16) mode = PSL_RECT_CONVEX;
+		gmt_setfont (GMT, &T->font);	/* Must set font color before psl_paragraphprocess reads PSL_IS_FONT */
 		if (Ctrl->S.active) {	/* Lay down shaded box first */
 			PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
 			PSL_plotparagraphbox (PSL, x + Ctrl->S.off[GMT_X], y + Ctrl->S.off[GMT_Y], T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
@@ -210,7 +211,6 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		/* Compute text box, draw/fill it, and in the process store the text in the PS file for next command */
 		PSL_plotparagraphbox (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
 		/* Passing NULL means we typeset using the last stored paragraph info */
-		gmt_setfont (GMT, &T->font);
 		PSL_plotparagraph (PSL, x, y, T->font.size, NULL, T->paragraph_angle, T->block_justify);
 	}
 	else {	/* No box beneath */
