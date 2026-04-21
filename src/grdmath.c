@@ -6822,11 +6822,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 	subset = GMT->common.R.active[RSET];
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
-		if (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) {
-			GMT_Report (API, GMT_MSG_ERROR, "Cannot use -I together with -R<gridfile>\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		else if  (GMT->common.R.active[GSET]) {
+		if  (GMT->common.R.active[GSET]) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot use -r when grid files are specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
