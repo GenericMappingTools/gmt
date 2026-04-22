@@ -7690,6 +7690,22 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				gmt_M_free (GMT, yp);
 				break;
 
+			case GMT_SYMBOL_QUAD_BEZIER: {	/* Quadratic Bezier: cp=(x,y) endpoint=(dim[0],dim[1]) */
+				/* P0 = last path point, P1 = (x,y) [control], P2 = (dim[0],dim[1]) [endpoint] */
+				double t, mt, x0b = 0.0, y0b = 0.0;
+				flush = true;
+				if (n > 0) { x0b = xx[n-1]; y0b = yy[n-1]; }
+				for (i = 1; i <= GMT_BEZIER_NPTS; i++) {
+					t = (double)i / GMT_BEZIER_NPTS;
+					mt = 1.0 - t;
+					if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+					xx[n] = mt*mt*x0b + 2.0*mt*t*x + t*t*dim[0];
+					yy[n] = mt*mt*y0b + 2.0*mt*t*y + t*t*dim[1];
+					n++;
+				}
+				break;
+			}
+
 			case GMT_SYMBOL_ROTATE:		/* Rotate the symbol coordinate system by a fixed amount */
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				PSL_setorigin (PSL, 0.0, 0.0, s->p[0], PSL_FWD);

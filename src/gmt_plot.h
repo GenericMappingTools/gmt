@@ -54,12 +54,15 @@
 #define GMT_SYMBOL_GEOVECTOR	((int)'=')
 #define GMT_SYMBOL_VARTEXT	((int)'L')
 #define GMT_SYMBOL_EPS	((int)'P')
+#define GMT_SYMBOL_QUAD_BEZIER	((int)'Q')	/* Quadratic Bezier curve: cp=(x,y) endpoint=(p[0],p[1]) */
 
 #define GMT_SYMBOL_LINE		0
 #define GMT_SYMBOL_NONE		((int)' ')
 #define GMT_SYMBOL_NOT_SET	((int)'*')
 
 #define GMT_DOT_SIZE 0.005	/* Size of a "dot" on a GMT PS map [in inches] */
+
+#define GMT_BEZIER_NPTS 20	/* Tessellation segments for Bezier curve macro commands */
 
 /*! FRONT symbols */
 
