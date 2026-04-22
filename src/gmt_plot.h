@@ -54,7 +54,8 @@
 #define GMT_SYMBOL_GEOVECTOR	((int)'=')
 #define GMT_SYMBOL_VARTEXT	((int)'L')
 #define GMT_SYMBOL_EPS	((int)'P')
-#define GMT_SYMBOL_QUAD_BEZIER	((int)'Q')	/* Quadratic Bezier curve: cp=(x,y) endpoint=(p[0],p[1]) */
+#define GMT_SYMBOL_QUAD_BEZIER	((int)'Q')	/* Quadratic Bezier: cp=(x,y) endpoint=(p[0],p[1]) */
+#define GMT_SYMBOL_CUBIC_BEZIER	((int)'B')	/* Cubic Bezier: cp1=(x,y) cp2=(p[0],p[1]) endpoint=(p[2],p[3]) */
 
 #define GMT_SYMBOL_LINE		0
 #define GMT_SYMBOL_NONE		((int)' ')
