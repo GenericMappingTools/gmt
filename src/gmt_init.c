@@ -4701,7 +4701,7 @@ bool gmtlib_B_is_frame (struct GMT_CTRL *GMT, char *in) {
 	if (strstr (in, "+u")) return false;	/* Found a +u so likely axis */
 	if (in[0] != 'z' && strchr ("WESNZwenzlrbtu", in[0])) return true;	/* Found one of the side specifiers so likely frame (check on z since -Bzaf could trick it) */
 	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzlrbtu", in[1]) != NULL)) return true;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
-	if (in[0] == 'z' && (in[1] == 0 || strchr ("WESNwenlrbtu", in[1]) != NULL)) return true;	/* Found -Bz in frame context, e.g. -Bzwn */
+	if (in[0] == 'z' && in[1] != 0 && strchr ("WESNwenlrbtu", in[1]) != NULL) return true;	/* Found -Bz in frame context, e.g. -Bzwn (bare -Bz is axis context) */
 	return false;	/* Cannot be frame */
 }
 
@@ -18626,7 +18626,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (GMT->current.setting.run_mode == GMT_MODERN && (!GMT->current.map.frame.set[GMT_X] || !GMT->current.map.frame.set[GMT_Y] || (GMT->common.J.zactive && !GMT->current.map.frame.set[GMT_Z]))) {
+				if (!GMT->current.map.frame.set[GMT_X] || !GMT->current.map.frame.set[GMT_Y] || (GMT->common.J.zactive && !GMT->current.map.frame.set[GMT_Z])) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
 					if (item[q] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffixes */
 					if (c && strchr (GMT_AXIS_MODIFIERS, c[1]))	/* We got the ones suitable for axes that we can chop off */
