@@ -8061,6 +8061,8 @@ void gmt_increment_adjust (struct GMT_CTRL *GMT, double *wesn, double *inc, enum
 		}
 	}
 
+	GMT->common.R.inc[GMT_X] = inc[GMT_X];	/* Update common.R.inc with converted values so subsequent GMT_Create_Data calls use degrees */
+	GMT->common.R.inc[GMT_Y] = inc[GMT_Y];
 	GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;	/* Processed, so resetting these */
 }
 
