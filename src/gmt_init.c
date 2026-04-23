@@ -18626,7 +18626,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) {
-				if (!GMT->current.map.frame.set[GMT_X] || !GMT->current.map.frame.set[GMT_Y] || (GMT->common.J.zactive && !GMT->current.map.frame.set[GMT_Z])) {
+				if (GMT->current.setting.run_mode == GMT_MODERN && (!GMT->current.map.frame.set[GMT_X] || !GMT->current.map.frame.set[GMT_Y] || (GMT->common.J.zactive && !GMT->current.map.frame.set[GMT_Z]))) {
 					char code[2], args[GMT_LEN256] = {""}, *c = strchr (item, '+');	/* Start of modifiers, if any */
 					if (item[q] && strstr (item, "+f")) GMT->current.plot.calclock.geo.wesn = 1;	/* Got +f, so enable W|E|S|N suffixes */
 					if (c && strchr (GMT_AXIS_MODIFIERS, c[1]))	/* We got the ones suitable for axes that we can chop off */
@@ -18648,6 +18648,13 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					else	/* Keep what we got */
 						strncpy (args, item, GMT_LEN256-1);
 					error = gmtlib_parse_B_option (GMT, args);
+				}
+				else if (GMT->common.J.zactive && !GMT->current.map.frame.set[GMT_Z] && item[q] == 'z' && item[q+1] == '\0') {
+					/* Classic mode: expand bare -Bz to -Bzaf when z-axis is active but has no annotation settings yet */
+					char args[GMT_LEN256] = {""};
+					if (q) args[0] = item[0];
+					strcat(args, "zaf");
+					error = gmtlib_parse_B_option(GMT, args);
 				}
 				else
 					error = gmtlib_parse_B_option (GMT, item);
