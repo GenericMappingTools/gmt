@@ -9472,7 +9472,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if ((error = gmt_DCW_parse (GMT, 'R', item, &info))) return error;
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		gmt_DCW_free (GMT, &info);
-		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
+		if (fabs(GMT->common.R.wesn[XLO]) > 1000.0 || GMT->common.R.wesn[YLO] > GMT->common.R.wesn[YHI]) return (GMT_MAP_NO_REGION);
 		if (GMT->current.setting.format_geo_out[0] == 'D')			/* [-180 180]*/
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		else if (GMT->current.setting.format_geo_out[0] == '+')		/* [0 360]*/
