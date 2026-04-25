@@ -11832,6 +11832,7 @@ void gmt_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		gmt_M_free (GMT, L);
 	}
 	gmt_M_free (GMT, G->segment);
+	G->n_segments = G->n_alloc = 0;
 	GMT_Destroy_Data (GMT->parent, &(G->X));
 	if (G->f_n) {	/* Array for fixed points */
 		gmt_M_free (GMT, G->f_xy[GMT_X]);
