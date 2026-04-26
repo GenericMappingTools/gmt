@@ -600,7 +600,7 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 			PSL_free (prev_addr);
 			return (NULL);
 		}
-		if ((tmp = realloc ( prev_addr, nelem * size)) == NULL) {
+		if ((tmp = realloc (prev_addr, nelem * size + 1)) == NULL) {
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
@@ -1149,8 +1149,8 @@ static void psl_prepare_buffer (struct PSL_CTRL *C, size_t len) {
 	/* Ensure buffer is large enough to accept additional text of length len */
 	size_t new_len = C->internal.n + len;       /* Need a buffer at least this large */
 	if (new_len < C->internal.n_alloc) return;  /* Already have a buffer that is large enough */
-	while (new_len > C->internal.n_alloc)       /* Wind past what is needed, growing by 1.75 */
-		C->internal.n_alloc = (size_t)(C->internal.n_alloc * 1.75);
+	while (new_len > C->internal.n_alloc)       /* Wind past what is needed, growing by 1.5 */
+		C->internal.n_alloc = (size_t)(C->internal.n_alloc * 1.5);
 	if ((C->internal.buffer = PSL_memory (C, C->internal.buffer, C->internal.n_alloc, char)) == NULL) {
 		PSL_message (C, PSL_MSG_ERROR, "Error: Could not allocate %d additional buffer space - this will not end well\n", len);
 	}
@@ -4586,17 +4586,17 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 	return (PSL_NO_ERROR);
 }
 
-char * PSL_getplot (struct PSL_CTRL *PSL) {
+char *PSL_getplot(struct PSL_CTRL *PSL) {
 	/* Simply pass the plot back to caller  */
 	if (!PSL->internal.memory) {
-		PSL_message (PSL, PSL_MSG_ERROR, "Error: Cannot get a plot since memory output was not activated!\n");
-		return (NULL);
+		PSL_message(PSL, PSL_MSG_ERROR, "Error: Cannot get a plot since memory output was not activated!\n");
+		return NULL;
 	}
 	if (!PSL->internal.buffer) {
-		PSL_message (PSL, PSL_MSG_ERROR, "Error: No plot in memory available!\n");
-		return (NULL);
+		PSL_message(PSL, PSL_MSG_ERROR, "Error: No plot in memory available!\n");
+		return NULL;
 	}
-	return (PSL->internal.buffer);
+	return PSL->internal.buffer;
 }
 
 int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[]) {
