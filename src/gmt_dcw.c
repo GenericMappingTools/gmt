@@ -928,6 +928,13 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 	gmt_M_free(GMT, Out);
 
 	if (mode & GMT_DCW_REGION) {
+		if (r_item == 0) {	/* No valid country/region codes were resolved - signal failure to caller */
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "No recognized DCW country or region codes were found\n");
+			gmt_M_free(GMT, Z);
+			gmt_M_free(GMT, order);
+			wesn[XLO] = 99999.0;	/* Trigger caller's > 1000 check (gmt_init.c) */
+			return NULL;
+		}
 		gmt_find_range(GMT, Z, r_item, &wesn[XLO], &wesn[XHI]);
 		gmt_M_free(GMT, Z);
 		GMT->current.io.geo.range = GMT_IGNORE_RANGE;		/* Override this setting explicitly */
@@ -960,7 +967,16 @@ struct GMT_DATASET *gmt_DCW_operation(struct GMT_CTRL *GMT, struct GMT_DCW_SELEC
 		gmt_free_segment(GMT, &P);
 	}
 
-	if (D) gmt_set_dataset_minmax(GMT, D);		/* Update stats */
+	if (D) {
+		if (tbl == 0) {	/* No valid codes produced data — table[0..n-1] pointers are NULL, cannot pass to psxy */
+			GMT_Report(GMT->parent, GMT_MSG_WARNING, "No recognized DCW codes produced any data\n");
+			GMT_Destroy_Data(GMT->parent, &D);
+			gmt_M_free(GMT, order);
+			return NULL;
+		}
+		D->n_tables = tbl;	/* Actual number of populated tables (may be less than originally allocated) */
+		gmt_set_dataset_minmax(GMT, D);		/* Update stats */
+	}
 
 	if (special) {	/* Plot via psxy or clip via psclip, then free dataset */
 		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};

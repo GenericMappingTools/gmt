@@ -8075,6 +8075,8 @@ void gmt_increment_adjust (struct GMT_CTRL *GMT, double *wesn, double *inc, enum
 		}
 	}
 
+	GMT->common.R.inc[GMT_X] = inc[GMT_X];	/* Update common.R.inc with converted values so subsequent GMT_Create_Data calls use degrees */
+	GMT->common.R.inc[GMT_Y] = inc[GMT_Y];
 	GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;	/* Processed, so resetting these */
 }
 
@@ -11844,6 +11846,7 @@ void gmt_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		gmt_M_free (GMT, L);
 	}
 	gmt_M_free (GMT, G->segment);
+	G->n_segments = G->n_alloc = 0;
 	GMT_Destroy_Data (GMT->parent, &(G->X));
 	if (G->f_n) {	/* Array for fixed points */
 		gmt_M_free (GMT, G->f_xy[GMT_X]);
@@ -12325,21 +12328,21 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	return (ndec);
 }
 
-void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int mode) {
+void gmt_set_inside_mode(struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int mode) {
 	/* Determine if we use spherical or Cartesian function for in--on-out polygon tests */
 	static char *method[2] = {"Cartesian", "spherical"};
 	if (mode == GMT_IOO_SPHERICAL)	/* Force spherical */
 		GMT->current.proj.sph_inside = true;
 	else if (mode == GMT_IOO_CARTESIAN)	/* Force Cartesian */
 		GMT->current.proj.sph_inside = false;
-	else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* If data is Cartesian then we do that */
+	else if (gmt_M_is_cartesian(GMT, GMT_IN))	/* If data is Cartesian then we do that */
 		GMT->current.proj.sph_inside = false;
 	else if (GMT->current.map.is_world)	/* Here we are dealing with geographic data that has 360 degree range */
 		GMT->current.proj.sph_inside = true;
 	else if (D) {	/* Geographic data less than 360 degree range in longitudes */
 		double lat[2];
 		lat[0] = D->min[GMT_Y]; lat[1] = D->max[GMT_Y];
-		if (doubleAlmostEqual (lat[0], -90.0) || doubleAlmostEqual (lat[1], +90.0))	/* Goes to a pole, must do spherical */
+		if (doubleAlmostEqual(lat[0], -90.0) || doubleAlmostEqual(lat[1], +90.0))	/* Goes to a pole, must do spherical */
 			GMT->current.proj.sph_inside = true;
 		else {	/* Limited in lon and lat, can do Cartesian but must ensure polygons do not jump within range */
 			uint64_t tbl, seg, row;
@@ -12359,13 +12362,22 @@ void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 					S = D->table[tbl]->segment[seg];	/* Shorthand */
 					for (row = 0; row < S->n_rows; row++)
 						gmt_lon_range_adjust (range, &S->data[GMT_X][row]);
+					/* Recompute segment x-range from adjusted vertices; S->min/max may be in a
+					 * different longitude convention (e.g. 0-360 from quad_finalize) than the
+					 * vertices just adjusted above, causing gmt_non_zero_winding to receive x
+					 * and polygon vertices in mismatched ranges. */
+					S->min[GMT_X] = S->max[GMT_X] = S->data[GMT_X][0];
+					for (row = 1; row < S->n_rows; row++) {
+						if (S->data[GMT_X][row] < S->min[GMT_X]) S->min[GMT_X] = S->data[GMT_X][row];
+						if (S->data[GMT_X][row] > S->max[GMT_X]) S->max[GMT_X] = S->data[GMT_X][row];
+					}
 				}
 			}
 		}
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not enough information given to gmt_set_inside_mode.\n");
-	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "A point's inside/outside status w.r.t. polygon(s) will be determined using a %s algorithm.\n", method[GMT->current.proj.sph_inside]);
+		GMT_Report(GMT->parent, GMT_MSG_ERROR, "Not enough information given to gmt_set_inside_mode.\n");
+	GMT_Report(GMT->parent, GMT_MSG_INFORMATION, "A point's inside/outside status w.r.t. polygon(s) will be determined using a %s algorithm.\n", method[GMT->current.proj.sph_inside]);
 }
 
 /*! . */
@@ -13250,22 +13262,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 }
 
 /* Clipper to ensure a byte stays in 0-255 range */
-#if 1
-GMT_LOCAL inline unsigned char gmtsupport_clip_to_byte (int byte) { if (byte < 0) return (0); else if (byte > 255) return (255); else return ((unsigned char)byte);}
-#else
-/* For debugging BC actions for images when the result is outside byte range  */
-GMT_LOCAL unsigned char gmtsupport_clip_to_byte (int byte) {
-	if (byte < 0) {
-		fprintf (stderr, "byte = %d\n", byte);
-		return (0);
-	}
-	if (byte > 255) {
-		fprintf (stderr, "byte = %d\n", byte);
-		return (255);
-	}
-	return ((unsigned char)byte);
-}
-#endif
+GMT_LOCAL inline unsigned char gmtsupport_clip_to_byte(int byte) { if (byte < 0) return (0); else if (byte > 255) return (255); else return ((unsigned char)byte);}
 
 /*! . */
 int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {

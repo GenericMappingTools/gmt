@@ -218,6 +218,12 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. _-X:
+
+**-X**
+    For externals only. Apply the crop blanks (-A) option to the in-memory PS
+    and leave it accessible via GMT->PSL->internal.buffer
+
 .. _-W:
 
 **-W**\ [**+a**\ *altmode*\ [*alt*]][**+c**][**+f**\ *minfade/maxfade*][**+g**][**+k**][**+l**\ *minLOD/maxLOD*][**+n**\ *layername*][**+o**\ *foldername*][**+t**\ *docname*][**+u**\ *URL*]

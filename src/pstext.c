@@ -200,6 +200,7 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
 		if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
 		if (T->boxflag & 16) mode = PSL_RECT_CONVEX;
+		gmt_setfont (GMT, &T->font);	/* Must set font color before psl_paragraphprocess reads PSL_IS_FONT */
 		if (Ctrl->S.active) {	/* Lay down shaded box first */
 			PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
 			PSL_plotparagraphbox (PSL, x + Ctrl->S.off[GMT_X], y + Ctrl->S.off[GMT_Y], T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
@@ -210,7 +211,6 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		/* Compute text box, draw/fill it, and in the process store the text in the PS file for next command */
 		PSL_plotparagraphbox (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
 		/* Passing NULL means we typeset using the last stored paragraph info */
-		gmt_setfont (GMT, &T->font);
 		PSL_plotparagraph (PSL, x, y, T->font.size, NULL, T->paragraph_angle, T->block_justify);
 	}
 	else {	/* No box beneath */
@@ -1024,7 +1024,37 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			curr_txt = use_text;
 		fmode = gmt_setfont (GMT, &T.font);
 
-		PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
+		if (Ctrl->G.mode) {	/* Set up text clip path instead of plotting directly */
+			int n_labels = 1, form = (T.boxflag & 4) ? PSL_TXT_ROUND : 0;
+			char *font = NULL, **fonts = NULL;
+			double one_x = plot_x, one_y = plot_y, one_angle = T.paragraph_angle;
+			int one_just = T.block_justify;
+			char *one_txt[1];
+			one_txt[0] = curr_txt;
+			form |= PSL_TXT_INIT;
+			if (Ctrl->G.mode == PSTEXT_CLIPPLOT) form |= PSL_TXT_SHOW;
+			form |= PSL_TXT_CLIP_ON;
+			gmt_textpath_init(GMT, &Ctrl->W.pen, Ctrl->G.fill.rgb);
+			if (T.space_flag) {
+				offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
+				offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
+			}
+			else {
+				offset[0] = T.x_space;
+				offset[1] = T.y_space;
+			}
+			fonts = gmt_M_memory(GMT, NULL, 1, char *);
+			PSL_setfont(PSL, T.font.id);
+			font = PSL_makefont(PSL, T.font.size, T.font.fill.rgb);
+			fonts[0] = strdup(font);
+			psl_set_int_array(PSL, "label_justify", &one_just, 1);
+			psl_set_txt_array(PSL, "label_font", fonts, 1);
+			PSL_plottextline(PSL, NULL, NULL, NULL, 1, &one_x, &one_y, one_txt, &one_angle, &n_labels, T.font.size, T.block_justify, offset, form);
+			gmt_M_str_free(fonts[0]);
+			gmt_M_free(GMT, fonts);
+		}
+		else
+			PSL_plottext(PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
 
 		if (clip_set)
 			gmt_map_clip_off (GMT);
@@ -1054,7 +1084,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 		if (!Ctrl->F.get_xy_from_justify && Ctrl->F.R_justify == 0) ncol += 2;	/* Expect input to have x,y */
 		ncol += a_col;				/* Might also have the angle among the numerical columns */
 		if (Ctrl->F.get_text == GET_CMD_FORMAT) {	/* Format z column into text */
-            		z_col = ncol - a_col;    /* Normally this would be GMT_Z */
+			z_col = ncol - a_col;    /* Normally this would be GMT_Z */
 			ncol++;	/* One more numerical column to read */
 			rec_mode = (Ctrl->F.mixed) ? GMT_READ_MIXED : GMT_READ_DATA;
 			geometry = (Ctrl->F.mixed) ? GMT_IS_NONE : GMT_IS_POINT;

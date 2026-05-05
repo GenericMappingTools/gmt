@@ -1972,10 +1972,11 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psscale task */
 	int error = 0;
 	unsigned int i, tr_status;
+	bool save_shrink = false;
 
 	char text[GMT_LEN256] = {""};
 
-	double dz, dim[2], start_val, stop_val, wesn[4], *z_width = NULL;
+	double dz, dim[2], start_val, stop_val, wesn[4], *z_width = NULL, save_shrink_scale = 0.0;
 
 	struct PSSCALE_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -2110,9 +2111,9 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (gmt_map_setup (GMT, GMT->common.R.wesn))
+		if (gmt_map_setup(GMT, GMT->common.R.wesn))
 			Return (GMT_PROJECTION_ERROR);
-		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		gmt_set_refpoint(GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 		if (Ctrl->D.R.dim[GMT_X] == 0.0) {	/* Automatically set scale width */
 			Ctrl->D.R.dim[GMT_X] = Ctrl->D.R.scl[GMT_X] * (Ctrl->D.horizontal ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI]);
@@ -2120,23 +2121,28 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 				Ctrl->D.R.dim[GMT_Y] = Ctrl->D.R.scl[GMT_Y] * Ctrl->D.R.dim[GMT_X];
 			if (Ctrl->D.reverse) Ctrl->D.R.dim[GMT_X] = -Ctrl->D.R.dim[GMT_X];
 			if (Ctrl->Q.active && GMT->current.map.frame.draw)
-				sprintf (text, "X%gil/%gi", Ctrl->D.R.dim[GMT_X], Ctrl->D.R.dim[GMT_Y]);
+				sprintf(text, "X%gil/%gi", Ctrl->D.R.dim[GMT_X], Ctrl->D.R.dim[GMT_Y]);
 			else if (P->mode & GMT_CPT_TIME)	/* Need time axis */
-				sprintf (text, "X%giT/%gi", Ctrl->D.R.dim[GMT_X], Ctrl->D.R.dim[GMT_Y]);
+				sprintf(text, "X%giT/%gi", Ctrl->D.R.dim[GMT_X], Ctrl->D.R.dim[GMT_Y]);
 			else
-				sprintf (text, "X%gi/%gi", Ctrl->D.R.dim[GMT_X], Ctrl->D.R.dim[GMT_Y]);
-			GMT_Report (API, GMT_MSG_DEBUG, "Scale mapping set to -J%s\n", text);
+				sprintf(text, "X%gi/%gi", Ctrl->D.R.dim[GMT_X], Ctrl->D.R.dim[GMT_Y]);
+			GMT_Report(API, GMT_MSG_DEBUG, "Scale mapping set to -J%s\n", text);
 		}
-		if ((PSL = gmt_plotinit (GMT, options)) == NULL)
+		if ((PSL = gmt_plotinit(GMT, options)) == NULL)
 			Return (GMT_RUNTIME_ERROR);
-		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plane_perspective(GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
-		gmt_parse_common_options (GMT, "J", 'J', text);
+		gmt_parse_common_options(GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.R.dim[GMT_Y];
-		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 1;	/* Do not rescale dimensions */
-		if (gmt_map_setup (GMT, wesn))
+		if (GMT->current.plot.panel.active || GMT->current.plot.inset.active) GMT->current.plot.panel.no_scaling = 1;	/* Do not rescale dimensions */
+		save_shrink = GMT->parent->inset_shrink;
+		save_shrink_scale = GMT->parent->inset_shrink_scale;
+		GMT->parent->inset_shrink = false;	/* Fake colorbar projection must not inherit inset shrink scale */
+		if (gmt_map_setup(GMT, wesn))
 			Return (GMT_PROJECTION_ERROR);
-		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
+		GMT->parent->inset_shrink = save_shrink;
+		GMT->parent->inset_shrink_scale = save_shrink_scale;
+		if (GMT->current.plot.panel.active || GMT->current.plot.inset.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
 
 	if (!GMT->current.map.frame.draw && (PH = gmt_get_C_hidden (P)) && PH->auto_scale) {	/* No -B given yet we have raw auto-scaling */

@@ -37,7 +37,7 @@
 #define THIS_MODULE_MODERN_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using Ghostscript"
-#define THIS_MODULE_KEYS	"<X{+,FI),AD)"
+#define THIS_MODULE_KEYS	"<X{+,FI),AD),XX)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
@@ -191,6 +191,9 @@ struct PSCONVERT_CTRL {
 		char *foldername;	/* Name of KML folder */
 		double altitude;
 	} W;
+	struct PSCONVERT_X {	/* -X */
+		bool active;
+	} X;
 	struct PSCONVERT_Z { /* -Z */
 		bool active;
 	} Z;
@@ -675,7 +678,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+i][+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
 		"[-N[+f<fade>][+g<backfill>][+k<fadefill>][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
-		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s [-!]"
+		"[-X] [-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s [-!]"
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -777,6 +780,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
 		"to create a geoTIFF file.");
+	GMT_Usage (API, 1, "\n-X");
+	GMT_Usage (API, -2, "For externals only. Apply the crop blanks (-A) option to the in-memory PS "
+		"and leave it accessible via GMT->PSL->internal.buffer");
 	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
 	GMT_Usage (API, -2, "Write an ESRI type world file suitable to make .tif files "
 		"recognized as geotiff by software that know how to do it. Be aware, "
@@ -1016,7 +1022,9 @@ static int parse(struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				n_errors += psconvert_parse_GE_settings (GMT, opt->arg, Ctrl);
 				break;
-
+			case 'X':	/* No output, but the modified PostScript is returned in externals */
+				n_errors += gmt_M_repeated_module_option(API, Ctrl->X.active);
+				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				if (GMT->current.setting.run_mode == GMT_MODERN) {
@@ -1188,10 +1196,10 @@ GMT_LOCAL void psconvert_possibly_fill_or_outline_BB (struct GMT_CTRL *GMT, stru
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int psconvert_pipe_HR_BB(struct GMTAPI_CTRL *API, struct PSCONVERT_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A (if used here) option but on an in-memory PS 'file' */
-	char      cmd[GMT_LEN512] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
-	int       fh, r, c_begin = 0;
-	size_t    n;
-	bool      landscape = false;
+	char      cmd[GMT_LEN512] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, *ps_ptr, *line_start, *line_end, *next_line, *next_eol, saved_nl, c;
+	int       fh, r;
+	size_t    n, len_old, len_next;
+	bool      landscape = false, found = false;
 	double    x0, y0, x1, y1, xt = 0, yt = 0;
 	struct GMT_POSTSCRIPT *PS = NULL;
 #ifdef _WIN32
@@ -1313,28 +1321,40 @@ GMT_LOCAL int psconvert_pipe_HR_BB(struct GMTAPI_CTRL *API, struct PSCONVERT_CTR
 	else
 		GMT_Report (API, GMT_MSG_WARNING, "Something very odd the GMT PS does not have a %%HiResBoundingBox\n");
 
-	/* Find where is the setpagedevice line */
-	if ((pch = strstr(PS->data, "setpagedevice")) != NULL) {
-		while (pch[c_begin] != '\n') c_begin--;
-		c_begin++;	/* It receded one too much */
-		/* So now we know where the line starts. Put a 'translate' command in its place. */
-		(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt, yt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt, yt);
-		for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
-		while (pch[c_begin] != '\n')  pch[c_begin++] = ' ';     /* Make sure there are only spaces till EOL */
-	}
-	else {
-		if ((pch = strstr(PS->data, " translate")) != NULL) {		/* If user runs through this function twice 'setpagedevice' was changed to 'translate' */
-			double old_xt, old_yt;
-			while (pch[c_begin] != '\n') c_begin--;
-			c_begin++;	/* Goto line start but it receded one too much */
-			sscanf (&pch[c_begin], "%lf %lf", &old_xt, &old_yt);
-			(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt + old_xt, yt + old_xt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt + old_xt, yt + old_xt);
-			for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
-			while (pch[c_begin] != '\n') pch[c_begin++] = ' ';
+	/* Find the setpagedevice line that has PageSize, update page size and add rotation/translation on next line */
+	ps_ptr = PS->data;
+	while (!found && (pch = strstr(ps_ptr, "setpagedevice")) != NULL) {
+		line_start = pch;
+		while (line_start > PS->data && line_start[-1] != '\n') line_start--;
+		if ((line_end = strchr(pch, '\n')) == NULL) { ps_ptr = pch + 13; continue; }
+		saved_nl = *line_end;  *line_end = '\0';
+		found = (strstr(line_start, "PageSize") != NULL);
+		*line_end = saved_nl;
+		if (!found) { ps_ptr = pch + 13; continue; }
+		/* Replace this line with updated PageSize setpagedevice */
+		len_old = (size_t)(line_end - line_start);
+		sprintf(buf, "PSLevel 1 gt { << /PageSize [%.7g %.7g] /ImagingBBox null >> setpagedevice } if", *w, *h);
+		for (n = 0; n < strlen(buf) && n < len_old; n++) line_start[n] = buf[n];
+		while (n < len_old) line_start[n++] = ' ';
+		/* Write rotation/translation on next line */
+		next_line = line_end + 1;
+		if ((next_eol = strchr(next_line, '\n')) != NULL) {
+			len_next = (size_t)(next_eol - next_line);
+			buf[0] = '\0';
+			if (r != 0) {
+				sprintf(buf, "%d R\n", r);
+				if (xt != 0.0 || yt != 0.0) { sprintf(t, "%g %g T", xt, yt); strcat(buf, t); }
+			}
+			else if (xt != 0.0 || yt != 0.0)
+				sprintf(buf, "%g %g T", xt, yt);
+			if (buf[0] != '\0') {
+				for (n = 0; n < strlen(buf) && n < len_next; n++) next_line[n] = buf[n];
+				while (n < len_next) next_line[n++] = ' ';
+			}
 		}
-		else
-			GMT_Report(API, GMT_MSG_WARNING, "Something very odd the GMT PS does not have the setpagedevice line\n");
 	}
+	if (!found)
+		GMT_Report(API, GMT_MSG_WARNING, "Something very odd the GMT PS does not have the setpagedevice line\n");
 
 	gmt_M_free (API->GMT, PS);
 
@@ -1536,6 +1556,8 @@ GMT_LOCAL int psconvert_in_mem_PS(struct GMTAPI_CTRL *API, struct PSCONVERT_CTRL
 
 	if (psconvert_pipe_HR_BB (API, Ctrl, gs_BB, margin, &w, &h))		/* Apply the -A stuff to the in-memory PS */
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
+
+	if (Ctrl->X.active) return GMT_NOERROR;		/* User wants only the reworked PS */
 
 	if (Ctrl->T.active) {		/* Then write the converted file into a file instead of storing it into a Image struct */
 		char t[PATH_MAX] = {""};
@@ -1894,8 +1916,8 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 
 	/* -------------------- Special case of in-memory PS. Process it and return ------------------- */
 	if (API->external && Ctrl->In.n_files == 1 && ps_names[0][0] == '=') {
-		if (!return_image && !Ctrl->T.active) {
-			GMT_Report (API, GMT_MSG_ERROR, "Internal PSL PostScript rip requires output file via -F\n");
+		if (!return_image && !Ctrl->T.active && !Ctrl->X.active) {
+			GMT_Report (API, GMT_MSG_ERROR, "Internal PSL PostScript rip requires output file via -F or -X\n");
 			error++;
 		}
 		else
@@ -2231,7 +2253,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 			else if ((strstr(line, "%%Orientation:")) &&!strncmp(&line[15], "Landscape", 9)) {
 				landscape = landscape_orig = true;
 				if (Ctrl->O.active && (Ctrl->P.active || Ctrl->A.crop)) {
-					/* The case here is that the on a first time all wet well, but on a second run the Orientation
+					/* The case here is that the on a first time all went well, but on a second run the Orientation
 					   was still Landscape and later on the w(idth) and h(eight) were swapped because they are set
 					   after value that were edit by the first run. The trick is then to set the Orientation to
 					   Portrait even before the rotation had been applied.

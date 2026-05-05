@@ -541,7 +541,7 @@ EXTERN_MSC int GMT_psbarb (void *V_API, int mode, void *args) {
 				Ctrl->Q.B.pen.width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
 			if (Ctrl->Q.B.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-				d = d_atan2d (in[ex2+2*S.read_size], in[ex1+2*S.read_size]);
+				d = d_atan2d (-in[ex2+2*S.read_size], -in[ex1+2*S.read_size]);
 			else
 				d = in[ex1+2*S.read_size];	/* Got direction */
 			if (!gmt_M_is_geographic (GMT, GMT_IN))	/* Cartesian azimuth; change to direction */

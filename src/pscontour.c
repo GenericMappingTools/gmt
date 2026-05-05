@@ -929,33 +929,75 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 		n_contours = c;
 	}
 	else if ((Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',')) || (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ','))) {	/* Got a comma-separated list of contours */
-		uint64_t na = 0, nc = 0;
-		double *za = NULL, *zc = NULL;
-		if (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') && (za = gmt_list_to_array (GMT, Ctrl->A.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &na)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing annotated contours from list %s\n", Ctrl->A.info.file);
+		uint64_t na = 0, nc = 0, kk;
+		double *za = NULL, *zclist = NULL;
+		bool A_is_list = (Ctrl->A.info.file && strchr (Ctrl->A.info.file, ',') != NULL);
+		bool C_is_list = (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') != NULL);
+		bool C_has_interval = (!C_is_list && Ctrl->C.info.file == NULL && !Ctrl->C.info.cpt && Ctrl->C.info.interval > 0.0);
+		if (A_is_list && (za = gmt_list_to_array(GMT, Ctrl->A.info.file, gmt_M_type(GMT, GMT_IN, GMT_Z), true, &na)) == NULL) {
+			GMT_Report(API, GMT_MSG_ERROR, "Failure while parsing annotated contours from list %s\n", Ctrl->A.info.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (Ctrl->C.info.file && strchr (Ctrl->C.info.file, ',') && (zc = gmt_list_to_array (GMT, Ctrl->C.info.file, gmt_M_type (GMT, GMT_IN, GMT_Z), true, &nc)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while parsing regular contours from list %s\n", Ctrl->C.info.file);
-			if (za) gmt_M_free (GMT, za);
+		if (C_is_list && (zclist = gmt_list_to_array(GMT, Ctrl->C.info.file, gmt_M_type(GMT, GMT_IN, GMT_Z), true, &nc)) == NULL) {
+			GMT_Report(API, GMT_MSG_ERROR, "Failure while parsing regular contours from list %s\n", Ctrl->C.info.file);
+			if (za) gmt_M_free(GMT, za);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		n_contours = na + nc;
-		cont = gmt_M_memory (GMT, NULL, n_contours, struct GMT_CONTOUR_INFO);
-		for (c = 0; c < nc; c++) {
-			cont[c].type = 'C';
-			cont[c].val = zc[c];
-			cont[c].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+		if (A_is_list && C_has_interval) {	/* -A is a list and -C is an interval: generate intervals from -C and mark -A list values as annotated */
+			double min, max, noise = GMT_CONV4_LIMIT * Ctrl->C.info.interval;
+			int n_int, ic, j, found;
+			min = floor(xyz[0][GMT_Z] / Ctrl->C.info.interval) * Ctrl->C.info.interval;
+			if (min < xyz[0][GMT_Z]) min += Ctrl->C.info.interval;
+			max = ceil(xyz[1][GMT_Z] / Ctrl->C.info.interval) * Ctrl->C.info.interval;
+			if (max > xyz[1][GMT_Z]) max -= Ctrl->C.info.interval;
+			n_int = irint (max / Ctrl->C.info.interval) - irint (min / Ctrl->C.info.interval) + 1;
+			if (n_int < 0) n_int = 0;
+			cont = gmt_M_memory(GMT, NULL, (size_t)n_int + na, struct GMT_CONTOUR_INFO);
+			n_contours = 0;
+			for (ic = irint(min / Ctrl->C.info.interval); ic <= irint(max / Ctrl->C.info.interval); ic++) {
+				gmt_M_memset (&cont[n_contours], 1, struct GMT_CONTOUR_INFO);
+				cont[n_contours].val = ic * Ctrl->C.info.interval;
+				if (Ctrl->Q.zero && gmt_M_is_zero(cont[n_contours].val)) continue;
+				cont[n_contours].type = 'C';
+				cont[n_contours].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+				cont[n_contours].do_tick = Ctrl->T.active;
+				n_contours++;
+			}
+			for (kk = 0; kk < na; kk++) {	/* Mark matching contours 'A'; append non-matching list values */
+				found = -1;
+				for (j = 0; j < (int)n_contours; j++) {
+					if (fabs(cont[j].val - za[kk]) < noise) { found = j; break; }
+				}
+				if (found >= 0)
+					cont[found].type = 'A';
+				else {
+					gmt_M_memset(&cont[n_contours], 1, struct GMT_CONTOUR_INFO);
+					cont[n_contours].val = za[kk];
+					cont[n_contours].type = 'A';
+					cont[n_contours].do_tick = Ctrl->T.active ? 1 : 0;
+					cont[n_contours].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+					n_contours++;
+				}
+			}
 		}
-		for (c = 0; c < na; c++) {
-			cont[c+nc].type = 'A';
-			cont[c+nc].val = za[c];
-			cont[c+nc].do_tick = Ctrl->T.active ? 1 : 0;
-			cont[c+nc].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+		else {
+			n_contours = na + nc;
+			cont = gmt_M_memory(GMT, NULL, n_contours, struct GMT_CONTOUR_INFO);
+			for (c = 0; c < nc; c++) {
+				cont[c].type = 'C';
+				cont[c].val = zclist[c];
+				cont[c].do_tick = Ctrl->T.active ? 1 : 0;
+				cont[c].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			}
+			for (c = 0; c < na; c++) {
+				cont[c+nc].type = 'A';
+				cont[c+nc].val = za[c];
+				cont[c+nc].do_tick = Ctrl->T.active ? 1 : 0;
+				cont[c+nc].angle = (Ctrl->contour.angle_type == GMT_ANGLE_LINE_FIXED) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			}
 		}
-		if (za) gmt_M_free (GMT, za);
-		if (zc) gmt_M_free (GMT, zc);
+		if (za) gmt_M_free(GMT, za);
+		if (zclist) gmt_M_free(GMT, zclist);
 	}
 	else if (Ctrl->C.info.file) {	/* Read contour info from file with cval C|A [angle [pen]] records */
 		if ((cont = gmt_get_contours_from_table (GMT, Ctrl->C.info.file, Ctrl->T.active, &Ctrl->contour.angle_type, &n_contours)) == NULL) Return (GMT_RUNTIME_ERROR);
