@@ -1976,18 +1976,50 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 }
 
 /*! . */
-GMT_LOCAL uint64_t gmtmap_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, double end_x[], double end_y[], double **xarc, double **yarc) {
+GMT_LOCAL bool gmtmap_arc_long_way (struct GMT_CTRL *GMT, double end_x[], double end_y[], double *lon, double *lat, uint64_t np) {
+	/* Decide which horizon arc connects a pair of polygon crossings (issue #5151).
+	 * end_x[]/end_y[] are the two crossing points expressed as offsets from the map center.
+	 * We take the midpoint of the SHORT arc, invert-project it back to lon/lat, and test
+	 * whether that midpoint lies inside the original spherical polygon.  If it does NOT,
+	 * the short arc sits outside the polygon -- so the polygon's interior must be reached
+	 * via the LONG (complementary) arc, e.g. when the polygon encloses the projection
+	 * center. */
+	double az1, az2, d_az, mid_az, xr, yr, mx, my, mlon, mlat, lon_ref;
+	if (np < 3) return false;
+	az1 = d_atan2d(end_y[0], end_x[0]);
+	az2 = d_atan2d(end_y[1], end_x[1]);
+	gmt_M_set_delta_lon(az1, az2, d_az);
+	mid_az = az1 + 0.5 * d_az;
+	sincosd(mid_az, &yr, &xr);
+	mx = GMT->current.proj.r * (1.0 + xr);
+	my = GMT->current.proj.r * (1.0 + yr);
+	gmt_xy_to_geo(GMT, &mlon, &mlat, mx, my);
+	/* Bring mlon into the polygon's longitude range to avoid 360 wrap mismatches */
+	lon_ref = lon[0];
+	while (mlon - lon_ref >  180.0) mlon -= 360.0;
+	while (mlon - lon_ref < -180.0) mlon += 360.0;
+	return (gmt_non_zero_winding(GMT, mlon, mlat, lon, lat, np) == GMT_OUTSIDE);
+}
+
+/*! . */
+GMT_LOCAL uint64_t gmtmap_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, double end_x[], double end_y[], double **xarc, double **yarc, bool long_way) {
 	uint64_t n_arc, k, pt;
 	double az1, az2, d_az, da, xr, yr, da_try, *xx = NULL, *yy = NULL;
 
 	/* When a polygon crosses out then in again into the circle we need to add a boundary arc
 	 * to the polygon where it is clipped.  We simply sample the circle as finely as the arc
-	 * length and the current line_step demands */
+	 * length and the current line_step demands.  If long_way is true we instead trace the
+	 * complementary (long) arc around the horizon -- needed when the polygon encloses the
+	 * projection center so that the polygon's interior wraps around the visible disk. */
 
 	da_try = (GMT->current.setting.map_line_step * 360.0) / (TWO_PI * GMT->current.proj.r);	/* Angular step in degrees */
 	az1 = d_atan2d (end_y[0], end_x[0]);	/* azimuth from map center to 1st crossing */
 	az2 = d_atan2d (end_y[1], end_x[1]);	/* azimuth from map center to 2nd crossing */
-	gmt_M_set_delta_lon (az1, az2, d_az);	/* Insist we take the short arc for now */
+	gmt_M_set_delta_lon(az1, az2, d_az);	/* Short arc delta in [-180, 180] */
+	if (long_way) {		/* Take the complementary arc instead */
+		if (d_az > 0.0) d_az -= 360.0;
+		else            d_az += 360.0;
+	}
 	n_arc = lrint (ceil (fabs (d_az) / da_try));	/* Get number of integer increments of da_try degree... */
 	if (n_arc < 2) n_arc = 2;	/* ...but minimum 2 */
 	da = d_az / (n_arc - 1);	/* Reset da to get exact steps */
@@ -2055,13 +2087,12 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 				add_boundary = !this_side;	/* We only add boundary arcs if we first exited and now entered the circle again */
 			}
 			if (add_boundary) {	/* Crossed twice.  Now add arc between the two crossing points */
-				/* PW: Currently, we make the assumption that the shortest arc is the one we want.  However,
-				 * extremely large polygons could cut the boundary so that it is the longest arc we want.
-				 * The way to improve this algorithm in the future is to find the two opposite points on
-				 * the circle boundary that lies on the bisector of az1,az2, and see which point lies
-				 * inside the polygon.  This would require that gmt_inonout_sphpol be called.
-				 */
-				if ((n_arc = gmtmap_radial_boundary_arc (GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc)) > 0) {
+				/* Choose between short and long arc by testing the midpoint of the short arc:
+				 * project it back to lon/lat and check if it lies inside the original polygon.
+				 * If outside, the polygon's interior is on the far side of the disk and we must
+				 * take the long arc instead (issue #5151). */
+				bool long_way = gmtmap_arc_long_way(GMT, &end_x[nx-2], &end_y[nx-2], lon, lat, np);
+				if ((n_arc = gmtmap_radial_boundary_arc(GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc, long_way)) > 0) {
 					if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 					gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 					gmt_M_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
@@ -2084,7 +2115,8 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 	}
 
 	if (nx == 2) {	/* Must close polygon by adding boundary arc */
-		if ((n_arc = gmtmap_radial_boundary_arc (GMT, this_side, end_x, end_y, &xarc, &yarc)) > 0) {
+		bool long_way = gmtmap_arc_long_way(GMT, end_x, end_y, lon, lat, np);
+		if ((n_arc = gmtmap_radial_boundary_arc(GMT, this_side, end_x, end_y, &xarc, &yarc, long_way)) > 0) {
 			if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 			gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 			gmt_M_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
