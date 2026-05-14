@@ -4866,6 +4866,12 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	/* Now parse the frame choices, if any */
 	error += gmtinit_decode5_wesnz (GMT, text, true);
 
+	/* Issue #5635: Only set frame.draw = true when a modifier that actually requires a drawn frame outline
+	 * is given (+w pen, +b 3D box, +w wall). Plain +t<title>, +s<subtitle>, +g<fill> must NOT cause an
+	 * unwanted frame outline; title/subtitle render via map_annotate path, fill via plotcanvas. */
+	if (GMT->current.map.frame.draw_wall || (GMT->current.map.frame.draw_box & (GMT_3D_BOX | GMT_3D_WALL)))
+		GMT->current.map.frame.draw = true;
+
 	return (error);
 }
 
