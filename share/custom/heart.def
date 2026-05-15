@@ -1,0 +1,10 @@
+# Heart shape using cubic Bezier curves (B command)
+# Classic heart: two cubic bezier lobes meeting at bottom tip (0,-0.5)
+# and top center notch (0, 0.15)
+
+# Right lobe: from notch (0,0.15) → top-right → right → bottom tip
+0.0   0.15  M
+ 0.5   0.5  0.5  -0.1  0.0  -0.5  B
+
+# Left lobe: from bottom tip (0,-0.5) → left → top-left → back to notch
+-0.5  -0.1  -0.5   0.5  0.0   0.15  B
