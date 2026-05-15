@@ -61,7 +61,8 @@ enum GMT_enum_session {
 	GMT_SESSION_LOGERRORS = 8,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 	GMT_SESSION_RUNMODE   = 16,	/* If set enable GMT's modern runmode. [Classic] */
 	GMT_SESSION_NOHISTORY = 32,	/* Do not use gmt.history at all [Let modules decide] */
-	GMT_SESSION_NOGDALCLOSE = 64	/* Do not call GDALDestroyDriverManager when using GDAL functions */
+	GMT_SESSION_NOGDALCLOSE = 64,	/* Do not call GDALDestroyDriverManager when using GDAL functions */
+	GMT_SESSION_BIN2LIBDIR  = 128	/* Reset bindir to libdir. This is to be used from externals only where bindir is set to callers bindir */
 };
 
 /*! Logging settings */
