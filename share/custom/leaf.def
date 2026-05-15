@@ -1,0 +1,8 @@
+# Leaf shape using quadratic Bezier curves
+# Tip at bottom (0,-0.5), apex at top (0,0.5)
+# Right lobe: cp=(0.5,-0.2), right side curves out
+# Left lobe:  cp=(-0.5,-0.2), symmetric
+
+0.0  -0.5  M
+ 0.5  0.3  0.0  0.5  Q
+-0.5  0.3  0.0 -0.5  Q
