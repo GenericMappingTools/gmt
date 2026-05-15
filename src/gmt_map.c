@@ -6460,52 +6460,54 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		GMT->current.proj.z_project.corner_x[1] = GMT->current.proj.z_project.corner_x[2] = (GMT->current.proj.xyz_pos[GMT_X]) ? GMT->common.R.wesn[XHI] : GMT->common.R.wesn[XLO];
 		GMT->current.proj.z_project.corner_y[0] = GMT->current.proj.z_project.corner_y[1] = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YLO] : GMT->common.R.wesn[YHI];
 		GMT->current.proj.z_project.corner_y[2] = GMT->current.proj.z_project.corner_y[3] = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO];
-		for (i = 0; i < GMT->current.map.n_lon_nodes; i++) {	/* S and N */
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZLO], &x, &y);
+		for (i = 0; i <= GMT->current.map.n_lon_nodes; i++) {	/* S and N (inclusive of XHI to include the eastern boundary) */
+			double lon = (i == GMT->current.map.n_lon_nodes) ? GMT->common.R.wesn[XHI] : GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon;
+			gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			}
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZLO], &x, &y);
+			gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			}
 		}
-		for (i = 0; i < GMT->current.map.n_lat_nodes; i++) {	/* W and E */
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZLO], &x, &y);
+		for (i = 0; i <= GMT->current.map.n_lat_nodes; i++) {	/* W and E (inclusive of YHI to include the northern boundary) */
+			double lat = (i == GMT->current.map.n_lat_nodes) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat;
+			gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XLO], lat, GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XLO], lat, GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			}
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZLO], &x, &y);
+			gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XHI], lat, GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XHI], lat, GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
@@ -6531,7 +6533,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			GMT->current.proj.z_project.world_y = 0.5 * (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]);
 			GMT->current.proj.z_project.world_z = GMT->current.proj.z_level;
 		}
-		gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.world_x, GMT->current.proj.z_project.world_y, GMT->current.proj.z_project.world_z, &x, &y);
+		gmt_geoz_to_xy(GMT, GMT->current.proj.z_project.world_x, GMT->current.proj.z_project.world_y, GMT->current.proj.z_project.world_z, &x, &y);
 		if (!GMT->current.proj.z_project.view_given) {	/* Pick center of current page */
 			GMT->current.proj.z_project.view_x = 0.5 * GMT->current.setting.ps_page_size[0] * GMT->session.u2u[GMT_PT][GMT_INCH];
 			GMT->current.proj.z_project.view_y = 0.5 * GMT->current.setting.ps_page_size[1] * GMT->session.u2u[GMT_PT][GMT_INCH];
