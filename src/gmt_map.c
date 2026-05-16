@@ -1976,7 +1976,35 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 }
 
 /*! . */
-GMT_LOCAL bool gmtmap_arc_long_way (struct GMT_CTRL *GMT, double end_x[], double end_y[], double *lon, double *lat, uint64_t np) {
+GMT_LOCAL bool gmtmap_polygon_encloses_center(struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np) {
+	/* Returns true iff (central_meridian, proj.pole) lies inside the spherical polygon
+	 * defined by (lon,lat,np).  Used as a gate before deciding the short/long arc closure
+	 * for radial clipping (issue #5151); we only need to consider flipping the arc if the
+	 * polygon actually encloses the projection center -- otherwise the historical short-arc
+	 * default is correct. */
+	struct GMT_DATASEGMENT *S = NULL;
+	bool inside, saved_sph_inside;
+	double clon, clat;
+	if (np < 3) return false;
+	clon = GMT->current.proj.central_meridian;
+	clat = GMT->current.proj.pole;
+	if (gmt_M_is_dnan(clon) || gmt_M_is_dnan(clat)) return false;
+	S = gmt_get_segment(GMT, 2);
+	if (S == NULL) return false;
+	gmt_alloc_segment(GMT, S, np, 2, 0, true);
+	gmt_M_memcpy(S->data[GMT_X], lon, np, double);
+	gmt_M_memcpy(S->data[GMT_Y], lat, np, double);
+	gmt_set_seg_minmax(GMT, GMT_IS_POLY, 2, S);
+	saved_sph_inside = GMT->current.proj.sph_inside;
+	GMT->current.proj.sph_inside = true;	/* Force spherical in-polygon test */
+	inside = (gmt_inonout(GMT, clon, clat, S) == GMT_INSIDE);
+	GMT->current.proj.sph_inside = saved_sph_inside;
+	gmt_free_segment(GMT, &S);
+	return inside;
+}
+
+/*! . */
+GMT_LOCAL bool gmtmap_arc_long_way(struct GMT_CTRL *GMT, double end_x[], double end_y[], double *lon, double *lat, uint64_t np) {
 	/* Decide which horizon arc connects a pair of polygon crossings (issue #5151).
 	 * end_x[]/end_y[] are the two crossing points expressed as offsets from the map center.
 	 * We take the midpoint of the SHORT arc, invert-project it back to lon/lat, and test
@@ -2059,13 +2087,18 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 	uint64_t n = 0, n_arc;
 	unsigned int i, nx;
 	unsigned int sides[4];
-	bool this_side = false, add_boundary = false;
+	bool this_side = false, add_boundary = false, may_need_long = false;
 	double xlon[4], xlat[4], xc[4], yc[4], end_x[3], end_y[3], xr, yr;
 	double *xx = NULL, *yy = NULL, *xarc = NULL, *yarc = NULL;
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
 	if (np == 0) return (0);
+
+	/* Only consider flipping to the long horizon arc if the polygon spherically encloses the
+	 * projection center.  Polygons that do not enclose the center keep the historical
+	 * short-arc behavior, which avoids regressing existing tests (issue #5151). */
+	may_need_long = gmtmap_polygon_encloses_center(GMT, lon, lat, np);
 
 	if (!gmt_map_outside (GMT, lon[0], lat[0])) {
 		gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
@@ -2087,11 +2120,9 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 				add_boundary = !this_side;	/* We only add boundary arcs if we first exited and now entered the circle again */
 			}
 			if (add_boundary) {	/* Crossed twice.  Now add arc between the two crossing points */
-				/* Choose between short and long arc by testing the midpoint of the short arc:
-				 * project it back to lon/lat and check if it lies inside the original polygon.
-				 * If outside, the polygon's interior is on the far side of the disk and we must
-				 * take the long arc instead (issue #5151). */
-				bool long_way = gmtmap_arc_long_way(GMT, &end_x[nx-2], &end_y[nx-2], lon, lat, np);
+				/* Only run the short/long arc midpoint test for polygons that enclose the
+				 * projection center; otherwise stay with the historical short arc default. */
+				bool long_way = may_need_long && gmtmap_arc_long_way(GMT, &end_x[nx-2], &end_y[nx-2], lon, lat, np);
 				if ((n_arc = gmtmap_radial_boundary_arc(GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc, long_way)) > 0) {
 					if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 					gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
@@ -2115,7 +2146,7 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 	}
 
 	if (nx == 2) {	/* Must close polygon by adding boundary arc */
-		bool long_way = gmtmap_arc_long_way(GMT, end_x, end_y, lon, lat, np);
+		bool long_way = may_need_long && gmtmap_arc_long_way(GMT, end_x, end_y, lon, lat, np);
 		if ((n_arc = gmtmap_radial_boundary_arc(GMT, this_side, end_x, end_y, &xarc, &yarc, long_way)) > 0) {
 			if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 			gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
