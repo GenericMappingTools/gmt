@@ -470,8 +470,6 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
-GMT_LOCAL double gmtplot_place_latex_eps(struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *F, const char *string);
-
 GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int cap = PSL->internal.line_cap;
 	double x_length, y_length;
@@ -525,41 +523,6 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No title (and optional subtitle) today */
 
 	PSL_comment (PSL, "Placing plot title\n");
-
-	if (GMT->current.proj.three_D) {
-		/* Issue #5635: place the title parallel to the rotated top edge of the map rect.
-		 * Project the two top corners (XLO,YHI) and (XHI,YHI) at the current z-level to
-		 * paper space, take their midpoint, offset perpendicularly outward by the title
-		 * offset, and rotate the text to match the edge slope. */
-		int form, old_plane = GMT->current.proj.z_project.plane;
-		double old_level = GMT->current.proj.z_project.level;
-		double xTL, yTL, xTR, yTR, xm, ym, ex, ey, nx, ny, nlen, ang, off;
-		double z_for_proj = gmt_z_to_zz(GMT, GMT->current.proj.z_level);
-		gmt_xyz_to_xy(GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI], z_for_proj, &xTL, &yTL);
-		gmt_xyz_to_xy(GMT, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], z_for_proj, &xTR, &yTR);
-		ex = xTR - xTL;
-		ey = yTR - yTL;
-		ang = atan2d(ey, ex);
-		/* Outward (CCW perpendicular) unit normal */
-		nx = -ey;
-		ny =  ex;
-		nlen = hypot(nx, ny);
-		if (nlen > 0.0) { nx /= nlen; ny /= nlen; }
-		off = GMT->current.setting.map_title_offset;
-		xm = 0.5 * (xTL + xTR) + off * nx;
-		ym = 0.5 * (yTL + yTR) + off * ny;
-		gmt_plane_perspective(GMT, -1, 0.0);
-		if (gmt_text_is_latex(GMT, GMT->current.map.frame.header)) {
-			(void)gmtplot_place_latex_eps(GMT, xm, ym, &GMT->current.setting.font_title, GMT->current.map.frame.header);
-		}
-		else {
-			form = gmt_setfont(GMT, &GMT->current.setting.font_title);
-			PSL_plottext(PSL, xm, ym, GMT->current.setting.font_title.size, GMT->current.map.frame.header, ang, -PSL_BC, form);
-		}
-		GMT->current.map.frame.plotted_header = true;
-		gmt_plane_perspective(GMT, old_plane, old_level);
-		return;
-	}
 
 	y_length += GMT->current.setting.map_graph_shift;  /* Extra shift (set in gmt_xy_axis) for map title when we have a centered y-axis with vector */
 
