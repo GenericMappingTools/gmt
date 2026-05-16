@@ -607,17 +607,19 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 
 	/* The following is needed to have psimage work correctly in perspective */
 
+	bool fake_J_only = false;	/* Issue #5635: track whether we took the no-R fake-J branch so we skip the redundant re-setup */
 	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
 	gmt_M_memset (wesn, 4, double);
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
+		fake_J_only = true;
 		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
-		gmt_parse_common_options (GMT, "J", 'J', "X1i");
+		gmt_parse_common_options(GMT, "J", 'J', "x1i");	/* Issue #5635: lowercase x = 1 inch per unit so wesn span = inches; uppercase X1i forced rect to 1x1 inch regardless of image size */
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.n_columns * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.n_rows * Ctrl->D.dim[GMT_Y];
 		gmt_M_memcpy (Rwesn, wesn, 4U, double);
-		strncpy (Jarg, "X1i", GMT_LEN128);
+		strncpy(Jarg, "x1i", GMT_LEN128);
 		if (gmt_map_setup (GMT, wesn)) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
@@ -704,17 +706,22 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
  	if (Ctrl->F.active)	/* Draw frame outlines */
 		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 2U, Ctrl->F.panel);
 
-	/* Redo original -R -J so basemap can work */
-	GMT->common.J.active = false;
-	gmt_parse_common_options (GMT, "J", 'J', Jarg);
-	if (gmt_map_setup (GMT, Rwesn)) {
-		if (free_GMT)
-			gmt_M_free (GMT, picture);
-		else if (is_eps || did_gray)
-			PSL_free (picture);
-		gmt_M_str_free (file);
-		Return (GMT_PROJECTION_ERROR);
+	/* Redo original -R -J so basemap can work. Issue #5635: only needed when the original -R/-J were used
+	 * (else branch above swapped them out for a fake X1i to place the image, and now must restore them).
+	 * In the fake-J-only branch we never swapped, so re-parsing/-setup is redundant and corrupts state. */
+	if (!fake_J_only) {
+		GMT->common.J.active = false;
+		gmt_parse_common_options(GMT, "J", 'J', Jarg);
+		if (gmt_map_setup(GMT, Rwesn)) {
+			if (free_GMT)
+				gmt_M_free(GMT, picture);
+			else if (is_eps || did_gray)
+				PSL_free(picture);
+			gmt_M_str_free(file);
+			Return (GMT_PROJECTION_ERROR);
+		}
 	}
+	GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Issue #5635: ensure basemap renders AFTER content (frame, title) since this is the only call when fake_J_only */
 	gmt_map_basemap (GMT);	/* Draw basemap if requested */
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);

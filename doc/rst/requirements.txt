@@ -9,4 +9,4 @@ sphinx-copybutton==0.5.2
 sphinx-design==0.7.0
 sphinx-jinja==2.0.2
 sphinx-togglebutton==0.4.5
-sphinxcontrib-youtube==1.4.1
+sphinxcontrib-youtube==1.5.0
