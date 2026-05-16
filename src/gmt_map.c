@@ -2019,8 +2019,13 @@ GMT_LOCAL bool gmtmap_arc_long_way(struct GMT_CTRL *GMT, double end_x[], double 
 	gmt_M_set_delta_lon(az1, az2, d_az);
 	mid_az = az1 + 0.5 * d_az;
 	sincosd(mid_az, &yr, &xr);
-	mx = GMT->current.proj.r * (1.0 + xr);
-	my = GMT->current.proj.r * (1.0 + yr);
+	/* Pull the test point slightly inside the horizon (0.99 * r) instead of placing it on
+	 * the horizon edge.  At exactly r the inverse projection is numerically singular
+	 * (involves asin(1)/sqrt(0)) and ULP-level libm differences between Windows (MSVC) and
+	 * Linux (glibc) produce different (mlon,mlat) for the same (mid_az), which then flips
+	 * the gmt_non_zero_winding result and the short/long arc decision (issue #5151). */
+	mx = GMT->current.proj.r * (1.0 + 0.99 * xr);
+	my = GMT->current.proj.r * (1.0 + 0.99 * yr);
 	gmt_xy_to_geo(GMT, &mlon, &mlat, mx, my);
 	/* Bring mlon into the polygon's longitude range to avoid 360 wrap mismatches */
 	lon_ref = lon[0];
