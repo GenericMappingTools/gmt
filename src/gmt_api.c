@@ -8471,6 +8471,11 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session initialized GMT structure\n");
 
+	if (API->external && (mode & GMT_SESSION_BIN2LIBDIR)) {	/* Reset bindir to libdir. This is to be used from externals only */
+		free(API->GMT->init.runtime_bindir);				/* where the bindir was set to the bin of launcher. In Julia it's julia/bin */
+		API->GMT->init.runtime_bindir = strdup(API->GMT->init.runtime_libdir);	/* but the libdir is correctly set to the GMT shared lib dir */
+	}
+
 	if (mode & GMT_SESSION_LOGERRORS) {	/* Want to redirect errors to a log file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;

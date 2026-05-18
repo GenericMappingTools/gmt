@@ -1976,18 +1976,74 @@ uint64_t gmt_map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 }
 
 /*! . */
-GMT_LOCAL uint64_t gmtmap_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, double end_x[], double end_y[], double **xarc, double **yarc) {
+GMT_LOCAL struct GMT_DATASEGMENT *gmtmap_build_test_segment(struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t np) {
+	/* Wrap (lon,lat,np) in a temporary GMT_DATASEGMENT so gmt_inonout (spherical mode) can
+	 * be used for in-polygon tests during radial clipping (issue #5151).  Caller frees. */
+	struct GMT_DATASEGMENT *S;
+	if (np < 3) return NULL;
+	S = gmt_get_segment(GMT, 2);
+	if (S == NULL) return NULL;
+	gmt_alloc_segment(GMT, S, np, 2, 0, true);
+	gmt_M_memcpy(S->data[GMT_X], lon, np, double);
+	gmt_M_memcpy(S->data[GMT_Y], lat, np, double);
+	gmt_set_seg_minmax(GMT, GMT_IS_POLY, 2, S);
+	return S;
+}
+
+/*! . */
+GMT_LOCAL bool gmtmap_polygon_encloses_center(struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
+	/* Returns true iff (central_meridian, proj.pole) lies inside the spherical polygon S.
+	 * Used as a gate before deciding the short/long arc closure for radial clipping. */
+	double clon, clat;
+	if (S == NULL) return false;
+	clon = GMT->current.proj.central_meridian;
+	clat = GMT->current.proj.pole;
+	if (gmt_M_is_dnan(clon) || gmt_M_is_dnan(clat)) return false;
+	return (gmt_inonout(GMT, clon, clat, S) == GMT_INSIDE);
+}
+
+/*! . */
+GMT_LOCAL bool gmtmap_arc_long_way(struct GMT_CTRL *GMT, double end_x[], double end_y[], struct GMT_DATASEGMENT *S) {
+	/* Decide which horizon arc connects a pair of polygon crossings (issue #5151).
+	 * end_x[]/end_y[] are the two crossing points expressed as offsets from the map center.
+	 * Take the midpoint of the SHORT arc, pull it inward to 0.99 * r so the inverse map is
+	 * well-conditioned (avoids the asin(1) singularity that causes libm-level Win/Linux
+	 * divergence at the horizon edge), invert-project to (lon,lat) and ask gmt_inonout in
+	 * SPHERICAL mode (handles dateline-spanning / hemispheric polygons like pssolar's
+	 * terminator) whether it lies inside the polygon.  If it does NOT, the short arc sits
+	 * outside the polygon -- so we close along the LONG (complementary) arc instead. */
+	double az1, az2, d_az, mid_az, xr, yr, mx, my, mlon, mlat;
+	if (S == NULL) return false;
+	az1 = d_atan2d(end_y[0], end_x[0]);
+	az2 = d_atan2d(end_y[1], end_x[1]);
+	gmt_M_set_delta_lon(az1, az2, d_az);
+	mid_az = az1 + 0.5 * d_az;
+	sincosd(mid_az, &yr, &xr);
+	mx = GMT->current.proj.r * (1.0 + 0.99 * xr);
+	my = GMT->current.proj.r * (1.0 + 0.99 * yr);
+	gmt_xy_to_geo(GMT, &mlon, &mlat, mx, my);
+	return (gmt_inonout(GMT, mlon, mlat, S) == GMT_OUTSIDE);
+}
+
+/*! . */
+GMT_LOCAL uint64_t gmtmap_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, double end_x[], double end_y[], double **xarc, double **yarc, bool long_way) {
 	uint64_t n_arc, k, pt;
 	double az1, az2, d_az, da, xr, yr, da_try, *xx = NULL, *yy = NULL;
 
 	/* When a polygon crosses out then in again into the circle we need to add a boundary arc
 	 * to the polygon where it is clipped.  We simply sample the circle as finely as the arc
-	 * length and the current line_step demands */
+	 * length and the current line_step demands.  If long_way is true we instead trace the
+	 * complementary (long) arc around the horizon -- needed when the polygon encloses the
+	 * projection center so that the polygon's interior wraps around the visible disk. */
 
 	da_try = (GMT->current.setting.map_line_step * 360.0) / (TWO_PI * GMT->current.proj.r);	/* Angular step in degrees */
 	az1 = d_atan2d (end_y[0], end_x[0]);	/* azimuth from map center to 1st crossing */
 	az2 = d_atan2d (end_y[1], end_x[1]);	/* azimuth from map center to 2nd crossing */
-	gmt_M_set_delta_lon (az1, az2, d_az);	/* Insist we take the short arc for now */
+	gmt_M_set_delta_lon(az1, az2, d_az);	/* Short arc delta in [-180, 180] */
+	if (long_way) {		/* Take the complementary arc instead */
+		if (d_az > 0.0) d_az -= 360.0;
+		else            d_az += 360.0;
+	}
 	n_arc = lrint (ceil (fabs (d_az) / da_try));	/* Get number of integer increments of da_try degree... */
 	if (n_arc < 2) n_arc = 2;	/* ...but minimum 2 */
 	da = d_az / (n_arc - 1);	/* Reset da to get exact steps */
@@ -2027,13 +2083,24 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 	uint64_t n = 0, n_arc;
 	unsigned int i, nx;
 	unsigned int sides[4];
-	bool this_side = false, add_boundary = false;
+	bool this_side = false, add_boundary = false, may_need_long = false, saved_sph_inside;
 	double xlon[4], xlat[4], xc[4], yc[4], end_x[3], end_y[3], xr, yr;
 	double *xx = NULL, *yy = NULL, *xarc = NULL, *yarc = NULL;
+	struct GMT_DATASEGMENT *S_test = NULL;
 
 	*total_nx = 0;	/* Keep track of total of crossings */
 
 	if (np == 0) return (0);
+
+	/* Build a temporary segment wrapping the polygon and force spherical in-polygon tests
+	 * so dateline-spanning / hemispheric polygons (e.g., pssolar terminator) are handled
+	 * correctly.  Only consider flipping to the long horizon arc if the polygon spherically
+	 * encloses the projection center -- polygons that do not enclose the center keep the
+	 * historical short-arc behavior (issue #5151, no regressions on other tests). */
+	saved_sph_inside = GMT->current.proj.sph_inside;
+	S_test = gmtmap_build_test_segment(GMT, lon, lat, np);
+	if (S_test) GMT->current.proj.sph_inside = true;
+	may_need_long = gmtmap_polygon_encloses_center(GMT, S_test);
 
 	if (!gmt_map_outside (GMT, lon[0], lat[0])) {
 		gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
@@ -2055,13 +2122,10 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 				add_boundary = !this_side;	/* We only add boundary arcs if we first exited and now entered the circle again */
 			}
 			if (add_boundary) {	/* Crossed twice.  Now add arc between the two crossing points */
-				/* PW: Currently, we make the assumption that the shortest arc is the one we want.  However,
-				 * extremely large polygons could cut the boundary so that it is the longest arc we want.
-				 * The way to improve this algorithm in the future is to find the two opposite points on
-				 * the circle boundary that lies on the bisector of az1,az2, and see which point lies
-				 * inside the polygon.  This would require that gmt_inonout_sphpol be called.
-				 */
-				if ((n_arc = gmtmap_radial_boundary_arc (GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc)) > 0) {
+				/* Only run the short/long arc midpoint test for polygons that enclose the
+				 * projection center; otherwise stay with the historical short arc default. */
+				bool long_way = may_need_long && gmtmap_arc_long_way(GMT, &end_x[nx-2], &end_y[nx-2], S_test);
+				if ((n_arc = gmtmap_radial_boundary_arc(GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc, long_way)) > 0) {
 					if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 					gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 					gmt_M_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
@@ -2084,7 +2148,8 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 	}
 
 	if (nx == 2) {	/* Must close polygon by adding boundary arc */
-		if ((n_arc = gmtmap_radial_boundary_arc (GMT, this_side, end_x, end_y, &xarc, &yarc)) > 0) {
+		bool long_way = may_need_long && gmtmap_arc_long_way(GMT, end_x, end_y, S_test);
+		if ((n_arc = gmtmap_radial_boundary_arc(GMT, this_side, end_x, end_y, &xarc, &yarc, long_way)) > 0) {
 			if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 			gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 			gmt_M_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
@@ -2093,6 +2158,10 @@ GMT_LOCAL uint64_t gmtmap_radial_clip (struct GMT_CTRL *GMT, double *lon, double
 		}
 		if (n == n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 		xx[n] = xx[0];	yy[n] = yy[0];	n++;	/* Close the polygon */
+	}
+	if (S_test) {
+		gmt_free_segment(GMT, &S_test);
+		GMT->current.proj.sph_inside = saved_sph_inside;
 	}
 	n_alloc = n;
 	gmt_M_malloc2 (GMT, xx, yy, 0U, &n_alloc, double);
@@ -6460,52 +6529,54 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		GMT->current.proj.z_project.corner_x[1] = GMT->current.proj.z_project.corner_x[2] = (GMT->current.proj.xyz_pos[GMT_X]) ? GMT->common.R.wesn[XHI] : GMT->common.R.wesn[XLO];
 		GMT->current.proj.z_project.corner_y[0] = GMT->current.proj.z_project.corner_y[1] = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YLO] : GMT->common.R.wesn[YHI];
 		GMT->current.proj.z_project.corner_y[2] = GMT->current.proj.z_project.corner_y[3] = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO];
-		for (i = 0; i < GMT->current.map.n_lon_nodes; i++) {	/* S and N */
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZLO], &x, &y);
+		for (i = 0; i <= GMT->current.map.n_lon_nodes; i++) {	/* S and N (inclusive of XHI to include the eastern boundary) */
+			double lon = (i == GMT->current.map.n_lon_nodes) ? GMT->common.R.wesn[XHI] : GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon;
+			gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YLO], GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			}
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZLO], &x, &y);
+			gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO] + i * GMT->current.map.dlon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, lon, GMT->common.R.wesn[YHI], GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			}
 		}
-		for (i = 0; i < GMT->current.map.n_lat_nodes; i++) {	/* W and E */
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZLO], &x, &y);
+		for (i = 0; i <= GMT->current.map.n_lat_nodes; i++) {	/* W and E (inclusive of YHI to include the northern boundary) */
+			double lat = (i == GMT->current.map.n_lat_nodes) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat;
+			gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XLO], lat, GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XLO], lat, GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 				GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			}
-			gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZLO], &x, &y);
+			gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XHI], lat, GMT->common.R.wesn[ZLO], &x, &y);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 			GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
 			GMT->current.proj.z_project.xmax = MAX (GMT->current.proj.z_project.xmax, x);
 			if (GMT->common.R.wesn[ZHI] != GMT->common.R.wesn[ZLO]) {
-				gmt_geoz_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat, GMT->common.R.wesn[ZHI], &x, &y);
+				gmt_geoz_to_xy(GMT, GMT->common.R.wesn[XHI], lat, GMT->common.R.wesn[ZHI], &x, &y);
 				GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, y);
 				GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, y);
 				GMT->current.proj.z_project.xmin = MIN (GMT->current.proj.z_project.xmin, x);
@@ -6531,7 +6602,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			GMT->current.proj.z_project.world_y = 0.5 * (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]);
 			GMT->current.proj.z_project.world_z = GMT->current.proj.z_level;
 		}
-		gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.world_x, GMT->current.proj.z_project.world_y, GMT->current.proj.z_project.world_z, &x, &y);
+		gmt_geoz_to_xy(GMT, GMT->current.proj.z_project.world_x, GMT->current.proj.z_project.world_y, GMT->current.proj.z_project.world_z, &x, &y);
 		if (!GMT->current.proj.z_project.view_given) {	/* Pick center of current page */
 			GMT->current.proj.z_project.view_x = 0.5 * GMT->current.setting.ps_page_size[0] * GMT->session.u2u[GMT_PT][GMT_INCH];
 			GMT->current.proj.z_project.view_y = 0.5 * GMT->current.setting.ps_page_size[1] * GMT->session.u2u[GMT_PT][GMT_INCH];

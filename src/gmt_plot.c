@@ -7690,6 +7690,22 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				gmt_M_free (GMT, yp);
 				break;
 
+			case GMT_SYMBOL_QUAD_BEZIER: {	/* Quadratic Bezier: cp=(x,y) endpoint=(dim[0],dim[1]) */
+				/* P0 = last path point, P1 = (x,y) [control], P2 = (dim[0],dim[1]) [endpoint] */
+				double t, mt, x0b = 0.0, y0b = 0.0;
+				flush = true;
+				if (n > 0) { x0b = xx[n-1]; y0b = yy[n-1]; }
+				for (i = 1; i <= GMT_BEZIER_NPTS; i++) {
+					t = (double)i / GMT_BEZIER_NPTS;
+					mt = 1.0 - t;
+					if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+					xx[n] = mt*mt*x0b + 2.0*mt*t*x + t*t*dim[0];
+					yy[n] = mt*mt*y0b + 2.0*mt*t*y + t*t*dim[1];
+					n++;
+				}
+				break;
+			}
+
 			case GMT_SYMBOL_ROTATE:		/* Rotate the symbol coordinate system by a fixed amount */
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				PSL_setorigin (PSL, 0.0, 0.0, s->p[0], PSL_FWD);
@@ -7718,6 +7734,23 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (s->fill) current_fill = s->fill;
 				if (s->pen) current_pen = s->pen;
 				break;
+
+			case GMT_SYMBOL_CUBIC_BEZIER: {	/* Cubic Bezier (B): cp1=(x,y) cp2=(dim[0],dim[1]) endpoint=(dim[2], p[3]*size) */
+				/* B(t) = (1-t)^3*P0 + 3*(1-t)^2*t*P1 + 3*(1-t)*t^2*P2 + t^3*P3 */
+				double t, mt, mt2, t2, x0b = 0.0, y0b = 0.0;
+				double cx2 = dim[0], cy2 = dim[1], ex = dim[2], ey = s->p[3] * size[0];
+				flush = true;
+				if (n > 0) { x0b = xx[n-1]; y0b = yy[n-1]; }
+				for (i = 1; i <= GMT_BEZIER_NPTS; i++) {
+					t = (double)i / GMT_BEZIER_NPTS;
+					mt = 1.0 - t;  mt2 = mt * mt;  t2 = t * t;
+					if (n >= n_alloc) gmt_M_malloc2(GMT, xx, yy, n, &n_alloc, double);
+					xx[n] = mt2*mt*x0b + 3.0*mt2*t*x   + 3.0*mt*t2*cx2 + t2*t*ex;
+					yy[n] = mt2*mt*y0b + 3.0*mt2*t*y   + 3.0*mt*t2*cy2 + t2*t*ey;
+					n++;
+				}
+				break;
+			}
 
 			case (int)'C':
 				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and purposefully fall through to assign the rest of the statements */
