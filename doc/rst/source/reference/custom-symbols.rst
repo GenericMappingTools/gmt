@@ -145,6 +145,8 @@ are constants.
 +===============+============+========================================+============================================+
 | arc           | **A**      | Append circular arc to existing path   | :math:`x_c, y_c, d, \alpha_1, \alpha_2`    |
 +---------------+------------+----------------------------------------+--------------------------------------------+
+| cubicbezier   | **B**      | Cubic Bezier from last point           | :math:`cx_1, cy_1, cx_2, cy_2, ex, ey`     |
++---------------+------------+----------------------------------------+--------------------------------------------+
 | drawto        | **D**      | Draw line from previous point          | :math:`x, y`                               |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | moveto        | **M**      | Set a new anchor point                 | :math:`x_0, y_0`                           |
@@ -179,6 +181,8 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | pentagon      | **n**      | Plot a pentagon                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
+| quadbezier    | **Q**      | Quadratic Bezier from last point       | :math:`cx, cy, ex, ey`                     |
++---------------+------------+----------------------------------------+--------------------------------------------+
 | rect          | **r**      | Plot a rectangle                       | :math:`x, y, width, height`                |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | roundrect     | **R**      | Plot a rounded rectangle               | :math:`x, y, width, height, radius`        |
@@ -199,6 +203,16 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | plus          | **+**      | Plot a plus sign                       | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
+
+Note for **B** and **Q**\: Both Bezier commands extend the current path from the
+*last point set by* **M** *or* **D** (the implicit start point :math:`P_0`); you do not
+supply :math:`P_0` explicitly. **B** takes two control points followed by the endpoint
+(:math:`cx_1, cy_1, cx_2, cy_2, ex, ey`) and draws a cubic Bezier curve.
+**Q** takes one control point followed by the endpoint (:math:`cx, cy, ex, ey`) and
+draws a quadratic Bezier curve.  Both commands are tessellated into line segments
+at render time and integrate with the normal fill/stroke pipeline, so **-G** and **-W**
+apply as usual.  Use **B** when converting SVG paths (SVG ``C``/``c`` maps directly);
+use **Q** for simpler arcs where one control point is sufficient.
 
 Note for **O**\: if an **a** is appended to the angle then :math:`\alpha` is considered
 to be a map azimuth; otherwise it is a Cartesian map angle.  The **a** modifier
