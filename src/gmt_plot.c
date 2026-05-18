@@ -470,8 +470,6 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
-GMT_LOCAL double gmtplot_place_latex_eps(struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *F, const char *string);
-
 GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int cap = PSL->internal.line_cap;
 	double x_length, y_length;
@@ -525,41 +523,6 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No title (and optional subtitle) today */
 
 	PSL_comment (PSL, "Placing plot title\n");
-
-	if (GMT->current.proj.three_D) {
-		/* Issue #5635: place the title parallel to the rotated top edge of the map rect.
-		 * Project the two top corners (XLO,YHI) and (XHI,YHI) at the current z-level to
-		 * paper space, take their midpoint, offset perpendicularly outward by the title
-		 * offset, and rotate the text to match the edge slope. */
-		int form, old_plane = GMT->current.proj.z_project.plane;
-		double old_level = GMT->current.proj.z_project.level;
-		double xTL, yTL, xTR, yTR, xm, ym, ex, ey, nx, ny, nlen, ang, off;
-		double z_for_proj = gmt_z_to_zz(GMT, GMT->current.proj.z_level);
-		gmt_xyz_to_xy(GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI], z_for_proj, &xTL, &yTL);
-		gmt_xyz_to_xy(GMT, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], z_for_proj, &xTR, &yTR);
-		ex = xTR - xTL;
-		ey = yTR - yTL;
-		ang = atan2d(ey, ex);
-		/* Outward (CCW perpendicular) unit normal */
-		nx = -ey;
-		ny =  ex;
-		nlen = hypot(nx, ny);
-		if (nlen > 0.0) { nx /= nlen; ny /= nlen; }
-		off = GMT->current.setting.map_title_offset;
-		xm = 0.5 * (xTL + xTR) + off * nx;
-		ym = 0.5 * (yTL + yTR) + off * ny;
-		gmt_plane_perspective(GMT, -1, 0.0);
-		if (gmt_text_is_latex(GMT, GMT->current.map.frame.header)) {
-			(void)gmtplot_place_latex_eps(GMT, xm, ym, &GMT->current.setting.font_title, GMT->current.map.frame.header);
-		}
-		else {
-			form = gmt_setfont(GMT, &GMT->current.setting.font_title);
-			PSL_plottext(PSL, xm, ym, GMT->current.setting.font_title.size, GMT->current.map.frame.header, ang, -PSL_BC, form);
-		}
-		GMT->current.map.frame.plotted_header = true;
-		gmt_plane_perspective(GMT, old_plane, old_level);
-		return;
-	}
 
 	y_length += GMT->current.setting.map_graph_shift;  /* Extra shift (set in gmt_xy_axis) for map title when we have a centered y-axis with vector */
 
@@ -7727,6 +7690,22 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				gmt_M_free (GMT, yp);
 				break;
 
+			case GMT_SYMBOL_QUAD_BEZIER: {	/* Quadratic Bezier: cp=(x,y) endpoint=(dim[0],dim[1]) */
+				/* P0 = last path point, P1 = (x,y) [control], P2 = (dim[0],dim[1]) [endpoint] */
+				double t, mt, x0b = 0.0, y0b = 0.0;
+				flush = true;
+				if (n > 0) { x0b = xx[n-1]; y0b = yy[n-1]; }
+				for (i = 1; i <= GMT_BEZIER_NPTS; i++) {
+					t = (double)i / GMT_BEZIER_NPTS;
+					mt = 1.0 - t;
+					if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+					xx[n] = mt*mt*x0b + 2.0*mt*t*x + t*t*dim[0];
+					yy[n] = mt*mt*y0b + 2.0*mt*t*y + t*t*dim[1];
+					n++;
+				}
+				break;
+			}
+
 			case GMT_SYMBOL_ROTATE:		/* Rotate the symbol coordinate system by a fixed amount */
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				PSL_setorigin (PSL, 0.0, 0.0, s->p[0], PSL_FWD);
@@ -7755,6 +7734,23 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				if (s->fill) current_fill = s->fill;
 				if (s->pen) current_pen = s->pen;
 				break;
+
+			case GMT_SYMBOL_CUBIC_BEZIER: {	/* Cubic Bezier (B): cp1=(x,y) cp2=(dim[0],dim[1]) endpoint=(dim[2], p[3]*size) */
+				/* B(t) = (1-t)^3*P0 + 3*(1-t)^2*t*P1 + 3*(1-t)*t^2*P2 + t^3*P3 */
+				double t, mt, mt2, t2, x0b = 0.0, y0b = 0.0;
+				double cx2 = dim[0], cy2 = dim[1], ex = dim[2], ey = s->p[3] * size[0];
+				flush = true;
+				if (n > 0) { x0b = xx[n-1]; y0b = yy[n-1]; }
+				for (i = 1; i <= GMT_BEZIER_NPTS; i++) {
+					t = (double)i / GMT_BEZIER_NPTS;
+					mt = 1.0 - t;  mt2 = mt * mt;  t2 = t * t;
+					if (n >= n_alloc) gmt_M_malloc2(GMT, xx, yy, n, &n_alloc, double);
+					xx[n] = mt2*mt*x0b + 3.0*mt2*t*x   + 3.0*mt*t2*cx2 + t2*t*ex;
+					yy[n] = mt2*mt*y0b + 3.0*mt2*t*y   + 3.0*mt*t2*cy2 + t2*t*ey;
+					n++;
+				}
+				break;
+			}
 
 			case (int)'C':
 				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and purposefully fall through to assign the rest of the statements */

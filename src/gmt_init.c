@@ -12538,7 +12538,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* TIME GROUP */
 
 		case GMTCASE_TIME_EPOCH:
-			strncpy (GMT->current.setting.time_system.epoch, lower_value, GMT_LEN64-1);
+			strncpy (GMT->current.setting.time_system.epoch, value, GMT_LEN64-1);
 			(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
