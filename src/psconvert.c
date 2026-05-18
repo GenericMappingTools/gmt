@@ -3129,7 +3129,9 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	   Add to this that the installed GS version may be 32 or 64 bits, so we have to check for the
 	   four GS_32|64 + GMT_32|64 combinations.
 
-		 Adapted from snippets at http://www.daniweb.com/software-development/c/code/217174
+	   Order of search: first the Windows registry, then GMT/bin as a fallback.
+
+	   Adapted from snippets at http://www.daniweb.com/software-development/c/code/217174
 	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
@@ -3139,13 +3141,9 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	unsigned long datatype;
 	long RegO, rc = 0;
 	bool bits64 = true;
+	bool found = false;
 
-	/* Before of all rest, check if we have a ghost in GMT/bin */
-	sprintf (data, "%s/gswin64c.exe", API->GMT->init.runtime_bindir);
-	if (!access (data, R_OK)) goto FOUNDGS;
-	sprintf (data, "%s/gswin32c.exe", API->GMT->init.runtime_bindir);
-	if (!access (data, R_OK)) goto FOUNDGS;
-
+	/* First try the Windows registry */
 #ifdef _WIN64
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
 	if (RegO != ERROR_SUCCESS) {		/* Try the 32 bits registry */
@@ -3161,69 +3159,78 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	}
 #endif
 
-	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
-		return (GMT_RUNTIME_ERROR);
-	}
+	if (RegO == ERROR_SUCCESS) {
+		if ((rc = RegEnumKeyEx(hkey, 0, ver, &verlen, 0, NULL, NULL, NULL)) == ERROR_SUCCESS) {
+			RegCloseKey(hkey);
+			strcat(key, ver);
 
-	if ((rc = RegEnumKeyEx (hkey, 0, ver, &verlen, 0, NULL, NULL, NULL)) != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Fallback to PATH.\n");
-		RegCloseKey(hkey);
-		return (GMT_RUNTIME_ERROR);
-	}
-
-	RegCloseKey(hkey);
-	strcat(key, ver);
-
-	/* Open the HKLM key, key, from which we wish to get data.
-	   But now we already know the registry bitage */
+			/* Open the HKLM key, key, from which we wish to get data.
+			   But now we already know the registry bitage */
 #ifdef _WIN64
-	if (bits64)
-		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
-	else
-		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &hkey);
+			if (bits64)
+				RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
+			else
+				RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &hkey);
 #else
-	if (bits64)
-		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hkey);
-	else
-		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
+			if (bits64)
+				RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE|KEY_WOW64_64KEY, &hkey);
+			else
+				RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 #endif
-	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_DEBUG, "Ghostscript not found in registry (2). Fallback to PATH.\n");
-		return (GMT_RUNTIME_ERROR);
+			if (RegO == ERROR_SUCCESS) {
+				/* Read the value for "GS_DLL" via the handle 'hkey' */
+				RegO = RegQueryValueEx(hkey, "GS_DLL", NULL, &datatype, (LPBYTE)data, &datalen);
+				RegCloseKey(hkey);
+
+				if (RegO == ERROR_SUCCESS) {
+					if ((ptr = strstr(data, "\\gsdll")) != NULL) {
+						/* Truncate string and add affix gswinXXc.exe */
+						*ptr = '\0';
+						strcat(data, bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
+						if (!access(data, R_OK))
+							found = true;
+						else
+							GMT_Report(API, GMT_MSG_DEBUG, "Registry registered %s does not exist. Trying GMT/bin.\n", data);
+					}
+					else
+						GMT_Report(API, GMT_MSG_DEBUG, "GS_DLL value is screwed. Trying GMT/bin.\n");
+				}
+				else
+					GMT_Report(API, GMT_MSG_DEBUG, "Failure while reading the GS_DLL value contents. Trying GMT/bin.\n");
+			}
+			else
+				GMT_Report(API, GMT_MSG_DEBUG, "Ghostscript not found in registry (2). Trying GMT/bin.\n");
+		}
+		else {
+			GMT_Report(API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Trying GMT/bin.\n");
+			RegCloseKey(hkey);
+		}
+	}
+	else
+		GMT_Report(API, GMT_MSG_DEBUG, "Ghostscript not found in registry. Trying GMT/bin.\n");
+
+	/* Fallback: check if we have a ghost in GMT/bin */
+	if (!found) {
+		sprintf(data, "%s/gswin64c.exe", API->GMT->init.runtime_bindir);
+		if (!access(data, R_OK))
+			found = true;
+		else {
+			sprintf(data, "%s/gswin32c.exe", API->GMT->init.runtime_bindir);
+			if (!access(data, R_OK))
+				found = true;
+		}
 	}
 
-	/* Read the value for "GS_DLL" via the handle 'hkey' */
-	RegO = RegQueryValueEx(hkey, "GS_DLL", NULL, &datatype, (LPBYTE)data, &datalen);
-
-	RegCloseKey(hkey);
-
-	if (RegO != ERROR_SUCCESS) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the GS_DLL value contents\n");
-		return (GMT_RUNTIME_ERROR);
-	}
-
-	if ((ptr = strstr(data,"\\gsdll")) == NULL ) {
-		GMT_Report (API, GMT_MSG_ERROR, "GS_DLL value is screwed.\n");
-		return (GMT_RUNTIME_ERROR);
-	}
-
-	/* Truncate string and add affix gswinXXc.exe */
-	*ptr = '\0';
-	strcat(data, bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
-
-	/* Now finally check that the gswinXXc.exe exists */
-	if (access (data, R_OK)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Registry registered %s does not exist. Resorting to the one provided in GMT.\n", data);
-		return (GMT_RUNTIME_ERROR);
+	if (!found) {
+		GMT_Report(API, GMT_MSG_ERROR, "Ghostscript not found in registry nor in GMT/bin. Fallback to PATH.\n");
+		return GMT_RUNTIME_ERROR;
 	}
 
 	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
-FOUNDGS:		/* Arrive directly here when we found a ghost in GMT/bin */
-	C->G.file = malloc (strlen (data) + 3);	/* strlen + 2 * " + \0 */
-	sprintf (C->G.file, "\"%s\"", data);
+	C->G.file = malloc(strlen(data) + 3);	/* strlen + 2 * " + \0 */
+	sprintf(C->G.file, "\"%s\"", data);
 
-	return (GMT_NOERROR);
+	return GMT_NOERROR;
 }
 
 #endif		/* _WIN32 */
