@@ -6,6 +6,15 @@
 Changelog
 =========
 
+New Features in GMT 6.7
+=======================
+
+* Add quadratic (**Q**) and cubic (**B**) Bezier curve commands to the custom symbol
+  macro language, enabling smooth curves in ``.def`` symbol files.  Both commands
+  extend the path from the previous **M** or **D** point; **Q** takes one control point
+  plus endpoint, **B** takes two control points plus endpoint.  See
+  :ref:`Custom Symbols <custom-symbols>` for details.
+
 New Features in GMT 6.6
 =======================
 

@@ -5784,6 +5784,20 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				if ((s->eps = gmtsupport_load_eps_symbol (GMT, name, path)) == NULL) return GMT_RUNTIME_ERROR;
 				break;
 
+			case GMT_SYMBOL_QUAD_BEZIER:	/* Quadratic Bezier: cx cy ex ey Q */
+				if (last != 4) error++;	/* Need cx cy ex ey + action = 5 cols */
+				s->p[0] = atof (col[2]);	/* endpoint x */
+				s->p[1] = atof (col[3]);	/* endpoint y */
+				break;
+
+			case GMT_SYMBOL_CUBIC_BEZIER:	/* Cubic Bezier: cx1 cy1 cx2 cy2 ex ey C */
+				if (last != 6) error++;	/* Need cx1 cy1 cx2 cy2 ex ey + action = 7 cols */
+				s->p[0] = atof (col[2]);	/* second control point x */
+				s->p[1] = atof (col[3]);	/* second control point y */
+				s->p[2] = atof (col[4]);	/* endpoint x */
+				s->p[3] = atof (col[5]);	/* endpoint y */
+				break;
+
 			default:
 				error++;
 				break;

@@ -82,7 +82,7 @@ struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 	char *args;		/* Text representation of any additional arguments */
 };
 
-#define CUSTOM_SYMBOL_MAXVAR	3	/* So we can check in the code if we exceed this */
+#define CUSTOM_SYMBOL_MAXVAR	4	/* So we can check in the code if we exceed this */
 
 enum gmt_enum_custsymb {
 	GMT_CONST_STRING	= -5,	/* We have a constant string in a conditional test */
