@@ -1,0 +1,43 @@
+/*--------------------------------------------------------------------
+ *
+ *  Out-of-tree custom supplement glue template.
+ *  Vendored from gmt/src/gmt_glue.c.in (LGPL, GMT Team).
+ *
+ *  This translation unit populates the per-DLL GMT module table that
+ *  `gmt --show-modules`, `gmt --help`, and GMT_Encode_Options query via
+ *  dlsym("<libname>_module_*"). The libname is the DLL basename, so
+ *  the exported entry points MUST be named
+ *  <libname>_module_show_all / _list_all / _classic_all / _keys / _group.
+ *
+ *  Two @-tokens are substituted by configure_file in the parent
+ *  CMakeLists.txt: @SHARED_LIB_NAME@ (must equal the DLL basename) and
+ *  @SHARED_LIB_PURPOSE@ (one-line description shown by `gmt --help`).
+ *
+ *--------------------------------------------------------------------*/
+
+#include "gmt.h"
+
+static struct GMT_MODULEINFO modules[] = {
+#include "gmt_@SHARED_LIB_NAME@_moduleinfo.h"
+    {NULL, NULL, NULL, NULL, NULL} /* sentinel */
+};
+
+EXTERN_MSC int @SHARED_LIB_NAME@_module_show_all (void *API) {
+    return (GMT_Show_ModuleInfo (API, modules, "@SHARED_LIB_PURPOSE@", GMT_MODULE_HELP));
+}
+
+EXTERN_MSC int @SHARED_LIB_NAME@_module_list_all (void *API) {
+    return (GMT_Show_ModuleInfo (API, modules, NULL, GMT_MODULE_SHOW_MODERN));
+}
+
+EXTERN_MSC int @SHARED_LIB_NAME@_module_classic_all (void *API) {
+    return (GMT_Show_ModuleInfo (API, modules, NULL, GMT_MODULE_SHOW_CLASSIC));
+}
+
+EXTERN_MSC const char *@SHARED_LIB_NAME@_module_keys (void *API, char *candidate) {
+    return (GMT_Get_ModuleInfo (API, modules, candidate, GMT_MODULE_KEYS));
+}
+
+EXTERN_MSC const char *@SHARED_LIB_NAME@_module_group (void *API, char *candidate) {
+    return (GMT_Get_ModuleInfo (API, modules, candidate, GMT_MODULE_GROUP));
+}
