@@ -1348,8 +1348,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
 				PSL_settransparencies (PSL, transp);
 			}
-			if (Ctrl->D.etext)
-				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, 0.0, PSL_MR, 0);
+			if (Ctrl->D.etext) {
+				form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, 0.0, PSL_MR, form);
+				gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
+			}
 		}
 		if (Ctrl->D.emode & (PSSCALE_BACK_F - reverse)) {	/* Add color triangle on right side */
 			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
@@ -1397,8 +1400,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
 				PSL_settransparencies (PSL, transp);
 			}
-			if (Ctrl->D.etext)
-				gmt_map_text (GMT, xp[2] + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, 0.0, PSL_ML, 0);
+			if (Ctrl->D.etext) {
+				form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+				gmt_map_text (GMT, xp[2] + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, 0.0, PSL_ML, form);
+				gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
+			}
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
@@ -1723,8 +1729,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				transp[GMT_FILL_TRANSP] = 0.0;
 				PSL_settransparencies (PSL, transp);
 			}
-			if (Ctrl->D.etext)
-				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, -90.0, PSL_TC, 0);
+			if (Ctrl->D.etext) {
+				form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, -90.0, PSL_TC, form);
+				gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
+			}
 		}
 		if (Ctrl->D.emode & (PSSCALE_BACK_F - reverse)) {	/* Add color triangle at top */
 			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
@@ -1772,8 +1781,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
 				PSL_settransparencies (PSL, transp);
 			}
-			if (Ctrl->D.etext)
-				gmt_map_text (GMT, xp[2] + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, -90.0, PSL_BC, 0);
+			if (Ctrl->D.etext) {
+				form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+				gmt_map_text (GMT, xp[2] + fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, -90.0, PSL_BC, form);
+				gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
+			}
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
