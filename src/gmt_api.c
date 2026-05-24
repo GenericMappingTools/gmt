@@ -13153,71 +13153,68 @@ struct GMT_RESOURCE *GMT_Encode_Options(void *V_API, const char *module_name, in
 	 *
 	 * X stands for the specific program OPTION (e.g., L for -L, F for -F). For tables or grids read from files or
 	 * tables processed via standard input we use '<', while '>' is used for standard (table) output.
-	 * Y stands for data TYPE (C = CPT, D = Dataset/Point, L = Dataset/Line, P = Dataset/Polygon,
-	 *    G = Grid, I = Image, X = PostScript, ? = type specified via a module option [more later]),
+	 * Y stands for data TYPE (C => CPT, D => Dataset/Point,Line,Text,
+	 *    G => Grid, I => Image, X => PostScript, ? => type specified via a module option [more later]),
 	 *    while a hyphen (-) means there is NO data when this option is set (see Z for whether this is for in- or output).
 	 * Z stands for PRIMARY inputs '{', primary output '}' OR SECONDARY input '(', or secondary output ')'.
 	 *   Primary inputs and outputs MUST be assigned, and if not explicitly given will result in
-	 *   a syntax error. However, external APIs (mex, Python) can override this and supply the missing items
+	 *   a syntax error. However, external APIs (MEX, Julia, Python) can override this and supply the missing items
 	 *   via any given left- and right-hand side arguments to supply inputs or accept outputs.
-	 *   Secondary inputs means they are only assigned if an option is actually given.  If the in|out designation
+	 *   Secondary inputs means they are only assigned if an option is actually given. If the in|out designation
 	 *   is irrelevant for an option we use '-'.
 	 *
 	 * There are a few special cases where X, Y, or Z take on "magic" behavior:
 	 *
-	 *   A few modules with have X = - (hyphen). This means the primary input or output (determined by Z)
-	 *   has a data type that is not known until runtime.  A module option will tells us which type it is, and this
-	 *   option is encoded in Y.  So a -Y<type> option is _required_ and that is how we can update the primary
-	 *   data type.  Example: gmtread can read any GMT object but requires -T<type>.  It thus has the keys
-	 *   "<?{,>?},-T-".  Hence, we examine -T<type> and replace ? with the dataset implied by <type> both for input
+	 *   A few modules will have X = - (hyphen). This means the primary input or output (determined by Z)
+	 *   has a data type that is not known until runtime. A module option will tells us which type it is, and this
+	 *   option is encoded in Y. So a -Y<type> option is _required_ and that is how we can update the primary
+	 *   data type.  Example: gmtread can read any GMT object but requires -T<type>. It thus has the keys
+	 *   "-T-,<?{,>?}". Hence, we examine -T<type> and replace ? with the dataset implied by <type> both for input
 	 *   AND output (since Z was indeterminate).  Use i|o if only input or output should have this treatment.
 	 *
 	 *   A few modules will have Y = - which is another magic key: If the -X option is given then either the input
 	 *   or output (depending on what Z is) will NOT be required. As an example of this behavior, consider psxy
 	 *   which has a -T option that means "read no input, just write trailer". So the key "T-<" in psxy means that
-	 *   when -T is used then NO input is required.  This means the primary input key "<D{" is changed to "<D(" (secondary)
-	 *   and no attempt is made to connect external input to the psxy input.  If Z is none of () then we expect Z to
+	 *   when -T is used then NO input is required. This means the primary input key "<D{" is changed to "<D(" (secondary)
+	 *   and no attempt is made to connect external input to the psxy input. If Z is none of () then we expect Z to
 	 *   be one of the options with required input (or output) and we change that option to option input (or output).
-	 *   Example: grdtrack has two required inputs (the grid(s) and the track/point file.  However, if -E is set then
-	 *   the track/point file is not expected so we need to change it to secondary.  We thus add E-< which then will
-	 *   change <D{ to <D(.  A modifier is also possible.  For instance -F<grid>[+d] is used by several modules, such
-	 *   as triangulate, to use the non-NaN nodes in a grid as the input data instead of reading the primary input
-	 *   source.  So F-( would turn off primary input.  However, if +d is present then we want to combine the grid with
-	 *   the primary input and hence we read that as well.
+	 *   Example: grdtrack has two required inputs (the grid(s) and the track/point file. However, if -E is set then
+	 *   the track/point file is not expected so we need to change it to secondary. We thus add E-< which then will
+	 *   change <D{ to <D(. A modifier is also possible.
 	 *
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
 	 *   will expect/produce whatever input/output is specified by the primary setting, but if the "-Z" option is given the primary
-	 *   input/output will be changed to the given type Y.  Also, modifiers may be involved. The full syntax for this is
+	 *   input/output will be changed to the given type Y. Also, modifiers may be involved. The full syntax for this is
 	 *   XYZ[+abc...][-def...]: We do the substitution of output type to Y only if
 	 *      1. -Z is given on the command line
 	 *      2. -Z contains ALL the modifiers from the first "+"-list: +a, +b, +c, ... [optional]
 	 *      3. -Z contains AT LEAST ONE of the modifiers from the second "-"-list: +d, +e, +f. [optional]
-	 *   At least on case from 2 or 3 must be specified.
+	 *   At least one case from 2 or 3 must be specified.
 	 *   The Z magic is a bit confusing so here is some examples:
 	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
-	 *   2. pscoast normally plots PostSCript but pscoast -E+l only want to return a text listing of countries.  We allow for this
+	 *   2. pscoast normally plots PostScript but pscoast -E+l only want to return a text listing of countries. We allow for this
 	 *      switch by using the key >DE-lL so that if -E with either +l or +L are used we change primary output to D.
 	 *
      * There can also be complications when an option either takes a file but may also accept optional modifiers, or the
-     * file in question is itself given via an optional modifier.  These cases are encoded this way:
+     * file in question is itself given via an optional modifier. These cases are encoded this way:
      *
      *   A) If an input|output file argument to an option may be followed by optional modifiers we append "=" to that key.
      *        Example: The dataset given to gmtselect via -C (syntax -C<ptfile>|<lon>/<lat>+d<dist>) needs CD(=.
      *   B) If an input|output file is given via an option's modifier +x, then we append =x to that key.
      *        Example: The output dataset file given to grd2cpt via -E (syntax -E[<nlevels>][+c][+f<file>]) needs code ED)=f.
      *
-     * Both psxy[z] and the contour functions may specify options that may accept file arguments.  These are special cases:
+     * Both psxy[z] and the contour functions may specify options that may accept file arguments. These are special cases:
      *
      *  A) psxy[z] lists KEY S?(=2. ? means unknown type, but this is replaced by D (dataset) only if -S requests either the
-     *     quoted or decorated lines symbols since these require crossing or fixed-point dataset files.  If any other symbol
+     *     quoted or decorated lines symbols since these require crossing or fixed-point dataset files. If any other symbol
      *     is specified then the type is set to ! which means we skip the processing of this key.
-     *  B) The contour modules have option -G to set annotation placements.  The key is G?(=1 and only if -Gf|x is given will we
+     *  B) The contour modules have option -G to set annotation placements. The key is G?(=1 and only if -Gf|x is given will we
      *     need to read a dataset (so type becomes D), else type is set to ! to skip the processing of this key.
      *
      *  The optional integer that may follow the '=' character indicates how many characters must we skip following the option
-     *  switch before we reach the start of the filename.  Since -Gxfile or -Gffile has that initial x or f we use =1.  For the
+     *  switch before we reach the start of the filename.  Since -Gxfile or -Gffile has that initial x or f we use =1. For the
      *  psxy[z] command we used =2 since -Sqffile, -Sqxfile, -S~ffile, -S~xfile all imply file starts after 2 leading characters.
      *  If not given then the default is 0 (i.e., the filename immediately follows the option switch, like in -Adatafile).
      *
@@ -13250,7 +13247,7 @@ struct GMT_RESOURCE *GMT_Encode_Options(void *V_API, const char *module_name, in
 		*n = UINT_MAX;
 		return NULL;
 	}
-	API = gmtapi_get_api_ptr (V_API);
+	API = gmtapi_get_api_ptr(V_API);
 	API->error = GMT_NOERROR;
 	(void) gmt_current_name (module_name, module);
 	gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL);		/* Detect and set modern mode if modern mode session dir is found */
