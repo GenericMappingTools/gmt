@@ -1750,7 +1750,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psconvert main code ----------------------------*/
-	
+
 	gmt_M_tic(GMT);
 
 	if (!Ctrl->L.active && (GMT->current.setting.run_mode == GMT_CLASSIC) && (Ctrl->In.n_files == 0)) {	/* No files given, bail */
@@ -2176,16 +2176,16 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 				if ((error = GMT_Set_Columns (API, GMT_OUT, 6, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
-				
+
 				Out = gmt_new_record(GMT, out, NULL);
 				out[0] = (x1-x0) * 2.54/72.0;		out[1] = (y1-y0) * 2.54/72.0;	out[2] = x0 * 2.54/72.0;
 				out[3] = y0 * 2.54/72.0;			out[4] = x1 * 2.54/72.0;		out[5] = y1 * 2.54/72.0;
 				GMT_Put_Record(API, GMT_WRITE_DATA, Out);
-				
+
 				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 					Return (API->error);
 				}
-				
+
 				Return(GMT_OK);
 			}
 		}
@@ -2734,7 +2734,7 @@ EXTERN_MSC int GMT_psconvert(void *V_API, int mode, void *args) {
 		if (!Ctrl->O.active && Ctrl->T.ps && GMT->current.setting.run_mode == GMT_CLASSIC) {
 			second_ps = true;		/* Tell the renaming branch of modern mode to deal with this case too */
 			if (!Ctrl->F.file) {
-				size_t len = strlen(ps_file);	
+				size_t len = strlen(ps_file);
 				Ctrl->F.file = strdup(ps_file);
 				Ctrl->F.file[len - 3] = '_';		/* Change the last ".ps" to "_2" */
 				Ctrl->F.file[len - 2] = '2';	Ctrl->F.file[len - 1] = '\0';
@@ -3222,7 +3222,7 @@ GMT_LOCAL int psconvert_ghostbuster(struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	}
 
 	if (!found) {
-		GMT_Report(API, GMT_MSG_ERROR, "Ghostscript not found in registry nor in GMT/bin. Fallback to PATH.\n");
+		GMT_Report(API, GMT_MSG_DEBUG, "Ghostscript not found in registry nor in GMT/bin. Fallback to PATH.\n");
 		return GMT_RUNTIME_ERROR;
 	}
 
