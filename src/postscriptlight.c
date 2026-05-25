@@ -4045,6 +4045,64 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 	return (PSL_NO_ERROR);
 }
 
+int PSL_plotline_clipped_by_textbox(struct PSL_CTRL *PSL, double x0, double y0, double x1, double y1,
+                                    double fontsize, char *text, double angle, int justify, double offset[2]) {
+	/* Draw a line from (x0,y0) to the text-reference point (x1,y1), clipping out the part
+	 * that falls inside the text bounding box (plus optional clearance offset) around (x1,y1).
+	 * The box is sized for the given text/fontsize/justify and rotated by angle. Used for
+	 * leader lines from a data point to an offset text label (pstext -D...+v<pen>).
+	 */
+	const char *jx[3] = {"0", "PSL_dim_w 2 div neg", "PSL_dim_w neg"};
+	const char *jy[3] = {"0", "PSL_dim_h 2 div neg", "PSL_dim_h neg"};
+	int x_just = 0, y_just = 0, ixl, iyl;
+	double a_rad, ca, sa, dx_u, dy_u, xl_u, yl_u, saved_fontsize;
+
+	if (text == NULL || text[0] == '\0')	/* No text -- just draw the line */
+		return (PSL_plotsegment(PSL, x0, y0, x1, y1));
+
+	if (justify > 1) {
+		x_just = (justify + 3) % 4;	/* 0=left, 1=center, 2=right */
+		y_just = justify / 4;		/* 0=bottom, 1=middle, 2=top */
+	}
+
+	/* Compute line-start position in the local (rotated) coord system whose origin is at (x1,y1) */
+	a_rad = angle * D2R;
+	ca = cos(a_rad);  sa = sin(a_rad);
+	dx_u = x0 - x1;    dy_u = y0 - y1;
+	xl_u =  dx_u * ca + dy_u * sa;
+	yl_u = -dx_u * sa + dy_u * ca;
+	ixl = (int)lrint(xl_u * PSL->internal.x2ix);
+	iyl = (int)lrint(yl_u * PSL->internal.y2iy);
+
+	saved_fontsize = PSL->current.fontsize;	/* PSL_deftextdim will update the cache; restore after grestore */
+
+	PSL_comment(PSL, "PSL_plotline_clipped_by_textbox begin\n");
+	PSL_command(PSL, "V ");						/* gsave */
+	PSL_command(PSL, "%d %d T ", psl_ix(PSL, x1), psl_iy(PSL, y1));
+	if (angle != 0.0) PSL_command(PSL, "%.12g R ", angle);
+	PSL_deftextdim(PSL, "PSL_dim", fontsize, text);		/* Defines PSL_dim_w, _h, _d, _x0, _x1 in PS */
+	PSL_defunits(PSL, "PSL_dx", offset[0]);
+	PSL_defunits(PSL, "PSL_dy", offset[1]);
+
+	/* Build even-odd clip path: huge outer rectangle + textbox rectangle (the hole) */
+	PSL_command(PSL, "N -10000000 -10000000 M 20000000 0 D 0 20000000 D -20000000 0 D P\n");
+	PSL_command(PSL, "%s PSL_dim_x0 add PSL_dx sub %s PSL_dim_d add PSL_dy sub M ",
+	            jx[x_just], jy[y_just]);
+	PSL_command(PSL, "PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 0 D ");
+	PSL_command(PSL, "0 PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add D ");
+	PSL_command(PSL, "PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add neg 0 D P\n");
+	PSL_command(PSL, "eoclip N\n");
+
+	/* Draw the (now clipped) line from (xl, yl) to (0, 0) in local coords */
+	PSL_command(PSL, "N %d %d M %d %d D S\n", ixl, iyl, -ixl, -iyl);
+
+	PSL_command(PSL, "U\n");						/* grestore -- pops clip and CTM */
+	PSL_comment(PSL, "PSL_plotline_clipped_by_textbox end\n");
+
+	PSL->current.fontsize = saved_fontsize;
+	return (PSL_NO_ERROR);
+}
+
 int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y) {
 	/* Set the current point only */
 	PSL->internal.ix = psl_ix (PSL, x);
