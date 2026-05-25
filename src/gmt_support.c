@@ -15677,34 +15677,34 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 }
 
 /*! . */
-unsigned int gmtlib_pow_array (struct GMT_CTRL *GMT, double min, double max, double delta, unsigned int x_or_y_or_z, double **array) {
+unsigned int gmtlib_pow_array(struct GMT_CTRL *GMT, double min, double max, double delta, unsigned int x_or_y_or_z, double **array) {
 	int i, n = 0;
-	double *val = NULL, v0, v1;
+	double *val = NULL, v0, v1, phase = GMT->current.map.frame.axis[x_or_y_or_z].phase;
 
 	if (delta <= 0.0) return (0);
 
-	if (GMT->current.map.frame.axis[x_or_y_or_z].type != GMT_POW) return (gmtlib_linear_array (GMT, min, max, delta, 0.0, array));
+	if (GMT->current.map.frame.axis[x_or_y_or_z].type != GMT_POW) return (gmtlib_linear_array(GMT, min, max, delta, phase, array));
 
 	if (x_or_y_or_z == 0) { /* x-axis */
-		GMT->current.proj.fwd_x (GMT, min, &v0);
-		GMT->current.proj.fwd_x (GMT, max, &v1);
-		n = gmtlib_linear_array (GMT, v0, v1, delta, 0.0, &val);
-		for (i = 0; i < n; i++) GMT->current.proj.inv_x (GMT, &val[i], val[i]);
+		GMT->current.proj.fwd_x(GMT, min, &v0);
+		GMT->current.proj.fwd_x(GMT, max, &v1);
+		n = gmtlib_linear_array(GMT, v0, v1, delta, phase, &val);
+		for (i = 0; i < n; i++) GMT->current.proj.inv_x(GMT, &val[i], val[i]);
 	}
 	else if (x_or_y_or_z == 1) { /* y-axis */
-		GMT->current.proj.fwd_y (GMT, min, &v0);
-		GMT->current.proj.fwd_y (GMT, max, &v1);
-		n = gmtlib_linear_array (GMT, v0, v1, delta, 0.0, &val);
-		for (i = 0; i < n; i++) GMT->current.proj.inv_y (GMT, &val[i], val[i]);
+		GMT->current.proj.fwd_y(GMT, min, &v0);
+		GMT->current.proj.fwd_y(GMT, max, &v1);
+		n = gmtlib_linear_array(GMT, v0, v1, delta, phase, &val);
+		for (i = 0; i < n; i++) GMT->current.proj.inv_y(GMT, &val[i], val[i]);
 	}
 	else if (x_or_y_or_z == 2) { /* z-axis */
-		GMT->current.proj.fwd_z (GMT, min, &v0);
-		GMT->current.proj.fwd_z (GMT, max, &v1);
-		n = gmtlib_linear_array (GMT, v0, v1, delta, 0.0, &val);
-		for (i = 0; i < n; i++) GMT->current.proj.inv_z (GMT, &val[i], val[i]);
+		GMT->current.proj.fwd_z(GMT, min, &v0);
+		GMT->current.proj.fwd_z(GMT, max, &v1);
+		n = gmtlib_linear_array(GMT, v0, v1, delta, phase, &val);
+		for (i = 0; i < n; i++) GMT->current.proj.inv_z(GMT, &val[i], val[i]);
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtlib_pow_array internal error: Invalid side (%d) passed - nothing returned!\n", x_or_y_or_z);
+		GMT_Report(GMT->parent, GMT_MSG_WARNING, "gmtlib_pow_array internal error: Invalid side (%d) passed - nothing returned!\n", x_or_y_or_z);
 
 	*array = val;
 
