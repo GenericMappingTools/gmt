@@ -998,19 +998,19 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 
 		PSL_setfont (PSL, T.font.id);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, 0.0);
-		if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
-			gmt_setpen (GMT, &T.vecpen);
-			PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);
+		if (T.space_flag) {	/* Meant % of fontsize */
+			offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
+			offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
+		}
+		else {
+			offset[0] = T.x_space;
+			offset[1] = T.y_space;
+		}
+		if (T.boxflag & 32) {	/* Draw line from original point to shifted location, clipped at textbox edge */
+			gmt_setpen(GMT, &T.vecpen);
+			PSL_plotline_clipped_by_textbox(PSL, xx[0], yy[0], xx[1], yy[1], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset);
 		}
 		if (!Ctrl->G.mode && T.boxflag & 3) {	/* Plot the box beneath the text */
-			if (T.space_flag) {	/* Meant % of fontsize */
-				offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
-				offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
-			}
-			else {
-				offset[0] = T.x_space;
-				offset[1] = T.y_space;
-			}
 			if (Ctrl->S.active) {	/* Lay down shaded box first */
 				PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
 				PSL_plottextbox (PSL, plot_x + Ctrl->S.off[GMT_X], plot_y + Ctrl->S.off[GMT_Y], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
@@ -1477,19 +1477,19 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			PSL_setfont (PSL, T.font.id);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
-			if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
+			if (T.space_flag) {	/* Meant % of fontsize */
+				offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
+				offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
+			}
+			else {
+				offset[0] = T.x_space;
+				offset[1] = T.y_space;
+			}
+			if (T.boxflag & 32) {	/* Draw line from original point to shifted location, clipped at textbox edge */
 				gmt_setpen (GMT, &T.vecpen);
-				PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);
+				PSL_plotline_clipped_by_textbox(PSL, xx[0], yy[0], xx[1], yy[1], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset);
 			}
 			if (!Ctrl->G.mode && T.boxflag & 3) {	/* Plot the box beneath the text */
-				if (T.space_flag) {	/* Meant % of fontsize */
-					offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
-					offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
-				}
-				else {
-					offset[0] = T.x_space;
-					offset[1] = T.y_space;
-				}
 				if (Ctrl->S.active) {	/* Lay down shaded box first */
 					PSL_setfill (PSL, Ctrl->S.fill.rgb, 0);	/* shade color */
 					PSL_plottextbox (PSL, plot_x + Ctrl->S.off[GMT_X], plot_y + Ctrl->S.off[GMT_Y], T.font.size, use_text, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
