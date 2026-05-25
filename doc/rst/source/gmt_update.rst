@@ -23,13 +23,15 @@ Description
 -----------
 
 **gmt_update** is a small, self-contained C executable shipped alongside the
-regular GMT tools in ``bin/``.  It exists so that an end user can keep an
-installed GMT tree up-to-date with the most recent official binaries without
-having to download a full installer or rebuild from source.
+regular GMT tools in ``bin/``. It exists so that an end user can keep an
+installed GMT tree up-to-date with the most recent development binaries without
+having to wait for the to the release of a new version, or rebuild from source.
 
 The updater is **forward-only** and **version-gated**: it refuses to install
 an older release on top of a newer one, and it requires an explicit
-confirmation before touching any local file.  Files locked by a running GMT
+confirmation before touching any local file. It is also restricted to updating
+only files belonging to the current development cycle, so it will never replace a 6.7
+dev file with a 6.6.0, for example. Files locked by a running GMT
 process are staged on the side and applied on the next invocation, so an
 update cannot corrupt a session that is currently in use.
 
@@ -43,7 +45,7 @@ A single executable handles three roles, selected by the first argument:
 Channels
 --------
 
-Each official binary release is published as a set of *channels*, one per
+Each official interim binary update is published as a set of *channels*, one per
 combination of operating system and processor architecture.  The compile-time
 channel of an individual ``gmt_update`` binary is fixed and printed at the top
 of the ``--help`` output.  The six supported channels are:
