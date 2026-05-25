@@ -523,6 +523,10 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 					base = 1;	/* high */
 				else
 					base = 0;	/* full */
+				/* The azimuthal equidistant projection is singular at the antipode and the crude resolution's
+				 * 20-degree bins are too coarse to be assembled correctly when an oblique region (-R...+r) brings
+				 * the antipode into (or near) the visible map (issue #3923). Force at least 'low' for -JE. */
+				if (base == 4 && GMT->current.proj.projection_GMT == GMT_AZ_EQDIST) base = 3;
 			}
 			else if (GMT->common.R.active[RSET]) {	/* No scale, based on region only */
 				double area, earth_area = 360 * 180; /* Flat Earth squared degrees */
