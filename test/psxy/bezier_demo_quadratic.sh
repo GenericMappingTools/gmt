@@ -2,7 +2,7 @@
 #
 # Test Q (quadratic Bezier) command in custom symbol macro language.
 # Uses share/custom/leaf.def (closed leaf shape from two Q curves)
-# and share/custom/qbezier_test.def (open parabolic arc).
+# and @qbezier_test.def (open parabolic arc).
 
 ps=bezier_demo_quadratic.ps
 
@@ -17,7 +17,7 @@ done
 
 # Parabolic arc symbol (open path, just stroked)
 for lon in -3 -1 1 3; do
-	echo "$lon  3.2" | gmt psxy -R -J -Skqbezier_test/1.5c -W1.5p,red -O -K >> $ps
+	echo "$lon  3.2" | gmt psxy -R -J -Sk@qbezier_test/1.5c -W1.5p,red -O -K >> $ps
 done
 
 # Labels
