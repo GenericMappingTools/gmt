@@ -16471,6 +16471,23 @@ dry_run:		if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S 
 					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 					if (!parsed_R) gmt_parse_R_option (GMT, opt_R->arg);
 					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+					/* Issue #6463: If -R<x>/<x>/<y>/<y>+u<unit> was given, rewrite opt_R->arg to the equivalent
+					 * geographic LL/UR form -R<LL_lon>/<LL_lat>/<UR_lon>/<UR_lat>+r. The +u parsing path invokes
+					 * mapproject as a sub-module to invert projected coords; a second invocation (during the
+					 * module's own GMT_Parse_Common) inherits the parent's now-populated current.proj and yields
+					 * a wrong inverse. The +r path needs no sub-mapproject call so it is immune. R.wesn already
+					 * holds the correct LL/UR corners at this point. */
+					if (!parsed_R && GMT->common.R.oblique) {
+						char *u_pos = strstr(opt_R->arg, "+u");
+						if (u_pos && strchr(GMT_LEN_UNITS2, u_pos[2])) {
+							char new_arg[GMT_LEN256] = {""}, *rest = u_pos + 3;		/* Skip past "+u<unit>" */
+							snprintf(new_arg, GMT_LEN256, "%.16g/%.16g/%.16g/%.16g+r%s", GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO],
+							         GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], rest);
+							GMT_Report(API, GMT_MSG_DEBUG, "Replace -R%s with -R%s to avoid projection-dependent re-parse [#6463]\n", opt_R->arg, new_arg);
+							gmt_M_str_free(opt_R->arg);
+							opt_R->arg = strdup(new_arg);
+						}
+					}
 					if (GMT->common.R.oblique || GMT->current.proj.projection == GMT_OBLIQUE_MERC || GMT->current.proj.projection == GMT_GENPER) {
 						int s_error = GMT_NOERROR;	/* Error code for various calls */
 						const char *prev_name = GMT->init.module_name;	/* Remember calling module */
