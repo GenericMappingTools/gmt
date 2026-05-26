@@ -824,7 +824,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					threshold = (0.5-GMT_CONV5_LIMIT) * dy;
 					if (fabs (fmod (dummy[0], dy)) > threshold) {	/* Pixel registration? */
 						if (header->registration == GMT_GRID_NODE_REG)	/* No, somehow messed up now */
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y (likely bad x_inc or y_inc steps), using %s\n", regtype[header->registration]);
 						else {	/* Pixel registration confirmed */
 							dummy[0] -= 0.5 * dy;	dummy[1] += 0.5 * dy;
 							registration = GMT_GRID_PIXEL_REG;
@@ -848,7 +848,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					else
 						GMT_Report (GMT->parent, GMT_MSG_WARNING, "The y-coordinates and range attribute are in conflict but range is exactly 180; we rely on this range\n");
 					if ((header->n_rows%2) == 1 && header->registration == GMT_GRID_NODE_REG)	/* Pixel registration? */
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y (likely bad x_inc or y_inc steps), using %s\n", regtype[header->registration]);
 					else
 						registration = header->registration;
 				}
@@ -856,7 +856,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			else {	/* Data seems OK; determine registration and set dummy from data coordinates */
 				dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 				if ((fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_rows-1] - xy[0]) - 1.0 > 0.5 / (header->n_rows - 1)) && header->registration == GMT_GRID_NODE_REG)
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y (likely bad x_inc or y_inc steps), using %s\n", regtype[header->registration]);
 			}
 		}
 		else if (has_vector) {	/* No attribute for range, use coordinates */
@@ -864,7 +864,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 			if (fabs (fmod (dummy[0], dy)) > threshold) {	/* Most likely pixel registration since off by dy/2 */
 				if (header->registration == GMT_GRID_NODE_REG)	/* No, somehow messed up now */
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y (likely bad x_inc or y_inc steps), using %s\n", regtype[header->registration]);
 				else {	/* Pixel registration confirmed */
 					if (dummy[0] > dummy[1]) {		/* Check for reverse order of y-coordinate */
 						gmt_M_double_swap (dummy[0], dummy[1]);
@@ -879,7 +879,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 		else {	/* Only has the valid_range settings.  If no registration set, and no dy available, guess based on ny */
 			if ((header->n_rows%2) == 1 && header->registration == GMT_GRID_NODE_REG)	/* Pixel registration? */
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Guessing of registration in conflict between x and y (likely bad x_inc or y_inc steps), using %s\n", regtype[header->registration]);
 		}
 
 		/* Check for reverse order of y-coordinate */
