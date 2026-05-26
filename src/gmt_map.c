@@ -7976,7 +7976,7 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	uint64_t n, k;
 	int n_try, pos;
 	bool keep_trying;
-	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
+	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap, final_d, x_prev, y_prev;
 
 	if (GMT->current.map.meridian_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
@@ -8041,10 +8041,26 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 					keep_trying = false;
 			}
 		} while (keep_trying && n_try < 10);
+		/* See gmtlib_lonpath above (#8684). Limit to azimuthal full-sphere case to avoid
+		 * affecting projections where large chords are legitimate. */
+		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {
+			final_d = hypot(x1 - x0, y1 - y0);
+			if (final_d > 5.0 * GMT->current.setting.map_line_step || gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1))
+				tlat[n] = GMT->session.d_NaN;
+		}
 		x0 = x1;	y0 = y1;
 	}
 	tlon[n] = lon;
 	tlat[n] = lat2;
+	/* Check if forced endpoint at lat2 makes a wild jump from previous sample (e.g. antipode of the
+	 * azimuthal pole). If so, flag NaN so gmt_geo_to_xy_line breaks the polyline (#8684). */
+	if (n > 0 && !gmt_M_is_dnan(tlat[n-1]) && gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {
+		gmt_geo_to_xy(GMT, tlon[n-1], tlat[n-1], &x_prev, &y_prev);
+		gmt_geo_to_xy(GMT, tlon[n], tlat[n], &x1, &y1);
+		if (gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1) || gmt_M_is_dnan(x_prev) || gmt_M_is_dnan(y_prev) ||
+		    hypot(x1 - x_prev, y1 - y_prev) > 5.0 * GMT->current.setting.map_line_step)
+			tlat[n] = GMT->session.d_NaN;
+	}
 	n++;
 
 	if (n != n_alloc) {
@@ -8062,7 +8078,7 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	uint64_t k, n;
 	int n_try, pos;
 	bool keep_trying;
-	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
+	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap, final_d, x_prev, y_prev;
 
 	if (GMT->current.map.parallel_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
@@ -8116,10 +8132,25 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 					keep_trying = false;
 			}
 		} while (keep_trying && n_try < 10);
+		/* If the final projected step is far larger than the desired map_line_step, the parallel
+		 * crossed a projection singularity (antipode of azimuthal full-sphere pole). Mark with NaN
+		 * so gmt_geo_to_xy_line breaks the polyline (#8684). */
+		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {
+			final_d = hypot(x1 - x0, y1 - y0);
+			if (final_d > 5.0 * GMT->current.setting.map_line_step || gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1))
+				tlat[n] = GMT->session.d_NaN;
+		}
 		x0 = x1;	y0 = y1;
 	}
 	tlon[n] = lon2;
 	tlat[n] = lat;
+	if (n > 0 && !gmt_M_is_dnan(tlat[n-1]) && gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {	/* Detect wild endpoint jump (#8684) */
+		gmt_geo_to_xy(GMT, tlon[n-1], tlat[n-1], &x_prev, &y_prev);
+		gmt_geo_to_xy(GMT, tlon[n], tlat[n], &x1, &y1);
+		if (gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1) || gmt_M_is_dnan(x_prev) || gmt_M_is_dnan(y_prev) ||
+		    hypot(x1 - x_prev, y1 - y_prev) > 5.0 * GMT->current.setting.map_line_step)
+			tlat[n] = GMT->session.d_NaN;
+	}
 	n++;
 	n_alloc = n;
 	gmt_M_malloc2 (GMT, tlon, tlat, 0, &n_alloc, double);
@@ -8221,7 +8252,8 @@ uint64_t gmt_geo_to_xy_line(struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		}
 
 		if ((nx = gmtmap_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Do nothing if we get crossings*/ }
-		else if (GMT->current.map.is_world)	/* Check global wrapping if 360 range */
+		else if (GMT->current.map.is_world &&	/* Check global wrapping if 360 range */
+			!(gmt_M_is_azimuthal (GMT) && !gmt_M_is_perspective (GMT)))	/* Azimuthal projections (except ortho/genper) have a closed boundary; cylindrical wrap check makes spurious chord crossings (#8684) */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 
 		if (nx == 1) {	/* inside-outside or outside-inside; set move&clip vs draw flags */

@@ -2035,10 +2035,15 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 		GMT->current.proj.n_antipoles++;
 	}
 	else {
-		c = d_acos (cc);
-		k = (gmt_M_proj_is_zero (c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin (c);
-		*x = k * clat * slon;
-		*y = k * (GMT->current.proj.cosp * slat - GMT->current.proj.sinp * t);
+		double sin_c, num_x, num_y;
+		c = d_acos(cc);
+		num_x = clat * slon;
+		num_y = GMT->current.proj.cosp * slat - GMT->current.proj.sinp * t;
+		/* sin(c) = sqrt(1 - cc^2) = hypot(num_x, num_y); this form avoids precision loss near the antipode (#8684) */
+		sin_c = hypot(num_x, num_y);
+		k = (gmt_M_proj_is_zero(c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin_c;
+		*x = k * num_x;
+		*y = k * num_y;
 	}
 }
 
