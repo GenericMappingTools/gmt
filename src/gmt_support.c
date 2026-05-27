@@ -7515,7 +7515,9 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
-	if (n == 2) {	/* Could be width,color or width,style or color,style */
+	if (n == 3)	/* width,color,style all given; user-supplied width wins */
+		set_NaN = false;
+	else if (n == 2) {	/* Could be width,color or width,style or color,style */
 		if (line[0] == ',') {	/* ,color,style got stored in width,color */
 			strncpy (style, color, GMT_LEN256-1);
 			strncpy (color, width, GMT_LEN256-1);
