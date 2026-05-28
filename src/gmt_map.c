@@ -6374,21 +6374,37 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 	/* z_level == DBL_MAX is signaling that it was not set by the user. In that case we change it to the lower z level */
 	if (GMT->current.proj.z_level == DBL_MAX) GMT->current.proj.z_level = (GMT->current.proj.xyz_pos[GMT_Z]) ?  GMT->common.R.wesn[ZLO] : GMT->common.R.wesn[ZHI];
 
-	switch (GMT->current.proj.z_project.view_plane % 3) {	/* This fixes the problem reported in #529 */
-		case GMT_X:
-			i_min = XLO, i_max = XHI;
-			break;
-		case GMT_Y:
-			i_min = YLO, i_max = YHI;
-			break;
-		case GMT_Z:
-			i_min = ZLO, i_max = ZHI;
+	if (GMT->common.J.zactive) {	/* True 3-D plot via -JZ: z-axis range is always ZLO/ZHI regardless of -p[x|y] view plane; view_plane retains user value so -px/-py target the x/y wall */
+		i_min = ZLO, i_max = ZHI;
+		switch (GMT->current.proj.z_project.view_plane % 3) {	/* This fixes the problem reported in #529 */
+			case GMT_X:
+				i_min = XLO, i_max = XHI;
+				break;
+			case GMT_Y:
+				i_min = YLO, i_max = YHI;
+				break;
+			case GMT_Z:
+				i_min = ZLO, i_max = ZHI;
+		}
+	}
+	else {
+		switch (GMT->current.proj.z_project.view_plane % 3) {	/* This fixes the problem reported in #529 */
+			case GMT_X:
+				i_min = XLO, i_max = XHI;
+				break;
+			case GMT_Y:
+				i_min = YLO, i_max = YHI;
+				break;
+			case GMT_Z:
+				i_min = ZLO, i_max = ZHI;
+		}
 	}
 
 	switch (GMT->current.proj.xyz_projection[GMT_Z]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_min] : GMT->common.R.wesn[i_max];
 			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_max] : GMT->common.R.wesn[i_min];
+			z_range = (GMT->current.proj.xyz_pos[GMT_Z]) ? (GMT->common.R.wesn[ZHI] - GMT->common.R.wesn[ZLO]) : (GMT->common.R.wesn[ZLO] - GMT->common.R.wesn[ZHI]);
 			GMT->current.proj.fwd_z = &gmtlib_translin;
 			GMT->current.proj.inv_z = &gmtlib_itranslin;
 			break;
@@ -6411,7 +6427,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			GMT->current.proj.fwd_z = &gmtproj_transpowz;
 			GMT->current.proj.inv_z = &gmtproj_itranspowz;
 	}
-	z_range = zmax - zmin;
+	//z_range = zmax - zmin;
 	if (z_range == 0.0 && GMT->current.proj.compute_scale[GMT_Z])
 		GMT->current.proj.scale[GMT_Z] = 0.0;	/* No range given, just flat projected map */
 	else if (GMT->current.proj.compute_scale[GMT_Z])

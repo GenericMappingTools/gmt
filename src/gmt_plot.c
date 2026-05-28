@@ -10582,7 +10582,13 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	if (plane < 0)			/* Reset to original matrix */
 		PSL_command (PSL, "PSL_GPP setmatrix\n"); /* Return to normal current transformation matrix */
 	else {	/* New perspective plane: compute all derivatives and use full matrix */
-		if (plane >= GMT_ZW) level = gmt_z_to_zz (GMT, level);	/* First convert world z coordinate to projected z coordinate */
+		if (plane >= GMT_ZW) {	/* World coordinate: pick the axis perpendicular to the plane so the correct scale (X/Y/Z) is applied */
+			switch (plane % 3) {
+				case GMT_X: level = gmt_x_to_xx(GMT, level); break;	/* Constant-X plane: level is in user X units */
+				case GMT_Y: level = gmt_y_to_yy(GMT, level); break;	/* Constant-Y plane: level is in user Y units */
+				case GMT_Z: level = gmt_z_to_zz(GMT, level); break;	/* Constant-Z plane: level is in user Z units */
+			}
+		}
 		switch (plane % 3) {
 			case GMT_X:	/* Constant x, Convert y,z to x',y' */
 				a = GMT->current.proj.z_project.sin_az;
