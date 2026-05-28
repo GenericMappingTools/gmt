@@ -15759,7 +15759,7 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 }
 
 /*! . */
-unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels, unsigned int which) {
+unsigned int gmtlib_load_custom_annot(struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels, unsigned int which) {
 	/* Reads a file with one or more records of the form
 	 * value	types	[label]
 	 * where value is the coordinate of the tickmark, types is a combination
@@ -15770,6 +15770,7 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	 * which: 0 = primary custom file, 1 = secondary custom file.
 	 */
 	int nc, error;
+	unsigned int parse_type = gmt_M_type(GMT, GMT_IN, A->id);
 	unsigned int k = 0, save_coltype, save_max_cols_to_read;
 	uint64_t row;
 	bool text, found, save_trailing;
@@ -15780,10 +15781,15 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	struct GMT_DATASEGMENT *S = NULL;
 
 	/* Temporarily change what data type col one is */
-	save_coltype = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+	save_coltype = gmt_get_column_type(GMT, GMT_IN, GMT_X);
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
-	gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_M_type (GMT, GMT_IN, A->id));
+
+	/* Pick the parsing type from the axis: prefer axis->type when it is TIME (psscale's vertical-bar kludge swaps axes and leaves col_type[A->id] unset), else use the column type */
+	if (A->type == GMT_TIME && !(parse_type == GMT_IS_ABSTIME || parse_type == GMT_IS_RELTIME))
+		parse_type = GMT_IS_ABSTIME;
+
+	gmt_set_column_type(GMT, GMT_IN, GMT_X, parse_type);
 	GMT->current.io.trailing_text[GMT_IN] = true;	/* Since we definitively have that here */
 	text = ((item == 'a' || item == 'i') && labels);
 	if (!GMT->common.R.oblique)	/* Eliminate items outside rectangular w/e/s/n/z0/z1 bounds */
