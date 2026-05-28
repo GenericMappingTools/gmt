@@ -5909,10 +5909,10 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 			for (i = 0; i < nx1; i++) {
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (axis == GMT_Z && (GMT->current.proj.z_project.view_plane % 3) == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane (only for -pz) */
 				x = (*xyz_fwd) (GMT, knots[i]);	/* Convert to inches on the page */
-                if (skip_center_annot && doubleAlmostEqualZero (knots[i], skip_val)) continue;   /* Don't want annotations exactly at intersection between graph axes */
-                if (gmtplot_skip_end_annotation (GMT, axis, x, length)) continue;   /* Don't want annotations exactly at one or both ends of the axis */
+				if (skip_center_annot && doubleAlmostEqualZero(knots[i], skip_val)) continue;   /* Don't want annotations exactly at intersection between graph axes */
+				if (gmtplot_skip_end_annotation(GMT, axis, x, length)) continue;   /* Don't want annotations exactly at one or both ends of the axis */
 				if (!is_interval && gmtplot_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0]) {
 					strncpy (string, label_c[i], GMT_LEN256-1);
@@ -5949,7 +5949,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 			for (i = 0; i < nx1; i++) {
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (axis == GMT_Z && (GMT->current.proj.z_project.view_plane % 3) == GMT_Z && fabs(knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane (only for -pz) */
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				if (skip_center_annot && doubleAlmostEqualZero (knots[i], skip_val)) continue;   /* Don't want annotations exactly at intersection between graph axes */
 				if (gmtplot_skip_end_annotation (GMT, axis, x, length)) continue;	/* Don't want annotations exactly at one or both ends of the axis */
