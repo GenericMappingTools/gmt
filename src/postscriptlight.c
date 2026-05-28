@@ -5702,7 +5702,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 
 	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, previous[BUFSIZ] = {""}, *plast = NULL;
 	/* PS strings to be used dependent on "mode" */
-	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs"};
+	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs currentpoint N M"};
 	/* PS strings to be used dependent on "justify". Empty strings added for unused values. */
 	const char *justcmd[12] = {"", "bl ", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
