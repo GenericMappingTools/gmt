@@ -10595,6 +10595,8 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 				b = -GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.sin_el;
 				c = 0.0;
 				d = GMT->current.proj.z_project.cos_el;
+				if (plane >= GMT_ZW && GMT->current.map.height > 0.0)	/* User -px plan: stretch in_y so plan height matches Z axis height (proj.zmax) */
+					d *= GMT->current.proj.zmax / GMT->current.map.height;
 				e = GMT->current.proj.z_project.x_off - level * GMT->current.proj.z_project.cos_az;
 				f = GMT->current.proj.z_project.y_off - level * GMT->current.proj.z_project.sin_az * GMT->current.proj.z_project.sin_el;
 				break;
@@ -10603,6 +10605,8 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 				b = -GMT->current.proj.z_project.sin_az * GMT->current.proj.z_project.sin_el;
 				c = 0.0;
 				d = GMT->current.proj.z_project.cos_el;
+				if (plane >= GMT_ZW && GMT->current.map.height > 0.0)	/* User -py plan: stretch in_y so plan height matches Z axis height (proj.zmax) */
+					d *= GMT->current.proj.zmax / GMT->current.map.height;
 				e = GMT->current.proj.z_project.x_off + level * GMT->current.proj.z_project.sin_az;
 				f = GMT->current.proj.z_project.y_off - level * GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.sin_el;
 				break;
