@@ -6648,6 +6648,26 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	bool clip_on = false, too_crowded = false;
 	char *order[2] = {"before", "after"};
 	struct PSL_CTRL *PSL= GMT->PSL;
+	/* For -px/-py world-coord wall plan, vertical of basemap is the Z axis. Swap only Y annotation state with Z
+	 * (labels and range), scale Y so labels still land within plan's projected y-box [0,map.height]; matrix d-stretch
+	 * then maps that visually to Z height. Restore before gmt_vertical_axis. */
+	bool swap_yz = (GMT->current.proj.z_project.plane >= GMT_ZW && (GMT->current.proj.z_project.plane % 3) != GMT_Z);
+	double saved_y_wesn[2] = {0.0, 0.0}, saved_y_scale = 0.0, saved_y_origin = 0.0;
+	struct GMT_PLOT_AXIS saved_axis_y;
+	if (swap_yz) {
+		double z_range = GMT->common.R.wesn[ZHI] - GMT->common.R.wesn[ZLO];
+		saved_y_wesn[0] = GMT->common.R.wesn[YLO];
+		saved_y_wesn[1] = GMT->common.R.wesn[YHI];
+		saved_y_scale   = GMT->current.proj.scale[GMT_Y];
+		saved_y_origin  = GMT->current.proj.origin[GMT_Y];
+		saved_axis_y    = GMT->current.map.frame.axis[GMT_Y];
+		GMT->common.R.wesn[YLO]            = GMT->common.R.wesn[ZLO];
+		GMT->common.R.wesn[YHI]            = GMT->common.R.wesn[ZHI];
+		GMT->current.proj.scale[GMT_Y]     = (z_range > 0.0) ? GMT->current.map.height / z_range : saved_y_scale;
+		GMT->current.proj.origin[GMT_Y]    = -GMT->common.R.wesn[ZLO] * GMT->current.proj.scale[GMT_Y];
+		GMT->current.map.frame.axis[GMT_Y] = GMT->current.map.frame.axis[GMT_Z];
+		GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;	/* So gmt_xy_axis uses gmt_y_to_yy(with our swapped scale[Y]) not gmt_z_to_zz */
+	}
 
 	/* 0. Determine if we need to be here and set a few parameters */
 
@@ -6711,6 +6731,14 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	/* 4. Undo various temporary changes */
 
 	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
+
+	if (swap_yz) {	/* Restore Y-axis state we swapped with Z for the vertical wall plan */
+		GMT->common.R.wesn[YLO]            = saved_y_wesn[0];
+		GMT->common.R.wesn[YHI]            = saved_y_wesn[1];
+		GMT->current.proj.scale[GMT_Y]     = saved_y_scale;
+		GMT->current.proj.origin[GMT_Y]    = saved_y_origin;
+		GMT->current.map.frame.axis[GMT_Y] = saved_axis_y;
+	}
 
 	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = false;	/* Now we can plot the title [if selected via -B+t] */
 
