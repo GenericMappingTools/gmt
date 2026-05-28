@@ -3186,7 +3186,7 @@ GMT_LOCAL void gmtplot_cube_box (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int
 	xx[0] = xx[1] = nesw[(quadrant+1)%4];	xx[2] = xx[3] = nesw[(quadrant+3)%4];
 	yy[0] = yy[3] = GMT->current.proj.zmin;	yy[1] = yy[2] = GMT->current.proj.zmax;
 	gmt_setpen (GMT, &GMT->current.map.frame.pen);
-	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
+	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 }
 
 GMT_LOCAL void gmtplot_timestamp(struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
