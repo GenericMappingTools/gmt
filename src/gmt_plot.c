@@ -6652,8 +6652,11 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	 * (labels and range), scale Y so labels still land within plan's projected y-box [0,map.height]; matrix d-stretch
 	 * then maps that visually to Z height. Restore before gmt_vertical_axis. */
 	bool swap_yz = (GMT->current.proj.z_project.plane >= GMT_ZW && (GMT->current.proj.z_project.plane % 3) != GMT_Z);
+	bool swap_xy = (GMT->current.proj.z_project.plane >= GMT_ZW && (GMT->current.proj.z_project.plane % 3) == GMT_X);
 	double saved_y_wesn[2] = {0.0, 0.0}, saved_y_scale = 0.0, saved_y_origin = 0.0;
-	struct GMT_PLOT_AXIS saved_axis_y;
+	double saved_x_wesn[2] = {0.0, 0.0}, saved_x_scale = 0.0, saved_x_origin = 0.0;
+	double saved_rect_x[2] = {0.0, 0.0}, saved_map_width = 0.0;
+	struct GMT_PLOT_AXIS saved_axis_y, saved_axis_x;
 	if (swap_yz) {
 		double z_range = GMT->common.R.wesn[ZHI] - GMT->common.R.wesn[ZLO];
 		saved_y_wesn[0] = GMT->common.R.wesn[YLO];
@@ -6667,6 +6670,25 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		GMT->current.proj.origin[GMT_Y]    = -GMT->common.R.wesn[ZLO] * GMT->current.proj.scale[GMT_Y];
 		GMT->current.map.frame.axis[GMT_Y] = GMT->current.map.frame.axis[GMT_Z];
 		GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;	/* So gmt_xy_axis uses gmt_y_to_yy(with our swapped scale[Y]) not gmt_z_to_zz */
+	}
+	if (swap_xy) {	/* -px: plan horizontal is the Y direction; swap X annotation state with original Y so plan top/bottom show Y range */
+		saved_x_wesn[0] = GMT->common.R.wesn[XLO];
+		saved_x_wesn[1] = GMT->common.R.wesn[XHI];
+		saved_x_scale   = GMT->current.proj.scale[GMT_X];
+		saved_x_origin  = GMT->current.proj.origin[GMT_X];
+		saved_axis_x    = GMT->current.map.frame.axis[GMT_X];
+		saved_rect_x[0] = GMT->current.proj.rect[XLO];
+		saved_rect_x[1] = GMT->current.proj.rect[XHI];
+		saved_map_width = GMT->current.map.width;
+		GMT->common.R.wesn[XLO]            = saved_y_wesn[0];
+		GMT->common.R.wesn[XHI]            = saved_y_wesn[1];
+		GMT->current.proj.scale[GMT_X]     = saved_y_scale;
+		GMT->current.proj.origin[GMT_X]    = saved_y_origin;
+		GMT->current.map.frame.axis[GMT_X] = saved_axis_y;
+		GMT->current.map.frame.axis[GMT_X].id = GMT_X;
+		GMT->current.proj.rect[XLO]        = GMT->current.proj.rect[YLO];
+		GMT->current.proj.rect[XHI]        = GMT->current.proj.rect[YHI];
+		GMT->current.map.width             = GMT->current.map.height;
 	}
 
 	/* 0. Determine if we need to be here and set a few parameters */
@@ -6732,6 +6754,16 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
 
+	if (swap_xy) {	/* Restore X-axis state we swapped with Y for the plan horizontal */
+		GMT->common.R.wesn[XLO]            = saved_x_wesn[0];
+		GMT->common.R.wesn[XHI]            = saved_x_wesn[1];
+		GMT->current.proj.scale[GMT_X]     = saved_x_scale;
+		GMT->current.proj.origin[GMT_X]    = saved_x_origin;
+		GMT->current.map.frame.axis[GMT_X] = saved_axis_x;
+		GMT->current.proj.rect[XLO]        = saved_rect_x[0];
+		GMT->current.proj.rect[XHI]        = saved_rect_x[1];
+		GMT->current.map.width             = saved_map_width;
+	}
 	if (swap_yz) {	/* Restore Y-axis state we swapped with Z for the vertical wall plan */
 		GMT->common.R.wesn[YLO]            = saved_y_wesn[0];
 		GMT->common.R.wesn[YHI]            = saved_y_wesn[1];
