@@ -9159,10 +9159,22 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (!GMT->common.X.active && O_active) GMT->current.setting.map_origin[GMT_X] = 0.0;
 	if (!GMT->common.Y.active && O_active) GMT->current.setting.map_origin[GMT_Y] = 0.0;
 
-	/* Adjust offset when centering plot on center of page (PS does the rest) */
+	/* Adjust offset when centering plot on center of page (PS does the rest).
+	 * For perspective plots (-p) the on-paper bounding box is given by z_project.[xy]{min,max},
+	 * not by map.width/height, so use that to center the actual perspective footprint. */
 
-	if (GMT->current.ps.origin[GMT_X] == 'c') GMT->current.setting.map_origin[GMT_X] -= 0.5 * GMT->current.map.width;
-	if (GMT->current.ps.origin[GMT_Y] == 'c') GMT->current.setting.map_origin[GMT_Y] -= 0.5 * GMT->current.map.height;
+	if (GMT->current.ps.origin[GMT_X] == 'c') {
+		if (GMT->current.proj.three_D)
+			GMT->current.setting.map_origin[GMT_X] -= 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax);
+		else
+			GMT->current.setting.map_origin[GMT_X] -= 0.5 * GMT->current.map.width;
+	}
+	if (GMT->current.ps.origin[GMT_Y] == 'c') {
+		if (GMT->current.proj.three_D)
+			GMT->current.setting.map_origin[GMT_Y] -= 0.5 * (GMT->current.proj.z_project.ymin + GMT->current.proj.z_project.ymax);
+		else
+			GMT->current.setting.map_origin[GMT_Y] -= 0.5 * GMT->current.map.height;
+	}
 
 	/* Get font names used */
 
