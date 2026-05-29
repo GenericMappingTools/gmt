@@ -4991,13 +4991,15 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
 		if (no == 0 && !strncmp(text, "000", 3)) {		/* Understand format '000' to mean "no frame but keep annots, ticks etc" */
-			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* A no-frame fancy would be super complicated */
+			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY)	/* Only downgrade fancy/rounded; keep inside/graph if user set those */
+				GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* A no-frame fancy would be super complicated */
 			GMT->current.setting.map_frame_pen.rgb[3] = 1.0;	/* Since it is very hard to no plot the axis, just make it transparent. */
 		}
 		else if ((text[0] == '0' && !text[1]) || !strncmp(text, "00", 2)) {	 /* Understand format '00' to mean zero line width frame. */
 			GMT->current.map.frame.draw = true;			/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
-			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
+			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY)	/* Only downgrade fancy/rounded; keep inside/graph if user set those */
+				GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
 			GMT->current.map.frame.set[no] = true;		/* Since we want this axis drawn */
 			if (no == 0 && !strncmp(text, "00", 2))
 				GMT->current.setting.map_frame_pen.width = 0;	/* Understand format '00' to mean "draw the frame with a 0 width line */
