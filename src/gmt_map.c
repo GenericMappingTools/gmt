@@ -6375,34 +6375,6 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 	/* z_level == DBL_MAX is signaling that it was not set by the user. In that case we change it to the lower z level */
 	if (GMT->current.proj.z_level == DBL_MAX) GMT->current.proj.z_level = (GMT->current.proj.xyz_pos[GMT_Z]) ?  GMT->common.R.wesn[ZLO] : GMT->common.R.wesn[ZHI];
 
-#if 0
-	if (GMT->common.J.zactive) {	/* True 3-D plot via -JZ: z-axis range is always ZLO/ZHI regardless of -p[x|y] view plane; view_plane retains user value so -px/-py target the x/y wall */
-		i_min = ZLO, i_max = ZHI;
-		switch (GMT->current.proj.z_project.view_plane % 3) {	/* This fixes the problem reported in #529 */
-			case GMT_X:
-				i_min = XLO, i_max = XHI;
-				break;
-			case GMT_Y:
-				i_min = YLO, i_max = YHI;
-				break;
-			case GMT_Z:
-				i_min = ZLO, i_max = ZHI;
-		}
-	}
-	else {
-		switch (GMT->current.proj.z_project.view_plane % 3) {	/* This fixes the problem reported in #529 */
-			case GMT_X:
-				i_min = XLO, i_max = XHI;
-				break;
-			case GMT_Y:
-				i_min = YLO, i_max = YHI;
-				break;
-			case GMT_Z:
-				i_min = ZLO, i_max = ZHI;
-		}
-	}
-#endif
-
 	switch (GMT->current.proj.z_project.view_plane % 3) {	/* This fixes the problem reported in #529 */
 		case GMT_X:
 			i_min = XLO, i_max = XHI;
