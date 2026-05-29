@@ -1495,6 +1495,16 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
+	if (GMT->common.R.active[RSET] && gmt_M_is_geographic(GMT, GMT_IN) && !gmt_M_is_nonlinear_graticule(GMT) && GMT->common.R.wesn[YHI] == 90.0) {
+		/* Plotting a global pixel-registered grid with a linear/cylindrical (rectangular graticule) projection and a
+		 * north boundary of exactly +90 makes a later gmt_map_setup collapse the y-scale, producing a degenerate plot
+		 * (https://github.com/GenericMappingTools/gmt issue).  Nudge the north boundary just below the pole, which is
+		 * what passing -R.../89.999999999999 does and avoids the problem with no visible difference.
+		*/
+		GMT->common.R.wesn[YHI] = 90.0 - GMT_CONV12_LIMIT;
+		GMT_Report(API, GMT_MSG_DEBUG, "Nudged north boundary from 90 to %.12g to avoid degenerate projection scaling\n", GMT->common.R.wesn[YHI]);
+	}
+
 	/*---------------------------- This is the grdimage main code ----------------------------*/
 
 	if ((Conf = gmt_M_memory (GMT, NULL, 1, struct GRDIMAGE_CONF)) == NULL) {
