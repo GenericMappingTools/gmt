@@ -6367,6 +6367,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 	unsigned int i, i_min = 0, i_max = 0;
 	bool easy, positive;
 	double x, y, zmin = 0.0, zmax = 0.0, z_range;
+	double _zmin = 0.0, _zmax = 0.0;
 
 	GMT->current.proj.three_D = (GMT->current.proj.z_project.view_azimuth != 180.0 || GMT->current.proj.z_project.view_elevation != 90.0);
 	GMT->current.proj.scale[GMT_Z] = GMT->current.proj.z_pars[0];
@@ -6389,6 +6390,9 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		case GMT_LINEAR:	/* Regular scaling */
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_min] : GMT->common.R.wesn[i_max];
 			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_max] : GMT->common.R.wesn[i_min];
+			_zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZLO] : GMT->common.R.wesn[ZHI];
+			_zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZHI] : GMT->common.R.wesn[ZLO];
+
 			GMT->current.proj.fwd_z = &gmtlib_translin;
 			GMT->current.proj.inv_z = &gmtlib_itranslin;
 			break;
@@ -6397,8 +6401,11 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Jz -JZ: limits must be positive for log10 projection\n");
 				return GMT_PROJECTION_ERROR;
 			}
-			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[i_min]) : d_log10 (GMT, GMT->common.R.wesn[i_max]);
-			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[i_max]) : d_log10 (GMT, GMT->common.R.wesn[i_min]);
+			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[i_min]) : d_log10(GMT, GMT->common.R.wesn[i_max]);
+			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[i_max]) : d_log10(GMT, GMT->common.R.wesn[i_min]);
+			_zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[ZLO]) : d_log10(GMT, GMT->common.R.wesn[ZHI]);
+			_zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[ZHI]) : d_log10(GMT, GMT->common.R.wesn[ZLO]);
+
 			GMT->current.proj.fwd_z = &gmtproj_translog10;
 			GMT->current.proj.inv_z = &gmtproj_itranslog10;
 			break;
@@ -6406,12 +6413,15 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			GMT->current.proj.xyz_pow[GMT_Z] = GMT->current.proj.z_pars[1];
 			GMT->current.proj.xyz_ipow[GMT_Z] = 1.0 / GMT->current.proj.z_pars[1];
 			positive = !((GMT->current.proj.xyz_pos[GMT_Z] + (GMT->current.proj.xyz_pow[GMT_Z] > 0.0)) % 2);
-			zmin = (positive) ? pow (GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]);
-			zmax = (positive) ? pow (GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[i_min], GMT->current.proj.xyz_pow[GMT_Z]);
+			zmin = (positive) ? pow(GMT->common.R.wesn[i_min], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]);
+			zmax = (positive) ? pow(GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[i_min], GMT->current.proj.xyz_pow[GMT_Z]);
+			_zmin = (positive) ? pow(GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]);
+			_zmax = (positive) ? pow(GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]);
+
 			GMT->current.proj.fwd_z = &gmtproj_transpowz;
 			GMT->current.proj.inv_z = &gmtproj_itranspowz;
 	}
-	z_range = zmax - zmin;
+	z_range = _zmax - _zmin;		/* This one is for the Z-axis scale. zmin & zmax are for -p[x|y] levels */
 	if (z_range == 0.0 && GMT->current.proj.compute_scale[GMT_Z])
 		GMT->current.proj.scale[GMT_Z] = 0.0;	/* No range given, just flat projected map */
 	else if (GMT->current.proj.compute_scale[GMT_Z])
