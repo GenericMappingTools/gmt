@@ -16570,7 +16570,8 @@ void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	  * We wish to "do no harm" as well, so only some situations will get through this function.
 	  */
 	int k_data;
-	double d_inc, wesn[4];
+	double d_inc, wesn[4], pars[16];	/* pars[] backs up the raw projection parameters since gmt_map_setup below mutates them in place */
+	bool units_pr_degree;
 	struct GMTAPI_CTRL *API = GMT->parent;	/* Shorthand */
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) return;	/* This check only applies to geographic data */
@@ -16580,19 +16581,30 @@ void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	if (!(gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]))) return;	/* Gave -Rd or -Rg so need to probe more*/
 	if (gmt_M_is_azimuthal (GMT) && doubleAlmostEqual (fabs (GMT->current.proj.lat0), 90.0) && !GMT->common.R.oblique) return;	/* Nothing to do */
 	if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) return;		/* This is one is square */
-	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Save the region we were given */
+	gmt_M_memcpy(wesn, GMT->common.R.wesn, 4, double);	/* Save the region we were given */
+	/* This is a throwaway probe: gmt_map_setup scales the projection parameters (e.g. pars[2] /= M_PR_DEG for -Jq scale),
+	 * so we must restore the raw pars and units_pr_degree flag afterwards or the caller's real gmt_map_setup will scale them
+	 * a second time and collapse the map (https://github.com/GenericMappingTools/gmt issue #8963). */
+	gmt_M_memcpy(pars, GMT->current.proj.pars, 16, double);
+	units_pr_degree = GMT->current.proj.units_pr_degree;
 
- 	if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* Set up projection */
+ 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up projection */
+		gmt_M_memcpy(GMT->current.proj.pars, pars, 16, double);	GMT->current.proj.units_pr_degree = units_pr_degree;
 		return;	/* Something went wrong */
-	if (gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false))	/* Refine without 0.1 degree padding */
+	}
+	if (gmt_map_perimeter_search(GMT, GMT->common.R.wesn, false)) {	/* Refine without 0.1 degree padding */
+		gmt_M_memcpy(GMT->current.proj.pars, pars, 16, double);	GMT->current.proj.units_pr_degree = units_pr_degree;
 		return;	/* Something went wrong */
+	}
+	gmt_M_memcpy(GMT->current.proj.pars, pars, 16, double);	/* Restore raw projection parameters clobbered by the probe map_setup */
+	GMT->current.proj.units_pr_degree = units_pr_degree;
 	if (GMT->common.R.wesn[XHI] < GMT->common.R.wesn[XLO] || GMT->common.R.wesn[YHI] < GMT->common.R.wesn[YLO])
-		gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);	/* Reset to give region if junk resulted */
-	else if (gmt_M_360_range (wesn[XLO], wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))
-		gmt_M_memcpy (GMT->common.R.wesn, wesn, 2, double);	/* Reset to given global w/e in the same format */
-	gmt_M_memcpy (API->tile_wesn, GMT->common.R.wesn, 4, double);	/* Save the region we found */
+		gmt_M_memcpy(GMT->common.R.wesn, wesn, 4, double);	/* Reset to give region if junk resulted */
+	else if (gmt_M_360_range(wesn[XLO], wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))
+		gmt_M_memcpy(GMT->common.R.wesn, wesn, 2, double);	/* Reset to given global w/e in the same format */
+	gmt_M_memcpy(API->tile_wesn, GMT->common.R.wesn, 4, double);	/* Save the region we found */
 	d_inc = API->tile_inc;	/* Increment in degrees, if set */
-	if (d_inc == 0.0 && file && file[0] == '@' && (k_data = gmt_remote_dataset_id (API, file)) != GMT_NOTSET) {	/* Got a remote file to work on */
+	if (d_inc == 0.0 && file && file[0] == '@' && (k_data = gmt_remote_dataset_id(API, file)) != GMT_NOTSET) {	/* Got a remote file to work on */
 		d_inc = API->remote_info[k_data].d_inc;	/* Increment in degrees */
 	}
 	if (d_inc > 0.0) {
