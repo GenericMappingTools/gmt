@@ -234,7 +234,7 @@ To fit the model y(x) = a + bx\ :sup:`2` + c * cos(2*pi*3*(x/l) + d * sin(2*pi*3
 
   gmt trend1d data.xy -Fxm -NP0,P2,F3+l15 > model.xy
 
-To find out how many terms (up to 20, say in a robust Fourier
+To find out how many terms (up to 20, say) in a robust Fourier
 interpolant are significant in fitting data.xy, use:
 
 ::
