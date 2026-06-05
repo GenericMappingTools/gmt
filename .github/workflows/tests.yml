@@ -70,7 +70,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         if: runner.os == 'macOS'
 
       - name: Install GMT dependencies
