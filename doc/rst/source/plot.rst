@@ -252,7 +252,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]]
+**-M**\ [**c**\|\ **s**][**+l**\ *seclabel*][**+g**\ *fill*][**+p**\ *pen*][**+r**\ *pen*][**+y**\ [*level*]]
     Fill the middle area between two curves :math:`y_0(x)` and :math:`y_1(x)`, expected to be
     given via one or more pairs of separate tables, each pair of tables having the same
     number of segments (which can vary from pair to pair). Thus, the order of the even
@@ -269,8 +269,7 @@ Optional Arguments
       :math:`y_1(x)`. For the opposite case, append another *fill* here.
     - **+l** - For the primary curve :math:`y_0(x)`, a legend label can be set via option
       |SYN_OPT-l|. For a secondary label use this modifier to append the label.
-    - **+p** - Specify a separate pen for drawing curve :math:`y_1(x)` [Default is same pen
-      as :math:`y_0(x)`]. See |-W| for specifying the pen for curve :math:`y_0(x)`.
+    - **+p** - Specify a separate pen for drawing curve :math:`y_1(x)`. See |-W| for specifying the pen for curve :math:`y_0(x)`.
     - **+r** - Specify a pen to simply draw a line instead of a filled box in the legend, but
       replace the color information with that from the fill settings (i.e., only the *pen*
       width is used as specified, the color is not used).
