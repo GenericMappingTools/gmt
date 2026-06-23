@@ -77,7 +77,7 @@ Required Arguments
     *gridfile* is a 2-D binary grid file with the function *f*\ (*x, y*). If the
     specified grid is in Sandwell/Smith Mercator format you must append
     a comma-separated list of arguments that includes a scale to
-    multiply the data (usually 1 or 0.1), the mode which stand for the
+    multiply the data (usually 1 or 0.1), the mode which stands for the
     following: (0) Img files with no constraint code, returns data at
     all points, (1) Img file with constraints coded, return data at all
     points, (2) Img file with constraints coded, return data only at

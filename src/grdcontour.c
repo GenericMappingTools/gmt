@@ -1119,8 +1119,12 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	/* Read data */
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
+	if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
 		Return (API->error);
+	}
+	if (G->header->n_rows == 1 || G->header->n_columns == 1) {
+		GMT_Report(API, GMT_MSG_WARNING, "Contouring grid has only 1 row or 1 column. Cannot do contours for such cases.\n");
+		Return(API->error);
 	}
 
 	if (gmt_M_type (GMT, GMT_IN, GMT_Z) == GMT_IS_ABSTIME) {	/* Grid data is time */
