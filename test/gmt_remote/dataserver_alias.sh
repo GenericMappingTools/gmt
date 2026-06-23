@@ -18,15 +18,15 @@
 # body that GMT cannot parse as a netCDF grid, causing the test to fail.
 
 # Remove any cached copy to force a real download from the server
-rm -f "${HOME}/.gmt/server/earth/earth_relief/earth_relief_15m_g.grd"
+rm -f "${HOME}/.gmt/server/earth/earth_relief/earth_relief_01d_p.grd"
 
 # Force an alias server name so the alias expansion and redirect resolver code
 # in gmt_dataserver_url() is always exercised, regardless of the build-time
 # GMT_DATA_SERVER default.  oceania is a stable direct server (no DNS forward).
 export GMT_DATA_SERVER=oceania
 
-# Download (or use cached) global 15 arc-minute relief grid and get its range
-gmt grdinfo @earth_relief_15m_g.grd -I- > got.txt 2>err.txt
+# Download (or use cached) global 1 arc-degree relief grid and get its range
+gmt grdinfo @earth_relief_01d_p.grd -I- > got.txt 2>err.txt
 
 # A valid global grid must report exactly this region
 echo "-R-180/180/-90/90" > expected.txt
