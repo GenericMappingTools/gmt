@@ -8014,7 +8014,8 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	if (!isfinite (GMT->current.map.dlat) || GMT->current.map.dlat <= 0.0) {	/* Guard against invalid sampling step (e.g., antipodal singularities) */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlon[0] = tlon[1] = lon;
-		tlat[0] = lat1;	tlat[1] = lat2;
+		tlat[0] = lat1;
+		tlat[1] = lat2;
 		*x = tlon;
 		*y = tlat;
 		return (2ULL);
@@ -8119,8 +8120,10 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	if (!isfinite (GMT->current.map.dlon) || GMT->current.map.dlon <= 0.0) {	/* Guard against invalid sampling step (e.g., antipodal singularities) */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlat[0] = tlat[1] = lat;
-		tlon[0] = lon1;	tlon[1] = lon2;
-		*x = tlon;	*y = tlat;
+		tlon[0] = lon1;
+		tlon[1] = lon2;
+		*x = tlon;
+		*y = tlat;
 		return (2ULL);
 	}
 	if ((n_alloc = lrint (ceil (fabs (lon2 - lon1) / GMT->current.map.dlon))) == 0) return (0);	/* Initial guess to path length */
