@@ -14202,14 +14202,8 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		error++;
 	}
 	/* Optional modifiers +a, +f, +j, +l, +o, +u, +v */
-	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL)) {	/* Do fancy label */
-		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Not allowed' */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No fancy map scale modifier allowed for Cartesian projections\n", option);
-			error++;
-		}
-		else
-			ms->fancy = true;
-	}
+	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy (checkerboard) scale bar; now allowed for both geographic and Cartesian projections */
+		ms->fancy = true;
 	if (gmt_get_modifier (ms->refpoint->args, 'v', NULL)) {	/* Ask for vertical Cartesian scale */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not allowed' */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No vertical scale modifier allowed for geographic projections\n", option);
