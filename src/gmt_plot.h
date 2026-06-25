@@ -39,6 +39,8 @@
 #define GMT_SYMBOL_COLUMN		((int)'o')
 #define GMT_SYMBOL_QUOTED_LINE		((int)'q')
 #define GMT_SYMBOL_CUBE			((int)'u')
+#define GMT_SYMBOL_HLINE		((int)'X')
+#define GMT_SYMBOL_VLINE		((int)'Y')
 #define GMT_SYMBOL_ZDASH		((int)'z')
 #define GMT_SYMBOL_DECORATED_LINE	((int)'~')
 #define GMT_SYMBOL_VECTOR_V4		999
