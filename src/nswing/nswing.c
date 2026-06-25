@@ -69,6 +69,8 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-RVf"
 
+//#define PARALLEL
+
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 #	define DO_MULTI_THREAD	/* ISTO TEM DE SER AUTOMATIZADO, OU VIA COMPILA */
 #else
@@ -540,7 +542,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	double  dt = 0;
 	double  f_dip, f_azim, f_rake, f_slip, f_length, f_width, f_topDepth, x_epic, y_epic;
 	double  dfXmin = 0, dfYmin = 0, dfXmax = 0, dfYmax = 0;
-	gmt_M_unused(GMT);
 	sanitize_nestContainer(&nest);
 
 	/* -------------------------------------------------------------------------------
@@ -805,7 +806,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				case 'N':	/* Number of cycles to compute */
 					n_of_cycles = atoi(&argv[i][2]);
 					break;
-				case 'O':	/* Time interval and fname for maregraph data. Use only when mareg locations were sent in as arg (MEX) */
+				case 'O':	/* Time interval and fname for maregraph data. Use only when mareg locations were sent in as arg */
 					sscanf(&argv[i][2], "%[^\n]s", str_tmp);
 					if ((pch = strstr(str_tmp,",")) != NULL) {
 						pch[0] = '\0';
@@ -822,10 +823,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						sscanf(&argv[i][2], "%lf", &z_offset);
 
 					break;					
-				case 'R':
-					error += decode_R(argv[i], &dfXmin, &dfXmax, &dfYmin, &dfYmax);
-					got_R = true;
-					break;
 				case 'S':	/* Output velocity grids */ 
 					strcpy(str_tmp, &argv[i][2]);
 					if ((pch = strstr(str_tmp,"+m")) != NULL) {    /* Velocity at maregraphs */
@@ -969,6 +966,11 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 		}
 	}
 
+	if (GMT->common.R.active[RSET]) {	/* -R was parsed by GMT_Parse_Common */
+		got_R  = true;
+		dfXmin = GMT->common.R.wesn[XLO];	dfXmax = GMT->common.R.wesn[XHI];
+		dfYmin = GMT->common.R.wesn[YLO];	dfYmax = GMT->common.R.wesn[YHI];
+	}
 
 	if (!error) {
 		for (i = 0; i < 10; i++)		/* Add the cte part of the manning coeff */
