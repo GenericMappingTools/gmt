@@ -7213,7 +7213,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	x_left  = ms->refpoint->x - 0.5 * bar_width;	/* x-coordinate of leftmost  scalebar point */
 	x_right = ms->refpoint->x + 0.5 * bar_width;	/* x-coordinate of rightmost scalebar point */
 
-	if (ms->fancy && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Fancy scale */
+	if (ms->fancy) {	/* Fancy (checkerboard) scale, now allowed for both geographic and Cartesian projections */
 		unsigned int i, justify, form;
 		unsigned int n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
 		unsigned int n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
