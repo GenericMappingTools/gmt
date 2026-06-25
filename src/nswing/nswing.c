@@ -241,8 +241,6 @@ typedef struct {
 
 void no_sys_mem(char *where, unsigned int n);
 int  count_col(char *line);
-int  write_grd_bin(char *name, double x_min, double y_min, double x_inc, double y_inc, unsigned int i_start, 
-                   unsigned int j_start, unsigned int i_end, unsigned int j_end, unsigned int nX, float *work);
 int  read_maregs(struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]);
 int  read_tracers(struct grd_header hdr, char *file, struct tracers *oranges);
 int  count_n_maregs(char *file);
@@ -372,6 +370,42 @@ GMT_LOCAL void gmtnswing_copy_grid(struct GMT_GRID *G, double *work, int sign) {
 			work[(ny - 1 - row) * nx + col] = sign * G->data[ij];
 		}
 	}
+}
+
+/* Write an nswing array (south-up, scanline order) to disk as a GMT grid through
+   the GMT API (replaces the old Surfer-binary writer).  Writes the sub-region
+   [i_start:i_end) x [j_start:j_end) of a grid that has nX columns per row. */
+GMT_LOCAL int gmtnswing_write_grid(void *API, char *name, double x_min, double y_min, double x_inc, double y_inc,
+                                   unsigned int i_start, unsigned int j_start, unsigned int i_end, unsigned int j_end,
+                                   unsigned int nX, float *work) {
+	uint64_t row, ij;
+	unsigned int nx = i_end - i_start, ny = j_end - j_start, i, j, col;
+	double wesn[4], inc[2];
+	struct GMT_GRID *G = NULL;
+
+	wesn[XLO] = x_min;	wesn[XHI] = x_min + (nx - 1) * x_inc;
+	wesn[YLO] = y_min;	wesn[YHI] = y_min + (ny - 1) * y_inc;
+	inc[GMT_X] = x_inc;	inc[GMT_Y] = y_inc;
+
+	if ((G = GMT_Create_Data(API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc,
+	                         GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL)
+		return (-1);
+
+	for (j = j_start; j < j_end; j++) {            /* nswing row j == y_min + j*y_inc (south-up) */
+		row = ny - 1 - (j - j_start);              /* GMT row 0 == north */
+		for (i = i_start; i < i_end; i++) {
+			col = i - i_start;
+			ij = gmt_M_ijp(G->header, row, col);
+			G->data[ij] = work[ijs(i,j,nX)];
+		}
+	}
+
+	if (GMT_Write_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, name, G) != GMT_NOERROR) {
+		GMT_Destroy_Data(API, &G);
+		return (-1);
+	}
+	GMT_Destroy_Data(API, &G);
+	return (0);
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1993,7 +2027,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					//strcat(prenome, &stem[len]);    /* Put back the given extension */
 				}
 
-				write_grd_bin(prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
+				gmtnswing_write_grid(API, prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
 				              nest.hdr[writeLevel].nx, wmax);
 			}
 
@@ -2001,14 +2035,14 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++)
 					wmax[ij] = nest.long_beach[writeLevel][ij];	/* Implicitly convert from short int to float */
 
-				write_grd_bin(fname_mask_lbeach, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
+				gmtnswing_write_grid(API, fname_mask_lbeach, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
 				              nest.hdr[writeLevel].nx, wmax);
 			}
 			if (nest.do_short_beach) {          /* In this case the calculations were done in mass() */
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++)
 					wmax[ij] = nest.short_beach[writeLevel][ij];/* Implicitly convert from short int to float */
 
-				write_grd_bin(fname_mask_sbeach, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
+				gmtnswing_write_grid(API, fname_mask_sbeach, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
 				              nest.hdr[writeLevel].nx, wmax);
 			}
 
@@ -2022,7 +2056,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					strcat(strncpy(prenome, stem, len), "_max_speed");
 					strcat(prenome, &stem[len]);        /* Put back the given extension */
 				}
-				write_grd_bin(prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
+				gmtnswing_write_grid(API, prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
 				              nest.hdr[writeLevel].nx, vmax);
 			}
 		}
@@ -2050,7 +2084,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 			if (write_grids) {
 				sprintf(prenome, "%s%05d.grd", stem, irint(time_h));
-				write_grd_bin(prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
+				gmtnswing_write_grid(API, prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
 			}
 
 			if (out_momentum && !out_3D) {
@@ -2061,13 +2095,13 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) work[ij] = (float)nest.fluxm_d[writeLevel][ij];
 
-				write_grd_bin(strcat(prenome,"_Uh.grd"), xMinOut, yMinOut, dx, dy, 
+				gmtnswing_write_grid(API, strcat(prenome,"_Uh.grd"), xMinOut, yMinOut, dx, dy,
 				              i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
 
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) work[ij] = (float)nest.fluxn_d[writeLevel][ij];
 
 				prenome[strlen(prenome) - 7] = '\0';	/* Remove the _Uh.grd' so that we can add '_Vh.grd' */
-				write_grd_bin(strcat(prenome,"_Vh.grd"), xMinOut, yMinOut, dx, dy, 
+				gmtnswing_write_grid(API, strcat(prenome,"_Vh.grd"), xMinOut, yMinOut, dx, dy,
 				              i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
 			}
 
@@ -2081,7 +2115,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 							work[ij] = 0;
 					}
 
-					write_grd_bin(strcat(prenome,"_U.grd"), xMinOut + nest.hdr[writeLevel].x_inc/2, yMinOut,
+					gmtnswing_write_grid(API, strcat(prenome,"_U.grd"), xMinOut + nest.hdr[writeLevel].x_inc/2, yMinOut,
 					              dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
 					prenome[strlen(prenome)-6] = '\0';	/* Remove the _U.grd' so that we can add '_V.grd' */
 				}
@@ -2092,7 +2126,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 							work[ij] = 0;
 					}
 
-					write_grd_bin(strcat(prenome,"_V.grd"), xMinOut, yMinOut + nest.hdr[writeLevel].y_inc/2,
+					gmtnswing_write_grid(API, strcat(prenome,"_V.grd"), xMinOut, yMinOut + nest.hdr[writeLevel].y_inc/2,
 					              dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
 				}
 			}
@@ -2666,54 +2700,6 @@ void total_energy(struct nestContainer *nest, float *work, int lev) {
 			                     nest->htotal_d[lev][ij] ) * 500);
 		}
 	}
-}
-
-/* --------------------------------------------------------------------------- */
-int write_grd_bin(char *name, double x_min, double y_min, double x_inc, double y_inc, unsigned int i_start,
-	unsigned int j_start, unsigned int i_end, unsigned int j_end, unsigned int nX, float *work) {
-
-	/* Writes a grid in the Surfer binary format */
-	unsigned int i, j;
-	double x_max, y_max;
-	float work_min = FLT_MAX, work_max = -FLT_MAX, tmp;
-	struct srf_header h;
-	FILE *fp;
-
-	if ((fp = fopen (name, "wb")) == NULL) {
-		fprintf(stderr, "Fatal Error: Could not create file %s!\n", name);
-		return (-1);
-	}
-
-	x_max = x_min + (i_end - i_start - 1) * x_inc;
-	y_max = y_min + (j_end - j_start - 1) * y_inc;
-
-	/* Find zmin/zmax */
-	for (j = j_start; j < j_end; j++) {
-		for (i = i_start; i < i_end; i++) {
-			tmp = work[ijs(i,j,nX)];
-			work_max = MAX(tmp, work_max);
-			work_min = MIN(tmp, work_min);
-		}
-	}
-
-	/* store header information and array */
-	strcpy (h.id,"DSBB");
-	h.nx = (i_end - i_start);	h.ny = (j_end - j_start);
-	h.x_min = x_min;		h.x_max = x_max;
-	h.y_min = y_min;		h.y_max = y_max;
-	h.z_min = (double)work_min;	h.z_max = (double)work_max;
-
-	if (fwrite ((void *)&h, sizeof (struct srf_header), (size_t)1, fp) != 1) {
-		fprintf (stderr, "Fatal Error: Error writing file %s!\n", name);
-		return (-1);
-	}
-
-	for (j = j_start; j < j_end; j++)
-		for (i = i_start; i < i_end; i++)
-			fwrite ((void *)&work[ijs(i,j,nX)], sizeof(float), (size_t)1, fp);
-
-	fclose(fp);
-	return (0);
 }
 
 /* -------------------------------------------------------------------- */
