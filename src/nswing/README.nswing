@@ -1,0 +1,23 @@
+
+NSWING Supplemental Package
+Distributed under the MIT License; see file
+LICENSE.TXT in main GMT directory.
+
+------------------------------------------------------
+Author:		Joaquim Luis, Miguel Miranda
+Date:		June 1, 2026
+Version:	6 (for GMT 6 release).
+------------------------------------------------------
+
+This directory contains:
+
+	README.nswing	This document
+	nswing.c	nswing C program code
+
+
+Documentation via RST files produce HTML and MAN pages that
+give full description of the program interfaces.
+
+
+* Acknowledgement
+
