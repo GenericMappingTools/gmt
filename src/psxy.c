@@ -1046,9 +1046,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 								Ctrl->M.do_draw = true;
 								break;
 							case 'r':
-								if (p[1] && gmt_getpen (GMT, &p[1], &Ctrl->M.xpen)) {
-									gmt_pen_syntax (GMT, 'M', NULL, "Option -M: The +r modifier sets pen attributes for the legend rgb exchange", NULL, 0);
-									n_errors++;
+								if (p[1]) {
+									if (gmt_getpen (GMT, &p[1], &Ctrl->M.xpen)) {
+										gmt_pen_syntax (GMT, 'M', NULL, "Option -M: The +r modifier sets pen attributes for the legend rgb exchange", NULL, 0);
+										n_errors++;
+									}
 								}
 								else /* Guesswork */
 									Ctrl->M.xpen.width = 2.5;	/* Default pen width in points */
