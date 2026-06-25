@@ -239,12 +239,8 @@ typedef struct {
 
 void no_sys_mem(char *where, unsigned int n);
 int  count_col(char *line);
-int  read_grd_info_ascii(char *file, struct srf_header *hdr);
-int  read_header_bin (FILE *fp, struct srf_header *hdr);
 int  write_grd_bin(char *name, double x_min, double y_min, double x_inc, double y_inc, unsigned int i_start, 
                    unsigned int j_start, unsigned int i_end, unsigned int j_end, unsigned int nX, float *work);
-int  read_grd_ascii (char *file, struct srf_header *hdr, double *work, int sign);
-int  read_grd_bin(char *file, struct srf_header *hdr, double *work, int sign);
 int  read_maregs(struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]);
 int  read_tracers(struct grd_header hdr, char *file, struct tracers *oranges);
 int  count_n_maregs(char *file);
@@ -451,129 +447,101 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 }
 
 /* --------------------------------------------------------------------------- */
-#define bailout(code) {gmt_M_free_options(mode); return (code);}
-#define Return(code) {gmt_end_module(GMT, GMT_cpy); if (argv) {int _k; for (_k = 0; _k < argc; _k++) gmt_M_str_free(argv[_k]); free(argv);} bailout(code);}
+/* Control structure for nswing, filled by parse() */
+struct NSWING_CTRL {
+	int     writeLevel, grn, cumint, decimate_max, do_Kaba, KbGridCols;
+	int     KbGridRows, n_of_cycles;
+	bool    out_energy, max_energy, out_power, max_power, out_sww, out_most;
+	bool    out_3D, surf_level, max_level, max_velocity, water_depth, do_Okada;
+	bool    do_tracers, out_maregs_nc, out_oranges_nc, do_HotStart, write_grids, isGeog;
+	bool    maregs_in_input, out_momentum, got_R, with_land, IamCompiled, saveNested;
+	bool    verbose, out_velocity, out_velocity_x, out_velocity_y, out_velocity_r, out_maregs_velocity;
+	bool    do_initial_interp, cumpt, do_2Dgrids, do_maxs;
+	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file;
+	char   *nesteds[10];
+	char    hcum[256];
+	char    maregs[256];
+	char    stem[256];
+	char    fname_momentM[256];
+	char    fname_momentN[256];
+	char    fname_mask_lbeach[256];
+	char    fname_mask_sbeach[256];
+	char    tracers_infile[256];
+	char    tracers_outfile[256];
+	double  add_const, time_h, dxKb, dyKb, z_offset, kaba_xmin;
+	double  kaba_xmax, kaba_ymin, kaba_ymax, time_jump, dt, f_dip;
+	double  f_azim, f_rake, f_slip, f_length, f_width, f_topDepth;
+	double  x_epic, y_epic, dfXmin, dfXmax, dfYmin, dfYmax;
+};
 
-EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
+GMT_LOCAL void *New_Ctrl(struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	struct NSWING_CTRL *C = gmt_M_memory(GMT, NULL, 1, struct NSWING_CTRL);
+	/* All non-zero defaults are set on the parse()-local variables and copied into C there */
+	return (C);
+}
 
-	int     argc = 0;                    /* Rebuilt from the GMT option list */
+GMT_LOCAL void Free_Ctrl(struct GMT_CTRL *GMT, struct NSWING_CTRL *C) {	/* Deallocate control structure */
+	if (!C) return;	/* String pointers point into the caller-owned argv[]; nothing to free here */
+	gmt_M_free(GMT, C);
+}
+
+/* Parse the nswing options.  nswing keeps its own (large, well tested) legacy argv[] parser;
+ * this rebuilds argv[] from the GMT option list, runs that parser, and packs the result into Ctrl.
+ * The argv[] block is handed back to the caller (argc_out/argv_out): several Ctrl string pointers
+ * point into it, so the caller owns and frees it. */
+GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestContainer *nest_out, struct GMT_OPTION *options, int *argc_out, char ***argv_out) {
+	int     argc = 0;
 	char  **argv = NULL;
-	struct  GMTAPI_CTRL *API = gmt_get_api_ptr(V_API);
-	struct  GMT_CTRL *GMT = NULL, *GMT_cpy = NULL; /* General GMT internal parameters */
-	struct  GMT_OPTION *options = NULL, *opt = NULL;
-	struct  GMT_GRID *Gb = NULL, *Gf = NULL;       /* Base bathymetry & source grids */
-	struct  GMT_GRID *GmM = NULL, *GmN = NULL;     /* Hot-start momentum grids */
-
-	int     writeLevel = 0;              /* If save grids, will hold the saving level (when nesting) */
+	struct  GMT_OPTION *opt = NULL;
+	struct  nestContainer nest;
+	int     writeLevel = 0;
 	int     i, j, k, n;
-	int     start_i;                     /* Where the loop over argc starts (1: argv[0] is the prog name) */
-	int     grn = 0, cumint = 0, decimate_max = 1, iprc, r_bin_b, r_bin_f, r_bin_mM, r_bin_mN;
+	int     start_i;
+	int     grn = 0, cumint = 0, decimate_max = 1;
 	int     error = 0;
-	bool    w_bin = true, cumpt = false, do_2Dgrids = false, do_maxs = false;
+	bool    cumpt = false, do_2Dgrids = false, do_maxs = false;
 	bool    out_energy = false, max_energy = false, out_power = false, max_power = false;
-	bool    first_anuga_time = true, out_sww = false, out_most = false, out_3D = false;
+	bool    out_sww = false, out_most = false, out_3D = false;
 	bool    surf_level = true, max_level = false, max_velocity = false, water_depth = false;
-	bool    do_Okada = false;            /* For when one will compute the Okada deformation here */
-	int     do_Kaba = 0;                 /* 0 = no; 1 = prism source; 2 = prism given as centre x/y/nx/ny */
-	bool    do_tracers = false;          /* For when doing Lagrangian tracers */
-	bool    out_maregs_nc = false;       /* For when maregs in output are written in netCDF */
-	bool    out_oranges_nc = false;      /* For when tracers in output are written in netCDF */
-	bool    do_HotStart = false;         /* For when doing a Hot Start */
-	int     n_arg_no_char = 0;
-	int     ncid, ncid_most[3], z_id = -1, ids[13], ids_ha[6], ids_ua[6], ids_va[6], ids_most[3];
-	int     ncid_3D[3], ids_z[10], ids_3D[3], ncid_Mar, ids_Mar[8];
-	int     n_of_cycles = 1010;          /* Default number of cycles to compute */
-	int     num_of_nestGrids = 0;        /* Number of nesting grids */
-	bool    bat_in_input = false, source_in_input = false, write_grids = false, isGeog = false;
+	bool    do_Okada = false;
+	int     do_Kaba = 0;
+	bool    do_tracers = false;
+	bool    out_maregs_nc = false;
+	bool    out_oranges_nc = false;
+	bool    do_HotStart = false;
+	int     n_of_cycles = 1010;
+	bool    write_grids = false, isGeog = false;
 	bool    maregs_in_input = false, out_momentum = false, got_R = false;
-	bool    with_land = false, IamCompiled = false, do_nestum = false, saveNested = false, verbose = false;
+	bool    with_land = false, IamCompiled = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false, do_initial_interp = true;
-	int     KbGridCols = 1, KbGridRows = 1; /* Number of rows & columns IF computing a grid of 'Kabas' */
-	int     cntKabas = 0;                /* Counter of the number of Kabas (prisms) already processed */
-	int     n_mareg, n_ptmar, n_oranges;
-	unsigned int *lcum_p = NULL, lcum = 0, ij, nx, ny;
-	unsigned int i_start, j_start, i_end, j_end, count_maregs_timeout = 0, count_time_maregs_timeout = 0;
-	size_t	start0 = 0, count0 = 1, len, start1_A[2] = {0,0}, count1_A[2];
-	size_t  start1_M[3] = {0,0,0}, count1_M[3], start_Mar[3] = {0,0,0}, count_Mar[2];
-	char   *bathy   = NULL;              /* Name pointer for bathymetry file */
-	char   	hcum[256]   = "";            /* Name of the cumulative hight file */
-	char    maregs[256] = "";            /* Name of the maregraph positions file */
-	char  **mareg_names = NULL;          /* Array to hold optional maregraph names */
-	char   *fname_sww = NULL;            /* Name pointer for Anuga's .sww file */
-	char   *basename_most = NULL;        /* Name pointer for basename of MOST .nc files */
-	char   *fname3D  = NULL;             /* Name pointer for the 3D netCDF file */
-	char   *fonte    = NULL;             /* Name pointer for tsunami source file */
-	char   *bnc_file = NULL;             /* Name pointer for a boundary condition file */
-	char    fname_mask_lbeach[256] = ""; /* Name pointer for the "long_beach" mask grid */
-	char    fname_mask_sbeach[256] = ""; /* Name pointer for the "short_beach" mask grid */
-	char    tracers_infile[256] = "", tracers_outfile[256] = "";	/* Names for in and out tracers files */
-	char    stem[256] = "", prenome[128] = "", str_tmp[128] = "", fname_momentM[256] = "", fname_momentN[256] = "";
-	char    history[512] = {""};         /* To hold the full command call to be saved in nc files as History */
+	int     KbGridCols = 1, KbGridRows = 1;
+	size_t  len;
+	char   *bathy = NULL;
+	char    hcum[256] = "";
+	char    maregs[256] = "";
+	char   *fname_sww = NULL;
+	char   *basename_most = NULL;
+	char   *fname3D = NULL;
+	char   *fonte = NULL;
+	char   *bnc_file = NULL;
+	char    fname_mask_lbeach[256] = "";
+	char    fname_mask_sbeach[256] = "";
+	char    tracers_infile[256] = "", tracers_outfile[256] = "";
+	char    stem[256] = "", str_tmp[128] = "", fname_momentM[256] = "", fname_momentN[256] = "";
 	char   *pch;
 	char   *nesteds[10] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-	char    txt[128];                    /* Auxiliary variable */
-
-	float  *work = NULL, *workMax = NULL, *vmax = NULL, *wmax = NULL, *time_p = NULL;
-	float   work_min = FLT_MAX, work_max = -FLT_MAX, *maregs_array = NULL, *maregs_array_t = NULL;
-	double *maregs_timeout = NULL, m_per_deg = 111317.1;
-	double *cum_p = NULL;
-	double  dfXmin = 0, dfYmin = 0, dfXmax = 0, dfYmax = 0, xMinOut, yMinOut;
-	double  kaba_xmin = 0, kaba_xmax = 0, kaba_ymin = 0, kaba_ymax = 0;
-	double  time_jump = 0, time0, time_for_anuga, prc;
-	double  dt = 0;                     /* Time step for Base level grid */
-	double  dx, dy, ds, dtCFL, etam, one_100, t;
-	double *eta_for_maregs, *vx_for_maregs, *vy_for_maregs, *htotal_for_maregs, *fluxm_for_maregs, *fluxn_for_maregs;
-	double *vx_for_oranges, *vy_for_oranges, *fluxm_for_oranges, *fluxn_for_oranges, *htotal_for_oranges;	/* For tracers */
-	double  f_dip, f_azim, f_rake, f_slip, f_length, f_width, f_topDepth, x_epic, y_epic;	/* For Okada initial condition */
+	char    txt[128];
 	double  add_const = 0, time_h = 0;
-	double  dxKb = 0, dyKb = 0;         /* Grid steps for when computing a grid of 'Kabas' */
-	double  z_offset = 0;	/* To apply to bathymetry to simulate a tide */
-	double  manning[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};	/* Manning coefficients */
-
-	double  actual_range[6] = {1e30, -1e30, 1e30, -1e30, 1e30, -1e30};
-	float	stage_range[2], xmom_range[2], ymom_range[2], *tmp_slice;
-	struct	srf_header hdr_b, hdr_f, hdr_mM, hdr_mN;
-	struct	grd_header hdr;
-	struct  nestContainer nest;
-	struct  tracers *oranges;
-	FILE   *fp, *fp_oranges;
-	clock_t tic;
-
-	call_moment[0] = (PFV)moment_M;
-	call_moment[1] = (PFV)moment_N;
-	call_moment_sp[0] = (PFV)moment_sp_M;
-	call_moment_sp[1] = (PFV)moment_sp_N;
-
-#ifdef PARALLEL
-	call_moment_sp_M_slice = (PFV)moment_sp_M_slice;
-	call_moment_sp_N_slice = (PFV)moment_sp_N_slice;
-	call_mass_sp = (PFV)mass_sp_slice;
-	call_mass = (PFV)mass_slice;
-#endif
-
-#ifdef DO_MULTI_THREAD
-	if ((k = GetLocalNThread()) == 1) {
-		fprintf(stderr, "NSWING: This version of the program is build for multi-threading but "
-		           "this machine has only one core. Don't know what will happen here.\n"); 
-	}
-#endif
-
+	double  dxKb = 0, dyKb = 0;
+	double  z_offset = 0;
+	double  kaba_xmin = 0, kaba_xmax = 0, kaba_ymin = 0, kaba_ymax = 0;
+	double  time_jump = 0;
+	double  dt = 0;
+	double  f_dip, f_azim, f_rake, f_slip, f_length, f_width, f_topDepth, x_epic, y_epic;
+	double  dfXmin = 0, dfYmin = 0, dfXmax = 0, dfYmax = 0;
+	gmt_M_unused(GMT);
 	sanitize_nestContainer(&nest);
-
-	/*----------------------- Standard module initialization and parsing ----------------------*/
-
-	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (usage(API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
-	options = GMT_Create_Options(API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
-
-	if (!options || options->option == GMT_OPT_USAGE) bailout(usage(API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout(usage(API, GMT_SYNOPSIS));		/* Return the synopsis */
-
-	/* Parse the command-line arguments */
-
-	if ((GMT = gmt_init_module(API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout(API->error);	/* Save current state */
-	if (GMT_Parse_Common(API, THIS_MODULE_OPTIONS, options)) Return(API->error);
 
 	/* -------------------------------------------------------------------------------
 	 * nswing keeps its own (large, well tested) option parser, a switch over a classic
@@ -596,7 +564,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		}
 	}
 
-	/*---------------------------- This is the nswing main code ----------------------------*/
+	/*---------------------------- Run the legacy argv[] option parser ----------------------------*/
 
 	start_i = 1;	/* argv[0] is the program name, so we start parsing at 1 */
 
@@ -1001,58 +969,356 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (error) Return(-1);
 
+	if (!error) {
+		for (i = 0; i < 10; i++)		/* Add the cte part of the manning coeff */
+			nest.manning[i] = nest.manning[i] * nest.manning[i] * 4.9; 
 
-	for (i = 0; i < 10; i++)		/* Add the cte part of the manning coeff */
-		nest.manning[i] = nest.manning[i] * nest.manning[i] * 4.9; 
+		do_maxs = (max_level || max_energy || max_power);
+		do_2Dgrids = (write_grids || out_velocity || out_velocity_x || out_velocity_y || out_velocity_r || out_momentum
+		              || max_level || max_velocity || max_energy || out_power || max_power || nest.do_long_beach
+		              || nest.do_short_beach);
 
-	do_maxs = (max_level || max_energy || max_power);
-	do_2Dgrids = (write_grids || out_velocity || out_velocity_x || out_velocity_y || out_velocity_r || out_momentum
-	              || max_level || max_velocity || max_energy || out_power || max_power || nest.do_long_beach
-	              || nest.do_short_beach);
+		if (!(do_2Dgrids || out_sww || out_most || out_3D || cumpt)) {
+			fprintf(stderr, "Nothing selected for output (grids, or maregraphs), exiting\n");
+			error++;
+		}
 
-	if (!(do_2Dgrids || out_sww || out_most || out_3D || cumpt)) {
-		fprintf(stderr, "Nothing selected for output (grids, or maregraphs), exiting\n");
-		error++;
+		if (grn == 0 && !do_maxs && !cumpt) {
+			fprintf(stderr, "NSWING: Error, -G or -Z option. MUST provide saving interval\n");
+			error++;
+		}
+		if (!stem && !cumpt) {
+			fprintf(stderr, "NSWING: Error, -G or -Z option. MUST provide base name || OR -T option\n");
+			error++;
+		}
+
+		if (water_depth && (out_sww || out_most)) {
+			water_depth = false;
+			fprintf(stderr, "WARNING: Total water option is not compatible with ANUGA|MOST outputs. Ignoring\n");
+		}
+
+		if (do_Kaba && fonte)
+			fprintf(stderr, "WARNING: Source file is ignored when -Fk option is used.\n");
+
+		if (dt <= 0) {
+			fprintf(stderr, "NSWING: Error -t option. Time step of simulation not provided or negative.\n");
+			error++;
+		}
+
+		if (out_sww && fname_sww == NULL) {
+			fprintf(stderr, "NSWING: Error -A option. Must provide a name for the .SWW file.\n");
+			error++;
+		}
+
+		if (out_momentum && (out_velocity_x || out_velocity_y)) {
+			fprintf(stderr, "NSWING: Error -S / -H options. Can only select one off velocity OR momentum output.\n");
+			error++;
+		}
+
+		if (nest.do_Coriolis && !isGeog && nest.lat_min4Coriolis == -100) {
+			fprintf(stderr, "NSWING: Error -C option. For cartesian grids must provide the South latitude. Ignoring Corilis request.\n");
+			nest.do_Coriolis = false;
+		}
 	}
 
-	if (grn == 0 && !do_maxs && !cumpt) {
-		fprintf(stderr, "NSWING: Error, -G or -Z option. MUST provide saving interval\n");
-		error++;
-	}
-	if (!stem && !cumpt) {
-		fprintf(stderr, "NSWING: Error, -G or -Z option. MUST provide base name || OR -T option\n");
-		error++;
-	}
+	*argc_out = argc;	*argv_out = argv;
+	/* Pack the parsed values into the control structure */
+	Ctrl->writeLevel = writeLevel;
+	Ctrl->grn = grn;
+	Ctrl->cumint = cumint;
+	Ctrl->decimate_max = decimate_max;
+	Ctrl->do_Kaba = do_Kaba;
+	Ctrl->KbGridCols = KbGridCols;
+	Ctrl->KbGridRows = KbGridRows;
+	Ctrl->n_of_cycles = n_of_cycles;
+	Ctrl->out_energy = out_energy;
+	Ctrl->max_energy = max_energy;
+	Ctrl->out_power = out_power;
+	Ctrl->max_power = max_power;
+	Ctrl->out_sww = out_sww;
+	Ctrl->out_most = out_most;
+	Ctrl->out_3D = out_3D;
+	Ctrl->surf_level = surf_level;
+	Ctrl->max_level = max_level;
+	Ctrl->max_velocity = max_velocity;
+	Ctrl->water_depth = water_depth;
+	Ctrl->do_Okada = do_Okada;
+	Ctrl->do_tracers = do_tracers;
+	Ctrl->out_maregs_nc = out_maregs_nc;
+	Ctrl->out_oranges_nc = out_oranges_nc;
+	Ctrl->do_HotStart = do_HotStart;
+	Ctrl->write_grids = write_grids;
+	Ctrl->isGeog = isGeog;
+	Ctrl->maregs_in_input = maregs_in_input;
+	Ctrl->out_momentum = out_momentum;
+	Ctrl->got_R = got_R;
+	Ctrl->with_land = with_land;
+	Ctrl->IamCompiled = IamCompiled;
+	Ctrl->saveNested = saveNested;
+	Ctrl->verbose = verbose;
+	Ctrl->out_velocity = out_velocity;
+	Ctrl->out_velocity_x = out_velocity_x;
+	Ctrl->out_velocity_y = out_velocity_y;
+	Ctrl->out_velocity_r = out_velocity_r;
+	Ctrl->out_maregs_velocity = out_maregs_velocity;
+	Ctrl->do_initial_interp = do_initial_interp;
+	Ctrl->cumpt = cumpt;
+	Ctrl->do_2Dgrids = do_2Dgrids;
+	Ctrl->do_maxs = do_maxs;
+	Ctrl->add_const = add_const;
+	Ctrl->time_h = time_h;
+	Ctrl->dxKb = dxKb;
+	Ctrl->dyKb = dyKb;
+	Ctrl->z_offset = z_offset;
+	Ctrl->kaba_xmin = kaba_xmin;
+	Ctrl->kaba_xmax = kaba_xmax;
+	Ctrl->kaba_ymin = kaba_ymin;
+	Ctrl->kaba_ymax = kaba_ymax;
+	Ctrl->time_jump = time_jump;
+	Ctrl->dt = dt;
+	Ctrl->f_dip = f_dip;
+	Ctrl->f_azim = f_azim;
+	Ctrl->f_rake = f_rake;
+	Ctrl->f_slip = f_slip;
+	Ctrl->f_length = f_length;
+	Ctrl->f_width = f_width;
+	Ctrl->f_topDepth = f_topDepth;
+	Ctrl->x_epic = x_epic;
+	Ctrl->y_epic = y_epic;
+	Ctrl->dfXmin = dfXmin;
+	Ctrl->dfXmax = dfXmax;
+	Ctrl->dfYmin = dfYmin;
+	Ctrl->dfYmax = dfYmax;
+	Ctrl->bathy = bathy;
+	Ctrl->fonte = fonte;
+	Ctrl->fname_sww = fname_sww;
+	Ctrl->basename_most = basename_most;
+	Ctrl->bnc_file = bnc_file;
+	strcpy(Ctrl->hcum, hcum);
+	strcpy(Ctrl->maregs, maregs);
+	strcpy(Ctrl->stem, stem);
+	strcpy(Ctrl->fname_momentM, fname_momentM);
+	strcpy(Ctrl->fname_momentN, fname_momentN);
+	strcpy(Ctrl->fname_mask_lbeach, fname_mask_lbeach);
+	strcpy(Ctrl->fname_mask_sbeach, fname_mask_sbeach);
+	strcpy(Ctrl->tracers_infile, tracers_infile);
+	strcpy(Ctrl->tracers_outfile, tracers_outfile);
+	for (k = 0; k < 10; k++) Ctrl->nesteds[k] = nesteds[k];
+	*nest_out = nest;
+	return (error ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+#define bailout(code) {gmt_M_free_options(mode); return (code);}
+#define Return(code) {Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); if (argv) {int _k; for (_k = 0; _k < argc; _k++) gmt_M_str_free(argv[_k]); free(argv);} bailout(code);}
 
-	if (water_depth && (out_sww || out_most)) {
-		water_depth = false;
-		fprintf(stderr, "WARNING: Total water option is not compatible with ANUGA|MOST outputs. Ignoring\n");
-	}
+EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
-	if (do_Kaba && fonte)
-		fprintf(stderr, "WARNING: Source file is ignored when -Fk option is used.\n");
+	int     argc = 0;                    /* Rebuilt from the GMT option list */
+	char  **argv = NULL;
+	struct  GMTAPI_CTRL *API = gmt_get_api_ptr(V_API);
+	struct  NSWING_CTRL *Ctrl = NULL;            /* Holds the parsed command-line options */
+	struct  GMT_CTRL *GMT = NULL, *GMT_cpy = NULL; /* General GMT internal parameters */
+	struct  GMT_OPTION *options = NULL;
+	struct  GMT_GRID *Gb = NULL, *Gf = NULL;       /* Base bathymetry & source grids */
+	struct  GMT_GRID *GmM = NULL, *GmN = NULL;     /* Hot-start momentum grids */
 
-	if (dt <= 0) {
-		fprintf(stderr, "NSWING: Error -t option. Time step of simulation not provided or negative.\n");
-		error++;
-	}
+	int     writeLevel = 0;              /* If save grids, will hold the saving level (when nesting) */
+	int     i, j, k, n;
+	int     grn = 0, cumint = 0, decimate_max = 1, iprc, r_bin_b, r_bin_f, r_bin_mM, r_bin_mN;
+	int     error = 0;
+	bool    w_bin = true, cumpt = false, do_2Dgrids = false, do_maxs = false;
+	bool    out_energy = false, max_energy = false, out_power = false, max_power = false;
+	bool    first_anuga_time = true, out_sww = false, out_most = false, out_3D = false;
+	bool    surf_level = true, max_level = false, max_velocity = false, water_depth = false;
+	bool    do_Okada = false;            /* For when one will compute the Okada deformation here */
+	int     do_Kaba = 0;                 /* 0 = no; 1 = prism source; 2 = prism given as centre x/y/nx/ny */
+	bool    do_tracers = false;          /* For when doing Lagrangian tracers */
+	bool    out_maregs_nc = false;       /* For when maregs in output are written in netCDF */
+	bool    out_oranges_nc = false;      /* For when tracers in output are written in netCDF */
+	bool    do_HotStart = false;         /* For when doing a Hot Start */
+	int     n_arg_no_char = 0;
+	int     ncid, ncid_most[3], z_id = -1, ids[13], ids_ha[6], ids_ua[6], ids_va[6], ids_most[3];
+	int     ncid_3D[3], ids_z[10], ids_3D[3], ncid_Mar, ids_Mar[8];
+	int     n_of_cycles = 1010;          /* Default number of cycles to compute */
+	int     num_of_nestGrids = 0;        /* Number of nesting grids */
+	bool    bat_in_input = false, source_in_input = false, write_grids = false, isGeog = false;
+	bool    maregs_in_input = false, out_momentum = false, got_R = false;
+	bool    with_land = false, IamCompiled = false, do_nestum = false, saveNested = false, verbose = false;
+	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
+	bool    out_maregs_velocity = false, do_initial_interp = true;
+	int     KbGridCols = 1, KbGridRows = 1; /* Number of rows & columns IF computing a grid of 'Kabas' */
+	int     cntKabas = 0;                /* Counter of the number of Kabas (prisms) already processed */
+	int     n_mareg, n_ptmar, n_oranges;
+	unsigned int *lcum_p = NULL, lcum = 0, ij, nx, ny;
+	unsigned int i_start, j_start, i_end, j_end, count_maregs_timeout = 0, count_time_maregs_timeout = 0;
+	size_t	start0 = 0, count0 = 1, len, start1_A[2] = {0,0}, count1_A[2];
+	size_t  start1_M[3] = {0,0,0}, count1_M[3], start_Mar[3] = {0,0,0}, count_Mar[2];
+	char   *bathy   = NULL;              /* Name pointer for bathymetry file */
+	char   	hcum[256]   = "";            /* Name of the cumulative hight file */
+	char    maregs[256] = "";            /* Name of the maregraph positions file */
+	char  **mareg_names = NULL;          /* Array to hold optional maregraph names */
+	char   *fname_sww = NULL;            /* Name pointer for Anuga's .sww file */
+	char   *basename_most = NULL;        /* Name pointer for basename of MOST .nc files */
+	char   *fname3D  = NULL;             /* Name pointer for the 3D netCDF file */
+	char   *fonte    = NULL;             /* Name pointer for tsunami source file */
+	char   *bnc_file = NULL;             /* Name pointer for a boundary condition file */
+	char    fname_mask_lbeach[256] = ""; /* Name pointer for the "long_beach" mask grid */
+	char    fname_mask_sbeach[256] = ""; /* Name pointer for the "short_beach" mask grid */
+	char    tracers_infile[256] = "", tracers_outfile[256] = "";	/* Names for in and out tracers files */
+	char    stem[256] = "", prenome[128] = "", fname_momentM[256] = "", fname_momentN[256] = "";
+	char    history[512] = {""};         /* To hold the full command call to be saved in nc files as History */
+	char   *nesteds[10] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+	char    txt[128];                    /* Auxiliary variable */
 
-	if (out_sww && fname_sww == NULL) {
-		fprintf(stderr, "NSWING: Error -A option. Must provide a name for the .SWW file.\n");
-		error++;
-	}
+	float  *work = NULL, *workMax = NULL, *vmax = NULL, *wmax = NULL, *time_p = NULL;
+	float   work_min = FLT_MAX, work_max = -FLT_MAX, *maregs_array = NULL, *maregs_array_t = NULL;
+	double *maregs_timeout = NULL, m_per_deg = 111317.1;
+	double *cum_p = NULL;
+	double  dfXmin = 0, dfYmin = 0, dfXmax = 0, dfYmax = 0, xMinOut, yMinOut;
+	double  kaba_xmin = 0, kaba_xmax = 0, kaba_ymin = 0, kaba_ymax = 0;
+	double  time_jump = 0, time0, time_for_anuga, prc;
+	double  dt = 0;                     /* Time step for Base level grid */
+	double  dx, dy, ds, dtCFL, etam, one_100, t;
+	double *eta_for_maregs, *vx_for_maregs, *vy_for_maregs, *htotal_for_maregs, *fluxm_for_maregs, *fluxn_for_maregs;
+	double *vx_for_oranges, *vy_for_oranges, *fluxm_for_oranges, *fluxn_for_oranges, *htotal_for_oranges;	/* For tracers */
+	double  f_dip, f_azim, f_rake, f_slip, f_length, f_width, f_topDepth, x_epic, y_epic;	/* For Okada initial condition */
+	double  add_const = 0, time_h = 0;
+	double  dxKb = 0, dyKb = 0;         /* Grid steps for when computing a grid of 'Kabas' */
+	double  z_offset = 0;	/* To apply to bathymetry to simulate a tide */
+	double  manning[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};	/* Manning coefficients */
 
-	if (out_momentum && (out_velocity_x || out_velocity_y)) {
-		fprintf(stderr, "NSWING: Error -S / -H options. Can only select one off velocity OR momentum output.\n");
-		error++;
-	}
+	double  actual_range[6] = {1e30, -1e30, 1e30, -1e30, 1e30, -1e30};
+	float	stage_range[2], xmom_range[2], ymom_range[2], *tmp_slice;
+	struct	srf_header hdr_b, hdr_f, hdr_mM, hdr_mN;
+	struct	grd_header hdr;
+	struct  nestContainer nest;
+	struct  tracers *oranges;
+	FILE   *fp, *fp_oranges;
+	clock_t tic;
 
-	if (nest.do_Coriolis && !isGeog && nest.lat_min4Coriolis == -100) {
-		fprintf(stderr, "NSWING: Error -C option. For cartesian grids must provide the South latitude. Ignoring Corilis request.\n");
-		nest.do_Coriolis = false;
+	call_moment[0] = (PFV)moment_M;
+	call_moment[1] = (PFV)moment_N;
+	call_moment_sp[0] = (PFV)moment_sp_M;
+	call_moment_sp[1] = (PFV)moment_sp_N;
+
+#ifdef PARALLEL
+	call_moment_sp_M_slice = (PFV)moment_sp_M_slice;
+	call_moment_sp_N_slice = (PFV)moment_sp_N_slice;
+	call_mass_sp = (PFV)mass_sp_slice;
+	call_mass = (PFV)mass_slice;
+#endif
+
+#ifdef DO_MULTI_THREAD
+	if ((k = GetLocalNThread()) == 1) {
+		fprintf(stderr, "NSWING: This version of the program is build for multi-threading but "
+		           "this machine has only one core. Don't know what will happen here.\n"); 
 	}
+#endif
+
+
+	/*----------------------- Standard module initialization and parsing ----------------------*/
+
+	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_MODULE_PURPOSE) return (usage(API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	options = GMT_Create_Options(API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
+
+	if (!options || options->option == GMT_OPT_USAGE) bailout(usage(API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout(usage(API, GMT_SYNOPSIS));		/* Return the synopsis */
+
+	/* Parse the command-line arguments */
+
+	if ((GMT = gmt_init_module(API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout(API->error);	/* Save current state */
+	if (GMT_Parse_Common(API, THIS_MODULE_OPTIONS, options)) Return(API->error);
+
+	/*---------------------------- Parse the command-line arguments ----------------------------*/
+	Ctrl = New_Ctrl(GMT);	/* Allocate the control structure */
+	if ((error = parse(GMT, Ctrl, &nest, options, &argc, &argv)) != 0) Return(error);
+
+	/* Unpack the parsed values into the local variables used by the main code below */
+	writeLevel = Ctrl->writeLevel;
+	grn = Ctrl->grn;
+	cumint = Ctrl->cumint;
+	decimate_max = Ctrl->decimate_max;
+	do_Kaba = Ctrl->do_Kaba;
+	KbGridCols = Ctrl->KbGridCols;
+	KbGridRows = Ctrl->KbGridRows;
+	n_of_cycles = Ctrl->n_of_cycles;
+	out_energy = Ctrl->out_energy;
+	max_energy = Ctrl->max_energy;
+	out_power = Ctrl->out_power;
+	max_power = Ctrl->max_power;
+	out_sww = Ctrl->out_sww;
+	out_most = Ctrl->out_most;
+	out_3D = Ctrl->out_3D;
+	surf_level = Ctrl->surf_level;
+	max_level = Ctrl->max_level;
+	max_velocity = Ctrl->max_velocity;
+	water_depth = Ctrl->water_depth;
+	do_Okada = Ctrl->do_Okada;
+	do_tracers = Ctrl->do_tracers;
+	out_maregs_nc = Ctrl->out_maregs_nc;
+	out_oranges_nc = Ctrl->out_oranges_nc;
+	do_HotStart = Ctrl->do_HotStart;
+	write_grids = Ctrl->write_grids;
+	isGeog = Ctrl->isGeog;
+	maregs_in_input = Ctrl->maregs_in_input;
+	out_momentum = Ctrl->out_momentum;
+	got_R = Ctrl->got_R;
+	with_land = Ctrl->with_land;
+	IamCompiled = Ctrl->IamCompiled;
+	saveNested = Ctrl->saveNested;
+	verbose = Ctrl->verbose;
+	out_velocity = Ctrl->out_velocity;
+	out_velocity_x = Ctrl->out_velocity_x;
+	out_velocity_y = Ctrl->out_velocity_y;
+	out_velocity_r = Ctrl->out_velocity_r;
+	out_maregs_velocity = Ctrl->out_maregs_velocity;
+	do_initial_interp = Ctrl->do_initial_interp;
+	cumpt = Ctrl->cumpt;
+	do_2Dgrids = Ctrl->do_2Dgrids;
+	do_maxs = Ctrl->do_maxs;
+	add_const = Ctrl->add_const;
+	time_h = Ctrl->time_h;
+	dxKb = Ctrl->dxKb;
+	dyKb = Ctrl->dyKb;
+	z_offset = Ctrl->z_offset;
+	kaba_xmin = Ctrl->kaba_xmin;
+	kaba_xmax = Ctrl->kaba_xmax;
+	kaba_ymin = Ctrl->kaba_ymin;
+	kaba_ymax = Ctrl->kaba_ymax;
+	time_jump = Ctrl->time_jump;
+	dt = Ctrl->dt;
+	f_dip = Ctrl->f_dip;
+	f_azim = Ctrl->f_azim;
+	f_rake = Ctrl->f_rake;
+	f_slip = Ctrl->f_slip;
+	f_length = Ctrl->f_length;
+	f_width = Ctrl->f_width;
+	f_topDepth = Ctrl->f_topDepth;
+	x_epic = Ctrl->x_epic;
+	y_epic = Ctrl->y_epic;
+	dfXmin = Ctrl->dfXmin;
+	dfXmax = Ctrl->dfXmax;
+	dfYmin = Ctrl->dfYmin;
+	dfYmax = Ctrl->dfYmax;
+	bathy = Ctrl->bathy;
+	fonte = Ctrl->fonte;
+	fname_sww = Ctrl->fname_sww;
+	basename_most = Ctrl->basename_most;
+	bnc_file = Ctrl->bnc_file;
+	strcpy(hcum, Ctrl->hcum);
+	strcpy(maregs, Ctrl->maregs);
+	strcpy(stem, Ctrl->stem);
+	strcpy(fname_momentM, Ctrl->fname_momentM);
+	strcpy(fname_momentN, Ctrl->fname_momentN);
+	strcpy(fname_mask_lbeach, Ctrl->fname_mask_lbeach);
+	strcpy(fname_mask_sbeach, Ctrl->fname_mask_sbeach);
+	strcpy(tracers_infile, Ctrl->tracers_infile);
+	strcpy(tracers_outfile, Ctrl->tracers_outfile);
+	for (k = 0; k < 10; k++) nesteds[k] = Ctrl->nesteds[k];
+	if (out_3D) fname3D = stem;
+
+	/*---------------------------- This is the nswing main code ----------------------------*/
 
 	if (cumpt) {		/* Deal with the several aspects of reading a maregraphs file */
 		if (cumint <= 0) {
@@ -1221,7 +1487,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	}
 
 	/* -------------------------------------------------------------------------------------- */
-	for (k = 0; k < argc; k++) {		/* Build the History string (incomplete if AM_MEX) */
+	for (k = 0; k < argc; k++) {		/* Build the History string */
 		strcat(history, argv[k]);		strcat(history, " ");
 	}
 	/* -------------- Allocate memory and initialize the 'nest' structure ------------------- */
@@ -2448,86 +2714,6 @@ int write_grd_bin(char *name, double x_min, double y_min, double x_inc, double y
 	return (0);
 }
 
-/* ------------------------------------------------------------------------------ */
-int read_grd_info_ascii(char *file, struct srf_header *hdr) {
-	/* Read Surfer grid header, either in ASCII or binary */
-
-	char line[128], id[5] = "";
-	FILE *fp;
-
-	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf(stderr, "NSWING: Unable to read file -- %s\n", file);
-		return (-1);
-	}
-
-	fgets (line, 16, fp);
-	sscanf (line, "%s", hdr->id);
-	sprintf (id, "%.4s", hdr->id);
-	if (strcmp (id, "DSAA") == 0) {
-		fgets (line, 128, fp);
-		sscanf (line, "%hd %hd", &hdr->nx, &hdr->ny);
-		fgets (line, 128, fp);
-		sscanf (line, "%lf %lf", &hdr->x_min, &hdr->x_max);
-		fgets (line, 128, fp);
-		sscanf (line, "%lf %lf", &hdr->y_min, &hdr->y_max);
-		fgets (line, 128, fp);
-		sscanf (line, "%lf %lf", &hdr->z_min, &hdr->z_max);
-		fclose(fp);
-		return (0);
-	}
-	else if (strcmp (id, "DSBB") == 0) {
-		fclose(fp);
-		fp = fopen (file, "rb");	/* Reopen in binary mode */
-		read_header_bin (fp, hdr);
-		fclose(fp);
-		return (1);
-	}
-	else
-		return (-1);
-}
-
-/* ------------------------------------------------------------------------------ */
-int read_grd_ascii(char *file, struct srf_header *hdr, double *work, int sign) {
-	/* sign is either +1 or -1, in case one wants to revert sign of the imported grid */
-
-	/* Reads a grid in the Surfer ascii format */
-	unsigned int i = 0, j, n_field;
-	char *p, buffer[512], line[512];
-	FILE *fp;
-
-	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf(stderr, "NSWING: Unable to read file %s - exiting\n", file);
-		return (-1);
-	}
-
-	fgets (line, 512, fp);
-	sscanf (line, "%s", hdr->id);
-	fgets (line, 512, fp);
-	sscanf (line, "%hd %hd", &hdr->nx, &hdr->ny);
-	fgets (line, 512, fp);
-	sscanf (line, "%lf %lf", &hdr->x_min, &hdr->x_max);
-	fgets (line, 512, fp);
-	sscanf (line, "%lf %lf", &hdr->y_min, &hdr->y_max);
-	fgets (line, 512, fp);
-	sscanf (line, "%lf %lf", &hdr->z_min, &hdr->z_max);
-
-	while (fgets (line, 512, fp) != NULL) {
-		strcpy (buffer, line);
-		n_field = count_col (buffer);	/* Count # of fields in line */
-		if (n_field == 0) continue;
-		p = (char *)strtok (line, " \t\n\015\032");
-		j = 0;
-		while (p && j < n_field) {
-			sscanf (p, "%lf", &work[i]);
-			work[i] *= sign;
-			j++;	i++;
-			p = (char *)strtok ((char *)NULL, " \t\n\015\032");
-		}
-	}
-	fclose(fp);
-	return (0);
-} 
-
 /* -------------------------------------------------------------------- */
 int count_col(char *line) {
 	/* Count # of fields contained in line */
@@ -2540,43 +2726,6 @@ int count_col(char *line) {
 		p = (char *)strtok_s (NULL, " \t\n\015\032", &ntoken);
 	}
 	return (n_col);
-}
-
-/* -------------------------------------------------------------------- */
-int read_header_bin(FILE *fp, struct srf_header *hdr) {
-	/* Reads the header of a binary Surfer gridfile */
-	fread ((void *)hdr, sizeof (struct srf_header), (size_t)1, fp); 
-	return (0);
-}
-
-/* -------------------------------------------------------------------- */
-int read_grd_bin(char *file, struct srf_header *hdr, double *work, int sign) {
-	/* sign is either +1 or -1, in case one wants to revert sign of the imported grid */
-	int i, j;
-	unsigned int ij, kk;
-	float	*tmp;			/* Array pointer for reading in rows of data */
-	FILE	*fp;
-
-	if ((fp = fopen (file, "rb")) == NULL) {
-		fprintf(stderr, "NSWING: Unable to read file %s - exiting\n", file);
-		return (-1);
-	}
-	fread ((void *)hdr, sizeof (struct srf_header), (size_t)1, fp); 
-
-	/* Allocate memory for one row of data (for reading purposes) */
-	tmp = (float *) malloc ((size_t)hdr->nx * sizeof (float));
-	for (j = 0; j < hdr->ny; j++) {
-		fread (tmp, sizeof (float), (size_t)hdr->nx, fp);	/* Get one row */
-		ij = j * hdr->nx;
-		for (i = 0; i < hdr->nx; i++) {
-			kk = ij + i;
-			work[kk] = tmp[i] * sign;
-		}
-	}
-	fclose(fp);
-	free ((void *)tmp);
-
-	return (0);
 }
 
 /* -------------------------------------------------------------------- */
