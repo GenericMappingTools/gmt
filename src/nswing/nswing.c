@@ -106,7 +106,7 @@ union {uint64_t i; double d;} loc_nan = {0x7ff8000000000000};
    to be defined only under #ifdef HAVE_NETCDF, but GMT never defines that symbol, so the
    macro vanished and every err_trap(...) call became an undefined external -> LNK2019.
    GMT always links netCDF, so just define it unconditionally here. */
-#define err_trap(status) if (status) {fprintf(stderr, "NSWING: error at line %d: %s\n", __LINE__, nc_strerror(status));}
+#define err_trap(api, status) if (status) {GMT_Report(api, GMT_MSG_ERROR, "NSWING: error at line %d: %s\n", __LINE__, nc_strerror(status));}
 
 
 #if HAVE_OPENMP
@@ -239,11 +239,11 @@ typedef struct {
 	int row_start, row_end;       /* Start and end rows for the BY slices in PARALLEL mode */
 } ThreadArg;
 
-void no_sys_mem(char *where, unsigned int n);
+void no_sys_mem(void *API, char *where, unsigned int n);
 int  count_col(char *line);
-int  read_maregs(struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]);
-int  read_tracers(struct grd_header hdr, char *file, struct tracers *oranges);
-int  count_n_maregs(char *file);
+int  read_maregs(void *API, struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]);
+int  read_tracers(void *API, struct grd_header hdr, char *file, struct tracers *oranges);
+int  count_n_maregs(void *API, char *file);
 int  decode_R(char *item, double *w, double *e, double *s, double *n);
 int  check_region(double w, double e, double s, double n);
 double ddmmss_to_degree (char *text);
@@ -251,15 +251,15 @@ void openb(struct grd_header hdr, double *bat, double *fluxm_d, double *fluxn_d,
 void wave_maker(struct nestContainer *nest);
 void wall_it(struct nestContainer *nest);
 void wall_two(struct nestContainer *nest, int ot1, int ot2, int in1, int in2);
-int  initialize_nestum(struct nestContainer *nest, int isGeog, int lev);
-int  intp_lin (double *x, double *y, int n, int m, double *u, double *v);
+int  initialize_nestum(void *API, struct nestContainer *nest, int isGeog, int lev);
+int  intp_lin (void *API, double *x, double *y, int n, int m, double *u, double *v);
 void inisp(struct nestContainer *nest);
 void inicart(struct nestContainer *nest);
-void interp_edges(struct nestContainer *nest, double *flux_L1, double *flux_L2, char *what, int lev, int i_time);
+void interp_edges(void *API, struct nestContainer *nest, double *flux_L1, double *flux_L2, char *what, int lev, int i_time);
 void sanitize_nestContainer(struct nestContainer *nest);
-void nestify(struct nestContainer *nest, int nNg, int recursionLevel, int isGeog);
+void nestify(void *API, struct nestContainer *nest, int nNg, int recursionLevel, int isGeog);
 void resamplegrid(struct nestContainer *nest, int nNg);
-void edge_communication(struct nestContainer *nest, int lev, int i_time);
+void edge_communication(void *API, struct nestContainer *nest, int lev, int i_time);
 void mass(struct nestContainer *nest, int lev);
 void mass_sp(struct nestContainer *nest, int lev);
 void mass_conservation(struct nestContainer *nest, int isGeog, int m);
@@ -279,10 +279,10 @@ void moment_sp_N_slice(int lev, int row_start, int row_end, struct nestContainer
 void mass_sp_slice(struct nestContainer *nest, int lev, int row_start, int row_end);
 void mass_slice(struct nestContainer *nest, int lev, int row_start, int row_end);
 void free_arrays(struct nestContainer *nest, int isGeog, int lev);
-int  check_paternity(struct nestContainer *nest);
+int  check_paternity(void *API, struct nestContainer *nest);
 int  check_binning(double x0P, double x0D, double dxP, double dxD, double tol, double *suggest);
-int  read_bnc_file(struct nestContainer *nest, char *file);
-int  interp_bnc (struct nestContainer *nest, double t);
+int  read_bnc_file(void *API, struct nestContainer *nest, char *file);
+int  interp_bnc (void *API, struct nestContainer *nest, double t);
 void total_energy(struct nestContainer *nest, float *work, int lev);
 void power(struct nestContainer *nest, float *work, int lev);
 void vtm (double lat0, double *t_c1, double *t_c2, double *t_c3, double *t_c4, double *t_e2, double *t_M0);
@@ -301,22 +301,22 @@ void update_max(struct nestContainer *nest);
 void update_max_velocity(struct nestContainer *nest);
 
 
-void write_most_slice(struct nestContainer *nest, int *ncid_most, int *ids_most, unsigned int i_start,
+void write_most_slice(void *API, struct nestContainer *nest, int *ncid_most, int *ids_most, unsigned int i_start,
                       unsigned int j_start, unsigned int i_end, unsigned int j_end, float *work, size_t *start,
                       size_t *count, double *slice_range, int isMost, int lev);
-int open_most_nc(struct nestContainer *nest, float *work, char *basename, char *name_var, char hist[], int *ids,
+int open_most_nc(void *API, struct nestContainer *nest, float *work, char *basename, char *name_var, char hist[], int *ids,
                  unsigned int nx, unsigned int ny, double xMinOut, double yMinOut, int isMost, int lev);
-int open_anuga_sww(struct nestContainer *nest, char *fname_sww, char history[], int *ids, unsigned int i_start,
+int open_anuga_sww(void *API, struct nestContainer *nest, char *fname_sww, char history[], int *ids, unsigned int i_start,
                    unsigned int j_start, unsigned int i_end, unsigned int j_end, double xMinOut, double yMinOut, int lev);
-void write_anuga_slice(struct nestContainer *nest, int ncid, int z_id, unsigned int i_start, unsigned int j_start,
+void write_anuga_slice(void *API, struct nestContainer *nest, int ncid, int z_id, unsigned int i_start, unsigned int j_start,
                        unsigned int i_end, unsigned int j_end, float *work, size_t *start, size_t *count,
                        float *slice_range, int idx, int with_land, int lev);
-int write_maregs_nc(struct nestContainer *nest, char *fname, float *work, double *t, unsigned int *lcum_p,
+int write_maregs_nc(void *API, struct nestContainer *nest, char *fname, float *work, double *t, unsigned int *lcum_p,
                     char *names[], char hist[], int n_maregs, unsigned int count_time_maregs_timeout, int lev);
-int write_greens_nc(struct nestContainer *nest, char *fname, float *work, size_t *start, size_t *count,
+int write_greens_nc(void *API, struct nestContainer *nest, char *fname, float *work, size_t *start, size_t *count,
                     double *t, unsigned int *lcum_p, char *names[], char hist[], int *ids, int n_maregs,
                     unsigned int n_times, int lev);
-void err_trap_(int status);
+void err_trap_(void *API, int status);
 
 #if (defined(WIN32) || defined(_WIN32) || defined(_WIN64)) && (defined(DO_MULTI_THREAD) || defined(PARALLEL))
 /* Prototypes for threading related functions */
@@ -729,7 +729,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						n = sscanf(&argv[i][2], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf", 
 						           &f_dip, &f_azim, &f_rake, &f_slip, &f_length, &f_width, &f_topDepth, &x_epic, &y_epic);
 						if (n != 9) {
-							fprintf(stderr, "NSWING: Error, -F option, must provide all 9 parameters.\n");
+							GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -F option, must provide all 9 parameters.\n");
 							error++;
 						}
 						else { /* Convert fault dimensions to meters (that's what is used by deform) */
@@ -780,7 +780,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 							do_HotStart = true;
 						}
 						else {
-							fprintf(stderr, "NSWING: Error, -H option (Hot start), must provide names of moment_X, moment_Y files.\n");
+							GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -H option (Hot start), must provide names of moment_X, moment_Y files.\n");
 							error++;							
 						}
 					}
@@ -812,7 +812,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 							strcpy(tracers_outfile, ++pch);		/* NEED TO TEST IF WE GOT A FNAME */
 						}
 						else {
-							fprintf(stderr, "NSWING: Error, -L option, must provide at least the tracers file name\n");
+							GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -L option, must provide at least the tracers file name\n");
 							error++;
 						}
 						do_tracers = true;
@@ -848,7 +848,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						strcpy(hcum, ++pch);
 					}
 					else { 
-						fprintf(stderr, "NSWING: Error, -O option, must provide interval and output maregs file name\n");
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -O option, must provide interval and output maregs file name\n");
 						error++;
 					}
 					break;
@@ -903,8 +903,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					break;
 				case 'T':	/* File with time interval (n steps), maregraph positions and optional output fname */
 					if (cumpt) {
-						fprintf(stderr, "NSWING: Error, this option is not to be used when maregraphs were transmitted in input\n");
-						fprintf(stderr, "        Ignoring it.\n");
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, this option is not to be used when maregraphs were transmitted in input\n");
+						GMT_Report(GMT->parent, GMT_MSG_WARNING, "        Ignoring it.\n");
 						break;
 					}
 					sscanf(&argv[i][2], "%s", str_tmp);
@@ -916,7 +916,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						char *pch2;
 						pch[0] = '\0';
 						if ((pch2 = strstr(str_tmp,".")) != NULL)
-							fprintf(stderr, "NSWING: WARNING, 'int' in option -T<int> must be an integer number. Expect surprises.\n");
+							GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, 'int' in option -T<int> must be an integer number. Expect surprises.\n");
 
 						cumint = atoi(str_tmp);
 						if ((pch2 = strstr(++pch,",")) != NULL) {
@@ -928,7 +928,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 							strcpy(maregs, pch);
 					}
 					else {
-						fprintf(stderr, "NSWING: Error, -T option, must provide at least a interval and maregs file name\n");
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide at least a interval and maregs file name\n");
 						error++;
 					}
 					cumpt = true;
@@ -981,7 +981,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					nesteds[atoi(&argv[i][1])-1] = &argv[i][2];
 					break;
 				default:
-					fprintf(stderr, "NSWING: Unknown option %s\n", argv[i]);
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Unknown option %s\n", argv[i]);
 					error = true;
 					break;
 			}
@@ -994,7 +994,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			else if (fonte == NULL)
 				fonte = argv[i];
 			else if (bathy != NULL && fonte != NULL) {
-				fprintf(stderr, "NSWING: Wrong option %s (misses the minus sign)\n", argv[i]);
+				GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Wrong option %s (misses the minus sign)\n", argv[i]);
 				error = true;
 			}
 		}
@@ -1016,44 +1016,44 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 		              || nest.do_short_beach);
 
 		if (!(do_2Dgrids || out_sww || out_most || out_3D || cumpt)) {
-			fprintf(stderr, "Nothing selected for output (grids, or maregraphs), exiting\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "Nothing selected for output (grids, or maregraphs), exiting\n");
 			error++;
 		}
 
 		if (grn == 0 && !do_maxs && !cumpt) {
-			fprintf(stderr, "NSWING: Error, -G or -Z option. MUST provide saving interval\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G or -Z option. MUST provide saving interval\n");
 			error++;
 		}
 		if (!stem && !cumpt) {
-			fprintf(stderr, "NSWING: Error, -G or -Z option. MUST provide base name || OR -T option\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G or -Z option. MUST provide base name || OR -T option\n");
 			error++;
 		}
 
 		if (water_depth && (out_sww || out_most)) {
 			water_depth = false;
-			fprintf(stderr, "WARNING: Total water option is not compatible with ANUGA|MOST outputs. Ignoring\n");
+			GMT_Report(GMT->parent, GMT_MSG_WARNING, "WARNING: Total water option is not compatible with ANUGA|MOST outputs. Ignoring\n");
 		}
 
 		if (do_Kaba && fonte)
-			fprintf(stderr, "WARNING: Source file is ignored when -Fk option is used.\n");
+			GMT_Report(GMT->parent, GMT_MSG_WARNING, "WARNING: Source file is ignored when -Fk option is used.\n");
 
 		if (dt <= 0) {
-			fprintf(stderr, "NSWING: Error -t option. Time step of simulation not provided or negative.\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error -t option. Time step of simulation not provided or negative.\n");
 			error++;
 		}
 
 		if (out_sww && fname_sww == NULL) {
-			fprintf(stderr, "NSWING: Error -A option. Must provide a name for the .SWW file.\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error -A option. Must provide a name for the .SWW file.\n");
 			error++;
 		}
 
 		if (out_momentum && (out_velocity_x || out_velocity_y)) {
-			fprintf(stderr, "NSWING: Error -S / -H options. Can only select one off velocity OR momentum output.\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error -S / -H options. Can only select one off velocity OR momentum output.\n");
 			error++;
 		}
 
 		if (nest.do_Coriolis && !isGeog && nest.lat_min4Coriolis == -100) {
-			fprintf(stderr, "NSWING: Error -C option. For cartesian grids must provide the South latitude. Ignoring Corilis request.\n");
+			GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: Error -C option. For cartesian grids must provide the South latitude. Ignoring Corilis request.\n");
 			nest.do_Coriolis = false;
 		}
 	}
@@ -1246,7 +1246,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 #ifdef DO_MULTI_THREAD
 	if ((k = GetLocalNThread()) == 1) {
-		fprintf(stderr, "NSWING: This version of the program is build for multi-threading but "
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: This version of the program is build for multi-threading but "
 		           "this machine has only one core. Don't know what will happen here.\n"); 
 	}
 #endif
@@ -1358,11 +1358,11 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	if (cumpt) {		/* Deal with the several aspects of reading a maregraphs file */
 		if (cumint <= 0) {
-			fprintf(stderr, "NSWING: error, -T or -O options imply a saving interval\n");
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: error, -T or -O options imply a saving interval\n");
 			Return(-1);
 		}
 		else if (!maregs) {
-			fprintf(stderr, "NSWING: error, -T or -O options imply a maregs file\n");
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: error, -T or -O options imply a maregs file\n");
 			Return(-1);
 		}
 		else if (!hcum || !strcmp(hcum, "")) {
@@ -1379,25 +1379,25 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 		n_ptmar = n_of_cycles / cumint + 1;
 		if (!error && (fp = fopen (hcum, "w")) == NULL) {
-			fprintf(stderr, "%s: Unable to create file %s - exiting\n", "nswing", hcum);
+			GMT_Report(API, GMT_MSG_ERROR, "%s: Unable to create file %s - exiting\n", "nswing", hcum);
 			Return(-1);
 		}
 		if (!error && !maregs_in_input) {
-			n_mareg = count_n_maregs(maregs);          /* Count maragraphs number */
+			n_mareg = count_n_maregs(API, maregs);          /* Count maragraphs number */
 			if (n_mareg < 0) {
 				Return(-1);            /* Warning already issued in count_n_maregs() */
 			}
 			else if (n_mareg == 0) {
-				fprintf(stderr, "NSWING: Warning file %s has no valid data.\n", maregs);
+				GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning file %s has no valid data.\n", maregs);
 				cumpt = false;
 			}
 		}
 	}
 
 	if (do_tracers) {	/* Count number of oranges */
-		n_oranges = count_n_maregs(tracers_infile);    /* Count tracers number */
+		n_oranges = count_n_maregs(API, tracers_infile);    /* Count tracers number */
 		if (n_oranges <= 0) {
-			fprintf(stderr, "NSWING: Warning file %s has no valid data. Ignoring this option\n", tracers_infile);
+			GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning file %s has no valid data. Ignoring this option\n", tracers_infile);
 			do_tracers = false;			
 		}
 	}
@@ -1407,30 +1407,30 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	if (!bat_in_input && !source_in_input) {			/* If bathymetry & source where not given as arguments, load them */
 		if (!bathy || (!fonte && !bnc_file && !do_Okada && !do_Kaba)) {
-			fprintf(stderr, "NSWING: error, bathymetry and/or source grids were not provided.\n"); 
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: error, bathymetry and/or source grids were not provided.\n"); 
 			Return(-1);
 		}
 
 		/* Read base bathymetry through the GMT API (real file or in-memory grid) */
 		if ((Gb = gmtnswing_get_grid(API, bathy, &hdr_b)) == NULL) {
-			fprintf(stderr, "NSWING: %s Invalid bathymetry grid.\n", bathy);
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid bathymetry grid.\n", bathy);
 			Return(-1);
 		}
 
 		if (!isGeog && hdr_b.x_min >= -180 && hdr_b.x_max <= 360 && hdr_b.y_min > -90 && hdr_b.y_max < 90) {
-			fprintf(stderr, "NSWING: Warning, the bathymetry grid seams to be in Geographical coords but -f was not set.\n");
+			GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning, the bathymetry grid seams to be in Geographical coords but -f was not set.\n");
 			isGeog = true;
 		}
 
 		if (!do_Okada && !do_Kaba) {	/* Otherwise we will compute initial condition later down after arrays are allocated */
 			if (!bnc_file && (Gf = gmtnswing_get_grid(API, fonte, &hdr_f)) == NULL) {	/* Read source grid */
-				fprintf(stderr, "NSWING: %s Invalid source grid.\n", fonte);
+				GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid source grid.\n", fonte);
 				Return(-1);
 			}
 
 			if (!bnc_file && (hdr_f.nx != hdr_b.nx || hdr_f.ny != hdr_b.ny)) {
-				fprintf(stderr, "Bathymetry and source grids have different rows/columns\n");
-				fprintf(stderr, "%d %d %d %d\n", hdr_b.ny, hdr_f.ny, hdr_b.nx, hdr_f.nx);
+				GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and source grids have different rows/columns\n");
+				GMT_Report(API, GMT_MSG_ERROR, "%d %d %d %d\n", hdr_b.ny, hdr_f.ny, hdr_b.nx, hdr_f.nx);
 				error++;
 			}
 		}
@@ -1439,11 +1439,11 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (do_HotStart) {		/* Read & check that the moment grids for Hot Start are compatible */
 		if ((GmM = gmtnswing_get_grid(API, fname_momentM, &hdr_mM)) == NULL ||
 		    (GmN = gmtnswing_get_grid(API, fname_momentN, &hdr_mN)) == NULL) {
-			fprintf(stderr, "NSWING: Could not read one of the Hot Start momentum grids.\n");
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Could not read one of the Hot Start momentum grids.\n");
 			Return(-1);
 		}
 		if (hdr_b.nx != hdr_mM.nx || hdr_b.ny != hdr_mM.ny || hdr_b.nx != hdr_mN.nx || hdr_b.ny != hdr_mN.ny) {
-			fprintf(stderr, "Bathymetry and moment grids have different rows/columns\n");
+			GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and moment grids have different rows/columns\n");
 			error++;
 		}
 	}
@@ -1453,9 +1453,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (!bnc_file && !do_Okada && !do_Kaba) {
 		if (fabs(hdr_f.x_min - hdr_b.x_min) / dx > dx / 4 || fabs(hdr_f.x_max - hdr_b.x_max) / dx > dx / 4 ||
 			fabs(hdr_f.y_min - hdr_b.y_min) / dy > dy / 4 || fabs(hdr_f.y_max - hdr_b.y_max) / dy > dy / 4 ) {
-			fprintf(stderr, "Bathymetry and source grids do not cover the same region\n"); 
-			fprintf(stderr, "%lf %lf %lf %lf\n", hdr_f.x_min, hdr_b.x_min, hdr_f.x_max, hdr_b.x_max); 
-			fprintf(stderr, "%lf %lf %lf %lf\n", hdr_f.y_min, hdr_b.y_min, hdr_f.y_max, hdr_b.y_max); 
+			GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and source grids do not cover the same region\n"); 
+			GMT_Report(API, GMT_MSG_ERROR, "%lf %lf %lf %lf\n", hdr_f.x_min, hdr_b.x_min, hdr_f.x_max, hdr_b.x_max); 
+			GMT_Report(API, GMT_MSG_ERROR, "%lf %lf %lf %lf\n", hdr_f.y_min, hdr_b.y_min, hdr_f.y_max, hdr_b.y_max); 
 			error++;
 		}
 	}
@@ -1465,11 +1465,11 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (isGeog) ds *= 111000;		/* Get it in metters */
 	dtCFL = ds / sqrt(fabs(hdr_b.z_min) * 9.8);
 	if (dt > dtCFL) {
-		fprintf(stderr, "NSWING: Error: dt is greater than dtCFL (%.3f). No way that this would work. Stopping here.\n", dtCFL); 
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error: dt is greater than dtCFL (%.3f). No way that this would work. Stopping here.\n", dtCFL); 
 		Return(-1);
 	}
 	else if (dt > (dtCFL / 2)*1.1)		/* With a margin of 10% before triggering the warning */
-		fprintf(stderr, "NSWING: Warning: dt > dtCFL / 2 is normaly not good enough. "
+		GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning: dt > dtCFL / 2 is normaly not good enough. "
 		                   "This may cause troubles. Consider using ~ %.3f\n", dtCFL/2); 
 
 	if (error) Return(-1);
@@ -1482,11 +1482,11 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		num_of_nestGrids = 0;
 		while (nesteds[num_of_nestGrids] != NULL) {
 			if ((Gn = gmtnswing_get_grid(API, nesteds[num_of_nestGrids], &hdr)) == NULL) {
-				fprintf(stderr, "NSWING: %s Invalid nested bathymetry grid.\n", nesteds[num_of_nestGrids]);
+				GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid nested bathymetry grid.\n", nesteds[num_of_nestGrids]);
 				Return(-1);
 			}
 			if ((nest.bat[num_of_nestGrids+1] = (double *)calloc((size_t)hdr.nx*(size_t)hdr.ny, sizeof(double)) ) == NULL)
-				{no_sys_mem("(bat)", hdr.nx*hdr.ny); Return(-1);}
+				{no_sys_mem(API, "(bat)", hdr.nx*hdr.ny); Return(-1);}
 
 			gmtnswing_copy_grid(Gn, nest.bat[num_of_nestGrids+1], -1);	/* Depth positive down, flip to S->N */
 			GMT_Destroy_Data(API, &Gn);
@@ -1506,10 +1506,10 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	}
 
 	/* Check if nesting grids fit nicely within each others */
-	if (do_nestum && check_paternity(&nest)) Return(-1);
+	if (do_nestum && check_paternity(API, &nest)) Return(-1);
 
 	if (writeLevel > num_of_nestGrids) {
-		fprintf(stderr, "Requested save grid level is higher that actual number of nested grids. Using last\n");
+		GMT_Report(API, GMT_MSG_ERROR, "Requested save grid level is higher that actual number of nested grids. Using last\n");
 		writeLevel = num_of_nestGrids;
 		if (writeLevel < 0) writeLevel = 0;     /* When num_of_nestGrids is zero */
 	}
@@ -1534,24 +1534,24 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	nest.out_momentum   = out_momentum;
 	nest.isGeog = isGeog;
 	nest.writeLevel = writeLevel;
-	if (initialize_nestum(&nest, isGeog, 0)) Return(-1);
+	if (initialize_nestum(API, &nest, isGeog, 0)) Return(-1);
 
 	/* We need the ''work' array in most cases, but not all and also need to make sure it's big enough */
 	if ((out_most || out_3D || surf_level || water_depth || out_energy || out_power || out_momentum ||
 		out_velocity || out_velocity_x || out_velocity_y || out_velocity_r || do_maxs || surf_level || water_depth) &&
 		(work = (float *) calloc((size_t)(nest.hdr[0].nm, nest.hdr[writeLevel].nm), sizeof(float)) ) == NULL)
-			{no_sys_mem("(work)", nest.hdr[writeLevel].nm); Return(-1);}
+			{no_sys_mem(API, "(work)", nest.hdr[writeLevel].nm); Return(-1);}
 
 	if ((do_maxs || (nest.long_beach || nest.short_beach)) && 
 		(wmax = (float *) calloc((size_t)nest.hdr[writeLevel].nm, sizeof(float)) ) == NULL)
-		{no_sys_mem("(wmax)", nest.hdr[writeLevel].nm); Return(-1);}
+		{no_sys_mem(API, "(wmax)", nest.hdr[writeLevel].nm); Return(-1);}
 	if (max_energy || max_power && (workMax = (float *)calloc((size_t)nest.hdr[writeLevel].nm, sizeof(float)) ) == NULL)
-		{no_sys_mem("(workMax)", nest.hdr[writeLevel].nm); Return(-1);}
+		{no_sys_mem(API, "(workMax)", nest.hdr[writeLevel].nm); Return(-1);}
 	/* Copy these pointers to use in update_max() */
 	nest.work = work;
 	nest.wmax = wmax;
 	if (max_velocity && (vmax = (float *)calloc((size_t)nest.hdr[writeLevel].nm, sizeof(float)) ) == NULL)
-		{no_sys_mem("(vmax)", nest.hdr[writeLevel].nm); Return(-1);}
+		{no_sys_mem(API, "(vmax)", nest.hdr[writeLevel].nm); Return(-1);}
 	nest.vmax = vmax;
 	/* -------------------------------------------------------------------------------------- */
 
@@ -1599,8 +1599,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (cumpt && !maregs_in_input) {
 		lcum_p = (unsigned int *)calloc((size_t)(1024), sizeof(unsigned int));	/* We wont ever use these many */
 		mareg_names = calloc((size_t)(1024), sizeof(char *));
-		if ((n_mareg = read_maregs(nest.hdr[writeLevel], maregs, lcum_p, mareg_names)) < 1) {	/* Read maregraph locations */
-			fprintf(stderr, "NSWING - WARNING: No maregraphs inside the (inner?) grid\n");
+		if ((n_mareg = read_maregs(API, nest.hdr[writeLevel], maregs, lcum_p, mareg_names)) < 1) {	/* Read maregraph locations */
+			GMT_Report(API, GMT_MSG_WARNING, "NSWING - WARNING: No maregraphs inside the (inner?) grid\n");
 			n_mareg = 0;
 			if (lcum_p) free(lcum_p);
 			free((void *) cum_p);	free((void *) time_p);	 
@@ -1611,7 +1611,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	/* ------- If we have a tracers (oranges) file, time to load it ------------ */
 	if (do_tracers) {
 		if ((fp_oranges = fopen(tracers_outfile, "wt")) == NULL) {
-			fprintf(stderr, "NSWING: Unable to open output tracers file %s - ignoring this option\n", tracers_outfile);
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open output tracers file %s - ignoring this option\n", tracers_outfile);
 			do_tracers = false;
 		}
 		else {
@@ -1620,8 +1620,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 				oranges[n].x = (double *)calloc((size_t)(n_of_cycles), sizeof(double));
 				oranges[n].y = (double *)calloc((size_t)(n_of_cycles), sizeof(double));
 			}
-			if ((n_oranges = read_tracers(nest.hdr[writeLevel], tracers_infile, oranges)) < 1) {	/* Read orange locations */
-				fprintf(stderr, "NSWING - WARNING: No tracers inside the (inner?) grid\n");
+			if ((n_oranges = read_tracers(API, nest.hdr[writeLevel], tracers_infile, oranges)) < 1) {	/* Read orange locations */
+				GMT_Report(API, GMT_MSG_WARNING, "NSWING - WARNING: No tracers inside the (inner?) grid\n");
 				for (n = 0; n < n_oranges; n++) {free(oranges[n].x);		free(oranges[n].y);}
 				do_tracers = false;
 			}
@@ -1638,7 +1638,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (bnc_file) {
 		int side_len;
 
-		if (read_bnc_file(&nest, bnc_file)) Return(-1);
+		if (read_bnc_file(API, &nest, bnc_file)) Return(-1);
 		wall_it(&nest);       /* Set Wall boundary conditions */
 
 		/* Allocate and initialize vectors for boundary conditions*/
@@ -1683,7 +1683,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	if (do_nestum) {                /* Initialize the nest struct array */
 		for (k = 1; k <= num_of_nestGrids; k++) {
-			if (initialize_nestum(&nest, isGeog, k))
+			if (initialize_nestum(API, &nest, isGeog, k))
 				Return(-1);
 		}
 		nest.time_h = time_h;
@@ -1694,9 +1694,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (out_sww) {
 		/* ----------------- Open a ANUGA netCDF file for writing --------------- */
 		nx = i_end - i_start;		ny = j_end - j_start;
-		ncid = open_anuga_sww(&nest, fname_sww, history, ids, i_start, j_start, i_end, j_end, xMinOut, yMinOut, writeLevel);
+		ncid = open_anuga_sww(API, &nest, fname_sww, history, ids, i_start, j_start, i_end, j_end, xMinOut, yMinOut, writeLevel);
 		if (ncid == -1) {
-			fprintf(stderr, "NSWING: failure to create ANUGA SWW file.\n");
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: failure to create ANUGA SWW file.\n");
 			Return(-1);
 		}
 
@@ -1712,12 +1712,12 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (out_most) {
 		/* ----------------- Open a 3 MOST netCDF files for writing ------------- */
 		nx = i_end - i_start;		ny = j_end - j_start;
-		ncid_most[0] = open_most_nc(&nest, work, basename_most, "HA", history, ids_ha, nx, ny, xMinOut, yMinOut, true, writeLevel);
-		ncid_most[1] = open_most_nc(&nest, work, basename_most, "UA", history, ids_ua, nx, ny, xMinOut, yMinOut, true, writeLevel);
-		ncid_most[2] = open_most_nc(&nest, work, basename_most, "VA", history, ids_va, nx, ny, xMinOut, yMinOut, true, writeLevel);
+		ncid_most[0] = open_most_nc(API, &nest, work, basename_most, "HA", history, ids_ha, nx, ny, xMinOut, yMinOut, true, writeLevel);
+		ncid_most[1] = open_most_nc(API, &nest, work, basename_most, "UA", history, ids_ua, nx, ny, xMinOut, yMinOut, true, writeLevel);
+		ncid_most[2] = open_most_nc(API, &nest, work, basename_most, "VA", history, ids_va, nx, ny, xMinOut, yMinOut, true, writeLevel);
 
 		if (ncid_most[0] == -1 || ncid_most[1] == -1 || ncid_most[2] == -1) {
-			fprintf(stderr, "NSWING: failure to create one or more of the MOST files\n");
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: failure to create one or more of the MOST files\n");
 			Return(-1);
 		}
 
@@ -1733,10 +1733,10 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	} 
 	else if (out_3D) {
 		nx = nest.hdr[writeLevel].nx;		ny = nest.hdr[writeLevel].ny;
-		ncid_3D[0] = open_most_nc(&nest, work, fname3D, "z", history, ids_z, nx, ny, xMinOut, yMinOut, false, writeLevel);
+		ncid_3D[0] = open_most_nc(API, &nest, work, fname3D, "z", history, ids_z, nx, ny, xMinOut, yMinOut, false, writeLevel);
 
 		if (ncid_3D[0] == -1) {
-			fprintf(stderr, "NSWING: failure to create netCDF file\n");
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: failure to create netCDF file\n");
 			Return(-1);
 		}
 		ids_3D[0] = ids_z[3];       /* ID of z vriable */
@@ -1770,59 +1770,59 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 		if (out_maregs_nc) {    /* Allocate an array to hold the maregraph data which will be written to a nc file at the end */
 			if ((maregs_array = (float *) calloc((size_t)(n_ptmar * n_mareg), sizeof(float))) == NULL)
-				{no_sys_mem("(maregs_array)", n_ptmar * n_mareg); Return(-1);}
+				{no_sys_mem(API, "(maregs_array)", n_ptmar * n_mareg); Return(-1);}
 			if ((maregs_array_t = (float *) calloc((size_t)(n_ptmar * n_mareg), sizeof(float))) == NULL)	/* A working copy */
-				{no_sys_mem("(maregs_array_t)", n_ptmar * n_mareg); Return(-1);}
+				{no_sys_mem(API, "(maregs_array_t)", n_ptmar * n_mareg); Return(-1);}
 			if ((maregs_timeout = (double *)calloc((size_t)n_ptmar, sizeof(double))) == NULL)
-				{no_sys_mem("(maregs_timeout)", n_ptmar); Return(-1);}
+				{no_sys_mem(API, "(maregs_timeout)", n_ptmar); Return(-1);}
 		}
 	}
 
 	/* --------------------------------------------------------------------------------------- */
 	if (verbose) {
-		fprintf(stderr, "\nNSWING: \n\n");
-		fprintf(stderr, "Layer 0  time step = %g\tx_min = %g\tx_max = %g\ty_min = %g\ty_max = %g\n",
+		GMT_Report(API, GMT_MSG_INFORMATION, "\nNSWING: \n\n");
+		GMT_Report(API, GMT_MSG_INFORMATION, "Layer 0  time step = %g\tx_min = %g\tx_max = %g\ty_min = %g\ty_max = %g\n",
 		          dt, hdr_b.x_min, hdr_b.x_max, hdr_b.y_min, hdr_b.y_max);
 		if (do_nestum) {
 			for (k = 1; k <= num_of_nestGrids; k++) {
-				fprintf(stderr, "Layer %d x_min = %g\tx_max = %g\ty_min = %g\ty_max = %g\n",
+				GMT_Report(API, GMT_MSG_INFORMATION, "Layer %d x_min = %g\tx_max = %g\ty_min = %g\ty_max = %g\n",
 				k, nest.LLx[k], nest.LRx[k], nest.LLy[k], nest.URy[k]);
-				fprintf(stderr, "Layer %d inserting index (one based) LL: (row,col) = %d\t%d\t\tUR: (row,col) = %d\t%d\n",
+				GMT_Report(API, GMT_MSG_INFORMATION, "Layer %d inserting index (one based) LL: (row,col) = %d\t%d\t\tUR: (row,col) = %d\t%d\n",
 				k, nest.LLrow[k]+2, nest.LLcol[k]+2, nest.URrow[k], nest.URcol[k]);
-				fprintf(stderr, "\tTime step ratio to parent grid = %d\n", (int)(nest.dt[k-1] / nest.dt[k]));
+				GMT_Report(API, GMT_MSG_INFORMATION, "\tTime step ratio to parent grid = %d\n", (int)(nest.dt[k-1] / nest.dt[k]));
 				if (k > 1)
-					fprintf(stderr, "\t\tdt(parent) = %g\tdt(doughter) = %g\n", nest.dt[k-1], nest.dt[k]);
+					GMT_Report(API, GMT_MSG_INFORMATION, "\t\tdt(parent) = %g\tdt(doughter) = %g\n", nest.dt[k-1], nest.dt[k]);
 			}
 		}
-		fprintf(stderr, "dtCFL = %.4f\tCourant number (sqrt(g*h)*dt / max(dx,dy)) = %g\n", dtCFL, 1/dtCFL * dt);
-		if (nest.do_long_beach) fprintf(stderr, "Output the 'Dry beach' mask.\n");
-		if (nest.do_short_beach) fprintf(stderr, "Output the 'Innundated beach' mask.\n");
-		if (water_depth)    fprintf(stderr, "Output wave height plus water thickness on land.\n");
-		if (out_momentum)   fprintf(stderr, "Output momentum (V * D).\n");
-		if (time_jump)      fprintf(stderr, "Hold on %.3f seconds before starting to save results.\n", time_jump);
+		GMT_Report(API, GMT_MSG_INFORMATION, "dtCFL = %.4f\tCourant number (sqrt(g*h)*dt / max(dx,dy)) = %g\n", dtCFL, 1/dtCFL * dt);
+		if (nest.do_long_beach) GMT_Report(API, GMT_MSG_INFORMATION, "Output the 'Dry beach' mask.\n");
+		if (nest.do_short_beach) GMT_Report(API, GMT_MSG_INFORMATION, "Output the 'Innundated beach' mask.\n");
+		if (water_depth)    GMT_Report(API, GMT_MSG_INFORMATION, "Output wave height plus water thickness on land.\n");
+		if (out_momentum)   GMT_Report(API, GMT_MSG_INFORMATION, "Output momentum (V * D).\n");
+		if (time_jump)      GMT_Report(API, GMT_MSG_INFORMATION, "Hold on %.3f seconds before starting to save results.\n", time_jump);
 		if (nest.run_jump_time)
-			fprintf(stderr, "Holding on %.3f seconds before start running the nested grids.\n", nest.run_jump_time);
+			GMT_Report(API, GMT_MSG_INFORMATION, "Holding on %.3f seconds before start running the nested grids.\n", nest.run_jump_time);
 		if (do_maxs) {
 			if (max_energy)
-				fprintf(stderr, "Output maximum Energy with a decimation of %d\n", decimate_max);
+				GMT_Report(API, GMT_MSG_INFORMATION, "Output maximum Energy with a decimation of %d\n", decimate_max);
 			if (max_power)
-				fprintf(stderr, "Output maximum Power with a decimation of %d\n", decimate_max);
+				GMT_Report(API, GMT_MSG_INFORMATION, "Output maximum Power with a decimation of %d\n", decimate_max);
 		}
 		if (nest.do_linear)
-			fprintf(stderr, "Using Linear approximation\n");
+			GMT_Report(API, GMT_MSG_INFORMATION, "Using Linear approximation\n");
 		if (do_tracers)
-			fprintf(stderr, "Computing tracers from file %s \n", tracers_infile);
+			GMT_Report(API, GMT_MSG_INFORMATION, "Computing tracers from file %s \n", tracers_infile);
 		if (do_Kaba)
-			fprintf(stderr, "Computing a grid of prisms with size %d (rows) x %d (cols)\n", KbGridRows, KbGridCols);
+			GMT_Report(API, GMT_MSG_INFORMATION, "Computing a grid of prisms with size %d (rows) x %d (cols)\n", KbGridRows, KbGridCols);
 		if (EPS4 != EPS4_)
-			fprintf(stderr, "Using a modified EPS4 const of %g\n", EPS4);
+			GMT_Report(API, GMT_MSG_INFORMATION, "Using a modified EPS4 const of %g\n", EPS4);
 #ifdef PARALLEL
-		fprintf(stderr, "\nUsing %d cores\n", nest.n_threads);
+		GMT_Report(API, GMT_MSG_INFORMATION, "\nUsing %d cores\n", nest.n_threads);
 #endif
 #ifdef LIMIT_DISCHARGE
-		fprintf(stderr, "\nUsing DISCHARGE limit to minimize sources of instability\n");
+		GMT_Report(API, GMT_MSG_INFORMATION, "\nUsing DISCHARGE limit to minimize sources of instability\n");
 #endif
-		fprintf(stderr, "\n");
+		GMT_Report(API, GMT_MSG_INFORMATION, "\n");
 	}
 	/* --------------------------------------------------------------------------------------- */
 
@@ -1857,7 +1857,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			prc = (double)iprc / 100.;
 			iprc++;
 			prc = (double)(k+1) / (double)n_of_cycles;
-			fprintf(stderr, "\t%d %%\r", iprc);
+			GMT_Report(API, GMT_MSG_INFORMATION, "\t%d %%\r", iprc);
 		}
 
 		/* ------------------------------------------------------------------------------------ */
@@ -1871,7 +1871,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		if (bnc_file) {
 			/* When the next IF is true it means the bnc file ended to be consumed, so following
 			   iterations will use the OPENB() function */
-			if (interp_bnc(&nest, time_h)) bnc_file = NULL;
+			if (interp_bnc(API, &nest, time_h)) bnc_file = NULL;
 			wave_maker(&nest);   /* Boundary condition was already set (after reading bnc_file) */
 		}
 		else if (k)
@@ -1880,7 +1880,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		/* ------------------------------------------------------------------------------------ */
 		/* If Nested grids we have to do the nesting work */
 		/* ------------------------------------------------------------------------------------ */
-		if (do_nestum) nestify(&nest, num_of_nestGrids, 1, isGeog);
+		if (do_nestum) nestify(API, &nest, num_of_nestGrids, 1, isGeog);
 
 		/* ------------------------------------------------------------------------------------ */
 		/* momentum conservation */
@@ -2137,13 +2137,13 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					first_anuga_time = false;
 				}
 				time_for_anuga = time_h - time0;	/* I think ANUGA wants time starting at zero */
-				err_trap(nc_put_vara_double (ncid, ids[6], &start0, &count0, &time_for_anuga));
+				err_trap(API, nc_put_vara_double (ncid, ids[6], &start0, &count0, &time_for_anuga));
 
-				write_anuga_slice(&nest, ncid, ids[7], i_start, j_start, i_end, j_end, tmp_slice, start1_A, count1_A,
+				write_anuga_slice(API, &nest, ncid, ids[7], i_start, j_start, i_end, j_end, tmp_slice, start1_A, count1_A,
 				                  stage_range, 1, with_land, writeLevel);
-				write_anuga_slice(&nest, ncid, ids[9], i_start, j_start, i_end, j_end, tmp_slice, start1_A, count1_A,
+				write_anuga_slice(API, &nest, ncid, ids[9], i_start, j_start, i_end, j_end, tmp_slice, start1_A, count1_A,
 				                  xmom_range, 2, with_land, writeLevel);
-				write_anuga_slice(&nest, ncid, ids[11], i_start, j_start, i_end, j_end, tmp_slice, start1_A, count1_A,
+				write_anuga_slice(API, &nest, ncid, ids[11], i_start, j_start, i_end, j_end, tmp_slice, start1_A, count1_A,
 				                  ymom_range, 3, with_land, writeLevel);
 
 				start1_A[0]++;		/* Increment for the next slice */
@@ -2151,18 +2151,18 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 			if (out_most) {
 				/* Here we'll use the start0 computed above */
-				err_trap(nc_put_vara_double(ncid_most[0], ids_ha[4], &start0, &count0, &time_h));
-				err_trap(nc_put_vara_double(ncid_most[1], ids_ua[4], &start0, &count0, &time_h));
-				err_trap(nc_put_vara_double(ncid_most[2], ids_va[4], &start0, &count0, &time_h));
+				err_trap(API, nc_put_vara_double(ncid_most[0], ids_ha[4], &start0, &count0, &time_h));
+				err_trap(API, nc_put_vara_double(ncid_most[1], ids_ua[4], &start0, &count0, &time_h));
+				err_trap(API, nc_put_vara_double(ncid_most[2], ids_va[4], &start0, &count0, &time_h));
 
-				write_most_slice(&nest, ncid_most, ids_most, i_start, j_start, i_end, j_end,
+				write_most_slice(API, &nest, ncid_most, ids_most, i_start, j_start, i_end, j_end,
 				                 tmp_slice, start1_M, count1_M, actual_range, true, writeLevel);
 				start1_M[0]++;		/* Increment for the next slice */
 			}
 			else if (out_3D) {
 				/* Here we'll use the start0 computed above */
-				err_trap(nc_put_vara_double(ncid_3D[0], ids_z[2], &start0, &count0, &time_h));
-				write_most_slice(&nest, ncid_3D, ids_3D, i_start, j_start, i_end, j_end,
+				err_trap(API, nc_put_vara_double(ncid_3D[0], ids_z[2], &start0, &count0, &time_h));
+				write_most_slice(API, &nest, ncid_3D, ids_3D, i_start, j_start, i_end, j_end,
 				                 work, start1_M, count1_M, actual_range, false, writeLevel);
 				start1_M[0]++;		/* Increment for the next slice */
 			}
@@ -2175,23 +2175,23 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 	/* ------------------------------- END MAIN LOOP --------------------------------------- */
 
 	if (out_sww) {          /* Uppdate range values and close SWW file */
-		err_trap(nc_put_var_float(ncid, ids[8], stage_range));
-		err_trap(nc_put_var_float(ncid, ids[10], xmom_range));
-		err_trap(nc_put_var_float(ncid, ids[12], ymom_range));
-		err_trap(nc_close (ncid)); 
+		err_trap(API, nc_put_var_float(ncid, ids[8], stage_range));
+		err_trap(API, nc_put_var_float(ncid, ids[10], xmom_range));
+		err_trap(API, nc_put_var_float(ncid, ids[12], ymom_range));
+		err_trap(API, nc_close (ncid)); 
 	}
 
 	if (out_most) {         /* Close MOST files */
-		err_trap(nc_close(ncid_most[0]));
-		err_trap(nc_close(ncid_most[1]));
-		err_trap(nc_close(ncid_most[2]));
+		err_trap(API, nc_close(ncid_most[0]));
+		err_trap(API, nc_close(ncid_most[1]));
+		err_trap(API, nc_close(ncid_most[2]));
 	}
 	else if (out_3D) {      /* Uppdate range values and close 3D file */
-		err_trap(nc_put_att_double(ncid_3D[0], ids_z[3], "actual_range", NC_DOUBLE, 2U, actual_range));
+		err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[3], "actual_range", NC_DOUBLE, 2U, actual_range));
 		if (out_velocity_x)
-			err_trap(nc_put_att_double(ncid_3D[0], ids_z[5], "actual_range", NC_DOUBLE, 2U, &actual_range[2]));
+			err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[5], "actual_range", NC_DOUBLE, 2U, &actual_range[2]));
 		if (out_velocity_y)
-			err_trap(nc_put_att_double(ncid_3D[0], ids_z[6], "actual_range", NC_DOUBLE, 2U, &actual_range[4]));
+			err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[6], "actual_range", NC_DOUBLE, 2U, &actual_range[4]));
 
 		/* It's ugly to have this here but I have no means to tell write_most_slice() when it's the last call */
 		if (nest.do_long_beach || nest.do_short_beach) {	/* Write the mask(s) */
@@ -2200,25 +2200,25 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			count_b[0] = nest.hdr[writeLevel].ny;	count_b[1] = nest.hdr[writeLevel].nx;
 			/* Allocate memory for the mask that were stored in floats */
 			if ((pchar = (unsigned char *) calloc((size_t)nest.hdr[writeLevel].nm, sizeof(unsigned char)) ) == NULL)
-				{no_sys_mem("(ShortBeach)", nest.hdr[writeLevel].nm); Return(-1);}
+				{no_sys_mem(API, "(ShortBeach)", nest.hdr[writeLevel].nm); Return(-1);}
 			if (nest.do_long_beach) {
 				float act_range[2] = {0, 0};
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) pchar[ij] = (unsigned char)nest.long_beach[writeLevel][ij];
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) if (pchar[ij] == 1) {act_range[1] = 1; break;}
-				err_trap(nc_put_att_float (ncid_3D[0], ids_z[7], "actual_range", NC_FLOAT, 2U, act_range));
-				err_trap(nc_put_vara_ubyte(ncid_3D[0], ids_z[7], start_b, count_b, pchar));		/* Write the mask */
+				err_trap(API, nc_put_att_float (ncid_3D[0], ids_z[7], "actual_range", NC_FLOAT, 2U, act_range));
+				err_trap(API, nc_put_vara_ubyte(ncid_3D[0], ids_z[7], start_b, count_b, pchar));		/* Write the mask */
 			}
 			if (nest.do_short_beach) {
 				float act_range[2] = {0, 0};
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) pchar[ij] = (unsigned char)nest.short_beach[writeLevel][ij];
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) if (pchar[ij] == 1) {act_range[1] = 1; break;}
-				err_trap(nc_put_att_float (ncid_3D[0], ids_z[8], "actual_range", NC_FLOAT, 2U, act_range));
-				err_trap(nc_put_vara_ubyte(ncid_3D[0], ids_z[8], start_b, count_b, pchar));		/* Write the mask */
+				err_trap(API, nc_put_att_float (ncid_3D[0], ids_z[8], "actual_range", NC_FLOAT, 2U, act_range));
+				err_trap(API, nc_put_vara_ubyte(ncid_3D[0], ids_z[8], start_b, count_b, pchar));		/* Write the mask */
 			}
 			if (pchar != NULL) free(pchar);
 		}
 
-		err_trap(nc_close(ncid_3D[0])); 
+		err_trap(API, nc_close(ncid_3D[0])); 
 	}
 
 	if (out_sww || out_most) free ((void *)tmp_slice);
@@ -2237,7 +2237,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 			if (cntKabas == 0) {    		/* First call. Open nc file and save first slice */
 				count_Mar[1] = count_time_maregs_timeout * n_mareg;	/* Was not yet initialized */
-				ncid_Mar = write_greens_nc(&nest, hcum, maregs_array_t, start_Mar, count_Mar,
+				ncid_Mar = write_greens_nc(API, &nest, hcum, maregs_array_t, start_Mar, count_Mar,
 				                           maregs_timeout, lcum_p, mareg_names, history, ids_Mar,
 				                           n_mareg, count_time_maregs_timeout, writeLevel);
 				sprintf(txt, "%g/%g/%g/%g", kaba_xmin, kaba_xmax, kaba_ymin, kaba_ymax);	/* Region string */
@@ -2245,14 +2245,14 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			}
 			else {
 				start_Mar[0]++;         /* Increment for the next slice */
-				err_trap(nc_put_vara_float(ncid_Mar, ids_Mar[4], start_Mar, count_Mar, maregs_array_t));
+				err_trap(API, nc_put_vara_float(ncid_Mar, ids_Mar[4], start_Mar, count_Mar, maregs_array_t));
 			}
 			cntKabas++;
 			col = cntKabas % KbGridCols;		row = cntKabas / KbGridCols;
 			x1 = kaba_xmin + col * dxKb;		x2 = kaba_xmax + col * dxKb;
 			y1 = kaba_ymin + row * dyKb;		y2 = kaba_ymax + row * dyKb;
 			strt = (size_t)(cntKabas - 1);
-			//err_trap(nc_put_vara_int(ncid_Mar, ids_Mar[2], &strt, &count0, &cntKabas));	/* Update unlimited var */
+			//err_trap(API, nc_put_vara_int(ncid_Mar, ids_Mar[2], &strt, &count0, &cntKabas));	/* Update unlimited var */
 
 			if (cntKabas < nKabas) {	/* While not all nodes in KabaGrid GOTO ... */
 				unsigned int nm, lev;
@@ -2271,18 +2271,18 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					memset(nest.htotal_d[lev], 0, (size_t)(nm * sizeof(double)));
 				}
 				/* ------------------------------------------------------------------------------- */
-				fprintf(stderr, "Computing prism %d out of %d (row = %zd\tcol = %zd)\t%s\n",
+				GMT_Report(API, GMT_MSG_INFORMATION, "Computing prism %d out of %d (row = %zd\tcol = %zd)\t%s\n",
 				        cntKabas+1, KbGridRows * KbGridCols, row+1, col+1, txt);
 				goto LoopKabas;			/* A LOOP HERE */
 			}
 			BB[1] = kaba_xmin + KbGridCols*dxKb;			BB[3] = kaba_ymin + KbGridRows*dyKb;
 			BB[4] = dxKb;           BB[5] = dyKb;
 			BB[6] = KbGridRows;     BB[7] = KbGridCols;
-			err_trap(nc_put_att_double(ncid_Mar,  ids_Mar[4], "BB_inc_RC", NC_DOUBLE, 8U, BB));
-			err_trap(nc_close(ncid_Mar)); 
+			err_trap(API, nc_put_att_double(ncid_Mar,  ids_Mar[4], "BB_inc_RC", NC_DOUBLE, 8U, BB));
+			err_trap(API, nc_close(ncid_Mar)); 
 		}
 		else
-			write_maregs_nc(&nest, hcum, maregs_array, maregs_timeout, lcum_p, mareg_names,
+			write_maregs_nc(API, &nest, hcum, maregs_array, maregs_timeout, lcum_p, mareg_names,
 			                history, n_mareg, count_time_maregs_timeout, writeLevel);
 
 		free(maregs_array);
@@ -2305,7 +2305,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		}
 	}
 
-	fprintf(stderr, "\t100 %%\tCPU secs/ticks = %.3f\n", (double)(clock() - tic));
+	GMT_Report(API, GMT_MSG_INFORMATION, "\t100 %%\tCPU secs/ticks = %.3f\n", (double)(clock() - tic));
 
 	if (cumpt) {
 		fclose (fp);
@@ -2378,7 +2378,7 @@ void sanitize_nestContainer(struct nestContainer *nest) {
 }
 
 /* -------------------------------------------------------------------------- */
-int check_paternity(struct nestContainer *nest) {
+int check_paternity(void *API, struct nestContainer *nest) {
 	/* Check if descendent grid with qualifies as nested grid with respect to grid HDR_PARENT
 	   WARNING: everything here assumes headers are in GRID registration.
 	*/
@@ -2390,26 +2390,26 @@ int check_paternity(struct nestContainer *nest) {
 		/* Check nesting at LowerLeft corner */
 		if (check_binning(nest->hdr[k-1].x_min, nest->hdr[k].x_min, nest->hdr[k-1].x_inc,
 		                  nest->hdr[k].x_inc, nest->hdr[k-1].x_inc / 4, &suggest)) {
-			fprintf(stderr, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
+			GMT_Report(API, GMT_MSG_ERROR, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
 				"X_MIN should be (in grid registration):\n\t%f\n", suggest);
 			error++;
 		}
 		if (check_binning(nest->hdr[k-1].y_min, nest->hdr[k].y_min, nest->hdr[k-1].y_inc,
 		                  nest->hdr[k].y_inc, nest->hdr[k-1].y_inc / 4, &suggest)) {
-			fprintf(stderr, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
+			GMT_Report(API, GMT_MSG_ERROR, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
 				"Y_MIN should be (in grid registration):\n\t%f\n", suggest);
 			error++;
 		}
 		/* Check nesting at UpperRight corner */
 		if (check_binning(nest->hdr[k-1].x_min, nest->hdr[k].x_max, nest->hdr[k-1].x_inc,
 		                  -nest->hdr[k].x_inc, nest->hdr[k-1].x_inc / 4, &suggest)) {
-			fprintf(stderr, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
+			GMT_Report(API, GMT_MSG_ERROR, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
 				"X_MAX should be (in grid registration):\n\t%f\n", suggest);
 			error++;
 		}
 		if (check_binning(nest->hdr[k-1].y_min, nest->hdr[k].y_max, nest->hdr[k-1].y_inc,
 		                  -nest->hdr[k].y_inc, nest->hdr[k-1].y_inc / 4, &suggest)) {
-			fprintf(stderr, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
+			GMT_Report(API, GMT_MSG_ERROR, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
 				"Y_MAX should be (in grid registration):\n\t%f\n", suggest);
 			error++;
 		}
@@ -2439,7 +2439,7 @@ int check_binning(double x0P, double x0D, double dxP, double dxD, double tol, do
 }
 
 /* -------------------------------------------------------------------------- */
-int initialize_nestum(struct nestContainer *nest, int isGeog, int lev) {
+int initialize_nestum(void *API, struct nestContainer *nest, int isGeog, int lev) {
 	/* Initialize the nest struct. */
 
 	int row, col, i, nSizeIncX, nSizeIncY, n;
@@ -2452,28 +2452,28 @@ int initialize_nestum(struct nestContainer *nest, int isGeog, int lev) {
 		/* -------------------- Check that this grid is nestifiable -------------------- */
 		nSizeIncX = irint(hdr.x_inc / nest->hdr[lev].x_inc);
 		if ((hdr.x_inc / nest->hdr[lev].x_inc) - nSizeIncX > 1e-5) {
-			fprintf(stderr, "NSWING ERROR: X increments of inner (%d) and outer (%d) grids are incompatible.\n", lev, lev-1);
-			fprintf(stderr, "\tInteger ratio of parent (%d) to doughter (%d) X increments = %d\n", lev, lev-1, nSizeIncX);
-			fprintf(stderr, "\tActual  ratio as a floating point = %f\n\tDifference between the two cannot exceed 1e-5\n",
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING ERROR: X increments of inner (%d) and outer (%d) grids are incompatible.\n", lev, lev-1);
+			GMT_Report(API, GMT_MSG_ERROR, "\tInteger ratio of parent (%d) to doughter (%d) X increments = %d\n", lev, lev-1, nSizeIncX);
+			GMT_Report(API, GMT_MSG_ERROR, "\tActual  ratio as a floating point = %f\n\tDifference between the two cannot exceed 1e-5\n",
 			          hdr.x_inc / nest->hdr[lev].x_inc);
 			return(-1);
 		}
 
 		nSizeIncY = irint(hdr.y_inc / nest->hdr[lev].y_inc);
 		if ((hdr.y_inc / nest->hdr[lev].y_inc) - nSizeIncY > 1e-5) {
-			fprintf(stderr, "NSWING ERROR: Y increments of inner (%d) and outer (%d) grids are incompatible.\n", lev, lev-1);
-			fprintf(stderr, "\tInteger ratio of parent (%d) to doughter (%d) Y increments = %d\n", lev, lev-1, nSizeIncY);
-			fprintf(stderr, "\tActual  ratio as a floating point = %f\n\tDifference between the two cannot exceed 1e-5\n",
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING ERROR: Y increments of inner (%d) and outer (%d) grids are incompatible.\n", lev, lev-1);
+			GMT_Report(API, GMT_MSG_ERROR, "\tInteger ratio of parent (%d) to doughter (%d) Y increments = %d\n", lev, lev-1, nSizeIncY);
+			GMT_Report(API, GMT_MSG_ERROR, "\tActual  ratio as a floating point = %f\n\tDifference between the two cannot exceed 1e-5\n",
 			          hdr.y_inc / nest->hdr[lev].y_inc);
 			return(-1);
 		}
 
 		if (nSizeIncX != nSizeIncY) {
-			fprintf(stderr, "NSWING ERROR: X/Y increments of inner (%d) and outer (%d) grid do not divide equaly.\n", lev, lev-1);
-			fprintf(stderr, "\tinc_x(%d) = %f\t inc_x(%d) = %f.\n", lev-1, hdr.x_inc, lev, nest->hdr[lev].x_inc);
-			fprintf(stderr, "\tinc_y(%d) = %f\t inc_y(%d) = %f.\n", lev-1, hdr.y_inc, lev, nest->hdr[lev].y_inc);
-			fprintf(stderr, "\tRatio of X increments (round(inc_x(%d) / inc_x(%d)) = %d.\n", lev-1, lev, nSizeIncX);
-			fprintf(stderr, "\tRatio of Y increments (round(inc_y(%d) / inc_y(%d)) = %d.\n", lev-1, lev, nSizeIncY);
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING ERROR: X/Y increments of inner (%d) and outer (%d) grid do not divide equaly.\n", lev, lev-1);
+			GMT_Report(API, GMT_MSG_ERROR, "\tinc_x(%d) = %f\t inc_x(%d) = %f.\n", lev-1, hdr.x_inc, lev, nest->hdr[lev].x_inc);
+			GMT_Report(API, GMT_MSG_ERROR, "\tinc_y(%d) = %f\t inc_y(%d) = %f.\n", lev-1, hdr.y_inc, lev, nest->hdr[lev].y_inc);
+			GMT_Report(API, GMT_MSG_ERROR, "\tRatio of X increments (round(inc_x(%d) / inc_x(%d)) = %d.\n", lev-1, lev, nSizeIncX);
+			GMT_Report(API, GMT_MSG_ERROR, "\tRatio of Y increments (round(inc_y(%d) / inc_y(%d)) = %d.\n", lev-1, lev, nSizeIncY);
 			return(-1);
 		}
 
@@ -2490,65 +2490,65 @@ int initialize_nestum(struct nestContainer *nest, int isGeog, int lev) {
 
 	/* Allocate the working arrays */
 	if (nest->bat[lev] == NULL && (nest->bat[lev] = (double *)  calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(bat)", nm); return(-1);}
+		{no_sys_mem(API, "(bat)", nm); return(-1);}
 
 	if ((nest->etaa[lev] = (double *)     calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(etaa)", nm); return(-1);}
+		{no_sys_mem(API, "(etaa)", nm); return(-1);}
 	if ((nest->etad[lev] = (double *)     calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(etad)", nm); return(-1);}
+		{no_sys_mem(API, "(etad)", nm); return(-1);}
 	if ((nest->fluxm_a[lev] = (double *)  calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(fluxm_a)", nm); return(-1);}
+		{no_sys_mem(API, "(fluxm_a)", nm); return(-1);}
 	if ((nest->fluxm_d[lev] = (double *)  calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(fluxm_d)", nm); return(-1);}
+		{no_sys_mem(API, "(fluxm_d)", nm); return(-1);}
 	if ((nest->fluxn_a[lev] = (double *)  calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(fluxn_a)", nm); return(-1);}
+		{no_sys_mem(API, "(fluxn_a)", nm); return(-1);}
 	if ((nest->fluxn_d[lev] = (double *)  calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(fluxn_d)", nm); return(-1);}
+		{no_sys_mem(API, "(fluxn_d)", nm); return(-1);}
 	if ((nest->htotal_a[lev] = (double *) calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(htotal_a)", nm); return(-1);}
+		{no_sys_mem(API, "(htotal_a)", nm); return(-1);}
 	if ((nest->htotal_d[lev] = (double *) calloc ((size_t)nm, sizeof(double)) ) == NULL)
-		{no_sys_mem("(htotal_d)", nm); return(-1);}
+		{no_sys_mem(API, "(htotal_d)", nm); return(-1);}
 
 	if (nest->do_long_beach && (lev == nest->writeLevel)) {
 		if ((nest->long_beach[lev] = (short int *) calloc ((size_t)nm, sizeof(short int)) ) == NULL)
-			{no_sys_mem("(long_beach)", nm); return(-1);}
+			{no_sys_mem(API, "(long_beach)", nm); return(-1);}
 	}
 	if (nest->do_short_beach && (lev == nest->writeLevel)) {
 		if ((nest->short_beach[lev] = (short int *) calloc ((size_t)nm, sizeof(short int)) ) == NULL)
-			{no_sys_mem("(short_beach)", nm); return(-1);}
+			{no_sys_mem(API, "(short_beach)", nm); return(-1);}
 	}
 
 	if (nest->out_velocity_x && (lev == nest->writeLevel)) {
 		if ((nest->vex[lev] = (double *) calloc ((size_t)nm, sizeof(double)) ) == NULL)
-			{no_sys_mem("(vex)", nm); return(-1);}
+			{no_sys_mem(API, "(vex)", nm); return(-1);}
 	}
 	if (nest->out_velocity_y && (lev == nest->writeLevel)) {
 		if ((nest->vey[lev] = (double *) calloc ((size_t)nm, sizeof(double)) ) == NULL)
-			{no_sys_mem("(vey)", nm); return(-1);}
+			{no_sys_mem(API, "(vey)", nm); return(-1);}
 	}
 
 	n = nest->hdr[lev].ny;
 	if (isGeog == 1) {		/* case spherical coordinates  */
 		if ((nest->r0[lev] = (double *)  calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-			{no_sys_mem("(r0)", n); return(-1);}
+			{no_sys_mem(API, "(r0)", n); return(-1);}
 		if ((nest->r1m[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-			{no_sys_mem("(r1m)", n); return(-1);}
+			{no_sys_mem(API, "(r1m)", n); return(-1);}
 		if ((nest->r1n[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-			{no_sys_mem("(r1n)", n); return(-1);}
+			{no_sys_mem(API, "(r1n)", n); return(-1);}
 		if ((nest->r2m[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-			{no_sys_mem("(r2m)", n); return(-1);}
+			{no_sys_mem(API, "(r2m)", n); return(-1);}
 		if ((nest->r2n[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-			{no_sys_mem("(r2n)", n); return(-1);}
+			{no_sys_mem(API, "(r2n)", n); return(-1);}
 		if ((nest->r3m[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-			{no_sys_mem("(r3m)", n); return(-1);}
+			{no_sys_mem(API, "(r3m)", n); return(-1);}
 		if ((nest->r3n[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-			{no_sys_mem("(r3n)", n); return(-1);}
+			{no_sys_mem(API, "(r3n)", n); return(-1);}
 	}
 	/* This may be used also by the Cartesian case */
 	if ((nest->r4m[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-		{no_sys_mem("(r4m)", n); return(-1);}
+		{no_sys_mem(API, "(r4m)", n); return(-1);}
 	if ((nest->r4n[lev] = (double *) calloc ((size_t)n,	sizeof(double)) ) == NULL) 
-		{no_sys_mem("(r4n)", n); return(-1);}
+		{no_sys_mem(API, "(r4n)", n); return(-1);}
 
 	nest->bnc_pos_x = nest->bnc_pos_y = nest->bnc_var_t = NULL;
 	nest->bnc_var_z = NULL;
@@ -2717,13 +2717,13 @@ int count_col(char *line) {
 }
 
 /* -------------------------------------------------------------------- */
-int count_n_maregs(char *file) {
+int count_n_maregs(void *API, char *file) {
 	int     i = 0;
 	char    line[256];
 	FILE   *fp;
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf(stderr, "NSWING: Unable to open file %s - exiting\n", file);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
 	while (fgets (line, 256, fp) != NULL) {
@@ -2735,7 +2735,7 @@ int count_n_maregs(char *file) {
 }
 
 /* -------------------------------------------------------------------- */
-int read_maregs(struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]) {
+int read_maregs(void *API, struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]) {
 	/* Read maregraph positions and convert them to vector linear indices */
 	int     i = 0, k = 0, ix, jy, n;
 	char    line[256], txt[64];
@@ -2743,7 +2743,7 @@ int read_maregs(struct grd_header hdr, char *file, unsigned int *lcum_p, char *n
 	FILE   *fp;
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf(stderr, "NSWING: Unable to open file %s - exiting\n", file);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
 
@@ -2755,7 +2755,7 @@ int read_maregs(struct grd_header hdr, char *file, unsigned int *lcum_p, char *n
 			if (n == 1) {				/* Try with commas */
 				n = sscanf (line, "%lf %lf %s", &x, &y, txt);
 				if (n !=2 && n != 3) {
-					fprintf(stderr, "NSWING: Error reading maregraph file at line %d Expected 2 or 3 values but got %d\n", k, n);
+					GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error reading maregraph file at line %d Expected 2 or 3 values but got %d\n", k, n);
 					continue;
 				}
 			}
@@ -2778,7 +2778,7 @@ int read_maregs(struct grd_header hdr, char *file, unsigned int *lcum_p, char *n
 }
 
 /* -------------------------------------------------------------------- */
-int read_tracers(struct grd_header hdr, char *file, struct tracers *oranges) {
+int read_tracers(void *API, struct grd_header hdr, char *file, struct tracers *oranges) {
 	/* Read tracers positions */
 	int     i = 0, k = 0, ix, jy, n;
 	char    line[256];
@@ -2786,7 +2786,7 @@ int read_tracers(struct grd_header hdr, char *file, struct tracers *oranges) {
 	FILE   *fp;
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		fprintf(stderr, "NSWING: Unable to open file %s - exiting\n", file);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
 
@@ -2796,7 +2796,7 @@ int read_tracers(struct grd_header hdr, char *file, struct tracers *oranges) {
 		if ((n = sscanf (line, "%lf %lf", &x, &y)) != 2) {
 			if (n == 1) {				/* Try with commas */
 				if ((n = sscanf(line, "%lf,%lf", &x, &y)) != 2) {
-					fprintf(stderr, "NSWING: Error reading maregraph file at line %d Expected 2 values but got %d\n", k, n);
+					GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error reading maregraph file at line %d Expected 2 values but got %d\n", k, n);
 					continue;
 				}
 			}
@@ -2813,7 +2813,7 @@ int read_tracers(struct grd_header hdr, char *file, struct tracers *oranges) {
 }
 
 /* -------------------------------------------------------------------- */
-int read_bnc_file(struct nestContainer *nest, char *file) {
+int read_bnc_file(void *API, struct nestContainer *nest, char *file) {
 	/* Read file with a boundary condition time series */
 	int	N, n, n_ts = 0, n_pts, n_vars, n_alloc = 2048;
 	bool	done_nPts = false, first_vars = true, foundB = false;
@@ -2821,7 +2821,7 @@ int read_bnc_file(struct nestContainer *nest, char *file) {
 	FILE	*fp;
 
 	if ((fp = fopen(file, "r")) == NULL) {
-		fprintf(stderr, "NSWING: Unable to open file %s - exiting\n", file);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
 
@@ -2849,8 +2849,8 @@ int read_bnc_file(struct nestContainer *nest, char *file) {
 	}
 	if (!foundB) {
 		nest->bnc_border[1] = true;	/* <<<<<<<<<<<<<<< TEMP ---------- */
-		fprintf(stderr, "\n\n\tATENCAO E PRECISO ESPECIFICAR A FRONTEIRA NO FICHE DA ONDA (ex: # B:S)\n");
-		fprintf(stderr, "\tDAQUI A ALGUM TEMPO NAO O FAZER DARA UM ERRO\n\n");
+		GMT_Report(API, GMT_MSG_ERROR, "\n\n\tATENCAO E PRECISO ESPECIFICAR A FRONTEIRA NO FICHE DA ONDA (ex: # B:S)\n");
+		GMT_Report(API, GMT_MSG_ERROR, "\tDAQUI A ALGUM TEMPO NAO O FAZER DARA UM ERRO\n\n");
 	}
 
 	while (fgets(line, 256, fp) != NULL) {
@@ -2859,7 +2859,7 @@ int read_bnc_file(struct nestContainer *nest, char *file) {
 			strcpy(buffer, line);
 			n_pts = count_col(buffer);	/* Count # of points along border */
 			if (n_pts % 2 || n_pts < 2) {
-				fprintf(stderr, "NSWING: %s Must have at least one pair of (x,y) points\n", file);
+				GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Must have at least one pair of (x,y) points\n", file);
 				return (-1);
 			}
 			strcpy(buffer, line);		/* Copy it again because buffer was 'consumed' in count_col() */
@@ -2884,7 +2884,7 @@ int read_bnc_file(struct nestContainer *nest, char *file) {
 		n_vars = count_col(buffer);	/* Count # of variables. */
 		if (n_vars == 0) continue;	/* Empty line */
 		if (n_vars < 2) {
-			fprintf(stderr, "NSWING: Variables on bnc file (%s) must be (t,z1,[z2,...]), but got only %d fields\n", file, n_vars);
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Variables on bnc file (%s) must be (t,z1,[z2,...]), but got only %d fields\n", file, n_vars);
 			return (-1);
 		}
 		if (first_vars) {
@@ -2902,7 +2902,7 @@ int read_bnc_file(struct nestContainer *nest, char *file) {
 			first_vars = false;
 		}
 		if (!first_vars && N != n_vars) {
-			fprintf(stderr, "NSWING: WARNING, expected %d variables but found %d Ignoring this entry\n", N, n_vars);
+			GMT_Report(API, GMT_MSG_WARNING, "NSWING: WARNING, expected %d variables but found %d Ignoring this entry\n", N, n_vars);
 			continue;
 		}
 		p = (char *)strtok_s(line, " \t\n\015\032", &ntoken);
@@ -2934,7 +2934,7 @@ int read_bnc_file(struct nestContainer *nest, char *file) {
 }
 
 /* -------------------------------------------------------------------- */
-int interp_bnc(struct nestContainer *nest, double t) {
+int interp_bnc(void *API, struct nestContainer *nest, double t) {
 	int i, n, side_len;
 	double s;
 
@@ -2963,18 +2963,18 @@ int interp_bnc(struct nestContainer *nest, double t) {
 	}
 	else { 		/* This case actually not yet implemented via the bnc file (-B option) */
 		if (side_len == nest->hdr[0].nx)
-			intp_lin(nest->bnc_pos_x, nest->bnc_var_zTmp, nest->bnc_pos_nPts, side_len,
+			intp_lin(API, nest->bnc_pos_x, nest->bnc_var_zTmp, nest->bnc_pos_nPts, side_len,
 			         nest->edge_row_P[0], nest->bnc_var_z_interp);
 		else
-			intp_lin(nest->bnc_pos_y, nest->bnc_var_zTmp, nest->bnc_pos_nPts, side_len,
+			intp_lin(API, nest->bnc_pos_y, nest->bnc_var_zTmp, nest->bnc_pos_nPts, side_len,
 			         nest->edge_row_P[0], nest->bnc_var_z_interp);
 	}
 	return false;
 }
 
 /* -------------------------------------------------------------------- */
-void no_sys_mem(char *where, unsigned int n) {
-		fprintf(stderr, "Fatal Error: %s could not allocate memory, n = %d\n", where, n);
+void no_sys_mem(void *API, char *where, unsigned int n) {
+		GMT_Report(API, GMT_MSG_ERROR, "Fatal Error: %s could not allocate memory, n = %d\n", where, n);
 }
 
 /* -------------------------------------------------------------------- */
@@ -3033,7 +3033,7 @@ double ddmmss_to_degree(char *text) {
 }
 
 /* -------------------------------------------------------------------- */
-int open_most_nc(struct nestContainer *nest, float *work, char *base, char *name_var, char hist[], int *ids,
+int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base, char *name_var, char hist[], int *ids,
 	unsigned int nx, unsigned int ny, double xMinOut, double yMinOut, int isMost, int lev) {
 	/* Open and initialize a generic 3D or a MOST netCDF file for writing.
 	   When generic 3D file also writes the bathymetry grid right away.
@@ -3068,98 +3068,98 @@ int open_most_nc(struct nestContainer *nest, float *work, char *base, char *name
 	}
 
 	if ((status = nc_create(basename, NC_NETCDF4, &ncid)) != NC_NOERR) {
-		fprintf(stderr, "NSWING: Unable to create file %s - exiting\n", basename);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to create file %s - exiting\n", basename);
 		return(-1);
 	}
 
 	if (nest->isGeog) {
 		/* ---- Define dimensions ------------ */
-		err_trap(nc_def_dim(ncid, "LON", (size_t) nx,   &dim0[0]));
-		err_trap(nc_def_dim(ncid, "LAT", (size_t) ny,   &dim0[1]));
-		err_trap(nc_def_dim(ncid, "time", NC_UNLIMITED, &dim0[2]));
+		err_trap(API, nc_def_dim(ncid, "LON", (size_t) nx,   &dim0[0]));
+		err_trap(API, nc_def_dim(ncid, "LAT", (size_t) ny,   &dim0[1]));
+		err_trap(API, nc_def_dim(ncid, "time", NC_UNLIMITED, &dim0[2]));
 
 		/* ---- Define variables ------------- */
 		dim3[0] = dim0[2];	dim3[1] = dim0[1];	dim3[2] = dim0[0];
-		err_trap(nc_def_var(ncid, "LON",       NC_DOUBLE,1, &dim0[0], &ids[0]));
-		err_trap(nc_def_var(ncid, "LAT",       NC_DOUBLE,1, &dim0[1], &ids[1]));
+		err_trap(API, nc_def_var(ncid, "LON",       NC_DOUBLE,1, &dim0[0], &ids[0]));
+		err_trap(API, nc_def_var(ncid, "LAT",       NC_DOUBLE,1, &dim0[1], &ids[1]));
 		if (isMost) {
-			err_trap(nc_def_var(ncid, "SLON",  NC_FLOAT, 0, &dim0[0], &ids[2]));
-			err_trap(nc_def_var(ncid, "SLAT",  NC_FLOAT, 0, &dim0[1], &ids[3]));
-			err_trap(nc_def_var(ncid, "time",  NC_DOUBLE,1, &dim0[2], &ids[4]));
-			err_trap(nc_def_var(ncid, name_var,NC_FLOAT, 3, dim3,     &ids[5]));
+			err_trap(API, nc_def_var(ncid, "SLON",  NC_FLOAT, 0, &dim0[0], &ids[2]));
+			err_trap(API, nc_def_var(ncid, "SLAT",  NC_FLOAT, 0, &dim0[1], &ids[3]));
+			err_trap(API, nc_def_var(ncid, "time",  NC_DOUBLE,1, &dim0[2], &ids[4]));
+			err_trap(API, nc_def_var(ncid, name_var,NC_FLOAT, 3, dim3,     &ids[5]));
 		}
 		else {
-			err_trap(nc_def_var(ncid, "time",   NC_DOUBLE,1, &dim0[2], &ids[2]));
-			err_trap(nc_def_var(ncid, name_var, NC_FLOAT, 3, dim3,     &ids[3]));
+			err_trap(API, nc_def_var(ncid, "time",   NC_DOUBLE,1, &dim0[2], &ids[2]));
+			err_trap(API, nc_def_var(ncid, name_var, NC_FLOAT, 3, dim3,     &ids[3]));
 			if (nest->out_momentum) {
-				err_trap(nc_def_var(ncid, "Mlon", NC_FLOAT,3, dim3,  &ids[5]));
-				err_trap(nc_def_var(ncid, "Mlat", NC_FLOAT,3, dim3,  &ids[6]));
+				err_trap(API, nc_def_var(ncid, "Mlon", NC_FLOAT,3, dim3,  &ids[5]));
+				err_trap(API, nc_def_var(ncid, "Mlat", NC_FLOAT,3, dim3,  &ids[6]));
 			}
 			if (nest->out_velocity_x)
-				err_trap(nc_def_var(ncid, "Vlon", NC_FLOAT,3, dim3,  &ids[5]));
+				err_trap(API, nc_def_var(ncid, "Vlon", NC_FLOAT,3, dim3,  &ids[5]));
 			if (nest->out_velocity_y)
-				err_trap(nc_def_var(ncid, "Vlat", NC_FLOAT,3, dim3,  &ids[6]));
+				err_trap(API, nc_def_var(ncid, "Vlat", NC_FLOAT,3, dim3,  &ids[6]));
 			dim3[0] = dim0[1];			dim3[1] = dim0[0];		/* Bathym array is rank 2 */
-			err_trap(nc_def_var(ncid, "bathymetry",NC_FLOAT,2, dim3,  &ids[4]));
+			err_trap(API, nc_def_var(ncid, "bathymetry",NC_FLOAT,2, dim3,  &ids[4]));
 		}
 	}
 	else {		/* Cartesian */
-		err_trap(nc_def_dim(ncid, "x",    (size_t)nx,   &dim0[0]));
-		err_trap(nc_def_dim(ncid, "y",    (size_t)ny,   &dim0[1]));
-		err_trap(nc_def_dim(ncid, "time", NC_UNLIMITED, &dim0[2]));
+		err_trap(API, nc_def_dim(ncid, "x",    (size_t)nx,   &dim0[0]));
+		err_trap(API, nc_def_dim(ncid, "y",    (size_t)ny,   &dim0[1]));
+		err_trap(API, nc_def_dim(ncid, "time", NC_UNLIMITED, &dim0[2]));
 
 		dim3[0] = dim0[2];	dim3[1] = dim0[1];   dim3[2] = dim0[0];
-		err_trap(nc_def_var(ncid, "x",         NC_DOUBLE,1, &dim0[0], &ids[0]));
-		err_trap(nc_def_var(ncid, "y",         NC_DOUBLE,1, &dim0[1], &ids[1]));
+		err_trap(API, nc_def_var(ncid, "x",         NC_DOUBLE,1, &dim0[0], &ids[0]));
+		err_trap(API, nc_def_var(ncid, "y",         NC_DOUBLE,1, &dim0[1], &ids[1]));
 		if (isMost) {
-			err_trap(nc_def_var(ncid, "SLON",  NC_FLOAT,0,  &dim0[0], &ids[2]));
-			err_trap(nc_def_var(ncid, "SLAT",  NC_FLOAT,0,  &dim0[1], &ids[3]));
-			err_trap(nc_def_var(ncid, "time",  NC_DOUBLE,1, &dim0[2], &ids[4]));
-			err_trap(nc_def_var(ncid, name_var,NC_FLOAT,3,  dim3,     &ids[5]));
+			err_trap(API, nc_def_var(ncid, "SLON",  NC_FLOAT,0,  &dim0[0], &ids[2]));
+			err_trap(API, nc_def_var(ncid, "SLAT",  NC_FLOAT,0,  &dim0[1], &ids[3]));
+			err_trap(API, nc_def_var(ncid, "time",  NC_DOUBLE,1, &dim0[2], &ids[4]));
+			err_trap(API, nc_def_var(ncid, name_var,NC_FLOAT,3,  dim3,     &ids[5]));
 		}
 		else {
-			err_trap(nc_def_var(ncid, "time",  NC_DOUBLE,1, &dim0[2], &ids[2]));
-			err_trap(nc_def_var(ncid, name_var,NC_FLOAT,3,  dim3,     &ids[3]));
+			err_trap(API, nc_def_var(ncid, "time",  NC_DOUBLE,1, &dim0[2], &ids[2]));
+			err_trap(API, nc_def_var(ncid, name_var,NC_FLOAT,3,  dim3,     &ids[3]));
 			if (nest->out_momentum) {
-				err_trap(nc_def_var(ncid, "Mx",NC_FLOAT,3, dim3,  &ids[5]));
-				err_trap(nc_def_var(ncid, "My",NC_FLOAT,3, dim3,  &ids[6]));
+				err_trap(API, nc_def_var(ncid, "Mx",NC_FLOAT,3, dim3,  &ids[5]));
+				err_trap(API, nc_def_var(ncid, "My",NC_FLOAT,3, dim3,  &ids[6]));
 			}
 			if (nest->out_velocity_x)
-				err_trap(nc_def_var(ncid, "Vx",NC_FLOAT,3, dim3,  &ids[5]));
+				err_trap(API, nc_def_var(ncid, "Vx",NC_FLOAT,3, dim3,  &ids[5]));
 			if (nest->out_velocity_y)
-				err_trap(nc_def_var(ncid, "Vy",NC_FLOAT,3, dim3,  &ids[6]));
+				err_trap(API, nc_def_var(ncid, "Vy",NC_FLOAT,3, dim3,  &ids[6]));
 			dim3[0] = dim0[1];			dim3[1] = dim0[0];		/* Bathym array is rank 2 */
-			err_trap(nc_def_var(ncid, "bathymetry",NC_FLOAT,2, dim3, &ids[4]));
+			err_trap(API, nc_def_var(ncid, "bathymetry",NC_FLOAT,2, dim3, &ids[4]));
 		}
 	}
 
 	if (!isMost) {
 		if (nest->do_long_beach)
-			err_trap(nc_def_var(ncid, "LongBeach",  NC_UBYTE, 2, dim3, &ids[7]));
+			err_trap(API, nc_def_var(ncid, "LongBeach",  NC_UBYTE, 2, dim3, &ids[7]));
 		if (nest->do_short_beach)
-			err_trap(nc_def_var(ncid, "ShortBeach", NC_UBYTE, 2, dim3, &ids[8]));
+			err_trap(API, nc_def_var(ncid, "ShortBeach", NC_UBYTE, 2, dim3, &ids[8]));
 	}
 
 	/* Set a deflation level of 5 (4 zero based) and shuffle for z variable */
 	id = (isMost) ? 5 : 3;
-	err_trap(nc_def_var_deflate(ncid, ids[id], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[id], 1, 1, 4));
 
 	/* ---- Variables Attributes --------- */
 	if (isMost) {
-		err_trap(nc_put_att_text (ncid, ids[0], "units", 12, "degrees_east"));
-		err_trap(nc_put_att_text (ncid, ids[0], "point_spacing", 4, "even"));
-		err_trap(nc_put_att_text (ncid, ids[1], "units", 13, "degrees_north"));
-		err_trap(nc_put_att_text (ncid, ids[1], "point_spacing", 4, "even"));
-		err_trap(nc_put_att_text (ncid, ids[2], "units", 12, "degrees_east"));
-		err_trap(nc_put_att_text (ncid, ids[2], "long_name", 16, "Source Longitude"));
-		err_trap(nc_put_att_text (ncid, ids[3], "units", 13, "degrees_north"));
-		err_trap(nc_put_att_text (ncid, ids[3], "long_name", 16, "Source Latitude"));
-		err_trap(nc_put_att_text (ncid, ids[4], "units", 7, "SECONDS"));
-		err_trap(nc_put_att_text (ncid, ids[5], "long_name", strlen(long_name), long_name));
-		err_trap(nc_put_att_text (ncid, ids[5], "units", strlen(units), units));
-		err_trap(nc_put_att_float(ncid, ids[5], "missing_value", NC_FLOAT, 1, &dummy));
-		err_trap(nc_put_att_float(ncid, ids[5], "_FillValue", NC_FLOAT, 1, &dummy));
-		err_trap(nc_put_att_text (ncid, ids[5], "history", 6, "Nikles"));
+		err_trap(API, nc_put_att_text (ncid, ids[0], "units", 12, "degrees_east"));
+		err_trap(API, nc_put_att_text (ncid, ids[0], "point_spacing", 4, "even"));
+		err_trap(API, nc_put_att_text (ncid, ids[1], "units", 13, "degrees_north"));
+		err_trap(API, nc_put_att_text (ncid, ids[1], "point_spacing", 4, "even"));
+		err_trap(API, nc_put_att_text (ncid, ids[2], "units", 12, "degrees_east"));
+		err_trap(API, nc_put_att_text (ncid, ids[2], "long_name", 16, "Source Longitude"));
+		err_trap(API, nc_put_att_text (ncid, ids[3], "units", 13, "degrees_north"));
+		err_trap(API, nc_put_att_text (ncid, ids[3], "long_name", 16, "Source Latitude"));
+		err_trap(API, nc_put_att_text (ncid, ids[4], "units", 7, "SECONDS"));
+		err_trap(API, nc_put_att_text (ncid, ids[5], "long_name", strlen(long_name), long_name));
+		err_trap(API, nc_put_att_text (ncid, ids[5], "units", strlen(units), units));
+		err_trap(API, nc_put_att_float(ncid, ids[5], "missing_value", NC_FLOAT, 1, &dummy));
+		err_trap(API, nc_put_att_float(ncid, ids[5], "_FillValue", NC_FLOAT, 1, &dummy));
+		err_trap(API, nc_put_att_text (ncid, ids[5], "history", 6, "Nikles"));
 	}
 	else {
 		size_t	start_b[2] = {0,0}, count_b[2];
@@ -3169,97 +3169,97 @@ int open_most_nc(struct nestContainer *nest, float *work, char *base, char *name
 		if (nan == 0) nan = (float)loc_nan.d;	/* Dirty hack. With the Intel compiler for example NAN returns 0*/
 
 		range[0] = xMinOut;		range[1] = xMinOut + (nx - 1) * nest->hdr[lev].x_inc;
-		err_trap(nc_put_att_double(ncid, ids[0], "actual_range", NC_DOUBLE, 2U, range));
+		err_trap(API, nc_put_att_double(ncid, ids[0], "actual_range", NC_DOUBLE, 2U, range));
 		range[0] = yMinOut;		range[1] = yMinOut + (ny - 1) * nest->hdr[lev].y_inc;
-		err_trap(nc_put_att_double(ncid, ids[1], "actual_range", NC_DOUBLE, 2U, range));
+		err_trap(API, nc_put_att_double(ncid, ids[1], "actual_range", NC_DOUBLE, 2U, range));
 		if (nest->isGeog) {
-			err_trap(nc_put_att_text(ncid, ids[0], "units", 12, "degrees_east"));
-			err_trap(nc_put_att_text(ncid, ids[1], "units", 13, "degrees_north"));
+			err_trap(API, nc_put_att_text(ncid, ids[0], "units", 12, "degrees_east"));
+			err_trap(API, nc_put_att_text(ncid, ids[1], "units", 13, "degrees_north"));
 		}
 		else {
-			err_trap(nc_put_att_text(ncid, ids[0], "units", 6, "meters"));
-			err_trap(nc_put_att_text(ncid, ids[1], "units", 6, "meters"));
+			err_trap(API, nc_put_att_text(ncid, ids[0], "units", 6, "meters"));
+			err_trap(API, nc_put_att_text(ncid, ids[1], "units", 6, "meters"));
 		}
-		err_trap(nc_put_att_text  (ncid, ids[2], "units", 7, "Seconds"));
-		err_trap(nc_put_att_text  (ncid, ids[3], "long_name", strlen(long_name), long_name));
-		err_trap(nc_put_att_text  (ncid, ids[3], "units", strlen(units), units));
-		err_trap(nc_put_att_float (ncid, ids[3], "missing_value", NC_FLOAT, 1, &nan));
-		err_trap(nc_put_att_float (ncid, ids[3], "_FillValue", NC_FLOAT, 1, &nan));
-		err_trap(nc_put_att_double(ncid, ids[3], "actual_range", NC_DOUBLE, 2U, dummy));
+		err_trap(API, nc_put_att_text  (ncid, ids[2], "units", 7, "Seconds"));
+		err_trap(API, nc_put_att_text  (ncid, ids[3], "long_name", strlen(long_name), long_name));
+		err_trap(API, nc_put_att_text  (ncid, ids[3], "units", strlen(units), units));
+		err_trap(API, nc_put_att_float (ncid, ids[3], "missing_value", NC_FLOAT, 1, &nan));
+		err_trap(API, nc_put_att_float (ncid, ids[3], "_FillValue", NC_FLOAT, 1, &nan));
+		err_trap(API, nc_put_att_double(ncid, ids[3], "actual_range", NC_DOUBLE, 2U, dummy));
 
-		err_trap(nc_put_att_text  (ncid, ids[4], "long_name", 10, "bathymetry"));
-		err_trap(nc_put_att_text  (ncid, ids[4], "units", 6, "meters"));
-		err_trap(nc_put_att_float (ncid, ids[4], "missing_value", NC_FLOAT, 1, &nan));
-		err_trap(nc_put_att_float (ncid, ids[4], "_FillValue", NC_FLOAT, 1, &nan));
+		err_trap(API, nc_put_att_text  (ncid, ids[4], "long_name", 10, "bathymetry"));
+		err_trap(API, nc_put_att_text  (ncid, ids[4], "units", 6, "meters"));
+		err_trap(API, nc_put_att_float (ncid, ids[4], "missing_value", NC_FLOAT, 1, &nan));
+		err_trap(API, nc_put_att_float (ncid, ids[4], "_FillValue", NC_FLOAT, 1, &nan));
 		range[0] = nest->hdr[lev].z_min;	range[1] = nest->hdr[lev].z_max;
-		err_trap(nc_put_att_double(ncid, ids[4], "actual_range", NC_DOUBLE, 2U, range));
+		err_trap(API, nc_put_att_double(ncid, ids[4], "actual_range", NC_DOUBLE, 2U, range));
 
 		for (ij = 0; ij < nest->hdr[lev].nm; ij++)		/* Change bathy sign back to pos up and copy to work array */
 			work[ij] = (float)-nest->bat[lev][ij];
 
 		count_b[0] = nest->hdr[lev].ny;	count_b[1] = nest->hdr[lev].nx;
-		err_trap(nc_put_vara_float(ncid, ids[4], start_b, count_b, work));	/* Write the bathymetry */
+		err_trap(API, nc_put_vara_float(ncid, ids[4], start_b, count_b, work));	/* Write the bathymetry */
 
 		if (nest->out_momentum) {
 			long_name = "Moment Component along x/Longitude";
-			err_trap(nc_put_att_text  (ncid, ids[5], "long_name", strlen(long_name), long_name));
-			err_trap(nc_put_att_text  (ncid, ids[5], "units", 15, "Meters^2/second"));
-			err_trap(nc_put_att_float (ncid, ids[5], "missing_value", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_float (ncid, ids[5], "_FillValue", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_double(ncid, ids[5], "actual_range", NC_DOUBLE, 2U, dummy));
+			err_trap(API, nc_put_att_text  (ncid, ids[5], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[5], "units", 15, "Meters^2/second"));
+			err_trap(API, nc_put_att_float (ncid, ids[5], "missing_value", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_float (ncid, ids[5], "_FillValue", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_double(ncid, ids[5], "actual_range", NC_DOUBLE, 2U, dummy));
 			long_name = "Moment Component along x/Latitude";
-			err_trap(nc_put_att_text  (ncid, ids[6], "long_name", strlen(long_name), long_name));
-			err_trap(nc_put_att_text  (ncid, ids[6], "units", 15, "Meters^2/second"));
-			err_trap(nc_put_att_float (ncid, ids[6], "missing_value", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_float (ncid, ids[6], "_FillValue", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_double(ncid, ids[6], "actual_range", NC_DOUBLE, 2U, dummy));
+			err_trap(API, nc_put_att_text  (ncid, ids[6], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[6], "units", 15, "Meters^2/second"));
+			err_trap(API, nc_put_att_float (ncid, ids[6], "missing_value", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_float (ncid, ids[6], "_FillValue", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_double(ncid, ids[6], "actual_range", NC_DOUBLE, 2U, dummy));
 		}
 		if (nest->out_velocity_x) {			/* Horizontal velocity, 3D case */
 			long_name = "Velocity Component along x/Longitude";
-			err_trap(nc_put_att_text  (ncid, ids[5], "long_name", strlen(long_name), long_name));
-			err_trap(nc_put_att_text  (ncid, ids[5], "units", 13, "Meters/second"));
-			err_trap(nc_put_att_float (ncid, ids[5], "missing_value", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_float (ncid, ids[5], "_FillValue", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_double(ncid, ids[5], "actual_range", NC_DOUBLE, 2U, dummy));
+			err_trap(API, nc_put_att_text  (ncid, ids[5], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[5], "units", 13, "Meters/second"));
+			err_trap(API, nc_put_att_float (ncid, ids[5], "missing_value", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_float (ncid, ids[5], "_FillValue", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_double(ncid, ids[5], "actual_range", NC_DOUBLE, 2U, dummy));
 		}
 		if (nest->out_velocity_y) {			/* Vertical velocity, 3D case */
 			long_name = "Velocity Component along x/Latitude";
-			err_trap(nc_put_att_text  (ncid, ids[6], "long_name", strlen(long_name), long_name));
-			err_trap(nc_put_att_text  (ncid, ids[6], "units", 13, "Meters/second"));
-			err_trap(nc_put_att_float (ncid, ids[6], "missing_value", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_float (ncid, ids[6], "_FillValue", NC_FLOAT, 1, &nan));
-			err_trap(nc_put_att_double(ncid, ids[6], "actual_range", NC_DOUBLE, 2U, dummy));
+			err_trap(API, nc_put_att_text  (ncid, ids[6], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[6], "units", 13, "Meters/second"));
+			err_trap(API, nc_put_att_float (ncid, ids[6], "missing_value", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_float (ncid, ids[6], "_FillValue", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_double(ncid, ids[6], "actual_range", NC_DOUBLE, 2U, dummy));
 		}
 
 		if (nest->do_long_beach) {
 			float act_range[2] = {0, 0};
 			long_name = "Mask of receded water";
-			err_trap(nc_put_att_text  (ncid, ids[7], "long_name", strlen(long_name), long_name));
-			err_trap(nc_put_att_text  (ncid, ids[7], "units", 3, "0/1"));
-			err_trap(nc_put_att_float (ncid, ids[7], "actual_range", NC_FLOAT, 2U, act_range));
+			err_trap(API, nc_put_att_text  (ncid, ids[7], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[7], "units", 3, "0/1"));
+			err_trap(API, nc_put_att_float (ncid, ids[7], "actual_range", NC_FLOAT, 2U, act_range));
 		}
 		if (nest->do_short_beach) {
 			float act_range[2] = {0, 0};
 			long_name = "Mask of innundation";
-			err_trap(nc_put_att_text  (ncid, ids[8], "long_name", strlen(long_name), long_name));
-			err_trap(nc_put_att_text  (ncid, ids[8], "units", 3, "0/1"));
-			err_trap(nc_put_att_float(ncid,  ids[8], "actual_range", NC_FLOAT, 2U, act_range));
+			err_trap(API, nc_put_att_text  (ncid, ids[8], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[8], "units", 3, "0/1"));
+			err_trap(API, nc_put_att_float(ncid,  ids[8], "actual_range", NC_FLOAT, 2U, act_range));
 		}
 	}
 
 	/* ---- Global Attributes ------------ */
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "Conventions",   13, "COARDS/CF-1.0"));
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "history",       10, "Mirone Tec"));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "Conventions",   13, "COARDS/CF-1.0"));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "history",       10, "Mirone Tec"));
 	if (isMost) {
-		err_trap(nc_put_att_text(ncid, NC_GLOBAL, "title", 39, "MOST type file created by Mirone-NSWING"));
+		err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "title", 39, "MOST type file created by Mirone-NSWING"));
 	}
 	else {
-		err_trap(nc_put_att_text(ncid, NC_GLOBAL, "title", 44, "Water levels series created by Mirone-NSWING"));
-		err_trap(nc_put_att_text(ncid, NC_GLOBAL, "TSU",    6, "NSWING"));
+		err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "title", 44, "Water levels series created by Mirone-NSWING"));
+		err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "TSU",    6, "NSWING"));
 	}
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "History", strlen(hist), hist));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "History", strlen(hist), hist));
 
-	err_trap(nc_enddef(ncid));
+	err_trap(API, nc_enddef(ncid));
 
 	/* ---- Write the vector coords ------ */
 	x = (double *)malloc (sizeof(double) * nx);
@@ -3267,8 +3267,8 @@ int open_most_nc(struct nestContainer *nest, float *work, char *base, char *name
 
 	for (n = 0; n < nx; n++) x[n] = xMinOut + n * nest->hdr[lev].x_inc;
 	for (m = 0; m < ny; m++) y[m] = yMinOut + m * nest->hdr[lev].y_inc;
-	err_trap(nc_put_var_double(ncid, ids[0], x));
-	err_trap(nc_put_var_double(ncid, ids[1], y));
+	err_trap(API, nc_put_var_double(ncid, ids[0], x));
+	err_trap(API, nc_put_var_double(ncid, ids[1], y));
 	free((void *)x); 
 	free((void *)y); 
 	free((void *)basename); 
@@ -3277,7 +3277,7 @@ int open_most_nc(struct nestContainer *nest, float *work, char *base, char *name
 }
 
 /* --------------------------------------------------------------------------- */
-void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned int i_start, unsigned int j_start,
+void write_most_slice(void *API, struct nestContainer *nest, int *ncid, int *ids, unsigned int i_start, unsigned int j_start,
                       unsigned int i_end, unsigned int j_end, float *work, size_t *start, size_t *count,
                       double *slice_range, int isMost, int lev) {
 	/* Write a slice of _ha.nc, _va.nc & _ua.nc MOST netCDF files */
@@ -3290,7 +3290,7 @@ void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned 
 			slice_range[1] = MAX(work[ij], slice_range[1]);
 		}
 
-		err_trap(nc_put_vara_float(ncid[0], ids[0], start, count, work));
+		err_trap(API, nc_put_vara_float(ncid[0], ids[0], start, count, work));
 
 		/* Conditionally write the Vx & Vy velocity components */
 		if (nest->out_velocity_x) {
@@ -3302,7 +3302,7 @@ void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned 
 				slice_range[2] = MIN(work[ij], slice_range[2]);
 				slice_range[3] = MAX(work[ij], slice_range[3]);
 			}			
-			err_trap(nc_put_vara_float(ncid[0], ids[1], start, count, work));
+			err_trap(API, nc_put_vara_float(ncid[0], ids[1], start, count, work));
 		}
 		if (nest->out_velocity_y) {
 			for (ij = 0; ij < nest->hdr[nest->writeLevel].nm; ij++) {
@@ -3313,7 +3313,7 @@ void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned 
 				slice_range[4] = MIN(work[ij], slice_range[4]);
 				slice_range[5] = MAX(work[ij], slice_range[5]);
 			}			
-			err_trap (nc_put_vara_float (ncid[0], ids[2], start, count, work));
+			err_trap(API, nc_put_vara_float (ncid[0], ids[2], start, count, work));
 		}
 		if (nest->out_momentum) {
 			for (ij = 0; ij < nest->hdr[nest->writeLevel].nm; ij++) {
@@ -3321,13 +3321,13 @@ void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned 
 				slice_range[2] = MIN(work[ij], slice_range[2]);
 				slice_range[3] = MAX(work[ij], slice_range[3]);
 			}
-			err_trap (nc_put_vara_float (ncid[0], ids[1], start, count, work));
+			err_trap(API, nc_put_vara_float (ncid[0], ids[1], start, count, work));
 			for (ij = 0; ij < nest->hdr[nest->writeLevel].nm; ij++) {
 				work[ij] = (float)nest->fluxn_d[nest->writeLevel][ij];
 				slice_range[4] = MIN(work[ij], slice_range[2]);
 				slice_range[5] = MAX(work[ij], slice_range[3]);
 			}
-			err_trap (nc_put_vara_float (ncid[0], ids[2], start, count, work));
+			err_trap(API, nc_put_vara_float (ncid[0], ids[2], start, count, work));
 		}
 	}
 	else {
@@ -3337,7 +3337,7 @@ void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned 
 					for (col = i_start; col < i_end; col++)
 						work[k++] = (float)(nest->etad[lev][ij_grd(col, row, nest->hdr[lev])] * 100);
 
-				err_trap (nc_put_vara_float (ncid[0], ids[0], start, count, work));
+				err_trap(API, nc_put_vara_float (ncid[0], ids[0], start, count, work));
 			}
 			else if (n == 1) {		/* X velocity */ 
 				for (row = j_start, k = 0; row < j_end; row++) {
@@ -3347,7 +3347,7 @@ void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned 
 						            (float)(nest->fluxm_d[lev][ij] / nest->htotal_d[lev][ij] * 100);
 					}
 				}
-				err_trap (nc_put_vara_float (ncid[1], ids[1], start, count, work));
+				err_trap(API, nc_put_vara_float (ncid[1], ids[1], start, count, work));
 			}
 			else {				/* Y velocity */ 
 				for (row = j_start, k = 0; row < j_end; row++) {
@@ -3357,14 +3357,14 @@ void write_most_slice(struct nestContainer *nest, int *ncid, int *ids, unsigned 
 						            (float)(nest->fluxn_d[lev][ij] / nest->htotal_d[lev][ij] * 100);
 					}
 				}
-				err_trap (nc_put_vara_float (ncid[2], ids[2], start, count, work));
+				err_trap(API, nc_put_vara_float (ncid[2], ids[2], start, count, work));
 			}
 		}
 	}
 }
 
 /* -------------------------------------------------------------------- */
-int write_greens_nc(struct nestContainer *nest, char *fname, float *work, size_t *start, size_t *count,
+int write_greens_nc(void *API, struct nestContainer *nest, char *fname, float *work, size_t *start, size_t *count,
 	double *t, unsigned int *lcum_p, char *names[], char hist[], int *ids, int n_maregs,
 	unsigned int n_times, int lev) {
 	/* Save the maregraphs time series in a netCDF file. This version is for the KabaGrid case.
@@ -3378,50 +3378,50 @@ int write_greens_nc(struct nestContainer *nest, char *fname, float *work, size_t
 	double *x, *y;
 
 	if ((status = nc_create(fname, NC_NETCDF4, &ncid)) != NC_NOERR) {
-		fprintf(stderr, "NSWING: Unable to create file -- %s -- exiting\n", fname);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to create file -- %s -- exiting\n", fname);
 		return(-1);
 	}
 
 	/* ---- Define dimensions ------------ */
-	err_trap(nc_def_dim(ncid, "countMareg",  (size_t)n_maregs, &dim0[0]));
-	err_trap(nc_def_dim(ncid, "time",        (size_t)n_times,  &dim0[1]));
-	err_trap(nc_def_dim(ncid, "TM",          (size_t)n_times*n_maregs,  &dim0[2]));
-	err_trap(nc_def_dim(ncid, "binIndex",     NC_UNLIMITED,    &dim0[3]));
+	err_trap(API, nc_def_dim(ncid, "countMareg",  (size_t)n_maregs, &dim0[0]));
+	err_trap(API, nc_def_dim(ncid, "time",        (size_t)n_times,  &dim0[1]));
+	err_trap(API, nc_def_dim(ncid, "TM",          (size_t)n_times*n_maregs,  &dim0[2]));
+	err_trap(API, nc_def_dim(ncid, "binIndex",     NC_UNLIMITED,    &dim0[3]));
 
 	/* ---- Define variables ------------- */
 	dim2[0] = dim0[3];   dim2[1] = dim0[2];
 	dim3[0] = dim0[3];   dim3[1] = dim0[2];
-	err_trap(nc_def_var(ncid, "time",         NC_DOUBLE,1, &dim0[1], &ids[0]));
+	err_trap(API, nc_def_var(ncid, "time",         NC_DOUBLE,1, &dim0[1], &ids[0]));
 	if (nest->isGeog) {
-		err_trap(nc_def_var(ncid, "lonMareg", NC_DOUBLE,1, &dim0[0], &ids[1]));
-		err_trap(nc_def_var(ncid, "latMareg", NC_DOUBLE,1, &dim0[0], &ids[2]));
+		err_trap(API, nc_def_var(ncid, "lonMareg", NC_DOUBLE,1, &dim0[0], &ids[1]));
+		err_trap(API, nc_def_var(ncid, "latMareg", NC_DOUBLE,1, &dim0[0], &ids[2]));
 	}
 	else {
-		err_trap(nc_def_var(ncid, "xMareg",   NC_DOUBLE,1, &dim0[0], &ids[1]));
-		err_trap(nc_def_var(ncid, "yMareg",   NC_DOUBLE,1, &dim0[0], &ids[2]));
+		err_trap(API, nc_def_var(ncid, "xMareg",   NC_DOUBLE,1, &dim0[0], &ids[1]));
+		err_trap(API, nc_def_var(ncid, "yMareg",   NC_DOUBLE,1, &dim0[0], &ids[2]));
 	}
-	err_trap(nc_def_var(ncid, "namesMareg",   NC_STRING,1, &dim0[0], &ids[3]));
-	err_trap(nc_def_var(ncid, "Greens",       NC_FLOAT, 2, dim2,     &ids[4]));
+	err_trap(API, nc_def_var(ncid, "namesMareg",   NC_STRING,1, &dim0[0], &ids[3]));
+	err_trap(API, nc_def_var(ncid, "Greens",       NC_FLOAT, 2, dim2,     &ids[4]));
 
 	/* Set a deflation level of 5 (4, zero based) and shuffle for variables */
-	err_trap(nc_def_var_deflate(ncid, ids[4], 1, 1, 4));
-	err_trap(nc_put_vara_float(ncid,  ids[4], start, count, work));
+	err_trap(API, nc_def_var_deflate(ncid, ids[4], 1, 1, 4));
+	err_trap(API, nc_put_vara_float(ncid,  ids[4], start, count, work));
 
 	/* ---- Variables Attributes --------- */
-	err_trap(nc_put_att_text(ncid, ids[0], "Description", 17, "Time at maregraph"));
-	err_trap(nc_put_att_text(ncid, ids[0], "units", 7, "SECONDS"));
-	err_trap(nc_put_att_text(ncid, ids[1], "Description", 23, "Longitude of maregraphs"));
-	err_trap(nc_put_att_text(ncid, ids[2], "Description", 22, "Latitude of maregraphs"));
-	err_trap(nc_put_att_text(ncid, ids[3], "Description", 29, "Code names for each maregraph"));
-	err_trap(nc_put_att_text(ncid, ids[4], "Description", 69, "G array (transposed) of the Green functions: Nprism x Nmareg * Ntimes"));
+	err_trap(API, nc_put_att_text(ncid, ids[0], "Description", 17, "Time at maregraph"));
+	err_trap(API, nc_put_att_text(ncid, ids[0], "units", 7, "SECONDS"));
+	err_trap(API, nc_put_att_text(ncid, ids[1], "Description", 23, "Longitude of maregraphs"));
+	err_trap(API, nc_put_att_text(ncid, ids[2], "Description", 22, "Latitude of maregraphs"));
+	err_trap(API, nc_put_att_text(ncid, ids[3], "Description", 29, "Code names for each maregraph"));
+	err_trap(API, nc_put_att_text(ncid, ids[4], "Description", 69, "G array (transposed) of the Green functions: Nprism x Nmareg * Ntimes"));
 
 	/* ---- Global Attributes ------------ */
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "Institution", 10, "Mirone Tec"));
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "Description", 17, "Created by NSWING"));
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "History", strlen(hist), hist));
-	err_trap(nc_put_att_int(ncid,  NC_GLOBAL, "Number of maregraphs", NC_INT, 1, &n_maregs));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "Institution", 10, "Mirone Tec"));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "Description", 17, "Created by NSWING"));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "History", strlen(hist), hist));
+	err_trap(API, nc_put_att_int(ncid,  NC_GLOBAL, "Number of maregraphs", NC_INT, 1, &n_maregs));
 
-	err_trap(nc_enddef (ncid));
+	err_trap(API, nc_enddef (ncid));
 
 	x = (double *)malloc(sizeof(double) * n_maregs);
 	y = (double *)malloc(sizeof(double) * n_maregs);
@@ -3433,10 +3433,10 @@ int write_greens_nc(struct nestContainer *nest, char *fname, float *work, size_t
 		y[k] = nest->hdr[lev].y_min + iy * nest->hdr[lev].y_inc;
 	}
 
-	err_trap(nc_put_var_double(ncid, ids[0], t));
-	err_trap(nc_put_var_double(ncid, ids[1], x));
-	err_trap(nc_put_var_double(ncid, ids[2], y));
-	err_trap(nc_put_var_string(ncid, ids[3], (const char **)names));
+	err_trap(API, nc_put_var_double(ncid, ids[0], t));
+	err_trap(API, nc_put_var_double(ncid, ids[1], x));
+	err_trap(API, nc_put_var_double(ncid, ids[2], y));
+	err_trap(API, nc_put_var_string(ncid, ids[3], (const char **)names));
 	free(x); 
 	free(y); 
 
@@ -3444,7 +3444,7 @@ int write_greens_nc(struct nestContainer *nest, char *fname, float *work, size_t
 }
 
 /* -------------------------------------------------------------------- */
-int write_maregs_nc(struct nestContainer *nest, char *fname, float *work, double *t, unsigned int *lcum_p,
+int write_maregs_nc(void *API, struct nestContainer *nest, char *fname, float *work, double *t, unsigned int *lcum_p,
 	char *names[], char hist[], int n_maregs, unsigned int n_times, int lev) {
 	/* Save the maregraphs time series in a netCDF file. This version is for the NO Kabas case.
 	   t        - is the vector of times
@@ -3461,40 +3461,40 @@ int write_maregs_nc(struct nestContainer *nest, char *fname, float *work, double
 	count[0] = n_times;	count[1] = n_maregs;
 
 	if ((status = nc_create(fname, NC_NETCDF4, &ncid)) != NC_NOERR) {
-		fprintf(stderr, "NSWING: Unable to create file -- %s -- exiting\n", fname);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to create file -- %s -- exiting\n", fname);
 		return(-1);
 	}
 
 	/* ---- Define dimensions ------------ */
-	err_trap(nc_def_dim(ncid, "time",   (size_t)n_times,  &dim0[0]));
-	err_trap(nc_def_dim(ncid, "count",  (size_t)n_maregs, &dim0[1]));
+	err_trap(API, nc_def_dim(ncid, "time",   (size_t)n_times,  &dim0[0]));
+	err_trap(API, nc_def_dim(ncid, "count",  (size_t)n_maregs, &dim0[1]));
 
 	/* ---- Define variables ------------- */
 	dim2[0] = dim0[0];                   dim2[1] = dim0[1];
-	err_trap(nc_def_var(ncid, "time",    NC_DOUBLE,1, &dim0[0], &ids[0]));
-	err_trap(nc_def_var(ncid, "count",   NC_INT,   1, &dim0[1], &ids[1]));
+	err_trap(API, nc_def_var(ncid, "time",    NC_DOUBLE,1, &dim0[0], &ids[0]));
+	err_trap(API, nc_def_var(ncid, "count",   NC_INT,   1, &dim0[1], &ids[1]));
 	if (nest->isGeog) {
-		err_trap(nc_def_var(ncid, "lonMareg", NC_DOUBLE,1, &dim0[1], &ids[2]));
-		err_trap(nc_def_var(ncid, "latMareg", NC_DOUBLE,1, &dim0[1], &ids[3]));
+		err_trap(API, nc_def_var(ncid, "lonMareg", NC_DOUBLE,1, &dim0[1], &ids[2]));
+		err_trap(API, nc_def_var(ncid, "latMareg", NC_DOUBLE,1, &dim0[1], &ids[3]));
 	}
 	else {
-		err_trap(nc_def_var(ncid, "xMareg",   NC_DOUBLE,1, &dim0[1], &ids[2]));
-		err_trap(nc_def_var(ncid, "yMareg",   NC_DOUBLE,1, &dim0[1], &ids[3]));
+		err_trap(API, nc_def_var(ncid, "xMareg",   NC_DOUBLE,1, &dim0[1], &ids[2]));
+		err_trap(API, nc_def_var(ncid, "yMareg",   NC_DOUBLE,1, &dim0[1], &ids[3]));
 	}
-	err_trap(nc_def_var(ncid, "NamesMareg",   NC_STRING,1, &dim0[1], &ids[4]));
-	err_trap(nc_def_var(ncid, "maregs",       NC_FLOAT, 2, dim2,     &ids[5]));
+	err_trap(API, nc_def_var(ncid, "NamesMareg",   NC_STRING,1, &dim0[1], &ids[4]));
+	err_trap(API, nc_def_var(ncid, "maregs",       NC_FLOAT, 2, dim2,     &ids[5]));
 
 	/* Set a deflation level of 5 (4, zero based) and shuffle for variables */
-	err_trap(nc_def_var_deflate(ncid, ids[5], 1, 1, 4));
-	err_trap(nc_put_vara_float(ncid, ids[5], start, count, work));
+	err_trap(API, nc_def_var_deflate(ncid, ids[5], 1, 1, 4));
+	err_trap(API, nc_put_vara_float(ncid, ids[5], start, count, work));
 
 	/* ---- Global Attributes ------------ */
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "Institution", 10, "Mirone Tec"));
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "Description", 17, "Created by NSWING"));
-	err_trap(nc_put_att_text(ncid, NC_GLOBAL, "History", strlen(hist), hist));
-	err_trap(nc_put_att_int(ncid,  NC_GLOBAL, "Number of maregraphs", NC_INT, 1, &n_maregs));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "Institution", 10, "Mirone Tec"));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "Description", 17, "Created by NSWING"));
+	err_trap(API, nc_put_att_text(ncid, NC_GLOBAL, "History", strlen(hist), hist));
+	err_trap(API, nc_put_att_int(ncid,  NC_GLOBAL, "Number of maregraphs", NC_INT, 1, &n_maregs));
 
-	err_trap(nc_enddef (ncid));
+	err_trap(API, nc_enddef (ncid));
 
 	x = (double *)malloc(sizeof(double) * n_maregs);
 	y = (double *)malloc(sizeof(double) * n_maregs);
@@ -3508,20 +3508,20 @@ int write_maregs_nc(struct nestContainer *nest, char *fname, float *work, double
 		maregs_vec[k] = k + 1;
 	}
 
-	err_trap(nc_put_var_double(ncid, ids[0], t));
-	err_trap(nc_put_var_int   (ncid, ids[1], maregs_vec));
-	err_trap(nc_put_var_double(ncid, ids[2], x));
-	err_trap(nc_put_var_double(ncid, ids[3], y));
-	err_trap(nc_put_var_string(ncid, ids[4], (const char **)names));
+	err_trap(API, nc_put_var_double(ncid, ids[0], t));
+	err_trap(API, nc_put_var_int   (ncid, ids[1], maregs_vec));
+	err_trap(API, nc_put_var_double(ncid, ids[2], x));
+	err_trap(API, nc_put_var_double(ncid, ids[3], y));
+	err_trap(API, nc_put_var_string(ncid, ids[4], (const char **)names));
 	free(x); 
 	free(y); 
 	free(maregs_vec); 
-	err_trap(nc_close(ncid)); 
+	err_trap(API, nc_close(ncid)); 
 	return (0);
 }
 
 /* -------------------------------------------------------------------- */
-int open_anuga_sww (struct nestContainer *nest, char *fname_sww, char hist[], int *ids, unsigned int i_start,
+int open_anuga_sww (void *API, struct nestContainer *nest, char *fname_sww, char hist[], int *ids, unsigned int i_start,
 	unsigned int j_start, unsigned int i_end, unsigned int j_end, double xMinOut, double yMinOut, int lev) {
 
 	/* Open and initialize a ANUGA netCDF file for writing ---------------- */
@@ -3537,7 +3537,7 @@ int open_anuga_sww (struct nestContainer *nest, char *fname_sww, char hist[], in
 	double dty = nest->hdr[lev].y_inc;
 
 	if ( (status = nc_create (fname_sww, NC_NETCDF4, &ncid)) != NC_NOERR) {
-		fprintf(stderr, "NSWING: Unable to create file -- %s -- exiting\n", fname_sww);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to create file -- %s -- exiting\n", fname_sww);
 		return(-1);
 	}
 
@@ -3545,52 +3545,52 @@ int open_anuga_sww (struct nestContainer *nest, char *fname_sww, char hist[], in
 	nx = i_end - i_start;		ny = j_end - j_start;
 	nVolumes = (nx - 1) * (ny - 1) * 2;
 	nPoints = nx * ny;
-	err_trap (nc_def_dim (ncid, "number_of_volumes",  (size_t) nVolumes, &dim0[0]));
-	err_trap (nc_def_dim (ncid, "number_of_vertices", (size_t) 3, &dim0[1]));
-	err_trap (nc_def_dim (ncid, "numbers_in_range",   (size_t) 2, &dim0[2]));
-	err_trap (nc_def_dim (ncid, "number_of_points",   (size_t) nPoints, &dim0[3]));
-	err_trap (nc_def_dim (ncid, "number_of_timesteps", NC_UNLIMITED, &dim0[4]));
+	err_trap(API, nc_def_dim (ncid, "number_of_volumes",  (size_t) nVolumes, &dim0[0]));
+	err_trap(API, nc_def_dim (ncid, "number_of_vertices", (size_t) 3, &dim0[1]));
+	err_trap(API, nc_def_dim (ncid, "numbers_in_range",   (size_t) 2, &dim0[2]));
+	err_trap(API, nc_def_dim (ncid, "number_of_points",   (size_t) nPoints, &dim0[3]));
+	err_trap(API, nc_def_dim (ncid, "number_of_timesteps", NC_UNLIMITED, &dim0[4]));
 
 	/* ---- Define variables ------------- */
 	dim2[0] = dim0[4];                              dim2[1] = dim0[3];
 	dim3[0] = dim0[0];                              dim3[1] = dim0[1];
-	err_trap (nc_def_var (ncid, "x",                NC_FLOAT,1, &dim0[3], &ids[0]));
-	err_trap (nc_def_var (ncid, "y",                NC_FLOAT,1, &dim0[3], &ids[1]));
-	err_trap (nc_def_var (ncid, "z",                NC_FLOAT,1, &dim0[3], &ids[2]));
-	err_trap (nc_def_var (ncid, "elevation",        NC_FLOAT,1, &dim0[3], &ids[3]));
-	err_trap (nc_def_var (ncid, "elevation_range",  NC_FLOAT,1, &dim0[2], &ids[4]));
-	err_trap (nc_def_var (ncid, "volumes",          NC_INT,  2, dim3,     &ids[5]));
-	err_trap (nc_def_var (ncid, "time",             NC_DOUBLE,1,&dim0[4], &ids[6]));
-	err_trap (nc_def_var (ncid, "stage",            NC_FLOAT,2, dim2,     &ids[7]));
-	err_trap (nc_def_var (ncid, "stage_range",      NC_FLOAT,1, &dim0[2], &ids[8]));
-	err_trap (nc_def_var (ncid, "xmomentum",        NC_FLOAT,2, dim2,     &ids[9]));
-	err_trap (nc_def_var (ncid, "xmomentum_range",  NC_FLOAT,1, &dim0[2], &ids[10]));
-	err_trap (nc_def_var (ncid, "ymomentum",        NC_FLOAT,2, dim2,     &ids[11]));
-	err_trap (nc_def_var (ncid, "ymomentum_range",  NC_FLOAT,1, &dim0[2], &ids[12]));
+	err_trap(API, nc_def_var (ncid, "x",                NC_FLOAT,1, &dim0[3], &ids[0]));
+	err_trap(API, nc_def_var (ncid, "y",                NC_FLOAT,1, &dim0[3], &ids[1]));
+	err_trap(API, nc_def_var (ncid, "z",                NC_FLOAT,1, &dim0[3], &ids[2]));
+	err_trap(API, nc_def_var (ncid, "elevation",        NC_FLOAT,1, &dim0[3], &ids[3]));
+	err_trap(API, nc_def_var (ncid, "elevation_range",  NC_FLOAT,1, &dim0[2], &ids[4]));
+	err_trap(API, nc_def_var (ncid, "volumes",          NC_INT,  2, dim3,     &ids[5]));
+	err_trap(API, nc_def_var (ncid, "time",             NC_DOUBLE,1,&dim0[4], &ids[6]));
+	err_trap(API, nc_def_var (ncid, "stage",            NC_FLOAT,2, dim2,     &ids[7]));
+	err_trap(API, nc_def_var (ncid, "stage_range",      NC_FLOAT,1, &dim0[2], &ids[8]));
+	err_trap(API, nc_def_var (ncid, "xmomentum",        NC_FLOAT,2, dim2,     &ids[9]));
+	err_trap(API, nc_def_var (ncid, "xmomentum_range",  NC_FLOAT,1, &dim0[2], &ids[10]));
+	err_trap(API, nc_def_var (ncid, "ymomentum",        NC_FLOAT,2, dim2,     &ids[11]));
+	err_trap(API, nc_def_var (ncid, "ymomentum_range",  NC_FLOAT,1, &dim0[2], &ids[12]));
 
 	/* Set a deflation level of 5 (4 zero based) and shuffle for variables */
-	err_trap(nc_def_var_deflate(ncid, ids[0], 1, 1, 4));
-	err_trap(nc_def_var_deflate(ncid, ids[1], 1, 1, 4));
-	err_trap(nc_def_var_deflate(ncid, ids[2], 1, 1, 4));
-	err_trap(nc_def_var_deflate(ncid, ids[3], 1, 1, 4));
-	err_trap(nc_def_var_deflate(ncid, ids[5], 1, 1, 4));
-	err_trap(nc_def_var_deflate(ncid, ids[7], 1, 1, 4));
-	err_trap(nc_def_var_deflate(ncid, ids[9], 1, 1, 4));
-	err_trap(nc_def_var_deflate(ncid, ids[11],1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[0], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[1], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[2], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[3], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[5], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[7], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[9], 1, 1, 4));
+	err_trap(API, nc_def_var_deflate(ncid, ids[11],1, 1, 4));
 
 	/* ---- Global Attributes ------------ */
-	err_trap(nc_put_att_text(ncid,   NC_GLOBAL, "institution", 10, "Mirone Tec"));
-	err_trap(nc_put_att_text(ncid,   NC_GLOBAL, "description", 22, "Created by Mirone-NSWING"));
-	err_trap(nc_put_att_text(ncid,   NC_GLOBAL, "History", strlen(hist), hist));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "xllcorner", NC_DOUBLE, 1, &xMinOut));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "yllcorner", NC_DOUBLE, 1, &yMinOut));
-	dummy = 29;	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "zone", NC_DOUBLE, 1, &dummy));
-	dummy = 0;	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "starttime", NC_DOUBLE, 1, &dummy));
-	dummy = 500000;	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "false_easting", NC_DOUBLE, 1, &dummy));
-	dummy = 0;	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "false_northing", NC_DOUBLE, 1, &dummy));
-	err_trap(nc_put_att_text(ncid,   NC_GLOBAL, "datum", 5, "wgs84"));
-	err_trap(nc_put_att_text(ncid,   NC_GLOBAL, "projection", 3, "UTM"));
-	err_trap(nc_put_att_text(ncid,   NC_GLOBAL, "units", 1, "m"));
+	err_trap(API, nc_put_att_text(ncid,   NC_GLOBAL, "institution", 10, "Mirone Tec"));
+	err_trap(API, nc_put_att_text(ncid,   NC_GLOBAL, "description", 22, "Created by Mirone-NSWING"));
+	err_trap(API, nc_put_att_text(ncid,   NC_GLOBAL, "History", strlen(hist), hist));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "xllcorner", NC_DOUBLE, 1, &xMinOut));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "yllcorner", NC_DOUBLE, 1, &yMinOut));
+	dummy = 29;	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "zone", NC_DOUBLE, 1, &dummy));
+	dummy = 0;	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "starttime", NC_DOUBLE, 1, &dummy));
+	dummy = 500000;	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "false_easting", NC_DOUBLE, 1, &dummy));
+	dummy = 0;	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "false_northing", NC_DOUBLE, 1, &dummy));
+	err_trap(API, nc_put_att_text(ncid,   NC_GLOBAL, "datum", 5, "wgs84"));
+	err_trap(API, nc_put_att_text(ncid,   NC_GLOBAL, "projection", 3, "UTM"));
+	err_trap(API, nc_put_att_text(ncid,   NC_GLOBAL, "units", 1, "m"));
 	/* Initialize the following attribs with NaNs. A posterior call will eventualy fill them with the right values */
 	nan = NAN;
 	if (nan == 0) nan = (float)loc_nan.d;	/* Dirty hack. With the Intel compiler for example NAN returns 0*/
@@ -3599,14 +3599,14 @@ int open_anuga_sww (struct nestContainer *nest, char *fname_sww, char hist[], in
 				faultRake[i] = faultWidth[i] = faultDepth[i] = nan;
 	}
 	faultPolyX[10] = faultPolyY[10] = nan;		/* Those have an extra element */
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultPolyX",  NC_DOUBLE, 11, faultPolyX));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultPolyY",  NC_DOUBLE, 11, faultPolyY));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultStrike", NC_DOUBLE, 10, faultStrike));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultSlip",   NC_DOUBLE, 10, faultSlip));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultDip",    NC_DOUBLE, 10, faultDip));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultRake",   NC_DOUBLE, 10, faultRake));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultWidth",  NC_DOUBLE, 10, faultWidth));
-	err_trap(nc_put_att_double(ncid, NC_GLOBAL, "faultDepth",  NC_DOUBLE, 10, faultDepth));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultPolyX",  NC_DOUBLE, 11, faultPolyX));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultPolyY",  NC_DOUBLE, 11, faultPolyY));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultStrike", NC_DOUBLE, 10, faultStrike));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultSlip",   NC_DOUBLE, 10, faultSlip));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultDip",    NC_DOUBLE, 10, faultDip));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultRake",   NC_DOUBLE, 10, faultRake));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultWidth",  NC_DOUBLE, 10, faultWidth));
+	err_trap(API, nc_put_att_double(ncid, NC_GLOBAL, "faultDepth",  NC_DOUBLE, 10, faultDepth));
 
 	/* ---- Write the vector coords ------ */
 	x = (float *)malloc(sizeof(float) * (nx * ny));
@@ -3640,9 +3640,9 @@ int open_anuga_sww (struct nestContainer *nest, char *fname_sww, char hist[], in
 
 	free ((void *)vertices);
 
-	err_trap(nc_enddef(ncid));
-	err_trap(nc_put_var_float(ncid, ids[0], x));
-	err_trap(nc_put_var_float(ncid, ids[1], y));
+	err_trap(API, nc_enddef(ncid));
+	err_trap(API, nc_put_var_float(ncid, ids[0], x));
+	err_trap(API, nc_put_var_float(ncid, ids[1], y));
 	free((void *)x); 
 	free((void *)y); 
 
@@ -3652,12 +3652,12 @@ int open_anuga_sww (struct nestContainer *nest, char *fname_sww, char hist[], in
 			tmp[k++] = (float)-nest->bat[lev][ijs(i,j,nest->hdr[lev].nx)];
 	}
 
-	err_trap(nc_put_var_float(ncid, ids[2], tmp));	/* z */
+	err_trap(API, nc_put_var_float(ncid, ids[2], tmp));	/* z */
 
-	err_trap(nc_put_var_float(ncid, ids[3], tmp));	/* elevation */
+	err_trap(API, nc_put_var_float(ncid, ids[3], tmp));	/* elevation */
 	dummy2[0] = z_min;		dummy2[1] = z_max;
-	err_trap(nc_put_var_float(ncid, ids[4], dummy2));	/* elevation_range */
-	err_trap(nc_put_var_int(ncid, ids[5], volumes));
+	err_trap(API, nc_put_var_float(ncid, ids[4], dummy2));	/* elevation_range */
+	err_trap(API, nc_put_var_int(ncid, ids[5], volumes));
 
 	free((void *)tmp);
 	free((void *)volumes);
@@ -3666,7 +3666,7 @@ int open_anuga_sww (struct nestContainer *nest, char *fname_sww, char hist[], in
 }
 
 /* --------------------------------------------------------------------------- */
-void write_anuga_slice(struct nestContainer *nest, int ncid, int z_id, unsigned int i_start, unsigned int j_start,
+void write_anuga_slice(void *API, struct nestContainer *nest, int ncid, int z_id, unsigned int i_start, unsigned int j_start,
 	unsigned int i_end, unsigned int j_end, float *work, size_t *start, size_t *count, float *slice_range,
 	int idx, int with_land, int lev) {
 	/* Write a slice of either STAGE, XMOMENTUM or YMOMENTUM of a Anuga's .sww netCDF file */
@@ -3732,13 +3732,13 @@ void write_anuga_slice(struct nestContainer *nest, int ncid, int z_id, unsigned 
 		slice_range[0] = MIN(work[k], slice_range[0]);
 	}
 
-	err_trap (nc_put_vara_float (ncid, z_id, start, count, work));
+	err_trap(API, nc_put_vara_float (ncid, z_id, start, count, work));
 }
 
 /* --------------------------------------------------------------------------- */
-void err_trap_(int status) {
+void err_trap_(void *API, int status) {
 	if (status != NC_NOERR)	
-		fprintf(stderr, "NSWING: error at line: %d\t and errorcode = %d\n", __LINE__, status);
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: error at line: %d\t and errorcode = %d\n", __LINE__, status);
 }
 
 /* --------------------------------------------------------------------
@@ -4938,7 +4938,7 @@ L201:
 }
 
 /* ----------------------------------------------------------------------------------------- */
-void interp_edges(struct nestContainer *nest, double *flux_L1, double *flux_L2, char *what, int lev, int i_time) {
+void interp_edges(void *API, struct nestContainer *nest, double *flux_L1, double *flux_L2, char *what, int lev, int i_time) {
 	/* Interpolate outer Fluxes on boundary edges with the resolution of the nested grid
 	   and assign them to inner grid, at its boundaries. */
 	int i, n, col, row, last_iter;
@@ -4959,7 +4959,7 @@ void interp_edges(struct nestContainer *nest, double *flux_L1, double *flux_L2, 
 			//t2 = flux_L1[ij_grd(col, nest->LLrow[lev]+1, nest->hdr[lev-1])];
 			nest->edge_row_Ptmp[lev][i] = t1;
 		}
-		intp_lin (nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].nx,
+		intp_lin(API, nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].nx,
 			nest->edge_row[lev], nest->edge_rowTmp[lev]);
 		for (col = 0; col < nest->hdr[lev].nx; col++) {		/* Put interp val in nested grid */
 			if (nest->bat[lev][ij_grd(col, 0, nest->hdr[lev])] + nest->etaa[lev][ij_grd(col, 0, nest->hdr[lev])] > EPS5)
@@ -4974,7 +4974,7 @@ void interp_edges(struct nestContainer *nest, double *flux_L1, double *flux_L2, 
 			//t2 = flux_L1[ij_grd(col, nest->ULrow[lev],   nest->hdr[lev-1])];
 			nest->edge_row_Ptmp[lev][i] = t1;
 		}
-		intp_lin (nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].nx,
+		intp_lin(API, nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].nx,
 			nest->edge_row[lev], nest->edge_rowTmp[lev]);
 		for (col = 0; col < nest->hdr[lev].nx; col++) {
 			if (nest->bat[lev][ij_grd(col, nest->hdr[lev].ny-1, nest->hdr[lev])] +
@@ -4994,7 +4994,7 @@ void interp_edges(struct nestContainer *nest, double *flux_L1, double *flux_L2, 
 			//t2 = flux_L1[ij_grd(nest->LLcol[lev]+1, row, nest->hdr[lev-1])];
 			nest->edge_col_Ptmp[lev][i] = t1;
 		}
-		intp_lin (nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].ny,
+		intp_lin(API, nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].ny,
 			nest->edge_col[lev], nest->edge_colTmp[lev]);
 		for (row = 0; row < nest->hdr[lev].ny; row++) {		/* Put interp val in nested grid */
 			if (nest->bat[lev][ij_grd(0, row, nest->hdr[lev])] + nest->etaa[lev][ij_grd(0, row, nest->hdr[lev])] > EPS5)
@@ -5026,7 +5026,7 @@ void interp_edges(struct nestContainer *nest, double *flux_L1, double *flux_L2, 
 		}
 #endif
 
-		intp_lin (nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].ny,
+		intp_lin(API, nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].ny,
 			nest->edge_col[lev], nest->edge_colTmp[lev]);
 		for (row = 0; row < nest->hdr[lev].ny; row++) {
 			if (nest->bat[lev][ij_grd(nest->hdr[lev].nx-1,  row, nest->hdr[lev])] +
@@ -5055,7 +5055,7 @@ void interp_edges(struct nestContainer *nest, double *flux_L1, double *flux_L2, 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
 
-int intp_lin (double *x, double *y, int n, int m, double *u, double *v) {
+int intp_lin (void *API, double *x, double *y, int n, int m, double *u, double *v) {
 	int i, j, err_flag = 0;
 	bool down = false;
 	double dx;
@@ -5075,7 +5075,7 @@ int intp_lin (double *x, double *y, int n, int m, double *u, double *v) {
 	}
 
 	if (err_flag) {
-		fprintf(stderr, "%s: Fatal Error: x-values are not monotonically increasing/decreasing!\n", "intp_lin");
+		GMT_Report(API, GMT_MSG_ERROR, "%s: Fatal Error: x-values are not monotonically increasing/decreasing!\n", "intp_lin");
 		return (err_flag);
 	}
 	
@@ -5245,7 +5245,7 @@ void replicate(struct nestContainer *nest, int lev) {
 }
 
 /* ------------------------------------------------------------------------------ */
-void nestify(struct nestContainer *nest, int nNg, int level, int isGeog) {
+void nestify(void *API, struct nestContainer *nest, int nNg, int level, int isGeog) {
 	/* nNg -> number of nested grids */
 	/* level contains the number of times this function was called recursively.
 	   Start with 0 in first call and this counter is increased internally */
@@ -5264,7 +5264,7 @@ void nestify(struct nestContainer *nest, int nNg, int level, int isGeog) {
 	last_iter = (int)(nest->dt[level-1] / nest->dt[level]);  /* No truncations here */
 	nhalf = (int)((float)last_iter / 2);           /* */
 	for (j = 0; j < last_iter; j++) {
-		edge_communication(nest, level, j);
+		edge_communication(API, nest, level, j);
 		mass_conservation(nest, isGeog, level);
 
 		if (nest->do_max_level)    update_max(nest);             /* This makes sure all time steps are visited */
@@ -5272,7 +5272,7 @@ void nestify(struct nestContainer *nest, int nNg, int level, int isGeog) {
 
 		/* MAGIC happens here */
 		if (nNg != 1)
-			nestify(nest, nNg - 1, level + 1, isGeog);
+			nestify(API, nest, nNg - 1, level + 1, isGeog);
 
 		moment_conservation(nest, isGeog, level);
 		replicate(nest, level);
@@ -5311,9 +5311,9 @@ void resamplegrid(struct nestContainer *nest, int nNg) {
 }
 
 /* ------------------------------------------------------------------------------ */
-void edge_communication(struct nestContainer *nest, int lev, int i_time) {
-	interp_edges(nest, nest->fluxm_a[lev-1], nest->fluxm_a[lev], "M", lev, i_time);
-	interp_edges(nest, nest->fluxn_a[lev-1], nest->fluxn_a[lev], "N", lev, i_time);
+void edge_communication(void *API, struct nestContainer *nest, int lev, int i_time) {
+	interp_edges(API, nest, nest->fluxm_a[lev-1], nest->fluxm_a[lev], "M", lev, i_time);
+	interp_edges(API, nest, nest->fluxn_a[lev-1], nest->fluxn_a[lev], "N", lev, i_time);
 }
 
 /* ------------------------------------------------------------------------------ */
