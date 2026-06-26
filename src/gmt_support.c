@@ -14308,7 +14308,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	/* If the user omitted the reference point (e.g., -Td or -Tm), inject a default one (jTR = Top-Right inside) */
 	if (text[0] == 'd' || text[0] == 'm') {
 		if (text[1] == '+' || text[1] == '\0') {
-			snprintf(refpoint_str, GMT_LEN256, "%cjTR%s", text[0], &text[1]);
+			snprintf(refpoint_str, GMT_LEN256-1, "%cjTR%s", text[0], &text[1]);
 			parse_text = refpoint_str;
 		}
 	}
