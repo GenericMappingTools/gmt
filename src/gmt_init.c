@@ -8903,7 +8903,8 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	GMT_Usage (API, 3, "%s Give <xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] of bounding rectangle in projected coordinates [meters].", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Set reference point and dimensions of the inset:", GMT_LINE_BULLET);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
-	GMT_Usage (API, 3, "Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "Append +w<width>[<u>][%%][/<height>[<u>][%%]] of bounding rectangle (<u> is a unit from %s). "
+		"Append %% instead of a unit to set that dimension as a percentage of the map width or height, respectively.", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
 		GMT_Usage (API, 2, "Append +s<file> to save inset lower left corner and dimensions to <file>.");

@@ -7045,6 +7045,12 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B, bool cli
 				return;
 		}
 		if (B->refpoint) {	/* Got a geographic center point and width/height for a rectangular box */
+			if (B->fraction[GMT_X] || B->fraction[GMT_Y]) {	/* One or both dimensions were given as %% of the map width/height */
+				if (B->fraction[GMT_X]) B->dim[GMT_X] = B->scl[GMT_X] * GMT->current.proj.rect[XHI];
+				if (B->fraction[GMT_Y]) B->dim[GMT_Y] = B->scl[GMT_Y] * GMT->current.proj.rect[YHI];
+				else if (B->dim[GMT_Y] == 0.0) B->dim[GMT_Y] = B->dim[GMT_X];	/* Square inset from single % width */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map inset dimensions resolved from percentages to %g/%g inches\n", B->dim[GMT_X], B->dim[GMT_Y]);
+			}
 			gmt_M_memcpy (dim, B->dim, 2, double);		/* Duplicate the width/height of rectangle */
 			if (B->unit) {	/* Gave dimensioned box */
 				for (k = 0; k < 2; k++) {
