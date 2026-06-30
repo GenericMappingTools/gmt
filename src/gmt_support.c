@@ -13953,8 +13953,9 @@ bool gmt_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSET *B) {
 	/* Parse the map inset option, which comes in two flavors:
 	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
-	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
+	 * 2) -Dg|j|J|n|x[<refpoint>]+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
 	 *    Note: the [+s<file>] is only valid in classic mode (via psbasemap)
+	 *    If <refpoint> (and its g|j|J|n|x code) is entirely omitted, we default to jTR (Top-Right inside)
 	 *
 	 * For backwards compatibility we also check the deprecated form of (1):
 	 *    [<unit>]<xmin/xmax/ymin/ymax>
@@ -13976,12 +13977,21 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 	/* Determine if we got an reference point or a region */
 
-	if (strchr (GMT_REFPOINT_CODES, text[0])) {	/* Did the reference point thing. */
+	/* Inject default reference point (jTR) if omitted by user --- */
+	char refpoint_str[GMT_LEN256];
+	char *parse_text = text;
+	/* If the user omitted the reference point (e.g., -D+w5c), inject a default one (jTR = Top-Right inside) */
+	if (text[0] == '+' || text[0] == '\0') {
+		snprintf (refpoint_str, GMT_LEN256-1, "jTR%s", text);
+		parse_text = refpoint_str;
+	}
+
+	if (strchr (GMT_REFPOINT_CODES, parse_text[0])) {	/* Did the reference point thing. */
 		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
-		if ((B->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
+		if ((B->refpoint = gmt_get_refpoint (GMT, parse_text, option)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map inset reference point was not accepted\n", option);
 			gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 			return (1);	/* Failed basic parsing */

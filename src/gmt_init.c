@@ -8905,6 +8905,7 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 	GMT_Usage (API, 3, "Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
+	GMT_Usage (API, -2, "If <refpoint> is omitted, the inset defaults to the top-right corner inside the map frame (using jTR).");
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
 		GMT_Usage (API, 2, "Append +s<file> to save inset lower left corner and dimensions to <file>.");
 		GMT_Usage (API, 2, "Append +t to translate plot origin to the lower left corner of the inset.");
