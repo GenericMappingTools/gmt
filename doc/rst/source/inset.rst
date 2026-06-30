@@ -150,6 +150,21 @@ To make a simple basemap plot called inset.pdf that demonstrates the inset modul
     gmt text -F+f18p+cBL+tMAP -Dj0.2i
   gmt end
 
+
+This example creates a main map of the Dominican Republic (DO) and adds an inset 
+showing the broader Caribbean region (IHO27). The inset size is automatically 
+determined from the projection specified in inset begin (-JM5c) together with the 
+region (-RIHO27), preserving the map aspect ratio without requiring explicit inset dimensions.
+
+::
+
+  gmt begin inset pdf
+	gmt coast -RDO+R1 -JM15c -Baf -Gbrown -Sazure1 -N1 -EDO+gbisque
+	gmt inset begin -DjTR+o0.2c -F+gwhite+p1p+c0.1c+s -JM5c -RIHO27
+		gmt coast -Gbrown -B0 -EDO+gbisque
+	gmt inset end
+  gmt end
+
 See Also
 --------
 
