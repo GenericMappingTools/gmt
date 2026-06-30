@@ -53,8 +53,8 @@ Required Arguments (begin mode)
 
     .. include:: explain_refpoint.rst_
 
-    If *refpoint* is omitted, the map inset is placed by default in the upper-left corner of the map
-    (using **jTL**).
+    If *refpoint* is omitted, the map inset is placed by default in the upper-right corner of the map
+    (using **jTR**).
 
     Alternatively, Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **+r** if the coordinates instead are the lower left and

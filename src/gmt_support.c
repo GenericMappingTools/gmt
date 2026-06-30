@@ -13955,7 +13955,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
 	 * 2) -Dg|j|J|n|x[<refpoint>]+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
 	 *    Note: the [+s<file>] is only valid in classic mode (via psbasemap)
-	 *    If <refpoint> (and its g|j|J|n|x code) is entirely omitted, we default to jTL (Top-Left inside)
+	 *    If <refpoint> (and its g|j|J|n|x code) is entirely omitted, we default to jTR (Top-Right inside)
 	 *
 	 * For backwards compatibility we also check the deprecated form of (1):
 	 *    [<unit>]<xmin/xmax/ymin/ymax>
@@ -13977,12 +13977,12 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 	/* Determine if we got an reference point or a region */
 
-	/* Inject default reference point (jTL) if omitted by user --- */
+	/* Inject default reference point (jTR) if omitted by user --- */
 	char refpoint_str[GMT_LEN256];
 	char *parse_text = text;
-	/* If the user omitted the reference point (e.g., -D+w5c), inject a default one (jTL = Top-Left inside) */
+	/* If the user omitted the reference point (e.g., -D+w5c), inject a default one (jTR = Top-Right inside) */
 	if (text[0] == '+' || text[0] == '\0') {
-		snprintf (refpoint_str, GMT_LEN256-1, "jTL%s", text);
+		snprintf (refpoint_str, GMT_LEN256-1, "jTR%s", text);
 		parse_text = refpoint_str;
 	}
 

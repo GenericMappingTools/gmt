@@ -52,7 +52,7 @@ Synopsis
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.). If *refpoint* is omitted, the map inset is placed by default in the
-    upper-left corner of the map (using **jTL**).
+    upper-right corner of the map (using **jTR**).
     Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
