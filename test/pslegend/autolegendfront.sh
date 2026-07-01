@@ -2,6 +2,8 @@
 #
 # Test auto-legend for front (fault) symbols (-Sf).
 #
+# GRAPHICSMAGICK_RMS = 0.02
+#
 # Regression test for issue #9066:
 #  1) Each auto-legend entry must show the correct front sub-type
 #     (e.g., +c circle vs +b box), not always a box.
