@@ -1,4 +1,5 @@
 .. index:: ! image
+.. index:: ! psimage
 .. include:: module_core_purpose.rst_
 
 *****
@@ -6,6 +7,10 @@ image
 *****
 
 |image_purpose|
+
+.. note::
+
+    The module name is **psimage** in GMT classic mode.
 
 Synopsis
 --------
@@ -20,7 +25,10 @@ Synopsis
 [ |-I| ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
+[ |-K| ]
 [ |-M| ]
+[ |-O| ]
+[ |-P| ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -29,8 +37,6 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
-
-.. module_common_begins
 
 Description
 -----------
@@ -78,7 +84,7 @@ Optional Arguments
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Specify image size in one of two ways:
-    
+
     - **+n** - Append \ *nx*\ [/*ny*] to replicate the (scaled) image *nx* times horizontally and
       *ny* times vertically. If *ny* is omitted, it will be identical to *nx* [Default is 1/1].
     - **+r** - Specify *dpi* to set the dpi of the image in dots per inch, or append **c**
@@ -161,50 +167,87 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: common_classic.rst_
+
 Notes
 -----
 
 The |-G| and |-I| options are for raster images only. They have
 no effect when placing Encapsulated *PostScript* files.
 
-.. module_common_ends
-
 Examples
 --------
 
-.. include:: oneliner_info.rst_
+.. tab-set::
 
-To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
-accordingly), use::
+    .. tab-item:: GMT modern mode
+        :sync: modern
 
-    gmt image @needle.jpg -Dx0/0+w7c -pdf plot
+        .. include:: oneliner_info.rst_
 
-To plot the same file but reversing the bands, use::
+        To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
+        accordingly), use::
 
-    gmt image @needle.jpg+b2,1,0 -Dx0/0+w7c -pdf plot
+            gmt image @needle.jpg -Dx0/0+w7c -pdf plot
 
-To only plot its red band as gray shade, use::
+        To plot the same file but reversing the bands, use::
 
-    gmt image @needle.jpg+b0 -Dx0/0+w7c -pdf plot
+            gmt image @needle.jpg+b2,1,0 -Dx0/0+w7c -pdf plot
 
-To include an Encapsulated PostScript file gallo.eps with its upper
-right corner 2 inch to the right and 1 inch up from the current
-location, and have its width scaled to 3 inches, while keeping the
-aspect ratio, use::
+        To only plot its red band as gray shade, use::
 
-    gmt image @gallo.eps -Dx2i/1i+jTR+w3i -pdf image
+            gmt image @needle.jpg+b0 -Dx0/0+w7c -pdf plot
 
-To replicate the 1-bit remote raster image vader1.png, colorize it
-(dark gray background and yellow foreground), and setting each of 6 by 12 tiles
-to be 2.5 cm wide, use::
+        To include an Encapsulated PostScript file gallo.eps with its upper
+        right corner 2 inch to the right and 1 inch up from the current
+        location, and have its width scaled to 3 inches, while keeping the
+        aspect ratio, use::
 
-    gmt image @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -pdf image
+            gmt image @gallo.eps -Dx2i/1i+jTR+w3i -pdf image
+
+        To replicate the 1-bit remote raster image vader1.png, colorize it
+        (dark gray background and yellow foreground), and setting each of 6 by 12 tiles
+        to be 2.5 cm wide, use::
+
+            gmt image @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -pdf image
+
+    .. tab-item:: GMT classic mode
+        :sync: classic
+
+        To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
+        accordingly), use::
+
+            gmt psimage @needle.jpg -Dx0/0+w7c > image.ps
+
+        To plot the same file but reversing the bands, use::
+
+            gmt psimage @needle.jpg+b2,1,0 -Dx0/0+w7c > image.ps
+
+        To only plot its red band as gray shade, use::
+
+            gmt psimage @needle.jpg+b0 -Dx0/0+w7c > image.ps
+
+        To include an Encapsulated PostScript file gallo.eps with its upper
+        right corner 2 inch to the right and 1 inch up from the current
+        location, and have its width scaled to 3 inches, while keeping the
+        aspect ratio, use::
+
+            gmt psimage @gallo.eps -Dx2i/1i+jTR+w3i > image.ps
+
+        To replicate the 1-bit remote raster image vader1.png, colorize it
+        (dark gray background and yellow foreground), and setting each of 6 by 12 tiles
+        to be 2.5 cm wide, use::
+
+            gmt psimage @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -P > image.ps
 
 See Also
 --------
 
 :doc:`gmt`,
-:doc:`gmtcolors`, :doc:`gmtlogo`
-:doc:`legend`, :doc:`colorbar`
+:doc:`gmtcolors`, :doc:`gmtlogo`,
+:doc:`legend`, :doc:`colorbar`,
 :doc:`plot`,
-:doc:`psconvert`
+:doc:`psconvert`,
+:doc:`pslegend <legend>`,
+:doc:`psscale <colorbar>`,
+:doc:`psxy <plot>`
