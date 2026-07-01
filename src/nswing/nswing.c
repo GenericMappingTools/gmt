@@ -474,7 +474,7 @@ struct NSWING_CTRL {
 	bool    out_energy, max_energy, out_power, max_power, out_sww, out_most;
 	bool    out_3D, surf_level, max_level, max_velocity, water_depth, do_Okada;
 	bool    do_tracers, out_maregs_nc, out_oranges_nc, do_HotStart, write_grids, isGeog;
-	bool    maregs_in_input, out_momentum, got_R, with_land, IamCompiled, saveNested;
+	bool    maregs_in_input, out_momentum, got_R, with_land, saveNested;
 	bool    verbose, out_velocity, out_velocity_x, out_velocity_y, out_velocity_r, out_maregs_velocity;
 	bool    cumpt, do_2Dgrids, do_maxs;
 	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file;
@@ -524,7 +524,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	bool    do_Okada = false, do_tracers = false, out_maregs_nc = false, out_oranges_nc = false;
 	bool    do_HotStart = false, write_grids = false, isGeog = false;
 	bool    maregs_in_input = false, out_momentum = false, got_R = false;
-	bool    with_land = false, IamCompiled = false, saveNested = false, verbose = false;
+	bool    with_land = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false;
 	char    buf[GMT_LEN512] = {""};
@@ -581,9 +581,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			switch (argv[i][1]) {
 				case 'c':
 					add_const = atof(&argv[i][2]);
-					break;
-				case 'e':
-					IamCompiled = true;
 					break;
 				case 'f':	/* */
 					isGeog = true;
@@ -1051,7 +1048,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	Ctrl->out_momentum = out_momentum;
 	Ctrl->got_R = got_R;
 	Ctrl->with_land = with_land;
-	Ctrl->IamCompiled = IamCompiled;
 	Ctrl->saveNested = saveNested;
 	Ctrl->verbose = verbose;
 	Ctrl->out_velocity = out_velocity;
@@ -1140,7 +1136,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	int     num_of_nestGrids = 0;        /* Number of nesting grids */
 	bool    bat_in_input = false, source_in_input = false, write_grids = false, isGeog = false;
 	bool    maregs_in_input = false, out_momentum = false, got_R = false;
-	bool    with_land = false, IamCompiled = false, do_nestum = false, saveNested = false, verbose = false;
+	bool    with_land = false, do_nestum = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false;
 	int     KbGridCols = 1, KbGridRows = 1; /* Number of rows & columns IF computing a grid of 'Kabas' */
@@ -1262,7 +1258,6 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	out_momentum = Ctrl->out_momentum;
 	got_R = Ctrl->got_R;
 	with_land = Ctrl->with_land;
-	IamCompiled = Ctrl->IamCompiled;
 	saveNested = Ctrl->saveNested;
 	verbose = Ctrl->verbose;
 	out_velocity = Ctrl->out_velocity;
