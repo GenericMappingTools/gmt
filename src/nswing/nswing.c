@@ -280,7 +280,7 @@ void tm (double lon, double lat, double *x, double *y, double central_meridian, 
 double uscal(double x1, double x2, double x3, double c, double cc, double dp);
 double udcal(double x1, double x2, double x3, double c, double cc, double dp);
 unsigned int gmt_bcr_prep (struct grd_header hdr, double xx, double yy, double wx[], double wy[]);
-double GMT_get_bcr_z(double *grd, struct grd_header hdr, double xx, double yy);
+double GMT_get_bcr_z(double *grd, double *bat, struct grd_header hdr, double xx, double yy);
 void update_max(struct nestContainer *nest);
 void update_max_velocity(struct nestContainer *nest);
 
@@ -397,9 +397,9 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose(API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage(API, 0, "usage: %s bathy.grd initial.grd [-1<bat_lev1>] [-2<bat_lev2>] [-3<...>] -G<name>[+m],<int> "
-		"[-A<fname.sww>] [-B<BCfile>] [-C] [-D] [-E[p][m][,decim]] [-Fx_epic/y_epic/dip/strike/rake/slip/length/width/topDepth] "
-		"[-Fk[c]<w/e/s/n>] [-H] [-H<momentM,momentN>[,t]] [-J<time_jump>] [-L[name1,name2]] "
-		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [%s] [-S[x|y|n][+m][+s]] [-T<mareg>[+o<outmaregs>][+t<int>]] "
+		"[-A<fname.sww>] [-C] [-D] [-E[p][m][,decim]] [-Fx_epic/y_epic/dip/strike/rake/slip/length/width/topDepth] "
+		"[-Fk[c]<w/e/s/n>] [-H] [-H<momentM,momentN>[,t]] [-P<time_jump>] [-L[name1,name2]] "
+		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [-O<BCfile>] [%s] [-S[x|y|n][+m][+s]] [-T<mareg>[+o<outmaregs>][+t<int>]] "
 		"[-Q<z_offset>] [-X<manning0[,...]>] -t<dt> [%s] [-x<n>] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -411,7 +411,6 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, 1, "\n-1<grd> -2<grd> ... -9<grd> Nested bathymetry grids (one per nesting level).");
 	GMT_Usage(API, 1, "\n-A<name> Save result as a .SWW ANUGA format file.");
 	//GMT_Usage(API, 1, "\n-n<base> Basename for MOST triplet files (no extension).");
-	//GMT_Usage(API, 1, "\n-B<BCfile> Name of a BoundaryCondition ASCII file.");
 	GMT_Usage(API, 1, "\n-C Add Coriolis effect.");
 	GMT_Usage(API, 1, "\n-D Write grids with the total water depth.");
 	GMT_Usage(API, -2, "These grids will have wave height on ocean and water thickness on land.");
@@ -434,10 +433,10 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, 1, "\n-H Write grids with the momentum (velocity times water depth).");
 	GMT_Usage(API, -2, "-H<fname_momentM,fname_momentN>[,t]: Hot start using these moment grids. Optional 't' is the hot-start "
 		"time (also needs the surface displacement corresponding to the time of these grids).");
-	GMT_Usage(API, 1, "\n-J<time_jump>");
+	GMT_Usage(API, 1, "\n-P<time_jump>");
 	GMT_Usage(API, -2, "Do not write grids or maregraphs for times before <time_jump> (seconds).");
 	//GMT_Usage(API, -2, "When doing nested grids, append +<time> to NOT start nested-grid computations before this time has "
-		//"elapsed. Allowed forms: -Jt1, -J+t2, -Jt1+t2 or -Jt1 -J+t2.");
+		//"elapsed. Allowed forms: -Pt1, -P+t2, -Pt1+t2 or -Pt1 -P+t2.");
 	GMT_Usage(API, 1, "\n-L");
 	GMT_Usage(API, -2, "Use linear approximation in the moment conservation equations (faster but less good).");
 	GMT_Usage(API, -2, "-L<in_fname>,<out_fname>");
@@ -448,12 +447,12 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 		"append a name after '-' to change it, e.g. -M-beach_long.grd). Append '+' for a mask with the Run In extent (behaves like -M-). "
 		"-M may be repeated, e.g. -M -M- -M+ computes all three. With -G the 'long' and 'short' beach arrays are also saved in the .nc file.");
 	GMT_Usage(API, 1, "\n-N<n_cycles> Number of cycles [Default 1010].");
-	//GMT_Usage(API, 1, "\n-O<int>,<outfname> Interval at which maregraphs are written to the <outfname> maregraph file.");
+	GMT_Usage(API, 1, "\n-O<BCfile> Name of a BoundaryCondition ASCII file (experimental).");
 	GMT_Option(API, "R");
 	GMT_Usage(API, -2, "Output grids only in the sub-region enclosed by <west/east/south/north>.");
 	GMT_Usage(API, 1, "\n-S Write grids with the velocity (names get _U and _V suffixes).");
 	GMT_Usage(API, -2, "Use x or y to save only one component, or n for no velocity grids (maregs only). Append +m to also write "
-		"velocity (vx,vy) at maregraph locations (needs -T and/or -O). Append +s to write the max speed (|v|) ('_max_speed' suffix). "
+		"velocity (vx,vy) at maregraph locations (needs -T). Append +s to write the max speed (|v|) ('_max_speed' suffix). "
 		"Use the 'n' flag to NOT output the U and V components, e.g. -Sn+s.");
 	GMT_Usage(API, 1, "\n-T<mareg>[+o<outmaregs>][+t<int>] Save maregraph (virtual tide-gauge) time series.");
 	GMT_Usage(API, -2, "<mareg> is the file with the (x y) locations of the virtual maregraphs. Append +o<outmaregs> to set the "
@@ -612,7 +611,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					if (argv[i][2] == 'l')		/* Output land nodes in SWW file */
 						with_land = true;
 					break;
-				case 'B':	/* File with the boundary condition (experimental) */
+				case 'O':	/* File with the boundary condition (experimental) */
 					bnc_file = &argv[i][2];
 					break;
 				case 'C':	/* Output momentum grids */
@@ -753,7 +752,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						}
 					}
 					break;
-				case 'J':	/* Jumping options. Accept either -Jn, -J+m, -Jn+m or -Jn -J+m */
+				case 'P':	/* Jumping options. Accept either -Pn, -P+m, -Pn+m or -Pn -P+m */
 					sscanf(&argv[i][2], "%s", str_tmp);
 					if ((pch = strstr(str_tmp,"+")) != NULL) {
 						sscanf((++pch), "%lf", &nest.run_jump_time);
@@ -762,7 +761,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					}
 					if (argv[i][2])
 						sscanf(&argv[i][2], "%lf", &time_jump);
-
 					break;
 				case 'L':	/* Use linear approximation or Lagrangean tracers*/
 					if (!argv[i][2])
@@ -807,18 +805,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					break;
 				case 'N':	/* Number of cycles to compute */
 					n_of_cycles = atoi(&argv[i][2]);
-					break;
-				case 'O':	/* Time interval and fname for maregraph data. Use only when mareg locations were sent in as arg */
-					sscanf(&argv[i][2], "%[^\n]s", str_tmp);
-					if ((pch = strstr(str_tmp,",")) != NULL) {
-						pch[0] = '\0';
-						cumint = atoi(str_tmp);
-						strcpy(hcum, ++pch);
-					}
-					else { 
-						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -O option, must provide interval and output maregs file name\n");
-						error++;
-					}
 					break;
 				case 'Q':	/* Vertical offset (simulate tide) */
 					if (argv[i][2])
@@ -5243,14 +5229,14 @@ void resamplegrid(struct nestContainer *nest, int nNg) {
 			for (col = 0; col < nest->hdr[k].nx; col++, ij++) {
 				if (nest->bat[k][ij] < 0) continue;
 				xx = nest->hdr[k].x_min + col * nest->hdr[k].x_inc;
-				nest->etaa[k][ij]    = GMT_get_bcr_z(nest->etaa[k-1],    nest->hdr[k-1], xx, yy);
-				nest->etad[k][ij]    = GMT_get_bcr_z(nest->etad[k-1],    nest->hdr[k-1], xx, yy);
-				nest->fluxm_a[k][ij] = GMT_get_bcr_z(nest->fluxm_a[k-1], nest->hdr[k-1], xx, yy);
-				nest->fluxn_a[k][ij] = GMT_get_bcr_z(nest->fluxn_a[k-1], nest->hdr[k-1], xx, yy);
-				nest->fluxm_d[k][ij] = GMT_get_bcr_z(nest->fluxm_d[k-1], nest->hdr[k-1], xx, yy);
-				nest->fluxn_d[k][ij] = GMT_get_bcr_z(nest->fluxn_d[k-1], nest->hdr[k-1], xx, yy);
-				nest->htotal_a[k][ij]= GMT_get_bcr_z(nest->htotal_a[k-1],nest->hdr[k-1], xx, yy);
-				nest->htotal_d[k][ij]= GMT_get_bcr_z(nest->htotal_d[k-1],nest->hdr[k-1], xx, yy);
+				nest->etaa[k][ij]    = GMT_get_bcr_z(nest->etaa[k-1],    nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->etad[k][ij]    = GMT_get_bcr_z(nest->etad[k-1],    nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->fluxm_a[k][ij] = GMT_get_bcr_z(nest->fluxm_a[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->fluxn_a[k][ij] = GMT_get_bcr_z(nest->fluxn_a[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->fluxm_d[k][ij] = GMT_get_bcr_z(nest->fluxm_d[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->fluxn_d[k][ij] = GMT_get_bcr_z(nest->fluxn_d[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->htotal_a[k][ij]= GMT_get_bcr_z(nest->htotal_a[k-1],nest->bat[k-1], nest->hdr[k-1], xx, yy);
+				nest->htotal_d[k][ij]= GMT_get_bcr_z(nest->htotal_d[k-1],nest->bat[k-1], nest->hdr[k-1], xx, yy);
 			}
 		}
 	}
@@ -5738,10 +5724,15 @@ void tm(double lon, double lat, double *x, double *y, double central_meridian, d
 }
 
 /* ---------------------------------------------------------------------------------------- */
-double GMT_get_bcr_z(double *grd, struct grd_header hdr, double xx, double yy) {
+double GMT_get_bcr_z(double *grd, double *bat, struct grd_header hdr, double xx, double yy) {
 	/* Given xx, yy in user's grid file (in non-normalized units)
 	   this routine returns the desired bicubic interpolated value at xx, yy
-	   ADAPTED from GMT's routine with the same name. */
+	   ADAPTED from GMT's routine with the same name.
+	   'bat' is the bathymetry (positive down) on the same grid as 'grd'; land nodes
+	   (bat < 0) are excluded from the convolution and wsum is renormalized over the
+	   remaining wet nodes. This keeps land-side terrain elevations (stored in etad/etc
+	   on dry nodes) from bleeding into coastal wet-node interpolates as invented values;
+	   pass bat = NULL to fall back to the plain, unmasked convolution. */
 
 	unsigned int i, j, ij, node;
 	double retval, wsum, wx[4], wy[4], w;
@@ -5754,6 +5745,7 @@ double GMT_get_bcr_z(double *grd, struct grd_header hdr, double xx, double yy) {
 	for (j = 0; j < 4; j++) {
 		for (i = 0; i < 4; i++) {
 			node = ij + i;
+			if (bat[node] <= 0) continue;	/* Skip land source nodes */
 			w = wx[i] * wy[j];
 			retval += grd[node] * w;
 			wsum += w;

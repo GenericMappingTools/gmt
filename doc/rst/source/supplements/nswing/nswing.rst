@@ -19,7 +19,6 @@ Synopsis
 **-t**\ *dt*
 [ **-1**\ *bat_lev1* ] [ **-2**\ *bat_lev2* ] [ **-3**\ *...* ]
 [ |-A|\ *fname.sww* ]
-[ |-B|\ *BCfile* ]
 [ |-C| ]
 [ |-D| ]
 [ |-E|\ [**p**][**m**][,\ *decim*] ]
@@ -27,11 +26,11 @@ Synopsis
 [ |-F|\ **k**\ [**c**]\ *w/e/s/n* ]
 [ |-G|\ *stem*\ [**+l**\ *ev*],\ *int* ]
 [ |-H|\ [*momentM,momentN*\ [,\ *t*]] ]
-[ |-J|\ *time_jump*\ [**+t**\ *run_time_jump*] ]
+[ |-P|\ *time_jump*\ [**+t**\ *run_time_jump*] ]
 [ |-L|\ [*name1,name2*] ]
 [ |-M|\ [**-**\|\ **+**\ [*maskname*]] ]
 [ |-N|\ *n_cycles* ]
-[ |-O|\ *int*,\ *outfname* ]
+[ |-O|\ *BCfile* ]
 [ |-Q|\ *z_offset* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**] ]
@@ -92,11 +91,6 @@ Optional Arguments
 **-n**\ *base*
     Basename for MOST triplet files (no extension).
 
-.. _-B:
-
-**-B**\ *BCfile*
-    Name of a Boundary Condition ASCII file.
-
 .. _-C:
 
 **-C**
@@ -156,13 +150,13 @@ Optional Arguments
       moment grids. The optional *t* is the hot-start time (also needs the
       surface displacement corresponding to the time of these grids).
 
-.. _-J:
+.. _-P:
 
-**-J**\ *time_jump*\ [**+t**\ *run_time_jump*]
+**-P**\ *time_jump*\ [**+t**\ *run_time_jump*]
     Do not write grids or maregraphs for times before *time_jump* (seconds).
     When doing nested grids, append **+**\ *time* to NOT start nested-grid
-    computations before this time has elapsed. Allowed forms: **-J**\ *t1*,
-    **-J+**\ *t2*, **-J**\ *t1*\ **+**\ *t2* or **-J**\ *t1* **-J+**\ *t2*.
+    computations before this time has elapsed. Allowed forms: **-P**\ *t1*,
+    **-P+**\ *t2*, **-P**\ *t1*\ **+**\ *t2* or **-P**\ *t1* **-P+**\ *t2*.
 
 .. _-L:
 
@@ -192,8 +186,8 @@ Optional Arguments
 
 .. _-O:
 
-**-O**\ *int*,\ *outfname*
-    Interval at which maregraphs are written to the *outfname* maregraph file.
+**-O**\ *BCfile*
+    Name of a Boundary Condition ASCII file (experimental).
 
 .. _-Q:
 
@@ -213,7 +207,7 @@ Output grids only in the sub-region enclosed by *west/east/south/north*.
     Write grids with the velocity (names get *_U* and *_V* suffixes). Use **x**
     or **y** to save only one component, or **n** for no velocity grids
     (maregraphs only). Append **+m** to also write velocity (vx,vy) at maregraph
-    locations (needs **-T** and/or **-O**). Append **+s** to write the max speed
+    locations (needs **-T**). Append **+s** to write the max speed
     (|v|) (*_max_speed* suffix). Use the **n** flag to NOT output the U and V
     components, e.g. **-Sn+s**.
 
