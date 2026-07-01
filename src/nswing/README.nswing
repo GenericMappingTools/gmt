@@ -1,11 +1,10 @@
 
 NSWING Supplemental Package
-Distributed under the MIT License; see file
-LICENSE.TXT in main GMT directory.
+Distributed under the MIT License
 
 ------------------------------------------------------
-Author:		Joaquim Luis, Miguel Miranda
-Date:		June 1, 2026
+Authors:	Joaquim Luis, Miguel Miranda
+Date:		July 1, 2026
 Version:	6 (for GMT 6 release).
 ------------------------------------------------------
 
@@ -17,7 +16,4 @@ This directory contains:
 
 Documentation via RST files produce HTML and MAN pages that
 give full description of the program interfaces.
-
-
-* Acknowledgement
 

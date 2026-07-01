@@ -1,0 +1,277 @@
+.. index:: ! nswing
+.. include:: ../module_supplements_purpose.rst_
+
+******
+nswing
+******
+
+.. only:: not man
+
+    |nswing_purpose|
+
+Synopsis
+--------
+
+.. include:: ../../common_SYN_OPTs.rst_
+
+**nswing**
+*bathy.grd* *initial.grd*
+**-t**\ *dt*
+[ **-1**\ *bat_lev1* ] [ **-2**\ *bat_lev2* ] [ **-3**\ *...* ]
+[ |-A|\ *fname.sww* ]
+[ |-B|\ *BCfile* ]
+[ |-C| ]
+[ |-D| ]
+[ |-E|\ [**p**][**m**][,\ *decim*] ]
+[ |-F|\ *dip/strike/rake/slip/length/width/topDepth/x_epic/y_epic* ]
+[ |-F|\ **k**\ [**c**]\ *w/e/s/n* ]
+[ |-G|\ *stem*\ [**+l**\ *ev*],\ *int* ]
+[ |-H|\ [*momentM,momentN*\ [,\ *t*]] ]
+[ |-J|\ *time_jump*\ [**+t**\ *run_time_jump*] ]
+[ |-L|\ [*name1,name2*] ]
+[ |-M|\ [**-**\|\ **+**\ [*maskname*]] ]
+[ |-N|\ *n_cycles* ]
+[ |-O|\ *int*,\ *outfname* ]
+[ |-Q|\ *z_offset* ]
+[ |SYN_OPT-R| ]
+[ |-S|\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**] ]
+[ |-T|\ *int*,\ *mareg*\ [,\ *outmaregs*\ [**+n**]] ]
+[ |-X|\ *manning0*\ [,\ *...*] ]
+[ |-Z|\ *name*\ [**+l**\ *ev*],\ *int* ]
+[ **-i** ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
+[ **-x**\ [[-]\ *n*] ]
+[ |SYN_OPT--| ]
+
+|No-spaces|
+
+Description
+-----------
+
+**nswing** is a Non-linear Shallow Water model that propagates a tsunami over a
+bathymetry grid. Starting from a base level bathymetry and an initial-condition
+(source) grid it integrates the shallow water equations in time and writes the
+resulting wave field (water level, velocity, momentum, energy, ...) either as a
+series of GMT grids, a 3D netCDF file, or as time series sampled at virtual
+maregraph (tide-gauge) locations. Nested grids of increasing resolution may be
+used to refine the solution near the coast, and a tsunami source can be generated
+on the fly from Okada fault parameters.
+
+Required Arguments
+------------------
+
+*bathy.grd*
+    The base level bathymetry grid (positive up; negative = below sea level).
+    (See :ref:`Grid File Formats <grd_inout_full>`).
+*initial.grd*
+    The initial-condition (source) grid holding the sea surface displacement at
+    time zero. (See :ref:`Grid File Formats <grd_inout_full>`).
+
+.. _-t:
+
+**-t**\ *dt*
+    Time step (in seconds) for the simulation.
+
+Optional Arguments
+------------------
+
+**-1**\ *bat_lev1* **-2**\ *bat_lev2* ... **-9**\ *bat_lev9*
+    Nested bathymetry grids, one per nesting level. Each level refines the solution inside
+    the area covered by its grid. Warning, the grids must be aligned and have a cell size
+    that is an integer fraction of the previous level. The first level (level 1) is the base
+    bathymetry grid, and the last level (level 9) is the finest grid. The number of levels
+    is determined by the number of **-n** options given. These grids are not trivial to create,
+    the best way is to use the Mirone TINTOL tool.
+
+.. _-A:
+
+**-A**\ *fname.sww*
+    Save the result as a *.sww* ANUGA-format file.
+
+**-n**\ *base*
+    Basename for MOST triplet files (no extension).
+
+.. _-B:
+
+**-B**\ *BCfile*
+    Name of a Boundary Condition ASCII file.
+
+.. _-C:
+
+**-C**
+    Add the Coriolis effect.
+
+.. _-D:
+
+**-D**
+    Write grids with the total water depth. These grids will have wave height
+    on the ocean and water thickness on land.
+
+.. _-E:
+
+**-E**\ [**p**][**m**][,\ *decim*]
+    Write grids with energy, or with power if **p** is appended (**-Ep**).
+    Append **m** to save only a single grid holding the max values. This can
+    noticeably slow the run, so optionally append a *decim* decimator factor
+    after the comma (causes aliasing visible under shaded illumination). The
+    file name comes from *name* in **-G**/**-Z** complemented with a *_max*
+    prefix; saving of multiple grids is then disabled. A 3D netCDF file with
+    wave heights is still possible with **-Z**.
+
+.. _-F:
+
+**-F**\ *dip/strike/rake/slip/length/width/topDepth/x_epic/y_epic*
+    Okada fault parameters used to build the source. *dip*, *strike* (azimuth),
+    *rake*, *slip* (m), *length*, *width* and *topDepth* (depth from the
+    sea-bottom); *x_epic*, *y_epic* are the x and y coordinates of the beginning
+    of the fault trace. All dimensions must be in km.
+
+**-F**\ **k**\ *west/east/south/north*
+    Build a prism source with these limits and a height of 1 meter.
+
+    - **-Fkc**\ *x/y/nx/ny* - alternatively give the prism size as centre *x/y*
+      and *nx/ny* half-width cell numbers.
+    - **-Fk**\ *...*\ **/**\ *RxC* - loop over a matrix of size *R* by *C*
+      starting at the Lower Left Corner given by *w/e/s/n*.
+    - **-Fk**\ *...*\ **/**\ *dx*\ [/*dy*] - given the *w/e/s/n* region (pixel
+      registration) loop over the prisms obtained by dividing the region in
+      increments of *dx/dy* (if *dy* is not given, *dy* = *dx*).
+
+    Using **-Fk** sets the output maregraph file to netCDF, unless rows = cols = 1.
+
+.. _-G:
+
+**-G**\ *stem*\ [**+l**\ *ev*],\ *int*
+    Write grids at the *int* time intervals; files are named *stem#*\ **.grd**.
+    When doing nested grids, append **+l**\ *ev* to save that particular level
+    (only one level is allowed).
+
+.. _-H:
+
+**-H**
+    Write grids with the momentum (velocity times water depth).
+
+    - **-H**\ *fname_momentM,fname_momentN*\ [,\ *t*] - hot start using these
+      moment grids. The optional *t* is the hot-start time (also needs the
+      surface displacement corresponding to the time of these grids).
+
+.. _-J:
+
+**-J**\ *time_jump*\ [**+t**\ *run_time_jump*]
+    Do not write grids or maregraphs for times before *time_jump* (seconds).
+    When doing nested grids, append **+**\ *time* to NOT start nested-grid
+    computations before this time has elapsed. Allowed forms: **-J**\ *t1*,
+    **-J+**\ *t2*, **-J**\ *t1*\ **+**\ *t2* or **-J**\ *t1* **-J+**\ *t2*.
+
+.. _-L:
+
+**-L**
+    Use the linear approximation in the moment conservation equations (faster
+    but less accurate).
+
+    - **-L**\ *in_fname,out_fname* - do Lagrangian tracers, where *in_fname* is
+      the tracers initial-position file and *out_fname* the file to hold the
+      results.
+
+.. _-M:
+
+**-M**\ [**-**\|\ **+**\ [*maskname*]]
+    Write a grid with the max water level (name from *name* in **-Z**, *_max*
+    prefix). Append **-** to instead compute the maximum water retreat, written
+    to a mask file (default *long_beach.grd*; append a name after **-** to
+    change it, e.g. **-M-**\ *beach_long.grd*). Append **+** for a mask with the
+    Run In extent (behaves like **-M-**). **-M** may be repeated, e.g.
+    **-M -M- -M+** computes all three. With **-Z** the *long* and *short* beach
+    arrays are also saved in the *.nc* file.
+
+.. _-N:
+
+**-N**\ *n_cycles*
+    Number of cycles in the simulation [Default 1010]. Total simulation time is *n_cycles* times the time step *dt*.
+
+.. _-O:
+
+**-O**\ *int*,\ *outfname*
+    Interval at which maregraphs are written to the *outfname* maregraph file.
+
+.. _-Q:
+
+**-Q**\ *z_offset*
+    Apply a vertical offset to ALL bathymetry grids (e.g. to simulate tide).
+
+.. _-R:
+
+.. |Add_-Rgeo| replace:: |Add_-R_auto_table|
+.. include:: ../../explain_-Rgeo.rst_
+
+Output grids only in the sub-region enclosed by *west/east/south/north*.
+
+.. _-S:
+
+**-S**\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**]
+    Write grids with the velocity (names get *_U* and *_V* suffixes). Use **x**
+    or **y** to save only one component, or **n** for no velocity grids
+    (maregraphs only). Append **+m** to also write velocity (vx,vy) at maregraph
+    locations (needs **-T** and/or **-O**). Append **+s** to write the max speed
+    (|v|) (*_max_speed* suffix). Use the **n** flag to NOT output the U and V
+    components, e.g. **-Sn+s**.
+
+.. _-T:
+
+**-T**\ *int*,\ *mareg*\ [,\ *outmaregs*\ [**+n**]]
+    Interval *int* at which maregraphs are written to the output maregraph file.
+    *mareg* is the file with the (x y) locations of the virtual maregraphs;
+    *outmaregs* is the optional output file. If not provided, the output name is
+    *mareg* with *_auto.dat* appended. Append **+n** to write the maregraphs as
+    a netCDF file.
+
+.. _-X:
+
+**-X**\ *manning0*\ [,\ *manning1*\ [,\ *...*]][**+**\ *depth*]
+    Manning friction coefficients. If only one is provided, use it for all
+    nesting levels; otherwise specify one per level, comma separated. Append
+    **+**\ *depth* to apply Manning only at depths shallower than *depth*
+    (positive up).
+
+.. _-Z:
+
+**-Z**\ *name*\ [**+l**\ *ev*],\ *int*
+    Same as **-G** but saves the result in a 3D netCDF file.
+
+**-i**
+    Do not interpolate the initial surface of nested grids, at time zero, from
+    the mother grids.
+
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: ../../explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-f.rst_
+
+.. include:: ../../explain_core.rst_
+
+.. include:: ../../explain_help.rst_
+
+Examples
+--------
+
+To propagate a tsunami over the bathymetry *bathy.grd* given the source
+*source.grd*, using a 5 second time step and saving the water level every 10
+time steps to grids named *wave#.grd*, try::
+
+    gmt nswing bathy.grd source.grd -t5 -Gwave,10
+
+To run the same simulation but generate the source on the fly from Okada fault
+parameters and sample the wave field at the virtual maregraphs listed in
+*gauges.dat* every 5 time steps, try::
+
+    gmt nswing bathy.grd dummy.grd -t5 -F12/90/90/3/100/50/10/-8/37 -T5,gauges.dat
+
+See Also
+--------
+
+:doc:`gmt </gmt>`,
+:doc:`grdseamount </supplements/potential/grdseamount>`

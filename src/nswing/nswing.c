@@ -1,21 +1,11 @@
 /*--------------------------------------------------------------------
- *	$Id: nswing.c 11410 2019-02-23 17:36:11Z j $
- *
  *	Copyright (c) 2012-2022 by J. Luis and J. M. Miranda
  *
  * 	This program is part of Mirone and is free software; you can redistribute
- * 	it and/or modify it under the terms of the GNU Lesser General Public
- * 	License as published by the Free Software Foundation; either
- * 	version 2.1 of the License, or any later version.
+ * 	it and/or modify it under the terms of the MIT License
  * 
- * 	This program is distributed in the hope that it will be useful,
- * 	but WITHOUT ANY WARRANTY; without even the implied warranty of
- * 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * 	Lesser General Public License for more details.
- *
- *	Contact info: w3.ualg.pt/~jluis/mirone
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
-
 
 /*
  *	Original Fortran version of core hydrodynamic code by J.M. Miranda and COMCOT
@@ -47,12 +37,6 @@
 		moment_L0
 		update_L0
 	}
- *
- *
- * To compile, do for example
- *	cl nswing.c -IC:\programs\compa_libs\netcdf_GIT\compileds\VC12_64\include
- *     C:\programs\compa_libs\netcdf_GIT\compileds\VC12_64\lib\netcdf.lib /DI_AM_C 
- *     /DHAVE_NETCDF /nologo /D_CRT_SECURE_NO_WARNINGS /fp:precise /Ox
  *
  *	Rewritten in C, added number options, etc... By
  *	Joaquim Luis - 2013
@@ -412,7 +396,7 @@ GMT_LOCAL int gmtnswing_write_grid(void *API, char *name, double x_min, double y
 GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose(API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage(API, 0, "usage: %s bathy.grd initial.grd [-1<bat_lev1>] [-2<bat_lev2>] [-3<...>] [-G|Z<name>[+lev],<int>] "
+	GMT_Usage(API, 0, "usage: %s bathy.grd initial.grd [-1<bat_lev1>] [-2<bat_lev2>] [-3<...>] -G<name>[+m],<int> "
 		"[-A<fname.sww>] [-B<BCfile>] [-C] [-D] [-E[p][m][,decim]] [-Fdip/strike/rake/slip/length/width/topDepth/x_epic/y_epic] "
 		"[-Fk[c]<w/e/s/n>] [-H] [-H<momentM,momentN>[,t]] [-J<time_jump>[+run_time_jump]] [-L[name1,name2]] "
 		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [-O<int>,<outfname>] [%s] [-S[x|y|n][+m][+s]] [-T<int>,<mareg>[,<outmaregs[+n]>]] "
@@ -426,8 +410,8 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Message(API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage(API, 1, "\n-1<grd> -2<grd> ... -9<grd> Nested bathymetry grids (one per nesting level).");
 	GMT_Usage(API, 1, "\n-A<name> Save result as a .SWW ANUGA format file.");
-	GMT_Usage(API, 1, "\n-n<base> Basename for MOST triplet files (no extension).");
-	GMT_Usage(API, 1, "\n-B<BCfile> Name of a BoundaryCondition ASCII file.");
+	//GMT_Usage(API, 1, "\n-n<base> Basename for MOST triplet files (no extension).");
+	//GMT_Usage(API, 1, "\n-B<BCfile> Name of a BoundaryCondition ASCII file.");
 	GMT_Usage(API, 1, "\n-C Add Coriolis effect.");
 	GMT_Usage(API, 1, "\n-D Write grids with the total water depth.");
 	GMT_Usage(API, -2, "These grids will have wave height on ocean and water thickness on land.");
@@ -444,8 +428,9 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 		"-Fk.../RxC: loop over a matrix of size R x C starting at the Lower Left Corner given by w/e/s/n. "
 		"-Fk.../dx[/dy]: given the w/e/s/n region (pixel registration) loop over the prisms obtained by dividing the "
 		"region in increments of dx/dy (if not given, dy = dx). Using -Fk sets the output maregraph file to netCDF, unless rows = cols = 1.");
-	GMT_Usage(API, 1, "\n-G<stem> Write grids at the <int> intervals; files are named <stem>#.grd.");
-	GMT_Usage(API, -2, "When doing nested grids, append +lev to save that particular level (only one level is allowed).");
+	GMT_Usage(API, 1, "\n-G<name>[+m],int");
+	GMT_Usage(API, -2, "Output name of a 3D netCDF file is <name>.nc. Save steps at the <int> intervals. Optionally "
+		"append '+m' to save each time step as a separate file. Files are then named <name>#.grd.");
 	GMT_Usage(API, 1, "\n-H Write grids with the momentum (velocity times water depth).");
 	GMT_Usage(API, -2, "-H<fname_momentM,fname_momentN>[,t]: Hot start using these moment grids. Optional 't' is the hot-start "
 		"time (also needs the surface displacement corresponding to the time of these grids).");
@@ -467,15 +452,14 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, -2, "Use x or y to save only one component, or n for no velocity grids (maregs only). Append +m to also write "
 		"velocity (vx,vy) at maregraph locations (needs -T and/or -O). Append +s to write the max speed (|v|) ('_max_speed' suffix). "
 		"Use the 'n' flag to NOT output the U and V components, e.g. -Sn+s.");
-	GMT_Usage(API, 1, "\n-T<int> Interval at which maregraphs are written to the output maregraph file.");
+	GMT_Usage(API, 1, "\n-T<int>,<maregs>[,<outmaregs[+n]>] Interval at which maregraphs are written to the output maregraph file.");
 	GMT_Usage(API, -2, "<maregs> is the file with the (x y) locations of the virtual maregraphs; <outmaregs> is the optional "
 		"output file. If not provided, the output name is <maregs> with '_auto.dat' appended. Append +n to write the maregraphs as a netCDF file.");
-	GMT_Usage(API, 1, "\n-Q<z_offset> Apply a vertical offset to ALL bathymetry grids (e.g. to simulate tide).");
+	GMT_Usage(API, 1, "\n-Q<z_offset>");
+	GMT_Usage(API, -2, "Apply a vertical offset to ALL bathymetry grids (e.g. to simulate tide).");
 	GMT_Usage(API, 1, "\n-X<manning0[,manning1[,...]][+<depth>]> Manning friction coefficients.");
 	GMT_Usage(API, -2, "If only one is provided, use it for all nesting levels; otherwise specify one per level, comma separated. "
 		"Append +<depth> to apply Manning only at depths shallower than <depth> (positive up).");
-	GMT_Usage(API, 1, "\n-Z Same as -G but saves the result in a 3D netCDF file.");
-	GMT_Usage(API, 1, "\n-i Do not interpolate the initial surface of nested grids, at time zero, from the mother grids.");
 	GMT_Usage(API, 1, "\n-x<n> Number of cores to use in a parallel run [Default is the max in the machine].");
 	GMT_Option(API, "V,f,.");
 
@@ -492,7 +476,7 @@ struct NSWING_CTRL {
 	bool    do_tracers, out_maregs_nc, out_oranges_nc, do_HotStart, write_grids, isGeog;
 	bool    maregs_in_input, out_momentum, got_R, with_land, IamCompiled, saveNested;
 	bool    verbose, out_velocity, out_velocity_x, out_velocity_y, out_velocity_r, out_maregs_velocity;
-	bool    do_initial_interp, cumpt, do_2Dgrids, do_maxs;
+	bool    cumpt, do_2Dgrids, do_maxs;
 	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file;
 	char   *nesteds[10];
 	char    hcum[256];
@@ -525,34 +509,25 @@ GMT_LOCAL void Free_Ctrl(struct GMT_CTRL *GMT, struct NSWING_CTRL *C) {	/* Deall
  * this rebuilds argv[] from the GMT option list, runs that parser, and packs the result into Ctrl.
  * The argv[] block is handed back to the caller (argc_out/argv_out): several Ctrl string pointers
  * point into it, so the caller owns and frees it. */
-GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestContainer *nest_out, struct GMT_OPTION *options, int *argc_out, char ***argv_out) {
-	int     argc = 0;
+GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestContainer *nest_out,
+                    struct GMT_OPTION *options, int *argc_out, char ***argv_out) {
 	char  **argv = NULL;
-	struct  GMT_OPTION *opt = NULL;
-	struct  nestContainer nest;
-	int     writeLevel = 0;
-	int     i, j, k, n;
-	int     start_i;
-	int     grn = 0, cumint = 0, decimate_max = 1;
-	int     error = 0;
+	int     argc = 0, writeLevel = 0;
+	int     i, j, k, n, start_i;
+	int     grn = 0, cumint = 0, decimate_max = 1, error = 0, nopt = 0;
+	int     do_Kaba = 0, n_of_cycles = 1010, KbGridCols = 1, KbGridRows = 1;
+	size_t  len;
 	bool    cumpt = false, do_2Dgrids = false, do_maxs = false;
 	bool    out_energy = false, max_energy = false, out_power = false, max_power = false;
 	bool    out_sww = false, out_most = false, out_3D = false;
 	bool    surf_level = true, max_level = false, max_velocity = false, water_depth = false;
-	bool    do_Okada = false;
-	int     do_Kaba = 0;
-	bool    do_tracers = false;
-	bool    out_maregs_nc = false;
-	bool    out_oranges_nc = false;
-	bool    do_HotStart = false;
-	int     n_of_cycles = 1010;
-	bool    write_grids = false, isGeog = false;
+	bool    do_Okada = false, do_tracers = false, out_maregs_nc = false, out_oranges_nc = false;
+	bool    do_HotStart = false, write_grids = false, isGeog = false;
 	bool    maregs_in_input = false, out_momentum = false, got_R = false;
 	bool    with_land = false, IamCompiled = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
-	bool    out_maregs_velocity = false, do_initial_interp = true;
-	int     KbGridCols = 1, KbGridRows = 1;
-	size_t  len;
+	bool    out_maregs_velocity = false;
+	char    buf[GMT_LEN512] = {""};
 	char   *bathy = NULL;
 	char    hcum[256] = "";
 	char    maregs[256] = "";
@@ -576,6 +551,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	double  dt = 0;
 	double  f_dip, f_azim, f_rake, f_slip, f_length, f_width, f_topDepth, x_epic, y_epic;
 	double  dfXmin = 0, dfYmin = 0, dfXmax = 0, dfYmax = 0;
+	struct  GMT_OPTION *opt = NULL;
+	struct  nestContainer nest;
 	sanitize_nestContainer(&nest);
 
 	/* -------------------------------------------------------------------------------
@@ -583,19 +560,15 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	 * argv[] array.  Rebuild that argv[] from the GMT option list so it can run verbatim.
 	 * Grids passed in memory (e.g. from Julia) arrive as infile tokens whose 'arg' is a
 	 * virtual-file name; those are read later by GMT_Read_Data like real file names. */
-	{
-		int nopt = 0;
-		char buf[GMT_LEN512] = {""};
-		for (opt = options; opt; opt = opt->next) nopt++;
-		argv = (char **)calloc((size_t)(nopt + 1), sizeof(char *));
-		argv[argc++] = strdup("nswing");           /* argv[0] = program name */
-		for (opt = options; opt; opt = opt->next) {
-			if (opt->option == GMT_OPT_INFILE)      /* bathy / source / nested grids / data files */
-				argv[argc++] = strdup(opt->arg);
-			else {                                  /* A regular -X[arg] option */
-				snprintf(buf, GMT_LEN512, "-%c%s", opt->option, (opt->arg) ? opt->arg : "");
-				argv[argc++] = strdup(buf);
-			}
+	for (opt = options; opt; opt = opt->next) nopt++;
+	argv = (char **)calloc((size_t)(nopt + 1), sizeof(char *));
+	argv[argc++] = strdup("nswing");           /* argv[0] = program name */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == GMT_OPT_INFILE)      /* bathy / source / nested grids / data files */
+			argv[argc++] = strdup(opt->arg);
+		else {                                  /* A regular -X[arg] option */
+			snprintf(buf, GMT_LEN512, "-%c%s", opt->option, (opt->arg) ? opt->arg : "");
+			argv[argc++] = strdup(buf);
 		}
 	}
 
@@ -614,9 +587,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					break;
 				case 'f':	/* */
 					isGeog = true;
-					break;
-				case 'i':	/* Do not interpolate time first run time of nested grids */
-					do_initial_interp = false;
 					break;
 				case 'n':	/* Write MOST files (*.nc) */
 					basename_most  = &argv[i][2];
@@ -739,22 +709,15 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						}
 					}
 					break;
-				case 'G':	/* Write grids at grn intervals */
-				case 'Z':	/* Write one single 3D netCDF at grn intervals */
+				case 'G':	/* Write one single 3D netCDF at grn intervals */
 					sscanf(&argv[i][2], "%[^\n]s,%d", stem, &grn);
 					if ((pch = strstr(stem,",")) != NULL) {
 						grn = atoi(&pch[1]);
 						pch[0] = '\0';		/* Strip the ",num" part */
 					}
-					if ((pch = strstr(stem,"+")) != NULL) {
-						writeLevel = atoi(pch++);
-						if (writeLevel < 0) writeLevel = 0;
-						pch--;
-						pch[0] = '\0';		/* Hide the +lev from the stem string */
-						saveNested = true;
-					}
-					if (argv[i][1] == 'G') 
+					if ((pch = strstr(stem,"+m")) != NULL) {	/* Write grids at grn intervals */
 						write_grids = true;
+					}
 					else {
 						out_3D = true;
 						fname3D = stem;
@@ -987,8 +950,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			}
 		}
 		else {
-			if (argv[i][0] == ' ' && argv[i][1] == '\0')	/* An empty option (not uncommon from the Matlab side) */
-				continue;
 			if (bathy == NULL)
 				bathy = argv[i];
 			else if (fonte == NULL)
@@ -1098,7 +1059,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	Ctrl->out_velocity_y = out_velocity_y;
 	Ctrl->out_velocity_r = out_velocity_r;
 	Ctrl->out_maregs_velocity = out_maregs_velocity;
-	Ctrl->do_initial_interp = do_initial_interp;
 	Ctrl->cumpt = cumpt;
 	Ctrl->do_2Dgrids = do_2Dgrids;
 	Ctrl->do_maxs = do_maxs;
@@ -1144,6 +1104,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	*nest_out = nest;
 	return (error ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
+
 #define bailout(code) {gmt_M_free_options(mode); return (code);}
 #define Return(code) {Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); if (argv) {int _k; for (_k = 0; _k < argc; _k++) gmt_M_str_free(argv[_k]); free(argv);} bailout(code);}
 
@@ -1181,7 +1142,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	bool    maregs_in_input = false, out_momentum = false, got_R = false;
 	bool    with_land = false, IamCompiled = false, do_nestum = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
-	bool    out_maregs_velocity = false, do_initial_interp = true;
+	bool    out_maregs_velocity = false;
 	int     KbGridCols = 1, KbGridRows = 1; /* Number of rows & columns IF computing a grid of 'Kabas' */
 	int     cntKabas = 0;                /* Counter of the number of Kabas (prisms) already processed */
 	int     n_mareg, n_ptmar, n_oranges;
@@ -1309,7 +1270,6 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	out_velocity_y = Ctrl->out_velocity_y;
 	out_velocity_r = Ctrl->out_velocity_r;
 	out_maregs_velocity = Ctrl->out_maregs_velocity;
-	do_initial_interp = Ctrl->do_initial_interp;
 	cumpt = Ctrl->cumpt;
 	do_2Dgrids = Ctrl->do_2Dgrids;
 	do_maxs = Ctrl->do_maxs;
@@ -1687,8 +1647,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 				Return(-1);
 		}
 		nest.time_h = time_h;
-		if (do_initial_interp)      /* Resample eta(s) in descendent grids to avoid initial jumps at borders */
-			resamplegrid(&nest, num_of_nestGrids);
+		/* Resample eta(s) in descendent grids to avoid initial jumps at borders */
+		resamplegrid(&nest, num_of_nestGrids);
 	}
 
 	if (out_sww) {
