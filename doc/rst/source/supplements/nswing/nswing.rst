@@ -121,6 +121,11 @@ Optional Arguments
     (azimuth), *rake*, *slip* (m), *length*, *width* and *topDepth* (depth from
     the sea-bottom) follow. All dimensions must be in km.
 
+    If no bathymetry grid is given, **-F** (or **-Fk**) together with **-R**
+    and **-G** computes the deformation over **-R**'s grid geometry (e.g.
+    **-R**\ *grid*) and writes it straight to **-G**'s name: no simulation is
+    run, so **-t** and **-G**'s saving interval are not needed.
+
 **-F**\ **k**\ *west/east/south/north*
     Build a prism source with these limits and a height of 1 meter.
 

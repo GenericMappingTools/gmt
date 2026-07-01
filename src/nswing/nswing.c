@@ -421,7 +421,10 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 		"A 3D netCDF file with wave heights is still possible with -G.");
 	GMT_Usage(API, 1, "\n-F<x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth> Okada fault parameters.");
 	GMT_Usage(API, -2, "x_epic, y_epic are the X and Y coordinates of the beginning of the fault trace; Dip, Azimuth, "
-		"Rake, Slip(m), length, width and depth from sea-bottom follow. All dimensions must be in km.");
+		"Rake, Slip(m), length, width and depth from sea-bottom follow. All dimensions must be in km. "
+		"If no bathymetry grid is given, -F (or -Fk) together with -R and -G computes the deformation over -R's "
+		"grid geometry (e.g. -R<grid>) and writes it straight to -G's name: no simulation is run, -t and -G's "
+		"saving interval are not needed.");
 	GMT_Usage(API, 1, "\n-Fk<west/east/south/north> Build a prism source with these limits and height of 1 meter.");
 	GMT_Usage(API, -2, "-Fkc<x/y/nx/ny>: alternatively give the prism size as centre x/y and nx/ny half-width cell numbers. "
 		"-Fk.../RxC: loop over a matrix of size R x C starting at the Lower Left Corner given by w/e/s/n. "
@@ -478,7 +481,7 @@ struct NSWING_CTRL {
 	bool    out_energy, max_energy, out_power, max_power, out_sww, out_most;
 	bool    out_3D, surf_level, max_level, max_velocity, water_depth, do_Okada;
 	bool    do_tracers, out_maregs_nc, out_oranges_nc, do_HotStart, write_grids, isGeog;
-	bool    maregs_in_input, out_momentum, got_R, with_land, saveNested;
+	bool    maregs_in_input, out_momentum, got_R, deform_only, with_land, saveNested;
 	bool    verbose, out_velocity, out_velocity_x, out_velocity_y, out_velocity_r, out_maregs_velocity;
 	bool    cumpt, do_2Dgrids, do_maxs;
 	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file;
@@ -526,7 +529,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	bool    surf_level = true, max_level = false, max_velocity = false, water_depth = false;
 	bool    do_Okada = false, do_tracers = false, out_maregs_nc = false, out_oranges_nc = false;
 	bool    do_HotStart = false, write_grids = false, isGeog = false;
-	bool    maregs_in_input = false, out_momentum = false, got_R = false;
+	bool    maregs_in_input = false, out_momentum = false, got_R = false, deform_only = false;
 	bool    with_land = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false;
@@ -921,21 +924,25 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 		dfYmin = GMT->common.R.wesn[YLO];	dfYmax = GMT->common.R.wesn[YHI];
 	}
 
+	/* No bathy grid but a source (-F/-Fk) and -R: nothing to simulate, just compute the
+	 * deformation over -R's geometry and save it with -G. No time stepping, no interval. */
+	deform_only = (!bathy && (do_Okada || do_Kaba) && got_R);
+
 	if (!error) {
 		for (i = 0; i < 10; i++)		/* Add the cte part of the manning coeff */
-			nest.manning[i] = nest.manning[i] * nest.manning[i] * 4.9; 
+			nest.manning[i] = nest.manning[i] * nest.manning[i] * 4.9;
 
 		do_maxs = (max_level || max_energy || max_power);
 		do_2Dgrids = (write_grids || out_velocity || out_velocity_x || out_velocity_y || out_velocity_r || out_momentum
 		              || max_level || max_velocity || max_energy || out_power || max_power || nest.do_long_beach
 		              || nest.do_short_beach);
 
-		if (!(do_2Dgrids || out_sww || out_most || out_3D || cumpt)) {
+		if (!deform_only && !(do_2Dgrids || out_sww || out_most || out_3D || cumpt)) {
 			GMT_Report(GMT->parent, GMT_MSG_ERROR, "Nothing selected for output (grids, or maregraphs), exiting\n");
 			error++;
 		}
 
-		if (grn == 0 && !do_maxs && !cumpt) {
+		if (!deform_only && grn == 0 && !do_maxs && !cumpt) {
 			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G option. MUST provide saving interval\n");
 			error++;
 		}
@@ -958,7 +965,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			error++;
 		}
 
-		if (dt <= 0) {
+		if (dt <= 0 && !deform_only) {
 			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error -t option. Time step of simulation not provided or negative.\n");
 			error++;
 		}
@@ -1009,6 +1016,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	Ctrl->maregs_in_input = maregs_in_input;
 	Ctrl->out_momentum = out_momentum;
 	Ctrl->got_R = got_R;
+	Ctrl->deform_only = deform_only;
 	Ctrl->with_land = with_land;
 	Ctrl->saveNested = saveNested;
 	Ctrl->verbose = verbose;
@@ -1096,7 +1104,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	int     n_of_cycles = 1010;          /* Default number of cycles to compute */
 	int     num_of_nestGrids = 0;        /* Number of nesting grids */
 	bool    bat_in_input = false, source_in_input = false, write_grids = false, isGeog = false;
-	bool    maregs_in_input = false, out_momentum = false, got_R = false;
+	bool    maregs_in_input = false, out_momentum = false, got_R = false, deform_only = false;
 	bool    with_land = false, do_nestum = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false;
@@ -1223,6 +1231,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	maregs_in_input = Ctrl->maregs_in_input;
 	out_momentum = Ctrl->out_momentum;
 	got_R = Ctrl->got_R;
+	deform_only = Ctrl->deform_only;
 	with_land = Ctrl->with_land;
 	saveNested = Ctrl->saveNested;
 	verbose = Ctrl->verbose;
@@ -1274,6 +1283,53 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	strcpy(tracers_outfile, Ctrl->tracers_outfile);
 	for (k = 0; k < 10; k++) nesteds[k] = Ctrl->nesteds[k];
 	if (out_3D) fname3D = stem;
+
+	/* ---- Deformation-only mode: no bathy grid, no simulation. Just compute the source
+	 * deformation over -R's geometry (region + increment + registration, e.g. from -R<grid>)
+	 * and save it with -G. No -t, no saving interval needed. ---- */
+	if (deform_only) {
+		double  *def = NULL;
+		float   *work_f = NULL;
+		uint64_t nm_def, ij_def;
+
+		dx = GMT->common.R.inc[GMT_X];
+		dy = GMT->common.R.inc[GMT_Y];
+		if (dx <= 0 || dy <= 0) {
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error, -R must carry a grid increment "
+			           "(use -R<grid> or add -I<inc>) in deformation-only mode.\n");
+			Return(-1);
+		}
+		hdr_b.x_min = dfXmin;	hdr_b.x_max = dfXmax;
+		hdr_b.y_min = dfYmin;	hdr_b.y_max = dfYmax;
+		hdr_b.nx = (short)(irint((dfXmax - dfXmin) / dx) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0));
+		hdr_b.ny = (short)(irint((dfYmax - dfYmin) / dy) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0));
+		hdr_b.z_min = hdr_b.z_max = 0;
+		nm_def = (uint64_t)hdr_b.nx * (uint64_t)hdr_b.ny;
+
+		if ((def = (double *)calloc((size_t)nm_def, sizeof(double))) == NULL)
+			{no_sys_mem(API, "(deform)", (unsigned int)nm_def); Return(-1);}
+
+		if (do_Okada)
+			deform(hdr_b, dx, dy, isGeog, f_length, f_width, f_azim, f_dip, f_rake, f_slip,
+			        f_topDepth, x_epic, y_epic, def);
+		else
+			kaba_source(hdr_b, dx, dy, kaba_xmin, kaba_xmax, kaba_ymin, kaba_ymax, do_Kaba, def);
+
+		if ((work_f = (float *)malloc((size_t)nm_def * sizeof(float))) == NULL)
+			{free(def); no_sys_mem(API, "(deform_f)", (unsigned int)nm_def); Return(-1);}
+		for (ij_def = 0; ij_def < nm_def; ij_def++) work_f[ij_def] = (float)def[ij_def];
+		free(def);
+
+		if (gmtnswing_write_grid(API, stem, dfXmin, dfYmin, dx, dy, 0, 0, (unsigned int)hdr_b.nx,
+		                          (unsigned int)hdr_b.ny, (unsigned int)hdr_b.nx, work_f)) {
+			free(work_f);
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error writing deformation grid %s\n", stem);
+			Return(-1);
+		}
+		free(work_f);
+		GMT_Report(API, GMT_MSG_INFORMATION, "NSWING: Deformation grid written to %s (no simulation run).\n", stem);
+		Return(GMT_NOERROR);
+	}
 
 	/*---------------------------- This is the nswing main code ----------------------------*/
 
