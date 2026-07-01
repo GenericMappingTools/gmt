@@ -505,21 +505,19 @@ GMT_LOCAL void *New_Ctrl(struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 }
 
 GMT_LOCAL void Free_Ctrl(struct GMT_CTRL *GMT, struct NSWING_CTRL *C) {	/* Deallocate control structure */
-	if (!C) return;	/* String pointers point into the caller-owned argv[]; nothing to free here */
+	if (!C) return;	/* String pointers point into the options list (freed via gmt_M_free_options); nothing to free here */
 	gmt_M_free(GMT, C);
 }
 
-/* Parse the nswing options.  nswing keeps its own (large, well tested) legacy argv[] parser;
- * this rebuilds argv[] from the GMT option list, runs that parser, and packs the result into Ctrl.
- * The argv[] block is handed back to the caller (argc_out/argv_out): several Ctrl string pointers
- * point into it, so the caller owns and frees it. */
-//static int parse (struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct GMT_OPTION *options) {
+/* Parse the nswing options.  nswing keeps its own (large, well tested) legacy switch body,
+ * dispatched directly off the GMT_OPTION list like other GMT modules do: switch(opt->option),
+ * read opt->arg. Grids passed in memory (e.g. from Julia) arrive as GMT_OPT_INFILE tokens whose
+ * 'arg' is a virtual-file name; those are read later by GMT_Read_Data like real file names. */
 GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestContainer *nest_out,
-                    struct GMT_OPTION *options, int *argc_out, char ***argv_out) {
-	char  **argv = NULL;
-	int     argc = 0, writeLevel = 0;
-	int     i, j, k, n, start_i;
-	int     grn = 0, cumint = 0, decimate_max = 1, error = 0, nopt = 0;
+                    struct GMT_OPTION *options) {
+	int     writeLevel = 0;
+	int     i, j, k, n;
+	int     grn = 0, cumint = 0, decimate_max = 1, error = 0;
 	int     do_Kaba = 0, n_of_cycles = 1010, KbGridCols = 1, KbGridRows = 1;
 	size_t  len;
 	bool    cumpt = false, do_2Dgrids = false, do_maxs = false;
@@ -532,7 +530,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	bool    with_land = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false;
-	char    buf[GMT_LEN512] = {""};
 	char   *bathy = NULL;
 	char    hcum[256] = "";
 	char    maregs[256] = "";
@@ -560,403 +557,359 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	struct  nestContainer nest;
 	sanitize_nestContainer(&nest);
 
-	/* -------------------------------------------------------------------------------
-	 * nswing keeps its own (large, well tested) option parser, a switch over a classic
-	 * argv[] array.  Rebuild that argv[] from the GMT option list so it can run verbatim.
-	 * Grids passed in memory (e.g. from Julia) arrive as infile tokens whose 'arg' is a
-	 * virtual-file name; those are read later by GMT_Read_Data like real file names. */
-	for (opt = options; opt; opt = opt->next) nopt++;
-	argv = (char **)calloc((size_t)(nopt + 1), sizeof(char *));
-	argv[argc++] = strdup("nswing");           /* argv[0] = program name */
 	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == GMT_OPT_INFILE)      /* bathy / source / nested grids / data files */
-			argv[argc++] = strdup(opt->arg);
-		else if (opt->option == 'R')            /* Already consumed by GMT_Parse_Common into GMT->common.R; the legacy switch has no case for it */
-			continue;
-		else {                                  /* A regular -X[arg] option */
-			snprintf(buf, GMT_LEN512, "-%c%s", opt->option, (opt->arg) ? opt->arg : "");
-			argv[argc++] = strdup(buf);
-		}
-	}
+		switch (opt->option) {
+			case GMT_OPT_INFILE:	/* bathy / source grid (positional, no leading '-') */
+				if (bathy == NULL)
+					bathy = opt->arg;
+				else if (fonte == NULL)
+					fonte = opt->arg;
+				else {
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Wrong option %s (misses the minus sign)\n", opt->arg);
+					error = true;
+				}
+				break;
+			case 'c':
+				add_const = atof(opt->arg);
+				break;
+			case 'f':	/* */
+				isGeog = true;
+				break;
+			case 'n':	/* Write MOST files (*.nc) */
+				basename_most = opt->arg;
+				out_most = true;
+				break;
+			case 'x':	/* */
+				if (opt->arg[0] == 'a')		/* Use all processors abvailable */
+					nest.n_threads = GetLocalNThread();
+				else
+					nest.n_threads = atoi(opt->arg);
 
-	/*---------------------------- Run the legacy argv[] option parser ----------------------------*/
-
-	start_i = 1;	/* argv[0] is the program name, so we start parsing at 1 */
-
-	for (i = start_i; i < argc; i++) {
-		if (argv[i][0] == '-') {
-			switch (argv[i][1]) {
-				case 'c':
-					add_const = atof(&argv[i][2]);
+				if (nest.n_threads < 1) nest.n_threads = 1;
+				nest.n_threads = MIN(MAX(GetLocalNThread(),64), nest.n_threads);	/* Not > Max available or 64 */
+				break;
+			case 'A':	/* Name for the Anuga .sww netCDF file */
+				fname_sww = opt->arg;
+				out_sww = true;
+				if (opt->arg[0] == 'l')		/* Output land nodes in SWW file */
+					with_land = true;
+				break;
+			case 'O':	/* File with the boundary condition (experimental) */
+				bnc_file = opt->arg;
+				break;
+			case 'C':	/* Output momentum grids */
+				nest.do_Coriolis = true;
+				if (opt->arg[0])
+					nest.lat_min4Coriolis = atof(opt->arg);
+				break;
+			case 'D':
+				water_depth = true;
+				surf_level = false;
+				break;
+			case 'E':	/* Compute total Energy or Power*/
+				if (strstr(opt->arg, "EPS4=")) {		/* Secreet option to change the EPS4 value */
+					EPS4 = atof(&opt->arg[4]);
 					break;
-				case 'f':	/* */
-					isGeog = true;
-					break;
-				case 'n':	/* Write MOST files (*.nc) */
-					basename_most  = &argv[i][2];
-					out_most = true;
-					break;
-				case 'x':	/* */
-					if (argv[i][2] == 'a')		/* Use all processors abvailable */
-						nest.n_threads = GetLocalNThread();
+				}
+				if (opt->arg[0] == 'p') {
+					if (opt->arg[1] == 'm')
+						max_power = true;
 					else
-						nest.n_threads = atoi(&argv[i][2]);
+						out_power = true;
+				}
+				else {
+					if (opt->arg[0] == 'm')
+						max_energy = true;
+					else
+						out_energy = true;
+				}
+				if ((pch = strstr(opt->arg,",")) != NULL) {
+					decimate_max = atoi(++pch);
+					if (decimate_max < 1) decimate_max = 1;
+				}
+				break;
+			case 'F':	/* Okada parameters to compute Initial condition */
+				if (opt->arg[0] == 'k') {
+					bool  have_RC = false;
+					char  kaba_str[GMT_LEN256];
 
-					if (nest.n_threads < 1) nest.n_threads = 1;
-					nest.n_threads = MIN(MAX(GetLocalNThread(),64), nest.n_threads);	/* Not > Max available or 64 */
-					break;
-				case 'A':	/* Name for the Anuga .sww netCDF file */
-					fname_sww  = &argv[i][2];
-					out_sww = true;
-					if (argv[i][2] == 'l')		/* Output land nodes in SWW file */
-						with_land = true;
-					break;
-				case 'O':	/* File with the boundary condition (experimental) */
-					bnc_file = &argv[i][2];
-					break;
-				case 'C':	/* Output momentum grids */
-					nest.do_Coriolis = true;
-					if (argv[i][2])
-						nest.lat_min4Coriolis = atof(&argv[i][2]);
-					break;
-				case 'D':
-					water_depth = true;
-					surf_level = false;
-					break;
-				case 'E':	/* Compute total Energy or Power*/
-					if (strstr(argv[i], "EPS4=")) {		/* Secreet option to change the EPS4 value */
-						EPS4 = atof(&argv[i][6]);
-						break;
+					do_Kaba = true;
+					k = 1;
+					if (opt->arg[1] == 'c') {
+						k = 2;
+						do_Kaba++;		/* Signal kaba_source function that the above is actually x/y/nx/ny */
 					}
-					if (argv[i][2] == 'p') {
-						if (argv[i][3] == 'm')
-							max_power = true;
-						else
-							out_power = true;
-					}
-					else {
-						if (argv[i][2] == 'm')
-							max_energy = true;
-						else
-							out_energy = true;
-					}
-					if ((pch = strstr(&argv[i][2],",")) != NULL) {
-						decimate_max = atoi(++pch);
-						if (decimate_max < 1) decimate_max = 1;
-					}
-					break;
-				case 'F':	/* Okada parameters to compute Initial condition */
-					if (argv[i][2] == 'k') {
-						char *lost_str1 = NULL, *lost_str2 = NULL;
-						bool  have_RC = false;
-
-						do_Kaba = true;
-						k = 3;
-						if (argv[i][3] == 'c') {
-							k = 4;
-							do_Kaba++;		/* Signal kaba_source function that the above is actually x/y/nx/ny */
-						}
-						n = sscanf(&argv[i][k], "%lf/%lf/%lf/%lf/%s/%lf", &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax, txt, &dyKb);
-						if (n > 4) {
-							lost_str1 = strdup(txt);		/* Save it to restore argv[i] for use in the nc History attrib */
-							pch = strchr(txt, 'x');
-							if (pch != NULL) {
-								KbGridCols = atoi(&pch[1]);
-								pch[0] = '\0';		/* Strip the 'x...' part */
-								KbGridRows = atoi(txt);
-								have_RC = true;
-							}
-							else {
-								dxKb = atof(txt);
-								if (n == 5) dyKb = dxKb;
-							}
-							/* Now strip the 5th (&6th) fields from argv[i] before calling decode_R */
-							if (n == 6) {
-								pch = strrchr(argv[i], '/');
-								lost_str2 = strdup(pch);	/* Iden lost_str1 */
-								pch[0] = '\0';
-							}
-							pch = strrchr(argv[i], '/');		pch[0] = '\0';
-						}
-
-						k -= 2;	/* Decrease k because the decode_R() function expects 2 chars at begining of string (-R...) */
-						error += decode_R(&argv[i][k], &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax);
-						if (have_RC) {
-							dxKb = (kaba_xmax - kaba_xmin);		dyKb = (kaba_ymax - kaba_ymin);
-						}
-						if (dxKb != 0 && !have_RC) {		/* Here dx/dy were given instead of RxC, so we have to compute them */
-							KbGridCols = irint((kaba_xmax - kaba_xmin) / dxKb);
-							KbGridRows = irint((kaba_ymax - kaba_ymin) / dyKb);
-						}
-						if (KbGridRows * KbGridCols > 1) out_maregs_nc = true;	/* Otherwise we can still save in ascii */
-						if (n > 4) {
-							strcat(argv[i], "/");	strcat(argv[i], lost_str1);
-							free(lost_str1);
-						}
-						if (lost_str2) {
-							strcat(argv[i], lost_str2);		/* Here the leading slash was still in lost_str2 */
-							free(lost_str2);
-						}
-					}
-					else {
-						do_Okada = true;
-						n = sscanf(&argv[i][2], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
-						           &x_epic, &y_epic, &f_dip, &f_azim, &f_rake, &f_slip, &f_length, &f_width, &f_topDepth);
-						if (n != 9) {
-							GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -F option, must provide all 9 parameters.\n");
-							error++;
-						}
-						else { /* Convert fault dimensions to meters (that's what is used by deform) */
-							f_length   *= 1000;
-							f_width    *= 1000;
-							f_topDepth *= 1000;
-						}
-					}
-					break;
-				case 'G':	/* Write one single 3D netCDF at grn intervals */
-					sscanf(&argv[i][2], "%[^\n]s,%d", stem, &grn);
-					if ((pch = strstr(stem,",")) != NULL) {
-						grn = atoi(&pch[1]);
-						pch[0] = '\0';		/* Strip the ",num" part */
-					}
-					if ((pch = strstr(stem,"+m")) != NULL) {	/* Write grids at grn intervals */
-						write_grids = true;
-					}
-					else {
-						out_3D = true;
-						fname3D = stem;
-						if (fname3D[strlen(fname3D)-3] != '.' && fname3D[strlen(fname3D)-4] != '.')
-							strcat(fname3D, ".nc");		/* If no 2 or 3 letters extension, add .nc */
-					}
-					break;
-				case 'H':	/* Hot start stuff */
-					if (!argv[i][2])					/* Output momentum grids */
-						out_momentum = true;
-					else if (argv[i][2] == 's' && argv[i][3] == ',')	/* NOT YET. Maybe it will be -Hs,time_to_stop */
-						;
-					else {
-						sscanf(&argv[i][2], "%s", str_tmp);
-						if ((pch = strstr(str_tmp,",")) != NULL) {
-							pch[0] = '\0';
-							strcpy(fname_momentM, str_tmp);                         /* File names of moment M & N files */
-							strcpy(fname_momentN, ++pch);
-							if ((pch = strstr(fname_momentN,",")) != NULL) {        /* We have the hot start time as well */
-								pch[0] = '\0';                                      /* The end of the moment N file name */
-								time_h += atof(++pch);                              /* Increment the starting time (was zero) */
-							}
-							do_HotStart = true;
+					n = sscanf(&opt->arg[k], "%lf/%lf/%lf/%lf/%s/%lf", &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax, txt, &dyKb);
+					snprintf(kaba_str, GMT_LEN256, "XX%s", &opt->arg[k]);	/* decode_R() skips its own first 2 chars */
+					if (n > 4) {
+						pch = strchr(txt, 'x');
+						if (pch != NULL) {
+							KbGridCols = atoi(&pch[1]);
+							pch[0] = '\0';		/* Strip the 'x...' part */
+							KbGridRows = atoi(txt);
+							have_RC = true;
 						}
 						else {
-							GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -H option (Hot start), must provide names of moment_X, moment_Y files.\n");
-							error++;							
+							dxKb = atof(txt);
+							if (n == 5) dyKb = dxKb;
 						}
-					}
-					break;
-				case 'P':	/* Jumping options. Accept either -Pn, -P+m, -Pn+m or -Pn -P+m */
-					sscanf(&argv[i][2], "%s", str_tmp);
-					if ((pch = strstr(str_tmp,"+")) != NULL) {
-						sscanf((++pch), "%lf", &nest.run_jump_time);
-						pch--;
-						pch[0] = '\0';		/* Put the string end where before was the '+' char */
-					}
-					if (argv[i][2])
-						sscanf(&argv[i][2], "%lf", &time_jump);
-					break;
-				case 'L':	/* Use linear approximation or Lagrangean tracers*/
-					if (!argv[i][2])
-						nest.do_linear = true;
-					else {
-						sscanf(&argv[i][2], "%[^\n]s", str_tmp);
-						if (str_tmp[strlen(str_tmp)-2] == '+') {	/* Output tracers file will be in netCDF */
-							out_oranges_nc = true;
-							str_tmp[strlen(str_tmp)-2] = '\0';
-						}
-						if ((pch = strstr(str_tmp,",")) != NULL) {
-							char *pch2;
+						if (n == 6) {		/* Strip the 6th field too before calling decode_R */
+							pch = strrchr(kaba_str, '/');
 							pch[0] = '\0';
-							strcpy(tracers_infile, str_tmp);
-							strcpy(tracers_outfile, ++pch);		/* NEED TO TEST IF WE GOT A FNAME */
 						}
-						else {
-							GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -L option, must provide at least the tracers file name\n");
-							error++;
-						}
-						do_tracers = true;
-						out_velocity_x = out_velocity_y = true;
+						pch = strrchr(kaba_str, '/');		pch[0] = '\0';	/* Strip the 5th field (RxC or dx) */
 					}
-					break;
-				case 'M':	/* Max/min options */
-					if (argv[i][2] == '-') {	/* Compute a mask with ones over the "dried beach" */
-						nest.do_long_beach = true;
-						if (argv[i][3])
-							sscanf(&argv[i][3], "%s", fname_mask_lbeach);
-						else
-							strcpy(fname_mask_lbeach, "long_beach.grd");
-					}
-					else if (argv[i][2] == '+') {	/* Compute a mask with ones over the "innundated beach" */
-						nest.do_short_beach = true;
-						if (argv[i][3])
-							sscanf(&argv[i][3], "%s", fname_mask_sbeach);
-						else
-							strcpy(fname_mask_sbeach, "short_beach.grd");
-					}
-					else
-						max_level = true;
-					break;
-				case 'N':	/* Number of cycles to compute */
-					n_of_cycles = atoi(&argv[i][2]);
-					break;
-				case 'Q':	/* Vertical offset (simulate tide) */
-					if (argv[i][2])
-						sscanf(&argv[i][2], "%lf", &z_offset);
 
-					break;
-				case 'S':	/* Output velocity grids */
-					strcpy(str_tmp, &argv[i][2]);
-					if ((pch = strstr(str_tmp,"+m")) != NULL) {    /* Velocity at maregraphs */
-						out_maregs_velocity = true;
-						out_velocity_x      = out_velocity_y = true;
-						for (k = 0; k < 2; k++) {   /* Strip the '+m' from the str_tmp string */
-							len = strlen(pch);
-							for (j = 0; j < (int)len; j++)
-								pch[j] = pch[j+1];
-						}
+					error += decode_R(kaba_str, &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax);
+					if (have_RC) {
+						dxKb = (kaba_xmax - kaba_xmin);		dyKb = (kaba_ymax - kaba_ymin);
 					}
-					if ((pch = strstr(str_tmp,"+s")) != NULL) {    /* Comput max speed */
-						max_velocity   = true;
-						out_velocity_x = out_velocity_y = true;
-						for (k = 0; k < 2; k++) {   /* Strip the '+s' from the str_tmp string */
-							len = strlen(pch);
-							for (j = 0; j < (int)len; j++)
-								pch[j] = pch[j+1];
-						}
+					if (dxKb != 0 && !have_RC) {		/* Here dx/dy were given instead of RxC, so we have to compute them */
+						KbGridCols = irint((kaba_xmax - kaba_xmin) / dxKb);
+						KbGridRows = irint((kaba_ymax - kaba_ymin) / dyKb);
 					}
-					if (str_tmp[0] == 'x') {         /* Only X component */
-						out_velocity   = out_velocity_x = true;
-						if (!(out_maregs_velocity || max_velocity)) out_velocity_y = false;
-					}
-					else if (str_tmp[0] == 'y') {    /* Only Y component */
-						out_velocity   = out_velocity_y = true;
-						if (!(out_maregs_velocity || max_velocity)) out_velocity_x = false;
-					}
-					else if (str_tmp[0] == 'r') {    /* Speed (velocity module) -- NOT YET -- */
-						out_velocity   = out_velocity_r = true;
-						if (!(out_maregs_velocity || max_velocity)) out_velocity_x = out_velocity_y = false;
-					}
-					else if (str_tmp[0] == 'n') {    /* No grids, only vx,vy in maregs */
-						out_velocity_x = out_velocity_y = true;
-						out_velocity   = false;
-					}
-					else {                          /* Both X & Y*/
-						out_velocity = out_velocity_x = out_velocity_y = true;
-					}
-					break;
-				case 't':	/* Time step of simulation */ 
-					dt = atof(&argv[i][2]);
-					nest.dt[0] = dt;
-					break;
-				case 'T':	/* Maregraph xy positions file, with optional +o<outname> and +t<interval> modifiers */
-					if (cumpt) {
-						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option given more than once.\n");
-						GMT_Report(GMT->parent, GMT_MSG_WARNING, "        Ignoring it.\n");
-						break;
-					}
-					cumint = 1;	/* Default: save maregraphs at every time step */
-					hcum[0] = '\0';
-					if (argv[i][2] == '\0') {
-						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
+					if (KbGridRows * KbGridCols > 1) out_maregs_nc = true;	/* Otherwise we can still save in ascii */
+				}
+				else {
+					do_Okada = true;
+					n = sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
+					           &x_epic, &y_epic, &f_dip, &f_azim, &f_rake, &f_slip, &f_length, &f_width, &f_topDepth);
+					if (n != 9) {
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -F option, must provide all 9 parameters.\n");
 						error++;
-						break;
 					}
-					sscanf(&argv[i][2], "%s", str_tmp);
-					if ((tok = strtok(str_tmp, "+")) == NULL || tok[0] == '\0') {
-						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
-						error++;
-						break;
+					else { /* Convert fault dimensions to meters (that's what is used by deform) */
+						f_length   *= 1000;
+						f_width    *= 1000;
+						f_topDepth *= 1000;
 					}
-					strcpy(maregs, tok);
-					while ((tok = strtok(NULL, "+")) != NULL) {
-						if (tok[0] == 'o')
-							strcpy(hcum, &tok[1]);
-						else if (tok[0] == 't') {
-							if (strchr(&tok[1], '.') != NULL)
-								GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, 'int' in option -T...+t<int> must be an integer number. Expect surprises.\n");
-							cumint = atoi(&tok[1]);
+				}
+				break;
+			case 'G':	/* Write one single 3D netCDF at grn intervals */
+				sscanf(opt->arg, "%[^\n]s,%d", stem, &grn);
+				if ((pch = strstr(stem,",")) != NULL) {
+					grn = atoi(&pch[1]);
+					pch[0] = '\0';		/* Strip the ",num" part */
+				}
+				if ((pch = strstr(stem,"+m")) != NULL) {	/* Write grids at grn intervals */
+					write_grids = true;
+				}
+				else {
+					out_3D = true;
+					fname3D = stem;
+					if (fname3D[strlen(fname3D)-3] != '.' && fname3D[strlen(fname3D)-4] != '.')
+						strcat(fname3D, ".nc");		/* If no 2 or 3 letters extension, add .nc */
+				}
+				break;
+			case 'H':	/* Hot start stuff */
+				if (!opt->arg[0])					/* Output momentum grids */
+					out_momentum = true;
+				else if (opt->arg[0] == 's' && opt->arg[1] == ',')	/* NOT YET. Maybe it will be -Hs,time_to_stop */
+					;
+				else {
+					sscanf(opt->arg, "%s", str_tmp);
+					if ((pch = strstr(str_tmp,",")) != NULL) {
+						pch[0] = '\0';
+						strcpy(fname_momentM, str_tmp);                         /* File names of moment M & N files */
+						strcpy(fname_momentN, ++pch);
+						if ((pch = strstr(fname_momentN,",")) != NULL) {        /* We have the hot start time as well */
+							pch[0] = '\0';                                      /* The end of the moment N file name */
+							time_h += atof(++pch);                              /* Increment the starting time (was zero) */
 						}
-						else
-							GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, unrecognized modifier '+%s' in -T option. Ignored.\n", tok);
+						do_HotStart = true;
 					}
-					if (hcum[0] == '\0')
-						strcpy(hcum, "maregs_out.dat");
-					len = strlen(hcum);
-					if (len > 3 && !strcmp(&hcum[len-3], ".nc"))
-						out_maregs_nc = true;
-					else if (strrchr(hcum, '.') == NULL)
-						strcat(hcum, ".dat");
-					cumpt = true;
-					maregs_in_input = false;
-					break;
-				case 'X':		/* Manning coeffs */
-					k = 0;
-					sscanf(&argv[i][2], "%s", str_tmp);
-					if ((pch = strstr(str_tmp,"+")) != NULL) {
-						nest.manning_depth = -atof(++pch);	/* Reverse sense right away because bat will be pos down */
-						pch--;	pch[0] = '\0';		/* Remove traces of this option in string */
+					else {
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -H option (Hot start), must provide names of moment_X, moment_Y files.\n");
+						error++;
+					}
+				}
+				break;
+			case 'P':	/* Jumping options. Accept either -Pn, -P+m, -Pn+m or -Pn -P+m */
+				sscanf(opt->arg, "%s", str_tmp);
+				if ((pch = strstr(str_tmp,"+")) != NULL) {
+					sscanf((++pch), "%lf", &nest.run_jump_time);
+					pch--;
+					pch[0] = '\0';		/* Put the string end where before was the '+' char */
+				}
+				if (opt->arg[0])
+					sscanf(opt->arg, "%lf", &time_jump);
+				break;
+			case 'L':	/* Use linear approximation or Lagrangean tracers*/
+				if (!opt->arg[0])
+					nest.do_linear = true;
+				else {
+					sscanf(opt->arg, "%[^\n]s", str_tmp);
+					if (str_tmp[strlen(str_tmp)-2] == '+') {	/* Output tracers file will be in netCDF */
+						out_oranges_nc = true;
+						str_tmp[strlen(str_tmp)-2] = '\0';
 					}
 					if ((pch = strstr(str_tmp,",")) != NULL) {
-						char t[16] = "";
 						pch[0] = '\0';
-						nest.manning[k++] = atof(str_tmp);
-						strcpy(t, ++pch);
-						while ((pch = strstr(t,",")) != NULL) {
-							pch[0] = '\0';
-							nest.manning[k++] = atof(t);
-							strcpy(t, ++pch);
-						}
-						nest.manning[k] = atof(t);	/* Last one doesn't end with a comma so was skipped above */
+						strcpy(tracers_infile, str_tmp);
+						strcpy(tracers_outfile, ++pch);		/* NEED TO TEST IF WE GOT A FNAME */
+					}
+					else {
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -L option, must provide at least the tracers file name\n");
+						error++;
+					}
+					do_tracers = true;
+					out_velocity_x = out_velocity_y = true;
+				}
+				break;
+			case 'M':	/* Max/min options */
+				if (opt->arg[0] == '-') {	/* Compute a mask with ones over the "dried beach" */
+					nest.do_long_beach = true;
+					if (opt->arg[1])
+						sscanf(&opt->arg[1], "%s", fname_mask_lbeach);
+					else
+						strcpy(fname_mask_lbeach, "long_beach.grd");
+				}
+				else if (opt->arg[0] == '+') {	/* Compute a mask with ones over the "innundated beach" */
+					nest.do_short_beach = true;
+					if (opt->arg[1])
+						sscanf(&opt->arg[1], "%s", fname_mask_sbeach);
+					else
+						strcpy(fname_mask_sbeach, "short_beach.grd");
+				}
+				else
+					max_level = true;
+				break;
+			case 'N':	/* Number of cycles to compute */
+				n_of_cycles = atoi(opt->arg);
+				break;
+			case 'Q':	/* Vertical offset (simulate tide) */
+				if (opt->arg[0])
+					sscanf(opt->arg, "%lf", &z_offset);
+
+				break;
+			case 'S':	/* Output velocity grids */
+				strcpy(str_tmp, opt->arg);
+				if ((pch = strstr(str_tmp,"+m")) != NULL) {    /* Velocity at maregraphs */
+					out_maregs_velocity = true;
+					out_velocity_x      = out_velocity_y = true;
+					for (k = 0; k < 2; k++) {   /* Strip the '+m' from the str_tmp string */
+						len = strlen(pch);
+						for (j = 0; j < (int)len; j++)
+							pch[j] = pch[j+1];
+					}
+				}
+				if ((pch = strstr(str_tmp,"+s")) != NULL) {    /* Comput max speed */
+					max_velocity   = true;
+					out_velocity_x = out_velocity_y = true;
+					for (k = 0; k < 2; k++) {   /* Strip the '+s' from the str_tmp string */
+						len = strlen(pch);
+						for (j = 0; j < (int)len; j++)
+							pch[j] = pch[j+1];
+					}
+				}
+				if (str_tmp[0] == 'x') {         /* Only X component */
+					out_velocity   = out_velocity_x = true;
+					if (!(out_maregs_velocity || max_velocity)) out_velocity_y = false;
+				}
+				else if (str_tmp[0] == 'y') {    /* Only Y component */
+					out_velocity   = out_velocity_y = true;
+					if (!(out_maregs_velocity || max_velocity)) out_velocity_x = false;
+				}
+				else if (str_tmp[0] == 'r') {    /* Speed (velocity module) -- NOT YET -- */
+					out_velocity   = out_velocity_r = true;
+					if (!(out_maregs_velocity || max_velocity)) out_velocity_x = out_velocity_y = false;
+				}
+				else if (str_tmp[0] == 'n') {    /* No grids, only vx,vy in maregs */
+					out_velocity_x = out_velocity_y = true;
+					out_velocity   = false;
+				}
+				else {                          /* Both X & Y*/
+					out_velocity = out_velocity_x = out_velocity_y = true;
+				}
+				break;
+			case 't':	/* Time step of simulation */
+				dt = atof(opt->arg);
+				nest.dt[0] = dt;
+				break;
+			case 'T':	/* Maregraph xy positions file, with optional +o<outname> and +t<interval> modifiers */
+				if (cumpt) {
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option given more than once.\n");
+					GMT_Report(GMT->parent, GMT_MSG_WARNING, "        Ignoring it.\n");
+					break;
+				}
+				cumint = 1;	/* Default: save maregraphs at every time step */
+				hcum[0] = '\0';
+				if (opt->arg[0] == '\0') {
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
+					error++;
+					break;
+				}
+				sscanf(opt->arg, "%s", str_tmp);
+				if ((tok = strtok(str_tmp, "+")) == NULL || tok[0] == '\0') {
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
+					error++;
+					break;
+				}
+				strcpy(maregs, tok);
+				while ((tok = strtok(NULL, "+")) != NULL) {
+					if (tok[0] == 'o')
+						strcpy(hcum, &tok[1]);
+					else if (tok[0] == 't') {
+						if (strchr(&tok[1], '.') != NULL)
+							GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, 'int' in option -T...+t<int> must be an integer number. Expect surprises.\n");
+						cumint = atoi(&tok[1]);
 					}
 					else
-						nest.manning[k] = atof(&argv[i][2]);
+						GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, unrecognized modifier '+%s' in -T option. Ignored.\n", tok);
+				}
+				if (hcum[0] == '\0')
+					strcpy(hcum, "maregs_out.dat");
+				len = strlen(hcum);
+				if (len > 3 && !strcmp(&hcum[len-3], ".nc"))
+					out_maregs_nc = true;
+				else if (strrchr(hcum, '.') == NULL)
+					strcat(hcum, ".dat");
+				cumpt = true;
+				maregs_in_input = false;
+				break;
+			case 'X':		/* Manning coeffs */
+				k = 0;
+				sscanf(opt->arg, "%s", str_tmp);
+				if ((pch = strstr(str_tmp,"+")) != NULL) {
+					nest.manning_depth = -atof(++pch);	/* Reverse sense right away because bat will be pos down */
+					pch--;	pch[0] = '\0';		/* Remove traces of this option in string */
+				}
+				if ((pch = strstr(str_tmp,",")) != NULL) {
+					char t[16] = "";
+					pch[0] = '\0';
+					nest.manning[k++] = atof(str_tmp);
+					strcpy(t, ++pch);
+					while ((pch = strstr(t,",")) != NULL) {
+						pch[0] = '\0';
+						nest.manning[k++] = atof(t);
+						strcpy(t, ++pch);
+					}
+					nest.manning[k] = atof(t);	/* Last one doesn't end with a comma so was skipped above */
+				}
+				else
+					nest.manning[k] = atof(opt->arg);
 
-					if (k == 0)			/* Only one set. Replicate it to the others (being used or not) */
-						for (n = 1; n < 10; n++)
-							nest.manning[n] = nest.manning[0];
-					break;
-				case 'U':
-					nest.do_upscale = true;
-					break;
-				case 'V':
-					verbose = true;
-					break;
-				case '1':
-					nesteds[0] = &argv[i][2];
-					break;
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-				case '10':
-					nesteds[atoi(&argv[i][1])-1] = &argv[i][2];
-					break;
-				default:
-					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Unknown option %s\n", argv[i]);
-					error = true;
-					break;
-			}
-		}
-		else {
-			if (bathy == NULL)
-				bathy = argv[i];
-			else if (fonte == NULL)
-				fonte = argv[i];
-			else if (bathy != NULL && fonte != NULL) {
-				GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Wrong option %s (misses the minus sign)\n", argv[i]);
+				if (k == 0)			/* Only one set. Replicate it to the others (being used or not) */
+					for (n = 1; n < 10; n++)
+						nest.manning[n] = nest.manning[0];
+				break;
+			case 'U':
+				nest.do_upscale = true;
+				break;
+			case 'V':
+				verbose = true;
+				break;
+			case '1':
+				nesteds[0] = opt->arg;
+				break;
+			case '2': case '3': case '4': case '5':
+			case '6': case '7': case '8': case '9':
+				nesteds[opt->option - '0' - 1] = opt->arg;
+				break;
+			default:
+				GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Unknown option -%c%s\n", opt->option, opt->arg);
 				error = true;
-			}
+				break;
 		}
 	}
 
@@ -1018,7 +971,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 		}
 	}
 
-	*argc_out = argc;	*argv_out = argv;
 	/* Pack the parsed values into the control structure */
 	Ctrl->writeLevel = writeLevel;
 	Ctrl->grn = grn;
@@ -1104,12 +1056,11 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 }
 
 #define bailout(code) {gmt_M_free_options(mode); return (code);}
-#define Return(code) {Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); if (argv) {int _k; for (_k = 0; _k < argc; _k++) gmt_M_str_free(argv[_k]); free(argv);} bailout(code);}
+#define Return(code) {Free_Ctrl(GMT, Ctrl); gmt_end_module(GMT, GMT_cpy); bailout(code);}
 
 EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
-	int     argc = 0;                    /* Rebuilt from the GMT option list */
-	char  **argv = NULL;
+	char   *cmd = NULL;                  /* Command-line text built from options, for the nc History attrib */
 	struct  GMTAPI_CTRL *API = gmt_get_api_ptr(V_API);
 	struct  NSWING_CTRL *Ctrl = NULL;            /* Holds the parsed command-line options */
 	struct  GMT_CTRL *GMT = NULL, *GMT_cpy = NULL; /* General GMT internal parameters */
@@ -1227,7 +1178,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	/*---------------------------- Parse the command-line arguments ----------------------------*/
 	Ctrl = New_Ctrl(GMT);	/* Allocate the control structure */
-	if ((error = parse(GMT, Ctrl, &nest, options, &argc, &argv)) != 0) Return(error);
+	if ((error = parse(GMT, Ctrl, &nest, options)) != 0) Return(error);
 
 	/* Unpack the parsed values into the local variables used by the main code below */
 	writeLevel = Ctrl->writeLevel;
@@ -1469,8 +1420,10 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	}
 
 	/* -------------------------------------------------------------------------------------- */
-	for (k = 0; k < argc; k++) {		/* Build the History string */
-		strcat(history, argv[k]);		strcat(history, " ");
+	strcat(history, "nswing ");		/* Build the History string */
+	if ((cmd = GMT_Create_Cmd(API, options)) != NULL) {
+		strcat(history, cmd);
+		GMT_Destroy_Cmd(API, &cmd);
 	}
 	/* -------------- Allocate memory and initialize the 'nest' structure ------------------- */
 	nest.hdr[0].nx      = hdr_b.nx;		nest.hdr[0].ny = hdr_b.ny;
@@ -2270,7 +2223,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		free(mareg_names);
 	}
 
-	/* Return() frees the rebuilt argv[], ends the module (restores GMT state) and frees the options */
+	/* Return() ends the module (restores GMT state) and frees the options */
 	Return(GMT_NOERROR);
 }
 
