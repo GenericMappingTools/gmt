@@ -49,7 +49,7 @@
 #define THIS_MODULE_MODERN_NAME	"nswing"
 #define THIS_MODULE_LIB		"supplements"
 #define THIS_MODULE_PURPOSE	"A tsunami maker"
-#define THIS_MODULE_KEYS	"<G{"        /* Input is grid(s); all outputs are still written internally to files */
+#define THIS_MODULE_KEYS	"<G{,TD(,GG},LD(,EG),FG),HG)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-RVf"
 
@@ -397,9 +397,9 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose(API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage(API, 0, "usage: %s bathy.grd initial.grd [-1<bat_lev1>] [-2<bat_lev2>] [-3<...>] -G<name>[+m],<int> "
-		"[-A<fname.sww>] [-B<BCfile>] [-C] [-D] [-E[p][m][,decim]] [-Fdip/strike/rake/slip/length/width/topDepth/x_epic/y_epic] "
-		"[-Fk[c]<w/e/s/n>] [-H] [-H<momentM,momentN>[,t]] [-J<time_jump>[+run_time_jump]] [-L[name1,name2]] "
-		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [-O<int>,<outfname>] [%s] [-S[x|y|n][+m][+s]] [-T<int>,<mareg>[,<outmaregs[+n]>]] "
+		"[-A<fname.sww>] [-B<BCfile>] [-C] [-D] [-E[p][m][,decim]] [-Fx_epic/y_epic/dip/strike/rake/slip/length/width/topDepth] "
+		"[-Fk[c]<w/e/s/n>] [-H] [-H<momentM,momentN>[,t]] [-J<time_jump>] [-L[name1,name2]] "
+		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [%s] [-S[x|y|n][+m][+s]] [-T<mareg>[+o<outmaregs>][+t<int>]] "
 		"[-Q<z_offset>] [-X<manning0[,...]>] -t<dt> [%s] [-x<n>] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -418,11 +418,11 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, 1, "\n-E[p][m][,decim] Write grids with energy or power (-Ep).");
 	GMT_Usage(API, -2, "Append 'm' to save only one grid with the max values. This can noticeably slow the run, "
 		"so optionally append a decimator factor after the comma (causes aliasing visible on shaded illumination). "
-		"The file name comes from <name> in -G/-Z complemented with a '_max' prefix; saving of multiple grids is disabled. "
-		"A 3D netCDF file with wave heights is still possible with -Z.");
-	GMT_Usage(API, 1, "\n-F<dip/strike/rake/slip/length/width/topDepth/x_epic/y_epic> Okada fault parameters.");
-	GMT_Usage(API, -2, "Dip, Azimuth, Rake, Slip(m), length, width and depth from sea-bottom; x_epic, y_epic are the "
-		"X and Y coordinates of the beginning of the fault trace. All dimensions must be in km.");
+		"The file name comes from <name> in -G complemented with a '_max' prefix; saving of multiple grids is disabled. "
+		"A 3D netCDF file with wave heights is still possible with -G.");
+	GMT_Usage(API, 1, "\n-F<x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth> Okada fault parameters.");
+	GMT_Usage(API, -2, "x_epic, y_epic are the X and Y coordinates of the beginning of the fault trace; Dip, Azimuth, "
+		"Rake, Slip(m), length, width and depth from sea-bottom follow. All dimensions must be in km.");
 	GMT_Usage(API, 1, "\n-Fk<west/east/south/north> Build a prism source with these limits and height of 1 meter.");
 	GMT_Usage(API, -2, "-Fkc<x/y/nx/ny>: alternatively give the prism size as centre x/y and nx/ny half-width cell numbers. "
 		"-Fk.../RxC: loop over a matrix of size R x C starting at the Lower Left Corner given by w/e/s/n. "
@@ -434,27 +434,32 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, 1, "\n-H Write grids with the momentum (velocity times water depth).");
 	GMT_Usage(API, -2, "-H<fname_momentM,fname_momentN>[,t]: Hot start using these moment grids. Optional 't' is the hot-start "
 		"time (also needs the surface displacement corresponding to the time of these grids).");
-	GMT_Usage(API, 1, "\n-J<time_jump> Do not write grids or maregraphs for times before time_jump (seconds).");
-	GMT_Usage(API, -2, "When doing nested grids, append +<time> to NOT start nested-grid computations before this time has "
-		"elapsed. Allowed forms: -Jt1, -J+t2, -Jt1+t2 or -Jt1 -J+t2.");
-	GMT_Usage(API, 1, "\n-L Use linear approximation in the moment conservation equations (faster but less good).");
-	GMT_Usage(API, -2, "-L<in_fname>,<out_fname>: do Lagrangian tracers, where <in_fname> is the tracers initial-position "
-		"file and <out_fname> the file to hold the results.");
-	GMT_Usage(API, 1, "\n-M Write a grid with the max water level (name from <name> in -Z, '_max' prefix).");
+	GMT_Usage(API, 1, "\n-J<time_jump>");
+	GMT_Usage(API, -2, "Do not write grids or maregraphs for times before <time_jump> (seconds).");
+	//GMT_Usage(API, -2, "When doing nested grids, append +<time> to NOT start nested-grid computations before this time has "
+		//"elapsed. Allowed forms: -Jt1, -J+t2, -Jt1+t2 or -Jt1 -J+t2.");
+	GMT_Usage(API, 1, "\n-L");
+	GMT_Usage(API, -2, "Use linear approximation in the moment conservation equations (faster but less good).");
+	GMT_Usage(API, -2, "-L<in_fname>,<out_fname>");
+	GMT_Usage(API, -2, "Do Lagrangian tracers, where <in_fname> is the tracers initial-position file "
+		"and <out_fname> the file to hold the results.");
+	GMT_Usage(API, 1, "\n-M Write a grid with the max water level (name from <name> in -G, '_max' prefix).");
 	GMT_Usage(API, -2, "Append '-' to compute instead the maximum water retreat, written to a mask file (default 'long_beach.grd'; "
 		"append a name after '-' to change it, e.g. -M-beach_long.grd). Append '+' for a mask with the Run In extent (behaves like -M-). "
-		"-M may be repeated, e.g. -M -M- -M+ computes all three. With -Z the 'long' and 'short' beach arrays are also saved in the .nc file.");
+		"-M may be repeated, e.g. -M -M- -M+ computes all three. With -G the 'long' and 'short' beach arrays are also saved in the .nc file.");
 	GMT_Usage(API, 1, "\n-N<n_cycles> Number of cycles [Default 1010].");
-	GMT_Usage(API, 1, "\n-O<int>,<outfname> Interval at which maregraphs are written to the <outfname> maregraph file.");
+	//GMT_Usage(API, 1, "\n-O<int>,<outfname> Interval at which maregraphs are written to the <outfname> maregraph file.");
 	GMT_Option(API, "R");
 	GMT_Usage(API, -2, "Output grids only in the sub-region enclosed by <west/east/south/north>.");
 	GMT_Usage(API, 1, "\n-S Write grids with the velocity (names get _U and _V suffixes).");
 	GMT_Usage(API, -2, "Use x or y to save only one component, or n for no velocity grids (maregs only). Append +m to also write "
 		"velocity (vx,vy) at maregraph locations (needs -T and/or -O). Append +s to write the max speed (|v|) ('_max_speed' suffix). "
 		"Use the 'n' flag to NOT output the U and V components, e.g. -Sn+s.");
-	GMT_Usage(API, 1, "\n-T<int>,<maregs>[,<outmaregs[+n]>] Interval at which maregraphs are written to the output maregraph file.");
-	GMT_Usage(API, -2, "<maregs> is the file with the (x y) locations of the virtual maregraphs; <outmaregs> is the optional "
-		"output file. If not provided, the output name is <maregs> with '_auto.dat' appended. Append +n to write the maregraphs as a netCDF file.");
+	GMT_Usage(API, 1, "\n-T<mareg>[+o<outmaregs>][+t<int>] Save maregraph (virtual tide-gauge) time series.");
+	GMT_Usage(API, -2, "<mareg> is the file with the (x y) locations of the virtual maregraphs. Append +o<outmaregs> to set the "
+		"output file name [Default is maregs_out.dat]. A '.dat' extension is added when <outmaregs> has none; use a '.nc' "
+		"extension to write the maregraphs as a netCDF file instead. Append +t<int> to save every <int> simulation time "
+		"steps (set by -t) [Default is every time step].");
 	GMT_Usage(API, 1, "\n-Q<z_offset>");
 	GMT_Usage(API, -2, "Apply a vertical offset to ALL bathymetry grids (e.g. to simulate tide).");
 	GMT_Usage(API, 1, "\n-X<manning0[,manning1[,...]][+<depth>]> Manning friction coefficients.");
@@ -509,6 +514,7 @@ GMT_LOCAL void Free_Ctrl(struct GMT_CTRL *GMT, struct NSWING_CTRL *C) {	/* Deall
  * this rebuilds argv[] from the GMT option list, runs that parser, and packs the result into Ctrl.
  * The argv[] block is handed back to the caller (argc_out/argv_out): several Ctrl string pointers
  * point into it, so the caller owns and frees it. */
+//static int parse (struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct GMT_OPTION *options) {
 GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestContainer *nest_out,
                     struct GMT_OPTION *options, int *argc_out, char ***argv_out) {
 	char  **argv = NULL;
@@ -540,7 +546,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	char    fname_mask_sbeach[256] = "";
 	char    tracers_infile[256] = "", tracers_outfile[256] = "";
 	char    stem[256] = "", str_tmp[128] = "", fname_momentM[256] = "", fname_momentN[256] = "";
-	char   *pch;
+	char   *pch, *tok;
 	char   *nesteds[10] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	char    txt[128];
 	double  add_const = 0, time_h = 0;
@@ -566,6 +572,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE)      /* bathy / source / nested grids / data files */
 			argv[argc++] = strdup(opt->arg);
+		else if (opt->option == 'R')            /* Already consumed by GMT_Parse_Common into GMT->common.R; the legacy switch has no case for it */
+			continue;
 		else {                                  /* A regular -X[arg] option */
 			snprintf(buf, GMT_LEN512, "-%c%s", opt->option, (opt->arg) ? opt->arg : "");
 			argv[argc++] = strdup(buf);
@@ -693,8 +701,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					}
 					else {
 						do_Okada = true;
-						n = sscanf(&argv[i][2], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf", 
-						           &f_dip, &f_azim, &f_rake, &f_slip, &f_length, &f_width, &f_topDepth, &x_epic, &y_epic);
+						n = sscanf(&argv[i][2], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
+						           &x_epic, &y_epic, &f_dip, &f_azim, &f_rake, &f_slip, &f_length, &f_width, &f_topDepth);
 						if (n != 9) {
 							GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -F option, must provide all 9 parameters.\n");
 							error++;
@@ -816,8 +824,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					if (argv[i][2])
 						sscanf(&argv[i][2], "%lf", &z_offset);
 
-					break;					
-				case 'S':	/* Output velocity grids */ 
+					break;
+				case 'S':	/* Output velocity grids */
 					strcpy(str_tmp, &argv[i][2]);
 					if ((pch = strstr(str_tmp,"+m")) != NULL) {    /* Velocity at maregraphs */
 						out_maregs_velocity = true;
@@ -861,36 +869,44 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					dt = atof(&argv[i][2]);
 					nest.dt[0] = dt;
 					break;
-				case 'T':	/* File with time interval (n steps), maregraph positions and optional output fname */
+				case 'T':	/* Maregraph xy positions file, with optional +o<outname> and +t<interval> modifiers */
 					if (cumpt) {
-						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, this option is not to be used when maregraphs were transmitted in input\n");
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option given more than once.\n");
 						GMT_Report(GMT->parent, GMT_MSG_WARNING, "        Ignoring it.\n");
 						break;
 					}
-					sscanf(&argv[i][2], "%s", str_tmp);
-					if (str_tmp[strlen(str_tmp)-2] == '+') {	/* Output maregs file will be in netCDF */
-						out_maregs_nc = true;
-						str_tmp[strlen(str_tmp)-2] = '\0';
+					cumint = 1;	/* Default: save maregraphs at every time step */
+					hcum[0] = '\0';
+					if (argv[i][2] == '\0') {
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
+						error++;
+						break;
 					}
-					if ((pch = strstr(str_tmp,",")) != NULL) {
-						char *pch2;
-						pch[0] = '\0';
-						if ((pch2 = strstr(str_tmp,".")) != NULL)
-							GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, 'int' in option -T<int> must be an integer number. Expect surprises.\n");
-
-						cumint = atoi(str_tmp);
-						if ((pch2 = strstr(++pch,",")) != NULL) {
-							pch2[0] = '\0';
-							strcpy(maregs, pch);
-							strcpy(hcum, ++pch2);
+					sscanf(&argv[i][2], "%s", str_tmp);
+					if ((tok = strtok(str_tmp, "+")) == NULL || tok[0] == '\0') {
+						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
+						error++;
+						break;
+					}
+					strcpy(maregs, tok);
+					while ((tok = strtok(NULL, "+")) != NULL) {
+						if (tok[0] == 'o')
+							strcpy(hcum, &tok[1]);
+						else if (tok[0] == 't') {
+							if (strchr(&tok[1], '.') != NULL)
+								GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, 'int' in option -T...+t<int> must be an integer number. Expect surprises.\n");
+							cumint = atoi(&tok[1]);
 						}
 						else
-							strcpy(maregs, pch);
+							GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, unrecognized modifier '+%s' in -T option. Ignored.\n", tok);
 					}
-					else {
-						GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide at least a interval and maregs file name\n");
-						error++;
-					}
+					if (hcum[0] == '\0')
+						strcpy(hcum, "maregs_out.dat");
+					len = strlen(hcum);
+					if (len > 3 && !strcmp(&hcum[len-3], ".nc"))
+						out_maregs_nc = true;
+					else if (strrchr(hcum, '.') == NULL)
+						strcat(hcum, ".dat");
 					cumpt = true;
 					maregs_in_input = false;
 					break;
@@ -979,11 +995,11 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 		}
 
 		if (grn == 0 && !do_maxs && !cumpt) {
-			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G or -Z option. MUST provide saving interval\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G option. MUST provide saving interval\n");
 			error++;
 		}
 		if (!stem && !cumpt) {
-			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G or -Z option. MUST provide base name || OR -T option\n");
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G option. MUST provide base name || OR -T option\n");
 			error++;
 		}
 
@@ -1316,20 +1332,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: error, -T or -O options imply a saving interval\n");
 			Return(-1);
 		}
-		else if (!maregs) {
+		else if (!maregs[0]) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: error, -T or -O options imply a maregs file\n");
 			Return(-1);
-		}
-		else if (!hcum || !strcmp(hcum, "")) {
-			len = strlen(maregs) - 1;
-			while (maregs[len] != '.') len--;
-			if (len <= 0)
-				strcat(strcpy(hcum, maregs), (out_maregs_nc) ? "_auto.nc" : "_auto.dat");
-			else {
-				strcpy(hcum, maregs);
-				hcum[len] = '\0';
-				strcat(hcum, (out_maregs_nc) ? "_auto.nc" : "_auto.dat");
-			}
 		}
 
 		n_ptmar = n_of_cycles / cumint + 1;
@@ -2673,97 +2678,83 @@ int count_col(char *line) {
 
 /* -------------------------------------------------------------------- */
 int count_n_maregs(void *API, char *file) {
-	int     i = 0;
-	char    line[256];
-	FILE   *fp;
+	/* Count data records in a maregraphs/tracers positions dataset. 'file' can be a real
+	 * file name OR a GMT virtual-file reference (e.g. a GMTdataset handed in from Julia). */
+	int  n;
+	struct GMT_DATASET *D = NULL;
 
-	if ((fp = fopen (file, "r")) == NULL) {
+	if ((D = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
-	while (fgets (line, 256, fp) != NULL) {
-		if (line[0] == '#') continue;	/* Jump comment lines */
-		i++;
-	}
-	fclose (fp);
-	return(i);
+	n = (int)D->n_records;
+	GMT_Destroy_Data(API, &D);
+	return (n);
 }
 
 /* -------------------------------------------------------------------- */
 int read_maregs(void *API, struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]) {
-	/* Read maregraph positions and convert them to vector linear indices */
-	int     i = 0, k = 0, ix, jy, n;
-	char    line[256], txt[64];
+	/* Read maregraph positions (real file or virtual dataset) and convert them to vector linear indices */
+	int     i = 0, ix, jy;
+	uint64_t tbl, seg, row;
 	double  x, y;
-	FILE   *fp;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
-	if ((fp = fopen (file, "r")) == NULL) {
+	if ((D = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
 
-	while (fgets (line, 256, fp) != NULL) {
-		k++;
-		if (line[0] == '#') continue;	/* Jump comment lines */
-		n = sscanf (line, "%lf %lf %s", &x, &y, txt);
-		if (n !=2 && n != 3) {
-			if (n == 1) {				/* Try with commas */
-				n = sscanf (line, "%lf %lf %s", &x, &y, txt);
-				if (n !=2 && n != 3) {
-					GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error reading maregraph file at line %d Expected 2 or 3 values but got %d\n", k, n);
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+			S = D->table[tbl]->segment[seg];
+			for (row = 0; row < S->n_rows; row++) {
+				x = S->data[GMT_X][row];
+				y = S->data[GMT_Y][row];
+				if (x < hdr.x_min || x > hdr.x_max || y < hdr.y_min || y > hdr.y_max)
 					continue;
-				}
+				ix = irint((x - hdr.x_min) / hdr.x_inc);
+				jy = irint((y - hdr.y_min) / hdr.y_inc);
+				lcum_p[i] = jy * hdr.nx + ix;
+				names[i] = (S->text && S->text[row]) ? strdup(S->text[row]) : strdup("NoName");
+				i++;
 			}
 		}
-
-		if (x < hdr.x_min || x > hdr.x_max || y < hdr.y_min || y > hdr.y_max)
-			continue;
-		ix = irint((x - hdr.x_min) / hdr.x_inc);
-		jy = irint((y - hdr.y_min) / hdr.y_inc);
-		lcum_p[i] = jy * hdr.nx + ix; 
-
-		if (n == 3)		/* This maregraph's name */
-			names[i] = strdup(&txt[0]);
-		else
-			names[i] = strdup("NoName");
-		i++;
 	}
-	fclose (fp);
+	GMT_Destroy_Data(API, &D);
 	return (i);
 }
 
 /* -------------------------------------------------------------------- */
 int read_tracers(void *API, struct grd_header hdr, char *file, struct tracers *oranges) {
-	/* Read tracers positions */
-	int     i = 0, k = 0, ix, jy, n;
-	char    line[256];
+	/* Read tracers positions (real file or virtual dataset) */
+	int     i = 0;
+	uint64_t tbl, seg, row;
 	double  x, y;
-	FILE   *fp;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
-	if ((fp = fopen (file, "r")) == NULL) {
+	if ((D = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
 
-	while (fgets (line, 256, fp) != NULL) {
-		k++;
-		if (line[0] == '#') continue;	/* Jump comment lines */
-		if ((n = sscanf (line, "%lf %lf", &x, &y)) != 2) {
-			if (n == 1) {				/* Try with commas */
-				if ((n = sscanf(line, "%lf,%lf", &x, &y)) != 2) {
-					GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error reading maregraph file at line %d Expected 2 values but got %d\n", k, n);
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+			S = D->table[tbl]->segment[seg];
+			for (row = 0; row < S->n_rows; row++) {
+				x = S->data[GMT_X][row];
+				y = S->data[GMT_Y][row];
+				if (x < hdr.x_min || x > hdr.x_max || y < hdr.y_min || y > hdr.y_max)
 					continue;
-				}
+				oranges[i].x[0] = x;
+				oranges[i].y[0] = y;
+				i++;
 			}
 		}
-		if (x < hdr.x_min || x > hdr.x_max || y < hdr.y_min || y > hdr.y_max)
-			continue;
-
-		oranges[i].x[0] = x;
-		oranges[i].y[0] = y;
-		i++;
 	}
-	fclose (fp);
+	GMT_Destroy_Data(API, &D);
 	return (i);
 }
 
