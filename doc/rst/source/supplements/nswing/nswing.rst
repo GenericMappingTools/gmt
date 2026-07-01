@@ -23,7 +23,7 @@ Synopsis
 [ |-C| ]
 [ |-D| ]
 [ |-E|\ [**p**][**m**][,\ *decim*] ]
-[ |-F|\ *dip/strike/rake/slip/length/width/topDepth/x_epic/y_epic* ]
+[ |-F|\ *x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth* ]
 [ |-F|\ **k**\ [**c**]\ *w/e/s/n* ]
 [ |-G|\ *stem*\ [**+l**\ *ev*],\ *int* ]
 [ |-H|\ [*momentM,momentN*\ [,\ *t*]] ]
@@ -35,7 +35,7 @@ Synopsis
 [ |-Q|\ *z_offset* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**] ]
-[ |-T|\ *int*,\ *mareg*\ [,\ *outmaregs*\ [**+n**]] ]
+[ |-T|\ *mareg*\ [**+o**\ *outmaregs*][**+t**\ *int*] ]
 [ |-X|\ *manning0*\ [,\ *...*] ]
 [ |-Z|\ *name*\ [**+l**\ *ev*],\ *int* ]
 [ **-i** ]
@@ -121,11 +121,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *dip/strike/rake/slip/length/width/topDepth/x_epic/y_epic*
-    Okada fault parameters used to build the source. *dip*, *strike* (azimuth),
-    *rake*, *slip* (m), *length*, *width* and *topDepth* (depth from the
-    sea-bottom); *x_epic*, *y_epic* are the x and y coordinates of the beginning
-    of the fault trace. All dimensions must be in km.
+**-F**\ *x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth*
+    Okada fault parameters used to build the source. *x_epic*, *y_epic* are the
+    x and y coordinates of the beginning of the fault trace; *dip*, *strike*
+    (azimuth), *rake*, *slip* (m), *length*, *width* and *topDepth* (depth from
+    the sea-bottom) follow. All dimensions must be in km.
 
 **-F**\ **k**\ *west/east/south/north*
     Build a prism source with these limits and a height of 1 meter.
@@ -219,12 +219,14 @@ Output grids only in the sub-region enclosed by *west/east/south/north*.
 
 .. _-T:
 
-**-T**\ *int*,\ *mareg*\ [,\ *outmaregs*\ [**+n**]]
-    Interval *int* at which maregraphs are written to the output maregraph file.
-    *mareg* is the file with the (x y) locations of the virtual maregraphs;
-    *outmaregs* is the optional output file. If not provided, the output name is
-    *mareg* with *_auto.dat* appended. Append **+n** to write the maregraphs as
-    a netCDF file.
+**-T**\ *mareg*\ [**+o**\ *outmaregs*][**+t**\ *int*]
+    Save time series (maregraphs) at virtual tide-gauge locations. *mareg* is
+    the file with the (x y) locations of the virtual maregraphs. Append
+    **+o**\ *outmaregs* to set the output file name [Default is
+    *maregs_out.dat*]. A *.dat* extension is added when *outmaregs* has none;
+    use a *.nc* extension to write the maregraphs as a netCDF file instead.
+    Append **+t**\ *int* to save every *int* simulation time steps (set by
+    **-t**) [Default is every time step].
 
 .. _-X:
 
@@ -268,7 +270,7 @@ To run the same simulation but generate the source on the fly from Okada fault
 parameters and sample the wave field at the virtual maregraphs listed in
 *gauges.dat* every 5 time steps, try::
 
-    gmt nswing bathy.grd dummy.grd -t5 -F12/90/90/3/100/50/10/-8/37 -T5,gauges.dat
+    gmt nswing bathy.grd dummy.grd -t5 -F-8/37/12/90/90/3/100/50/10 -Tgauges.dat+t5
 
 See Also
 --------
