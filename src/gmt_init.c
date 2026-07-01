@@ -8925,7 +8925,7 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	GMT_Usage (API, 1, "\n-%c%s", option, GMT_SCALE);
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
-	GMT_Usage (API, -2, "If <refpoint> is omitted, the scale defaults to the bottom-right corner inside the map frame, nudged 0.5 cm inward (using +jBR+o0.5c).");
+	GMT_Usage (API, -2, "If <refpoint> is omitted, the scale defaults to the bottom-left corner inside the map frame, nudged 0.5 cm inward (using +jBL+o0.5c).");
 	GMT_Usage (API, -2, "Set required scale via +w<length>, and (for geographic projection) append a unit from %s [km]. Other scale modifiers are optional:",
 		GMT_LEN_UNITS2_DISPLAY);
 	GMT_Usage (API, 3, "+a Append label alignment (choose among l(eft), r(ight), t(op), and b(ottom)) [t].");
