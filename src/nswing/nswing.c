@@ -558,6 +558,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	sanitize_nestContainer(&nest);
 
 	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'R')	/* Already consumed by GMT_Parse_Common into GMT->common.R; not one of nswing's own options */
+			continue;
 		switch (opt->option) {
 			case GMT_OPT_INFILE:	/* bathy / source grid (positional, no leading '-') */
 				if (bathy == NULL)
