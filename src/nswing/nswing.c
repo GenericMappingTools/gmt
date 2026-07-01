@@ -1182,6 +1182,11 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module(API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout(API->error);	/* Save current state */
 	if (GMT_Parse_Common(API, THIS_MODULE_OPTIONS, options)) Return(API->error);
 
+	/* nswing copies grids into its own flat arrays and manages boundary conditions itself, so it has
+	 * no use for GMT's default grid padding: force pad = 0 on every grid read/created from here on,
+	 * removing that boundary strip entirely rather than relying on gmt_M_ijp() to always avoid it. */
+	GMT_Set_Default(API, "API_PAD", "0");
+
 	/*---------------------------- Parse the command-line arguments ----------------------------*/
 	Ctrl = New_Ctrl(GMT);	/* Allocate the control structure */
 	if ((error = parse(GMT, Ctrl, &nest, options)) != 0) Return(error);
