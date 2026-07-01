@@ -950,6 +950,12 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 		if (do_Kaba && fonte)
 			GMT_Report(GMT->parent, GMT_MSG_WARNING, "WARNING: Source file is ignored when -Fk option is used.\n");
 
+		if (KbGridRows * KbGridCols > 1 && !cumpt) {
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -Fk.../RxC (or /dx/dy) needs the -T option to know "
+			           "where to sample the maregraphs written for each prism.\n");
+			error++;
+		}
+
 		if (dt <= 0) {
 			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error -t option. Time step of simulation not provided or negative.\n");
 			error++;
