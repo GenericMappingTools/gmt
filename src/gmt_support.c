@@ -14128,7 +14128,8 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms) {
 	/* This function parses the -L map scale syntax:
-	 *   -L[g|j|J|n|x]<refpoint>+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
+	 *   -L[g|j|J|n|x][<refpoint>]+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
+	 * If <refpoint> (and its g|j|J|n|x code) is entirely omitted, we default to jBR (Bottom-Right inside)
 	 * If the required +w is not present we call the backwards compatible parsert for the previous map scale syntax.
 	 * An optional background panel is handled by a separate option (typically -F). */
 
@@ -14149,7 +14150,22 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	ms->measure = 'k';	/* Default distance unit is km */
 	ms->alignment = (vertical) ? 'r' : 't';	/* Default label placement is on top for map scale and right for vertical scale */
 
-	if ((ms->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
+	/* Inject default reference point (jBR) if omitted by user --- */
+	char refpoint_str[GMT_LEN256];
+	char *parse_text = text;
+	/* If the user omitted the reference point (e.g., -L+w100k), inject a default one (jBR = Bottom-Right inside),
+	 * plus a small 0.5 cm inward offset (+o) so the scale does not sit flush against the map frame.
+	 * If the user already gave their own +o modifier, leave it untouched. */
+	if (text[0] == '+') {
+		char dummy[GMT_LEN256] = {""};
+		if (gmt_get_modifier (text, 'o', dummy))	/* User already specified +o<dx>/<dy>; do not override */
+			snprintf (refpoint_str, GMT_LEN256-1, "jBR%s", text);
+		else
+			snprintf (refpoint_str, GMT_LEN256-1, "jBR+o0.5c/0.5c%s", text);
+		parse_text = refpoint_str;
+	}
+
+	if ((ms->refpoint = gmt_get_refpoint (GMT, parse_text, option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
 		return (1);	/* Failed basic parsing */
