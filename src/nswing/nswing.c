@@ -4209,7 +4209,7 @@ void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *n
 
 #ifndef PARALLEL
 	row_start = 0;		row_end = hdr.n_rows - 1;
-	memset(fluxm_d, 0, hdr.nm * sizeof(double));
+	memset(fluxn_d, 0, hdr.nm * sizeof(double));	/* fluxn_d, NOT fluxm_d: zeroing fluxm_d here raced with moment_M writing it */
 #endif
 
 	dtdx = dt / hdr.inc[GMT_X];
