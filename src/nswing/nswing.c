@@ -127,28 +127,13 @@ static double EPS4 = EPS4_;		/* Kinda trick to be able to change EPS4 via a comm
 
 #define ijs(i,j,n) ((i) + (j)*n)
 #define ijc(i,j) ((i) + (j)*n_ptmar)
-#define ij_grd(col,row,hdr) ((col) + (row)*hdr.nx)
+#define ij_grd(col,row,hdr) ((col) + (row)*hdr.n_columns)
 
 typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void */
 
 struct tracers {        /* For tracers (oranges) */
 	double *x;          /* x coordinate */
 	double *y;          /* y coordinate */
-};
-
-struct grd_header {     /* Generic grid hdr structure */
-	int nx;             /* Number of columns */
-	int ny;             /* Number of rows */
-	unsigned int nm;    /* nx * ny */
-	double x_inc;
-	double y_inc;
-	double x_min;       /* Minimum x coordinate */
-	double x_max;       /* Maximum x coordinate */
-	double y_min;       /* Minimum y coordinate */
-	double y_max;       /* Maximum y coordinate */
-	double z_min;       /* Minimum z value */
-	double z_max;       /* Maximum z value */
-	double lat_min4Coriolis;	/* PRECISA SOLUCAO. POR AGORA SERA Cte = 0 */
 };
 
 struct nestContainer {         /* Container for the nestings */
@@ -200,7 +185,7 @@ struct nestContainer {         /* Container for the nestings */
 	double **bnc_var_z;
 	double *bnc_var_zTmp;
 	double *bnc_var_z_interp;
-	struct grd_header hdr[10];
+	struct GMT_GRID_HEADER hdr[10];
 };
 
 /* Argument struct for threading */
@@ -213,13 +198,13 @@ typedef struct {
 
 void no_sys_mem(void *API, char *where, unsigned int n);
 int  count_col(char *line);
-int  read_maregs(void *API, struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]);
-int  read_tracers(void *API, struct grd_header hdr, char *file, struct tracers *oranges);
+int  read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int *lcum_p, char *names[]);
+int  read_tracers(void *API, struct GMT_GRID_HEADER hdr, char *file, struct tracers *oranges);
 int  count_n_maregs(void *API, char *file);
 int  decode_R(char *item, double *w, double *e, double *s, double *n);
 int  check_region(double w, double e, double s, double n);
 double ddmmss_to_degree (char *text);
-void openb(struct grd_header hdr, double *bat, double *fluxm_d, double *fluxn_d, double *etad, struct nestContainer *nest);
+void openb(struct GMT_GRID_HEADER hdr, double *bat, double *fluxm_d, double *fluxn_d, double *etad, struct nestContainer *nest);
 void wave_maker(struct nestContainer *nest);
 void wall_it(struct nestContainer *nest);
 void wall_two(struct nestContainer *nest, int ot1, int ot2, int in1, int in2);
@@ -258,17 +243,17 @@ int  interp_bnc (void *API, struct nestContainer *nest, double t);
 void total_energy(struct nestContainer *nest, float *work, int lev);
 void power(struct nestContainer *nest, float *work, int lev);
 void vtm (double lat0, double *t_c1, double *t_c2, double *t_c3, double *t_c4, double *t_e2, double *t_M0);
-void deform (struct grd_header hdr, double x_inc, double y_inc, int isGeog, double fault_length,
+void deform (struct GMT_GRID_HEADER hdr, double x_inc, double y_inc, int isGeog, double fault_length,
              double fault_width, double th, double dip, double rake, double d, double top_depth,
              double xl, double yl, double *z);
-void kaba_source(struct grd_header hdr, double x_inc, double y_inc, double x_min, double x_max,
+void kaba_source(struct GMT_GRID_HEADER hdr, double x_inc, double y_inc, double x_min, double x_max,
 	             double y_min, double y_max, int type, double *z);
 void tm (double lon, double lat, double *x, double *y, double central_meridian, double t_c1,
          double t_c2, double t_c3, double t_c4, double t_e2, double t_M0);
 double uscal(double x1, double x2, double x3, double c, double cc, double dp);
 double udcal(double x1, double x2, double x3, double c, double cc, double dp);
-unsigned int gmt_bcr_prep (struct grd_header hdr, double xx, double yy, double wx[], double wy[]);
-double GMT_get_bcr_z(double *grd, double *bat, struct grd_header hdr, double xx, double yy);
+unsigned int gmt_bcr_prep (struct GMT_GRID_HEADER hdr, double xx, double yy, double wx[], double wy[]);
+double GMT_get_bcr_z(double *grd, double *bat, struct GMT_GRID_HEADER hdr, double xx, double yy);
 void update_max(struct nestContainer *nest);
 void update_max_velocity(struct nestContainer *nest);
 
@@ -316,20 +301,14 @@ PFV call_mass_sp;
 /* ------------------------------------------------------------------------------ */
 /* Read a grid through the GMT API. Works for both on-disk files and in-memory
    GMT_GRID objects (virtual files, e.g. handed in from Julia). Fills the
-   grd_header used internally and returns the GMT_GRID (the caller must
+   internal header copy and returns the GMT_GRID (the caller must
    GMT_Destroy_Data() it after copying the data with gmtnswing_copy_grid()). */
-GMT_LOCAL struct GMT_GRID *gmtnswing_get_grid(void *API, char *fname, struct grd_header *h) {
+GMT_LOCAL struct GMT_GRID *gmtnswing_get_grid(void *API, char *fname, struct GMT_GRID_HEADER *h) {
 	struct GMT_GRID *G = NULL;
 	if ((G = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, fname, NULL)) == NULL)
 		return NULL;
-	h->nx = (int)G->header->n_columns;
-	h->ny = (int)G->header->n_rows;
-	h->nm = (unsigned int)G->header->n_columns * (unsigned int)G->header->n_rows;
-	h->x_inc = G->header->inc[GMT_X];	h->y_inc = G->header->inc[GMT_Y];
-	h->x_min = G->header->wesn[XLO];	h->x_max = G->header->wesn[XHI];
-	h->y_min = G->header->wesn[YLO];	h->y_max = G->header->wesn[YHI];
-	h->z_min = G->header->z_min;		h->z_max = G->header->z_max;
-	h->lat_min4Coriolis = 0;
+	*h = *G->header;	/* Struct copy; we only ever read the plain public fields */
+	h->hidden = NULL;	/* The hidden part stays with (and dies with) G */
 	return G;
 }
 
@@ -1141,8 +1120,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	double  actual_range[6] = {1e30, -1e30, 1e30, -1e30, 1e30, -1e30};
 	float	stage_range[2], xmom_range[2], ymom_range[2], *tmp_slice;
-	struct	grd_header hdr_b, hdr_f, hdr_mM, hdr_mN;
-	struct	grd_header hdr;
+	struct	GMT_GRID_HEADER hdr_b, hdr_f, hdr_mM, hdr_mN;
+	struct	GMT_GRID_HEADER hdr;
 	struct  nestContainer nest;
 	struct  tracers *oranges = NULL;
 	FILE   *fp = NULL, *fp_oranges = NULL;
@@ -1289,12 +1268,12 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			           "(use -R<grid> or add -I<inc>) in deformation-only mode.\n");
 			Return(-1);
 		}
-		hdr_b.x_min = dfXmin;	hdr_b.x_max = dfXmax;
-		hdr_b.y_min = dfYmin;	hdr_b.y_max = dfYmax;
-		hdr_b.nx = irint((dfXmax - dfXmin) / dx) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0);
-		hdr_b.ny = irint((dfYmax - dfYmin) / dy) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0);
+		hdr_b.wesn[XLO] = dfXmin;	hdr_b.wesn[XHI] = dfXmax;
+		hdr_b.wesn[YLO] = dfYmin;	hdr_b.wesn[YHI] = dfYmax;
+		hdr_b.n_columns = irint((dfXmax - dfXmin) / dx) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0);
+		hdr_b.n_rows = irint((dfYmax - dfYmin) / dy) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0);
 		hdr_b.z_min = hdr_b.z_max = 0;
-		nm_def = (uint64_t)hdr_b.nx * (uint64_t)hdr_b.ny;
+		nm_def = (uint64_t)hdr_b.n_columns * (uint64_t)hdr_b.n_rows;
 
 		if ((def = (double *)calloc((size_t)nm_def, sizeof(double))) == NULL)
 			{no_sys_mem(API, "(deform)", (unsigned int)nm_def); Return(-1);}
@@ -1310,8 +1289,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		for (ij_def = 0; ij_def < nm_def; ij_def++) work_f[ij_def] = (float)def[ij_def];
 		free(def);
 
-		if (gmtnswing_write_grid(API, stem, dfXmin, dfYmin, dx, dy, 0, 0, (unsigned int)hdr_b.nx,
-		                          (unsigned int)hdr_b.ny, (unsigned int)hdr_b.nx, work_f)) {
+		if (gmtnswing_write_grid(API, stem, dfXmin, dfYmin, dx, dy, 0, 0, (unsigned int)hdr_b.n_columns,
+		                          (unsigned int)hdr_b.n_rows, (unsigned int)hdr_b.n_columns, work_f)) {
 			free(work_f);
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Error writing deformation grid %s\n", stem);
 			Return(-1);
@@ -1373,13 +1352,13 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid bathymetry grid.\n", bathy);
 			Return(-1);
 		}
-		if (hdr_b.nx < 2 || hdr_b.ny < 2) {
+		if (hdr_b.n_columns < 2 || hdr_b.n_rows < 2) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: bathymetry grid must have at least 2 rows and 2 columns.\n");
 			GMT_Destroy_Data(API, &Gb);
 			Return(-1);
 		}
 
-		if (!isGeog && hdr_b.x_min >= -180 && hdr_b.x_max <= 360 && hdr_b.y_min > -90 && hdr_b.y_max < 90) {
+		if (!isGeog && hdr_b.wesn[XLO] >= -180 && hdr_b.wesn[XHI] <= 360 && hdr_b.wesn[YLO] > -90 && hdr_b.wesn[YHI] < 90) {
 			GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning, the bathymetry grid seams to be in Geographical coords but -f was not set.\n");
 			isGeog = true;
 		}
@@ -1390,9 +1369,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 				Return(-1);
 			}
 
-			if (!bnc_file && (hdr_f.nx != hdr_b.nx || hdr_f.ny != hdr_b.ny)) {
+			if (!bnc_file && (hdr_f.n_columns != hdr_b.n_columns || hdr_f.n_rows != hdr_b.n_rows)) {
 				GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and source grids have different rows/columns\n");
-				GMT_Report(API, GMT_MSG_ERROR, "%d %d %d %d\n", hdr_b.ny, hdr_f.ny, hdr_b.nx, hdr_f.nx);
+				GMT_Report(API, GMT_MSG_ERROR, "%d %d %d %d\n", hdr_b.n_rows, hdr_f.n_rows, hdr_b.n_columns, hdr_f.n_columns);
 				error++;
 			}
 		}
@@ -1404,20 +1383,20 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Could not read one of the Hot Start momentum grids.\n");
 			Return(-1);
 		}
-		if (hdr_b.nx != hdr_mM.nx || hdr_b.ny != hdr_mM.ny || hdr_b.nx != hdr_mN.nx || hdr_b.ny != hdr_mN.ny) {
+		if (hdr_b.n_columns != hdr_mM.n_columns || hdr_b.n_rows != hdr_mM.n_rows || hdr_b.n_columns != hdr_mN.n_columns || hdr_b.n_rows != hdr_mN.n_rows) {
 			GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and moment grids have different rows/columns\n");
 			error++;
 		}
 	}
 
-	dx = (hdr_b.x_max - hdr_b.x_min) / (hdr_b.nx - 1);
-	dy = (hdr_b.y_max - hdr_b.y_min) / (hdr_b.ny - 1);
+	dx = (hdr_b.wesn[XHI] - hdr_b.wesn[XLO]) / (hdr_b.n_columns - 1);
+	dy = (hdr_b.wesn[YHI] - hdr_b.wesn[YLO]) / (hdr_b.n_rows - 1);
 	if (!bnc_file && !do_Okada && !do_Kaba) {
-		if (fabs(hdr_f.x_min - hdr_b.x_min) / dx > dx / 4 || fabs(hdr_f.x_max - hdr_b.x_max) / dx > dx / 4 ||
-			fabs(hdr_f.y_min - hdr_b.y_min) / dy > dy / 4 || fabs(hdr_f.y_max - hdr_b.y_max) / dy > dy / 4 ) {
+		if (fabs(hdr_f.wesn[XLO] - hdr_b.wesn[XLO]) / dx > dx / 4 || fabs(hdr_f.wesn[XHI] - hdr_b.wesn[XHI]) / dx > dx / 4 ||
+			fabs(hdr_f.wesn[YLO] - hdr_b.wesn[YLO]) / dy > dy / 4 || fabs(hdr_f.wesn[YHI] - hdr_b.wesn[YHI]) / dy > dy / 4 ) {
 			GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and source grids do not cover the same region\n"); 
-			GMT_Report(API, GMT_MSG_ERROR, "%lf %lf %lf %lf\n", hdr_f.x_min, hdr_b.x_min, hdr_f.x_max, hdr_b.x_max); 
-			GMT_Report(API, GMT_MSG_ERROR, "%lf %lf %lf %lf\n", hdr_f.y_min, hdr_b.y_min, hdr_f.y_max, hdr_b.y_max); 
+			GMT_Report(API, GMT_MSG_ERROR, "%lf %lf %lf %lf\n", hdr_f.wesn[XLO], hdr_b.wesn[XLO], hdr_f.wesn[XHI], hdr_b.wesn[XHI]); 
+			GMT_Report(API, GMT_MSG_ERROR, "%lf %lf %lf %lf\n", hdr_f.wesn[YLO], hdr_b.wesn[YLO], hdr_f.wesn[YHI], hdr_b.wesn[YHI]); 
 			error++;
 		}
 	}
@@ -1444,7 +1423,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	if (n_arg_no_char == 0) {		/* Read the nesting grids (when we have them ofc) */
 		double dx, dy;		/* Local variables to not interfere with the base level ones */
-		struct	grd_header hdr;
+		struct	GMT_GRID_HEADER hdr;
 		struct  GMT_GRID *Gn = NULL;
 
 		num_of_nestGrids = 0;
@@ -1453,21 +1432,17 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 				GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid nested bathymetry grid.\n", nesteds[num_of_nestGrids]);
 				Return(-1);
 			}
-			if ((nest.bat[num_of_nestGrids+1] = (double *)calloc((size_t)hdr.nx*(size_t)hdr.ny, sizeof(double)) ) == NULL)
-				{no_sys_mem(API, "(bat)", hdr.nx*hdr.ny); Return(-1);}
+			if ((nest.bat[num_of_nestGrids+1] = (double *)calloc((size_t)hdr.n_columns*(size_t)hdr.n_rows, sizeof(double)) ) == NULL)
+				{no_sys_mem(API, "(bat)", hdr.n_columns*hdr.n_rows); Return(-1);}
 
 			gmtnswing_copy_grid(Gn, nest.bat[num_of_nestGrids+1], -1);	/* Depth positive down, flip to S->N */
 			GMT_Destroy_Data(API, &Gn);
 
-			dx = (hdr.x_max - hdr.x_min) / (hdr.nx - 1);
-			dy = (hdr.y_max - hdr.y_min) / (hdr.ny - 1);
-			nest.hdr[num_of_nestGrids+1].nx = hdr.nx;
-			nest.hdr[num_of_nestGrids+1].ny = hdr.ny;
-			nest.hdr[num_of_nestGrids+1].nm = (unsigned int)hdr.nx * (unsigned int)hdr.ny;
-			nest.hdr[num_of_nestGrids+1].x_inc = dx;           nest.hdr[num_of_nestGrids+1].y_inc = dy;
-			nest.hdr[num_of_nestGrids+1].x_min = hdr.x_min;    nest.hdr[num_of_nestGrids+1].x_max = hdr.x_max;
-			nest.hdr[num_of_nestGrids+1].y_min = hdr.y_min;    nest.hdr[num_of_nestGrids+1].y_max = hdr.y_max;
-			nest.hdr[num_of_nestGrids+1].z_min = hdr.z_min;    nest.hdr[num_of_nestGrids+1].z_max = hdr.z_max;
+			dx = (hdr.wesn[XHI] - hdr.wesn[XLO]) / (hdr.n_columns - 1);
+			dy = (hdr.wesn[YHI] - hdr.wesn[YLO]) / (hdr.n_rows - 1);
+			nest.hdr[num_of_nestGrids+1] = hdr;		/* Whole header; increments recomputed for grid registration */
+			nest.hdr[num_of_nestGrids+1].nm = (size_t)hdr.n_columns * (size_t)hdr.n_rows;
+			nest.hdr[num_of_nestGrids+1].inc[GMT_X] = dx;           nest.hdr[num_of_nestGrids+1].inc[GMT_Y] = dy;
 			num_of_nestGrids++;
 		}
 		do_nestum = (num_of_nestGrids) ? true : false;
@@ -1497,8 +1472,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		GMT_Destroy_Cmd(API, &cmd);
 	}
 	/* -------------- Allocate memory and initialize the 'nest' structure ------------------- */
-	nest.hdr[0].nx      = hdr_b.nx;		nest.hdr[0].ny = hdr_b.ny;
-	nest.hdr[0].nm      = (unsigned int)hdr_b.nx * (unsigned int)hdr_b.ny;
+	nest.hdr[0].n_columns      = hdr_b.n_columns;		nest.hdr[0].n_rows = hdr_b.n_rows;
+	nest.hdr[0].nm      = (size_t)hdr_b.n_columns * (size_t)hdr_b.n_rows;
 	nest.out_velocity_x = out_velocity_x;
 	nest.out_velocity_y = out_velocity_y;
 	nest.out_momentum   = out_momentum;
@@ -1556,13 +1531,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		GMT_Destroy_Data(API, &GmN);
 	}
 
-	hdr.nx = hdr_b.nx;          hdr.ny = hdr_b.ny;
-	hdr.nm = (unsigned int)hdr.nx * (unsigned int)hdr.ny;
-	hdr.x_inc = dx;             hdr.y_inc = dy;
-	hdr.x_min = hdr_b.x_min;    hdr.x_max = hdr_b.x_max;
-	hdr.y_min = hdr_b.y_min;    hdr.y_max = hdr_b.y_max;
-	hdr.z_min = hdr_b.z_min;    hdr.z_max = hdr_b.z_max;
-	hdr.lat_min4Coriolis = 0;	/* PRECISA ACABAR ISTO */
+	hdr = hdr_b;			/* Base-level header, but with the increments recomputed above */
+	hdr.nm = (size_t)hdr.n_columns * (size_t)hdr.n_rows;
+	hdr.inc[GMT_X] = dx;             hdr.inc[GMT_Y] = dy;
 
 	nest.hdr[0] = hdr;
 
@@ -1617,21 +1588,21 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 		/* Allocate and initialize vectors for boundary conditions*/
 		if ((nest.bnc_border[0] != 0) || (nest.bnc_border[2] != 0))	/* West or East borders */ 
-			side_len = nest.hdr[0].ny;
+			side_len = nest.hdr[0].n_rows;
 		else
-			side_len = nest.hdr[0].nx;
+			side_len = nest.hdr[0].n_columns;
 
 		nest.bnc_var_z_interp = (double *)malloc((size_t)side_len * sizeof(double));
 
 		if (nest.bnc_pos_nPts > 1) {	/* In this (not yet) case we need to deal with these guys */
 			nest.edge_row_P[0] = (double *) calloc((size_t)side_len, sizeof(double));
-			if (side_len == nest.hdr[0].nx) {
-				for (i = 0; i < nest.hdr[0].nx; i++)
-					nest.edge_row_P[0][i] = nest.hdr[0].x_min + i * nest.hdr[0].x_inc;   /* XX coords along S/N edge */
+			if (side_len == nest.hdr[0].n_columns) {
+				for (i = 0; i < nest.hdr[0].n_columns; i++)
+					nest.edge_row_P[0][i] = nest.hdr[0].wesn[XLO] + i * nest.hdr[0].inc[GMT_X];   /* XX coords along S/N edge */
 			}
 			else {
-				for (i = 0; i < nest.hdr[0].ny; i++)
-					nest.edge_row_P[0][i] = nest.hdr[0].y_min + i * nest.hdr[0].y_inc;   /* YY coords along S/N edge */
+				for (i = 0; i < nest.hdr[0].n_rows; i++)
+					nest.edge_row_P[0][i] = nest.hdr[0].wesn[YLO] + i * nest.hdr[0].inc[GMT_Y];   /* YY coords along S/N edge */
 			}
 		}
 	}
@@ -1639,19 +1610,19 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	/* ----------------- Compute vars to use if write grids --------------------- */
 	if (!got_R && (do_2Dgrids || out_sww || out_most || out_3D) ) {	
 		/* Write grids over the whole region */
-		i_start = 0;            i_end = nest.hdr[writeLevel].nx;
-		j_start = 0;            j_end = nest.hdr[writeLevel].ny;
-		xMinOut = nest.hdr[writeLevel].x_min;	yMinOut = nest.hdr[writeLevel].y_min;
+		i_start = 0;            i_end = nest.hdr[writeLevel].n_columns;
+		j_start = 0;            j_end = nest.hdr[writeLevel].n_rows;
+		xMinOut = nest.hdr[writeLevel].wesn[XLO];	yMinOut = nest.hdr[writeLevel].wesn[YLO];
 	}
 	else if (got_R && (do_2Dgrids || out_sww || out_most || out_3D)) {	
 		/* Write grids in sub-region */
-		i_start = irint((dfXmin - nest.hdr[writeLevel].x_min) / nest.hdr[writeLevel].x_inc);
-		j_start = irint((dfYmin - nest.hdr[writeLevel].y_min) / nest.hdr[writeLevel].y_inc); 
-		i_end   = irint((dfXmax - nest.hdr[writeLevel].x_min) / nest.hdr[writeLevel].x_inc) + 1;
-		j_end   = irint((dfYmax - nest.hdr[writeLevel].y_min) / nest.hdr[writeLevel].y_inc) + 1;
+		i_start = irint((dfXmin - nest.hdr[writeLevel].wesn[XLO]) / nest.hdr[writeLevel].inc[GMT_X]);
+		j_start = irint((dfYmin - nest.hdr[writeLevel].wesn[YLO]) / nest.hdr[writeLevel].inc[GMT_Y]); 
+		i_end   = irint((dfXmax - nest.hdr[writeLevel].wesn[XLO]) / nest.hdr[writeLevel].inc[GMT_X]) + 1;
+		j_end   = irint((dfYmax - nest.hdr[writeLevel].wesn[YLO]) / nest.hdr[writeLevel].inc[GMT_Y]) + 1;
 		/* Adjustes xMin|yMin to lay on the closest grid node */
-		xMinOut = nest.hdr[writeLevel].x_min + nest.hdr[writeLevel].x_inc * i_start;
-		yMinOut = nest.hdr[writeLevel].y_min + nest.hdr[writeLevel].y_inc * j_start;
+		xMinOut = nest.hdr[writeLevel].wesn[XLO] + nest.hdr[writeLevel].inc[GMT_X] * i_start;
+		yMinOut = nest.hdr[writeLevel].wesn[YLO] + nest.hdr[writeLevel].inc[GMT_Y] * j_start;
 	}
 	/* -------------------------------------------------------------------------- */
 
@@ -1706,7 +1677,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			tmp_slice = (float *)malloc(sizeof(float) * (nx * ny));   /* To use inside slice writing */ 
 	} 
 	else if (out_3D) {
-		nx = nest.hdr[writeLevel].nx;		ny = nest.hdr[writeLevel].ny;
+		nx = nest.hdr[writeLevel].n_columns;		ny = nest.hdr[writeLevel].n_rows;
 		ncid_3D[0] = open_most_nc(API, &nest, work, fname3D, "z", history, ids_z, nx, ny, xMinOut, yMinOut, false, writeLevel);
 
 		if (ncid_3D[0] == -1) {
@@ -1725,13 +1696,13 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 
 	if (do_nestum && saveNested) {
-		xMinOut = nest.hdr[writeLevel].x_min;
-		yMinOut = nest.hdr[writeLevel].y_min;
-		dx = nest.hdr[writeLevel].x_inc;
-		dy = nest.hdr[writeLevel].y_inc;
+		xMinOut = nest.hdr[writeLevel].wesn[XLO];
+		yMinOut = nest.hdr[writeLevel].wesn[YLO];
+		dx = nest.hdr[writeLevel].inc[GMT_X];
+		dy = nest.hdr[writeLevel].inc[GMT_Y];
 		i_start = 0; j_start = 0;
-		i_end = nest.hdr[writeLevel].nx;
-		j_end = nest.hdr[writeLevel].ny;
+		i_end = nest.hdr[writeLevel].n_columns;
+		j_end = nest.hdr[writeLevel].n_rows;
 	}
 
 	if (cumpt) {               /* Select which etad/vx/vy will be used to output maregrapghs */
@@ -1756,7 +1727,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (verbose) {
 		GMT_Report(API, GMT_MSG_INFORMATION, "\nNSWING: \n\n");
 		GMT_Report(API, GMT_MSG_INFORMATION, "Layer 0  time step = %g\tx_min = %g\tx_max = %g\ty_min = %g\ty_max = %g\n",
-		          dt, hdr_b.x_min, hdr_b.x_max, hdr_b.y_min, hdr_b.y_max);
+		          dt, hdr_b.wesn[XLO], hdr_b.wesn[XHI], hdr_b.wesn[YLO], hdr_b.wesn[YHI]);
 		if (do_nestum) {
 			for (k = 1; k <= num_of_nestGrids; k++) {
 				GMT_Report(API, GMT_MSG_INFORMATION, "Layer %d x_min = %g\tx_max = %g\ty_min = %g\ty_max = %g\n",
@@ -1889,11 +1860,11 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					else
 						strcpy(fmt, "\t%.2f");
 					for (n = 0; n < n_mareg; n++) {
-						ix = lcum_p[n] % nest.hdr[writeLevel].nx;
-						iy = lcum_p[n] / nest.hdr[writeLevel].nx;
+						ix = lcum_p[n] % nest.hdr[writeLevel].n_columns;
+						iy = lcum_p[n] / nest.hdr[writeLevel].n_columns;
 						sprintf(t0, "%8s",  mareg_names[n]);
-						sprintf(t1, fmt, nest.hdr[writeLevel].x_min + ix * nest.hdr[writeLevel].x_inc);	/* Xs */
-						sprintf(t2, fmt, nest.hdr[writeLevel].y_min + iy * nest.hdr[writeLevel].y_inc);	/* Ys */
+						sprintf(t1, fmt, nest.hdr[writeLevel].wesn[XLO] + ix * nest.hdr[writeLevel].inc[GMT_X]);	/* Xs */
+						sprintf(t2, fmt, nest.hdr[writeLevel].wesn[YLO] + iy * nest.hdr[writeLevel].inc[GMT_Y]);	/* Ys */
 						sprintf(t3, "\t%.1f", nest.bat[writeLevel][lcum_p[n]]); 	/* Zs (from grid) */
 						strcat(txt[0], t0);		strcat(txt[1], t1);		strcat(txt[2], t2);		strcat(txt[3], t3);
 						strcat(txt_X, t1);		strcat(txt_Y, t2);
@@ -1930,12 +1901,12 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			double vx, vy, vx1, vx2, vy1, vy2, dx, dy;
 			double v_LLx, v_LLy, v_LRx, v_LRy, v_ULx, v_ULy, v_URx, v_URy;
 			for (n = 0; n < n_oranges; n++) {
-				ix = (int)((oranges[n].x[k-1] - nest.hdr[writeLevel].x_min) / nest.hdr[writeLevel].x_inc);
-				jy = (int)((oranges[n].y[k-1] - nest.hdr[writeLevel].y_min) / nest.hdr[writeLevel].y_inc);
-				dx = oranges[n].x[k-1] - (nest.hdr[writeLevel].x_min + ix * nest.hdr[writeLevel].x_inc);
-				dy = oranges[n].y[k-1] - (nest.hdr[writeLevel].y_min + jy * nest.hdr[writeLevel].y_inc);
+				ix = (int)((oranges[n].x[k-1] - nest.hdr[writeLevel].wesn[XLO]) / nest.hdr[writeLevel].inc[GMT_X]);
+				jy = (int)((oranges[n].y[k-1] - nest.hdr[writeLevel].wesn[YLO]) / nest.hdr[writeLevel].inc[GMT_Y]);
+				dx = oranges[n].x[k-1] - (nest.hdr[writeLevel].wesn[XLO] + ix * nest.hdr[writeLevel].inc[GMT_X]);
+				dy = oranges[n].y[k-1] - (nest.hdr[writeLevel].wesn[YLO] + jy * nest.hdr[writeLevel].inc[GMT_Y]);
 
-				ij_c = jy * nest.hdr[writeLevel].nx + ix;   /* Linear index LowerLeft cell corner */
+				ij_c = jy * nest.hdr[writeLevel].n_columns + ix;   /* Linear index LowerLeft cell corner */
 				if (htotal_for_oranges[ij_c] > EPS2 && htotal_for_oranges[ij_c + 1] > EPS2) {
 					v_LLx = vx_for_oranges[ij_c];		v_LLy = vy_for_oranges[ij_c];
 					v_LRx = vx_for_oranges[ij_c+1];		v_LRy = vy_for_oranges[ij_c+1];
@@ -1943,7 +1914,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 				else
 					v_LLx = v_LLy = v_LRx = v_LRy = 0;
 
-				ij_c += nest.hdr[writeLevel].nx;            /* Linear index UpperLeft cell corner */
+				ij_c += nest.hdr[writeLevel].n_columns;            /* Linear index UpperLeft cell corner */
 				if (htotal_for_oranges[ij_c] > EPS2 && htotal_for_oranges[ij_c + 1] > EPS2) {
 					v_ULx = vx_for_oranges[ij_c];		v_ULy = vy_for_oranges[ij_c];
 					v_URx = vx_for_oranges[ij_c+1];		v_URy = vy_for_oranges[ij_c+1];
@@ -1951,8 +1922,8 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 				else
 					v_ULx = v_ULy = v_URx = v_URy = 0;
 
-				dx /= nest.hdr[writeLevel].x_inc;		/* Resuse the dx,dy variables */
-				dy /= nest.hdr[writeLevel].y_inc;
+				dx /= nest.hdr[writeLevel].inc[GMT_X];		/* Resuse the dx,dy variables */
+				dy /= nest.hdr[writeLevel].inc[GMT_Y];
 
 				vx1 = v_LLx + (v_LRx - v_LLx) * dx;		vx2 = v_ULx + (v_URx - v_ULx) * dx;
 				vy1 = v_LLy + (v_ULy - v_LLy) * dy;		vy2 = v_LRy + (v_URy - v_LRy) * dy;
@@ -2002,7 +1973,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 				}
 
 				gmtnswing_write_grid(API, prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
-				              nest.hdr[writeLevel].nx, wmax);
+				              nest.hdr[writeLevel].n_columns, wmax);
 			}
 
 			if (nest.do_long_beach) {           /* In this case the calculations were done in mass() */
@@ -2010,14 +1981,14 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					wmax[ij] = nest.long_beach[writeLevel][ij];	/* Implicitly convert from short int to float */
 
 				gmtnswing_write_grid(API, fname_mask_lbeach, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
-				              nest.hdr[writeLevel].nx, wmax);
+				              nest.hdr[writeLevel].n_columns, wmax);
 			}
 			if (nest.do_short_beach) {          /* In this case the calculations were done in mass() */
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++)
 					wmax[ij] = nest.short_beach[writeLevel][ij];/* Implicitly convert from short int to float */
 
 				gmtnswing_write_grid(API, fname_mask_sbeach, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
-				              nest.hdr[writeLevel].nx, wmax);
+				              nest.hdr[writeLevel].n_columns, wmax);
 			}
 
 			if (max_velocity || nest.do_max_velocity) { /* Maximum velocity is treated differently */
@@ -2031,7 +2002,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 					strcat(prenome, &stem[len]);        /* Put back the given extension */
 				}
 				gmtnswing_write_grid(API, prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end,
-				              nest.hdr[writeLevel].nx, vmax);
+				              nest.hdr[writeLevel].n_columns, vmax);
 			}
 		}
 		/* -------------------------------------------------------------------------------- */
@@ -2058,7 +2029,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 			if (write_grids) {
 				sprintf(prenome, "%s%05d.grd", stem, irint(time_h));
-				gmtnswing_write_grid(API, prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
+				gmtnswing_write_grid(API, prenome, xMinOut, yMinOut, dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].n_columns, work);
 			}
 
 			if (out_momentum && !out_3D) {
@@ -2070,13 +2041,13 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) work[ij] = (float)nest.fluxm_d[writeLevel][ij];
 
 				gmtnswing_write_grid(API, strcat(prenome,"_Uh.grd"), xMinOut, yMinOut, dx, dy,
-				              i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
+				              i_start, j_start, i_end, j_end, nest.hdr[writeLevel].n_columns, work);
 
 				for (ij = 0; ij < nest.hdr[writeLevel].nm; ij++) work[ij] = (float)nest.fluxn_d[writeLevel][ij];
 
 				prenome[strlen(prenome) - 7] = '\0';	/* Remove the _Uh.grd' so that we can add '_Vh.grd' */
 				gmtnswing_write_grid(API, strcat(prenome,"_Vh.grd"), xMinOut, yMinOut, dx, dy,
-				              i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
+				              i_start, j_start, i_end, j_end, nest.hdr[writeLevel].n_columns, work);
 			}
 
 			if (out_velocity && !out_3D) {
@@ -2089,8 +2060,8 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 							work[ij] = 0;
 					}
 
-					gmtnswing_write_grid(API, strcat(prenome,"_U.grd"), xMinOut + nest.hdr[writeLevel].x_inc/2, yMinOut,
-					              dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
+					gmtnswing_write_grid(API, strcat(prenome,"_U.grd"), xMinOut + nest.hdr[writeLevel].inc[GMT_X]/2, yMinOut,
+					              dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].n_columns, work);
 					prenome[strlen(prenome)-6] = '\0';	/* Remove the _U.grd' so that we can add '_V.grd' */
 				}
 				if (out_velocity_y) {
@@ -2100,8 +2071,8 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 							work[ij] = 0;
 					}
 
-					gmtnswing_write_grid(API, strcat(prenome,"_V.grd"), xMinOut, yMinOut + nest.hdr[writeLevel].y_inc/2,
-					              dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].nx, work);
+					gmtnswing_write_grid(API, strcat(prenome,"_V.grd"), xMinOut, yMinOut + nest.hdr[writeLevel].inc[GMT_Y]/2,
+					              dx, dy, i_start, j_start, i_end, j_end, nest.hdr[writeLevel].n_columns, work);
 				}
 			}
 
@@ -2171,7 +2142,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		if (nest.do_long_beach || nest.do_short_beach) {	/* Write the mask(s) */
 			unsigned char *pchar = NULL;
 			size_t	start_b[2] = {0,0}, count_b[2];
-			count_b[0] = nest.hdr[writeLevel].ny;	count_b[1] = nest.hdr[writeLevel].nx;
+			count_b[0] = nest.hdr[writeLevel].n_rows;	count_b[1] = nest.hdr[writeLevel].n_columns;
 			/* Allocate memory for the mask that were stored in floats */
 			if ((pchar = (unsigned char *) calloc((size_t)nest.hdr[writeLevel].nm, sizeof(unsigned char)) ) == NULL)
 				{no_sys_mem(API, "(ShortBeach)", nest.hdr[writeLevel].nm); Return(-1);}
@@ -2363,27 +2334,27 @@ int check_paternity(void *API, struct nestContainer *nest) {
 
 	while (k < 10 && nest->level[k] > 0) {
 		/* Check nesting at LowerLeft corner */
-		if (check_binning(nest->hdr[k-1].x_min, nest->hdr[k].x_min, nest->hdr[k-1].x_inc,
-		                  nest->hdr[k].x_inc, nest->hdr[k-1].x_inc / 4, &suggest)) {
+		if (check_binning(nest->hdr[k-1].wesn[XLO], nest->hdr[k].wesn[XLO], nest->hdr[k-1].inc[GMT_X],
+		                  nest->hdr[k].inc[GMT_X], nest->hdr[k-1].inc[GMT_X] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
 				"X_MIN should be (in grid registration):\n\t%f\n", suggest);
 			error++;
 		}
-		if (check_binning(nest->hdr[k-1].y_min, nest->hdr[k].y_min, nest->hdr[k-1].y_inc,
-		                  nest->hdr[k].y_inc, nest->hdr[k-1].y_inc / 4, &suggest)) {
+		if (check_binning(nest->hdr[k-1].wesn[YLO], nest->hdr[k].wesn[YLO], nest->hdr[k-1].inc[GMT_Y],
+		                  nest->hdr[k].inc[GMT_Y], nest->hdr[k-1].inc[GMT_Y] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
 				"Y_MIN should be (in grid registration):\n\t%f\n", suggest);
 			error++;
 		}
 		/* Check nesting at UpperRight corner */
-		if (check_binning(nest->hdr[k-1].x_min, nest->hdr[k].x_max, nest->hdr[k-1].x_inc,
-		                  -nest->hdr[k].x_inc, nest->hdr[k-1].x_inc / 4, &suggest)) {
+		if (check_binning(nest->hdr[k-1].wesn[XLO], nest->hdr[k].wesn[XHI], nest->hdr[k-1].inc[GMT_X],
+		                  -nest->hdr[k].inc[GMT_X], nest->hdr[k-1].inc[GMT_X] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
 				"X_MAX should be (in grid registration):\n\t%f\n", suggest);
 			error++;
 		}
-		if (check_binning(nest->hdr[k-1].y_min, nest->hdr[k].y_max, nest->hdr[k-1].y_inc,
-		                  -nest->hdr[k].y_inc, nest->hdr[k-1].y_inc / 4, &suggest)) {
+		if (check_binning(nest->hdr[k-1].wesn[YLO], nest->hdr[k].wesn[YHI], nest->hdr[k-1].inc[GMT_Y],
+		                  -nest->hdr[k].inc[GMT_Y], nest->hdr[k-1].inc[GMT_Y] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
 				"Y_MAX should be (in grid registration):\n\t%f\n", suggest);
 			error++;
@@ -2422,32 +2393,32 @@ int initialize_nestum(void *API, struct nestContainer *nest, int isGeog, int lev
 	unsigned int nm = nest->hdr[lev].nm;
 	double dt, scale;
 	double xoff, yoff, xoff_P, yoff_P;		/* Offsets to move from grid to pixel registration (zero if grid in pix reg) */
-	struct grd_header hdr = nest->hdr[MAX(lev-1, 0)];	/* Parent header. Self at lev = 0, where it is not used */
+	struct GMT_GRID_HEADER hdr = nest->hdr[MAX(lev-1, 0)];	/* Parent header. Self at lev = 0, where it is not used */
 
 	if (lev > 0) {
 		/* -------------------- Check that this grid is nestifiable -------------------- */
-		nSizeIncX = irint(hdr.x_inc / nest->hdr[lev].x_inc);
-		if ((hdr.x_inc / nest->hdr[lev].x_inc) - nSizeIncX > 1e-5) {
+		nSizeIncX = irint(hdr.inc[GMT_X] / nest->hdr[lev].inc[GMT_X]);
+		if ((hdr.inc[GMT_X] / nest->hdr[lev].inc[GMT_X]) - nSizeIncX > 1e-5) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING ERROR: X increments of inner (%d) and outer (%d) grids are incompatible.\n", lev, lev-1);
 			GMT_Report(API, GMT_MSG_ERROR, "\tInteger ratio of parent (%d) to doughter (%d) X increments = %d\n", lev, lev-1, nSizeIncX);
 			GMT_Report(API, GMT_MSG_ERROR, "\tActual  ratio as a floating point = %f\n\tDifference between the two cannot exceed 1e-5\n",
-			          hdr.x_inc / nest->hdr[lev].x_inc);
+			          hdr.inc[GMT_X] / nest->hdr[lev].inc[GMT_X]);
 			return(-1);
 		}
 
-		nSizeIncY = irint(hdr.y_inc / nest->hdr[lev].y_inc);
-		if ((hdr.y_inc / nest->hdr[lev].y_inc) - nSizeIncY > 1e-5) {
+		nSizeIncY = irint(hdr.inc[GMT_Y] / nest->hdr[lev].inc[GMT_Y]);
+		if ((hdr.inc[GMT_Y] / nest->hdr[lev].inc[GMT_Y]) - nSizeIncY > 1e-5) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING ERROR: Y increments of inner (%d) and outer (%d) grids are incompatible.\n", lev, lev-1);
 			GMT_Report(API, GMT_MSG_ERROR, "\tInteger ratio of parent (%d) to doughter (%d) Y increments = %d\n", lev, lev-1, nSizeIncY);
 			GMT_Report(API, GMT_MSG_ERROR, "\tActual  ratio as a floating point = %f\n\tDifference between the two cannot exceed 1e-5\n",
-			          hdr.y_inc / nest->hdr[lev].y_inc);
+			          hdr.inc[GMT_Y] / nest->hdr[lev].inc[GMT_Y]);
 			return(-1);
 		}
 
 		if (nSizeIncX != nSizeIncY) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING ERROR: X/Y increments of inner (%d) and outer (%d) grid do not divide equaly.\n", lev, lev-1);
-			GMT_Report(API, GMT_MSG_ERROR, "\tinc_x(%d) = %f\t inc_x(%d) = %f.\n", lev-1, hdr.x_inc, lev, nest->hdr[lev].x_inc);
-			GMT_Report(API, GMT_MSG_ERROR, "\tinc_y(%d) = %f\t inc_y(%d) = %f.\n", lev-1, hdr.y_inc, lev, nest->hdr[lev].y_inc);
+			GMT_Report(API, GMT_MSG_ERROR, "\tinc_x(%d) = %f\t inc_x(%d) = %f.\n", lev-1, hdr.inc[GMT_X], lev, nest->hdr[lev].inc[GMT_X]);
+			GMT_Report(API, GMT_MSG_ERROR, "\tinc_y(%d) = %f\t inc_y(%d) = %f.\n", lev-1, hdr.inc[GMT_Y], lev, nest->hdr[lev].inc[GMT_Y]);
 			GMT_Report(API, GMT_MSG_ERROR, "\tRatio of X increments (round(inc_x(%d) / inc_x(%d)) = %d.\n", lev-1, lev, nSizeIncX);
 			GMT_Report(API, GMT_MSG_ERROR, "\tRatio of Y increments (round(inc_y(%d) / inc_y(%d)) = %d.\n", lev-1, lev, nSizeIncY);
 			return(-1);
@@ -2458,7 +2429,7 @@ int initialize_nestum(void *API, struct nestContainer *nest, int isGeog, int lev
 
 		/* Compute the run time step interval for this level */
 		scale = (isGeog) ? 111000 : 1;		/* To get the incs in meters */
-		dt = 0.5 * MIN(nest->hdr[lev].x_inc, nest->hdr[lev].y_inc) * scale / sqrt(NORMAL_GRAV * fabs(nest->hdr[lev].z_min));
+		dt = 0.5 * MIN(nest->hdr[lev].inc[GMT_X], nest->hdr[lev].inc[GMT_Y]) * scale / sqrt(NORMAL_GRAV * fabs(nest->hdr[lev].z_min));
 		nest->dt[lev] = nest->dt[lev-1] / ceil(nest->dt[lev-1] / dt);
 	}
 
@@ -2503,7 +2474,7 @@ int initialize_nestum(void *API, struct nestContainer *nest, int isGeog, int lev
 			{no_sys_mem(API, "(vey)", nm); return(-1);}
 	}
 
-	n = nest->hdr[lev].ny;
+	n = nest->hdr[lev].n_rows;
 	if (isGeog == 1) {		/* case spherical coordinates  */
 		if ((nest->r0[lev] = (double *)  calloc ((size_t)n,	sizeof(double)) ) == NULL) 
 			{no_sys_mem(API, "(r0)", n); return(-1);}
@@ -2536,60 +2507,57 @@ int initialize_nestum(void *API, struct nestContainer *nest, int isGeog, int lev
 	/* ------------------------------------------------------------------------------------------ */
 
 	/* These two must be set to zero if inner grid was already pixel registrated */
-	xoff = nest->hdr[lev].x_inc / 2;
-	yoff = nest->hdr[lev].y_inc / 2;
-	xoff_P = nest->hdr[lev-1].x_inc / 2;
-	yoff_P = nest->hdr[lev-1].y_inc / 2;
+	xoff = nest->hdr[lev].inc[GMT_X] / 2;
+	yoff = nest->hdr[lev].inc[GMT_Y] / 2;
+	xoff_P = nest->hdr[lev-1].inc[GMT_X] / 2;
+	yoff_P = nest->hdr[lev-1].inc[GMT_Y] / 2;
 
 	/* Compute the 4 coorners coordinates of the nodes on the parent grid embracing the nested grid */
-	nest->LLx[lev] = (nest->hdr[lev].x_min - xoff) - hdr.x_inc / 2;
-	nest->LLy[lev] = (nest->hdr[lev].y_min - yoff) - hdr.y_inc / 2;
-	nest->ULx[lev] = (nest->hdr[lev].x_min - xoff) - hdr.x_inc / 2;
-	nest->ULy[lev] = (nest->hdr[lev].y_max + yoff) + hdr.y_inc / 2;
-	nest->URx[lev] = (nest->hdr[lev].x_max + xoff) + hdr.x_inc / 2;
-	nest->URy[lev] = (nest->hdr[lev].y_max + yoff) + hdr.y_inc / 2;
-	nest->LRx[lev] = (nest->hdr[lev].x_max + xoff) + hdr.x_inc / 2;
-	nest->LRy[lev] = (nest->hdr[lev].y_min - yoff) - hdr.y_inc / 2;
+	nest->LLx[lev] = (nest->hdr[lev].wesn[XLO] - xoff) - hdr.inc[GMT_X] / 2;
+	nest->LLy[lev] = (nest->hdr[lev].wesn[YLO] - yoff) - hdr.inc[GMT_Y] / 2;
+	nest->ULx[lev] = (nest->hdr[lev].wesn[XLO] - xoff) - hdr.inc[GMT_X] / 2;
+	nest->ULy[lev] = (nest->hdr[lev].wesn[YHI] + yoff) + hdr.inc[GMT_Y] / 2;
+	nest->URx[lev] = (nest->hdr[lev].wesn[XHI] + xoff) + hdr.inc[GMT_X] / 2;
+	nest->URy[lev] = (nest->hdr[lev].wesn[YHI] + yoff) + hdr.inc[GMT_Y] / 2;
+	nest->LRx[lev] = (nest->hdr[lev].wesn[XHI] + xoff) + hdr.inc[GMT_X] / 2;
+	nest->LRy[lev] = (nest->hdr[lev].wesn[YLO] - yoff) - hdr.inc[GMT_Y] / 2;
 
 	/* The row e column indices corresponding to above computed coordinates */
-	nest->LLrow[lev] = irint((nest->LLy[lev] - hdr.y_min) / hdr.y_inc);
-	nest->LLcol[lev] = irint((nest->LLx[lev] - hdr.x_min) / hdr.x_inc);
-	nest->ULrow[lev] = irint((nest->ULy[lev] - hdr.y_min) / hdr.y_inc);
-	nest->ULcol[lev] = irint((nest->ULx[lev] - hdr.x_min) / hdr.x_inc);
-	nest->URrow[lev] = irint((nest->URy[lev] - hdr.y_min) / hdr.y_inc);
-	nest->URcol[lev] = irint((nest->URx[lev] - hdr.x_min) / hdr.x_inc);
-	nest->LRrow[lev] = irint((nest->LRy[lev] - hdr.y_min) / hdr.y_inc);
-	nest->LRcol[lev] = irint((nest->LRx[lev] - hdr.x_min) / hdr.x_inc);
+	nest->LLrow[lev] = irint((nest->LLy[lev] - hdr.wesn[YLO]) / hdr.inc[GMT_Y]);
+	nest->LLcol[lev] = irint((nest->LLx[lev] - hdr.wesn[XLO]) / hdr.inc[GMT_X]);
+	nest->ULrow[lev] = irint((nest->ULy[lev] - hdr.wesn[YLO]) / hdr.inc[GMT_Y]);
+	nest->ULcol[lev] = irint((nest->ULx[lev] - hdr.wesn[XLO]) / hdr.inc[GMT_X]);
+	nest->URrow[lev] = irint((nest->URy[lev] - hdr.wesn[YLO]) / hdr.inc[GMT_Y]);
+	nest->URcol[lev] = irint((nest->URx[lev] - hdr.wesn[XLO]) / hdr.inc[GMT_X]);
+	nest->LRrow[lev] = irint((nest->LRy[lev] - hdr.wesn[YLO]) / hdr.inc[GMT_Y]);
+	nest->LRcol[lev] = irint((nest->LRx[lev] - hdr.wesn[XLO]) / hdr.inc[GMT_X]);
 
 	/* Allocate vectors of the size of side inner grid to hold the BC */
-	n = nest->hdr[lev].nx;
+	n = nest->hdr[lev].n_columns;
 	nest->edge_rowTmp[lev] = (double *) calloc((size_t)n, sizeof(double));	/* To be filled by interp */
 	nest->edge_row[lev]    = (double *) calloc((size_t)n, sizeof(double));
 	/* Compute XXs of nested grid along N/S edge. We'll use only the south border coordinates */
 	for (col = 0; col < n; col++)
-		nest->edge_row[lev][col] = nest->hdr[lev].x_min + xoff + col * nest->hdr[lev].x_inc;
+		nest->edge_row[lev][col] = nest->hdr[lev].wesn[XLO] + xoff + col * nest->hdr[lev].inc[GMT_X];
 
-	n = nest->hdr[lev].ny;
+	n = nest->hdr[lev].n_rows;
 	nest->edge_colTmp[lev] = (double *) calloc((size_t)n, sizeof(double)); /* To be filled by interp */
 	nest->edge_col[lev]    = (double *) calloc((size_t)n, sizeof(double));
 	for (row = 0; row < n; row++)		/* Compute YYs of inner grid along W/E edge */
-		nest->edge_col[lev][row] = nest->hdr[lev].y_min + yoff + row * nest->hdr[lev].y_inc;
+		nest->edge_col[lev][row] = nest->hdr[lev].wesn[YLO] + yoff + row * nest->hdr[lev].inc[GMT_Y];
 
 	/* These two will be used to make copies of data around the connected boundary on parent grid */
 	n = nest->LRcol[lev] - nest->LLcol[lev] + 1;
 	nest->edge_row_Ptmp[lev] = (double *) calloc((size_t)n, sizeof(double));
 	nest->edge_row_P[lev]    = (double *) calloc((size_t)n, sizeof(double));
 	for (i = 0; i < n; i++)
-		nest->edge_row_P[lev][i] = nest->LLx[lev] + xoff_P + i * hdr.x_inc;      /* XX coords of parent grid along N/S edge */
+		nest->edge_row_P[lev][i] = nest->LLx[lev] + xoff_P + i * hdr.inc[GMT_X];      /* XX coords of parent grid along N/S edge */
 
 	n = nest->ULrow[lev] - nest->LLrow[lev] + 1;
 	nest->edge_col_Ptmp[lev] = (double *) calloc((size_t)n, sizeof(double));
 	nest->edge_col_P[lev]    = (double *) calloc((size_t)n, sizeof(double));
 	for (i = 0; i < n; i++)
-		nest->edge_col_P[lev][i] = nest->LLy[lev] + xoff_P + i * hdr.y_inc;     /* YY coords of parent grid along W/E edge */
-
-	/* ------------------- PRECISA REVISÃO MAS TAMBÉM PRECISA INICIALIZAR --------------- */
-	nest->hdr[lev].lat_min4Coriolis = 0;
+		nest->edge_col_P[lev][i] = nest->LLy[lev] + xoff_P + i * hdr.inc[GMT_Y];     /* YY coords of parent grid along W/E edge */
 
 	return(0);
 }
@@ -2709,7 +2677,7 @@ int count_n_maregs(void *API, char *file) {
 }
 
 /* -------------------------------------------------------------------- */
-int read_maregs(void *API, struct grd_header hdr, char *file, unsigned int *lcum_p, char *names[]) {
+int read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int *lcum_p, char *names[]) {
 	/* Read maregraph positions (real file or virtual dataset) and convert them to vector linear indices */
 	int     i = 0, ix, jy;
 	uint64_t tbl, seg, row;
@@ -2728,11 +2696,11 @@ int read_maregs(void *API, struct grd_header hdr, char *file, unsigned int *lcum
 			for (row = 0; row < S->n_rows; row++) {
 				x = S->data[GMT_X][row];
 				y = S->data[GMT_Y][row];
-				if (x < hdr.x_min || x > hdr.x_max || y < hdr.y_min || y > hdr.y_max)
+				if (x < hdr.wesn[XLO] || x > hdr.wesn[XHI] || y < hdr.wesn[YLO] || y > hdr.wesn[YHI])
 					continue;
-				ix = irint((x - hdr.x_min) / hdr.x_inc);
-				jy = irint((y - hdr.y_min) / hdr.y_inc);
-				lcum_p[i] = jy * hdr.nx + ix;
+				ix = irint((x - hdr.wesn[XLO]) / hdr.inc[GMT_X]);
+				jy = irint((y - hdr.wesn[YLO]) / hdr.inc[GMT_Y]);
+				lcum_p[i] = jy * hdr.n_columns + ix;
 				names[i] = (S->text && S->text[row]) ? strdup(S->text[row]) : strdup("NoName");
 				i++;
 			}
@@ -2743,7 +2711,7 @@ int read_maregs(void *API, struct grd_header hdr, char *file, unsigned int *lcum
 }
 
 /* -------------------------------------------------------------------- */
-int read_tracers(void *API, struct grd_header hdr, char *file, struct tracers *oranges) {
+int read_tracers(void *API, struct GMT_GRID_HEADER hdr, char *file, struct tracers *oranges) {
 	/* Read tracers positions (real file or virtual dataset) */
 	int     i = 0;
 	uint64_t tbl, seg, row;
@@ -2762,7 +2730,7 @@ int read_tracers(void *API, struct grd_header hdr, char *file, struct tracers *o
 			for (row = 0; row < S->n_rows; row++) {
 				x = S->data[GMT_X][row];
 				y = S->data[GMT_Y][row];
-				if (x < hdr.x_min || x > hdr.x_max || y < hdr.y_min || y > hdr.y_max)
+				if (x < hdr.wesn[XLO] || x > hdr.wesn[XHI] || y < hdr.wesn[YLO] || y > hdr.wesn[YHI])
 					continue;
 				oranges[i].x[0] = x;
 				oranges[i].y[0] = y;
@@ -2902,9 +2870,9 @@ int interp_bnc(void *API, struct nestContainer *nest, double t) {
 
 	/* Pick up the appropriate dimension for this bnc interpolation */
 	if ((nest->bnc_border[0] != 0) || (nest->bnc_border[2] != 0))	/* West or East borders */ 
-		side_len = nest->hdr[0].ny;
+		side_len = nest->hdr[0].n_rows;
 	else
-		side_len = nest->hdr[0].nx;
+		side_len = nest->hdr[0].n_columns;
 
 	for (n = 0; n < nest->bnc_var_nTimes - 1; n++) {		/* Interp boundary data, normally with cruder dt, for the model run time dt */
 		if (t >= nest->bnc_var_t[n] && t < nest->bnc_var_t[n+1]) {		/* Found the bounds of 't' */
@@ -2924,7 +2892,7 @@ int interp_bnc(void *API, struct nestContainer *nest, double t) {
 			nest->bnc_var_z_interp[n] = nest->bnc_var_zTmp[0];
 	}
 	else { 		/* This case actually not yet implemented via the bnc file (-B option) */
-		if (side_len == nest->hdr[0].nx)
+		if (side_len == nest->hdr[0].n_columns)
 			intp_lin(API, nest->bnc_pos_x, nest->bnc_var_zTmp, nest->bnc_pos_nPts, side_len,
 			         nest->edge_row_P[0], nest->bnc_var_z_interp);
 		else
@@ -3007,7 +2975,7 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 	float    dummy = -1e34f;
 	double  *x, *y;
 
-	basename = (char *)malloc(strlen(base) * sizeof(char));
+	basename = (char *)malloc(strlen(base) + 8);	/* +8: room for the NUL and a "_ha.nc" type suffix */
 	strcpy(basename, base);
 	if (!strcmp(name_var,"HA")) {
 		strcat(basename,"_ha.nc");
@@ -3130,9 +3098,9 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 
 		if (nan == 0) nan = (float)loc_nan.d;	/* Dirty hack. With the Intel compiler for example NAN returns 0*/
 
-		range[0] = xMinOut;		range[1] = xMinOut + (nx - 1) * nest->hdr[lev].x_inc;
+		range[0] = xMinOut;		range[1] = xMinOut + (nx - 1) * nest->hdr[lev].inc[GMT_X];
 		err_trap(API, nc_put_att_double(ncid, ids[0], "actual_range", NC_DOUBLE, 2U, range));
-		range[0] = yMinOut;		range[1] = yMinOut + (ny - 1) * nest->hdr[lev].y_inc;
+		range[0] = yMinOut;		range[1] = yMinOut + (ny - 1) * nest->hdr[lev].inc[GMT_Y];
 		err_trap(API, nc_put_att_double(ncid, ids[1], "actual_range", NC_DOUBLE, 2U, range));
 		if (nest->isGeog) {
 			err_trap(API, nc_put_att_text(ncid, ids[0], "units", 12, "degrees_east"));
@@ -3159,7 +3127,7 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 		for (ij = 0; ij < nest->hdr[lev].nm; ij++)		/* Change bathy sign back to pos up and copy to work array */
 			work[ij] = (float)-nest->bat[lev][ij];
 
-		count_b[0] = nest->hdr[lev].ny;	count_b[1] = nest->hdr[lev].nx;
+		count_b[0] = nest->hdr[lev].n_rows;	count_b[1] = nest->hdr[lev].n_columns;
 		err_trap(API, nc_put_vara_float(ncid, ids[4], start_b, count_b, work));	/* Write the bathymetry */
 
 		if (nest->out_momentum) {
@@ -3227,8 +3195,8 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 	x = (double *)malloc (sizeof(double) * nx);
 	y = (double *)malloc (sizeof(double) * ny);
 
-	for (n = 0; n < nx; n++) x[n] = xMinOut + n * nest->hdr[lev].x_inc;
-	for (m = 0; m < ny; m++) y[m] = yMinOut + m * nest->hdr[lev].y_inc;
+	for (n = 0; n < nx; n++) x[n] = xMinOut + n * nest->hdr[lev].inc[GMT_X];
+	for (m = 0; m < ny; m++) y[m] = yMinOut + m * nest->hdr[lev].inc[GMT_Y];
 	err_trap(API, nc_put_var_double(ncid, ids[0], x));
 	err_trap(API, nc_put_var_double(ncid, ids[1], y));
 	free((void *)x); 
@@ -3389,10 +3357,10 @@ int write_greens_nc(void *API, struct nestContainer *nest, char *fname, float *w
 	y = (double *)malloc(sizeof(double) * n_maregs);
 
 	for (k = 0; k < n_maregs; k++) {
-		ix = lcum_p[k] % nest->hdr[lev].nx;
-		iy = lcum_p[k] / nest->hdr[lev].nx;
-		x[k] = nest->hdr[lev].x_min + ix * nest->hdr[lev].x_inc;
-		y[k] = nest->hdr[lev].y_min + iy * nest->hdr[lev].y_inc;
+		ix = lcum_p[k] % nest->hdr[lev].n_columns;
+		iy = lcum_p[k] / nest->hdr[lev].n_columns;
+		x[k] = nest->hdr[lev].wesn[XLO] + ix * nest->hdr[lev].inc[GMT_X];
+		y[k] = nest->hdr[lev].wesn[YLO] + iy * nest->hdr[lev].inc[GMT_Y];
 	}
 
 	err_trap(API, nc_put_var_double(ncid, ids[0], t));
@@ -3463,10 +3431,10 @@ int write_maregs_nc(void *API, struct nestContainer *nest, char *fname, float *w
 	maregs_vec = (int *)malloc(sizeof(int) * n_maregs);
 
 	for (k = 0; k < n_maregs; k++) {
-		ix = lcum_p[k] % nest->hdr[lev].nx;
-		iy = lcum_p[k] / nest->hdr[lev].nx;
-		x[k] = nest->hdr[lev].x_min + ix * nest->hdr[lev].x_inc;
-		y[k] = nest->hdr[lev].y_min + iy * nest->hdr[lev].y_inc;
+		ix = lcum_p[k] % nest->hdr[lev].n_columns;
+		iy = lcum_p[k] / nest->hdr[lev].n_columns;
+		x[k] = nest->hdr[lev].wesn[XLO] + ix * nest->hdr[lev].inc[GMT_X];
+		y[k] = nest->hdr[lev].wesn[YLO] + iy * nest->hdr[lev].inc[GMT_Y];
 		maregs_vec[k] = k + 1;
 	}
 
@@ -3495,8 +3463,8 @@ int open_anuga_sww (void *API, struct nestContainer *nest, char *fname_sww, char
 	float z_max = nest->hdr[lev].z_max;
 	double dummy, nan, faultPolyX[11], faultPolyY[11], faultSlip[10], faultStrike[10], 
 	       faultDip[10], faultRake[10], faultWidth[10], faultDepth[10];
-	double dtx = nest->hdr[lev].x_inc;
-	double dty = nest->hdr[lev].y_inc;
+	double dtx = nest->hdr[lev].inc[GMT_X];
+	double dty = nest->hdr[lev].inc[GMT_Y];
 
 	if ( (status = nc_create (fname_sww, NC_NETCDF4, &ncid)) != NC_NOERR) {
 		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to create file -- %s -- exiting\n", fname_sww);
@@ -3611,7 +3579,7 @@ int open_anuga_sww (void *API, struct nestContainer *nest, char *fname_sww, char
 	tmp = (float *)malloc(sizeof (float) * (nx * ny));
 	for (j = j_start, k = 0; j < j_end; j++) {
 		for (i = i_start; i < i_end; i++)
-			tmp[k++] = (float)-nest->bat[lev][ijs(i,j,nest->hdr[lev].nx)];
+			tmp[k++] = (float)-nest->bat[lev][ijs(i,j,nest->hdr[lev].n_columns)];
 	}
 
 	err_trap(API, nc_put_var_float(ncid, ids[2], tmp));	/* z */
@@ -3639,7 +3607,7 @@ void write_anuga_slice(void *API, struct nestContainer *nest, int ncid, int z_id
 
 	if (idx == 1) {
 		if (!with_land) {		/* Land nodes are kept = 0 */
-			if (i_end == nest->hdr[lev].nx && j_end == nest->hdr[lev].ny) {        /* Full Region */
+			if (i_end == nest->hdr[lev].n_columns && j_end == nest->hdr[lev].n_rows) {        /* Full Region */
 				for (ij = 0; ij < nest->hdr[lev].nm; ij++)
 					work[ij] = (float)nest->etad[lev][ij];              /* Anuga calls this -> stage */
 			}
@@ -3650,7 +3618,7 @@ void write_anuga_slice(void *API, struct nestContainer *nest, int ncid, int z_id
 			}
 		}
 		else {
-			if (i_end == nest->hdr[lev].nx && j_end == nest->hdr[lev].ny) {        /* Full Region */
+			if (i_end == nest->hdr[lev].n_columns && j_end == nest->hdr[lev].n_rows) {        /* Full Region */
 				for (ij = 0; ij < nest->hdr[lev].nm; ij++)
 					work[ij] = (nest->htotal_d[lev][ij] < EPS3) ? (float)-nest->bat[lev][ij] : (float)nest->etad[lev][ij];
 			}
@@ -3666,7 +3634,7 @@ void write_anuga_slice(void *API, struct nestContainer *nest, int ncid, int z_id
 		}
 	}
 	else if (idx == 2) {	/* X momentum */
-		if (i_end == nest->hdr[lev].nx && j_end == nest->hdr[lev].ny) {
+		if (i_end == nest->hdr[lev].n_columns && j_end == nest->hdr[lev].n_rows) {
 			for (ij = 0; ij < nest->hdr[lev].nm; ij++)
 				work[ij] = (float)nest->fluxm_d[lev][ij];
 		}
@@ -3677,7 +3645,7 @@ void write_anuga_slice(void *API, struct nestContainer *nest, int ncid, int z_id
 		}
 	}
 	else {			/* Y momentum */
-		if (i_end == nest->hdr[lev].nx && j_end == nest->hdr[lev].ny) {
+		if (i_end == nest->hdr[lev].n_columns && j_end == nest->hdr[lev].n_rows) {
 			for (ij = 0; ij < nest->hdr[lev].nm; ij++)
 				work[ij] = (float)nest->fluxn_d[lev][ij];
 		}
@@ -3729,17 +3697,17 @@ void mass(struct nestContainer *nest, int lev) {
 	htotal_d = nest->htotal_d[lev];      bat     = nest->bat[lev];
 	fluxm_a  = nest->fluxm_a[lev];       fluxn_a = nest->fluxn_a[lev];
 
-	dtdx = nest->dt[lev] / nest->hdr[lev].x_inc;
-	dtdy = nest->dt[lev] / nest->hdr[lev].y_inc;
+	dtdx = nest->dt[lev] / nest->hdr[lev].inc[GMT_X];
+	dtdy = nest->dt[lev] / nest->hdr[lev].inc[GMT_Y];
 
 #ifndef PARALLEL
-	row_start = 0;		row_end = nest->hdr[lev].ny;
+	row_start = 0;		row_end = nest->hdr[lev].n_rows;
 #endif
 
 	for (row = row_start; row < row_end; row++) {
-		ij = row * nest->hdr[lev].nx;
-		rm1 = (row == 0) ? 0 : nest->hdr[lev].nx;
-		for (col = 0; col < nest->hdr[lev].nx; col++) {
+		ij = row * nest->hdr[lev].n_columns;
+		rm1 = (row == 0) ? 0 : nest->hdr[lev].n_columns;
+		for (col = 0; col < nest->hdr[lev].n_columns; col++) {
 			/* case ocean and non permanent dry area */
 			if (bat[ij] > MAXRUNUP) {
 				cm1 = (col == 0) ? 0 : 1;
@@ -3778,8 +3746,8 @@ void wave_maker(struct nestContainer *nest) {
 	int64_t ij;
 
 	if ((nest->bnc_border[0] != 0) || (nest->bnc_border[2] != 0)) {         /* West or East borders */
-		col = (nest->bnc_border[0] != 0) ? 0 : nest->hdr[0].nx - 1;
-		for (row = 0; row < nest->hdr[0].ny; row++) {
+		col = (nest->bnc_border[0] != 0) ? 0 : nest->hdr[0].n_columns - 1;
+		for (row = 0; row < nest->hdr[0].n_rows; row++) {
 			ij = ij_grd(col,row,nest->hdr[0]);
 			if (nest->bat [0][ij] < EPS5) {
 				nest->etad[0][ij] = -nest->bat[0][ij];
@@ -3789,8 +3757,8 @@ void wave_maker(struct nestContainer *nest) {
 		}
 	}
 	else {    /* South or North borders */
-		row = (nest->bnc_border[1] != 0) ? 0 : nest->hdr[0].ny - 1;
-		for (col = 0; col < nest->hdr[0].nx; col++) {
+		row = (nest->bnc_border[1] != 0) ? 0 : nest->hdr[0].n_rows - 1;
+		for (col = 0; col < nest->hdr[0].n_columns; col++) {
 			if (nest->bat [0][ij_grd(col,row,nest->hdr[0])] < EPS5) {
 				nest->etad[0][ij_grd(col,row,nest->hdr[0])] = -nest->bat[0][ij_grd(col,row,nest->hdr[0])];
 				continue;
@@ -3805,24 +3773,24 @@ void wall_it(struct nestContainer *nest) {
 	/* Set up vertical walls in all other boundaries but from the one where water goes in */
 
 	if (nest->bnc_border[0] != 0) {		/* West border */
-		wall_two(nest, 0, nest->hdr[0].nx, nest->hdr[0].ny - 2, nest->hdr[0].ny);   /* Wall the North border */
-		wall_two(nest, 0, nest->hdr[0].nx, 0, 2);                                   /* Wall the South border */
-		wall_two(nest, nest->hdr[0].nx - 2, nest->hdr[0].nx, 0, nest->hdr[0].ny);   /* Wall the East border */
+		wall_two(nest, 0, nest->hdr[0].n_columns, nest->hdr[0].n_rows - 2, nest->hdr[0].n_rows);   /* Wall the North border */
+		wall_two(nest, 0, nest->hdr[0].n_columns, 0, 2);                                   /* Wall the South border */
+		wall_two(nest, nest->hdr[0].n_columns - 2, nest->hdr[0].n_columns, 0, nest->hdr[0].n_rows);   /* Wall the East border */
 	}
 	else if (nest->bnc_border[1] != 0) {		/* South border */
-		wall_two(nest, 0, 2, 0, nest->hdr[0].ny);                                   /* Wall the West border */
-		wall_two(nest, nest->hdr[0].nx - 2, nest->hdr[0].nx, 0, nest->hdr[0].ny);   /* Wall the East border */
-		wall_two(nest, 0, nest->hdr[0].nx, nest->hdr[0].ny - 2, nest->hdr[0].ny);   /* Wall the North border */
+		wall_two(nest, 0, 2, 0, nest->hdr[0].n_rows);                                   /* Wall the West border */
+		wall_two(nest, nest->hdr[0].n_columns - 2, nest->hdr[0].n_columns, 0, nest->hdr[0].n_rows);   /* Wall the East border */
+		wall_two(nest, 0, nest->hdr[0].n_columns, nest->hdr[0].n_rows - 2, nest->hdr[0].n_rows);   /* Wall the North border */
 	}
 	else if (nest->bnc_border[2] != 0) {		/* East border */
-		wall_two(nest, 0, nest->hdr[0].nx, nest->hdr[0].ny - 2, nest->hdr[0].ny);   /* Wall the North border */
-		wall_two(nest, 0, nest->hdr[0].nx, 0, 2);                                   /* Wall the South border */
-		wall_two(nest, 0, 2, 0, nest->hdr[0].ny);                                   /* Wall the West border */
+		wall_two(nest, 0, nest->hdr[0].n_columns, nest->hdr[0].n_rows - 2, nest->hdr[0].n_rows);   /* Wall the North border */
+		wall_two(nest, 0, nest->hdr[0].n_columns, 0, 2);                                   /* Wall the South border */
+		wall_two(nest, 0, 2, 0, nest->hdr[0].n_rows);                                   /* Wall the West border */
 	}
 	else if (nest->bnc_border[3] != 0) {		/* Noth border */
-		wall_two(nest, 0, 2, 0, nest->hdr[0].ny);                                   /* Wall the West border */
-		wall_two(nest, 0, nest->hdr[0].nx, 0, 2);                                   /* Wall the South border */
-		wall_two(nest, nest->hdr[0].nx - 2, nest->hdr[0].nx, 0, nest->hdr[0].ny);   /* Wall the East border */
+		wall_two(nest, 0, 2, 0, nest->hdr[0].n_rows);                                   /* Wall the West border */
+		wall_two(nest, 0, nest->hdr[0].n_columns, 0, 2);                                   /* Wall the South border */
+		wall_two(nest, nest->hdr[0].n_columns - 2, nest->hdr[0].n_columns, 0, nest->hdr[0].n_rows);   /* Wall the East border */
 	}
 }
 
@@ -3847,14 +3815,14 @@ void wall_two(struct nestContainer *nest, int ot1, int ot2, int in1, int in2) {
 /* ---------------------------------------------------------------------- */
 /* open boundary condition */
 /* ---------------------------------------------------------------------- */
-void openb(struct grd_header hdr, double *bat, double *fluxm_d, double *fluxn_d, double *etad, struct nestContainer *nest) {
+void openb(struct GMT_GRID_HEADER hdr, double *bat, double *fluxm_d, double *fluxn_d, double *etad, struct nestContainer *nest) {
 
 	int i, j;
 	double uh, zz, d__1, d__2;
 
 	/* ----- first column (South border) */
 	j = 0;
-	for (i = 1; i < hdr.nx - 1; i++) {
+	for (i = 1; i < hdr.n_columns - 1; i++) {
 		if (bat[ij_grd(i,j,hdr)] < EPS5) {
 			etad[ij_grd(i,j,hdr)] = -bat[ij_grd(i,j,hdr)];
 			continue;
@@ -3867,8 +3835,8 @@ void openb(struct grd_header hdr, double *bat, double *fluxm_d, double *fluxn_d,
 	}
 
 	/* ------ last column (North border) */
-	j = hdr.ny - 1;
-	for (i = 1; i < hdr.nx - 1; i++) {
+	j = hdr.n_rows - 1;
+	for (i = 1; i < hdr.n_columns - 1; i++) {
 		if (bat[ij_grd(i,j,hdr)] > EPS5) {
 			uh = (fluxm_d[ij_grd(i,j,hdr)] + fluxm_d[ij_grd(i-1,j,hdr)]) * 0.5;
 			d__2 = fluxn_d[ij_grd(i,j-1,hdr)];
@@ -3883,7 +3851,7 @@ void openb(struct grd_header hdr, double *bat, double *fluxm_d, double *fluxn_d,
 
 	/* ------ first row (West border) */
 	i = 0;
-	for (j = 1; j < hdr.ny - 1; j++) {
+	for (j = 1; j < hdr.n_rows - 1; j++) {
 		if (bat[ij_grd(i,j,hdr)] < EPS5) {
 			etad[ij_grd(i,j,hdr)] = -bat[ij_grd(i,j,hdr)];
 			continue;
@@ -3901,8 +3869,8 @@ void openb(struct grd_header hdr, double *bat, double *fluxm_d, double *fluxn_d,
 	}
 
 	/* ------- last row (East border) */
-	i = hdr.nx - 1;
-	for (j = 1; j < hdr.ny - 1; j++) {
+	i = hdr.n_columns - 1;
+	for (j = 1; j < hdr.n_rows - 1; j++) {
 		if (bat[ij_grd(i,j,hdr)] > EPS5) {
 			uh = (fluxn_d[ij_grd(i,j,hdr)] + fluxn_d[ij_grd(i,j-1,hdr)]) * 0.5;
 			d__2 = fluxm_d[ij_grd(i-1,j,hdr)];
@@ -3927,39 +3895,39 @@ void openb(struct grd_header hdr, double *bat, double *fluxm_d, double *fluxn_d,
 	}
 
 	/* -------- last row & first column */
-	if (bat[ij_grd(hdr.nx-1,0,hdr)] > EPS5) {
-		d__1 = fluxm_d[ij_grd(hdr.nx-2,0,hdr)];
-		d__2 = fluxn_d[ij_grd(hdr.nx-1,0,hdr)];
-		zz = sqrt(d__1 * d__1 + d__2 * d__2) / sqrt(NORMAL_GRAV * bat[ij_grd(hdr.nx-1,0,hdr)]);
-		if (fluxm_d[ij_grd(hdr.nx-2,0,hdr)] < 0 || fluxn_d[ij_grd(hdr.nx-1,0,hdr)] > 0) zz *= -1;
+	if (bat[ij_grd(hdr.n_columns-1,0,hdr)] > EPS5) {
+		d__1 = fluxm_d[ij_grd(hdr.n_columns-2,0,hdr)];
+		d__2 = fluxn_d[ij_grd(hdr.n_columns-1,0,hdr)];
+		zz = sqrt(d__1 * d__1 + d__2 * d__2) / sqrt(NORMAL_GRAV * bat[ij_grd(hdr.n_columns-1,0,hdr)]);
+		if (fluxm_d[ij_grd(hdr.n_columns-2,0,hdr)] < 0 || fluxn_d[ij_grd(hdr.n_columns-1,0,hdr)] > 0) zz *= -1;
 		if (fabs(zz) <= EPS5) zz = 0;
-		etad[ij_grd(0,hdr.ny-1,hdr)] = zz;
+		etad[ij_grd(0,hdr.n_rows-1,hdr)] = zz;
 	} 
 	else
-		etad[ij_grd(0,hdr.ny-1,hdr)] = -bat[ij_grd(0,hdr.ny-1,hdr)];
+		etad[ij_grd(0,hdr.n_rows-1,hdr)] = -bat[ij_grd(0,hdr.n_rows-1,hdr)];
 
 	/* -------- first row & last column */
-	if (bat[ij_grd(0,hdr.ny-1,hdr)] > EPS5) {
-		d__1 = fluxm_d[ij_grd(0,hdr.ny-1,hdr)];
-		d__2 = fluxn_d[ij_grd(0,hdr.ny-2,hdr)];
-		zz = sqrt(d__1 * d__1 + d__2 * d__2) / sqrt(NORMAL_GRAV * bat[ij_grd(0,hdr.ny-1,hdr)]);
-		if (fluxm_d[ij_grd(0,hdr.ny-1,hdr)] > 0 || fluxn_d[ij_grd(0,hdr.ny-2,hdr)] < 0) zz = -zz;
+	if (bat[ij_grd(0,hdr.n_rows-1,hdr)] > EPS5) {
+		d__1 = fluxm_d[ij_grd(0,hdr.n_rows-1,hdr)];
+		d__2 = fluxn_d[ij_grd(0,hdr.n_rows-2,hdr)];
+		zz = sqrt(d__1 * d__1 + d__2 * d__2) / sqrt(NORMAL_GRAV * bat[ij_grd(0,hdr.n_rows-1,hdr)]);
+		if (fluxm_d[ij_grd(0,hdr.n_rows-1,hdr)] > 0 || fluxn_d[ij_grd(0,hdr.n_rows-2,hdr)] < 0) zz = -zz;
 		if (fabs(zz) <= EPS5) zz = 0;
-		etad[ij_grd(0,hdr.ny-1,hdr)] = zz;
+		etad[ij_grd(0,hdr.n_rows-1,hdr)] = zz;
 	} 
 	else
-		etad[ij_grd(0,hdr.ny-1,hdr)] = -bat[ij_grd(0,hdr.ny-1,hdr)];
+		etad[ij_grd(0,hdr.n_rows-1,hdr)] = -bat[ij_grd(0,hdr.n_rows-1,hdr)];
 
 	/* ---------- last row & last column */
-	if (bat[ij_grd(hdr.nx-1,hdr.ny-1,hdr)] > EPS5) {
-		d__1 = fluxm_d[ij_grd(hdr.nx-2,hdr.ny-1,hdr)];
-		d__2 = fluxn_d[ij_grd(hdr.nx-1,hdr.ny-2,hdr)];
-		zz = sqrt(d__1 * d__1 + d__2 * d__2) / sqrt(NORMAL_GRAV * bat[ij_grd(hdr.nx-1,hdr.ny-1,hdr)]);
-		if (fluxm_d[ij_grd(hdr.nx-2,hdr.ny-1,hdr)] < 0 || fluxn_d[ij_grd(hdr.nx-1,hdr.ny-2,hdr)] < 0) zz *= -1;
-		etad[ij_grd(hdr.nx-1,hdr.ny-1,hdr)] = zz;
+	if (bat[ij_grd(hdr.n_columns-1,hdr.n_rows-1,hdr)] > EPS5) {
+		d__1 = fluxm_d[ij_grd(hdr.n_columns-2,hdr.n_rows-1,hdr)];
+		d__2 = fluxn_d[ij_grd(hdr.n_columns-1,hdr.n_rows-2,hdr)];
+		zz = sqrt(d__1 * d__1 + d__2 * d__2) / sqrt(NORMAL_GRAV * bat[ij_grd(hdr.n_columns-1,hdr.n_rows-1,hdr)]);
+		if (fluxm_d[ij_grd(hdr.n_columns-2,hdr.n_rows-1,hdr)] < 0 || fluxn_d[ij_grd(hdr.n_columns-1,hdr.n_rows-2,hdr)] < 0) zz *= -1;
+		etad[ij_grd(hdr.n_columns-1,hdr.n_rows-1,hdr)] = zz;
 	} 
 	else
-		etad[ij_grd(hdr.nx-1,hdr.ny-1,hdr)] = -bat[ij_grd(hdr.nx-1,hdr.ny-1,hdr)];
+		etad[ij_grd(hdr.n_columns-1,hdr.n_rows-1,hdr)] = -bat[ij_grd(hdr.n_columns-1,hdr.n_rows-1,hdr)];
 }
 
 /* --------------------------------------------------------------------- */
@@ -4000,7 +3968,7 @@ void moment_M(struct nestContainer *nest, int lev) {
 	double advx, dtdx, dtdy, advy, rlat;
 	double dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1;
 	double dt, manning, *bat, *htotal_a, *htotal_d, *etad, *fluxm_a, *fluxm_d, *fluxn_a, *fluxn_d, *vex, *r4m;
-	struct grd_header hdr;
+	struct GMT_GRID_HEADER hdr;
 
 	hdr      = nest->hdr[lev];             vex      = nest->vex[lev];
 	dt       = nest->dt[lev];              manning  = nest->manning[lev];
@@ -4010,7 +3978,7 @@ void moment_M(struct nestContainer *nest, int lev) {
 	fluxn_a  = nest->fluxn_a[lev];         fluxn_d  = nest->fluxn_d[lev];
 	r4m      = nest->r4m[lev];
 
-	row_start = 0;		row_end = hdr.ny - nest->last;
+	row_start = 0;		row_end = hdr.n_rows - nest->last;
 	memset(fluxm_d, 0, hdr.nm * sizeof(double));
 
 #ifdef PARALLEL
@@ -4026,7 +3994,7 @@ void moment_M_slice(int lev, int row_start, int row_end, struct nestContainer *n
 	double advx, dtdx, dtdy, advy, rlat;
 	double dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1;
 	double dt, manning, *bat, *htotal_a, *htotal_d, *etad, *fluxm_a, *fluxm_d, *fluxn_a, *fluxn_d, *vex, *r4m;
-	struct grd_header hdr;
+	struct GMT_GRID_HEADER hdr;
 
 	hdr      = nest->hdr[lev];             vex      = nest->vex[lev];
 	dt       = nest->dt[lev];              manning  = nest->manning[lev];
@@ -4037,18 +4005,18 @@ void moment_M_slice(int lev, int row_start, int row_end, struct nestContainer *n
 	r4m      = nest->r4m[lev];
 #endif
 
-	dtdx = dt / hdr.x_inc;
-	dtdy = dt / hdr.y_inc;
+	dtdx = dt / hdr.inc[GMT_X];
+	dtdy = dt / hdr.inc[GMT_Y];
 	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
 
 	for (row = row_start; row < row_end; row++) {	/* main computation cycle fluxm_d */
-		rp1 = (row < hdr.ny - 1) ? hdr.nx : 0;
-		rm1 = (row == 0) ? 0 : hdr.nx;
-		ij = row * hdr.nx - 1 + nest->first;
+		rp1 = (row < hdr.n_rows - 1) ? hdr.n_columns : 0;
+		rm1 = (row == 0) ? 0 : hdr.n_columns;
+		ij = row * hdr.n_columns - 1 + nest->first;
 
-		for (col = nest->first; col < hdr.nx - 1; col++) {
+		for (col = nest->first; col < hdr.n_columns - 1; col++) {
 			cp1 = 1;
-			cp2 = (col < hdr.nx - 2) ? 2 : 1;
+			cp2 = (col < hdr.n_columns - 2) ? 2 : 1;
 			cm1 = (col == 0) ? 0 : 1;
 			ij++;
 			/* no flux to permanent dry areas */
@@ -4105,7 +4073,7 @@ void moment_M_slice(int lev, int row_start, int row_end, struct nestContainer *n
 			/* - total water depth is smaller than EPS3 >> linear */
 			if (dpa_ij < EPS4) goto L120;
 			/* - lateral buffer >> linear */
-			if (col < nest->jupe || col > (hdr.nx - nest->jupe - 1) || row < nest->jupe || row > (hdr.ny - nest->jupe - 1))
+			if (col < nest->jupe || col > (hdr.n_columns - nest->jupe - 1) || row < nest->jupe || row > (hdr.n_rows - nest->jupe - 1))
 				goto L120;
 
 			/* - computes convection terms */
@@ -4152,7 +4120,7 @@ void moment_M_slice(int lev, int row_start, int row_end, struct nestContainer *n
 						advy = dtdy * (fluxm_a[ij] * xqq / dpa_ij);
 
 					else {
-						rm2 = (row < 2) ? 0 : 2 * hdr.nx;
+						rm2 = (row < 2) ? 0 : 2 * hdr.n_columns;
 						xqe = (fluxn_a[ij-rm1] + fluxn_a[ij+cp1-rm1] + fluxn_a[ij-rm2] + fluxn_a[ij+cp1-rm2]) * 0.25;
 						advy = dtdy * (fluxm_a[ij] * xqq / dpa_ij - fluxm_a[ij-rm1] * xqe / dpa_ij_rm1);
 					}
@@ -4202,7 +4170,7 @@ void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *n
 	double advx, dtdx, dtdy, advy, rlat;
 	double dqa_ij, dqa_ij_rp1, dqa_ij_rm1, dqa_ij_cm1, dqa_ij_cp1;
 	double dt, manning, *bat, *htotal_a, *htotal_d, *etad, *fluxm_a, *fluxm_d, *fluxn_a, *fluxn_d, *vey, *r4n;
-	struct grd_header hdr;
+	struct GMT_GRID_HEADER hdr;
 
 	hdr      = nest->hdr[lev];             vey      = nest->vey[lev];
 	dt       = nest->dt[lev];              manning  = nest->manning[lev];
@@ -4213,21 +4181,21 @@ void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *n
 	r4n      = nest->r4n[lev];
 
 #ifndef PARALLEL
-	row_start = 0;		row_end = hdr.ny - 1;
+	row_start = 0;		row_end = hdr.n_rows - 1;
 	memset(fluxm_d, 0, hdr.nm * sizeof(double));
 #endif
 
-	dtdx = dt / hdr.x_inc;
-	dtdy = dt / hdr.y_inc;
+	dtdx = dt / hdr.inc[GMT_X];
+	dtdy = dt / hdr.inc[GMT_Y];
 	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
 
 	for (row = row_start; row < row_end; row++) {	/* main computation cycle fluxn_d */
-		rp1 = hdr.nx;
-		rp2 = (row < hdr.ny - 2) ? 2*hdr.nx : hdr.nx;
-		rm1 = (row == 0) ? 0 : hdr.nx;
-		ij = row * hdr.nx - 1;
-		for (col = 0; col < hdr.nx - nest->last; col++) {
-			cp1 = (col < hdr.nx - 1) ? 1 : 0;
+		rp1 = hdr.n_columns;
+		rp2 = (row < hdr.n_rows - 2) ? 2*hdr.n_columns : hdr.n_columns;
+		rm1 = (row == 0) ? 0 : hdr.n_columns;
+		ij = row * hdr.n_columns - 1;
+		for (col = 0; col < hdr.n_columns - nest->last; col++) {
+			cp1 = (col < hdr.n_columns - 1) ? 1 : 0;
 			cm1 = (col == 0) ? 0 : 1;
 			ij++;
 			/* no flux to permanent dry areas */
@@ -4286,7 +4254,7 @@ void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *n
 			/* - total water depth is smaller than EPS3 >> linear */
 			if (dqa_ij < EPS4) goto L200;
 			/* - lateral buffer >> linear */
-			if (col < nest->jupe || col > (hdr.nx - nest->jupe - 1) || row < nest->jupe || row > (hdr.ny - nest->jupe - 1))
+			if (col < nest->jupe || col > (hdr.n_columns - nest->jupe - 1) || row < nest->jupe || row > (hdr.n_rows - nest->jupe - 1))
 				goto L200;
 
 			/* - computes convection terms */
@@ -4373,11 +4341,11 @@ void inisp(struct nestContainer *nest) {
 	omega = 7.2722e-5;
 	while (nest->level[k] >= 0) {
 		dt = nest->dt[k];
-		dxtemp = raio_t * nest->hdr[k].x_inc * D2R;
-		dytemp = raio_t * nest->hdr[k].y_inc * D2R;
-		for (row = 0; row < nest->hdr[k].ny; row++) {
-			phim_rad = (nest->hdr[k].y_min + row * nest->hdr[k].y_inc) * D2R;
-			phin_rad = (nest->hdr[k].y_min + (row + 0.5) * nest->hdr[k].y_inc) * D2R;
+		dxtemp = raio_t * nest->hdr[k].inc[GMT_X] * D2R;
+		dytemp = raio_t * nest->hdr[k].inc[GMT_Y] * D2R;
+		for (row = 0; row < nest->hdr[k].n_rows; row++) {
+			phim_rad = (nest->hdr[k].wesn[YLO] + row * nest->hdr[k].inc[GMT_Y]) * D2R;
+			phin_rad = (nest->hdr[k].wesn[YLO] + (row + 0.5) * nest->hdr[k].inc[GMT_Y]) * D2R;
 			nest->r0[k][row] = dt / dytemp;
 			nest->r1m[k][row] = sin(phim_rad);
 			nest->r1n[k][row] = cos(phin_rad);
@@ -4401,9 +4369,9 @@ void inicart(struct nestContainer *nest) {
 
 	while (nest->level[k] >= 0) {
 		dt = nest->dt[k];
-		for (row = 0; row < nest->hdr[k].ny; row++) {
-			phim_rad = nest->lat_min4Coriolis + row * nest->hdr[k].y_inc * M_PI / 2e9;
-			phin_rad = nest->lat_min4Coriolis + (row * nest->hdr[k].y_inc + nest->hdr[k].y_inc / 2.) * M_PI / 2e9;
+		for (row = 0; row < nest->hdr[k].n_rows; row++) {
+			phim_rad = nest->lat_min4Coriolis + row * nest->hdr[k].inc[GMT_Y] * M_PI / 2e9;
+			phin_rad = nest->lat_min4Coriolis + (row * nest->hdr[k].inc[GMT_Y] + nest->hdr[k].inc[GMT_Y] / 2.) * M_PI / 2e9;
 			nest->r4m[k][row] = dt * omega * sin(phim_rad);
 			nest->r4n[k][row] = dt * omega * sin(phin_rad);
 		}
@@ -4426,7 +4394,7 @@ void mass_sp(struct nestContainer *nest, int lev) {
 	double etan, dd;
 	double r2m_r, r2n_r, r1n_r, r1n_r1;
 
-	row_start = 0;		row_end = nest->hdr[lev].ny;
+	row_start = 0;		row_end = nest->hdr[lev].n_rows;
 
 #ifdef PARALLEL
 }		/* Than the mass_sp() fun end here */
@@ -4439,14 +4407,14 @@ void mass_sp_slice(struct nestContainer *nest, int lev, int row_start, int row_e
 #endif
 
 	for (row = row_start; row < row_end; row++) {
-		ij = row * nest->hdr[lev].nx;
-		rm1 = ((row == 0) ? 0 : 1) * nest->hdr[lev].nx;
+		ij = row * nest->hdr[lev].n_columns;
+		rm1 = ((row == 0) ? 0 : 1) * nest->hdr[lev].n_columns;
 		rowm1 = MAX(row - 1, 0);
 		r2m_r = nest->r2m[lev][row];
 		r2n_r = nest->r2n[lev][row];
 		r1n_r = nest->r1n[lev][row];
 		r1n_r1 = nest->r1n[lev][rowm1];
-		for (col = 0; col < nest->hdr[lev].nx; col++) {
+		for (col = 0; col < nest->hdr[lev].n_columns; col++) {
 			if (nest->bat[lev][ij] > MAXRUNUP) {	/* case ocean and non permanent dry area */
 				cm1 = (col == 0) ? 0 : 1;
 				etan = nest->etaa[lev][ij] - r2m_r * (nest->fluxm_a[lev][ij] - nest->fluxm_a[lev][ij-cm1])
@@ -4494,7 +4462,7 @@ void moment_sp_M(struct nestContainer *nest, int lev) {
 	double dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1;
 	double dt, manning, *htotal_a, *htotal_d, *bat, *etad, *fluxm_a, *fluxn_a, *fluxm_d, *fluxn_d, *vex;
 	double *r0, *r2m, *r3m, *r4m, r2m_r;
-	struct grd_header hdr;
+	struct GMT_GRID_HEADER hdr;
 	double bat__ij;
 	double htotal_d__ij;
 	double htotal_d__ij_cp1;
@@ -4510,7 +4478,7 @@ void moment_sp_M(struct nestContainer *nest, int lev) {
 	r0       = nest->r0[lev];              r2m      = nest->r2m[lev];
 	r3m      = nest->r3m[lev];             r4m      = nest->r4m[lev];
 
-	row_start = 0;		row_end = hdr.ny - nest->last;
+	row_start = 0;		row_end = hdr.n_rows - nest->last;
 	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
 
 	memset(fluxm_d, 0, hdr.nm * sizeof(double));
@@ -4534,7 +4502,7 @@ void moment_sp_M_slice(int lev, int row_start, int row_end, struct nestContainer
 	double htotal_d__ij_cp1;
 	double etad__ij, etad__ij_cp1;
 	double fluxm_a__ij;
-	struct grd_header hdr;
+	struct GMT_GRID_HEADER hdr;
 
 	hdr      = nest->hdr[lev];             vex      = nest->vex[lev];
 	dt       = nest->dt[lev];              manning  = nest->manning[lev];
@@ -4549,13 +4517,13 @@ void moment_sp_M_slice(int lev, int row_start, int row_end, struct nestContainer
 #endif
 
 	for (row = row_start; row < row_end; row++) {		/* - main computation cycle fluxm_d */
-		rp1 = (row < hdr.ny - 1) ? hdr.nx : 0;
-		rm1 = (row == 0) ? 0 : hdr.nx;
+		rp1 = (row < hdr.n_rows - 1) ? hdr.n_columns : 0;
+		rm1 = (row == 0) ? 0 : hdr.n_columns;
 		r2m_r = r2m[row];
-		ij = row * hdr.nx - 1 + nest->first;
-		for (col = nest->first; col < hdr.nx - 1; col++) {
+		ij = row * hdr.n_columns - 1 + nest->first;
+		for (col = nest->first; col < hdr.n_columns - 1; col++) {
 			cp1 = 1;
-			cp2 = (col < hdr.nx - 2) ? 2 : 1;
+			cp2 = (col < hdr.n_columns - 2) ? 2 : 1;
 			cm1 = (col == 0) ? 0 : 1;
 			ij++;
 
@@ -4623,7 +4591,7 @@ void moment_sp_M_slice(int lev, int row_start, int row_end, struct nestContainer
 			if (dpa_ij < EPS3)
 				goto L120;
 			/* - lateral buffer >> linear */
-			if (col < nest->jupe || col > (hdr.nx - nest->jupe - 1) || row < nest->jupe || row > (hdr.ny - nest->jupe -1 ))
+			if (col < nest->jupe || col > (hdr.n_columns - nest->jupe - 1) || row < nest->jupe || row > (hdr.n_rows - nest->jupe -1 ))
 				goto L120;
 
 			/* - computes convection terms */
@@ -4658,7 +4626,7 @@ void moment_sp_M_slice(int lev, int row_start, int row_end, struct nestContainer
 				dpa_ij_rm1 = (htotal_d__ij_rm1 + htotal_a[ij-rm1] + htotal_d__ij_cp1_rm1 + htotal_a[ij+cp1-rm1]) * 0.25;
 				advy = r0[row] * (fluxm_a__ij * xqq / dpa_ij);
 				if (!(dpa_ij_rm1 < EPS5 || htotal_d__ij_rm1 < EPS5 || htotal_d__ij_cp1_rm1 < EPS5)) {
-					rm2 = ((row < 2) ? 0 : 2) * hdr.nx;
+					rm2 = ((row < 2) ? 0 : 2) * hdr.n_columns;
 					xqe = (fluxn_a[ij-rm1] + fluxn_a[ij+cp1-rm1] + fluxn_a[ij-rm2] + fluxn_a[ij+cp1-rm2]) * 0.25;
 					advy += - r0[row] * (fluxm_a[ij-rm1] * xqe / dpa_ij_rm1);
 				}
@@ -4701,7 +4669,7 @@ void moment_sp_N(struct nestContainer *nest, int lev) {
 	double dqa_ij, dqa_ij_rp1, dqa_ij_rm1, dqa_ij_cm1, dqa_ij_cp1;
 	double dt, manning, *htotal_a, *htotal_d, *bat, *etad, *fluxm_a, *fluxn_a, *fluxm_d, *fluxn_d, *vey;
 	double *r0, *r2n, *r3n, *r4n, r2n_r;
-	struct grd_header hdr;
+	struct GMT_GRID_HEADER hdr;
 	double bat__ij;
 	double htotal_d__ij;
 	double htotal_d__ij_rp1;
@@ -4719,7 +4687,7 @@ void moment_sp_N(struct nestContainer *nest, int lev) {
 	r0       = nest->r0[lev];              r2n      = nest->r2n[lev];
 	r3n      = nest->r3n[lev];             r4n      = nest->r4n[lev];
 
-	row_start = nest->first;		row_end = hdr.ny - 1;
+	row_start = nest->first;		row_end = hdr.n_rows - 1;
 	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
 
 	memset(fluxn_d, 0, hdr.nm * sizeof(double));
@@ -4743,7 +4711,7 @@ void moment_sp_N_slice(int lev, int row_start, int row_end, struct nestContainer
 	double htotal_a__ij_rp1, htotal_d__ij_rp1;
 	double etad__ij, etad__ij_rp1;
 	double fluxn_a__ij;
-	struct grd_header hdr;
+	struct GMT_GRID_HEADER hdr;
 
 	hdr      = nest->hdr[lev];             vey      = nest->vey[lev];
 	dt       = nest->dt[lev];              manning  = nest->manning[lev];
@@ -4758,13 +4726,13 @@ void moment_sp_N_slice(int lev, int row_start, int row_end, struct nestContainer
 #endif
 
 	for (row = row_start; row < row_end; row++) {		/* - main computation cycle fluxn_d */
-		rp1 = hdr.nx;
-		rp2 = (row < hdr.ny - 2) ? 2*hdr.nx : hdr.nx;
-		rm1 = (row == 0) ? 0 : hdr.nx;
+		rp1 = hdr.n_columns;
+		rp2 = (row < hdr.n_rows - 2) ? 2*hdr.n_columns : hdr.n_columns;
+		rm1 = (row == 0) ? 0 : hdr.n_columns;
 		r2n_r = r2n[row];
-		ij = row * hdr.nx - 1;
-		for (col = 0; col < hdr.nx - nest->last; col++) {
-			cp1 = (col < hdr.nx-1) ? 1 : 0;
+		ij = row * hdr.n_columns - 1;
+		for (col = 0; col < hdr.n_columns - nest->last; col++) {
+			cp1 = (col < hdr.n_columns-1) ? 1 : 0;
 			cm1 = (col == 0) ? 0 : 1;
 			ij++;
 
@@ -4835,7 +4803,7 @@ void moment_sp_N_slice(int lev, int row_start, int row_end, struct nestContainer
 				xq -= r4n[row] * 2 * xpp;
 
 			/* - lateral buffer >> linear */
-			if (col < nest->jupe || col > (hdr.nx - nest->jupe - 1) || row < nest->jupe || row > (hdr.ny - nest->jupe - 1))
+			if (col < nest->jupe || col > (hdr.n_columns - nest->jupe - 1) || row < nest->jupe || row > (hdr.n_rows - nest->jupe - 1))
 				goto L200;
 			/* - total water depth is smaller than EPS3 >> linear */
 			if (dqa_ij < EPS3)
@@ -4915,15 +4883,15 @@ void interp_edges(void *API, struct nestContainer *nest, double *flux_L1, double
 	if (what[0] == 'N') {			/* Only FLUXN uses this branch */
 		n = (nest->LRcol[lev] - nest->LLcol[lev] + 1);
 		/* SOUTH boundary */
-		s = nest->hdr[lev].y_inc / nest->hdr[lev-1].y_inc;
+		s = nest->hdr[lev].inc[GMT_Y] / nest->hdr[lev-1].inc[GMT_Y];
 		for (i = 0, col = nest->LLcol[lev]; col <= nest->LRcol[lev]; col++, i++) {
 			t1 = flux_L1[ij_grd(col, nest->LLrow[lev], nest->hdr[lev-1])];
 			//t2 = flux_L1[ij_grd(col, nest->LLrow[lev]+1, nest->hdr[lev-1])];
 			nest->edge_row_Ptmp[lev][i] = t1;
 		}
-		intp_lin(API, nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].nx,
+		intp_lin(API, nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].n_columns,
 			nest->edge_row[lev], nest->edge_rowTmp[lev]);
-		for (col = 0; col < nest->hdr[lev].nx; col++) {		/* Put interp val in nested grid */
+		for (col = 0; col < nest->hdr[lev].n_columns; col++) {		/* Put interp val in nested grid */
 			if (nest->bat[lev][ij_grd(col, 0, nest->hdr[lev])] + nest->etaa[lev][ij_grd(col, 0, nest->hdr[lev])] > EPS5)
 				flux_L2[ij_grd(col, 0, nest->hdr[lev])] = nest->edge_rowTmp[lev][col];
 			else
@@ -4936,29 +4904,29 @@ void interp_edges(void *API, struct nestContainer *nest, double *flux_L1, double
 			//t2 = flux_L1[ij_grd(col, nest->ULrow[lev],   nest->hdr[lev-1])];
 			nest->edge_row_Ptmp[lev][i] = t1;
 		}
-		intp_lin(API, nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].nx,
+		intp_lin(API, nest->edge_row_P[lev], nest->edge_row_Ptmp[lev], n, nest->hdr[lev].n_columns,
 			nest->edge_row[lev], nest->edge_rowTmp[lev]);
-		for (col = 0; col < nest->hdr[lev].nx; col++) {
-			if (nest->bat[lev][ij_grd(col, nest->hdr[lev].ny-1, nest->hdr[lev])] +
-			    nest->etaa[lev][ij_grd(col, nest->hdr[lev].ny-1, nest->hdr[lev])] > EPS5)
-				flux_L2[ij_grd(col, nest->hdr[lev].ny-1, nest->hdr[lev])] = nest->edge_rowTmp[lev][col];
+		for (col = 0; col < nest->hdr[lev].n_columns; col++) {
+			if (nest->bat[lev][ij_grd(col, nest->hdr[lev].n_rows-1, nest->hdr[lev])] +
+			    nest->etaa[lev][ij_grd(col, nest->hdr[lev].n_rows-1, nest->hdr[lev])] > EPS5)
+				flux_L2[ij_grd(col, nest->hdr[lev].n_rows-1, nest->hdr[lev])] = nest->edge_rowTmp[lev][col];
 			else
-				flux_L2[ij_grd(col,nest->hdr[lev].ny-1,nest->hdr[lev])] = 0;
+				flux_L2[ij_grd(col,nest->hdr[lev].n_rows-1,nest->hdr[lev])] = 0;
 		}
 	}
 	else {							/* Only FLUXM uses this branch */
-		//grx = NORMAL_GRAV * nest->dt[lev] / nest->hdr[lev].x_inc;
+		//grx = NORMAL_GRAV * nest->dt[lev] / nest->hdr[lev].inc[GMT_X];
 		n = (nest->ULrow[lev] - nest->LLrow[lev] + 1);
 		/* WEST (left) boundary. */
-		s = nest->hdr[lev].x_inc / nest->hdr[lev-1].x_inc;
+		s = nest->hdr[lev].inc[GMT_X] / nest->hdr[lev-1].inc[GMT_X];
 		for (i = 0, row = nest->LLrow[lev]; row <= nest->ULrow[lev]; row++, i++) {
 			t1 = flux_L1[ij_grd(nest->LLcol[lev],   row, nest->hdr[lev-1])];
 			//t2 = flux_L1[ij_grd(nest->LLcol[lev]+1, row, nest->hdr[lev-1])];
 			nest->edge_col_Ptmp[lev][i] = t1;
 		}
-		intp_lin(API, nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].ny,
+		intp_lin(API, nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].n_rows,
 			nest->edge_col[lev], nest->edge_colTmp[lev]);
-		for (row = 0; row < nest->hdr[lev].ny; row++) {		/* Put interp val in nested grid */
+		for (row = 0; row < nest->hdr[lev].n_rows; row++) {		/* Put interp val in nested grid */
 			if (nest->bat[lev][ij_grd(0, row, nest->hdr[lev])] + nest->etaa[lev][ij_grd(0, row, nest->hdr[lev])] > EPS5)
 				flux_L2[ij_grd(0,row,nest->hdr[lev])] = nest->edge_colTmp[lev][row];
 			else
@@ -4988,14 +4956,14 @@ void interp_edges(void *API, struct nestContainer *nest, double *flux_L1, double
 		}
 #endif
 
-		intp_lin(API, nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].ny,
+		intp_lin(API, nest->edge_col_P[lev], nest->edge_col_Ptmp[lev], n, nest->hdr[lev].n_rows,
 			nest->edge_col[lev], nest->edge_colTmp[lev]);
-		for (row = 0; row < nest->hdr[lev].ny; row++) {
-			if (nest->bat[lev][ij_grd(nest->hdr[lev].nx-1,  row, nest->hdr[lev])] +
-			    nest->etaa[lev][ij_grd(nest->hdr[lev].nx-1, row, nest->hdr[lev])] > EPS5)
-				flux_L2[ij_grd(nest->hdr[lev].nx-1, row, nest->hdr[lev])] = nest->edge_colTmp[lev][row];
+		for (row = 0; row < nest->hdr[lev].n_rows; row++) {
+			if (nest->bat[lev][ij_grd(nest->hdr[lev].n_columns-1,  row, nest->hdr[lev])] +
+			    nest->etaa[lev][ij_grd(nest->hdr[lev].n_columns-1, row, nest->hdr[lev])] > EPS5)
+				flux_L2[ij_grd(nest->hdr[lev].n_columns-1, row, nest->hdr[lev])] = nest->edge_colTmp[lev][row];
 			else
-				flux_L2[ij_grd(nest->hdr[lev].nx-1, row, nest->hdr[lev])] = 0;
+				flux_L2[ij_grd(nest->hdr[lev].n_columns-1, row, nest->hdr[lev])] = 0;
 		}
 	}
 }
@@ -5082,7 +5050,7 @@ void upscale(struct nestContainer *nest, double *out, int lev, int i_tsr) {
 	inc = nest->incRatio[lev];	/* Grid spatial ratio between Parent and doughter */
 	bat_P = nest->bat[lev-1];	/* Parent bathymetry */
 
-	nm = nest->hdr[lev].nx * nest->hdr[lev].ny;
+	nm = nest->hdr[lev].n_columns * nest->hdr[lev].n_rows;
 	for (ij = 0; ij < nm; ij++)
 		if (nest->bat[lev][ij] < 0) nest->etad[lev][ij] += nest->bat[lev][ij];
 
@@ -5091,17 +5059,17 @@ void upscale(struct nestContainer *nest, double *out, int lev, int i_tsr) {
 	half = irint(floor(nest->incRatio[lev] * nest->incRatio[lev] * 2.0 / 3.0));
 
 	rim = 1 * inc;
-	for (row = 0+rim, prow = 0, row_P = nest->LLrow[lev]+1; row < nest->hdr[lev].ny-rim; row_P++, prow++, row += inc) {
+	for (row = 0+rim, prow = 0, row_P = nest->LLrow[lev]+1; row < nest->hdr[lev].n_rows-rim; row_P++, prow++, row += inc) {
 		ij = ij_grd(nest->LLcol[lev] + 1,  nest->LLrow[lev] + 1 + prow,  nest->hdr[lev-1]);
-		for (col = 0+rim, col_P = nest->LLcol[lev]+1; col < nest->hdr[lev].nx-rim; col_P++, col += inc) {
-			k = col + row * nest->hdr[lev].nx;       /* Index of window's LL corner */
+		for (col = 0+rim, col_P = nest->LLcol[lev]+1; col < nest->hdr[lev].n_columns-rim; col_P++, col += inc) {
+			k = col + row * nest->hdr[lev].n_columns;       /* Index of window's LL corner */
 			soma = 0;
 			count = 0;
 			for (wrow = 0; wrow < inc; wrow++) {     /* Loop rows inside window */
-				p = &nest->etad[lev][k + wrow * nest->hdr[lev].nx];
-				if (do_half) pa = &nest->etaa[lev][k + wrow * nest->hdr[lev].nx];
+				p = &nest->etad[lev][k + wrow * nest->hdr[lev].n_columns];
+				if (do_half) pa = &nest->etaa[lev][k + wrow * nest->hdr[lev].n_columns];
 				for (wcol = 0; wcol < inc; wcol++) {
-					if (nest->bat[lev][k + wcol + wrow * nest->hdr[lev].nx] + *p > EPS5) {
+					if (nest->bat[lev][k + wcol + wrow * nest->hdr[lev].n_columns] + *p > EPS5) {
 						if (do_half)
 							soma += (*p + *pa) * 0.5;
 						else
@@ -5193,13 +5161,13 @@ void replicate(struct nestContainer *nest, int lev) {
 	/* Replicate Left and Bottom boundaries */
 	int	col, row;
 
-	for (row = 0; row < nest->hdr[lev].ny; row++) {
+	for (row = 0; row < nest->hdr[lev].n_rows; row++) {
 		if (nest->bat[lev][ij_grd(0, row, nest->hdr[lev])] < 0) continue;
 		nest->etad[lev][ij_grd(0, row, nest->hdr[lev])] =
 			nest->etad[lev][ij_grd(1, row, nest->hdr[lev])];
 	}
 
-	for (col = 0; col < nest->hdr[lev].nx; col++) {
+	for (col = 0; col < nest->hdr[lev].n_columns; col++) {
 		if (nest->bat[lev][ij_grd(col, 0, nest->hdr[lev])] < 0) continue;
 		nest->etad[lev][ij_grd(col, 0, nest->hdr[lev])] =
 			nest->etad[lev][ij_grd(col, 1, nest->hdr[lev])];
@@ -5254,11 +5222,11 @@ void resamplegrid(struct nestContainer *nest, int nNg) {
 	size_t ij;
 	double xx, yy;
 	for (k = 1; k <= nNg; k++) {
-		for (row = ij = 0; row < nest->hdr[k].ny; row++) {
-			yy = nest->hdr[k].y_min + row * nest->hdr[k].y_inc;
-			for (col = 0; col < nest->hdr[k].nx; col++, ij++) {
+		for (row = ij = 0; row < nest->hdr[k].n_rows; row++) {
+			yy = nest->hdr[k].wesn[YLO] + row * nest->hdr[k].inc[GMT_Y];
+			for (col = 0; col < nest->hdr[k].n_columns; col++, ij++) {
 				if (nest->bat[k][ij] < 0) continue;
-				xx = nest->hdr[k].x_min + col * nest->hdr[k].x_inc;
+				xx = nest->hdr[k].wesn[XLO] + col * nest->hdr[k].inc[GMT_X];
 				nest->etaa[k][ij]    = GMT_get_bcr_z(nest->etaa[k-1],    nest->bat[k-1], nest->hdr[k-1], xx, yy);
 				nest->etad[k][ij]    = GMT_get_bcr_z(nest->etad[k-1],    nest->bat[k-1], nest->hdr[k-1], xx, yy);
 				nest->fluxm_a[k][ij] = GMT_get_bcr_z(nest->fluxm_a[k-1], nest->bat[k-1], nest->hdr[k-1], xx, yy);
@@ -5287,11 +5255,11 @@ void mass_conservation(struct nestContainer *nest, int isGeog, int m) {
 	HANDLE ThreadList[64];  /* Handles to the worker threads */
 	ThreadArg Arg_List[64], *Arg_p;
 
-	n_rows_block = (int)ceil(nest->hdr[m].ny / nest->n_threads);
+	n_rows_block = (int)ceil(nest->hdr[m].n_rows / nest->n_threads);
 	if (isGeog) {
 		for (i = 0; i < nest->n_threads; i++) {
 			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].ny);
+			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows);
 			Arg_p           = &Arg_List[i];
 			Arg_p->nest     = nest;
 			Arg_p->lev      = m;
@@ -5303,7 +5271,7 @@ void mass_conservation(struct nestContainer *nest, int isGeog, int m) {
 	else {
 		for (i = 0; i < nest->n_threads; i++) {
 			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].ny);
+			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows);
 			Arg_p           = &Arg_List[i];
 			Arg_p->nest     = nest;
 			Arg_p->lev      = m;
@@ -5376,10 +5344,10 @@ void moment_conservation(struct nestContainer *nest, int isGeog, int m) {
 
 	if (isGeog) {
 		memset(nest->fluxm_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].ny - last) / nest->n_threads);
+		n_rows_block = (int)ceil((nest->hdr[m].n_rows - last) / nest->n_threads);
 		for (i = 0; i < nest->n_threads; i++) {
 			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].ny - last);
+			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - last);
 			Arg_p           = &Arg_List[i];
 			Arg_p->nest     = nest;
 			Arg_p->iThread  = i;
@@ -5395,10 +5363,10 @@ void moment_conservation(struct nestContainer *nest, int isGeog, int m) {
 
 		/* Now the N component */
 		memset(nest->fluxn_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].ny - 1) / nest->n_threads);
+		n_rows_block = (int)ceil((nest->hdr[m].n_rows - 1) / nest->n_threads);
 		for (i = 0; i < nest->n_threads; i++) {
 			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].ny - 1);
+			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - 1);
 			Arg_p           = &Arg_List[i];
 			Arg_p->nest     = nest;
 			Arg_p->iThread  = i;
@@ -5414,10 +5382,10 @@ void moment_conservation(struct nestContainer *nest, int isGeog, int m) {
 	}
 	else {
 		memset(nest->fluxm_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].ny - last) / nest->n_threads);
+		n_rows_block = (int)ceil((nest->hdr[m].n_rows - last) / nest->n_threads);
 		for (i = 0; i < nest->n_threads; i++) {
 			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].ny - last);
+			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - last);
 			Arg_p           = &Arg_List[i];
 			Arg_p->nest     = nest;
 			Arg_p->iThread  = i;
@@ -5433,10 +5401,10 @@ void moment_conservation(struct nestContainer *nest, int isGeog, int m) {
 
 		/* Now the N component */
 		memset(nest->fluxn_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].ny - 1) / nest->n_threads);
+		n_rows_block = (int)ceil((nest->hdr[m].n_rows - 1) / nest->n_threads);
 		for (i = 0; i < nest->n_threads; i++) {
 			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].ny - 1);
+			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - 1);
 			Arg_p           = &Arg_List[i];
 			Arg_p->nest     = nest;
 			Arg_p->iThread  = i;
@@ -5552,7 +5520,7 @@ unsigned __stdcall MT_mass(void *Arg_p) {
 #endif
 
 /* ---------------------------------------------------------------------------------------- */
-void kaba_source(struct grd_header hdr, double x_inc, double y_inc, double x_min, double x_max,
+void kaba_source(struct GMT_GRID_HEADER hdr, double x_inc, double y_inc, double x_min, double x_max,
 	double y_min, double y_max, int type, double *z) {
 	/* Create a prismatic source (a Kaba) to use as source for the Green's functions method.
 	   when type = 1, all variables represent what their names say
@@ -5561,20 +5529,20 @@ void kaba_source(struct grd_header hdr, double x_inc, double y_inc, double x_min
 	int row, col, col1, col2, row1, row2;
 
 	if (type == 1) {		/* We will select the closest nodes that are INSIDE the -R region on L & B sides and ON R & T sides */
-		col1 = irint((x_min - hdr.x_min) / x_inc) + 1;		/* Leftmost column not included*/
-		col2 = irint((x_max - hdr.x_min) / x_inc);
-		row1 = irint((y_min - hdr.y_min) / y_inc) + 1;		/* Bottomost row not included */
-		row2 = irint((y_max - hdr.y_min) / y_inc);
+		col1 = irint((x_min - hdr.wesn[XLO]) / x_inc) + 1;		/* Leftmost column not included*/
+		col2 = irint((x_max - hdr.wesn[XLO]) / x_inc);
+		row1 = irint((y_min - hdr.wesn[YLO]) / y_inc) + 1;		/* Bottomost row not included */
+		row2 = irint((y_max - hdr.wesn[YLO]) / y_inc);
 	}
 	else {
 		int nx2 = (int)y_min;
 		int ny2 = (int)y_max;
-		col1 = irint((x_min - hdr.x_min) / x_inc) - nx2;
+		col1 = irint((x_min - hdr.wesn[XLO]) / x_inc) - nx2;
 		col2 = col1 + 2*nx2;
-		row1 = irint((y_min - hdr.y_min) / y_inc) - ny2;
+		row1 = irint((y_min - hdr.wesn[YLO]) / y_inc) - ny2;
 		row2 = row1 + 2*ny2;
 	}
-	memset(z, 0, (size_t)hdr.nx * (size_t)hdr.ny * sizeof(double));	/* Need because this function may be called recursivly */
+	memset(z, 0, (size_t)hdr.n_columns * (size_t)hdr.n_rows * sizeof(double));	/* Need because this function may be called recursivly */
 	for (row = row1; row <= row2; row++) {
 		for (col = col1; col <= col2; col++) {
 			z[ij_grd(col,row,hdr)] = 1;
@@ -5583,7 +5551,7 @@ void kaba_source(struct grd_header hdr, double x_inc, double y_inc, double x_min
 }
 
 /* ---------------------------------------------------------------------------------------- */
-void deform(struct grd_header hdr, double x_inc, double y_inc, int isGeog, double fault_length,
+void deform(struct GMT_GRID_HEADER hdr, double x_inc, double y_inc, int isGeog, double fault_length,
 	double fault_width, double th, double dip, double rake, double d, double top_depth,
 	double xl, double yl, double *z) {
 
@@ -5611,10 +5579,10 @@ void deform(struct grd_header hdr, double x_inc, double y_inc, int isGeog, doubl
 	dd =  d * sin(D2R * rake);
 	sn_tmp = sin(D2R*th);	cs_tmp = cos(D2R*th);	tg_tmp = tan(dip);
 
-	for (i = 0; i < hdr.ny; i++) {
-		yy = hdr.y_min + y_inc * i;
-		for (j = 0; j < hdr.nx; j++) {
-			xx = hdr.x_min + x_inc * j;
+	for (i = 0; i < hdr.n_rows; i++) {
+		yy = hdr.wesn[YLO] + y_inc * i;
+		for (j = 0; j < hdr.n_columns; j++) {
+			xx = hdr.wesn[XLO] + x_inc * j;
 			if (isGeog)
 				tm(xx, yy, &rx, &ry, lon0, t_c1, t_c2, t_c3, t_c4, t_e2, t_M0);	/* Remember that (xl,yl) is already the proj origin */
 			else {
@@ -5754,7 +5722,7 @@ void tm(double lon, double lat, double *x, double *y, double central_meridian, d
 }
 
 /* ---------------------------------------------------------------------------------------- */
-double GMT_get_bcr_z(double *grd, double *bat, struct grd_header hdr, double xx, double yy) {
+double GMT_get_bcr_z(double *grd, double *bat, struct GMT_GRID_HEADER hdr, double xx, double yy) {
 	/* Given xx, yy in user's grid file (in non-normalized units)
 	   this routine returns the desired bicubic interpolated value at xx, yy
 	   ADAPTED from GMT's routine with the same name.
@@ -5780,7 +5748,7 @@ double GMT_get_bcr_z(double *grd, double *bat, struct grd_header hdr, double xx,
 			retval += grd[node] * w;
 			wsum += w;
 		}
-		ij += hdr.nx;
+		ij += hdr.n_columns;
 	}
 	if (wsum > 0.0)
 		retval /= wsum;
@@ -5791,7 +5759,7 @@ double GMT_get_bcr_z(double *grd, double *bat, struct grd_header hdr, double xx,
 }
 
 /* ---------------------------------------------------------------------------------------- */
-unsigned int gmt_bcr_prep (struct grd_header hdr, double xx, double yy, double wx[], double wy[]) {
+unsigned int gmt_bcr_prep (struct GMT_GRID_HEADER hdr, double xx, double yy, double wx[], double wy[]) {
 	int col, row;
 	unsigned int ij;
 	double x, y, wp, wq, w, xi, yj;
@@ -5799,8 +5767,8 @@ unsigned int gmt_bcr_prep (struct grd_header hdr, double xx, double yy, double w
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
 	   Note that the y axis points down from the upper left corner of the grid. */
 
-	x = (xx - hdr.x_min) / hdr.x_inc;
-	y = (yy - hdr.y_min) / hdr.y_inc;
+	x = (xx - hdr.wesn[XLO]) / hdr.inc[GMT_X];
+	y = (yy - hdr.wesn[YLO]) / hdr.inc[GMT_Y];
 
 	/* Find the indices (i,j) of the node to the upper left of that.
    	   Because of padding, i and j can be on the edge. */
