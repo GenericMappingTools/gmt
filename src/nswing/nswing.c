@@ -53,16 +53,8 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-RVf"
 
-//#define PARALLEL
-
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
-#	define DO_MULTI_THREAD	/* ISTO TEM DE SER AUTOMATIZADO, OU VIA COMPILA */
-#else
+#if !(defined(WIN32) || defined(_WIN32) || defined(_WIN64))
 #	define strtok_s strtok_r
-#endif
-
-#ifdef PARALLEL
-#	undef DO_MULTI_THREAD
 #endif
 
 /* This file is now built exclusively as a GMT supplement (module GMT_nswing).
@@ -93,7 +85,7 @@ union {uint64_t i; double d;} loc_nan = {0x7ff8000000000000};
 #define err_trap(api, status) if (status) {GMT_Report(api, GMT_MSG_ERROR, "NSWING: error at line %d: %s\n", __LINE__, nc_strerror(status));}
 
 
-#if HAVE_OPENMP
+#ifdef _OPENMP
 #include <omp.h>
 #endif
 
@@ -128,8 +120,6 @@ static double EPS4 = EPS4_;		/* Kinda trick to be able to change EPS4 via a comm
 #define ijs(i,j,n) ((i) + (j)*n)
 #define ijc(i,j) ((i) + (j)*n_ptmar)
 #define ij_grd(col,row,hdr) ((col) + (row)*hdr.n_columns)
-
-typedef void (*PFV) ();		/* PFV declares a pointer to a function returning void */
 
 struct tracers {        /* For tracers (oranges) */
 	double *x;          /* x coordinate */
@@ -188,14 +178,6 @@ struct nestContainer {         /* Container for the nestings */
 	struct GMT_GRID_HEADER hdr[10];
 };
 
-/* Argument struct for threading */
-typedef struct {
-	struct nestContainer *nest;   /* Pointer to a nestContainer struct */
-	int iThread;                  /* Thread index */
-	int lev;                      /* Level of nested grid */
-	int row_start, row_end;       /* Start and end rows for the BY slices in PARALLEL mode */
-} ThreadArg;
-
 void no_sys_mem(void *API, char *where, unsigned int n);
 int  count_col(char *line);
 int  read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int *lcum_p, char *names[]);
@@ -227,14 +209,8 @@ void upscale_(struct nestContainer *nest, double *out, int lev, int i_tsr);
 void replicate(struct nestContainer *nest, int lev);
 void moment_M(struct nestContainer *nest, int lev);
 void moment_N(struct nestContainer *nest, int lev);
-void moment_M_slice(int lev, int row_start, int row_end, struct nestContainer *nest);
-void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *nest);
 void moment_sp_M(struct nestContainer *nest, int lev);
 void moment_sp_N(struct nestContainer *nest, int lev);
-void moment_sp_M_slice(int lev, int row_start, int row_end, struct nestContainer *nest);
-void moment_sp_N_slice(int lev, int row_start, int row_end, struct nestContainer *nest);
-void mass_sp_slice(struct nestContainer *nest, int lev, int row_start, int row_end);
-void mass_slice(struct nestContainer *nest, int lev, int row_start, int row_end);
 void free_arrays(struct nestContainer *nest, int isGeog, int lev);
 int  check_paternity(void *API, struct nestContainer *nest);
 int  check_binning(double x0P, double x0D, double dxP, double dxD, double tol, double *suggest);
@@ -275,28 +251,7 @@ int write_greens_nc(void *API, struct nestContainer *nest, char *fname, float *w
                     unsigned int n_times, int lev);
 void err_trap_(void *API, int status);
 
-#if (defined(WIN32) || defined(_WIN32) || defined(_WIN64)) && (defined(DO_MULTI_THREAD) || defined(PARALLEL))
-/* Prototypes for threading related functions */
-unsigned __stdcall MT_cart(void *Arg_p);
-unsigned __stdcall MT_sp(void *Arg_p);
-unsigned __stdcall MT_moment_sp_M_slice(void *Arg_p);
-unsigned __stdcall MT_moment_sp_N_slice(void *Arg_p);
-unsigned __stdcall MT_moment_M_slice(void *Arg_p);
-unsigned __stdcall MT_moment_N_slice(void *Arg_p);
-unsigned __stdcall MT_mass_sp(void *Arg_p);
-unsigned __stdcall MT_mass(void *Arg_p);
-#endif
 int GetLocalNThread(void);
-
-/* Function pointers to M & N moment components */
-PFV call_moment[2];
-PFV call_moment_sp[2];
-PFV call_moment_sp_M_slice;
-PFV call_moment_sp_N_slice;
-PFV call_moment_M_slice;
-PFV call_moment_N_slice;
-PFV call_mass;
-PFV call_mass_sp;
 
 /* ------------------------------------------------------------------------------ */
 /* Read a grid through the GMT API. Works for both on-disk files and in-memory
@@ -1136,26 +1091,6 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	FILE   *fp = NULL, *fp_oranges = NULL;
 	clock_t tic;
 
-	call_moment[0] = (PFV)moment_M;
-	call_moment[1] = (PFV)moment_N;
-	call_moment_sp[0] = (PFV)moment_sp_M;
-	call_moment_sp[1] = (PFV)moment_sp_N;
-
-#ifdef PARALLEL
-	call_moment_sp_M_slice = (PFV)moment_sp_M_slice;
-	call_moment_sp_N_slice = (PFV)moment_sp_N_slice;
-	call_mass_sp = (PFV)mass_sp_slice;
-	call_mass = (PFV)mass_slice;
-#endif
-
-#ifdef DO_MULTI_THREAD
-	if ((k = GetLocalNThread()) == 1) {
-		GMT_Report(API, GMT_MSG_ERROR, "NSWING: This version of the program is build for multi-threading but "
-		           "this machine has only one core. Don't know what will happen here.\n"); 
-	}
-#endif
-
-
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -1178,6 +1113,10 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	/*---------------------------- Parse the command-line arguments ----------------------------*/
 	Ctrl = New_Ctrl(GMT);	/* Allocate the control structure */
 	if ((error = parse(GMT, Ctrl, &nest, options)) != 0) Return(error);
+
+#ifdef _OPENMP
+	if (nest.n_threads > 0) omp_set_num_threads(nest.n_threads);	/* Honor -x<n> [Default is all cores] */
+#endif
 
 	/* Unpack the parsed values into the local variables used by the main code below */
 	writeLevel = Ctrl->writeLevel;
@@ -1788,8 +1727,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			GMT_Report(API, GMT_MSG_INFORMATION, "Computing a grid of prisms with size %d (rows) x %d (cols)\n", KbGridRows, KbGridCols);
 		if (EPS4 != EPS4_)
 			GMT_Report(API, GMT_MSG_INFORMATION, "Using a modified EPS4 const of %g\n", EPS4);
-#ifdef PARALLEL
-		GMT_Report(API, GMT_MSG_INFORMATION, "\nUsing %d cores\n", nest.n_threads);
+#ifdef _OPENMP
+		GMT_Report(API, GMT_MSG_INFORMATION, "\nUsing %d OpenMP threads\n", omp_get_max_threads());
 #endif
 #ifdef LIMIT_DISCHARGE
 		GMT_Report(API, GMT_MSG_INFORMATION, "\nUsing DISCHARGE limit to minimize sources of instability\n");
@@ -3707,13 +3646,8 @@ void err_trap_(void *API, int status) {
  *
  *		Updates only etad and htotal_d
  * -------------------------------------------------------------------- */
-#ifdef PARALLEL
-void mass_slice(struct nestContainer *nest, int lev, int row_start, int row_end) {
-#else
 void mass(struct nestContainer *nest, int lev) {
 	int row_start, row_end;
-#endif
-
 	int row, col;
 	int cm1, rm1;			/* previous column (cm1 = col -1) and row (rm1 = row - 1) */
 	unsigned int ij;
@@ -3727,10 +3661,11 @@ void mass(struct nestContainer *nest, int lev) {
 	dtdx = nest->dt[lev] / nest->hdr[lev].inc[GMT_X];
 	dtdy = nest->dt[lev] / nest->hdr[lev].inc[GMT_Y];
 
-#ifndef PARALLEL
 	row_start = 0;		row_end = nest->hdr[lev].n_rows;
-#endif
 
+#ifdef _OPENMP
+#pragma omp parallel for private(col, ij, rm1, cm1, zzz, dd) schedule(dynamic, 8)
+#endif
 	for (row = row_start; row < row_end; row++) {
 		ij = row * nest->hdr[lev].n_columns;
 		rm1 = (row == 0) ? 0 : nest->hdr[lev].n_columns;
@@ -4008,34 +3943,14 @@ void moment_M(struct nestContainer *nest, int lev) {
 	row_start = 0;		row_end = hdr.n_rows - nest->last;
 	memset(fluxm_d, 0, hdr.nm * sizeof(double));
 
-#ifdef PARALLEL
-}		/* Than the moment_M() fun ends here */
-void moment_M_slice(int lev, int row_start, int row_end, struct nestContainer *nest) {
-	unsigned int ij;
-	int row, col;
-	int valid_vel;
-	int cm1, rm1;			/* previous column (cm1 = col - 1) and row (rm1 = row - 1) */
-	int cp1, rp1;			/* next column (cp1 = col + 1) and row (rp1 = row + 1) */
-	int rm2, cp2;
-	double xp, xqe, xqq, ff = 0, dd, df, f_limit;
-	double advx, dtdx, dtdy, advy, rlat;
-	double dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1;
-	double dt, manning, *bat, *htotal_a, *htotal_d, *etad, *fluxm_a, *fluxm_d, *fluxn_a, *fluxn_d, *vex, *r4m;
-	struct GMT_GRID_HEADER hdr;
-
-	hdr      = nest->hdr[lev];             vex      = nest->vex[lev];
-	dt       = nest->dt[lev];              manning  = nest->manning[lev];
-	bat      = nest->bat[lev];             etad     = nest->etad[lev];
-	htotal_a = nest->htotal_a[lev];        htotal_d = nest->htotal_d[lev];
-	fluxm_a  = nest->fluxm_a[lev];         fluxm_d  = nest->fluxm_d[lev];
-	fluxn_a  = nest->fluxn_a[lev];         fluxn_d  = nest->fluxn_d[lev];
-	r4m      = nest->r4m[lev];
-#endif
-
 	dtdx = dt / hdr.inc[GMT_X];
 	dtdy = dt / hdr.inc[GMT_Y];
 	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
 
+#ifdef _OPENMP
+#pragma omp parallel for private(col, ij, valid_vel, cm1, rm1, cp1, rp1, rm2, cp2, xp, xqe, xqq, ff, dd, df, \
+                                 f_limit, advx, advy, dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1) schedule(dynamic, 8)
+#endif
 	for (row = row_start; row < row_end; row++) {	/* main computation cycle fluxm_d */
 		rp1 = (row < hdr.n_rows - 1) ? hdr.n_columns : 0;
 		rm1 = (row == 0) ? 0 : hdr.n_columns;
@@ -4051,7 +3966,7 @@ void moment_M_slice(int lev, int row_start, int row_end, struct nestContainer *n
 
 			/* Looks weird but it's faster than an IF case (branch prediction?) */
 			dpa_ij = (dpa_ij = (htotal_d[ij] + htotal_a[ij] + htotal_d[ij+cp1] + htotal_a[ij+cp1]) * 0.25) > EPS5 ? dpa_ij : 0;
-			xp = 0;
+			xp = 0;	dd = df = 0;	/* dd/df must not carry over from the previous cell (goto L121 paths read them) */
 
 			valid_vel = true;
 			if (htotal_d[ij] > EPS5 && htotal_d[ij+cp1] > EPS5) {		/* case wet-wet */
@@ -4179,14 +4094,8 @@ L121:
 }
 
 /* -------------------------------------------------------------------- */
-#ifndef PARALLEL
 void moment_N(struct nestContainer *nest, int lev) {
 	int row_start, row_end;
-#else
-void moment_N(struct nestContainer *nest, int lev) {}		// UGLY. Just for it to exist
-void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *nest) {
-#endif
-
 	unsigned int ij;
 	int row, col;
 	int valid_vel;
@@ -4207,15 +4116,17 @@ void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *n
 	fluxn_a  = nest->fluxn_a[lev];         fluxn_d  = nest->fluxn_d[lev];
 	r4n      = nest->r4n[lev];
 
-#ifndef PARALLEL
 	row_start = 0;		row_end = hdr.n_rows - 1;
 	memset(fluxn_d, 0, hdr.nm * sizeof(double));	/* fluxn_d, NOT fluxm_d: zeroing fluxm_d here raced with moment_M writing it */
-#endif
 
 	dtdx = dt / hdr.inc[GMT_X];
 	dtdy = dt / hdr.inc[GMT_Y];
 	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
 
+#ifdef _OPENMP
+#pragma omp parallel for private(col, ij, valid_vel, cm1, rm1, cp1, rp1, cm2, rp2, xq, xpe, xpp, ff, dd, df, \
+                                 f_limit, advx, advy, dqa_ij, dqa_ij_rp1, dqa_ij_rm1, dqa_ij_cm1, dqa_ij_cp1) schedule(dynamic, 8)
+#endif
 	for (row = row_start; row < row_end; row++) {	/* main computation cycle fluxn_d */
 		rp1 = hdr.n_columns;
 		rp2 = (row < hdr.n_rows - 2) ? 2*hdr.n_columns : hdr.n_columns;
@@ -4230,7 +4141,7 @@ void moment_N_slice(int lev, int row_start, int row_end, struct nestContainer *n
 
 			/* Looks weird but it's faster than an IF case (branch prediction?) */
 			dqa_ij = (dqa_ij = (htotal_d[ij] + htotal_a[ij] + htotal_d[ij+rp1] + htotal_a[ij+rp1]) * 0.25) > EPS5 ? dqa_ij : 0;
-			xq = 0;
+			xq = 0;	dd = df = 0;	/* dd/df must not carry over from the previous cell (goto L201 paths read them) */
 
 			/* moving boundary - Imamura algorithm following cho 2009 */
 			valid_vel = true;
@@ -4423,16 +4334,9 @@ void mass_sp(struct nestContainer *nest, int lev) {
 
 	row_start = 0;		row_end = nest->hdr[lev].n_rows;
 
-#ifdef PARALLEL
-}		/* Than the mass_sp() fun end here */
-void mass_sp_slice(struct nestContainer *nest, int lev, int row_start, int row_end) {
-	unsigned int ij;
-	int row, col;
-	int cm1, rm1, rowm1;		/* previous column (cm1 = col -1) and row (rm1 = row - 1) */
-	double etan, dd;
-	double r2m_r, r2n_r, r1n_r, r1n_r1;
+#ifdef _OPENMP
+#pragma omp parallel for private(col, ij, rm1, cm1, rowm1, etan, dd, r2m_r, r2n_r, r1n_r, r1n_r1) schedule(dynamic, 8)
 #endif
-
 	for (row = row_start; row < row_end; row++) {
 		ij = row * nest->hdr[lev].n_columns;
 		rm1 = ((row == 0) ? 0 : 1) * nest->hdr[lev].n_columns;
@@ -4510,39 +4414,11 @@ void moment_sp_M(struct nestContainer *nest, int lev) {
 
 	memset(fluxm_d, 0, hdr.nm * sizeof(double));
 
-#ifdef PARALLEL
-}		/* Than the moment_sp_M() fun end here */
-void moment_sp_M_slice(int lev, int row_start, int row_end, struct nestContainer *nest) {
-	unsigned int ij;
-	int valid_vel;
-	int row, col;
-	int cm1, rm1;			/* previous column (cm1 = col - 1) and row (rm1 = row - 1) */
-	int cp1, rp1;			/* next column (cp1 = col + 1) and row (rp1 = row + 1) */
-	int rm2, cp2;
-	double ff = 0;
-	double dd, df, xp, xqe, xqq, advx, advy, f_limit;
-	double dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1;
-	double dt, manning, *htotal_a, *htotal_d, *bat, *etad, *fluxm_a, *fluxn_a, *fluxm_d, *fluxn_d, *vex;
-	double *r0, *r2m, *r3m, *r4m, r2m_r;
-	double bat__ij;
-	double htotal_d__ij;
-	double htotal_d__ij_cp1;
-	double etad__ij, etad__ij_cp1;
-	double fluxm_a__ij;
-	struct GMT_GRID_HEADER hdr;
-
-	hdr      = nest->hdr[lev];             vex      = nest->vex[lev];
-	dt       = nest->dt[lev];              manning  = nest->manning[lev];
-	bat      = nest->bat[lev];             etad     = nest->etad[lev];
-	htotal_a = nest->htotal_a[lev];        htotal_d = nest->htotal_d[lev];
-	fluxm_a  = nest->fluxm_a[lev];         fluxm_d  = nest->fluxm_d[lev];
-	fluxn_a  = nest->fluxn_a[lev];         fluxn_d  = nest->fluxn_d[lev];
-	r0       = nest->r0[lev];              r2m      = nest->r2m[lev];
-	r3m      = nest->r3m[lev];             r4m      = nest->r4m[lev];
-
-	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
+#ifdef _OPENMP
+#pragma omp parallel for private(col, ij, valid_vel, cm1, rm1, cp1, rp1, rm2, cp2, ff, dd, df, xp, xqe, xqq, \
+                                 advx, advy, f_limit, dpa_ij, dpa_ij_rp1, dpa_ij_rm1, dpa_ij_cm1, dpa_ij_cp1, \
+                                 r2m_r, bat__ij, htotal_d__ij, htotal_d__ij_cp1, etad__ij, etad__ij_cp1, fluxm_a__ij) schedule(dynamic, 8)
 #endif
-
 	for (row = row_start; row < row_end; row++) {		/* - main computation cycle fluxm_d */
 		rp1 = (row < hdr.n_rows - 1) ? hdr.n_columns : 0;
 		rm1 = (row == 0) ? 0 : hdr.n_columns;
@@ -4564,7 +4440,7 @@ void moment_sp_M_slice(int lev, int row_start, int row_end, struct nestContainer
 			etad__ij = etad[ij];
 			etad__ij_cp1 = etad[ij+cp1];
 			fluxm_a__ij = fluxm_a[ij];
-			xp = 0;
+			xp = 0;	dd = df = 0;	/* dd/df must not carry over from the previous cell (goto L121 paths read them) */
 
 			/* Looks weird but it's faster than an IF case (branch prediction?) */
 			dpa_ij = (dpa_ij = (htotal_d__ij + htotal_a[ij] + htotal_d__ij_cp1 + htotal_a[ij+cp1]) * 0.25) > EPS5 ? dpa_ij : 0;
@@ -4719,39 +4595,11 @@ void moment_sp_N(struct nestContainer *nest, int lev) {
 
 	memset(fluxn_d, 0, hdr.nm * sizeof(double));
 
-#ifdef PARALLEL
-}	/* Than the moment_sp_N() fun ends here */
-void moment_sp_N_slice(int lev, int row_start, int row_end, struct nestContainer *nest) {
-	unsigned int ij;
-	int valid_vel;
-	int row, col;
-	int cm1, rm1;			/* previous column (cm1 = col - 1) and row (rm1 = row - 1) */
-	int cp1, rp1;			/* next column (cp1 = col + 1) and row (rp1 = row + 1) */
-	int cm2, rp2;
-	double ff = 0;
-	double dd, df, xq, xpe, xpp, advx, advy, f_limit;
-	double dqa_ij, dqa_ij_rp1, dqa_ij_rm1, dqa_ij_cm1, dqa_ij_cp1;
-	double dt, manning, *htotal_a, *htotal_d, *bat, *etad, *fluxm_a, *fluxn_a, *fluxm_d, *fluxn_d, *vey;
-	double *r0, *r2n, *r3n, *r4n, r2n_r;
-	double bat__ij;
-	double htotal_d__ij;
-	double htotal_a__ij_rp1, htotal_d__ij_rp1;
-	double etad__ij, etad__ij_rp1;
-	double fluxn_a__ij;
-	struct GMT_GRID_HEADER hdr;
-
-	hdr      = nest->hdr[lev];             vey      = nest->vey[lev];
-	dt       = nest->dt[lev];              manning  = nest->manning[lev];
-	bat      = nest->bat[lev];             etad     = nest->etad[lev];
-	htotal_a = nest->htotal_a[lev];        htotal_d = nest->htotal_d[lev];
-	fluxm_a  = nest->fluxm_a[lev];         fluxm_d  = nest->fluxm_d[lev];
-	fluxn_a  = nest->fluxn_a[lev];         fluxn_d  = nest->fluxn_d[lev];
-	r0       = nest->r0[lev];              r2n      = nest->r2n[lev];
-	r3n      = nest->r3n[lev];             r4n      = nest->r4n[lev];
-
-	manning *= dt;		/* Finish the cte part now that we know 'dt': manning * manning * dt * 4.9  */
+#ifdef _OPENMP
+#pragma omp parallel for private(col, ij, valid_vel, cm1, rm1, cp1, rp1, cm2, rp2, ff, dd, df, xq, xpe, xpp, \
+                                 advx, advy, f_limit, dqa_ij, dqa_ij_rp1, dqa_ij_rm1, dqa_ij_cm1, dqa_ij_cp1, \
+                                 r2n_r, bat__ij, htotal_d__ij, htotal_d__ij_rp1, htotal_a__ij_rp1, etad__ij, etad__ij_rp1, fluxn_a__ij) schedule(dynamic, 8)
 #endif
-
 	for (row = row_start; row < row_end; row++) {		/* - main computation cycle fluxn_d */
 		rp1 = hdr.n_columns;
 		rp2 = (row < hdr.n_rows - 2) ? 2*hdr.n_columns : hdr.n_columns;
@@ -4775,7 +4623,7 @@ void moment_sp_N_slice(int lev, int row_start, int row_end, struct nestContainer
 			htotal_a__ij_rp1 = htotal_a[ij+rp1];
 			etad__ij_rp1 = etad[ij+rp1];
 			fluxn_a__ij = fluxn_a[ij];
-			xq = 0;
+			xq = 0;	dd = df = 0;	/* dd/df must not carry over from the previous cell (goto L201 paths read them) */
 
 			/* Looks weird but it's faster than an IF case (branch prediction?) */
 			dqa_ij = (dqa_ij = (htotal_d__ij + htotal_a[ij] + htotal_d__ij_rp1 + htotal_a__ij_rp1) * 0.25) > EPS5 ? dqa_ij : 0;
@@ -5276,275 +5124,44 @@ void edge_communication(void *API, struct nestContainer *nest, int lev, int i_ti
 /* ------------------------------------------------------------------------------ */
 void mass_conservation(struct nestContainer *nest, int isGeog, int m) {
 	/* m is the level of nesting which starts counting at one for FIRST nesting level */
-	int  i, row_start, row_end, n_rows_block;
-
-#ifdef PARALLEL
-	HANDLE ThreadList[64];  /* Handles to the worker threads */
-	ThreadArg Arg_List[64], *Arg_p;
-
-	n_rows_block = (int)ceil(nest->hdr[m].n_rows / nest->n_threads);
-	if (isGeog) {
-		for (i = 0; i < nest->n_threads; i++) {
-			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows);
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->lev      = m;
-			Arg_p->row_start= row_start;
-			Arg_p->row_end  = row_end;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_mass_sp, Arg_p, 0, NULL);
-		}
-	}
-	else {
-		for (i = 0; i < nest->n_threads; i++) {
-			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows);
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->lev      = m;
-			Arg_p->row_start= row_start;
-			Arg_p->row_end  = row_end;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_mass, Arg_p, 0, NULL);
-		}
-	}
-	/* Wait until all threads are ready and close the handles */
-	WaitForMultipleObjects(nest->n_threads, ThreadList, true, INFINITE);
-	for (i = 0; i < nest->n_threads; i++)
-		CloseHandle(ThreadList[i]);
-#else
 	if (isGeog)
 		mass_sp(nest, m);
 	else
 		mass(nest, m);
-#endif
 }
 
 /* ------------------------------------------------------------------------------ */
 void moment_conservation(struct nestContainer *nest, int isGeog, int m) {
 	/* m is the level of nesting which starts counting at one for FIRST nesting level */
-	int i;
-
-#ifdef DO_MULTI_THREAD
-	HANDLE ThreadList[2];  /* Handles to the worker threads */
-	ThreadArg Arg_List[2], *Arg_p;
-
-	if (m > 0)   {nest->jupe = 0;    nest->first = 1;    nest->last = 0;}
-	else         {nest->jupe = 10;   nest->first = 0;    nest->last = 1;}
-	if (nest->do_linear) nest->jupe = 1e6;		/* A tricky way of imposing linearity */
-
-	if (isGeog == 0) { 
-		for (i = 0; i < 2; i++) {
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->iThread  = i;
-			Arg_p->lev      = m;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_cart, Arg_p, 0, NULL);
-		}
-	}
-	else {
-		for (i = 0; i < 2; i++) {
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->iThread  = i;
-			Arg_p->lev      = m;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_sp, Arg_p, 0, NULL);
-		}
-	}
-
-	/* Wait until all threads are ready and close the handles */
-	WaitForMultipleObjects(2, ThreadList, true, INFINITE);
-	for (i = 0; i < 2; i++)
-		CloseHandle(ThreadList[i]);
-
-#elif defined(PARALLEL)
-	HANDLE ThreadList[64];  /* Handles to the worker threads */
-	ThreadArg Arg_List[64], *Arg_p;
-	int  row_start, row_end, last, n_rows_block;
-
 	/* - fixes the width of the lateral buffer for linear aproximation */
 	/* - if jupe>nnx/2 and jupe>nny/2 linear model will be applied */
 	if (m > 0)   {nest->jupe = 0;    nest->first = 1;    nest->last = 0;}
 	else         {nest->jupe = 10;   nest->first = 0;    nest->last = 1;}
 	if (nest->do_linear) nest->jupe = 1e6;		/* A tricky way of imposing linearity */
-	
-	last = (m > 0) ? 0 : 1;
 
-	if (isGeog) {
-		memset(nest->fluxm_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].n_rows - last) / nest->n_threads);
-		for (i = 0; i < nest->n_threads; i++) {
-			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - last);
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->iThread  = i;
-			Arg_p->lev      = m;
-			Arg_p->row_start= row_start;
-			Arg_p->row_end  = row_end;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_moment_sp_M_slice, Arg_p, 0, NULL);
-		}
-		/* Wait until all threads are ready and close the handles */
-		WaitForMultipleObjects(nest->n_threads, ThreadList, true, INFINITE);
-		for (i = 0; i < nest->n_threads; i++)
-			CloseHandle(ThreadList[i]);
-
-		/* Now the N component */
-		memset(nest->fluxn_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].n_rows - 1) / nest->n_threads);
-		for (i = 0; i < nest->n_threads; i++) {
-			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - 1);
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->iThread  = i;
-			Arg_p->lev      = m;
-			Arg_p->row_start= row_start;
-			Arg_p->row_end  = row_end;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_moment_sp_N_slice, Arg_p, 0, NULL);
-		}
-		/* Wait until all threads are ready and close the handles */
-		WaitForMultipleObjects(nest->n_threads, ThreadList, true, INFINITE);
-		for (i = 0; i < nest->n_threads; i++)
-			CloseHandle(ThreadList[i]);
+	/* The M and N components are internally parallelized with OpenMP over their row loops */
+	if (isGeog == 0) {
+		moment_M(nest, m);
+		moment_N(nest, m);
 	}
 	else {
-		memset(nest->fluxm_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].n_rows - last) / nest->n_threads);
-		for (i = 0; i < nest->n_threads; i++) {
-			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - last);
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->iThread  = i;
-			Arg_p->lev      = m;
-			Arg_p->row_start= row_start;
-			Arg_p->row_end  = row_end;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_moment_M_slice, Arg_p, 0, NULL);
-		}
-		/* Wait until all threads are ready and close the handles */
-		WaitForMultipleObjects(nest->n_threads, ThreadList, true, INFINITE);
-		for (i = 0; i < nest->n_threads; i++)
-			CloseHandle(ThreadList[i]);
-
-		/* Now the N component */
-		memset(nest->fluxn_d[m], 0, nest->hdr[m].nm * sizeof(double));
-		n_rows_block = (int)ceil((nest->hdr[m].n_rows - 1) / nest->n_threads);
-		for (i = 0; i < nest->n_threads; i++) {
-			row_start       = i * n_rows_block;
-			row_end         = MIN(row_start + n_rows_block, nest->hdr[m].n_rows - 1);
-			Arg_p           = &Arg_List[i];
-			Arg_p->nest     = nest;
-			Arg_p->iThread  = i;
-			Arg_p->lev      = m;
-			Arg_p->row_start= row_start;
-			Arg_p->row_end  = row_end;
-			ThreadList[i] = (HANDLE)_beginthreadex(NULL, 0, MT_moment_N_slice, Arg_p, 0, NULL);
-		}
-		/* Wait until all threads are ready and close the handles */
-		WaitForMultipleObjects(nest->n_threads, ThreadList, true, INFINITE);
-		for (i = 0; i < nest->n_threads; i++)
-			CloseHandle(ThreadList[i]);			
+		moment_sp_M(nest, m);
+		moment_sp_N(nest, m);
 	}
-
-#else
-	if (m > 0)   {nest->jupe = 0;    nest->first = 1;    nest->last = 0;}
-	else         {nest->jupe = 10;   nest->first = 0;    nest->last = 1;}
-	if (nest->do_linear) nest->jupe = 1e6;		/* A tricky way of imposing linearity */
-
-	if (isGeog == 0) { 
-		for (i = 0; i < 2; i++)
-			call_moment[i](nest, m);
-	}
-	else {
-		for (i = 0; i < 2; i++)
-			call_moment_sp[i](nest, m);
-	}
-#endif
 }
 
-#ifdef DO_MULTI_THREAD
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_cart(void *Arg_p) {
-	/* Convert input from (void *) to (ThreadArg *), call the moment and stop the thread. */
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_moment[Arg->iThread](Arg->nest, Arg->lev);
-	_endthreadex(0);
-	return (0);
-}
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_sp(void *Arg_p) {
-	/* Convert input from (void *) to (ThreadArg *), call the moment and stop the thread. */
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_moment_sp[Arg->iThread](Arg->nest, Arg->lev);
-	_endthreadex(0);
-	return (0);
-}
-#endif
-
-#if defined(DO_MULTI_THREAD) || defined(PARALLEL)
 /* ------------------------------------------------------------------------------ */
 int GetLocalNThread(void) {
 	/* Get number of processors from the environment variable NUMBER_OF_PROCESSORS. */
-  
 	char *pStr;
 	int   localNThread = 1;  /* Default */
-  
+
 	if ((pStr = getenv("NUMBER_OF_PROCESSORS")) != NULL)
 		sscanf(pStr, "%d", &localNThread);
-  
+
 	return (localNThread);
 }
-#else
-int GetLocalNThread(void) {
-	return 1;
-}
-#endif
 
-#ifdef PARALLEL
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_moment_sp_M_slice(void *Arg_p) {
-	/* Convert input from (void *) to (ThreadArg *), call the moment and stop the thread. */
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_moment_sp_M_slice(Arg->lev, Arg->row_start, Arg->row_end, Arg->nest);
-	_endthreadex(0);
-	return (0);
-}
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_moment_sp_N_slice(void *Arg_p) {
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_moment_sp_N_slice(Arg->lev, Arg->row_start, Arg->row_end, Arg->nest);
-	_endthreadex(0);
-	return (0);
-}
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_moment_M_slice(void *Arg_p) {
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_moment_M_slice(Arg->lev, Arg->row_start, Arg->row_end, Arg->nest);
-	_endthreadex(0);
-	return (0);
-}
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_moment_N_slice(void *Arg_p) {
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_moment_N_slice(Arg->lev, Arg->row_start, Arg->row_end, Arg->nest);
-	_endthreadex(0);
-	return (0);
-}
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_mass_sp(void *Arg_p) {
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_mass_sp(Arg->nest, Arg->lev, Arg->row_start, Arg->row_end);
-	_endthreadex(0);
-	return (0);
-}
-/* ------------------------------------------------------------------------------ */
-unsigned __stdcall MT_mass(void *Arg_p) {
-	ThreadArg *Arg = (ThreadArg *)Arg_p;
-	call_mass(Arg->nest, Arg->lev, Arg->row_start, Arg->row_end);
-	_endthreadex(0);
-	return (0);
-}
-#endif
 
 /* ---------------------------------------------------------------------------------------- */
 void kaba_source(struct GMT_GRID_HEADER hdr, double x_inc, double y_inc, double x_min, double x_max,
