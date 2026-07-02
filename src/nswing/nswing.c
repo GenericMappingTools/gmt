@@ -1226,6 +1226,17 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		hdr_b.z_min = hdr_b.z_max = 0;
 		nm_def = (uint64_t)hdr_b.n_columns * (uint64_t)hdr_b.n_rows;
 
+		if (!isGeog) {	/* No -fg given. Trust GMT's -R<grid> metadata detection first, fall back to a range heuristic */
+			if (gmt_M_is_geographic(GMT, GMT_IN)) {
+				GMT_Report(API, GMT_MSG_WARNING, "NSWING: -R region is in geographic coordinates. Assuming -fg.\n");
+				isGeog = true;
+			}
+			else if (dfXmin >= -180 && dfXmax <= 360 && dfYmin > -90 && dfYmax < 90) {
+				GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning, -R region seams to be in Geographical coords but -f was not set.\n");
+				isGeog = true;
+			}
+		}
+
 		if ((def = (double *)calloc((size_t)nm_def, sizeof(double))) == NULL)
 			{no_sys_mem(API, "(deform)", (unsigned int)nm_def); Return(-1);}
 
@@ -1310,9 +1321,15 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			Return(-1);
 		}
 
-		if (!isGeog && hdr_b.wesn[XLO] >= -180 && hdr_b.wesn[XHI] <= 360 && hdr_b.wesn[YLO] > -90 && hdr_b.wesn[YHI] < 90) {
-			GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning, the bathymetry grid seams to be in Geographical coords but -f was not set.\n");
-			isGeog = true;
+		if (!isGeog) {	/* No -fg given. Trust GMT's grid-metadata detection first, fall back to a range heuristic */
+			if (gmt_M_is_geographic(GMT, GMT_IN)) {
+				GMT_Report(API, GMT_MSG_WARNING, "NSWING: Bathymetry grid metadata says geographic coordinates. Assuming -fg.\n");
+				isGeog = true;
+			}
+			else if (hdr_b.wesn[XLO] >= -180 && hdr_b.wesn[XHI] <= 360 && hdr_b.wesn[YLO] > -90 && hdr_b.wesn[YHI] < 90) {
+				GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning, the bathymetry grid seams to be in Geographical coords but -f was not set.\n");
+				isGeog = true;
+			}
 		}
 
 		if (!do_Okada && !do_Kaba) {	/* Otherwise we will compute initial condition later down after arrays are allocated */
