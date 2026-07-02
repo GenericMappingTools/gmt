@@ -369,7 +369,7 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, 0, "usage: %s bathy.grd initial.grd [-1<bat_lev1>] [-2<bat_lev2>] [-3<...>] -G<name>[+m],<int> "
 		"[-A<fname.sww>] [-C] [-D] [-E[p][m][,decim]] [-Fx_epic/y_epic/dip/strike/rake/slip/length/width/topDepth] "
 		"[-Fk[c]<w/e/s/n>] [-H] [-H<momentM,momentN>[,t]] [-P<time_jump>] [-L[name1,name2]] "
-		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [-O<BCfile>] [%s] [-S[x|y|n][+m][+s]] [-T<mareg>[+o<outmaregs>][+t<int>]] "
+		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [-O<BCfile>] [%s] [-S[x|y|n][+m][+s]] [-T<mareg>|<x/y>[+o<outmaregs>][+t<int>]] "
 		"[-Q<z_offset>] [-X<manning0[,...]>] -t<dt> [%s] [-x<n>] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -427,8 +427,9 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, -2, "Use x or y to save only one component, or n for no velocity grids (maregs only). Append +m to also write "
 		"velocity (vx,vy) at maregraph locations (needs -T). Append +s to write the max speed (|v|) ('_max_speed' suffix). "
 		"Use the 'n' flag to NOT output the U and V components, e.g. -Sn+s.");
-	GMT_Usage(API, 1, "\n-T<mareg>[+o<outmaregs>][+t<int>] Save maregraph (virtual tide-gauge) time series.");
-	GMT_Usage(API, -2, "<mareg> is the file with the (x y) locations of the virtual maregraphs. Append +o<outmaregs> to set the "
+	GMT_Usage(API, 1, "\n-T<mareg>|<x/y>[+o<outmaregs>][+t<int>] Save maregraph (virtual tide-gauge) time series.");
+	GMT_Usage(API, -2, "<mareg> is the file with the (x y) locations of the virtual maregraphs. For a single maregraph the "
+		"location may be given directly as <x/y> instead of a file name. Append +o<outmaregs> to set the "
 		"output file name [Default is maregs_out.dat]. A '.dat' extension is added when <outmaregs> has none; use a '.nc' "
 		"extension to write the maregraphs as a netCDF file instead. Append +t<int> to save every <int> simulation time "
 		"steps (set by -t) [Default is every time step].");
@@ -453,7 +454,7 @@ struct NSWING_CTRL {
 	bool    do_tracers, out_maregs_nc, out_oranges_nc, do_HotStart, write_grids, isGeog;
 	bool    maregs_in_input, out_momentum, got_R, deform_only, with_land, saveNested;
 	bool    verbose, out_velocity, out_velocity_x, out_velocity_y, out_velocity_r, out_maregs_velocity;
-	bool    cumpt, do_2Dgrids, do_maxs;
+	bool    cumpt, do_2Dgrids, do_maxs, mareg_xy;
 	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file;
 	char   *nesteds[10];
 	char    hcum[256];
@@ -469,6 +470,7 @@ struct NSWING_CTRL {
 	double  kaba_xmax, kaba_ymin, kaba_ymax, time_jump, dt, f_dip;
 	double  f_azim, f_rake, f_slip, f_length, f_width, f_topDepth;
 	double  x_epic, y_epic, dfXmin, dfXmax, dfYmin, dfYmax;
+	double  mareg_x, mareg_y;
 };
 
 GMT_LOCAL void *New_Ctrl(struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -493,7 +495,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	int     grn = 0, cumint = 0, decimate_max = 1, error = 0;
 	int     do_Kaba = 0, n_of_cycles = 1010, KbGridCols = 1, KbGridRows = 1;
 	size_t  len;
-	bool    cumpt = false, do_2Dgrids = false, do_maxs = false;
+	bool    cumpt = false, do_2Dgrids = false, do_maxs = false, mareg_xy = false;
+	double  mareg_x = 0, mareg_y = 0;
 	bool    out_energy = false, max_energy = false, out_power = false, max_power = false;
 	bool    out_sww = false, out_most = false, out_3D = false;
 	bool    surf_level = true, max_level = false, max_velocity = false, water_depth = false;
@@ -803,7 +806,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				dt = atof(opt->arg);
 				nest.dt[0] = dt;
 				break;
-			case 'T':	/* Maregraph xy positions file, with optional +o<outname> and +t<interval> modifiers */
+			case 'T':	/* Maregraph xy positions file (or a single x/y pair), with optional +o<outname> and +t<interval> modifiers */
 				if (cumpt) {
 					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option given more than once.\n");
 					GMT_Report(GMT->parent, GMT_MSG_WARNING, "        Ignoring it.\n");
@@ -812,17 +815,19 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				cumint = 1;	/* Default: save maregraphs at every time step */
 				hcum[0] = '\0';
 				if (opt->arg[0] == '\0') {
-					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name (or a x/y pair)\n");
 					error++;
 					break;
 				}
 				sscanf(opt->arg, "%127s", str_tmp);
 				if ((tok = strtok(str_tmp, "+")) == NULL || tok[0] == '\0') {
-					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name (or a x/y pair)\n");
 					error++;
 					break;
 				}
 				strcpy(maregs, tok);
+				if (sscanf(maregs, "%lf/%lf%c", &mareg_x, &mareg_y, txt) == 2)
+					mareg_xy = true;	/* A single maregraph given inline as -Tx/y; no positions file */
 				while ((tok = strtok(NULL, "+")) != NULL) {
 					if (tok[0] == 'o')
 						strcpy(hcum, &tok[1]);
@@ -997,6 +1002,9 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	Ctrl->cumpt = cumpt;
 	Ctrl->do_2Dgrids = do_2Dgrids;
 	Ctrl->do_maxs = do_maxs;
+	Ctrl->mareg_xy = mareg_xy;
+	Ctrl->mareg_x = mareg_x;
+	Ctrl->mareg_y = mareg_y;
 	Ctrl->add_const = add_const;
 	Ctrl->time_h = time_h;
 	Ctrl->dxKb = dxKb;
@@ -1057,7 +1065,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	int     i, j, k, n;
 	int     grn = 0, cumint = 0, decimate_max = 1, iprc, r_bin_b, r_bin_f, r_bin_mM, r_bin_mN;
 	int     error = 0;
-	bool    w_bin = true, cumpt = false, do_2Dgrids = false, do_maxs = false;
+	bool    w_bin = true, cumpt = false, do_2Dgrids = false, do_maxs = false, mareg_xy = false;
+	double  mareg_x = 0, mareg_y = 0;
 	bool    out_energy = false, max_energy = false, out_power = false, max_power = false;
 	bool    first_anuga_time = true, out_sww = false, out_most = false, out_3D = false;
 	bool    surf_level = true, max_level = false, max_velocity = false, water_depth = false;
@@ -1212,6 +1221,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	cumpt = Ctrl->cumpt;
 	do_2Dgrids = Ctrl->do_2Dgrids;
 	do_maxs = Ctrl->do_maxs;
+	mareg_xy = Ctrl->mareg_xy;
+	mareg_x = Ctrl->mareg_x;
+	mareg_y = Ctrl->mareg_y;
 	add_const = Ctrl->add_const;
 	time_h = Ctrl->time_h;
 	dxKb = Ctrl->dxKb;
@@ -1319,8 +1331,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			Return(-1);
 		}
 		if (!error && !maregs_in_input) {
-			n_mareg = count_n_maregs(API, maregs);          /* Count maragraphs number */
-			if (n_mareg < 0) {
+			if (mareg_xy)                                   /* A single maregraph given inline via -Tx/y */
+				n_mareg = 1;
+			else if ((n_mareg = count_n_maregs(API, maregs)) < 0) {	/* Count maragraphs number */
 				Return(-1);            /* Warning already issued in count_n_maregs() */
 			}
 			else if (n_mareg == 0) {
@@ -1540,7 +1553,21 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (cumpt && !maregs_in_input) {
 		lcum_p = (unsigned int *)calloc((size_t)(1024), sizeof(unsigned int));	/* We wont ever use these many */
 		mareg_names = calloc((size_t)(1024), sizeof(char *));
-		if ((n_mareg = read_maregs(API, nest.hdr[writeLevel], maregs, lcum_p, mareg_names)) < 1) {	/* Read maregraph locations */
+		if (mareg_xy) {		/* A single maregraph given inline via -Tx/y */
+			if (mareg_x < nest.hdr[writeLevel].wesn[XLO] || mareg_x > nest.hdr[writeLevel].wesn[XHI] ||
+			    mareg_y < nest.hdr[writeLevel].wesn[YLO] || mareg_y > nest.hdr[writeLevel].wesn[YHI])
+				n_mareg = 0;
+			else {
+				i = irint((mareg_x - nest.hdr[writeLevel].wesn[XLO]) / nest.hdr[writeLevel].inc[GMT_X]);
+				j = irint((mareg_y - nest.hdr[writeLevel].wesn[YLO]) / nest.hdr[writeLevel].inc[GMT_Y]);
+				lcum_p[0] = j * nest.hdr[writeLevel].n_columns + i;
+				mareg_names[0] = strdup("NoName");
+				n_mareg = 1;
+			}
+		}
+		else
+			n_mareg = read_maregs(API, nest.hdr[writeLevel], maregs, lcum_p, mareg_names);	/* Read maregraph locations */
+		if (n_mareg < 1) {
 			GMT_Report(API, GMT_MSG_WARNING, "NSWING - WARNING: No maregraphs inside the (inner?) grid\n");
 			n_mareg = 0;
 			if (lcum_p) {free(lcum_p);	lcum_p = NULL;}
