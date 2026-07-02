@@ -554,7 +554,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	double  kaba_xmin = 0, kaba_xmax = 0, kaba_ymin = 0, kaba_ymax = 0;
 	double  time_jump = 0;
 	double  dt = 0;
-	double  f_dip, f_azim, f_rake, f_slip, f_length, f_width, f_topDepth, x_epic, y_epic;
+	double  f_dip = 0, f_azim = 0, f_rake = 0, f_slip = 0, f_length = 0, f_width = 0, f_topDepth = 0, x_epic = 0, y_epic = 0;
 	double  dfXmin = 0, dfYmin = 0, dfXmax = 0, dfYmax = 0;
 	struct  GMT_OPTION *opt = NULL;
 	struct  nestContainer nest;
@@ -644,7 +644,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 						k = 2;
 						do_Kaba++;		/* Signal kaba_source function that the above is actually x/y/nx/ny */
 					}
-					n = sscanf(&opt->arg[k], "%lf/%lf/%lf/%lf/%s/%lf", &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax, txt, &dyKb);
+					n = sscanf(&opt->arg[k], "%lf/%lf/%lf/%lf/%127s/%lf", &kaba_xmin, &kaba_xmax, &kaba_ymin, &kaba_ymax, txt, &dyKb);
 					snprintf(kaba_str, GMT_LEN256, "XX%s", &opt->arg[k]);	/* decode_R() skips its own first 2 chars */
 					if (n > 4) {
 						pch = strchr(txt, 'x');
@@ -691,7 +691,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				}
 				break;
 			case 'G':	/* Write one single 3D netCDF at grn intervals */
-				sscanf(opt->arg, "%[^\n]s,%d", stem, &grn);
+				sscanf(opt->arg, "%255[^\n]", stem);
 				if ((pch = strstr(stem,",")) != NULL) {
 					grn = atoi(&pch[1]);
 					pch[0] = '\0';		/* Strip the ",num" part */
@@ -702,7 +702,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				else {
 					out_3D = true;
 					fname3D = stem;
-					if (fname3D[strlen(fname3D)-3] != '.' && fname3D[strlen(fname3D)-4] != '.')
+					len = strlen(fname3D);
+					if (len + 4 < sizeof(stem) && (len < 4 || (fname3D[len-3] != '.' && fname3D[len-4] != '.')))
 						strcat(fname3D, ".nc");		/* If no 2 or 3 letters extension, add .nc */
 				}
 				break;
@@ -712,7 +713,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				else if (opt->arg[0] == 's' && opt->arg[1] == ',')	/* NOT YET. Maybe it will be -Hs,time_to_stop */
 					;
 				else {
-					sscanf(opt->arg, "%s", str_tmp);
+					sscanf(opt->arg, "%127s", str_tmp);
 					if ((pch = strstr(str_tmp,",")) != NULL) {
 						pch[0] = '\0';
 						strcpy(fname_momentM, str_tmp);                         /* File names of moment M & N files */
@@ -730,7 +731,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				}
 				break;
 			case 'P':	/* Jumping options. Accept either -Pn, -P+m, -Pn+m or -Pn -P+m */
-				sscanf(opt->arg, "%s", str_tmp);
+				sscanf(opt->arg, "%127s", str_tmp);
 				if ((pch = strstr(str_tmp,"+")) != NULL) {
 					sscanf((++pch), "%lf", &nest.run_jump_time);
 					pch--;
@@ -743,10 +744,11 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				if (!opt->arg[0])
 					nest.do_linear = true;
 				else {
-					sscanf(opt->arg, "%[^\n]s", str_tmp);
-					if (str_tmp[strlen(str_tmp)-2] == '+') {	/* Output tracers file will be in netCDF */
+					sscanf(opt->arg, "%127[^\n]", str_tmp);
+					len = strlen(str_tmp);
+					if (len > 1 && str_tmp[len-2] == '+') {	/* Output tracers file will be in netCDF */
 						out_oranges_nc = true;
-						str_tmp[strlen(str_tmp)-2] = '\0';
+						str_tmp[len-2] = '\0';
 					}
 					if ((pch = strstr(str_tmp,",")) != NULL) {
 						pch[0] = '\0';
@@ -765,14 +767,14 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				if (opt->arg[0] == '-') {	/* Compute a mask with ones over the "dried beach" */
 					nest.do_long_beach = true;
 					if (opt->arg[1])
-						sscanf(&opt->arg[1], "%s", fname_mask_lbeach);
+						sscanf(&opt->arg[1], "%255s", fname_mask_lbeach);
 					else
 						strcpy(fname_mask_lbeach, "long_beach.grd");
 				}
 				else if (opt->arg[0] == '+') {	/* Compute a mask with ones over the "innundated beach" */
 					nest.do_short_beach = true;
 					if (opt->arg[1])
-						sscanf(&opt->arg[1], "%s", fname_mask_sbeach);
+						sscanf(&opt->arg[1], "%255s", fname_mask_sbeach);
 					else
 						strcpy(fname_mask_sbeach, "short_beach.grd");
 				}
@@ -788,7 +790,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 
 				break;
 			case 'S':	/* Output velocity grids */
-				strcpy(str_tmp, opt->arg);
+				strncpy(str_tmp, opt->arg, sizeof(str_tmp)-1);	str_tmp[sizeof(str_tmp)-1] = '\0';
 				if ((pch = strstr(str_tmp,"+m")) != NULL) {    /* Velocity at maregraphs */
 					out_maregs_velocity = true;
 					out_velocity_x      = out_velocity_y = true;
@@ -844,7 +846,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					error++;
 					break;
 				}
-				sscanf(opt->arg, "%s", str_tmp);
+				sscanf(opt->arg, "%127s", str_tmp);
 				if ((tok = strtok(str_tmp, "+")) == NULL || tok[0] == '\0') {
 					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -T option, must provide the maregraphs xy file name\n");
 					error++;
@@ -874,27 +876,20 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				break;
 			case 'X':		/* Manning coeffs */
 				k = 0;
-				sscanf(opt->arg, "%s", str_tmp);
+				sscanf(opt->arg, "%127s", str_tmp);
 				if ((pch = strstr(str_tmp,"+")) != NULL) {
 					nest.manning_depth = -atof(++pch);	/* Reverse sense right away because bat will be pos down */
 					pch--;	pch[0] = '\0';		/* Remove traces of this option in string */
 				}
-				if ((pch = strstr(str_tmp,",")) != NULL) {
-					char t[16] = "";
-					pch[0] = '\0';
-					nest.manning[k++] = atof(str_tmp);
-					strcpy(t, ++pch);
-					while ((pch = strstr(t,",")) != NULL) {
-						pch[0] = '\0';
-						nest.manning[k++] = atof(t);
-						strcpy(t, ++pch);
-					}
-					nest.manning[k] = atof(t);	/* Last one doesn't end with a comma so was skipped above */
+				tok = strtok(str_tmp, ",");
+				while (tok && k < 10) {		/* No more than the 10 nesting levels the struct can hold */
+					nest.manning[k++] = atof(tok);
+					tok = strtok(NULL, ",");
 				}
-				else
-					nest.manning[k] = atof(opt->arg);
+				if (tok)
+					GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: WARNING, -X accepts at most 10 Manning coefficients. Extra ones ignored.\n");
 
-				if (k == 0)			/* Only one set. Replicate it to the others (being used or not) */
+				if (k == 1)			/* Only one set. Replicate it to the others (being used or not) */
 					for (n = 1; n < 10; n++)
 						nest.manning[n] = nest.manning[0];
 				break;
@@ -946,8 +941,12 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G option. MUST provide saving interval\n");
 			error++;
 		}
-		if (!stem && !cumpt) {
-			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -G option. MUST provide base name || OR -T option\n");
+		if (deform_only && !stem[0]) {
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, deformation-only mode needs the output name from -G\n");
+			error++;
+		}
+		if (!stem[0] && (do_maxs || max_velocity)) {	/* These build their output names from -G's stem */
+			GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -M/-Em/-Epm/-S...+s need the base name provided by -G\n");
 			error++;
 		}
 
@@ -1110,7 +1109,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	bool    out_maregs_velocity = false;
 	int     KbGridCols = 1, KbGridRows = 1; /* Number of rows & columns IF computing a grid of 'Kabas' */
 	int     cntKabas = 0;                /* Counter of the number of Kabas (prisms) already processed */
-	int     n_mareg, n_ptmar, n_oranges;
+	int     n_mareg, n_ptmar, n_oranges, n_oranges_alloc = 0;
 	unsigned int *lcum_p = NULL, lcum = 0, ij, nx, ny;
 	unsigned int i_start, j_start, i_end, j_end, count_maregs_timeout = 0, count_time_maregs_timeout = 0;
 	size_t	start0 = 0, count0 = 1, len, start1_A[2] = {0,0}, count1_A[2];
@@ -1154,8 +1153,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	struct	srf_header hdr_b, hdr_f, hdr_mM, hdr_mN;
 	struct	grd_header hdr;
 	struct  nestContainer nest;
-	struct  tracers *oranges;
-	FILE   *fp, *fp_oranges;
+	struct  tracers *oranges = NULL;
+	FILE   *fp = NULL, *fp_oranges = NULL;
 	clock_t tic;
 
 	call_moment[0] = (PFV)moment_M;
@@ -1344,7 +1343,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		}
 
 		n_ptmar = n_of_cycles / cumint + 1;
-		if (!error && (fp = fopen (hcum, "w")) == NULL) {
+		/* The ASCII maregraph file is only used when NOT writing maregraphs to netCDF */
+		if (!error && !out_maregs_nc && (fp = fopen(hcum, "w")) == NULL) {
 			GMT_Report(API, GMT_MSG_ERROR, "%s: Unable to create file %s - exiting\n", "nswing", hcum);
 			Return(-1);
 		}
@@ -1380,6 +1380,11 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		/* Read base bathymetry through the GMT API (real file or in-memory grid) */
 		if ((Gb = gmtnswing_get_grid(API, bathy, &hdr_b)) == NULL) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid bathymetry grid.\n", bathy);
+			Return(-1);
+		}
+		if (hdr_b.nx < 2 || hdr_b.ny < 2) {
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: bathymetry grid must have at least 2 rows and 2 columns.\n");
+			GMT_Destroy_Data(API, &Gb);
 			Return(-1);
 		}
 
@@ -1438,7 +1443,13 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning: dt > dtCFL / 2 is normaly not good enough. "
 		                   "This may cause troubles. Consider using ~ %.3f\n", dtCFL/2); 
 
-	if (error) Return(-1);
+	if (error) {		/* Release any grids read before bailing out */
+		if (Gb) GMT_Destroy_Data(API, &Gb);
+		if (Gf) GMT_Destroy_Data(API, &Gf);
+		if (GmM) GMT_Destroy_Data(API, &GmM);
+		if (GmN) GMT_Destroy_Data(API, &GmN);
+		Return(-1);
+	}
 
 	if (n_arg_no_char == 0) {		/* Read the nesting grids (when we have them ofc) */
 		double dx, dy;		/* Local variables to not interfere with the base level ones */
@@ -1502,18 +1513,18 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	nest.out_momentum   = out_momentum;
 	nest.isGeog = isGeog;
 	nest.writeLevel = writeLevel;
-	if (initialize_nestum(API, &nest, isGeog, 0)) Return(-1);
+	if (initialize_nestum(API, &nest, isGeog, 0)) {free_arrays(&nest, isGeog, num_of_nestGrids); Return(-1);}
 
 	/* We need the ''work' array in most cases, but not all and also need to make sure it's big enough */
 	if ((out_most || out_3D || surf_level || water_depth || out_energy || out_power || out_momentum ||
 		out_velocity || out_velocity_x || out_velocity_y || out_velocity_r || do_maxs || surf_level || water_depth) &&
-		(work = (float *) calloc((size_t)(nest.hdr[0].nm, nest.hdr[writeLevel].nm), sizeof(float)) ) == NULL)
+		(work = (float *) calloc((size_t)MAX(nest.hdr[0].nm, nest.hdr[writeLevel].nm), sizeof(float)) ) == NULL)
 			{no_sys_mem(API, "(work)", nest.hdr[writeLevel].nm); Return(-1);}
 
-	if ((do_maxs || (nest.long_beach || nest.short_beach)) && 
+	if ((do_maxs || nest.do_long_beach || nest.do_short_beach) &&
 		(wmax = (float *) calloc((size_t)nest.hdr[writeLevel].nm, sizeof(float)) ) == NULL)
 		{no_sys_mem(API, "(wmax)", nest.hdr[writeLevel].nm); Return(-1);}
-	if (max_energy || max_power && (workMax = (float *)calloc((size_t)nest.hdr[writeLevel].nm, sizeof(float)) ) == NULL)
+	if ((max_energy || max_power) && (workMax = (float *)calloc((size_t)nest.hdr[writeLevel].nm, sizeof(float)) ) == NULL)
 		{no_sys_mem(API, "(workMax)", nest.hdr[writeLevel].nm); Return(-1);}
 	/* Copy these pointers to use in update_max() */
 	nest.work = work;
@@ -1570,8 +1581,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		if ((n_mareg = read_maregs(API, nest.hdr[writeLevel], maregs, lcum_p, mareg_names)) < 1) {	/* Read maregraph locations */
 			GMT_Report(API, GMT_MSG_WARNING, "NSWING - WARNING: No maregraphs inside the (inner?) grid\n");
 			n_mareg = 0;
-			if (lcum_p) free(lcum_p);
-			free((void *) cum_p);	free((void *) time_p);	 
+			if (lcum_p) {free(lcum_p);	lcum_p = NULL;}
+			if (mareg_names) {free(mareg_names);	mareg_names = NULL;}
+			if (fp) {fclose(fp);	fp = NULL;}
 			cumpt = false;
 		}
 	}
@@ -1583,6 +1595,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			do_tracers = false;
 		}
 		else {
+			n_oranges_alloc = n_oranges;
 			oranges = (struct tracers *)calloc((size_t)n_oranges, sizeof(struct tracers));
 			for (n = 0; n < n_oranges; n++) {
 				oranges[n].x = (double *)calloc((size_t)(n_of_cycles), sizeof(double));
@@ -1590,7 +1603,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			}
 			if ((n_oranges = read_tracers(API, nest.hdr[writeLevel], tracers_infile, oranges)) < 1) {	/* Read orange locations */
 				GMT_Report(API, GMT_MSG_WARNING, "NSWING - WARNING: No tracers inside the (inner?) grid\n");
-				for (n = 0; n < n_oranges; n++) {free(oranges[n].x);		free(oranges[n].y);}
+				for (n = 0; n < n_oranges_alloc; n++) {free(oranges[n].x);		free(oranges[n].y);}
+				free(oranges);		oranges = NULL;
+				fclose(fp_oranges);	fp_oranges = NULL;
 				do_tracers = false;
 			}
 			/* Select which vx/vy will be used to compute the lagragian tracers */
@@ -1652,7 +1667,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (do_nestum) {                /* Initialize the nest struct array */
 		for (k = 1; k <= num_of_nestGrids; k++) {
 			if (initialize_nestum(API, &nest, isGeog, k))
-				Return(-1);
+				{free_arrays(&nest, isGeog, num_of_nestGrids); Return(-1);}
 		}
 		nest.time_h = time_h;
 		/* Resample eta(s) in descendent grids to avoid initial jumps at borders */
@@ -1982,8 +1997,8 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			update_max_velocity(&nest);
 
 		if (k == (n_of_cycles - 1)) {   /* Last cycle: write wmax to file */
-			size_t len = strlen(stem) - 1;
-			while (stem[len] != '.' && len > 0) len--;
+			size_t len = (stem[0]) ? strlen(stem) - 1 : 0;	/* Guard against an empty stem (no -G) */
+			while (len > 0 && stem[len] != '.') len--;
 			if (do_maxs) {              /* Deal with the case of 'only one of the maximums' */
 				if (len == 0) {                    /* No extension, add a "_max.grd" one */
 					strcpy(prenome, stem);
@@ -2191,7 +2206,7 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 
 	if (out_sww || out_most) free ((void *)tmp_slice);
 
-	if (out_maregs_nc) {    /* Write the maregs in a netCDF file */
+	if (out_maregs_nc && cumpt) {    /* Write the maregs in a netCDF file */
 		if (do_Kaba) {
 			int    k, kp, km, nKabas, RC[2];
 			size_t strt, cnt, row, col;
@@ -2268,17 +2283,18 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		}
 
 		fclose (fp_oranges);
-		for (n = 0; n < n_oranges; n++) {
+		for (n = 0; n < n_oranges_alloc; n++) {
 			free(oranges[n].x);		free(oranges[n].y);
 		}
+		free(oranges);
 	}
 
 	GMT_Report(API, GMT_MSG_INFORMATION, "\t100 %%\tCPU secs/ticks = %.3f\n", (double)(clock() - tic));
 
 	if (cumpt) {
-		fclose (fp);
+		if (fp) fclose(fp);	/* Not opened when maregraphs went to netCDF */
 		if (cum_p) free((void *) cum_p);
-		if (time_p)free((void *) time_p);	 
+		if (time_p)free((void *) time_p);
 	}
 
 	free_arrays(&nest, isGeog, num_of_nestGrids);
@@ -2334,7 +2350,7 @@ void sanitize_nestContainer(struct nestContainer *nest) {
 		nest->short_beach[i] = NULL;
 		nest->bat[i] = NULL;
 		nest->fluxm_a[i] = nest->fluxm_d[i] = NULL;
-		nest->fluxn_a[i] = nest->fluxm_d[i] = NULL;
+		nest->fluxn_a[i] = nest->fluxn_d[i] = NULL;
 		nest->htotal_a[i] = nest->htotal_d[i] = NULL;
 		nest->etaa[i] = nest->etad[i] = NULL;
 		nest->vex[i] = nest->vey[i] = NULL;
@@ -2354,7 +2370,7 @@ int check_paternity(void *API, struct nestContainer *nest) {
 	int error = 0, k = 1;	/* 1 because first nested grid is Level 1 */
 	double suggest;
 
-	while (nest->level[k] > 0) {
+	while (k < 10 && nest->level[k] > 0) {
 		/* Check nesting at LowerLeft corner */
 		if (check_binning(nest->hdr[k-1].x_min, nest->hdr[k].x_min, nest->hdr[k-1].x_inc,
 		                  nest->hdr[k].x_inc, nest->hdr[k-1].x_inc / 4, &suggest)) {
@@ -2384,6 +2400,7 @@ int check_paternity(void *API, struct nestContainer *nest) {
 
 		if (error)		/* Abort since any further info would be false/useless */
 			break;
+		k++;
 	}
 	return (error);
 }
@@ -2414,7 +2431,7 @@ int initialize_nestum(void *API, struct nestContainer *nest, int isGeog, int lev
 	unsigned int nm = nest->hdr[lev].nm;
 	double dt, scale;
 	double xoff, yoff, xoff_P, yoff_P;		/* Offsets to move from grid to pixel registration (zero if grid in pix reg) */
-	struct grd_header hdr = nest->hdr[lev-1];
+	struct grd_header hdr = nest->hdr[MAX(lev-1, 0)];	/* Parent header. Self at lev = 0, where it is not used */
 
 	if (lev > 0) {
 		/* -------------------- Check that this grid is nestifiable -------------------- */
@@ -3728,7 +3745,7 @@ void mass(struct nestContainer *nest, int lev) {
 	row_start = 0;		row_end = nest->hdr[lev].ny;
 #endif
 
-	for (row = row_start; row_end; row++) {
+	for (row = row_start; row < row_end; row++) {
 		ij = row * nest->hdr[lev].nx;
 		rm1 = (row == 0) ? 0 : nest->hdr[lev].nx;
 		for (col = 0; col < nest->hdr[lev].nx; col++) {
