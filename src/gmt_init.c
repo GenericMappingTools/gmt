@@ -20455,6 +20455,14 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		else if (symbol == GMT_SYMBOL_CUSTOM) { /* Custom symbol */
 			fprintf (fp, "S - %c%s %s %s %s - %s\n", GMT_SYMBOL_CUSTOM, S->custom->name, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
+		else if (symbol == GMT_SYMBOL_FRONT) {	/* Front symbol: must pass along the front-type and sense modifiers or pslegend will default to +l+b (left box) for all entries */
+			char scode[GMT_LEN64] = {""};
+			static char f_type[7] = {'f', 'v', 't', 's', 'S', 'c', 'b'};	/* Maps GMT_FRONT_* enum to its -Sf modifier letter */
+			sprintf (scode, "f+%c", f_type[S->f.f_symbol]);
+			if (S->f.f_sense == GMT_FRONT_LEFT) strcat (scode, "+l");
+			else if (S->f.f_sense == GMT_FRONT_RIGHT) strcat (scode, "+r");
+			fprintf (fp, "S - %s %s %s %s - %s\n", scode, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}		
 		else
 			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
