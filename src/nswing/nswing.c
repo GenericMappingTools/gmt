@@ -136,18 +136,6 @@ struct tracers {        /* For tracers (oranges) */
 	double *y;          /* y coordinate */
 };
 
-struct srf_header {     /* Surfer file hdr structure */
-	char id[4];         /* ASCII Binary identifier (DSAA/DSBB) */
-	short int nx;       /* Number of columns */
-	short int ny;       /* Number of rows */
-	double x_min;       /* Minimum x coordinate */
-	double x_max;       /* Maximum x coordinate */
-	double y_min;       /* Minimum y coordinate */
-	double y_max;       /* Maximum y coordinate */
-	double z_min;       /* Minimum z value */
-	double z_max;       /* Maximum z value */
-};
-
 struct grd_header {     /* Generic grid hdr structure */
 	int nx;             /* Number of columns */
 	int ny;             /* Number of rows */
@@ -270,10 +258,10 @@ int  interp_bnc (void *API, struct nestContainer *nest, double t);
 void total_energy(struct nestContainer *nest, float *work, int lev);
 void power(struct nestContainer *nest, float *work, int lev);
 void vtm (double lat0, double *t_c1, double *t_c2, double *t_c3, double *t_c4, double *t_e2, double *t_M0);
-void deform (struct srf_header hdr, double x_inc, double y_inc, int isGeog, double fault_length,
+void deform (struct grd_header hdr, double x_inc, double y_inc, int isGeog, double fault_length,
              double fault_width, double th, double dip, double rake, double d, double top_depth,
              double xl, double yl, double *z);
-void kaba_source(struct srf_header hdr, double x_inc, double y_inc, double x_min, double x_max,
+void kaba_source(struct grd_header hdr, double x_inc, double y_inc, double x_min, double x_max,
 	             double y_min, double y_max, int type, double *z);
 void tm (double lon, double lat, double *x, double *y, double central_meridian, double t_c1,
          double t_c2, double t_c3, double t_c4, double t_e2, double t_M0);
@@ -328,17 +316,20 @@ PFV call_mass_sp;
 /* ------------------------------------------------------------------------------ */
 /* Read a grid through the GMT API. Works for both on-disk files and in-memory
    GMT_GRID objects (virtual files, e.g. handed in from Julia). Fills the
-   Surfer-style header used internally and returns the GMT_GRID (the caller must
+   grd_header used internally and returns the GMT_GRID (the caller must
    GMT_Destroy_Data() it after copying the data with gmtnswing_copy_grid()). */
-GMT_LOCAL struct GMT_GRID *gmtnswing_get_grid(void *API, char *fname, struct srf_header *h) {
+GMT_LOCAL struct GMT_GRID *gmtnswing_get_grid(void *API, char *fname, struct grd_header *h) {
 	struct GMT_GRID *G = NULL;
 	if ((G = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, fname, NULL)) == NULL)
 		return NULL;
-	h->nx = (short int)G->header->n_columns;
-	h->ny = (short int)G->header->n_rows;
+	h->nx = (int)G->header->n_columns;
+	h->ny = (int)G->header->n_rows;
+	h->nm = (unsigned int)G->header->n_columns * (unsigned int)G->header->n_rows;
+	h->x_inc = G->header->inc[GMT_X];	h->y_inc = G->header->inc[GMT_Y];
 	h->x_min = G->header->wesn[XLO];	h->x_max = G->header->wesn[XHI];
 	h->y_min = G->header->wesn[YLO];	h->y_max = G->header->wesn[YHI];
 	h->z_min = G->header->z_min;		h->z_max = G->header->z_max;
+	h->lat_min4Coriolis = 0;
 	return G;
 }
 
@@ -1150,7 +1141,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	double  actual_range[6] = {1e30, -1e30, 1e30, -1e30, 1e30, -1e30};
 	float	stage_range[2], xmom_range[2], ymom_range[2], *tmp_slice;
-	struct	srf_header hdr_b, hdr_f, hdr_mM, hdr_mN;
+	struct	grd_header hdr_b, hdr_f, hdr_mM, hdr_mN;
 	struct	grd_header hdr;
 	struct  nestContainer nest;
 	struct  tracers *oranges = NULL;
@@ -1300,8 +1291,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		}
 		hdr_b.x_min = dfXmin;	hdr_b.x_max = dfXmax;
 		hdr_b.y_min = dfYmin;	hdr_b.y_max = dfYmax;
-		hdr_b.nx = (short)(irint((dfXmax - dfXmin) / dx) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0));
-		hdr_b.ny = (short)(irint((dfYmax - dfYmin) / dy) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0));
+		hdr_b.nx = irint((dfXmax - dfXmin) / dx) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0);
+		hdr_b.ny = irint((dfYmax - dfYmin) / dy) + (GMT->common.R.registration == GMT_GRID_NODE_REG ? 1 : 0);
 		hdr_b.z_min = hdr_b.z_max = 0;
 		nm_def = (uint64_t)hdr_b.nx * (uint64_t)hdr_b.ny;
 
@@ -1453,7 +1444,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	if (n_arg_no_char == 0) {		/* Read the nesting grids (when we have them ofc) */
 		double dx, dy;		/* Local variables to not interfere with the base level ones */
-		struct	srf_header hdr;
+		struct	grd_header hdr;
 		struct  GMT_GRID *Gn = NULL;
 
 		num_of_nestGrids = 0;
@@ -5561,7 +5552,7 @@ unsigned __stdcall MT_mass(void *Arg_p) {
 #endif
 
 /* ---------------------------------------------------------------------------------------- */
-void kaba_source(struct srf_header hdr, double x_inc, double y_inc, double x_min, double x_max,
+void kaba_source(struct grd_header hdr, double x_inc, double y_inc, double x_min, double x_max,
 	double y_min, double y_max, int type, double *z) {
 	/* Create a prismatic source (a Kaba) to use as source for the Green's functions method.
 	   when type = 1, all variables represent what their names say
@@ -5583,7 +5574,7 @@ void kaba_source(struct srf_header hdr, double x_inc, double y_inc, double x_min
 		row1 = irint((y_min - hdr.y_min) / y_inc) - ny2;
 		row2 = row1 + 2*ny2;
 	}
-	memset(z, 0, hdr.nx * hdr.ny * sizeof(double));		/* Need because this function may be called recursivly */
+	memset(z, 0, (size_t)hdr.nx * (size_t)hdr.ny * sizeof(double));	/* Need because this function may be called recursivly */
 	for (row = row1; row <= row2; row++) {
 		for (col = col1; col <= col2; col++) {
 			z[ij_grd(col,row,hdr)] = 1;
@@ -5592,7 +5583,7 @@ void kaba_source(struct srf_header hdr, double x_inc, double y_inc, double x_min
 }
 
 /* ---------------------------------------------------------------------------------------- */
-void deform(struct srf_header hdr, double x_inc, double y_inc, int isGeog, double fault_length,
+void deform(struct grd_header hdr, double x_inc, double y_inc, int isGeog, double fault_length,
 	double fault_width, double th, double dip, double rake, double d, double top_depth,
 	double xl, double yl, double *z) {
 
