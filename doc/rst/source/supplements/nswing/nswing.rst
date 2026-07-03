@@ -24,7 +24,7 @@ Synopsis
 [ |-E|\ [**p**][**m**][,\ *decim*] ]
 [ |-F|\ *x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth* ]
 [ |-F|\ **k**\ [**c**]\ *w/e/s/n* ]
-[ |-G|\ *stem*\ [**+l**\ *ev*],\ *int* ]
+[ |-G|\ *name*\ [**+m**],\ *int* ]
 [ |-H|\ [*momentM,momentN*\ [,\ *t*]] ]
 [ |-P|\ *time_jump*\ [**+t**\ *run_time_jump*] ]
 [ |-L|\ [*name1,name2*] ]
@@ -34,13 +34,11 @@ Synopsis
 [ |-Q|\ *z_offset* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**] ]
-[ |-T|\ *mareg*\ [**+o**\ *outmaregs*][**+t**\ *int*] ]
+[ |-T|\ *mareg*\|\ *x/y*\ [**+o**\ *outmaregs*][**+t**\ *int*] ]
 [ |-X|\ *manning0*\ [,\ *...*] ]
-[ |-Z|\ *name*\ [**+l**\ *ev*],\ *int* ]
-[ **-i** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
-[ **-x**\ [[-]\ *n*] ]
+[ **-x**\ *n* ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -78,9 +76,8 @@ Optional Arguments
 **-1**\ *bat_lev1* **-2**\ *bat_lev2* ... **-9**\ *bat_lev9*
     Nested bathymetry grids, one per nesting level. Each level refines the solution inside
     the area covered by its grid. Warning, the grids must be aligned and have a cell size
-    that is an integer fraction of the previous level. The first level (level 1) is the base
-    bathymetry grid, and the last level (level 9) is the finest grid. The number of levels
-    is determined by the number of **-n** options given. These grids are not trivial to create,
+    that is an integer fraction of the previous level. The number of levels is determined
+    by the number of **-1** ... **-9** options given. These grids are not trivial to create,
     the best way is to use the Mirone TINTOL tool.
 
 .. _-A:
@@ -109,9 +106,9 @@ Optional Arguments
     Append **m** to save only a single grid holding the max values. This can
     noticeably slow the run, so optionally append a *decim* decimator factor
     after the comma (causes aliasing visible under shaded illumination). The
-    file name comes from *name* in **-G**/**-Z** complemented with a *_max*
+    file name comes from *name* in **-G** complemented with a *_max*
     prefix; saving of multiple grids is then disabled. A 3D netCDF file with
-    wave heights is still possible with **-Z**.
+    wave heights is still possible with **-G**.
 
 .. _-F:
 
@@ -141,10 +138,12 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *stem*\ [**+l**\ *ev*],\ *int*
-    Write grids at the *int* time intervals; files are named *stem#*\ **.grd**.
-    When doing nested grids, append **+l**\ *ev* to save that particular level
-    (only one level is allowed).
+**-G**\ *name*\ [**+m**],\ *int*
+    Save the water level every *int* time steps in a single 3D netCDF file
+    called *name*\ **.nc** (the extension is appended when *name* has none).
+    Append **+m** to instead write each saved step as a separate grid; files
+    are then named *name#*\ **.grd**. When doing nested grids the finest level
+    is the one saved.
 
 .. _-H:
 
@@ -176,12 +175,12 @@ Optional Arguments
 .. _-M:
 
 **-M**\ [**-**\|\ **+**\ [*maskname*]]
-    Write a grid with the max water level (name from *name* in **-Z**, *_max*
+    Write a grid with the max water level (name from *name* in **-G**, *_max*
     prefix). Append **-** to instead compute the maximum water retreat, written
     to a mask file (default *long_beach.grd*; append a name after **-** to
     change it, e.g. **-M-**\ *beach_long.grd*). Append **+** for a mask with the
     Run In extent (behaves like **-M-**). **-M** may be repeated, e.g.
-    **-M -M- -M+** computes all three. With **-Z** the *long* and *short* beach
+    **-M -M- -M+** computes all three. With **-G** the *long* and *short* beach
     arrays are also saved in the *.nc* file.
 
 .. _-N:
@@ -218,14 +217,16 @@ Output grids only in the sub-region enclosed by *west/east/south/north*.
 
 .. _-T:
 
-**-T**\ *mareg*\ [**+o**\ *outmaregs*][**+t**\ *int*]
+**-T**\ *mareg*\|\ *x/y*\ [**+o**\ *outmaregs*][**+t**\ *int*]
     Save time series (maregraphs) at virtual tide-gauge locations. *mareg* is
-    the file with the (x y) locations of the virtual maregraphs. Append
-    **+o**\ *outmaregs* to set the output file name [Default is
+    the file with the (x y) locations of the virtual maregraphs. For a single
+    maregraph the location may be given directly as *x/y* instead of a file
+    name. Append **+o**\ *outmaregs* to set the output file name [Default is
     *maregs_out.dat*]. A *.dat* extension is added when *outmaregs* has none;
     use a *.nc* extension to write the maregraphs as a netCDF file instead.
     Append **+t**\ *int* to save every *int* simulation time steps (set by
-    **-t**) [Default is every time step].
+    **-t**) [Default is every time step]. **-T** alone (without **-G**) is
+    allowed and runs a simulation that only outputs the maregraph series.
 
 .. _-X:
 
@@ -235,15 +236,6 @@ Output grids only in the sub-region enclosed by *west/east/south/north*.
     **+**\ *depth* to apply Manning only at depths shallower than *depth*
     (positive up).
 
-.. _-Z:
-
-**-Z**\ *name*\ [**+l**\ *ev*],\ *int*
-    Same as **-G** but saves the result in a 3D netCDF file.
-
-**-i**
-    Do not interpolate the initial surface of nested grids, at time zero, from
-    the mother grids.
-
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: ../../explain_-V.rst_
     :start-after: **Syntax**
@@ -251,6 +243,15 @@ Output grids only in the sub-region enclosed by *west/east/south/north*.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-f.rst_
+
+    When **-fg** is not given, **nswing** first checks the grid's own metadata
+    (netCDF degree units) and, failing that, falls back to a coordinate-range
+    heuristic; if either indicates geographic coordinates a warning is issued
+    and **-fg** is set implicitly.
+
+**-x**\ *n*
+    Number of OpenMP threads to use [Default is all available cores]. Results
+    are identical for any number of threads.
 
 .. include:: ../../explain_core.rst_
 
@@ -269,7 +270,23 @@ To run the same simulation but generate the source on the fly from Okada fault
 parameters and sample the wave field at the virtual maregraphs listed in
 *gauges.dat* every 5 time steps, try::
 
-    gmt nswing bathy.grd dummy.grd -t5 -F-8/37/12/90/90/3/100/50/10 -Tgauges.dat+t5
+    gmt nswing bathy.grd -t5 -F-8/37/12/90/90/3/100/50/10 -Tgauges.dat+t5
+
+To record only the time series at a single virtual tide gauge (no grids at
+all), give its location directly to **-T**::
+
+    gmt nswing bathy.grd source.grd -t5 -T-10.7/37.3
+
+To compute just the Okada co-seismic deformation over the geometry of the grid
+*bathy.grd* (no simulation), try::
+
+    gmt nswing -Rbathy.grd -F94.3/2.8/25/330/90/10/250/65/10 -Gdeform.grd
+
+A less hypothetical example that generates only a few layers in the tsu.nc cube::
+
+    gmt grdcut @earth_relief_02m_g -R-15/-7.5/34/39.5 -Gbat.grd
+    gmt nswing -Rbat.grd -F-12.49593345/35.93634937/25/58.2/90/10/215/53.75/10 -Ginit.grd
+    gmt nswing bat.grd init.grd -t3 -Gtsu,10 -N100 -V
 
 See Also
 --------
