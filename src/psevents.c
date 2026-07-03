@@ -913,8 +913,8 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	bool do_coda, finite_duration, has_text, out_segment = false, have_previous_point = false;
 
 	/* Save state for -q option to prevent double filtering in internal calls. Fixes #8460. */
-	bool q_active_in_save, q_active_out_save;
-	unsigned int q_mode_save; 
+	bool q_active_in_save, q_active_out_save = false;
+	unsigned int q_mode_save = 0; 
 
 	int error;
 
@@ -1478,12 +1478,13 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	if (fp_symbols || fp_labels)	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	if (fp_symbols || fp_labels) {	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_reenable_bghio_opts (GMT);
 		/* Restore original -q state before re-enabling other I/O options (Fixes #8460). */
 		GMT->common.q.mode = q_mode_save;
 		GMT->common.q.active[GMT_IN] = q_active_in_save;
 		GMT->common.q.active[GMT_OUT] = q_active_out_save;
+	}
 
 	/* Finalize plot and we are done */
 
