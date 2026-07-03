@@ -292,4 +292,4 @@ See Also
 --------
 
 :doc:`gmt </gmt>`,
-:doc:`grdseamount </supplements/potential/grdseamount>`
+:doc:`grdinterpolate </grdinterpolate>`
