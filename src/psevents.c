@@ -1372,7 +1372,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 					/* Labels have variable transparency during optional rise and fade, and fully opaque during normal section, and skipped otherwise unless coda */
 
 					if (Ctrl->T.now < t[PSEVENTS_T_EVENT]) {	/* We are within the rise phase */
-						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_DECAY, t, Ctrl->T.now);	/* Ramp function */
+						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_RISE, t, Ctrl->T.now);	/* Ramp function */
 						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0 - x);		/* Magnification of opacity */
 					}
 					else if (finite_duration && Ctrl->T.now < t[PSEVENTS_T_END])	/* We are within the normal phase, keep everything constant */
