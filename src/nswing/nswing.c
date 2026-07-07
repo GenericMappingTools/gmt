@@ -51,7 +51,7 @@
 #define THIS_MODULE_PURPOSE	"A tsunami maker"
 /* We can't use 1G(, etc because -1 is taken leterally, so julia changes: 1->u, 2->d, 3->r, 4->q, 5->c, 6->s, 7->e, 8->o
    so that we can still use -1<grd1>, -2<grd2>, etc. in command line and via Julia. */
-#define THIS_MODULE_KEYS	"<G{2,uG(,dG(,rG(,qG(,cG(,sG(,eG(,oG(,TD(,GG},LD(,EG),FG),HG)"
+#define THIS_MODULE_KEYS	"<G{2,uG(,dG(,rG(,qG(,cG(,sG(,eG(,oG(,TD(=,GG},LD(,EG),FG),HG)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-RVf"
 
@@ -182,9 +182,9 @@ struct nestContainer {         /* Container for the nestings */
 
 void no_sys_mem(void *API, char *where, unsigned int n);
 int  count_col(char *line);
-int  read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int *lcum_p, char *names[]);
-int  read_tracers(void *API, struct GMT_GRID_HEADER hdr, char *file, struct tracers *oranges);
-int  count_n_maregs(void *API, char *file);
+int  read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int *lcum_p, char *names[], struct GMT_DATASET *D_in);
+int  read_tracers(void *API, struct GMT_GRID_HEADER hdr, char *file, struct tracers *oranges, struct GMT_DATASET *D_in);
+int  count_n_maregs(void *API, char *file, struct GMT_DATASET **D_out);
 int  decode_R(char *item, double *w, double *e, double *s, double *n);
 int  check_region(double w, double e, double s, double n);
 double ddmmss_to_degree (char *text);
@@ -1030,6 +1030,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	struct  GMT_OPTION *options = NULL;
 	struct  GMT_GRID *Gb = NULL, *Gf = NULL;       /* Base bathymetry & source grids */
 	struct  GMT_GRID *GmM = NULL, *GmN = NULL;     /* Hot-start momentum grids */
+	struct  GMT_DATASET *D_mareg = NULL, *D_tracer = NULL; /* Cache maregs/tracers dataset so a virtual file is read only once */
 
 	int     writeLevel = 0;              /* If save grids, will hold the saving level (when nesting) */
 	int     i, j, k, n;
@@ -1298,20 +1299,22 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		if (!error && !maregs_in_input) {
 			if (mareg_xy)                                   /* A single maregraph given inline via -Tx/y */
 				n_mareg = 1;
-			else if ((n_mareg = count_n_maregs(API, maregs)) < 0) {	/* Count maragraphs number */
+			else if ((n_mareg = count_n_maregs(API, maregs, &D_mareg)) < 0) {	/* Count maragraphs number */
 				Return(-1);            /* Warning already issued in count_n_maregs() */
 			}
 			else if (n_mareg == 0) {
 				GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning file %s has no valid data.\n", maregs);
 				cumpt = false;
+				if (D_mareg) GMT_Destroy_Data(API, &D_mareg);
 			}
 		}
 	}
 
 	if (do_tracers) {	/* Count number of oranges */
-		n_oranges = count_n_maregs(API, tracers_infile);    /* Count tracers number */
+		n_oranges = count_n_maregs(API, tracers_infile, &D_tracer);    /* Count tracers number */
 		if (n_oranges <= 0) {
 			GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning file %s has no valid data. Ignoring this option\n", tracers_infile);
+			if (D_tracer) {GMT_Destroy_Data(API, &D_tracer);	D_tracer = NULL;}
 			do_tracers = false;			
 		}
 	}
@@ -1534,8 +1537,10 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 				n_mareg = 1;
 			}
 		}
-		else
-			n_mareg = read_maregs(API, nest.hdr[writeLevel], maregs, lcum_p, mareg_names);	/* Read maregraph locations */
+		else {
+			n_mareg = read_maregs(API, nest.hdr[writeLevel], maregs, lcum_p, mareg_names, D_mareg);	/* Read maregraph locations */
+			D_mareg = NULL;	/* read_maregs() destroyed it */
+		}
 		if (n_mareg < 1) {
 			GMT_Report(API, GMT_MSG_WARNING, "NSWING - WARNING: No maregraphs inside the (inner?) grid\n");
 			n_mareg = 0;
@@ -1551,6 +1556,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		if ((fp_oranges = fopen(tracers_outfile, "wt")) == NULL) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open output tracers file %s - ignoring this option\n", tracers_outfile);
 			do_tracers = false;
+			if (D_tracer) {GMT_Destroy_Data(API, &D_tracer);	D_tracer = NULL;}
 		}
 		else {
 			n_oranges_alloc = n_oranges;
@@ -1559,7 +1565,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 				oranges[n].x = (double *)calloc((size_t)(n_of_cycles), sizeof(double));
 				oranges[n].y = (double *)calloc((size_t)(n_of_cycles), sizeof(double));
 			}
-			if ((n_oranges = read_tracers(API, nest.hdr[writeLevel], tracers_infile, oranges)) < 1) {	/* Read orange locations */
+			n_oranges = read_tracers(API, nest.hdr[writeLevel], tracers_infile, oranges, D_tracer);	/* Read orange locations */
+			D_tracer = NULL;	/* read_tracers() destroyed it */
+			if (n_oranges < 1) {
 				GMT_Report(API, GMT_MSG_WARNING, "NSWING - WARNING: No tracers inside the (inner?) grid\n");
 				for (n = 0; n < n_oranges_alloc; n++) {free(oranges[n].x);		free(oranges[n].y);}
 				free(oranges);		oranges = NULL;
@@ -2657,9 +2665,12 @@ int count_col(char *line) {
 }
 
 /* -------------------------------------------------------------------- */
-int count_n_maregs(void *API, char *file) {
+int count_n_maregs(void *API, char *file, struct GMT_DATASET **D_out) {
 	/* Count data records in a maregraphs/tracers positions dataset. 'file' can be a real
-	 * file name OR a GMT virtual-file reference (e.g. a GMTdataset handed in from Julia). */
+	 * file name OR a GMT virtual-file reference (e.g. a GMTdataset handed in from Julia).
+	 * A virtual-file reference can only be read once, so when D_out is not NULL the dataset
+	 * is handed back to the caller (instead of being destroyed here) to be reused later by
+	 * read_maregs()/read_tracers() instead of re-reading (and thus re-consuming) the file. */
 	int  n;
 	struct GMT_DATASET *D = NULL;
 
@@ -2668,20 +2679,25 @@ int count_n_maregs(void *API, char *file) {
 		return (-1);
 	}
 	n = (int)D->n_records;
-	GMT_Destroy_Data(API, &D);
+	if (D_out)
+		*D_out = D;
+	else
+		GMT_Destroy_Data(API, &D);
 	return (n);
 }
 
 /* -------------------------------------------------------------------- */
-int read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int *lcum_p, char *names[]) {
-	/* Read maregraph positions (real file or virtual dataset) and convert them to vector linear indices */
+int read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int *lcum_p, char *names[], struct GMT_DATASET *D_in) {
+	/* Read maregraph positions (real file or virtual dataset) and convert them to vector linear indices.
+	 * If D_in is not NULL it is a dataset already read by count_n_maregs() and is reused here instead of
+	 * re-reading the file (a GMT virtual-file reference can only be read once). */
 	int     i = 0, ix, jy;
 	uint64_t tbl, seg, row;
 	double  x, y;
-	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASET *D = D_in;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	if ((D = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
+	if (D == NULL && (D = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
@@ -2692,8 +2708,11 @@ int read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int 
 			for (row = 0; row < S->n_rows; row++) {
 				x = S->data[GMT_X][row];
 				y = S->data[GMT_Y][row];
-				if (x < hdr.wesn[XLO] || x > hdr.wesn[XHI] || y < hdr.wesn[YLO] || y > hdr.wesn[YHI])
+				if (x < hdr.wesn[XLO] || x > hdr.wesn[XHI] || y < hdr.wesn[YLO] || y > hdr.wesn[YHI]) {
+					GMT_Report(API, GMT_MSG_WARNING, "NSWING: maregraph position %g/%g in %s falls outside grid W/E/S/N = %g/%g/%g/%g - skipped\n",
+					           x, y, file, hdr.wesn[XLO], hdr.wesn[XHI], hdr.wesn[YLO], hdr.wesn[YHI]);
 					continue;
+				}
 				ix = irint((x - hdr.wesn[XLO]) / hdr.inc[GMT_X]);
 				jy = irint((y - hdr.wesn[YLO]) / hdr.inc[GMT_Y]);
 				lcum_p[i] = jy * hdr.n_columns + ix;
@@ -2707,15 +2726,17 @@ int read_maregs(void *API, struct GMT_GRID_HEADER hdr, char *file, unsigned int 
 }
 
 /* -------------------------------------------------------------------- */
-int read_tracers(void *API, struct GMT_GRID_HEADER hdr, char *file, struct tracers *oranges) {
-	/* Read tracers positions (real file or virtual dataset) */
+int read_tracers(void *API, struct GMT_GRID_HEADER hdr, char *file, struct tracers *oranges, struct GMT_DATASET *D_in) {
+	/* Read tracers positions (real file or virtual dataset). If D_in is not NULL it is a dataset
+	 * already read by count_n_maregs() and is reused here instead of re-reading the file (a GMT
+	 * virtual-file reference can only be read once). */
 	int     i = 0;
 	uint64_t tbl, seg, row;
 	double  x, y;
-	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASET *D = D_in;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	if ((D = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
+	if (D == NULL && (D = GMT_Read_Data(API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 		GMT_Report(API, GMT_MSG_ERROR, "NSWING: Unable to open file %s - exiting\n", file);
 		return (-1);
 	}
