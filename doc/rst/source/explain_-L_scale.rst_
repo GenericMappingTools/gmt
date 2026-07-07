@@ -1,4 +1,4 @@
-**-L**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *length*\ [**e**\|\ **f**\|\ **k**\|\
+**-L**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ [*refpoint*]\ **+w**\ *length*\ [**e**\|\ **f**\|\ **k**\|\
 **M**\|\ **n**\|\ **u**]\ [**+a**\ *align*]\ [**+c**\ [[*slon*/]\ *slat*]]\ [**+f**]\ [**+j**\ *justify*]\ [**+l**\
 [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
 
@@ -7,6 +7,9 @@
     coordinate systems:
 
     .. include:: explain_refpoint.rst_
+
+    If *refpoint* is omitted, the map scale is placed by default in the lower-left corner of the map
+    (using **+jBL+o0.2c/0.4c**), nudged slightly inward so it does not sit flush against the map frame.
 
     The following modifiers can be appended to |-L| (**+w** is required), with additional explanation and
     examples provided in the :ref:`placing-map-scales` cookbook section. For Cartesian projection, the modifier

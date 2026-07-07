@@ -1312,6 +1312,23 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to open title script file %s\n", Ctrl->E.file);
 				n_errors++;
 			}
+			else if (n_errors == 0) {
+				/* GMT_movie will later chdir into its own working directory to build the frames,
+				 * and (for -M master-frame requests that fall inside the title sequence) needs to
+				 * reopen Ctrl->E.file a second time to re-read it [Bug #8322].  If the user gave a
+				 * path relative to the directory we are in right now, that relative path will no
+				 * longer resolve after the chdir, so turn it into an absolute path here, before any
+				 * chdir happens, while we still know we are in the right place. */
+				char abs_path[PATH_MAX];
+#ifdef WIN32
+				if (_fullpath (abs_path, Ctrl->E.file, PATH_MAX) != NULL) {
+#else
+				if (realpath (Ctrl->E.file, abs_path) != NULL) {
+#endif
+					gmt_M_str_free (Ctrl->E.file);
+					Ctrl->E.file = strdup (abs_path);
+				}
+			}
 		}
 		if (!n_errors && Ctrl->I.active) {	/* Must also check the include file, and open it for reading */
 			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3, NULL);
@@ -1826,8 +1843,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		goto out_of_here;
 	}
 
-	if (Ctrl->M.update)	/* Now we can determine and update last or middle frame number */
-		Ctrl->M.frame = (Ctrl->M.update == 2) ? n_frames - 1 : n_frames / 2;
+	if (Ctrl->M.update) {	/* Now we can determine and update last or middle frame number.
+		 * Ctrl->M.frame is the *absolute* frame number in the final movie, which includes
+		 * any title/fade sequence frames (Ctrl->E.duration) placed before the main animation
+		 * frames.  Without adding that offset, -Ml (last frame) would point to a frame number
+		 * that still falls inside (or before) the title sequence whenever -E is used, instead
+		 * of the actual last frame of the main animation [Bug #8322]. */
+		Ctrl->M.frame = Ctrl->E.duration + ((Ctrl->M.update == 2) ? n_frames - 1 : n_frames / 2);
+	}
 	if (Ctrl->K.active) {
 		n_fade_frames = Ctrl->K.fade[GMT_IN] + Ctrl->K.fade[GMT_OUT];	/* Extra frames if preserving */
 		if (!(Ctrl->K.preserve[GMT_IN] || Ctrl->K.preserve[GMT_OUT]) && n_fade_frames > n_data_frames) {
@@ -2307,6 +2330,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			else /* No fading during main part of title */
 				fade_level = 0.0;
 			gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
+			/* Must (re)build extra here [Bug #8322]: leaving it untouched meant it kept whatever
+			 * stale content it had from an earlier phase (typically the intro-script construction,
+			 * which already contains ",N+f..."), which then caused psconvert's -N option to be
+			 * duplicated once -G was also processed below. */
+			sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
+			if (Ctrl->E.fill) {strcat (extra, "+k"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
 		}
 		else if (Ctrl->K.active) {
 			sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
@@ -2315,7 +2344,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
 		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -N option */
-			if (!Ctrl->K.active) strcat (extra, ",N");	/* Need to switch to the -N option first */
+			if (!Ctrl->K.active && !is_title) strcat (extra, ",N");	/* Need to switch to the -N option first, unless already using N+f for fading [Bug #8322] */
 			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 		}
@@ -2373,7 +2402,16 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt plot -R0/%g/0/%g -Jx1%c -X0 -Y0 -T\n", Ctrl->C.dim[GMT_X], Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "gmt end\n");		/* Eliminate show from gmt end in this script */
 			}
-			else {	/* Read the title script */
+			else {	/* Read the title script.  Note: Ctrl->E.fp was already fclose'd earlier when we
+				 * built the title/intro script for the main animation [Bug #8322], so it must be
+				 * reopened here rather than read (or rewound) via a stale, closed FILE pointer,
+				 * which is undefined behavior and was observed to cause a segfault in gmt_fgets. */
+				if ((Ctrl->E.fp = fopen (Ctrl->E.file, "r")) == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to reopen title script file %s\n", Ctrl->E.file);
+					fclose (Ctrl->In.fp);
+					error = GMT_ERROR_ON_FOPEN;
+					goto out_of_here;
+				}
 				while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->E.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 					if (gmt_is_gmtmodule (line, "begin")) {	/* Need to insert a gmt figure call after this line */
 						fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
@@ -2396,7 +2434,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						fprintf (fp, "%s", line);	/* Just copy the line as is */
 					}
 				}
-				rewind (Ctrl->E.fp);	/* Get ready for main_frame reading */
+				fclose (Ctrl->E.fp);	/* Done reading the title script; it is not needed again in this run */
 			}
 		}
 		else {	/* Process main script */
