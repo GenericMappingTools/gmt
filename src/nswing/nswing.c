@@ -868,9 +868,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			case '8': case 'o':
 				nesteds[7] = opt->arg;
 				break;
-			default:
-				GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Unknown option -%c%s\n", opt->option, opt->arg);
-				error = true;
+			default:	/* Let GMT catch common options (like -R) already consumed by GMT_Parse_Common */
+				error += gmt_default_option_error(GMT, opt);
 				break;
 		}
 	}
