@@ -7460,8 +7460,13 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	gmt_adjust_refpoint (GMT, mr->refpoint, dim, mr->off, mr->justify, PSL_MC);	/* Adjust refpoint to MC */
 
 	if (panel && panel->mode) {	/* Place rectangle behind the map rose */
-		/* Determine panel dimensions */
-		panel->width = panel->height = mr->size;
+		/* Determine panel dimensions.  Use the same footprint as was used to adjust
+		 * the reference point above: for a plain (simple) rose this is only half as
+		 * wide as it is tall, so the panel must match that instead of always being a
+		 * full mr->size x mr->size square, or it will show excess blue padding on
+		 * either side of a simple north indicator. */
+		panel->width  = dim[GMT_X];
+		panel->height = dim[GMT_Y];
 		gmt_draw_map_panel (GMT, mr->refpoint->x, mr->refpoint->y, 3U, panel);
 	}
 
