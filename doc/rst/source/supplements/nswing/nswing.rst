@@ -21,7 +21,7 @@ Synopsis
 [ |-A|\ *fname.sww* ]
 [ |-C| ]
 [ |-D| ]
-[ |-E|\ [**p**][**m**][,\ *decim*] ]
+[ |-E|\ [**p**][**m**][**+a**][,\ *decim*] ]
 [ |-F|\ *x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth* ]
 [ |-F|\ **k**\ [**c**]\ *w/e/s/n* ]
 [ |-G|\ *name*\ [**+m**],\ *int* ]
@@ -33,7 +33,7 @@ Synopsis
 [ |-O|\ *BCfile* ]
 [ |-Q|\ *z_offset* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**] ]
+[ |-S|\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**][**+a**] ]
 [ |-T|\ *mareg*\|\ *x/y*\ [**+o**\ *outmaregs*][**+t**\ *int*] ]
 [ |-X|\ *manning0*\ [,\ *...*] ]
 [ |SYN_OPT-V| ]
@@ -101,14 +101,18 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**p**][**m**][,\ *decim*]
+**-E**\ [**p**][**m**][**+a**][,\ *decim*]
     Write grids with energy, or with power if **p** is appended (**-Ep**).
     Append **m** to save only a single grid holding the max values. This can
     noticeably slow the run, so optionally append a *decim* decimator factor
     after the comma (causes aliasing visible under shaded illumination). The
     file name comes from *name* in **-G** complemented with a *_max*
-    prefix; saving of multiple grids is then disabled. A 3D netCDF file with
-    wave heights is still possible with **-G**.
+    prefix; saving of multiple grids is then disabled.
+
+    With **-G**'s 3D netCDF cube, Energy/Power replaces the sea-surface
+    (*z*) variable unless **+a** is appended, in which case Energy/Power is
+    written as an extra variable alongside *z* (same idea as **-S**'s
+    **+a**).
 
 .. _-F:
 
@@ -207,13 +211,17 @@ Output grids only in the sub-region enclosed by *west/east/south/north*.
 
 .. _-S:
 
-**-S**\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**]
+**-S**\ [**x**\|\ **y**\|\ **n**][**+m**][**+s**][**+a**]
     Write grids with the velocity (names get *_U* and *_V* suffixes). Use **x**
     or **y** to save only one component, or **n** for no velocity grids
     (maregraphs only). Append **+m** to also write velocity (vx,vy) at maregraph
     locations (needs **-T**). Append **+s** to write the max speed
     (|v|) (*_max_speed* suffix). Use the **n** flag to NOT output the U and V
     components, e.g. **-Sn+s**.
+
+    With **-G**'s 3D netCDF cube, velocity is written as the only variable
+    unless **+a** is appended, in which case the sea-surface (*z*) variable
+    is also written (*z* + velocity).
 
 .. _-T:
 

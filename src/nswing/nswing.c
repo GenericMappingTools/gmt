@@ -51,7 +51,7 @@
 #define THIS_MODULE_PURPOSE	"A tsunami maker"
 /* We can't use 1G(, etc because -1 is taken leterally, so julia changes: 1->u, 2->d, 3->r, 4->q, 5->c, 6->s, 7->e, 8->o
    so that we can still use -1<grd1>, -2<grd2>, etc. in command line and via Julia. */
-#define THIS_MODULE_KEYS	"<G{2,uG(,dG(,rG(,qG(,cG(,sG(,eG(,oG(,TD(=,GG},LD(,EG),FG),HG)"
+#define THIS_MODULE_KEYS	"<G{2,uG(,dG(,rG(,qG(,cG(,sG(,eG(,oG(,TD(=,GG},LD("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-RVf"
 
@@ -139,6 +139,10 @@ struct nestContainer {         /* Container for the nestings */
 	int    out_velocity_x;     /* To know if we must compute the vex,vey velocity arrays */
 	int    out_velocity_y;
 	int    out_momentum;       /* To know if save the momentum in the 3D netCDF grid. Mutually exclusive with out_velocity_x|y */
+	int    out_energy;         /* To know if -E (or -Ep) was selected: write Energy or Power in the 3D netCDF grid */
+	int    out_power;
+	int    append_z;           /* -E|-S "+a": true = write z (sea surface) together with the extra quantity; false = the extra
+	                               quantity replaces z (-E) or z is omitted altogether (-S) */
 	int    isGeog;             /* 0 == Cartesian, otherwise Geographic coordinates */
 	int    n_threads;          /* Number of threads for multi-threading */
 	int    first, last, jupe;  /* To hold start and ending rows in the moment conservation functions */
@@ -324,9 +328,9 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose(API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage(API, 0, "usage: %s bathy.grd initial.grd [-1<bat_lev1>] [-2<bat_lev2>] [-3<...>] -G<name>[+m],<int> "
-		"[-A<fname.sww>] [-C] [-D] [-E[p][m][,decim]] [-Fx_epic/y_epic/dip/strike/rake/slip/length/width/topDepth] "
+		"[-A<fname.sww>] [-C] [-D] [-E[p][m][+a][,decim]] [-Fx_epic/y_epic/dip/strike/rake/slip/length/width/topDepth] "
 		"[-Fk[c]<w/e/s/n>] [-H] [-H<momentM,momentN>[,t]] [-P<time_jump>] [-L[name1,name2]] "
-		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [-O<BCfile>] [%s] [-S[x|y|n][+m][+s]] [-T<mareg>|<x/y>[+o<outmaregs>][+t<int>]] "
+		"[-M[-|+[<maskname>]]] [-N<n_cycles>] [-O<BCfile>] [%s] [-S[x|y|n][+m][+s][+a]] [-T<mareg>|<x/y>[+o<outmaregs>][+t<int>]] "
 		"[-Q<z_offset>] [-X<manning0[,...]>] -t<dt> [%s] [-x<n>] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -341,14 +345,15 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, 1, "\n-C Add Coriolis effect.");
 	GMT_Usage(API, 1, "\n-D Write grids with the total water depth.");
 	GMT_Usage(API, -2, "These grids will have wave height on ocean and water thickness on land.");
-	GMT_Usage(API, 1, "\n-E[p][m][,decim] Write grids with energy or power (-Ep).");
-	GMT_Usage(API, -2, "Append 'm' to save only one grid with the max values. This can noticeably slow the run, "
-		"so optionally append a decimator factor after the comma (causes aliasing visible on shaded illumination). "
-		"The file name comes from <name> in -G complemented with a '_max' prefix; saving of multiple grids is disabled. "
-		"A 3D netCDF file with wave heights is still possible with -G.");
-	GMT_Usage(API, 1, "\n-F<x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth> Okada fault parameters.");
-	GMT_Usage(API, -2, "x_epic, y_epic are the X and Y coordinates of the beginning of the fault trace; Dip, Azimuth, "
-		"Rake, Slip(m), length, width and depth from sea-bottom follow. All dimensions must be in km. "
+	GMT_Usage(API, 1, "\n-E[p][m][+a][,decim]");
+	GMT_Usage(API, -2, "Write grids with energy or power (-Ep). Append 'm' to save only one grid with the max values. "
+		"This can noticeably slow the run, so optionally append a decimator factor after the comma (causes aliasing "
+		"visible on shaded illumination). The file name comes from <name> in -G complemented with a '_max' prefix; "
+		"saving of multiple grids is disabled. With -G's 3D netCDF file, Energy/Power replaces the sea-surface "
+		"variable unless +a is appended, in which case it is written as an extra variable alongside it (like -S does).");
+	GMT_Usage(API, 1, "\n-F<x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth>");
+	GMT_Usage(API, -2, "Okada fault parameters. x_epic, y_epic are the X and Y coordinates of the beginning of the fault trace;"
+		" Dip, Azimuth, Rake, Slip(m), length, width and depth from sea-bottom follow. All dimensions must be in km. "
 		"If no bathymetry grid is given, -F (or -Fk) together with -R and -G computes the deformation over -R's "
 		"grid geometry (e.g. -R<grid>) and writes it straight to -G's name: no simulation is run, -t and -G's "
 		"saving interval are not needed.");
@@ -372,18 +377,22 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, -2, "-L<in_fname>,<out_fname>");
 	GMT_Usage(API, -2, "Do Lagrangian tracers, where <in_fname> is the tracers initial-position file "
 		"and <out_fname> the file to hold the results.");
-	GMT_Usage(API, 1, "\n-M Write a grid with the max water level (name from <name> in -G, '_max' prefix).");
-	GMT_Usage(API, -2, "Append '-' to compute instead the maximum water retreat, written to a mask file (default 'long_beach.grd'; "
+	GMT_Usage(API, 1, "\n-M");
+	GMT_Usage(API, -2, " Write a grid with the max water level (name from <name> in -G, '_max' prefix). "
+		"Append '-' to compute instead the maximum water retreat, written to a mask file (default 'long_beach.grd'; "
 		"append a name after '-' to change it, e.g. -M-beach_long.grd). Append '+' for a mask with the Run In extent (behaves like -M-). "
 		"-M may be repeated, e.g. -M -M- -M+ computes all three. With -G the 'long' and 'short' beach arrays are also saved in the .nc file.");
-	GMT_Usage(API, 1, "\n-N<n_cycles> Number of cycles [Default 1010].");
+	GMT_Usage(API, 1, "\n-N<n_cycles>");
+	GMT_Usage(API, -2, "Number of ccycles [Default 1010].");
 	GMT_Usage(API, 1, "\n-O<BCfile> Name of a BoundaryCondition ASCII file (experimental).");
 	GMT_Option(API, "R");
 	GMT_Usage(API, -2, "Output grids only in the sub-region enclosed by <west/east/south/north>.");
-	GMT_Usage(API, 1, "\n-S Write grids with the velocity (names get _U and _V suffixes).");
-	GMT_Usage(API, -2, "Use x or y to save only one component, or n for no velocity grids (maregs only). Append +m to also write "
+	GMT_Usage(API, 1, "\n-S[x|y|n][+m][+s][+a]");
+	GMT_Usage(API, -2, " Write grids with the velocity (names get _U and _V suffixes). Use x or y to save "
+		"only one component, or n for no velocity grids (maregs only). Append +m to also write "
 		"velocity (vx,vy) at maregraph locations (needs -T). Append +s to write the max speed (|v|) ('_max_speed' suffix). "
-		"Use the 'n' flag to NOT output the U and V components, e.g. -Sn+s.");
+		"Use the 'n' flag to NOT output the U and V components, e.g. -Sn+s. With -G's 3D netCDF file, velocity is written "
+		"as the only variable unless +a is appended, in which case the sea-surface variable is also written (z + velocity).");
 	GMT_Usage(API, 1, "\n-T<mareg>|<x/y>[+o<outmaregs>][+t<int>] Save maregraph (virtual tide-gauge) time series.");
 	GMT_Usage(API, -2, "<mareg> is the file with the (x y) locations of the virtual maregraphs. For a single maregraph the "
 		"location may be given directly as <x/y> instead of a file name. Append +o<outmaregs> to set the "
@@ -392,10 +401,12 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 		"steps (set by -t) [Default is every time step].");
 	GMT_Usage(API, 1, "\n-Q<z_offset>");
 	GMT_Usage(API, -2, "Apply a vertical offset to ALL bathymetry grids (e.g. to simulate tide).");
-	GMT_Usage(API, 1, "\n-X<manning0[,manning1[,...]][+<depth>]> Manning friction coefficients.");
-	GMT_Usage(API, -2, "If only one is provided, use it for all nesting levels; otherwise specify one per level, comma separated. "
-		"Append +<depth> to apply Manning only at depths shallower than <depth> (positive up).");
-	GMT_Usage(API, 1, "\n-x<n> Number of cores to use in a parallel run [Default is the max in the machine].");
+	GMT_Usage(API, 1, "\n-X<manning0[,manning1[,...]][+<depth>]>");
+	GMT_Usage(API, -2, "Manning friction coefficients. If only one is provided, use it for all nesting levels; "
+		"otherwise specify one per level, comma separated. Append +<depth> to apply Manning only at depths "
+		"shallower than <depth> (positive up).");
+	GMT_Usage(API, 1, "\n-x<n>");
+	GMT_Usage(API, -2, "Number of cores to use in a parallel run [Default is the max in the machine].");
 	GMT_Option(API, "V,f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -412,6 +423,7 @@ struct NSWING_CTRL {
 	bool    maregs_in_input, out_momentum, got_R, deform_only, with_land, saveNested;
 	bool    verbose, out_velocity, out_velocity_x, out_velocity_y, out_velocity_r, out_maregs_velocity;
 	bool    cumpt, do_2Dgrids, do_maxs, mareg_xy;
+	bool    append_z;
 	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file;
 	char   *nesteds[10];
 	char    hcum[256];
@@ -463,6 +475,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	bool    with_land = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false;
+	bool    E_append = false, S_append = false;
 	char   *bathy = NULL;
 	char    hcum[256] = "";
 	char    maregs[256] = "";
@@ -538,6 +551,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					EPS4 = atof(&opt->arg[4]);
 					break;
 				}
+				if (strstr(opt->arg, "+a"))		/* Append to (rather than replace) the -G 3D cube's sea-surface variable */
+					E_append = true;
 				if (opt->arg[0] == 'p') {
 					if (opt->arg[1] == 'm')
 						max_power = true;
@@ -717,6 +732,8 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				break;
 			case 'S':	/* Output velocity grids */
 				strncpy(str_tmp, opt->arg, sizeof(str_tmp)-1);	str_tmp[sizeof(str_tmp)-1] = '\0';
+				if (strstr(str_tmp, "+a"))		/* Append to (rather than be the only variable in) the -G 3D cube */
+					S_append = true;
 				if ((pch = strstr(str_tmp,"+m")) != NULL) {    /* Velocity at maregraphs */
 					out_maregs_velocity = true;
 					out_velocity_x      = out_velocity_y = true;
@@ -874,7 +891,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 
 		do_maxs = (max_level || max_energy || max_power);
 		do_2Dgrids = (write_grids || out_velocity || out_velocity_x || out_velocity_y || out_velocity_r || out_momentum
-		              || max_level || max_velocity || max_energy || out_power || max_power || nest.do_long_beach
+		              || max_level || max_velocity || max_energy || out_energy || out_power || max_power || nest.do_long_beach
 		              || nest.do_short_beach);
 
 		if (!deform_only && !(do_2Dgrids || out_sww || out_most || out_3D || cumpt)) {
@@ -942,6 +959,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	Ctrl->out_energy = out_energy;
 	Ctrl->max_energy = max_energy;
 	Ctrl->out_power = out_power;
+	Ctrl->append_z = E_append || S_append;
 	Ctrl->max_power = max_power;
 	Ctrl->out_sww = out_sww;
 	Ctrl->out_most = out_most;
@@ -1049,7 +1067,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	bool    do_HotStart = false;         /* For when doing a Hot Start */
 	int     n_arg_no_char = 0;
 	int     ncid, ncid_most[3], z_id = -1, ids[13], ids_ha[6], ids_ua[6], ids_va[6], ids_most[3];
-	int     ncid_3D[3], ids_z[10], ids_3D[3], ncid_Mar, ids_Mar[8];
+	int     ncid_3D[3], ids_z[10], ids_3D[4], ncid_Mar, ids_Mar[8];
 	int     n_of_cycles = 1010;          /* Default number of cycles to compute */
 	int     num_of_nestGrids = 0;        /* Number of nesting grids */
 	bool    write_grids = false, isGeog = false;
@@ -1057,6 +1075,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	bool    with_land = false, do_nestum = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
 	bool    out_maregs_velocity = false;
+	bool    append_z = false, wrote_z = true;
 	int     KbGridCols = 1, KbGridRows = 1; /* Number of rows & columns IF computing a grid of 'Kabas' */
 	int     cntKabas = 0;                /* Counter of the number of Kabas (prisms) already processed */
 	int     n_mareg, n_ptmar, n_oranges, n_oranges_alloc = 0;
@@ -1098,7 +1117,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	double  z_offset = 0;	/* To apply to bathymetry to simulate a tide */
 	double  manning[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};	/* Manning coefficients */
 
-	double  actual_range[6] = {1e30, -1e30, 1e30, -1e30, 1e30, -1e30};
+	double  actual_range[8] = {1e30, -1e30, 1e30, -1e30, 1e30, -1e30, 1e30, -1e30};
 	float	stage_range[2], xmom_range[2], ymom_range[2], *tmp_slice;
 	struct	GMT_GRID_HEADER hdr_b, hdr_f, hdr_mM, hdr_mN;
 	struct	GMT_GRID_HEADER hdr;
@@ -1146,6 +1165,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	out_energy = Ctrl->out_energy;
 	max_energy = Ctrl->max_energy;
 	out_power = Ctrl->out_power;
+	append_z = Ctrl->append_z;
 	max_power = Ctrl->max_power;
 	out_sww = Ctrl->out_sww;
 	out_most = Ctrl->out_most;
@@ -1462,6 +1482,10 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	nest.out_velocity_x = out_velocity_x;
 	nest.out_velocity_y = out_velocity_y;
 	nest.out_momentum   = out_momentum;
+	nest.out_energy     = out_energy;
+	nest.out_power      = out_power;
+	nest.append_z       = append_z;
+	wrote_z = !((out_velocity_x || out_velocity_y) && !append_z);	/* -S without +a omits the sea-surface variable */
 	nest.isGeog = isGeog;
 	nest.writeLevel = writeLevel;
 	if (initialize_nestum(API, &nest, isGeog, 0)) {free_arrays(&nest, isGeog, num_of_nestGrids); Return(-1);}
@@ -1681,16 +1705,20 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			tmp_slice = (float *)malloc(sizeof(float) * (nx * ny));   /* To use inside slice writing */ 
 	} 
 	else if (out_3D) {
+		char *var3D = "z";
+		if (!append_z && out_energy) var3D = "Energy";	/* -E without +a: Energy/Power replaces the z variable */
+		else if (!append_z && out_power) var3D = "Power";
 		nx = nest.hdr[writeLevel].n_columns;		ny = nest.hdr[writeLevel].n_rows;
-		ncid_3D[0] = open_most_nc(API, &nest, work, fname3D, "z", history, ids_z, nx, ny, xMinOut, yMinOut, false, writeLevel);
+		ncid_3D[0] = open_most_nc(API, &nest, work, fname3D, var3D, history, ids_z, nx, ny, xMinOut, yMinOut, false, writeLevel);
 
 		if (ncid_3D[0] == -1) {
 			GMT_Report(API, GMT_MSG_ERROR, "NSWING: failure to create netCDF file\n");
 			Return(-1);
 		}
-		ids_3D[0] = ids_z[3];       /* ID of z vriable */
+		ids_3D[0] = ids_z[3];       /* ID of z (or Energy/Power, if it replaced z) vriable */
 		ids_3D[1] = ids_z[5];       /* ID of Vx vriable (only used when it exists) */
 		ids_3D[2] = ids_z[6];       /* ID of Vy vriable (only used when it exists) */
+		ids_3D[3] = ids_z[9];       /* ID of the appended Energy/Power vriable (only used when it exists) */
 
 		/* To be used when writing the data slices */
 		count1_M[0] = 1;	count1_M[1] = ny;	count1_M[2] = nx;
@@ -2026,10 +2054,12 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 				}
 			}
 
-			if (out_energy)
-				total_energy(&nest, work, writeLevel);
-			else if (out_power)
-				power(&nest, work, writeLevel);
+			if (!(append_z && out_3D)) {	/* With -E+a on the 3D cube, Energy/Power gets its own channel instead (write_most_slice) */
+				if (out_energy)
+					total_energy(&nest, work, writeLevel);
+				else if (out_power)
+					power(&nest, work, writeLevel);
+			}
 
 			if (write_grids) {
 				sprintf(prenome, "%s%05d.grd", stem, irint(time_h));
@@ -2136,11 +2166,14 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		err_trap(API, nc_close(ncid_most[2]));
 	}
 	else if (out_3D) {      /* Uppdate range values and close 3D file */
-		err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[3], "actual_range", NC_DOUBLE, 2U, actual_range));
+		if (wrote_z)
+			err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[3], "actual_range", NC_DOUBLE, 2U, actual_range));
 		if (out_velocity_x)
 			err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[5], "actual_range", NC_DOUBLE, 2U, &actual_range[2]));
 		if (out_velocity_y)
 			err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[6], "actual_range", NC_DOUBLE, 2U, &actual_range[4]));
+		if (append_z && (out_energy || out_power))
+			err_trap(API, nc_put_att_double(ncid_3D[0], ids_z[9], "actual_range", NC_DOUBLE, 2U, &actual_range[6]));
 
 		/* It's ugly to have this here but I have no means to tell write_most_slice() when it's the last call */
 		if (nest.do_long_beach || nest.do_short_beach) {	/* Write the mask(s) */
@@ -2991,6 +3024,11 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 	unsigned int m, n, ij;
 	float    dummy = -1e34f;
 	double  *x, *y;
+	/* -S without +a omits the sea-surface variable entirely (velocity/momentum keep their own dedicated
+	   channels regardless); in every other case the primary variable (named z, or Energy/Power when -E
+	   replaced it) is written. */
+	int      write_z = !((nest->out_velocity_x || nest->out_velocity_y) && !nest->append_z);
+	int      write_energy_chan = (nest->append_z && (nest->out_energy || nest->out_power));
 
 	basename = (char *)malloc(strlen(base) + 8);	/* +8: room for the NUL and a "_ha.nc" type suffix */
 	strcpy(basename, base);
@@ -3012,6 +3050,14 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 	else if (!strcmp(name_var,"z")) {	/* Generic variable in meters */
 		long_name = "Sea surface";
 		units = "meters";
+	}
+	else if (!strcmp(name_var,"Energy")) {
+		long_name = "Total Wave Energy";
+		units = "Joules/m^2";
+	}
+	else if (!strcmp(name_var,"Power")) {
+		long_name = "Wave Power";
+		units = "Watts/m";
 	}
 
 	if ((status = nc_create(basename, NC_NETCDF4, &ncid)) != NC_NOERR) {
@@ -3037,7 +3083,8 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 		}
 		else {
 			err_trap(API, nc_def_var(ncid, "time",   NC_DOUBLE,1, &dim0[2], &ids[2]));
-			err_trap(API, nc_def_var(ncid, name_var, NC_FLOAT, 3, dim3,     &ids[3]));
+			if (write_z)
+				err_trap(API, nc_def_var(ncid, name_var, NC_FLOAT, 3, dim3,     &ids[3]));
 			if (nest->out_momentum) {
 				err_trap(API, nc_def_var(ncid, "Mlon", NC_FLOAT,3, dim3,  &ids[5]));
 				err_trap(API, nc_def_var(ncid, "Mlat", NC_FLOAT,3, dim3,  &ids[6]));
@@ -3046,6 +3093,8 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 				err_trap(API, nc_def_var(ncid, "Vlon", NC_FLOAT,3, dim3,  &ids[5]));
 			if (nest->out_velocity_y)
 				err_trap(API, nc_def_var(ncid, "Vlat", NC_FLOAT,3, dim3,  &ids[6]));
+			if (write_energy_chan)
+				err_trap(API, nc_def_var(ncid, (nest->out_energy ? "Energy" : "Power"), NC_FLOAT,3, dim3,  &ids[9]));
 			dim3[0] = dim0[1];			dim3[1] = dim0[0];		/* Bathym array is rank 2 */
 			err_trap(API, nc_def_var(ncid, "bathymetry",NC_FLOAT,2, dim3,  &ids[4]));
 		}
@@ -3066,7 +3115,8 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 		}
 		else {
 			err_trap(API, nc_def_var(ncid, "time",  NC_DOUBLE,1, &dim0[2], &ids[2]));
-			err_trap(API, nc_def_var(ncid, name_var,NC_FLOAT,3,  dim3,     &ids[3]));
+			if (write_z)
+				err_trap(API, nc_def_var(ncid, name_var,NC_FLOAT,3,  dim3,     &ids[3]));
 			if (nest->out_momentum) {
 				err_trap(API, nc_def_var(ncid, "Mx",NC_FLOAT,3, dim3,  &ids[5]));
 				err_trap(API, nc_def_var(ncid, "My",NC_FLOAT,3, dim3,  &ids[6]));
@@ -3075,6 +3125,8 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 				err_trap(API, nc_def_var(ncid, "Vx",NC_FLOAT,3, dim3,  &ids[5]));
 			if (nest->out_velocity_y)
 				err_trap(API, nc_def_var(ncid, "Vy",NC_FLOAT,3, dim3,  &ids[6]));
+			if (write_energy_chan)
+				err_trap(API, nc_def_var(ncid, (nest->out_energy ? "Energy" : "Power"), NC_FLOAT,3, dim3,  &ids[9]));
 			dim3[0] = dim0[1];			dim3[1] = dim0[0];		/* Bathym array is rank 2 */
 			err_trap(API, nc_def_var(ncid, "bathymetry",NC_FLOAT,2, dim3, &ids[4]));
 		}
@@ -3087,8 +3139,11 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 			err_trap(API, nc_def_var(ncid, "ShortBeach", NC_UBYTE, 2, dim3, &ids[8]));
 	}
 
-	/* Set a deflation level of 5 (4 zero based) and shuffle for z variable */
-	id = (isMost) ? 5 : 3;
+	/* Set a deflation level of 5 (4 zero based) and shuffle for the primary variable */
+	if (isMost) id = 5;
+	else if (write_z) id = 3;
+	else if (nest->out_velocity_x) id = 5;
+	else id = 6;
 	err_trap(API, nc_def_var_deflate(ncid, ids[id], 1, 1, 4));
 
 	/* ---- Variables Attributes --------- */
@@ -3128,11 +3183,13 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 			err_trap(API, nc_put_att_text(ncid, ids[1], "units", 6, "meters"));
 		}
 		err_trap(API, nc_put_att_text  (ncid, ids[2], "units", 7, "Seconds"));
-		err_trap(API, nc_put_att_text  (ncid, ids[3], "long_name", strlen(long_name), long_name));
-		err_trap(API, nc_put_att_text  (ncid, ids[3], "units", strlen(units), units));
-		err_trap(API, nc_put_att_float (ncid, ids[3], "missing_value", NC_FLOAT, 1, &nan));
-		err_trap(API, nc_put_att_float (ncid, ids[3], "_FillValue", NC_FLOAT, 1, &nan));
-		err_trap(API, nc_put_att_double(ncid, ids[3], "actual_range", NC_DOUBLE, 2U, dummy));
+		if (write_z) {
+			err_trap(API, nc_put_att_text  (ncid, ids[3], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[3], "units", strlen(units), units));
+			err_trap(API, nc_put_att_float (ncid, ids[3], "missing_value", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_float (ncid, ids[3], "_FillValue", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_double(ncid, ids[3], "actual_range", NC_DOUBLE, 2U, dummy));
+		}
 
 		err_trap(API, nc_put_att_text  (ncid, ids[4], "long_name", 10, "bathymetry"));
 		err_trap(API, nc_put_att_text  (ncid, ids[4], "units", 6, "meters"));
@@ -3176,6 +3233,15 @@ int open_most_nc(void *API, struct nestContainer *nest, float *work, char *base,
 			err_trap(API, nc_put_att_float (ncid, ids[6], "missing_value", NC_FLOAT, 1, &nan));
 			err_trap(API, nc_put_att_float (ncid, ids[6], "_FillValue", NC_FLOAT, 1, &nan));
 			err_trap(API, nc_put_att_double(ncid, ids[6], "actual_range", NC_DOUBLE, 2U, dummy));
+		}
+		if (write_energy_chan) {			/* -E +a: Energy/Power appended alongside z, 3D case */
+			long_name = nest->out_energy ? "Total Wave Energy" : "Wave Power";
+			units = nest->out_energy ? "Joules/m^2" : "Watts/m";
+			err_trap(API, nc_put_att_text  (ncid, ids[9], "long_name", strlen(long_name), long_name));
+			err_trap(API, nc_put_att_text  (ncid, ids[9], "units", strlen(units), units));
+			err_trap(API, nc_put_att_float (ncid, ids[9], "missing_value", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_float (ncid, ids[9], "_FillValue", NC_FLOAT, 1, &nan));
+			err_trap(API, nc_put_att_double(ncid, ids[9], "actual_range", NC_DOUBLE, 2U, dummy));
 		}
 
 		if (nest->do_long_beach) {
@@ -3229,15 +3295,18 @@ void write_most_slice(void *API, struct nestContainer *nest, int *ncid, int *ids
                       double *slice_range, int isMost, int lev) {
 	/* Write a slice of _ha.nc, _va.nc & _ua.nc MOST netCDF files */
 	unsigned int col, row, n, ij, k;
+	int write_z = !((nest->out_velocity_x || nest->out_velocity_y) && !nest->append_z);
 
 	if (!isMost) {
-		/* ----------- Find the min/max of this slice --------- */
-		for (ij = 0; ij < nest->hdr[lev].nm; ij++) {
-			slice_range[0] = MIN(work[ij], slice_range[0]);
-			slice_range[1] = MAX(work[ij], slice_range[1]);
-		}
+		if (write_z) {
+			/* ----------- Find the min/max of this slice --------- */
+			for (ij = 0; ij < nest->hdr[lev].nm; ij++) {
+				slice_range[0] = MIN(work[ij], slice_range[0]);
+				slice_range[1] = MAX(work[ij], slice_range[1]);
+			}
 
-		err_trap(API, nc_put_vara_float(ncid[0], ids[0], start, count, work));
+			err_trap(API, nc_put_vara_float(ncid[0], ids[0], start, count, work));
+		}
 
 		/* Conditionally write the Vx & Vy velocity components */
 		if (nest->out_velocity_x) {
@@ -3275,6 +3344,17 @@ void write_most_slice(void *API, struct nestContainer *nest, int *ncid, int *ids
 				slice_range[5] = MAX(work[ij], slice_range[3]);
 			}
 			err_trap(API, nc_put_vara_float (ncid[0], ids[2], start, count, work));
+		}
+		if (nest->append_z && (nest->out_energy || nest->out_power)) {	/* -E +a: Energy/Power as an extra channel */
+			if (nest->out_energy)
+				total_energy(nest, work, nest->writeLevel);
+			else
+				power(nest, work, nest->writeLevel);
+			for (ij = 0; ij < nest->hdr[nest->writeLevel].nm; ij++) {
+				slice_range[6] = MIN(work[ij], slice_range[6]);
+				slice_range[7] = MAX(work[ij], slice_range[7]);
+			}
+			err_trap(API, nc_put_vara_float (ncid[0], ids[3], start, count, work));
 		}
 	}
 	else {
