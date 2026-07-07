@@ -49,7 +49,9 @@
 #define THIS_MODULE_MODERN_NAME	"nswing"
 #define THIS_MODULE_LIB		"supplements"
 #define THIS_MODULE_PURPOSE	"A tsunami maker"
-#define THIS_MODULE_KEYS	"<G{,TD(,GG},LD(,EG),FG),HG)"
+/* We can't use 1G(, etc because -1 is taken leterally, so julia changes: 1->u, 2->d, 3->r, 4->q, 5->c, 6->s, 7->e, 8->o
+   so that we can still use -1<grd1>, -2<grd2>, etc. in command line and via Julia. */
+#define THIS_MODULE_KEYS	"<G{2,uG(,dG(,rG(,qG(,cG(,sG(,eG(,oG(,TD(,GG},LD(,EG),FG),HG)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-RVf"
 
@@ -489,8 +491,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	sanitize_nestContainer(&nest);
 
 	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == 'R')	/* Already consumed by GMT_Parse_Common into GMT->common.R; not one of nswing's own options */
-			continue;
 		switch (opt->option) {
 			case GMT_OPT_INFILE:	/* bathy / source grid (positional, no leading '-') */
 				if (bathy == NULL)
@@ -501,9 +501,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Wrong option %s (misses the minus sign)\n", opt->arg);
 					error = true;
 				}
-				break;
-			case 'c':
-				add_const = atof(opt->arg);
 				break;
 			case 'f':	/* */
 				isGeog = true;
@@ -527,10 +524,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				if (opt->arg[0] == 'l')		/* Output land nodes in SWW file */
 					with_land = true;
 				break;
-			case 'O':	/* File with the boundary condition (experimental) */
-				bnc_file = opt->arg;
-				break;
-			case 'C':	/* Output momentum grids */
+			case 'C':	/* Coriolis */
 				nest.do_Coriolis = true;
 				if (opt->arg[0])
 					nest.lat_min4Coriolis = atof(opt->arg);
@@ -626,6 +620,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				}
 				if ((pch = strstr(stem,"+m")) != NULL) {	/* Write grids at grn intervals */
 					write_grids = true;
+					pch[0] = '\0';		/* Strip the "+m" part */
 				}
 				else {
 					out_3D = true;
@@ -711,6 +706,9 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 				break;
 			case 'N':	/* Number of cycles to compute */
 				n_of_cycles = atoi(opt->arg);
+				break;
+			case 'O':	/* File with the boundary condition (experimental) */
+				bnc_file = opt->arg;
 				break;
 			case 'Q':	/* Vertical offset (simulate tide) */
 				if (opt->arg[0])
@@ -829,12 +827,29 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			case 'V':
 				verbose = true;
 				break;
-			case '1':
+			case '1': case 'u':
 				nesteds[0] = opt->arg;
 				break;
-			case '2': case '3': case '4': case '5':
-			case '6': case '7': case '8': case '9':
-				nesteds[opt->option - '0' - 1] = opt->arg;
+			case '2': case 'd':
+				nesteds[1] = opt->arg;
+				break;
+			case '3': case 'r':
+				nesteds[2] = opt->arg;
+				break;
+			case '4': case 'q':
+				nesteds[3] = opt->arg;
+				break;
+			case '5': case 'c':
+				nesteds[4] = opt->arg;
+				break;
+			case '6': case 's':
+				nesteds[5] = opt->arg;
+				break;
+			case '7': case 'e':
+				nesteds[6] = opt->arg;
+				break;
+			case '8': case 'o':
+				nesteds[7] = opt->arg;
 				break;
 			default:
 				GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Unknown option -%c%s\n", opt->option, opt->arg);
@@ -1036,7 +1051,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	int     ncid_3D[3], ids_z[10], ids_3D[3], ncid_Mar, ids_Mar[8];
 	int     n_of_cycles = 1010;          /* Default number of cycles to compute */
 	int     num_of_nestGrids = 0;        /* Number of nesting grids */
-	bool    bat_in_input = false, source_in_input = false, write_grids = false, isGeog = false;
+	bool    write_grids = false, isGeog = false;
 	bool    maregs_in_input = false, out_momentum = false, got_R = false, deform_only = false;
 	bool    with_land = false, do_nestum = false, saveNested = false, verbose = false;
 	bool    out_velocity = false, out_velocity_x = false, out_velocity_y = false, out_velocity_r = false;
@@ -1304,45 +1319,43 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	if (out_momentum && (out_sww || out_most)) out_momentum = false;
 	if ((out_velocity || out_velocity_x || out_velocity_y || out_velocity_r) && (out_sww || out_most)) out_velocity = false;
 
-	if (!bat_in_input && !source_in_input) {			/* If bathymetry & source where not given as arguments, load them */
-		if (!bathy || (!fonte && !bnc_file && !do_Okada && !do_Kaba)) {
-			GMT_Report(API, GMT_MSG_ERROR, "NSWING: error, bathymetry and/or source grids were not provided.\n"); 
+	if (!bathy || (!fonte && !bnc_file && !do_Okada && !do_Kaba)) {
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: error, bathymetry and/or source grids were not provided.\n"); 
+		Return(-1);
+	}
+
+	/* Read base bathymetry through the GMT API (real file or in-memory grid) */
+	if ((Gb = gmtnswing_get_grid(API, bathy, &hdr_b)) == NULL) {
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid bathymetry grid.\n", bathy);
+		Return(-1);
+	}
+	if (hdr_b.n_columns < 2 || hdr_b.n_rows < 2) {
+		GMT_Report(API, GMT_MSG_ERROR, "NSWING: bathymetry grid must have at least 2 rows and 2 columns.\n");
+		GMT_Destroy_Data(API, &Gb);
+		Return(-1);
+	}
+
+	if (!isGeog) {	/* No -fg given. Trust GMT's grid-metadata detection first, fall back to a range heuristic */
+		if (gmt_M_is_geographic(GMT, GMT_IN)) {
+			GMT_Report(API, GMT_MSG_WARNING, "NSWING: Bathymetry grid metadata says geographic coordinates. Assuming -fg.\n");
+			isGeog = true;
+		}
+		else if (hdr_b.wesn[XLO] >= -180 && hdr_b.wesn[XHI] <= 360 && hdr_b.wesn[YLO] > -90 && hdr_b.wesn[YHI] < 90) {
+			GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning, the bathymetry grid seams to be in Geographical coords but -f was not set.\n");
+			isGeog = true;
+		}
+	}
+
+	if (!do_Okada && !do_Kaba) {	/* Otherwise we will compute initial condition later down after arrays are allocated */
+		if (!bnc_file && (Gf = gmtnswing_get_grid(API, fonte, &hdr_f)) == NULL) {	/* Read source grid */
+			GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid source grid.\n", fonte);
 			Return(-1);
 		}
 
-		/* Read base bathymetry through the GMT API (real file or in-memory grid) */
-		if ((Gb = gmtnswing_get_grid(API, bathy, &hdr_b)) == NULL) {
-			GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid bathymetry grid.\n", bathy);
-			Return(-1);
-		}
-		if (hdr_b.n_columns < 2 || hdr_b.n_rows < 2) {
-			GMT_Report(API, GMT_MSG_ERROR, "NSWING: bathymetry grid must have at least 2 rows and 2 columns.\n");
-			GMT_Destroy_Data(API, &Gb);
-			Return(-1);
-		}
-
-		if (!isGeog) {	/* No -fg given. Trust GMT's grid-metadata detection first, fall back to a range heuristic */
-			if (gmt_M_is_geographic(GMT, GMT_IN)) {
-				GMT_Report(API, GMT_MSG_WARNING, "NSWING: Bathymetry grid metadata says geographic coordinates. Assuming -fg.\n");
-				isGeog = true;
-			}
-			else if (hdr_b.wesn[XLO] >= -180 && hdr_b.wesn[XHI] <= 360 && hdr_b.wesn[YLO] > -90 && hdr_b.wesn[YHI] < 90) {
-				GMT_Report(API, GMT_MSG_WARNING, "NSWING: Warning, the bathymetry grid seams to be in Geographical coords but -f was not set.\n");
-				isGeog = true;
-			}
-		}
-
-		if (!do_Okada && !do_Kaba) {	/* Otherwise we will compute initial condition later down after arrays are allocated */
-			if (!bnc_file && (Gf = gmtnswing_get_grid(API, fonte, &hdr_f)) == NULL) {	/* Read source grid */
-				GMT_Report(API, GMT_MSG_ERROR, "NSWING: %s Invalid source grid.\n", fonte);
-				Return(-1);
-			}
-
-			if (!bnc_file && (hdr_f.n_columns != hdr_b.n_columns || hdr_f.n_rows != hdr_b.n_rows)) {
-				GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and source grids have different rows/columns\n");
-				GMT_Report(API, GMT_MSG_ERROR, "%d %d %d %d\n", hdr_b.n_rows, hdr_f.n_rows, hdr_b.n_columns, hdr_f.n_columns);
-				error++;
-			}
+		if (!bnc_file && (hdr_f.n_columns != hdr_b.n_columns || hdr_f.n_rows != hdr_b.n_rows)) {
+			GMT_Report(API, GMT_MSG_ERROR, "Bathymetry and source grids have different rows/columns\n");
+			GMT_Report(API, GMT_MSG_ERROR, "%d %d %d %d\n", hdr_b.n_rows, hdr_f.n_rows, hdr_b.n_columns, hdr_f.n_columns);
+			error++;
 		}
 	}
 
