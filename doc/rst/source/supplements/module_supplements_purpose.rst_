@@ -106,6 +106,8 @@
 
 .. |rotsmoother_purpose| replace:: Get mean rotations and covariance matrices from set of finite rotations
 
+.. |nswing_purpose| replace:: A tsunami maker
+
 .. |grdbarb_purpose| replace:: Plot wind barb field from two component grids
 
 .. |barb_purpose| replace:: Plot wind barbs in 2-D and 3-D
