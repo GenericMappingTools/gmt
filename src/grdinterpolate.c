@@ -772,8 +772,12 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 	else if (C[GMT_IN] == NULL) {	/* Read the cube */
 		gmt_M_free (GMT, level);	/* Free this one now since it will be re-read by GMT_Read_Data */
-		if ((C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
-			Return (GMT_DATA_READ_ERROR);
+		if (cube_layer[0])	/* Restore the requested variable name that was chopped off earlier */
+			sprintf(file, "%s?%s", Ctrl->In.file[0], cube_layer);
+		else
+			strncpy(file, Ctrl->In.file[0], PATH_MAX-1);
+		if ((C[GMT_IN] = GMT_Read_Data(API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, file, NULL)) == NULL)
+			Return(GMT_DATA_READ_ERROR);
 	}
 
 	if (convert_to_cube) {	/* Just want to build cube from input stack */
