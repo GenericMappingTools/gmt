@@ -301,3 +301,8 @@ See Also
 
 :doc:`gmt </gmt>`,
 :doc:`grdinterpolate </grdinterpolate>`
+
+Reference
+---------
+
+[Validation of NSWING, a multi-core finite difference code for tsunami propagation and run-up]( https://www.researchgate.net/publication/275349940_Validation_of_NSWING_a_multi-core_finite_difference_code_for_tsunami_propagation_and_run-up)
