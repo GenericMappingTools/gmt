@@ -115,12 +115,22 @@ jobs:
           cmake --build .
         if: runner.os == 'Windows'
 
-      - name: Install GMT
+      - name: Install GMT (Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
           cd build
           cmake --build . --target install
           # Add GMT PATH to bin
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
+
+      - name: Install GMT (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          cd build
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          cmake --build . --target install
+          echo %INSTALLDIR%\bin >> %GITHUB_PATH%
 
       - name: Download cached GMT remote data from GitHub Artifacts
         run: gh run download -n gmt-cache -D ~/.gmt/static/
