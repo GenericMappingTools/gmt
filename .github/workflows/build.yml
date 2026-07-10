@@ -141,7 +141,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Check a few simple commands
-        run: bash ci/simple-gmt-tests.sh
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          export PATH="$INSTALLDIR/bin:$PATH"
+          bash ci/simple-gmt-tests.sh
 
       - name: Check a few simple commands (Windows)
         shell: cmd
