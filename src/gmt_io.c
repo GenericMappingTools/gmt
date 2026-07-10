@@ -2732,6 +2732,27 @@ int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 		if ((gmt_scanf_float (GMT, s, t)) == GMT_IS_NAN) return (GMT_IS_NAN);
 		return (GMT_IS_RELTIME);
 	}
+	if (memchr (s, '.', (size_t)(pt - s))) {
+		/* A valid Gregorian or ISO calendar string only has integer year, month,
+		 * day (or week) fields ahead of the T, so a decimal point there means this
+		 * is not a calendar string at all.  Most likely this is a relative time
+		 * value (e.g., a fractional year when --TIME_UNIT=y is in effect) that has
+		 * been given a trailing T simply to flag it as time, following the same
+		 * convention as the lower-case "t" suffix handled above.  If we did not
+		 * catch this here, the code below would try to match "%4d-%2d-%2d" against
+		 * the string, silently truncate at the decimal point (since sscanf stops
+		 * at the first character - here '.' - that fails to match the literal '-'),
+		 * and default the month and day to 1.  That discards the fractional part
+		 * of the value without warning and can even make distinct west/east (or
+		 * south/north) bounds collapse onto the same truncated date (issue #8865). */
+		char tmp[GMT_LEN64] = {""};
+		size_t len = (size_t)(pt - s);
+		if (len >= GMT_LEN64) len = GMT_LEN64 - 1;
+		strncpy (tmp, s, len);
+		tmp[len] = '\0';
+		if ((gmt_scanf_float (GMT, tmp, t)) == GMT_IS_NAN) return (GMT_IS_NAN);
+		return (GMT_IS_RELTIME);
+	}
 	x = 0.0;	/* x will be the seconds since start of today.  */
 	if (pt[1]) {	/* There is a string following the T:  Decode a clock */
 		k = sscanf (&pt[1], "%2d:%2d:%lf", &hh, &mm, &ss);
