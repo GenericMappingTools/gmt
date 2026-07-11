@@ -135,7 +135,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Check a few simple commands
-        if: runner.os == 'Windows'
         shell: bash
         run: |
           export PATH="$INSTALLDIR/bin:$PATH"
