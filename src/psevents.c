@@ -912,6 +912,10 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	bool do_coda, finite_duration, has_text, out_segment = false, have_previous_point = false;
 
+	/* Save state for -q option to prevent double filtering in internal calls. Fixes #8460. */
+	bool q_active_in_save, q_active_out_save = false;
+	unsigned int q_mode_save = 0; 
+
 	int error;
 
 	enum gmt_col_enum time_type, end_type;
@@ -1368,7 +1372,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 					/* Labels have variable transparency during optional rise and fade, and fully opaque during normal section, and skipped otherwise unless coda */
 
 					if (Ctrl->T.now < t[PSEVENTS_T_EVENT]) {	/* We are within the rise phase */
-						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_DECAY, t, Ctrl->T.now);	/* Ramp function */
+						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_RISE, t, Ctrl->T.now);	/* Ramp function */
 						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0 - x);		/* Magnification of opacity */
 					}
 					else if (finite_duration && Ctrl->T.now < t[PSEVENTS_T_END])	/* We are within the normal phase, keep everything constant */
@@ -1390,6 +1394,14 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		if (fp_symbols) fclose (fp_symbols);	/* Close the file so symbol output is flushed */
 		if (fp_labels)  fclose (fp_labels);		/* Close the file so label output is flushed */
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from temp files in psxy or pstext below */
+		/* Save current -q state and disable it temporarily. This prevents the internal psxy/pstext calls
+		 * from applying the -q filter a second time to the already filtered temporary files (Fixes #8460). */		
+		q_mode_save = GMT->common.q.mode;
+		q_active_in_save = GMT->common.q.active[GMT_IN];
+		q_active_out_save = GMT->common.q.active[GMT_OUT];
+		GMT->common.q.mode = 0;               /* Disable row/time range checks */
+		GMT->common.q.active[GMT_IN] = false; /* Disable input filtering */
+		GMT->common.q.active[GMT_OUT] = false;/* Disable output filtering */
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up map projection */
@@ -1466,8 +1478,13 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	if (fp_symbols || fp_labels)	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	if (fp_symbols || fp_labels) {	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_reenable_bghio_opts (GMT);
+		/* Restore original -q state before re-enabling other I/O options (Fixes #8460). */
+		GMT->common.q.mode = q_mode_save;
+		GMT->common.q.active[GMT_IN] = q_active_in_save;
+		GMT->common.q.active[GMT_OUT] = q_active_out_save;
+	}
 
 	/* Finalize plot and we are done */
 
