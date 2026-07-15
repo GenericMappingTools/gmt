@@ -8004,7 +8004,11 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	bool keep_trying;
 	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap, final_d, x_prev, y_prev;
 
-	if (GMT->current.map.meridian_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
+	/* The isfinite() is a patch for the crash reported in issue #9073. The crash occurs because lat1 = NaN,
+	   but only on unix. On Windows it works fine. The true fix must be to find WHY lat1 = NaN in the first place,
+	   bug debugging on Linuxd is behind my suffering threshold.
+	*/
+	if (GMT->current.map.meridian_straight == 2 || !isfinite(lat1) || !isfinite(lat2)) {	/* Special non-sampling for gmtselect/grdlandmask */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlon[0] = tlon[1] = lon;
 		tlat[0] = lat1;	tlat[1] = lat2;
