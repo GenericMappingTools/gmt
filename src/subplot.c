@@ -504,10 +504,13 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					char *q = NULL;
 					double f = 0.0;
 					if ((q = strstr (opt->arg, "+f")) != NULL) {	/* Gave optional fractions on how to partition width and height on a per row/col basis */
-						char *ytxt = strchr (&q[2], '/');	/* Find the slash */
+						char *ytxt = NULL, *nxt = strchr (&q[2], '+');	/* Find start of any subsequent modifier so we can bound the +f value */
+						if (nxt) nxt[0] = '\0';	/* Temporarily hide later modifiers so they cannot be swept into the fraction lists below */
+						ytxt = strchr (&q[2], '/');	/* Find the slash */
 						if (!ytxt) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Ff...+f missing slash between width and height fractions.\n");
 							n_errors++;
+							if (nxt) nxt[0] = '+';	/* Restore before bailing */
 							break;
 						}
 						k = GMT_Get_Values (API, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
@@ -533,6 +536,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						for (j = 0; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] /= f;
 						for (j = 0, f = 0.0; j < Ctrl->N.dim[GMT_Y]; j++) f += Ctrl->F.h[j];
 						for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] /= f;
+						if (nxt) nxt[0] = '+';	/* Restore any later modifiers */
 						q[0] = '+';	/* Restore the fraction settings for now */
 					}
 					else {	/* Equal rows and cols */
@@ -1478,6 +1482,9 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (fabs (Ctrl->F.clearance[GMT_X]) > 0.0 || fabs (Ctrl->F.clearance[GMT_Y]) > 0.0) {	/* Must reset origin */
 			width  -= 2.0 * Ctrl->F.clearance[GMT_X];
 			height -= 2.0 * Ctrl->F.clearance[GMT_Y];
+			/* Same reasoning as for the divider-line call below: this call only resets the origin (-T, no -B)
+			 * and must never repaint the canvas, so make sure no stale canvas-paint request survives here. */
+			GMT->current.map.frame.paint[GMT_Z] = false;
 			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=readonly", width, height, 'r', Ctrl->F.clearance[GMT_X], 'r', Ctrl->F.clearance[GMT_Y]);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
@@ -1487,6 +1494,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, L, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
+			/* This call must never paint a canvas background - it only strokes the divider lines on top of
+			 * whatever was already drawn (e.g. the +g fill from the earlier plot call above). Make sure no
+			 * stale/leaked canvas-paint request survives from that earlier internal plot call. */
+			GMT->current.map.frame.paint[GMT_Z] = false;
 			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=readonly", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */

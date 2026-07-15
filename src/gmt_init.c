@@ -20746,6 +20746,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	unsigned int pos = 0, sides[5];
 	bool add_label = false, add_annot = false, axis_set = false, was;
 	double GMT_LETTER_HEIGHT = 0.736;
+	double map_origin[2];
 	struct GMT_OPTION *opt = NULL;
 	char *c = NULL;
 	unsigned int n_errors = 0;
@@ -20799,6 +20800,16 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	/* Because the next call will reset frame sides I will make a copy and override the override here */
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	was = GMT->current.map.frame.draw;
+	/* gmt_getdefaults below reloads gmt.conf from scratch, which will reset map_origin to the raw
+	 * MAP_ORIGIN_X|Y settings.  However, when we are called from within a subplot panel, map_origin
+	 * has already been adjusted (e.g., via -Xf/-Yf) to reflect the panel's position on the page, and
+	 * gmt_plot_init will later add the panel offset (P->dx/P->dy) on top of whatever is in map_origin.
+	 * If we let gmt_getdefaults clobber map_origin here, the user's MAP_ORIGIN_X|Y gets reintroduced
+	 * and then double-counted once the panel offset is added, throwing off -D justified placements
+	 * (most visibly for middle-justified codes like MR/ML/TC/BC).  Save and restore map_origin so
+	 * this call only affects the frame/annotation settings it is meant to inspect. */
+	map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_X];
+	map_origin[GMT_Y] = GMT->current.setting.map_origin[GMT_Y];
 	gmtinit_conf_modern_override (GMT);	/* Reset */
 	(void)gmt_getdefaults (GMT, NULL);
 	if (!GMT->parent->external || options) {	/* So that externals can send a NULL ptr for options. 'Internal' is not affected */
@@ -20813,6 +20824,8 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT parameter parsing failures for %d settings\n", n_errors);
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;
+	GMT->current.setting.map_origin[GMT_X] = map_origin[GMT_X];
+	GMT->current.setting.map_origin[GMT_Y] = map_origin[GMT_Y];
 }
 
 unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {

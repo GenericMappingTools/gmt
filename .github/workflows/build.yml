@@ -105,17 +105,25 @@ jobs:
           cmake --build .
         if: runner.os != 'Windows'
 
-      - name: Compile GMT (Windows)
+      - name: Compile and Install GMT (Windows)
+        if: runner.os == 'Windows'
         shell: cmd
         run: |
           mkdir build
           cd build
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+          setlocal enabledelayedexpansion
+          set "INSTALLDIR=%INSTALLDIR:\=/%"
+          set "WINVCPKGROOT=%VCPKG_INSTALLATION_ROOT:/=\%"
+          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=!WINVCPKGROOT!\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build .
-        if: runner.os == 'Windows'
+          cmake --build . --target install
+          set "WININSTALLDIR=!INSTALLDIR:/=\!"
+          echo !WININSTALLDIR!\bin>> %GITHUB_PATH%
+          endlocal
 
-      - name: Install GMT
+      - name: Install GMT (Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
           cd build
           cmake --build . --target install
@@ -128,7 +136,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Check a few simple commands
-        run: bash ci/simple-gmt-tests.sh
+        shell: bash
+        run: |
+          export PATH="$INSTALLDIR/bin:$PATH"
+          bash ci/simple-gmt-tests.sh
 
       - name: Check a few simple commands (Windows)
         shell: cmd
