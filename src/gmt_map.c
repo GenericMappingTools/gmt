@@ -7085,8 +7085,24 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.2));
 
 	/* Now determine 'round' major and minor tick intervals */
-	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
-		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+	if (gmt_M_axis_is_geo (GMT, axis)) {	/* Geographical coordinate */
+		struct GMT_GEO_IO *S = &GMT->current.plot.calclock.geo;
+		if (S->order[1] == GMT_NOTSET && S->n_sec_decimals > 0) {
+			/* FORMAT_GEO_MAP is a plain decimal-degree template with a fixed number
+			 * of decimals (e.g., ddd.xxF or ddd.xxxF).  If we let the interval be
+			 * picked in arcsec/arcmin/degree "nice" units as usual it may end up as
+			 * a value (e.g., 25" = 0.006944...9 degrees) that cannot be represented
+			 * exactly at the requested decimal precision.  The annotation label is
+			 * then rounded for display while the tick/gridline is still placed at
+			 * the true (unrounded) coordinate, so the label and its position visibly
+			 * disagree -- see GMT issue #8490.  To avoid this we pick the interval
+			 * directly in units of the smallest displayable decimal step so that any
+			 * "nice" multiple of it is exactly representable in the chosen format. */
+			p = pow (10.0, -(double)S->n_sec_decimals);
+		}
+		else
+			p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+	}
 	else if (GMT->current.io.cycle_col == axis && GMT->current.io.cycle_operator != GMT_CYCLE_CUSTOM) {
 		switch (GMT->current.io.cycle_operator) {
 			case GMT_CYCLE_MIN: case GMT_CYCLE_HOUR:	/* With a range of 60 it behaves like geo */
