@@ -85,10 +85,16 @@ struct GRDGRAVMAG3D_CTRL {
 		bool active;
 		bool bhatta;
 		bool pirtt;
-		bool x_comp, y_comp, z_comp, f_tot, h_comp;
+		bool x_comp, y_comp, z_comp, f_tot, h_comp, d_comp, i_comp;
 		bool got_incgrid, got_decgrid, got_maggrid, do_igrf;
 		char *incfile, *decfile;
 		double	t_dec, t_dip, m_int, m_dec, m_dip, koningsberg;
+		/* Work buffers used only when d_comp|i_comp request declination/inclination of the anomaly
+		   vector. Since atan2() is non-linear, the x/y/z components must be accumulated separately
+		   over all body facets before the final angle can be computed, unlike the other components
+		   which are added directly into Gout/g[] */
+		gmt_grdfloat *Gx, *Gy, *Gz;
+		double *gx, *gy, *gz;
 	} H;
 	struct GRDGRAVMAG3D_L {	/* -L */
 		bool active;
@@ -229,6 +235,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "z: Compute the Vertical component.");
 	GMT_Usage (API, 3, "h: Compute the Horizontal component.");
 	GMT_Usage (API, 3, "t: Compute the total field.");
+	GMT_Usage (API, 3, "d: Compute the declination of the anomaly.");
+	GMT_Usage (API, 3, "i: Compute the inclination of the anomaly.");
 	GMT_Usage (API, -2, "If we want to compute the magnetic anomalies over a large region where the ambient "
 		"magnetic field can no longer be assumed to be constant we can set variable inclinations and declinations "
 		"via IGRF. Set any of -H+i|g|r|f|n to do that.");
@@ -376,6 +384,14 @@ static int parse(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GM
 					Ctrl->H.h_comp = true;
 					Ctrl->H.pirtt = true;
 				}
+				else if (opt->arg[0] == 'd' || opt->arg[0] == 'D') {
+					Ctrl->H.d_comp = true;
+					Ctrl->H.pirtt = true;
+				}
+				else if (opt->arg[0] == 'i' || opt->arg[0] == 'I') {
+					Ctrl->H.i_comp = true;
+					Ctrl->H.pirtt = true;
+				}
 				if (Ctrl->H.pirtt) i = 1;
 				if (opt->arg[i] && (sscanf(&opt->arg[i], "%lf/%lf/%lf/%lf/%lf",
 				            &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
@@ -461,6 +477,8 @@ static int parse(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GM
 	                                "Cannot specify both -C and -H options\n");
 	n_errors += gmt_M_check_condition(GMT, (Ctrl->H.got_maggrid || Ctrl->C.got_gravgrid) && !Ctrl->box.srcfile,
 	                                "Option -H+m or -C+d: Must specify source file\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->H.bhatta && (Ctrl->H.d_comp || Ctrl->H.i_comp),
+	                                "Option -H: d and i components are not supported with the Bhattacharya method\n");
 	i += gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -706,6 +724,19 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	x_obs = gmt_M_memory (GMT, NULL, nx_p, double);
 	y_obs = gmt_M_memory (GMT, NULL, ny_p, double);
 	if (Ctrl->F.active) g = gmt_M_memory (GMT, NULL, ndata, double);
+
+	if (Ctrl->H.d_comp || Ctrl->H.i_comp) {	/* Need to accumulate the x/y/z vector before the final atan2() */
+		if (Ctrl->G.active) {
+			Ctrl->H.Gx = gmt_M_memory (GMT, NULL, Gout->header->size, gmt_grdfloat);
+			Ctrl->H.Gy = gmt_M_memory (GMT, NULL, Gout->header->size, gmt_grdfloat);
+			Ctrl->H.Gz = gmt_M_memory (GMT, NULL, Gout->header->size, gmt_grdfloat);
+		}
+		else {
+			Ctrl->H.gx = gmt_M_memory (GMT, NULL, ndata, double);
+			Ctrl->H.gy = gmt_M_memory (GMT, NULL, ndata, double);
+			Ctrl->H.gz = gmt_M_memory (GMT, NULL, ndata, double);
+		}
+	}
 
 	d = GridA->header->xy_off;		/*  0.5 : 0.0 */
 
@@ -978,10 +1009,38 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 L1:
 
+	if (Ctrl->H.d_comp || Ctrl->H.i_comp) {	/* atan2() of the vector accumulated above; can only be done once, after all facets are summed */
+		double hx, hy, hz, h_hor;
+		if (Ctrl->G.active) {
+			for (ij = 0; ij < Gout->header->size; ij++) {
+				hx = Ctrl->H.Gx[ij];	hy = Ctrl->H.Gy[ij];	hz = Ctrl->H.Gz[ij];
+				h_hor = sqrt(hx * hx + hy * hy);
+				Gout->data[ij] = (gmt_grdfloat)((Ctrl->H.d_comp) ? atan2(hx, hy) * R2D : atan2(hz, h_hor) * R2D);
+			}
+			gmt_M_free (GMT, Ctrl->H.Gx);	gmt_M_free (GMT, Ctrl->H.Gy);	gmt_M_free (GMT, Ctrl->H.Gz);
+		}
+		else {
+			for (k = 0; k < ndata; k++) {
+				hx = Ctrl->H.gx[k];	hy = Ctrl->H.gy[k];	hz = Ctrl->H.gz[k];
+				h_hor = sqrt(hx * hx + hy * hy);
+				g[k] = (Ctrl->H.d_comp) ? atan2(hx, hy) * R2D : atan2(hz, h_hor) * R2D;
+			}
+			gmt_M_free (GMT, Ctrl->H.gx);	gmt_M_free (GMT, Ctrl->H.gy);	gmt_M_free (GMT, Ctrl->H.gz);
+		}
+	}
+
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active) {
 			strcpy (Gout->header->title, "Gravity field");
 			strcpy (Gout->header->z_units, "mGal");
+		}
+		else if (Ctrl->H.d_comp) {
+			strcpy (Gout->header->title, "Magnetic anomaly declination");
+			strcpy (Gout->header->z_units, "degrees");
+		}
+		else if (Ctrl->H.i_comp) {
+			strcpy (Gout->header->title, "Magnetic anomaly inclination");
+			strcpy (Gout->header->z_units, "degrees");
 		}
 		else {
 			strcpy (Gout->header->title, "Magnetic field");
@@ -1296,7 +1355,44 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 				}
 			}
 
-			if (Ctrl->G.active) {
+			if (Ctrl->H.d_comp || Ctrl->H.i_comp) {
+				/* Declination/inclination need the full x/y/z vector accumulated first; atan2() can't be summed per facet */
+				if (Ctrl->G.active) {
+					for (k = 0; k < Gout->header->n_rows; k++) {            /* Loop over output grid rows */
+						y_o = (Ctrl->box.is_geog) ? (y_obs[k] + Ctrl->box.lat_0) * Ctrl->box.d_to_m : y_obs[k]; /* +lat_0 because y was already *= -1 */
+						if (Ctrl->S.active) {
+							DY = body_verts[0].y - y_o;
+							if (fabs(DY) > Ctrl->S.radius) continue;    /* If outside the circumscribed square no need to continue */
+							DY *= DY;                                   /* Square it right away */
+						}
+
+						if (Ctrl->box.is_geog) tmp = Ctrl->box.d_to_m * cos(y_obs[k]*D2R);
+						for (i = 0; i < Gout->header->n_columns; i++) {        /* Loop over output grid cols */
+							size_t ij_out;
+							x_o = (Ctrl->box.is_geog) ? (x_obs[i] - Ctrl->box.lon_0) * tmp : x_obs[i];
+							if (Ctrl->S.active) {
+								DX = body_verts[0].x - x_o;             /* Use the first vertex to estimate distance. Approximate but good enough */
+								if ((DX*DX + DY) > s_rad2) continue;    /* Remember that DY was already squared above */
+							}
+							ij_out = gmt_M_ijp(Gout->header, k, i);
+							Ctrl->H.Gx[ij_out] += (gmt_grdfloat)d_func[indf](GMT, x_o, y_o, Ctrl->L.zobs, rho_or_mag, Ctrl->C.active, *body_desc, body_verts, km, 1, loc_or, okabe_mag_param, okabe_mag_var);
+							Ctrl->H.Gy[ij_out] += (gmt_grdfloat)d_func[indf](GMT, x_o, y_o, Ctrl->L.zobs, rho_or_mag, Ctrl->C.active, *body_desc, body_verts, km, 2, loc_or, okabe_mag_param, okabe_mag_var);
+							Ctrl->H.Gz[ij_out] += (gmt_grdfloat)d_func[indf](GMT, x_o, y_o, Ctrl->L.zobs, rho_or_mag, Ctrl->C.active, *body_desc, body_verts, km, 3, loc_or, okabe_mag_param, okabe_mag_var);
+						}
+					}
+				}
+				else {                                                  /* Compute on a polyline only */
+					for (k = 0; k < n_pts; k++) {
+						Ctrl->H.gx[k] += d_func[indf](GMT, x_obs[k], y_obs[k], Ctrl->L.zobs, rho_or_mag, Ctrl->C.active,
+						                     *body_desc, body_verts, km, 1, loc_or, okabe_mag_param, okabe_mag_var);
+						Ctrl->H.gy[k] += d_func[indf](GMT, x_obs[k], y_obs[k], Ctrl->L.zobs, rho_or_mag, Ctrl->C.active,
+						                     *body_desc, body_verts, km, 2, loc_or, okabe_mag_param, okabe_mag_var);
+						Ctrl->H.gz[k] += d_func[indf](GMT, x_obs[k], y_obs[k], Ctrl->L.zobs, rho_or_mag, Ctrl->C.active,
+						                     *body_desc, body_verts, km, 3, loc_or, okabe_mag_param, okabe_mag_var);
+					}
+				}
+			}
+			else if (Ctrl->G.active) {
 				for (k = 0; k < Gout->header->n_rows; k++) {            /* Loop over output grid rows */
 					y_o = (Ctrl->box.is_geog) ? (y_obs[k] + Ctrl->box.lat_0) * Ctrl->box.d_to_m : y_obs[k]; /* +lat_0 because y was already *= -1 */
 					if (Ctrl->S.active) {
