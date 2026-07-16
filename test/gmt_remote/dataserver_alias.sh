@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Regression test for GMT_DATA_SERVER alias redirect resolution.
 #
-# Background: Alias server names (e.g., china, australia) expand to Hover DNS
-# URL-forwards that redirect to the real mirror but strip the file path.
+# Background: Alias server names (e.g., remotedata, china, australia) expand to
+# Hover DNS URL-forwards that redirect to the real mirror but strip the file path.
 # Before the fix, GMT constructed download URLs using the alias base (e.g.,
 # http://china.generic-mapping-tools.org/server/earth/earth_relief/file.grd),
 # which Hover would redirect to the mirror root — discarding the file path and
@@ -20,10 +20,10 @@
 # Remove any cached copy to force a real download from the server
 rm -f "${HOME}/.gmt/server/earth/earth_relief/earth_relief_01d_p.grd"
 
-# Force an alias server name so the alias expansion and redirect resolver code
-# in gmt_dataserver_url() is always exercised, regardless of the build-time
-# GMT_DATA_SERVER default.  oceania is a stable direct server (no DNS forward).
-export GMT_DATA_SERVER=oceania
+# Use the short alias form to exercise alias expansion and the redirect resolver.
+# GMT expands "remotedata" to "remotedata.generic-mapping-tools.org", follows the
+# Hover redirect to discover the real mirror URL, then builds file paths against it.
+export GMT_DATA_SERVER=remotedata
 
 # Download (or use cached) global 1 arc-degree relief grid and get its range
 gmt grdinfo @earth_relief_01d_p.grd -I- > got.txt 2>err.txt
