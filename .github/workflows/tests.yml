@@ -70,7 +70,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Setup conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         if: runner.os == 'macOS'
 
       - name: Install GMT dependencies
@@ -127,13 +127,14 @@ jobs:
         continue-on-error: true
         run: |
           dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-          dvc pull --remote origin --no-run-cache
+          dvc pull --remote origin --no-run-cache --force
         env:
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Download DVC cache from GitHub Artifacts and restore baseline image data
         if: steps.dvc-pull.outcome == 'failure'
         run: |
+          rm -rf .dvc/cache
           gh run download -n dvc-cache -D .dvc/cache/
           dvc checkout --force
         env:
@@ -188,7 +189,7 @@ jobs:
         if: failure()
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6.0.0
+        uses: codecov/codecov-action@v6.0.1
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:

@@ -1449,6 +1449,8 @@ EXTERN_MSC int GMT_grdimage(void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, byte_image_no_cmap;
 	bool nothing_inside = false, use_intensity_grid = false, got_data_tiles = false, rgb_cube_scan;
 	bool has_content, mem_G = false, mem_I = false, mem_D = false, got_z_grid = true, plot_squares = false;
+	bool extend_image_A = false;	/* Issue #3106: when -A is used and -R extends beyond grid, embed grid in larger image */
+	int64_t img_col_off = 0, img_row_off = 0;	/* Pixel offsets of grid block inside extended -A image */
 	unsigned int grid_registration = GMT_GRID_NODE_REG, try, row, col, mixed = 0, pad_mode = 0;
 	uint64_t node, k, kk, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET, ftype2 = GMT_NOTSET;
@@ -2131,18 +2133,30 @@ tr_image:		GMT_Report(API, GMT_MSG_INFORMATION, "Project the input image\n");
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
 		char mem_layout[5] = {""}, *pch = NULL;
+		int64_t target_n_cols, target_n_rows;	/* Issue #3106: snapped Out pixel dimensions */
+		double full_x_ext_plot, full_y_ext_plot;	/* Full plot extent in plot/data units */
 		if (Ctrl->M.active || gray_only) dim[GMT_Z] = 1;	/* Only one band requested */
-		if (!need_to_project) {	/* Stick with original -R */
-			img_wesn[XLO] = GMT->common.R.wesn[XLO];		img_wesn[XHI] = GMT->common.R.wesn[XHI];
-			img_wesn[YHI] = GMT->common.R.wesn[YHI];		img_wesn[YLO] = GMT->common.R.wesn[YLO];
+		/* Issue #3106: derive Out dims from full plot extent / grid pixel-size (plot units),
+		 * then snap img_inc so (img_wesn extent)/img_inc is exactly an integer pixel count.
+		 * This avoids the gmt_grd_RI_verify warning about non-integer NX/NY. */
+		if (!need_to_project) {
+			img_wesn[XLO] = GMT->common.R.wesn[XLO];	img_wesn[XHI] = GMT->common.R.wesn[XHI];
+			img_wesn[YHI] = GMT->common.R.wesn[YHI];	img_wesn[YLO] = GMT->common.R.wesn[YLO];
+			full_x_ext_plot = img_wesn[XHI] - img_wesn[XLO];
+			full_y_ext_plot = img_wesn[YHI] - img_wesn[YLO];
 		}
-		else {	/* Must use the projected limits, here in meters */
+		else {
 			img_wesn[XLO] = GMT->current.proj.rect_m[XLO];	img_wesn[XHI] = GMT->current.proj.rect_m[XHI];
 			img_wesn[YHI] = GMT->current.proj.rect_m[YHI];	img_wesn[YLO] = GMT->current.proj.rect_m[YLO];
+			full_x_ext_plot = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
+			full_y_ext_plot = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
 		}
-		/* Determine raster image pixel sizes in the final units */
-		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (Conf->n_columns - !grid_registration);
-		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (Conf->n_rows - !grid_registration);
+		target_n_cols = (header_work->inc[GMT_X] > 0.0) ? lrint(full_x_ext_plot / header_work->inc[GMT_X]) : (int64_t)header_work->n_columns;
+		target_n_rows = (header_work->inc[GMT_Y] > 0.0) ? lrint(full_y_ext_plot / header_work->inc[GMT_Y]) : (int64_t)header_work->n_rows;
+		if (target_n_cols < 1) target_n_cols = (int64_t)header_work->n_columns;
+		if (target_n_rows < 1) target_n_rows = (int64_t)header_work->n_rows;
+		img_inc[0] = (img_wesn[XHI] - img_wesn[XLO]) / (double)target_n_cols;
+		img_inc[1] = (img_wesn[YHI] - img_wesn[YLO]) / (double)target_n_rows;
 
 		if (grid_registration == GMT_GRID_NODE_REG) {	/* Adjust domain by 1/2 pixel since SW pixel is outside the domain */
 			img_wesn[XLO] -= 0.5 * img_inc[0];		img_wesn[XHI] += 0.5 * img_inc[0];
@@ -2185,10 +2199,33 @@ tr_image:		GMT_Report(API, GMT_MSG_INFORMATION, "Project the input image\n");
 			Out->header->ProjRefPROJ4 = img_ProjectionRefPROJ4;
 		}
 
-		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
-			bitimage_8  = Out->data;
-		else	/* Need 3-byte array for a 24-bit image */
-			bitimage_24 = Out->data;
+		/* Issue #3106: detect whether Out is larger than the grid block (i.e. -R extends beyond grid).
+		 * Offsets are pixel positions of the grid block origin (top-left) inside Out and may be
+		 * negative when the grid extends beyond the user -R on west/north -- the copy below clips. */
+		if (Out->header->n_columns != (uint32_t)Conf->n_columns || Out->header->n_rows != (uint32_t)Conf->n_rows) {
+			extend_image_A = true;
+			if (!need_to_project) {	/* Data-space wesn vs user -R, both in data units */
+				img_col_off = (int64_t)lrint((wesn[XLO] - GMT->common.R.wesn[XLO]) / header_work->inc[GMT_X]);
+				img_row_off = (int64_t)lrint((GMT->common.R.wesn[YHI] - wesn[YHI]) / header_work->inc[GMT_Y]);
+			}
+			else {	/* Projected plot-inches: header_work->wesn and proj.rect are in the same units */
+				img_col_off = (int64_t)lrint((header_work->wesn[XLO] - GMT->current.proj.rect[XLO]) / header_work->inc[GMT_X]);
+				img_row_off = (int64_t)lrint((GMT->current.proj.rect[YHI] - header_work->wesn[YHI]) / header_work->inc[GMT_Y]);
+			}
+		}
+
+		if (Ctrl->M.active || gray_only) {	/* Only need a byte-array to hold this image */
+			if (extend_image_A)	/* Fill into a grid-sized scratch buffer; copy into Out at offset below */
+				bitimage_8 = gmt_M_memory (GMT, NULL, header_work->nm, unsigned char);
+			else
+				bitimage_8  = Out->data;
+		}
+		else {	/* Need 3-byte array for a 24-bit image */
+			if (extend_image_A)
+				bitimage_24 = gmt_M_memory (GMT, NULL, 3 * header_work->nm, unsigned char);
+			else
+				bitimage_24 = Out->data;
+		}
 	}
 	else if (!plot_squares) {	/* Produce a PostScript image layer */
 		if (Ctrl->M.active || gray_only)	/* Only need a byte-array to hold this image */
@@ -2300,6 +2337,55 @@ tr_image:		GMT_Report(API, GMT_MSG_INFORMATION, "Project the input image\n");
 
 	if (rgb_used) gmt_M_free (GMT, rgb_used);	/* Done using the r/g/b cube */
 
+	if (extend_image_A) {	/* Issue #3106: embed grid-sized fill into the extended Out image at (img_col_off, img_row_off) */
+		uint64_t bands = (Ctrl->M.active || gray_only) ? 1 : 3;
+		uint64_t out_cols = Out->header->n_columns;
+		uint64_t out_rows = Out->header->n_rows;
+		uint64_t grow, opos, gpos, ipix;
+		unsigned char nan_bg[3], *src = (Ctrl->M.active || gray_only) ? bitimage_8 : bitimage_24;
+		double *bg = (P) ? P->bfn[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
+		int64_t src_col0 = 0, src_row0 = 0;
+		int64_t dst_col0 = img_col_off, dst_row0 = img_row_off;
+		int64_t copy_cols = (int64_t)Conf->n_columns, copy_rows = (int64_t)Conf->n_rows;
+		for (k = 0; k < 3; k++) nan_bg[k] = gmt_M_u255(bg[k]);
+		/* Fill the entire Out->data with the NaN background color */
+		if (bands == 1) {
+			unsigned char gray = (unsigned char)irint(0.299 * nan_bg[0] + 0.587 * nan_bg[1] + 0.114 * nan_bg[2]);
+			memset(Out->data, gray, (size_t)(out_cols * out_rows));
+		}
+		else {
+			for (ipix = 0; ipix < out_cols * out_rows; ipix++) {
+				Out->data[3*ipix+0] = nan_bg[0];
+				Out->data[3*ipix+1] = nan_bg[1];
+				Out->data[3*ipix+2] = nan_bg[2];
+			}
+		}
+		/* Copy the overlapping portion of the grid block into Out (clip both ends) */
+		if (dst_col0 < 0) src_col0 = -dst_col0, copy_cols += dst_col0, dst_col0 = 0;
+		if (dst_row0 < 0) src_row0 = -dst_row0, copy_rows += dst_row0, dst_row0 = 0;
+		if (dst_col0 + copy_cols > (int64_t)out_cols) copy_cols = (int64_t)out_cols - dst_col0;
+		if (dst_row0 + copy_rows > (int64_t)out_rows) copy_rows = (int64_t)out_rows - dst_row0;
+		if (copy_cols > 0 && copy_rows > 0)
+			for (grow = 0; grow < (uint64_t)copy_rows; grow++) {
+				opos = (((uint64_t)dst_row0 + grow) * out_cols + (uint64_t)dst_col0) * bands;
+				gpos = (((uint64_t)src_row0 + grow) * (uint64_t)Conf->n_columns + (uint64_t)src_col0) * bands;
+				memcpy(&Out->data[opos], &src[gpos], (size_t)((uint64_t)copy_cols * bands));
+			}
+		/* Free the scratch grid-sized buffer; the bands pointer below now refers to Out->data */
+		if (bands == 1) {
+			gmt_M_free(GMT, bitimage_8);
+			bitimage_8 = Out->data;
+		}
+		else {
+			gmt_M_free(GMT, bitimage_24);
+			bitimage_24 = Out->data;
+		}
+		/* Initialize transparency: 0 (transparent) outside the grid block; the per-grid loop below
+		 * (when -Q is active) will set 255 inside or 0 at NaN grid nodes. */
+		if (Ctrl->Q.active && Out->alpha)
+			memset(Out->alpha, 0, (size_t)(out_cols * out_rows));
+	}
+
 ready:
 
 	/* Get actual plot size of each pixel */
@@ -2347,11 +2433,32 @@ ready:
 	else {	/* Dealing with a 24-bit color image */
 		if (Ctrl->A.active) {	/* Creating a raster image, not PostScript */
 			if (Ctrl->Q.active) {	/* Must initialize the transparency byte (alpha): 255 everywhere except at NaNs where it should be 0 */
-				memset (Out->alpha, 255, header_work->nm);
-				for (node = row = 0; row < (unsigned int)Conf->n_rows; row++) {
-					kk = gmt_M_ijpgi (header_work, row, 0);
-					for (col = 0; col < (unsigned int)Conf->n_columns; col++, node++) {
-						if (gmt_M_is_fnan (Grid_proj->data[kk + col])) Out->alpha[node] = 0;
+				if (extend_image_A) {	/* Out->alpha already 0 outside grid block; fill in grid block (issue #3106) */
+					uint64_t out_cols = Out->header->n_columns;
+					uint64_t out_rows = Out->header->n_rows;
+					int64_t src_col0 = 0, src_row0 = 0;
+					int64_t dst_col0 = img_col_off, dst_row0 = img_row_off;
+					int64_t copy_cols = (int64_t)Conf->n_columns, copy_rows = (int64_t)Conf->n_rows;
+					if (dst_col0 < 0) src_col0 = -dst_col0, copy_cols += dst_col0, dst_col0 = 0;
+					if (dst_row0 < 0) src_row0 = -dst_row0, copy_rows += dst_row0, dst_row0 = 0;
+					if (dst_col0 + copy_cols > (int64_t)out_cols) copy_cols = (int64_t)out_cols - dst_col0;
+					if (dst_row0 + copy_rows > (int64_t)out_rows) copy_rows = (int64_t)out_rows - dst_row0;
+					if (copy_cols > 0 && copy_rows > 0)
+						for (row = 0; row < (unsigned int)copy_rows; row++) {
+							kk = gmt_M_ijpgi(header_work, (unsigned int)((int64_t)row + src_row0), 0);
+							for (col = 0; col < (unsigned int)copy_cols; col++) {
+								node = ((uint64_t)dst_row0 + (uint64_t)row) * out_cols + (uint64_t)dst_col0 + (uint64_t)col;
+								Out->alpha[node] = gmt_M_is_fnan(Grid_proj->data[kk + col + (uint64_t)src_col0]) ? 0 : 255;
+							}
+						}
+				}
+				else {
+					memset (Out->alpha, 255, header_work->nm);
+					for (node = row = 0; row < (unsigned int)Conf->n_rows; row++) {
+						kk = gmt_M_ijpgi (header_work, row, 0);
+						for (col = 0; col < (unsigned int)Conf->n_columns; col++, node++) {
+							if (gmt_M_is_fnan (Grid_proj->data[kk + col])) Out->alpha[node] = 0;
+						}
 					}
 				}
 			}

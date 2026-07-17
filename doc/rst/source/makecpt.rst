@@ -136,7 +136,7 @@ Optional Arguments
     :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before |-G| and |-T| values are used
-    so the latter much be compatible with the changed *z*-range.
+    so the latter must be compatible with the changed *z*-range.
     See also :ref:`manipulating_CPTs`
 
 .. _-M:
@@ -237,7 +237,7 @@ part from the hinge to the top, according to the prescribed new range.
 Hinges are either *hard* or *soft*.  Soft hinges must be *activated* by
 appending **+h**\ [*hinge*] to the CPT name.
 If the selected range does not include an activated soft or hard hinge then
-we only resample colors from the half of the CPT that pertains to the range.
+we only resample colors from the half of the CPT that pertain to the range.
 See :ref:`Of Colors and Color Legends` for more information.
 
 Discrete versus Continuous CPT

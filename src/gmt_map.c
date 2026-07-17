@@ -6367,6 +6367,7 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 	unsigned int i, i_min = 0, i_max = 0;
 	bool easy, positive;
 	double x, y, zmin = 0.0, zmax = 0.0, z_range;
+	double _zmin = 0.0, _zmax = 0.0;
 
 	GMT->current.proj.three_D = (GMT->current.proj.z_project.view_azimuth != 180.0 || GMT->current.proj.z_project.view_elevation != 90.0);
 	GMT->current.proj.scale[GMT_Z] = GMT->current.proj.z_pars[0];
@@ -6389,6 +6390,9 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 		case GMT_LINEAR:	/* Regular scaling */
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_min] : GMT->common.R.wesn[i_max];
 			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[i_max] : GMT->common.R.wesn[i_min];
+			_zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZLO] : GMT->common.R.wesn[ZHI];
+			_zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZHI] : GMT->common.R.wesn[ZLO];
+
 			GMT->current.proj.fwd_z = &gmtlib_translin;
 			GMT->current.proj.inv_z = &gmtlib_itranslin;
 			break;
@@ -6397,8 +6401,11 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Jz -JZ: limits must be positive for log10 projection\n");
 				return GMT_PROJECTION_ERROR;
 			}
-			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[i_min]) : d_log10 (GMT, GMT->common.R.wesn[i_max]);
-			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[i_max]) : d_log10 (GMT, GMT->common.R.wesn[i_min]);
+			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[i_min]) : d_log10(GMT, GMT->common.R.wesn[i_max]);
+			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[i_max]) : d_log10(GMT, GMT->common.R.wesn[i_min]);
+			_zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[ZLO]) : d_log10(GMT, GMT->common.R.wesn[ZHI]);
+			_zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10(GMT, GMT->common.R.wesn[ZHI]) : d_log10(GMT, GMT->common.R.wesn[ZLO]);
+
 			GMT->current.proj.fwd_z = &gmtproj_translog10;
 			GMT->current.proj.inv_z = &gmtproj_itranslog10;
 			break;
@@ -6406,12 +6413,15 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 			GMT->current.proj.xyz_pow[GMT_Z] = GMT->current.proj.z_pars[1];
 			GMT->current.proj.xyz_ipow[GMT_Z] = 1.0 / GMT->current.proj.z_pars[1];
 			positive = !((GMT->current.proj.xyz_pos[GMT_Z] + (GMT->current.proj.xyz_pow[GMT_Z] > 0.0)) % 2);
-			zmin = (positive) ? pow (GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]);
-			zmax = (positive) ? pow (GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[i_min], GMT->current.proj.xyz_pow[GMT_Z]);
+			zmin = (positive) ? pow(GMT->common.R.wesn[i_min], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]);
+			zmax = (positive) ? pow(GMT->common.R.wesn[i_max], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[i_min], GMT->current.proj.xyz_pow[GMT_Z]);
+			_zmin = (positive) ? pow(GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]);
+			_zmax = (positive) ? pow(GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]) : pow(GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]);
+
 			GMT->current.proj.fwd_z = &gmtproj_transpowz;
 			GMT->current.proj.inv_z = &gmtproj_itranspowz;
 	}
-	z_range = zmax - zmin;
+	z_range = _zmax - _zmin;		/* This one is for the Z-axis scale. zmin & zmax are for -p[x|y] levels */
 	if (z_range == 0.0 && GMT->current.proj.compute_scale[GMT_Z])
 		GMT->current.proj.scale[GMT_Z] = 0.0;	/* No range given, just flat projected map */
 	else if (GMT->current.proj.compute_scale[GMT_Z])
@@ -7075,8 +7085,24 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.2));
 
 	/* Now determine 'round' major and minor tick intervals */
-	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
-		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+	if (gmt_M_axis_is_geo (GMT, axis)) {	/* Geographical coordinate */
+		struct GMT_GEO_IO *S = &GMT->current.plot.calclock.geo;
+		if (S->order[1] == GMT_NOTSET && S->n_sec_decimals > 0) {
+			/* FORMAT_GEO_MAP is a plain decimal-degree template with a fixed number
+			 * of decimals (e.g., ddd.xxF or ddd.xxxF).  If we let the interval be
+			 * picked in arcsec/arcmin/degree "nice" units as usual it may end up as
+			 * a value (e.g., 25" = 0.006944...9 degrees) that cannot be represented
+			 * exactly at the requested decimal precision.  The annotation label is
+			 * then rounded for display while the tick/gridline is still placed at
+			 * the true (unrounded) coordinate, so the label and its position visibly
+			 * disagree -- see GMT issue #8490.  To avoid this we pick the interval
+			 * directly in units of the smallest displayable decimal step so that any
+			 * "nice" multiple of it is exactly representable in the chosen format. */
+			p = pow (10.0, -(double)S->n_sec_decimals);
+		}
+		else
+			p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+	}
 	else if (GMT->current.io.cycle_col == axis && GMT->current.io.cycle_operator != GMT_CYCLE_CUSTOM) {
 		switch (GMT->current.io.cycle_operator) {
 			case GMT_CYCLE_MIN: case GMT_CYCLE_HOUR:	/* With a range of 60 it behaves like geo */
@@ -7976,9 +8002,13 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	uint64_t n, k;
 	int n_try, pos;
 	bool keep_trying;
-	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
+	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap, final_d, x_prev, y_prev;
 
-	if (GMT->current.map.meridian_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
+	/* The isfinite() is a patch for the crash reported in issue #9073. The crash occurs because lat1 = NaN,
+	   but only on unix. On Windows it works fine. The true fix must be to find WHY lat1 = NaN in the first place,
+	   bug debugging on Linuxd is behind my suffering threshold.
+	*/
+	if (GMT->current.map.meridian_straight == 2 || !isfinite(lat1) || !isfinite(lat2)) {	/* Special non-sampling for gmtselect/grdlandmask */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlon[0] = tlon[1] = lon;
 		tlat[0] = lat1;	tlat[1] = lat2;
@@ -8041,10 +8071,26 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 					keep_trying = false;
 			}
 		} while (keep_trying && n_try < 10);
+		/* See gmtlib_lonpath above (#8684). Limit to azimuthal full-sphere case to avoid
+		 * affecting projections where large chords are legitimate. */
+		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {
+			final_d = hypot(x1 - x0, y1 - y0);
+			if (final_d > 5.0 * GMT->current.setting.map_line_step || gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1))
+				tlat[n] = GMT->session.d_NaN;
+		}
 		x0 = x1;	y0 = y1;
 	}
 	tlon[n] = lon;
 	tlat[n] = lat2;
+	/* Check if forced endpoint at lat2 makes a wild jump from previous sample (e.g. antipode of the
+	 * azimuthal pole). If so, flag NaN so gmt_geo_to_xy_line breaks the polyline (#8684). */
+	if (n > 0 && !gmt_M_is_dnan(tlat[n-1]) && gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {
+		gmt_geo_to_xy(GMT, tlon[n-1], tlat[n-1], &x_prev, &y_prev);
+		gmt_geo_to_xy(GMT, tlon[n], tlat[n], &x1, &y1);
+		if (gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1) || gmt_M_is_dnan(x_prev) || gmt_M_is_dnan(y_prev) ||
+		    hypot(x1 - x_prev, y1 - y_prev) > 5.0 * GMT->current.setting.map_line_step)
+			tlat[n] = GMT->session.d_NaN;
+	}
 	n++;
 
 	if (n != n_alloc) {
@@ -8062,7 +8108,7 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	uint64_t k, n;
 	int n_try, pos;
 	bool keep_trying;
-	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
+	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap, final_d, x_prev, y_prev;
 
 	if (GMT->current.map.parallel_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
@@ -8116,10 +8162,25 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 					keep_trying = false;
 			}
 		} while (keep_trying && n_try < 10);
+		/* If the final projected step is far larger than the desired map_line_step, the parallel
+		 * crossed a projection singularity (antipode of azimuthal full-sphere pole). Mark with NaN
+		 * so gmt_geo_to_xy_line breaks the polyline (#8684). */
+		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {
+			final_d = hypot(x1 - x0, y1 - y0);
+			if (final_d > 5.0 * GMT->current.setting.map_line_step || gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1))
+				tlat[n] = GMT->session.d_NaN;
+		}
 		x0 = x1;	y0 = y1;
 	}
 	tlon[n] = lon2;
 	tlat[n] = lat;
+	if (n > 0 && !gmt_M_is_dnan(tlat[n-1]) && gmt_M_is_azimuthal(GMT) && GMT->current.proj.f_horizon >= 180.0 - GMT_CONV4_LIMIT) {	/* Detect wild endpoint jump (#8684) */
+		gmt_geo_to_xy(GMT, tlon[n-1], tlat[n-1], &x_prev, &y_prev);
+		gmt_geo_to_xy(GMT, tlon[n], tlat[n], &x1, &y1);
+		if (gmt_M_is_dnan(x1) || gmt_M_is_dnan(y1) || gmt_M_is_dnan(x_prev) || gmt_M_is_dnan(y_prev) ||
+		    hypot(x1 - x_prev, y1 - y_prev) > 5.0 * GMT->current.setting.map_line_step)
+			tlat[n] = GMT->session.d_NaN;
+	}
 	n++;
 	n_alloc = n;
 	gmt_M_malloc2 (GMT, tlon, tlat, 0, &n_alloc, double);
@@ -8221,7 +8282,8 @@ uint64_t gmt_geo_to_xy_line(struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		}
 
 		if ((nx = gmtmap_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Do nothing if we get crossings*/ }
-		else if (GMT->current.map.is_world)	/* Check global wrapping if 360 range */
+		else if (GMT->current.map.is_world &&	/* Check global wrapping if 360 range */
+			!(gmt_M_is_azimuthal (GMT) && !gmt_M_is_perspective (GMT)))	/* Azimuthal projections (except ortho/genper) have a closed boundary; cylindrical wrap check makes spurious chord crossings (#8684) */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 
 		if (nx == 1) {	/* inside-outside or outside-inside; set move&clip vs draw flags */

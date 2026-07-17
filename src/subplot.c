@@ -297,7 +297,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 	unsigned int n_errors = 0, error, k, j, n = 0, pos, side;
 	bool B_args = false, noB = false;
-	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
+	char *c = NULL, *s = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL, *Bframe = NULL, *Bx = NULL, *By = NULL, *Bxy = NULL;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
@@ -504,10 +504,13 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					char *q = NULL;
 					double f = 0.0;
 					if ((q = strstr (opt->arg, "+f")) != NULL) {	/* Gave optional fractions on how to partition width and height on a per row/col basis */
-						char *ytxt = strchr (&q[2], '/');	/* Find the slash */
+						char *ytxt = NULL, *nxt = strchr (&q[2], '+');	/* Find start of any subsequent modifier so we can bound the +f value */
+						if (nxt) nxt[0] = '\0';	/* Temporarily hide later modifiers so they cannot be swept into the fraction lists below */
+						ytxt = strchr (&q[2], '/');	/* Find the slash */
 						if (!ytxt) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Ff...+f missing slash between width and height fractions.\n");
 							n_errors++;
+							if (nxt) nxt[0] = '+';	/* Restore before bailing */
 							break;
 						}
 						k = GMT_Get_Values (API, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
@@ -533,6 +536,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						for (j = 0; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] /= f;
 						for (j = 0, f = 0.0; j < Ctrl->N.dim[GMT_Y]; j++) f += Ctrl->F.h[j];
 						for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] /= f;
+						if (nxt) nxt[0] = '+';	/* Restore any later modifiers */
 						q[0] = '+';	/* Restore the fraction settings for now */
 					}
 					else {	/* Equal rows and cols */
@@ -703,9 +707,16 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 			}
 			if (Bx) {	/* Did get separate x-axis annotation settings */
-				if ((c = gmt_first_modifier (GMT, Bx->arg, "lpsu"))) {	/* Gave valid axes modifiers for custom labels */
+				s = Bx->arg;
+				/* +a (annotation angle/parallel/normal) is a valid modifier but must not be treated as the
+				 * cut point below since it has to survive verbatim in Ctrl->S[GMT_X].b; skip past any +a
+				 * we encounter and keep looking for a genuine label/prefix/unit modifier to truncate at.
+				 * Note: if +a appears *after* a genuine l/p/s/u modifier it will still be chopped off below;
+				 * that combination is not currently supported. */
+				while ((c = gmt_first_modifier (GMT, s, "alpsu")) && c[1] == 'a') s = c + 2;
+				if (c) {	/* Gave valid axes modifiers for custom labels */
 					pos = error = 0;
-					while (gmt_getmodopt (GMT, 'B', c, "lpsu", &pos, p, &error) && error == 0) {
+					while (gmt_getmodopt (GMT, 'B', c, "alpsu", &pos, p, &error) && error == 0) {
 						switch (p[0]) {
 							case 'l':	/* Regular x-axis label */
 								Ctrl->S[GMT_X].label[GMT_PRIMARY] = strdup (&p[1]);	break;
@@ -715,6 +726,8 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 								Ctrl->S[GMT_X].label[GMT_SECONDARY] = strdup (&p[1]);	break;
 							case 'u':	/* Annotation units */
 								Ctrl->S[GMT_X].unit[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 'a':	/* Annotation angle/parallel/normal - passed through verbatim via subplot_prep_annot_args */
+								break;
 							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 								break;
 						}
@@ -728,9 +741,12 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			else if (Bxy)	/* Did common x and y-axes annotation settings */
 				Ctrl->S[GMT_X].b = strdup (Bxy->arg);
 			if (By) {	/* Did get y-axis annotation settings */
-				if ((c = gmt_first_modifier (GMT, By->arg, "lpsu"))) {	/* Gave valid axes modifiers for custom labels */
+				s = By->arg;
+				/* See comment in the Bx block above: skip past +a so it is preserved verbatim. */
+				while ((c = gmt_first_modifier (GMT, s, "alpsu")) && c[1] == 'a') s = c + 2;
+				if (c) {	/* Gave valid axes modifiers for custom labels */
 					pos = 0;
-					while (gmt_getmodopt (GMT, 'B', c, "lpsu", &pos, p, &error) && error == 0) {
+					while (gmt_getmodopt (GMT, 'B', c, "alpsu", &pos, p, &error) && error == 0) {
 						switch (p[0]) {
 							case 'l':	/* Regular y-axis label */
 								Ctrl->S[GMT_Y].label[GMT_PRIMARY] = strdup (&p[1]);	break;
@@ -740,6 +756,8 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 								Ctrl->S[GMT_Y].label[GMT_SECONDARY] = strdup (&p[1]);	break;
 							case 'u':	/* Annotation units */
 								Ctrl->S[GMT_Y].unit[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 'a':	/* Annotation angle/parallel/normal - passed through verbatim via subplot_prep_annot_args */
+								break;
 							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 								break;
 						}
@@ -1464,6 +1482,9 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (fabs (Ctrl->F.clearance[GMT_X]) > 0.0 || fabs (Ctrl->F.clearance[GMT_Y]) > 0.0) {	/* Must reset origin */
 			width  -= 2.0 * Ctrl->F.clearance[GMT_X];
 			height -= 2.0 * Ctrl->F.clearance[GMT_Y];
+			/* Same reasoning as for the divider-line call below: this call only resets the origin (-T, no -B)
+			 * and must never repaint the canvas, so make sure no stale canvas-paint request survives here. */
+			GMT->current.map.frame.paint[GMT_Z] = false;
 			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=readonly", width, height, 'r', Ctrl->F.clearance[GMT_X], 'r', Ctrl->F.clearance[GMT_Y]);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
@@ -1473,6 +1494,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, L, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
+			/* This call must never paint a canvas background - it only strokes the divider lines on top of
+			 * whatever was already drawn (e.g. the +g fill from the earlier plot call above). Make sure no
+			 * stale/leaked canvas-paint request survives from that earlier internal plot call. */
+			GMT->current.map.frame.paint[GMT_Z] = false;
 			sprintf (command, "-R0/%g/0/%g -Jx1i -W%s %s --GMT_HISTORY=readonly", Ctrl->F.dim[GMT_X] + GMT->current.setting.map_origin[GMT_X], Ctrl->F.dim[GMT_Y] + GMT->current.setting.map_origin[GMT_Y], Ctrl->F.Lpen, vfile);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */

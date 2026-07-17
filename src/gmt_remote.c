@@ -646,6 +646,61 @@ GMT_LOCAL char *gmtremote_lockfile (struct GMT_CTRL *GMT, char *file) {
 	return (strdup (Lfile));
 }
 
+GMT_LOCAL size_t gmtremote_discard_body (void *ptr, size_t size, size_t nmemb, void *userdata) {
+	/* Write callback that discards all data and aborts the transfer immediately.
+	 * Returning 0 causes libcurl to stop with CURLE_WRITE_ERROR, which is expected. */
+	(void)ptr; (void)size; (void)nmemb; (void)userdata;
+	return 0;
+}
+
+GMT_LOCAL char *gmtremote_resolve_redirect (struct GMTAPI_CTRL *API, const char *url) {
+	/* Follow any HTTP redirect and return the effective base URL (no trailing slash).
+	 * This resolves vanity alias domains like china.generic-mapping-tools.org that
+	 * issue a 302 redirect to the actual mirror (e.g. https://mirrors.ustc.edu.cn/gmtdata).
+	 * Uses a GET request (not HEAD) because some redirect servers return 404 for HEAD.
+	 * The body is discarded immediately via a write callback to avoid downloading content.
+	 * Returns NULL on connection failure, leaving the caller to use the original URL. */
+	CURL *curl;
+	CURLcode res;
+	static char resolved[GMT_LEN256] = {""};
+	char *effective = NULL;
+	size_t len;
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "Resolving redirect for %s ...\n", url);
+	if ((curl = curl_easy_init ()) == NULL) return NULL;
+	curl_easy_setopt (curl, CURLOPT_URL, url);
+	curl_easy_setopt (curl, CURLOPT_FOLLOWLOCATION, 1L);			/* Follow 30x redirects */
+	curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
+	curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, 3L);			/* Short timeout: this is best-effort */
+	curl_easy_setopt (curl, CURLOPT_TIMEOUT, 5L);				/* Overall cap including redirect chain */
+	curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, gmtremote_discard_body);	/* Abort on first data */
+	res = curl_easy_perform (curl);
+	GMT_Report (API, GMT_MSG_DEBUG, "Resolver curl result: %d (%s)\n", (int)res, curl_easy_strerror (res));
+	/* Read effective URL regardless of error code: when the discard callback aborts the
+	 * transfer, platform SSL backends may report CURLE_WRITE_ERROR, CURLE_RECV_ERROR, or
+	 * CURLE_OK — all are acceptable if a redirect was followed. */
+	if (curl_easy_getinfo (curl, CURLINFO_EFFECTIVE_URL, &effective) == CURLE_OK && effective) {
+		strncpy (resolved, effective, GMT_LEN256-1);
+		resolved[GMT_LEN256-1] = '\0';
+		len = strlen (resolved);
+		if (len > 0 && resolved[len-1] == '/')	/* Strip trailing slash */
+			resolved[len-1] = '\0';
+	}
+	curl_easy_cleanup (curl);
+	if (effective == NULL) return NULL;
+	/* Only return the resolved URL if a redirect actually occurred */
+	{
+		char url_trimmed[GMT_LEN256];
+		strncpy (url_trimmed, url, GMT_LEN256-1);
+		url_trimmed[GMT_LEN256-1] = '\0';
+		len = strlen (url_trimmed);
+		if (len > 0 && url_trimmed[len-1] == '/') url_trimmed[len-1] = '\0';
+		if (strcmp (resolved, url_trimmed) == 0) return NULL;	/* No redirect occurred */
+	}
+	GMT_Report (API, GMT_MSG_INFORMATION, "Resolved %s -> %s\n", url, resolved);
+	return resolved;
+}
+
 GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, size_t limit) {
 	/* Get the remote file's size and if too large we refuse to download */
 	CURL *curl = NULL;
@@ -1414,8 +1469,9 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	}
 
 	if (c && file[0] == '\0') {	/* Some distaster, such like my typo of =W1p instead of -W1p that lead to this check to prevent SEGV */
-		if (c) c[0] = was;	c = NULL; skip_checks = true;
-		GMT_Report (API, GMT_MSG_DEBUG, "Not able to understand the file name : %s\n", file);
+		if (c) c[0] = was;
+		c = NULL;	skip_checks = true;
+		GMT_Report(API, GMT_MSG_DEBUG, "Not able to understand the file name : %s\n", file);
 	}
 
 	if (is_url) {	/* A remote file or query given via an URL never exists locally */
@@ -1910,15 +1966,23 @@ int gmt_download_tiles (struct GMTAPI_CTRL *API, char *list, unsigned int mode) 
 char *gmt_dataserver_url (struct GMTAPI_CTRL *API) {
 	/* Build the full URL to the currently selected data server */
 	static char URL[GMT_LEN256] = {""}, *link = URL;
+	static char last_candidate[GMT_LEN256] = {""};	/* Cache: avoid re-resolving same server */
 	if (strncmp (API->GMT->session.DATASERVER, "http", 4U)) {	/* Not an URL so must assume it is the country/unit name, e.g., oceania */
 		/* We make this part case insensitive since all official GMT servers are lower-case */
-		char name[GMT_LEN64] = {""};
+		char name[GMT_LEN64] = {""}, candidate[GMT_LEN256] = {""};
+		char *resolved = NULL;
 		strncpy (name, API->GMT->session.DATASERVER, GMT_LEN64-1);
 		gmt_str_tolower (name);
 		if (strchr (name, '.'))	/* Must assume it is stuff like mybox.somedomain.type so prepend http */
-			snprintf (URL, GMT_LEN256-1, "http://%s", name);
+			snprintf (candidate, GMT_LEN256-1, "http://%s", name);
 		else	/* Expand server name to full URL */
-			snprintf (URL, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
+			snprintf (candidate, GMT_LEN256-1, "http://%s.generic-mapping-tools.org", name);
+		if (strcmp (candidate, last_candidate)) {	/* New or changed server — resolve redirect */
+			resolved = gmtremote_resolve_redirect (API, candidate);
+			strncpy (URL, resolved ? resolved : candidate, GMT_LEN256-1);
+			strncpy (last_candidate, candidate, GMT_LEN256-1);
+		}
+		/* else URL already holds the resolved base from the previous call */
 	}
 	else	/* Must use the URL as is */
 		snprintf (URL, GMT_LEN256-1, "%s", API->GMT->session.DATASERVER);

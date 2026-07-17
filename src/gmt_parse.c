@@ -98,6 +98,7 @@ GMT_LOCAL int gmtparse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
 	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
 	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
+	if (in[0] == 's' && in[1] && strchr ("WESNZwenzlrbtu", in[1])) gmt5++;		/* -Bs<axis-letter> is GMT5 frame (south + other axes), not -B[s] secondary prefix */
 	j = k;
 	while (j < last && (in[j] == 'x' || in[j] == 'y' || in[j] == 'z')) j++;
 	custom = (in[j] == 'c');	/* Got -B[p|s][xyz]c<customfile> */

@@ -53,6 +53,8 @@ jobs:
 
     - name: Setup continuous machine learning (CML)
       uses: iterative/setup-cml@v3
+      with:
+        vega: false
 
     - name: Setup Micromamba
       uses: mamba-org/setup-micromamba@v3.0.0

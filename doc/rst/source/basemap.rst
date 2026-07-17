@@ -79,7 +79,7 @@ Optional Arguments
 
     Without further options, draws a rectangular border around any map inset (|-D|; classic mode only), map scale (|-L|)
     or map rose (|-T|) using :term:`MAP_FRAME_PEN`. Used in combination with |-D|, |-L| or |-T|.  Append **d** for map
-    inset, **l** for map scale, or **t** for map rose to specify which plot embellisment the |-F| parameters should be
+    inset, **l** for map scale, or **t** for map rose to specify which plot embellishment the |-F| parameters should be
     applied to [default uses the same panel parameters for all selected map embellishments]. The following modifiers can
     be appended to |-F|, with additional explanation and examples provided in the
     :ref:`reference/features:The background panel` cookbook section:

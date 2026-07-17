@@ -48,10 +48,13 @@ Required Arguments (begin mode)
 
 .. _-D:
 
-**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+u**\ *unit*]] \| **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+u**\ *unit*]] \| **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ [*refpoint*]\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
     Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:
 
     .. include:: explain_refpoint.rst_
+
+    If *refpoint* is omitted, the map inset is placed by default in the upper-right corner of the map
+    (using **jTR**).
 
     Alternatively, Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **+r** if the coordinates instead are the lower left and
@@ -145,6 +148,21 @@ To make a simple basemap plot called inset.pdf that demonstrates the inset modul
       gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
     gmt inset end
     gmt text -F+f18p+cBL+tMAP -Dj0.2i
+  gmt end
+
+
+This example creates a main map of the Dominican Republic (DO) and adds an inset 
+showing the broader Caribbean region (IHO27). The inset size is automatically 
+determined from the projection specified in inset begin (-JM5c) together with the 
+region (-RIHO27), preserving the map aspect ratio without requiring explicit inset dimensions.
+
+::
+
+  gmt begin inset pdf
+	gmt coast -RDO+R1 -JM15c -Baf -Gbrown -Sazure1 -N1 -EDO+gbisque
+	gmt inset begin -DjTR+o0.2c -F+gwhite+p1p+c0.1c+s -JM5c -RIHO27
+		gmt coast -Gbrown -B0 -EDO+gbisque
+	gmt inset end
   gmt end
 
 See Also

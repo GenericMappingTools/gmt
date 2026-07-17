@@ -4991,13 +4991,15 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
 		if (no == 0 && !strncmp(text, "000", 3)) {		/* Understand format '000' to mean "no frame but keep annots, ticks etc" */
-			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* A no-frame fancy would be super complicated */
+			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY)	/* Only downgrade fancy/rounded; keep inside/graph if user set those */
+				GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* A no-frame fancy would be super complicated */
 			GMT->current.setting.map_frame_pen.rgb[3] = 1.0;	/* Since it is very hard to no plot the axis, just make it transparent. */
 		}
 		else if ((text[0] == '0' && !text[1]) || !strncmp(text, "00", 2)) {	 /* Understand format '00' to mean zero line width frame. */
 			GMT->current.map.frame.draw = true;			/* But we do wish to draw the frame */
 			if (GMT->common.J.zactive) GMT->current.map.frame.drawz = true;	/* Also brings z-axis into contention */
-			GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
+			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY)	/* Only downgrade fancy/rounded; keep inside/graph if user set those */
+				GMT->current.setting.map_frame_type = GMT_IS_PLAIN;	/* Since checkerboard without intervals look stupid */
 			GMT->current.map.frame.set[no] = true;		/* Since we want this axis drawn */
 			if (no == 0 && !strncmp(text, "00", 2))
 				GMT->current.setting.map_frame_pen.width = 0;	/* Understand format '00' to mean "draw the frame with a 0 width line */
@@ -8903,6 +8905,7 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 	GMT_Usage (API, 3, "Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
+	GMT_Usage (API, -2, "If <refpoint> is omitted, the inset defaults to the top-right corner inside the map frame (using jTR).");
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
 		GMT_Usage (API, 2, "Append +s<file> to save inset lower left corner and dimensions to <file>.");
 		GMT_Usage (API, 2, "Append +t to translate plot origin to the lower left corner of the inset.");
@@ -8922,6 +8925,7 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	GMT_Usage (API, 1, "\n-%c%s", option, GMT_SCALE);
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
+	GMT_Usage (API, -2, "If <refpoint> is omitted, the scale defaults to the bottom-left corner inside the map frame, nudged slightly inward (using +jBL+o0.2/0.4c).");
 	GMT_Usage (API, -2, "Set required scale via +w<length>, and (for geographic projection) append a unit from %s [km]. Other scale modifiers are optional:",
 		GMT_LEN_UNITS2_DISPLAY);
 	GMT_Usage (API, 3, "+a Append label alignment (choose among l(eft), r(ight), t(op), and b(ottom)) [t].");
@@ -16471,6 +16475,23 @@ dry_run:		if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S 
 					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 					if (!parsed_R) gmt_parse_R_option (GMT, opt_R->arg);
 					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+					/* Issue #6463: If -R<x>/<x>/<y>/<y>+u<unit> was given, rewrite opt_R->arg to the equivalent
+					 * geographic LL/UR form -R<LL_lon>/<LL_lat>/<UR_lon>/<UR_lat>+r. The +u parsing path invokes
+					 * mapproject as a sub-module to invert projected coords; a second invocation (during the
+					 * module's own GMT_Parse_Common) inherits the parent's now-populated current.proj and yields
+					 * a wrong inverse. The +r path needs no sub-mapproject call so it is immune. R.wesn already
+					 * holds the correct LL/UR corners at this point. */
+					if (!parsed_R && GMT->common.R.oblique) {
+						char *u_pos = strstr(opt_R->arg, "+u");
+						if (u_pos && strchr(GMT_LEN_UNITS2, u_pos[2])) {
+							char new_arg[GMT_LEN256] = {""}, *rest = u_pos + 3;		/* Skip past "+u<unit>" */
+							snprintf(new_arg, GMT_LEN256, "%.16g/%.16g/%.16g/%.16g+r%s", GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO],
+							         GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], rest);
+							GMT_Report(API, GMT_MSG_DEBUG, "Replace -R%s with -R%s to avoid projection-dependent re-parse [#6463]\n", opt_R->arg, new_arg);
+							gmt_M_str_free(opt_R->arg);
+							opt_R->arg = strdup(new_arg);
+						}
+					}
 					if (GMT->common.R.oblique || GMT->current.proj.projection == GMT_OBLIQUE_MERC || GMT->current.proj.projection == GMT_GENPER) {
 						int s_error = GMT_NOERROR;	/* Error code for various calls */
 						const char *prev_name = GMT->init.module_name;	/* Remember calling module */
@@ -16551,7 +16572,8 @@ void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	  * We wish to "do no harm" as well, so only some situations will get through this function.
 	  */
 	int k_data;
-	double d_inc, wesn[4];
+	double d_inc, wesn[4], pars[16];	/* pars[] backs up the raw projection parameters since gmt_map_setup below mutates them in place */
+	bool units_pr_degree;
 	struct GMTAPI_CTRL *API = GMT->parent;	/* Shorthand */
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) return;	/* This check only applies to geographic data */
@@ -16561,19 +16583,30 @@ void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	if (!(gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]))) return;	/* Gave -Rd or -Rg so need to probe more*/
 	if (gmt_M_is_azimuthal (GMT) && doubleAlmostEqual (fabs (GMT->current.proj.lat0), 90.0) && !GMT->common.R.oblique) return;	/* Nothing to do */
 	if (GMT->current.proj.projection == GMT_PROJ4_SPILHAUS) return;		/* This is one is square */
-	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Save the region we were given */
+	gmt_M_memcpy(wesn, GMT->common.R.wesn, 4, double);	/* Save the region we were given */
+	/* This is a throwaway probe: gmt_map_setup scales the projection parameters (e.g. pars[2] /= M_PR_DEG for -Jq scale),
+	 * so we must restore the raw pars and units_pr_degree flag afterwards or the caller's real gmt_map_setup will scale them
+	 * a second time and collapse the map (https://github.com/GenericMappingTools/gmt issue #8963). */
+	gmt_M_memcpy(pars, GMT->current.proj.pars, 16, double);
+	units_pr_degree = GMT->current.proj.units_pr_degree;
 
- 	if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* Set up projection */
+ 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up projection */
+		gmt_M_memcpy(GMT->current.proj.pars, pars, 16, double);	GMT->current.proj.units_pr_degree = units_pr_degree;
 		return;	/* Something went wrong */
-	if (gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false))	/* Refine without 0.1 degree padding */
+	}
+	if (gmt_map_perimeter_search(GMT, GMT->common.R.wesn, false)) {	/* Refine without 0.1 degree padding */
+		gmt_M_memcpy(GMT->current.proj.pars, pars, 16, double);	GMT->current.proj.units_pr_degree = units_pr_degree;
 		return;	/* Something went wrong */
+	}
+	gmt_M_memcpy(GMT->current.proj.pars, pars, 16, double);	/* Restore raw projection parameters clobbered by the probe map_setup */
+	GMT->current.proj.units_pr_degree = units_pr_degree;
 	if (GMT->common.R.wesn[XHI] < GMT->common.R.wesn[XLO] || GMT->common.R.wesn[YHI] < GMT->common.R.wesn[YLO])
-		gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);	/* Reset to give region if junk resulted */
-	else if (gmt_M_360_range (wesn[XLO], wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))
-		gmt_M_memcpy (GMT->common.R.wesn, wesn, 2, double);	/* Reset to given global w/e in the same format */
-	gmt_M_memcpy (API->tile_wesn, GMT->common.R.wesn, 4, double);	/* Save the region we found */
+		gmt_M_memcpy(GMT->common.R.wesn, wesn, 4, double);	/* Reset to give region if junk resulted */
+	else if (gmt_M_360_range(wesn[XLO], wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))
+		gmt_M_memcpy(GMT->common.R.wesn, wesn, 2, double);	/* Reset to given global w/e in the same format */
+	gmt_M_memcpy(API->tile_wesn, GMT->common.R.wesn, 4, double);	/* Save the region we found */
 	d_inc = API->tile_inc;	/* Increment in degrees, if set */
-	if (d_inc == 0.0 && file && file[0] == '@' && (k_data = gmt_remote_dataset_id (API, file)) != GMT_NOTSET) {	/* Got a remote file to work on */
+	if (d_inc == 0.0 && file && file[0] == '@' && (k_data = gmt_remote_dataset_id(API, file)) != GMT_NOTSET) {	/* Got a remote file to work on */
 		d_inc = API->remote_info[k_data].d_inc;	/* Increment in degrees */
 	}
 	if (d_inc > 0.0) {
@@ -20422,6 +20455,14 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		else if (symbol == GMT_SYMBOL_CUSTOM) { /* Custom symbol */
 			fprintf (fp, "S - %c%s %s %s %s - %s\n", GMT_SYMBOL_CUSTOM, S->custom->name, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
+		else if (symbol == GMT_SYMBOL_FRONT) {	/* Front symbol: must pass along the front-type and sense modifiers or pslegend will default to +l+b (left box) for all entries */
+			char scode[GMT_LEN64] = {""};
+			static char f_type[7] = {'f', 'v', 't', 's', 'S', 'c', 'b'};	/* Maps GMT_FRONT_* enum to its -Sf modifier letter */
+			sprintf (scode, "f+%c", f_type[S->f.f_symbol]);
+			if (S->f.f_sense == GMT_FRONT_LEFT) strcat (scode, "+l");
+			else if (S->f.f_sense == GMT_FRONT_RIGHT) strcat (scode, "+r");
+			fprintf (fp, "S - %s %s %s %s - %s\n", scode, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}		
 		else
 			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
@@ -20705,6 +20746,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	unsigned int pos = 0, sides[5];
 	bool add_label = false, add_annot = false, axis_set = false, was;
 	double GMT_LETTER_HEIGHT = 0.736;
+	double map_origin[2];
 	struct GMT_OPTION *opt = NULL;
 	char *c = NULL;
 	unsigned int n_errors = 0;
@@ -20758,6 +20800,16 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	/* Because the next call will reset frame sides I will make a copy and override the override here */
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	was = GMT->current.map.frame.draw;
+	/* gmt_getdefaults below reloads gmt.conf from scratch, which will reset map_origin to the raw
+	 * MAP_ORIGIN_X|Y settings.  However, when we are called from within a subplot panel, map_origin
+	 * has already been adjusted (e.g., via -Xf/-Yf) to reflect the panel's position on the page, and
+	 * gmt_plot_init will later add the panel offset (P->dx/P->dy) on top of whatever is in map_origin.
+	 * If we let gmt_getdefaults clobber map_origin here, the user's MAP_ORIGIN_X|Y gets reintroduced
+	 * and then double-counted once the panel offset is added, throwing off -D justified placements
+	 * (most visibly for middle-justified codes like MR/ML/TC/BC).  Save and restore map_origin so
+	 * this call only affects the frame/annotation settings it is meant to inspect. */
+	map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_X];
+	map_origin[GMT_Y] = GMT->current.setting.map_origin[GMT_Y];
 	gmtinit_conf_modern_override (GMT);	/* Reset */
 	(void)gmt_getdefaults (GMT, NULL);
 	if (!GMT->parent->external || options) {	/* So that externals can send a NULL ptr for options. 'Internal' is not affected */
@@ -20772,6 +20824,8 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT parameter parsing failures for %d settings\n", n_errors);
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;
+	GMT->current.setting.map_origin[GMT_X] = map_origin[GMT_X];
+	GMT->current.setting.map_origin[GMT_Y] = map_origin[GMT_Y];
 }
 
 unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {

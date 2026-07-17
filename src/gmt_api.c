@@ -1629,7 +1629,7 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 	size_t len, k, kk, n;
 	int o_id = GMT_NOTSET, family = GMT_NOTSET, geometry = GMT_NOTSET;
 	bool change_type = false;
-	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
+	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = gmtapi_get_api_ptr (V_API);
 
@@ -1795,7 +1795,7 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 	n = kk;	/* May have lost some NULLs.  Make a revised string for debug output */
 	for (k = 0; k < n; k++) {
 		if (k) strcat (revised, ",");
-		strncat (revised, s[k], GMT_LEN64-1);
+		strncat (revised, s[k], GMT_LEN128-1);
 	}
 	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_process_keys: Revised keys string is %s\n", revised);
 	*n_items = (unsigned int)n;	/* Total number of remaining keys for this module */

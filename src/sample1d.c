@@ -343,6 +343,7 @@ EXTERN_MSC int GMT_sample1d(void *V_API, int mode, void *args) {
 
 	double *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
 	double low_t, high_t, *lon = NULL, *lat = NULL, *weight = NULL;
+	double T_orig_min = 0.0, T_orig_max = 0.0;	/* Snapshot of user's -T range so we can restore between segments */
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *Tout = NULL;
@@ -473,10 +474,12 @@ EXTERN_MSC int GMT_sample1d(void *V_API, int mode, void *args) {
 	Dout->n_tables = Din->n_tables;
 
 	nan_flag = gmt_M_memory (GMT, NULL, Din->n_columns, unsigned char);
+	T_orig_min = Ctrl->T.T.min;	T_orig_max = Ctrl->T.T.max;	/* gmt_create_array overwrites these per segment */
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		Tout = gmt_create_table(GMT, Din->table[tbl]->n_segments, 0, Dout->n_columns, 0U, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
+			Ctrl->T.T.min = T_orig_min;	Ctrl->T.T.max = T_orig_max;	/* Restore user's range for this segment */
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			if (S->n_rows < 2) {
 				GMT_Report(API, GMT_MSG_WARNING, "Table %" PRIu64 " Segment %" PRIu64 " has %" PRIu64 " record - no interpolation possible\n", tbl, seg, S->n_rows);
@@ -510,6 +513,7 @@ EXTERN_MSC int GMT_sample1d(void *V_API, int mode, void *args) {
 			}
 			else {	/* Generate evenly spaced output */
 				double min, max;
+				bool multi_seg = (Din->n_tables > 1 || Din->table[tbl]->n_segments > 1);
 				if (S->data[Ctrl->N.col][0] > S->data[Ctrl->N.col][S->n_rows-1]) {	/* t-column is monotonically decreasing */
 					min = (Ctrl->T.T.delay[GMT_X]) ? floor(S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
 					max = (Ctrl->T.T.delay[GMT_Y]) ? ceil(S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
@@ -519,6 +523,20 @@ EXTERN_MSC int GMT_sample1d(void *V_API, int mode, void *args) {
 					min = (Ctrl->T.T.delay[GMT_X]) ? ceil(S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
 					max = (Ctrl->T.T.delay[GMT_Y]) ? floor(S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
 					Ctrl->T.T.reverse = false;	/* Flag we are monotonically increasing in time for this segment */
+				}
+				if (multi_seg && !Ctrl->T.T.delay[GMT_X] && !Ctrl->T.T.delay[GMT_Y]) {
+					/* Input split into multiple segments (e.g. by -g): clip this segment's output range to its
+					 * data extremes so gap zones produce no rows (avoids NaN fill that would otherwise need -s) */
+					double s_lo = MIN(S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+					double s_hi = MAX(S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+					double clip_lo = ceil(s_lo / Ctrl->T.T.inc) * Ctrl->T.T.inc;
+					double clip_hi = floor(s_hi / Ctrl->T.T.inc) * Ctrl->T.T.inc;
+					if (clip_lo > clip_hi || clip_lo > max || clip_hi < min) {
+						GMT_Report(API, GMT_MSG_INFORMATION, "Segment %" PRIu64 " in table %" PRIu64 " has no overlap with -T range; skipped.\n", seg, tbl);
+						continue;
+					}
+					if (clip_lo > min) min = clip_lo;
+					if (clip_hi < max) max = clip_hi;
 				}
 				if (gmt_create_array(GMT, 'T', &(Ctrl->T.T), &min, &max) != GMT_NOERROR) {
 					GMT_Report(API, GMT_MSG_WARNING, "Segment %" PRIu64 " in table %" PRIu64 " had troubles.\n", seg, tbl);

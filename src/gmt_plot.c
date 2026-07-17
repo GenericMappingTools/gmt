@@ -3186,7 +3186,7 @@ GMT_LOCAL void gmtplot_cube_box (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int
 	xx[0] = xx[1] = nesw[(quadrant+1)%4];	xx[2] = xx[3] = nesw[(quadrant+3)%4];
 	yy[0] = yy[3] = GMT->current.proj.zmin;	yy[1] = yy[2] = GMT->current.proj.zmax;
 	gmt_setpen (GMT, &GMT->current.map.frame.pen);
-	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
+	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 }
 
 GMT_LOCAL void gmtplot_timestamp(struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, unsigned int justify, char *U_label) {
@@ -5909,10 +5909,10 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 			for (i = 0; i < nx1; i++) {
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (axis == GMT_Z && (GMT->current.proj.z_project.view_plane % 3) == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane (only for -pz) */
 				x = (*xyz_fwd) (GMT, knots[i]);	/* Convert to inches on the page */
-                if (skip_center_annot && doubleAlmostEqualZero (knots[i], skip_val)) continue;   /* Don't want annotations exactly at intersection between graph axes */
-                if (gmtplot_skip_end_annotation (GMT, axis, x, length)) continue;   /* Don't want annotations exactly at one or both ends of the axis */
+				if (skip_center_annot && doubleAlmostEqualZero(knots[i], skip_val)) continue;   /* Don't want annotations exactly at intersection between graph axes */
+				if (gmtplot_skip_end_annotation(GMT, axis, x, length)) continue;   /* Don't want annotations exactly at one or both ends of the axis */
 				if (!is_interval && gmtplot_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0]) {
 					strncpy (string, label_c[i], GMT_LEN256-1);
@@ -5949,7 +5949,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 			for (i = 0; i < nx1; i++) {
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
-				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
+				if (axis == GMT_Z && (GMT->current.proj.z_project.view_plane % 3) == GMT_Z && fabs(knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane (only for -pz) */
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				if (skip_center_annot && doubleAlmostEqualZero (knots[i], skip_val)) continue;   /* Don't want annotations exactly at intersection between graph axes */
 				if (gmtplot_skip_end_annotation (GMT, axis, x, length)) continue;	/* Don't want annotations exactly at one or both ends of the axis */
@@ -6648,6 +6648,48 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	bool clip_on = false, too_crowded = false;
 	char *order[2] = {"before", "after"};
 	struct PSL_CTRL *PSL= GMT->PSL;
+	/* For -px/-py world-coord wall plan, vertical of basemap is the Z axis. Swap only Y annotation state with Z
+	 * (labels and range), scale Y so labels still land within plan's projected y-box [0,map.height]; matrix d-stretch
+	 * then maps that visually to Z height. Restore before gmt_vertical_axis. */
+	bool swap_yz = (GMT->current.proj.z_project.plane >= GMT_ZW && (GMT->current.proj.z_project.plane % 3) != GMT_Z);
+	bool swap_xy = (GMT->current.proj.z_project.plane >= GMT_ZW && (GMT->current.proj.z_project.plane % 3) == GMT_X);
+	double saved_y_wesn[2] = {0.0, 0.0}, saved_y_scale = 0.0, saved_y_origin = 0.0;
+	double saved_x_wesn[2] = {0.0, 0.0}, saved_x_scale = 0.0, saved_x_origin = 0.0;
+	double saved_rect_x[2] = {0.0, 0.0}, saved_map_width = 0.0;
+	struct GMT_PLOT_AXIS saved_axis_y, saved_axis_x;
+	if (swap_yz) {
+		double z_range = GMT->common.R.wesn[ZHI] - GMT->common.R.wesn[ZLO];
+		saved_y_wesn[0] = GMT->common.R.wesn[YLO];
+		saved_y_wesn[1] = GMT->common.R.wesn[YHI];
+		saved_y_scale   = GMT->current.proj.scale[GMT_Y];
+		saved_y_origin  = GMT->current.proj.origin[GMT_Y];
+		saved_axis_y    = GMT->current.map.frame.axis[GMT_Y];
+		GMT->common.R.wesn[YLO]            = GMT->common.R.wesn[ZLO];
+		GMT->common.R.wesn[YHI]            = GMT->common.R.wesn[ZHI];
+		GMT->current.proj.scale[GMT_Y]     = (z_range > 0.0) ? GMT->current.map.height / z_range : saved_y_scale;
+		GMT->current.proj.origin[GMT_Y]    = -GMT->common.R.wesn[ZLO] * GMT->current.proj.scale[GMT_Y];
+		GMT->current.map.frame.axis[GMT_Y] = GMT->current.map.frame.axis[GMT_Z];
+		GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;	/* So gmt_xy_axis uses gmt_y_to_yy(with our swapped scale[Y]) not gmt_z_to_zz */
+	}
+	if (swap_xy) {	/* -px: plan horizontal is the Y direction; swap X annotation state with original Y so plan top/bottom show Y range */
+		saved_x_wesn[0] = GMT->common.R.wesn[XLO];
+		saved_x_wesn[1] = GMT->common.R.wesn[XHI];
+		saved_x_scale   = GMT->current.proj.scale[GMT_X];
+		saved_x_origin  = GMT->current.proj.origin[GMT_X];
+		saved_axis_x    = GMT->current.map.frame.axis[GMT_X];
+		saved_rect_x[0] = GMT->current.proj.rect[XLO];
+		saved_rect_x[1] = GMT->current.proj.rect[XHI];
+		saved_map_width = GMT->current.map.width;
+		GMT->common.R.wesn[XLO]            = saved_y_wesn[0];
+		GMT->common.R.wesn[XHI]            = saved_y_wesn[1];
+		GMT->current.proj.scale[GMT_X]     = saved_y_scale;
+		GMT->current.proj.origin[GMT_X]    = saved_y_origin;
+		GMT->current.map.frame.axis[GMT_X] = saved_axis_y;
+		GMT->current.map.frame.axis[GMT_X].id = GMT_X;
+		GMT->current.proj.rect[XLO]        = GMT->current.proj.rect[YLO];
+		GMT->current.proj.rect[XHI]        = GMT->current.proj.rect[YHI];
+		GMT->current.map.width             = GMT->current.map.height;
+	}
 
 	/* 0. Determine if we need to be here and set a few parameters */
 
@@ -6711,6 +6753,24 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 	/* 4. Undo various temporary changes */
 
 	if (GMT->current.proj.got_azimuths) gmt_M_uint_swap (GMT->current.map.frame.side[E_SIDE], GMT->current.map.frame.side[W_SIDE]);	/* Undo temporary swap */
+
+	if (swap_xy) {	/* Restore X-axis state we swapped with Y for the plan horizontal */
+		GMT->common.R.wesn[XLO]            = saved_x_wesn[0];
+		GMT->common.R.wesn[XHI]            = saved_x_wesn[1];
+		GMT->current.proj.scale[GMT_X]     = saved_x_scale;
+		GMT->current.proj.origin[GMT_X]    = saved_x_origin;
+		GMT->current.map.frame.axis[GMT_X] = saved_axis_x;
+		GMT->current.proj.rect[XLO]        = saved_rect_x[0];
+		GMT->current.proj.rect[XHI]        = saved_rect_x[1];
+		GMT->current.map.width             = saved_map_width;
+	}
+	if (swap_yz) {	/* Restore Y-axis state we swapped with Z for the vertical wall plan */
+		GMT->common.R.wesn[YLO]            = saved_y_wesn[0];
+		GMT->common.R.wesn[YHI]            = saved_y_wesn[1];
+		GMT->current.proj.scale[GMT_Y]     = saved_y_scale;
+		GMT->current.proj.origin[GMT_Y]    = saved_y_origin;
+		GMT->current.map.frame.axis[GMT_Y] = saved_axis_y;
+	}
 
 	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = false;	/* Now we can plot the title [if selected via -B+t] */
 
@@ -7153,7 +7213,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	x_left  = ms->refpoint->x - 0.5 * bar_width;	/* x-coordinate of leftmost  scalebar point */
 	x_right = ms->refpoint->x + 0.5 * bar_width;	/* x-coordinate of rightmost scalebar point */
 
-	if (ms->fancy && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Fancy scale */
+	if (ms->fancy) {	/* Fancy (checkerboard) scale, now allowed for both geographic and Cartesian projections */
 		unsigned int i, justify, form;
 		unsigned int n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
 		unsigned int n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
@@ -9159,10 +9219,22 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (!GMT->common.X.active && O_active) GMT->current.setting.map_origin[GMT_X] = 0.0;
 	if (!GMT->common.Y.active && O_active) GMT->current.setting.map_origin[GMT_Y] = 0.0;
 
-	/* Adjust offset when centering plot on center of page (PS does the rest) */
+	/* Adjust offset when centering plot on center of page (PS does the rest).
+	 * For perspective plots (-p) the on-paper bounding box is given by z_project.[xy]{min,max},
+	 * not by map.width/height, so use that to center the actual perspective footprint. */
 
-	if (GMT->current.ps.origin[GMT_X] == 'c') GMT->current.setting.map_origin[GMT_X] -= 0.5 * GMT->current.map.width;
-	if (GMT->current.ps.origin[GMT_Y] == 'c') GMT->current.setting.map_origin[GMT_Y] -= 0.5 * GMT->current.map.height;
+	if (GMT->current.ps.origin[GMT_X] == 'c') {
+		if (GMT->current.proj.three_D)
+			GMT->current.setting.map_origin[GMT_X] -= 0.5 * (GMT->current.proj.z_project.xmin + GMT->current.proj.z_project.xmax);
+		else
+			GMT->current.setting.map_origin[GMT_X] -= 0.5 * GMT->current.map.width;
+	}
+	if (GMT->current.ps.origin[GMT_Y] == 'c') {
+		if (GMT->current.proj.three_D)
+			GMT->current.setting.map_origin[GMT_Y] -= 0.5 * (GMT->current.proj.z_project.ymin + GMT->current.proj.z_project.ymax);
+		else
+			GMT->current.setting.map_origin[GMT_Y] -= 0.5 * GMT->current.map.height;
+	}
 
 	/* Get font names used */
 
@@ -10570,13 +10642,21 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 	if (plane < 0)			/* Reset to original matrix */
 		PSL_command (PSL, "PSL_GPP setmatrix\n"); /* Return to normal current transformation matrix */
 	else {	/* New perspective plane: compute all derivatives and use full matrix */
-		if (plane >= GMT_ZW) level = gmt_z_to_zz (GMT, level);	/* First convert world z coordinate to projected z coordinate */
+		if (plane >= GMT_ZW) {	/* World coordinate: pick the axis perpendicular to the plane so the correct scale (X/Y/Z) is applied */
+			switch (plane % 3) {
+				case GMT_X: level = gmt_x_to_xx(GMT, level); break;	/* Constant-X plane: level is in user X units */
+				case GMT_Y: level = gmt_y_to_yy(GMT, level); break;	/* Constant-Y plane: level is in user Y units */
+				case GMT_Z: level = gmt_z_to_zz(GMT, level); break;	/* Constant-Z plane: level is in user Z units */
+			}
+		}
 		switch (plane % 3) {
 			case GMT_X:	/* Constant x, Convert y,z to x',y' */
 				a = GMT->current.proj.z_project.sin_az;
 				b = -GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.sin_el;
 				c = 0.0;
 				d = GMT->current.proj.z_project.cos_el;
+				if (plane >= GMT_ZW && GMT->current.map.height > 0.0)	/* User -px plan: stretch in_y so plan height matches Z axis height (proj.zmax) */
+					d *= GMT->current.proj.zmax / GMT->current.map.height;
 				e = GMT->current.proj.z_project.x_off - level * GMT->current.proj.z_project.cos_az;
 				f = GMT->current.proj.z_project.y_off - level * GMT->current.proj.z_project.sin_az * GMT->current.proj.z_project.sin_el;
 				break;
@@ -10585,6 +10665,8 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 				b = -GMT->current.proj.z_project.sin_az * GMT->current.proj.z_project.sin_el;
 				c = 0.0;
 				d = GMT->current.proj.z_project.cos_el;
+				if (plane >= GMT_ZW && GMT->current.map.height > 0.0)	/* User -py plan: stretch in_y so plan height matches Z axis height (proj.zmax) */
+					d *= GMT->current.proj.zmax / GMT->current.map.height;
 				e = GMT->current.proj.z_project.x_off + level * GMT->current.proj.z_project.sin_az;
 				f = GMT->current.proj.z_project.y_off - level * GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.sin_el;
 				break;
