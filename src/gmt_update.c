@@ -60,6 +60,8 @@
  *   on dirty developer build unless --allow-dirty.
  */
 
+/* WARNING: This code is still very experimental and not meant for public usage. */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

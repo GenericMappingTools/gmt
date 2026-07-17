@@ -4,6 +4,9 @@
 gmt_update
 **********
 
+WARNING: This is a developer tool for updating GMT binaries. It is not yet intended for end users.
+--------------------------------------------------------------------------------------------------
+
 Fetch and apply GMT binary updates from a remote manifest.
 
 Synopsis
