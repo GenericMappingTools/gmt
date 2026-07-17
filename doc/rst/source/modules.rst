@@ -190,7 +190,10 @@ All modules are requested via a call to the :doc:`gmt` program.
 Program
 -------
 
-- :doc:`gmt`
+.. hlist::
+    :columns: 2
+
+    - :doc:`gmt`
 
 Core Modules
 ------------
