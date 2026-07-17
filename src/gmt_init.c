@@ -17252,7 +17252,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	unsigned int ju, col;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
-	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpPqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopPqRrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpPqRrSsTtVvWwXxYy", "=-+AabCcDdEefGgHhIiJjMmNnOopPqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
 		p->base = GMT->session.d_NaN;
@@ -17414,6 +17414,16 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (cmd) p->read_size_cmd = false;
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, arg), check = false;
 		}
+	}
+	else if (text[0] == 'X') {	/* Infinite horizontal line: -SX, no size or extra column involved */
+		symbol_type = 'X';
+		p->size_x = p->size_y = p->given_size_x = p->given_size_y = 0.0;
+		check = false;
+	}
+	else if (text[0] == 'Y') {	/* Infinite vertical line: -SY, no size or extra column involved */
+		symbol_type = 'Y';
+		p->size_x = p->size_y = p->given_size_x = p->given_size_y = 0.0;
+		check = false;	/* This symbol never reads a size from file or command line */
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && text[1] && strchr (GMT_DIM_UNITS, (int) text[1])) {
 		/* Symbol, but no size given (size assumed given on command line), only unit information */
@@ -18210,8 +18220,16 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case '+':
 			p->symbol =  PSL_PLUS;
 			break;
+		case 'X':
+			p->symbol = GMT_SYMBOL_HLINE;	/* Infinite horizontal line at given x value; only needs one coordinate */
+			p->n_required = 0;
+			break;
 		case 'x':
 			p->symbol = PSL_CROSS;
+			break;
+		case 'Y':
+			p->symbol = GMT_SYMBOL_VLINE;	/* Infinite vertical line at given y value; only needs one coordinate */
+			p->n_required = 0;
 			break;
 		case 'y':
 			p->symbol = PSL_YDASH;
