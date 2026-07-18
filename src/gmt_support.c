@@ -14009,18 +14009,36 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 			else {	/* Gave some arguments */
 				n = sscanf (string, "%[^/]/%s", txt_a, txt_b);
 				/* First deal with inset dimensions and horizontal vs vertical */
-				/* Handle either <unit><width>/<height> or <width>/<height> */
+				/* Handle either <unit><width>/<height>, <width>/<height>, or <width>%[/<height>%] */
 				q[GMT_X] = txt_a;	q[GMT_Y] = txt_b;
 				last = (n == 1) ? GMT_X : GMT_Y;
 				for (k = GMT_X; k <= last; k++) {
 					len = strlen (q[k]) - 1;
-					if (strchr (GMT_LEN_UNITS2, q[k][len])) {	/* Got dimensions in these units */
-						B->unit = q[k][len];
-						q[k][len] = 0;
+					if (q[k][len] == '%') {	/* Gave this dimension as a percentage of the map width/height */
+						q[k][len] = 0;	/* Chop off the % sign */
+						B->fraction[k] = true;
+						B->scl[k] = atof (q[k]) * 0.01;	/* Convert to fraction */
+						B->dim[k] = 0.0;	/* Resolved later in gmt_draw_map_inset once the map dimensions are known */
 					}
-					B->dim[k] = (B->unit) ? atof (q[k]) : gmt_M_to_inch (GMT, q[k]);
+					else {
+						if (strchr (GMT_LEN_UNITS2, q[k][len])) {	/* Got dimensions in these units */
+							B->unit = q[k][len];
+							q[k][len] = 0;
+						}
+						B->dim[k] = (B->unit) ? atof (q[k]) : gmt_M_to_inch (GMT, q[k]);
+					}
 				}
-				if (last == GMT_X) B->dim[GMT_Y] = B->dim[GMT_X];
+				if (last == GMT_X) {	/* Only got <width> so let height match width */
+					if (B->fraction[GMT_X]) {
+						B->fraction[GMT_Y] = false;
+						B->dim[GMT_Y] = 0.0;	/* Will be copied from X after X is resolved */
+					}
+					else {
+						B->dim[GMT_Y] = B->dim[GMT_X];
+						B->fraction[GMT_Y] = B->fraction[GMT_X];
+						B->scl[GMT_Y] = B->scl[GMT_X];
+					}
+				}
 			}
 		}
 		/* Optional modifiers +j, +o, +s */
