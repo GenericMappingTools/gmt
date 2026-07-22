@@ -21,6 +21,17 @@
  *
  * Brief synopsis: gmtget will return the values of selected parameters.
  *
+ * Modified: Added -H<key1,key2,...> to fetch values from gmt.history
+ *           instead of gmt.conf/defaults, e.g.:
+ *               gmt get -H R J B
+ *           returns the last recorded -R, -J and -B values. Also
+ *           supports the special keys w and h (as used in -Xw... and
+ *           -Yh...), which return the previous plotted object's
+ *           bounding box width/height (in PROJ_LENGTH_UNIT), e.g.:
+ *               gmt get -H w h
+ *           The actual lookup lives in gmtlib_get_history_value()
+ *           (src/gmt_history_value.c) so it can be shared with the
+ *           public GMT_Get_History API function used by wrappers.
  */
 
 #include "gmt_dev.h"
@@ -29,7 +40,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"gmtget"
 #define THIS_MODULE_MODERN_NAME	"gmtget"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Get individual GMT default settings or download data sets"
+#define THIS_MODULE_PURPOSE	"Get individual GMT default settings, history values, or download data sets"
 #define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
@@ -45,6 +56,9 @@ struct GMTGET_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GMTGET_H {	/* -H : Fetch values from gmt.history (or w/h) instead of gmt.conf */
+		bool active;
+	} H;
 	struct GMTGET_I {	/* -I<inc>*/
 		bool active;
 		double inc;
@@ -76,8 +90,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [-D<download>] [-G<defaultsfile>] [-I<inc>] [-L] [-N] [-Q] [%s] [PARAMETER1 PARAMETER2 PARAMETER3 ...]\n", name, GMT_V_OPT);
-	GMT_Usage (API, 1, "Note: For available PARAMETERS, see %s documentation", GMT_SETTINGS_FILE);
+	GMT_Usage (API, 0, "usage: %s [-D<download>] [-G<defaultsfile>] [-H] [-I<inc>] [-L] [-N] [-Q] [%s] [PARAMETER1 PARAMETER2 PARAMETER3 ...]\n", name, GMT_V_OPT);
+	GMT_Usage (API, 1, "Note: For available PARAMETERS, see %s documentation, or, with -H, see the gmt.history file", GMT_SETTINGS_FILE);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -94,6 +108,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set name of specific %s file to process "
 		"Default looks for file in current directory.  If not found, "
 		"it looks in the home directory, if not found it uses the GMT defaults].", GMT_SETTINGS_FILE);
+	GMT_Usage (API, 1, "\n-H");
+	GMT_Usage (API, -2, "Fetch values from the gmt.history file instead of %s. "
+		"PARAMETER1, PARAMETER2, ... must then be history keys such as R, J, B, or one of the "
+		"internal @-prefixed keys (e.g., @L for PS layer). Cannot be used with -D or -G. "
+		"Two special keys w and h return the width and height, in the session's PROJ_LENGTH_UNIT, "
+		"of the bounding box of the last object plotted in the current (modern mode) figure, i.e., "
+		"the same dimensions available to -Xw... and -Yh... Requires modern mode and a prior plot command.", GMT_SETTINGS_FILE);
 	GMT_Usage (API, 1, "\n-I<inc>");
 	GMT_Usage (API, -2, "Limit the download of data sets to grid spacing of <inc> or larger [0].");
 	GMT_Usage (API, 1, "\n-L Write one parameter value per line [Default writes all on one line].");
@@ -133,6 +154,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
+			case 'H':	/* Fetch values from gmt.history (or w/h) instead of gmt.conf */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+				break;
 			case 'I':	/* Set increment limitation */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				if (gmt_getincn (GMT, opt->arg, &Ctrl->I.inc, 1) != 1)
@@ -168,12 +193,53 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	                                 "Option -Q: Requires -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->N.active,
 	                                 "Option -Q: -N will be ignored\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->D.active,
+	                                 "Option -H: Cannot be used with -D\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->G.active,
+	                                 "Option -H: Cannot be used with -G\n");
 	if (Ctrl->D.active && Ctrl->D.dir && !(!strcmp (Ctrl->D.dir, "all") || !strcmp (Ctrl->D.dir, "cache") || !strncmp (Ctrl->D.dir, "data", 4U))) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>] or data=<datasetlist>\n");
 		n_errors++;
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+
+/* Shared lookup, defined once in src/gmt_history_value.c so both this module
+ * and the public GMT_Get_History API function use the same implementation. */
+EXTERN_MSC int gmtlib_get_history_value (struct GMTAPI_CTRL *API, const char *key, char *value);
+
+GMT_LOCAL int gmtget_report_history (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPTION *options) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	struct GMT_OPTION *opt = NULL;
+	char value[GMT_LEN256] = {""};
+	unsigned int n_req = 0, n_found = 0;
+	bool first = true;
+
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != '<' && opt->option != '#') continue;	/* Only free-standing words are history keys */
+		n_req++;
+		if (gmtlib_get_history_value (API, opt->arg, value) == GMT_NOERROR) {
+			n_found++;
+			/* Data values go to stdout via plain printf, like gmt_pickdefaults does for -G.
+			 * GMT_Message/GMT_Report write to stderr and would be invisible to $(...) capture. */
+			if (Ctrl->L.active)
+				printf ("%s\n", value);
+			else {
+				if (!first) printf (" ");
+				printf ("%s", value);
+				first = false;
+			}
+		}
+		/* On failure, gmtlib_get_history_value() has already emitted a GMT_Report warning/error */
+	}
+	if (!Ctrl->L.active && n_found) printf ("\n");
+
+	if (n_req == 0) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -H: No PARAMETER keys given\n");
+		return (GMT_RUNTIME_ERROR);
+	}
+	return ((n_found == n_req) ? GMT_NOERROR : GMT_RUNTIME_ERROR);
 }
 
 EXTERN_MSC void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
@@ -208,6 +274,10 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtget main code ----------------------------*/
 
+	if (Ctrl->H.active) {	/* Fetch value(s) from gmt.history (or w/h) instead of gmt.conf/defaults */
+		error = gmtget_report_history (GMT, Ctrl, options);
+		Return (error);
+	}
 
 	if (Ctrl->D.active) {	/* Remote data download */
 		gmt_refresh_server (API);	/* Refresh hash and info tables as needed since we need to know what is there */
