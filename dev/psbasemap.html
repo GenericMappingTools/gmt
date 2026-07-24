@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -218,7 +219,7 @@ allowed. The sampling interval is controlled via <a class="reference internal" h
 <blockquote>
 <div><p>Without further options, draws a rectangular border around any map inset (<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>; classic mode only), map scale (<a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>)
 or map rose (<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>) using <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>. Used in combination with <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> or <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  Append <strong>d</strong> for map
-inset, <strong>l</strong> for map scale, or <strong>t</strong> for map rose to specify which plot embellisment the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> parameters should be
+inset, <strong>l</strong> for map scale, or <strong>t</strong> for map rose to specify which plot embellishment the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> parameters should be
 applied to [default uses the same panel parameters for all selected map embellishments]. The following modifiers can
 be appended to <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, with additional explanation and examples provided in the
 <a class="reference internal" href="reference/features.html#the-background-panel"><span class="std std-ref">The background panel</span></a> cookbook section:</p>
@@ -238,7 +239,7 @@ individual <a class="reference internal" href="reference/features.html#plt-units
 <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
 </ul>
 </div></blockquote>
-<p id="l"><strong>-L</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+a</strong><em>align</em>][<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+f</strong>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>label</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+u</strong>][<strong>+v</strong>]</p>
+<p id="l"><strong>-L</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>][<em>refpoint</em>]<strong>+w</strong><em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+a</strong><em>align</em>][<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+f</strong>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>label</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+u</strong>][<strong>+v</strong>]</p>
 <blockquote>
 <div><p>Draw a simple map scale at the location defined by the reference (<em>refpoint</em>) and anchor point (set by
 <strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one of four
@@ -249,9 +250,11 @@ coordinate systems:</p>
 <li><p><strong>n</strong> - Append <em>xn</em>/<em>yn</em> for <a class="reference internal" href="reference/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
 <li><p><strong>x</strong> - Append <em>x</em>/<em>y</em> for <a class="reference internal" href="reference/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint).</p></li>
 </ul>
+<p>If <em>refpoint</em> is omitted, the map scale is placed by default in the lower-left corner of the map
+(using <strong>+jBL+o0.2c/0.4c</strong>), nudged slightly inward so it does not sit flush against the map frame.</p>
 <p>The following modifiers can be appended to <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> (<strong>+w</strong> is required), with additional explanation and
-examples provided in the <a class="reference internal" href="reference/features.html#placing-map-scales"><span class="std std-ref">Placing map scales</span></a> cookbook section. For Cartesian projection, the modifiers
-<strong>+c</strong> and <strong>+f</strong> are not allowed and no units should be appended in <strong>+w</strong>.</p>
+examples provided in the <a class="reference internal" href="reference/features.html#placing-map-scales"><span class="std std-ref">Placing map scales</span></a> cookbook section. For Cartesian projection, the modifier
+<strong>+c</strong> is not allowed and no units should be appended in <strong>+w</strong>.</p>
 <ul class="simple">
 <li><p><strong>+w</strong><em>length</em> to set scale <em>length</em> in km, or append <a class="reference internal" href="reference/features.html#tbl-distunits"><span class="std std-ref">unit</span></a> from
 <strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.</p></li>
@@ -279,7 +282,7 @@ the plain scale, <strong>+u</strong> will instead select the unit to be appended
 font. The height of the map scale is controlled by <a class="reference internal" href="gmt.conf.html#term-MAP_SCALE_HEIGHT"><span class="xref std std-term">MAP_SCALE_HEIGHT</span></a>, and the pen thickness is set by
 <a class="reference internal" href="gmt.conf.html#term-MAP_TICK_PEN_PRIMARY"><span class="xref std std-term">MAP_TICK_PEN_PRIMARY</span></a>. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel behind the scale.</p>
 </div></blockquote>
-<p id="t"><strong>-Td</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em>[<strong>+f</strong>|<strong>F</strong>[<em>level</em>]][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+w</strong><em>width</em>]</p>
+<p id="t"><strong>-Td</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>][<em>refpoint</em>][<strong>+f</strong>|<strong>F</strong>[<em>level</em>]][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+w</strong><em>width</em>]</p>
 <blockquote>
 <div><p>Draw a map directional rose on the map at the location defined by the reference (<em>refpoint</em>) and anchor point
 (set by <strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one
@@ -290,6 +293,8 @@ of four coordinate systems:</p>
 <li><p><strong>n</strong> - Append <em>xn</em>/<em>yn</em> for <a class="reference internal" href="reference/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
 <li><p><strong>x</strong> - Append <em>x</em>/<em>y</em> for <a class="reference internal" href="reference/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint).</p></li>
 </ul>
+<p>If <em>refpoint</em> is omitted, the directional rose is placed by default in the upper-right corner of the map
+(using <strong>+jTR</strong>).</p>
 <p>The following optional modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>d</strong>, with additional explanation and
 examples provided in the <a class="reference internal" href="reference/features.html#placing-dir-map-roses"><span class="std std-ref">Placing directional map roses</span></a> cookbook section. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel
 behind the directional rose.</p>
@@ -312,7 +317,7 @@ or append unit % for a size in percentage of map width [10%].</p></li>
 </ul>
 <p>For further information, see the Map Embellishment section on <a class="reference internal" href="reference/features.html#placing-dir-map-roses"><span class="std std-ref">Directional Roses</span></a>.</p>
 </div></blockquote>
-<p><strong>-Tm</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em>[<strong>+d</strong><em>dec</em>[/<em>dlabel</em>]]][<strong>+i</strong><em>pen</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+p</strong><em>pen</em>][<strong>+t</strong><em>ints</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+w</strong><em>width</em>]</p>
+<p><strong>-Tm</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>][<em>refpoint</em>][<strong>+d</strong><em>dec</em>[/<em>dlabel</em>]]][<strong>+i</strong><em>pen</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+p</strong><em>pen</em>][<strong>+t</strong><em>ints</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+w</strong><em>width</em>]</p>
 <blockquote>
 <div><p>Draw a map magnetic rose on the map at the location defined by the reference (<em>refpoint</em>) and anchor point
 (set by <strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one
@@ -323,6 +328,8 @@ of four coordinate systems:</p>
 <li><p><strong>n</strong> - Append <em>xn</em>/<em>yn</em> for <a class="reference internal" href="reference/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
 <li><p><strong>x</strong> - Append <em>x</em>/<em>y</em> for <a class="reference internal" href="reference/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint).</p></li>
 </ul>
+<p>If <em>refpoint</em> is omitted, the directional rose is placed by default in the upper-right corner of the map
+(using <strong>+jTR</strong>).</p>
 <p>The following optional modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>m</strong>, with additional explanation and
 examples provided in the <a class="reference internal" href="reference/features.html#placing-mag-map-roses"><span class="std std-ref">Placing magnetic map roses</span></a> cookbook section. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel
 behind the magnetic rose.</p>
@@ -409,7 +416,7 @@ They are not available when using GMT modern mode.</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong><em>xmin/xmax/ymin/ymax</em>[<strong>+r</strong>][<strong>+s</strong><em>file</em>][<strong>+t</strong>][<strong>+u</strong><em>unit</em>] | <strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+s</strong><em>file</em>][<strong>+t</strong>]</dt><dd><p>Draw a simple map inset box on the map.  Requires <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>.  Specify the box in one of three ways:
+<dt><strong>-D</strong><em>xmin/xmax/ymin/ymax</em>[<strong>+r</strong>][<strong>+s</strong><em>file</em>][<strong>+t</strong>][<strong>+u</strong><em>unit</em>] | <strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>][<em>refpoint</em>]<strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+s</strong><em>file</em>][<strong>+t</strong>]</dt><dd><p>Draw a simple map inset box on the map.  Requires <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>.  Specify the box in one of three ways:
 (a) Give <em>west/east/south/north</em> of geographic rectangle bounded by parallels
 and meridians; append <strong>r</strong> if the coordinates instead are the lower left and
 upper right corners of the desired rectangle. (b) Give <em>xmin/xmax/ymin/ymax</em>
@@ -418,7 +425,8 @@ of bounding rectangle in projected coordinates and optionally append <strong>+u<
 (1) Use <strong>-Dg</strong> for map (user) coordinates, (2) use <strong>-Dj</strong> or <strong>-DJ</strong> for setting <em>refpoint</em> via
 a 2-char justification code that refers to the (invisible) map domain rectangle,
 (3) use <strong>-Dn</strong> for normalized (0-1) coordinates, or (4) use <strong>-Dx</strong> for plot coordinates
-(inches, cm, etc.).
+(inches, cm, etc.). If <em>refpoint</em> is omitted, the map inset is placed by default in the
+upper-right corner of the map (using <strong>jTR</strong>).
 Append <strong>+w</strong><em>width</em>[/<em>height</em>] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
 By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
 can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="pstext.html"><span class="doc">pstext</span></a>).
@@ -841,8 +849,8 @@ However, it is fairly simple for most applications (see examples).</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

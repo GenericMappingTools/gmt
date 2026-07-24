@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -91,6 +91,7 @@
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-7">New Features in GMT 6.7</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-6">New Features in GMT 6.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-5">New Features in GMT 6.5</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-core-module-features-in-gmt-6-5">New Core Module Features in GMT 6.5</a></li>
@@ -189,6 +190,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -238,6 +240,16 @@
              
   <section id="changelog">
 <span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="new-features-in-gmt-6-7">
+<h2>New Features in GMT 6.7<a class="headerlink" href="#new-features-in-gmt-6-7" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add quadratic (<strong>Q</strong>) and cubic (<strong>B</strong>) Bezier curve commands to the custom symbol
+macro language, enabling smooth curves in <code class="docutils literal notranslate"><span class="pre">.def</span></code> symbol files.  Both commands
+extend the path from the previous <strong>M</strong> or <strong>D</strong> point; <strong>Q</strong> takes one control point
+plus endpoint, <strong>B</strong> takes two control points plus endpoint.  See
+<span class="xref std std-ref">Custom Symbols</span> for details.</p></li>
+</ul>
+</section>
 <section id="new-features-in-gmt-6-6">
 <h2>New Features in GMT 6.6<a class="headerlink" href="#new-features-in-gmt-6-6" title="Link to this heading"></a></h2>
 <p>GMT 6.6 is our first release after Paul Wessel has left us. Though we are still in a kind of orphanage state,
@@ -706,15 +718,15 @@ there are numerous changes:</p>
 organization: <a class="reference external" href="https://www.generic-mapping-tools.org/">https://www.generic-mapping-tools.org/</a>.</p></li>
 <li><p>A new discussion forum at <a class="reference external" href="https://forum.generic-mapping-tools.org/">https://forum.generic-mapping-tools.org/</a>.</p></li>
 <li><p>A data server in Hawaii (oceania.generic-mapping-tools.org) with plans
-for new mirror servers around the world.  This is where the remote files
+for new mirror servers around the world. This is where the remote files
 that start with &#64; come from.</p></li>
 <li><p>A new way to use GMT (<em>modern</em> mode) that eliminates many of the
-aspects of classic GMT that perplexes users.  In modern mode, PostSCript
+aspects of classic GMT that perplexes users. In modern mode, PostScript
 is no longer the default graphics output format and most modules that
 had names starting with <strong>ps</strong> have had that prefix removed.  In addition,
 a few modules have entirely different names in modern mode (<em>psxy</em> is <em>plot</em>,
 <em>psxyz</em> is <em>plot3d</em>, and <em>psscale</em> is <em>colorbar</em>).</p></li>
-<li><p>The default mode remains <em>classic</em>, the only mode previously available.  All
+<li><p>The default mode remains <em>classic</em>, the only mode previously available. All
 existing classic mode GMT 4 and 5 scripts will run as before.</p></li>
 </ol>
 <section id="modern-mode-modules-in-gmt-6-0">
@@ -1940,8 +1952,8 @@ simply process their PostScript files via <a class="reference internal" href="ps
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

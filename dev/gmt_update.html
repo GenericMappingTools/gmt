@@ -1,0 +1,465 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gmt_update &mdash; GMT 6.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
+        <script src="_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.7
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">gmt_update</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gmt_update.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gmt-update">
+<span id="index-0"></span><h1>gmt_update<a class="headerlink" href="#gmt-update" title="Link to this heading"></a></h1>
+<section id="warning-this-is-a-developer-tool-for-updating-gmt-binaries-it-is-not-yet-intended-for-end-users">
+<h2>WARNING: This is a developer tool for updating GMT binaries. It is not yet intended for end users.<a class="headerlink" href="#warning-this-is-a-developer-tool-for-updating-gmt-binaries-it-is-not-yet-intended-for-end-users" title="Link to this heading"></a></h2>
+<p>Fetch and apply GMT binary updates from a remote manifest.</p>
+</section>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<p><strong>gmt_update</strong> [ <em>manifest_url</em> ] [ <strong>-</strong><strong>-dry-run</strong> ] [ <strong>-</strong><strong>-allow-dirty</strong> ]
+[ <strong>-</strong><strong>-root</strong> <em>dir</em> ]</p>
+<p><strong>gmt_update -</strong><strong>-show</strong> [ <em>manifest_url</em> ] [ <strong>-</strong><strong>-root</strong> <em>dir</em> ]</p>
+<p><strong>gmt_update -</strong><strong>-make-manifest</strong> [ <strong>-o</strong> <em>file</em> ] [ <strong>-</strong><strong>-files</strong> <em>list</em> ]
+[ <strong>-</strong><strong>-version</strong> <em>str</em> ] [ <strong>-</strong><strong>-root</strong> <em>dir</em> ]</p>
+<p><strong>gmt_update -</strong><strong>-help</strong> | <strong>-h</strong></p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p><strong>gmt_update</strong> is a small, self-contained C executable shipped alongside the
+regular GMT tools in <code class="docutils literal notranslate"><span class="pre">bin/</span></code>. It exists so that an end user can keep an
+installed GMT tree up-to-date with the most recent development binaries without
+having to wait for the to the release of a new version, or rebuild from source.</p>
+<p>The updater is <strong>forward-only</strong> and <strong>version-gated</strong>: it refuses to install
+an older release on top of a newer one, and it requires an explicit
+confirmation before touching any local file. It is also restricted to updating
+only files belonging to the current development cycle, so it will never replace a 6.7
+dev file with a 6.6.0, for example. Files locked by a running GMT
+process are staged on the side and applied on the next invocation, so an
+update cannot corrupt a session that is currently in use.</p>
+<p>A single executable handles three roles, selected by the first argument:</p>
+<ul class="simple">
+<li><p>with no subcommand (or just a <em>manifest_url</em>), it performs an <em>update</em>;</p></li>
+<li><p>with <code class="docutils literal notranslate"><span class="pre">--show</span></code>, it prints a per-file diff but does not download anything;</p></li>
+<li><p>with <code class="docutils literal notranslate"><span class="pre">--make-manifest</span></code>, it generates the manifest that <em>other</em> installs
+will later consume.  This second role is intended for release engineering.</p></li>
+</ul>
+</section>
+<section id="channels">
+<h2>Channels<a class="headerlink" href="#channels" title="Link to this heading"></a></h2>
+<p>Each official interim binary update is published as a set of <em>channels</em>, one per
+combination of operating system and processor architecture.  The compile-time
+channel of an individual <code class="docutils literal notranslate"><span class="pre">gmt_update</span></code> binary is fixed and printed at the top
+of the <code class="docutils literal notranslate"><span class="pre">--help</span></code> output.  The six supported channels are:</p>
+<p>Each channel sees only its own manifest.  A <code class="docutils literal notranslate"><span class="pre">win_x64</span></code> <code class="docutils literal notranslate"><span class="pre">gmt_update</span></code> will
+never download a Linux binary and vice versa.</p>
+</section>
+<section id="how-the-manifest-is-located">
+<h2>How the manifest is located<a class="headerlink" href="#how-the-manifest-is-located" title="Link to this heading"></a></h2>
+<p>The default <em>manifest_url</em> is the GitHub REST API endpoint for the GMT
+project’s latest release:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://api.github.com/repos/GenericMappingTools/gmt/releases/latest">https://api.github.com/repos/GenericMappingTools/gmt/releases/latest</a></p>
+</div></blockquote>
+<p>When the updater is given an <code class="docutils literal notranslate"><span class="pre">api.github.com/.../releases/latest</span></code> URL it
+fetches the JSON, walks the <code class="docutils literal notranslate"><span class="pre">assets[]</span></code> array, and follows the
+<code class="docutils literal notranslate"><span class="pre">browser_download_url</span></code> of the asset whose name is
+<code class="docutils literal notranslate"><span class="pre">manifest_&lt;channel&gt;.txt</span></code>.  Every other file listed in that manifest is then
+fetched as a <em>sibling</em> of the manifest itself, so a release simply consists of
+the manifest plus all referenced binaries uploaded to the same location.</p>
+<p>A literal URL pointing directly at a <code class="docutils literal notranslate"><span class="pre">manifest_*.txt</span></code> is also accepted and
+used verbatim; this is what you want when testing against a private mirror.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The updater never constructs a static release-asset URL on its own.  This
+is a deliberate design choice: GitHub does not provide a stable
+<code class="docutils literal notranslate"><span class="pre">latest/&lt;asset&gt;</span></code> URL, and any attempt to invent one will produce
+<code class="docutils literal notranslate"><span class="pre">404</span></code> errors as soon as the release name changes.  Always go through
+the API.</p>
+</div>
+</section>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading"></a></h2>
+<section id="common-options">
+<h3>Common options<a class="headerlink" href="#common-options" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt><em>manifest_url</em></dt><dd><p>URL of the manifest to read.  Defaults to the GitHub API endpoint
+described above.  May also be the direct URL of a published
+<code class="docutils literal notranslate"><span class="pre">manifest_&lt;channel&gt;.txt</span></code> (useful for staging tests).</p>
+</dd>
+<dt><strong>-</strong><strong>-root</strong> <em>dir</em></dt><dd><p>Override the install root.  By default the updater resolves its own
+executable path (following symlinks), strips the trailing <code class="docutils literal notranslate"><span class="pre">bin/</span></code>
+component, and uses the resulting directory as the install root.  All
+relative paths in the manifest are interpreted under this root.</p>
+</dd>
+<dt><strong>-</strong><strong>-help</strong>, <strong>-h</strong></dt><dd><p>Print a compact synopsis to standard output and exit.</p>
+</dd>
+</dl>
+</section>
+<section id="update-mode">
+<h3>Update mode<a class="headerlink" href="#update-mode" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt><strong>-</strong><strong>-dry-run</strong></dt><dd><p>Resolve the manifest, fetch and parse it, and print the per-file diff,
+but do not download or replace anything.  No confirmation prompt is
+shown.  This is the safe way to preview an upgrade.</p>
+</dd>
+<dt><strong>-</strong><strong>-allow-dirty</strong></dt><dd><p>Permit running against a developer build whose version string contains
+<code class="docutils literal notranslate"><span class="pre">-dirty</span></code> (i.e. built from an uncommitted working tree).  Without this
+flag such builds are refused, because the version comparison against the
+manifest cannot be trusted.</p>
+</dd>
+</dl>
+</section>
+<section id="manifest-generation-mode-make-manifest">
+<h3>Manifest-generation mode (<code class="docutils literal notranslate"><span class="pre">-</span></code> <code class="docutils literal notranslate"><span class="pre">-make-manifest</span></code>)<a class="headerlink" href="#manifest-generation-mode-make-manifest" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt><strong>-o</strong> <em>file</em></dt><dd><p>Write the generated manifest to <em>file</em>.  When omitted, the manifest is
+written to <code class="docutils literal notranslate"><span class="pre">./manifest_&lt;channel&gt;.txt</span></code> in the current directory — the
+same basename the consumer side resolves via the GitHub API, so the file
+can be uploaded to the release as-is.</p>
+</dd>
+<dt><strong>-</strong><strong>-files</strong> <em>list</em></dt><dd><p>A plain-text file with one repository-relative path per line; lines
+starting with <code class="docutils literal notranslate"><span class="pre">#</span></code> and blank lines are ignored.  Overrides the
+built-in list of artefacts for the current OS.</p>
+</dd>
+<dt><strong>-</strong><strong>-version</strong> <em>str</em></dt><dd><p>Use <em>str</em> as the manifest <code class="docutils literal notranslate"><span class="pre">version:</span></code> field instead of running
+<code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/bin/gmt</span> <span class="pre">--version</span></code> to probe it.</p>
+</dd>
+<dt><strong>-</strong><strong>-root</strong> <em>dir</em></dt><dd><p>Hash files under <em>dir</em> instead of under the updater’s own install root.
+Useful for packaging a build that lives in a staging directory.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="version-gate">
+<h2>Version gate<a class="headerlink" href="#version-gate" title="Link to this heading"></a></h2>
+<p>Before any download decision, the updater spawns
+<code class="docutils literal notranslate"><span class="pre">&lt;install_root&gt;/bin/gmt</span> <span class="pre">--version</span></code> and parses the output to obtain the
+local version (for example, <code class="docutils literal notranslate"><span class="pre">6.7.0_d3435c5_2026.05.19</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">6.7.0_8b76b26-dirty_...</span></code> on a developer build).  It then compares that to
+the manifest’s <code class="docutils literal notranslate"><span class="pre">version:</span></code> field using a <em>(semver, date)</em> tuple:</p>
+<ul class="simple">
+<li><p>if the local version is newer than the manifest, the updater refuses to
+proceed — there is nothing to upgrade to;</p></li>
+<li><p>if the local version is equal, only individual files whose SHA-256 differs
+from the manifest will be replaced;</p></li>
+<li><p>if the manifest is newer, the updater offers to upgrade.</p></li>
+</ul>
+<p>Dirty builds (<code class="docutils literal notranslate"><span class="pre">-dirty</span></code> in the version string) are rejected unless
+<code class="docutils literal notranslate"><span class="pre">--allow-dirty</span></code> is passed.</p>
+</section>
+<section id="confirmation-prompt">
+<h2>Confirmation prompt<a class="headerlink" href="#confirmation-prompt" title="Link to this heading"></a></h2>
+<p>After the diff is computed the updater prints a summary of the form</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>N<span class="w"> </span>file<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>downloaded<span class="w"> </span>and<span class="w"> </span>replace<span class="w"> </span><span class="nb">local</span><span class="w"> </span>copies<span class="w"> </span>under
+<span class="w">  </span>&lt;install_root&gt;
+Proceed?<span class="w"> </span><span class="o">[</span>y/N<span class="o">]</span>
+</pre></div>
+</div>
+<p>and waits on standard input.  Anything other than <code class="docutils literal notranslate"><span class="pre">y</span></code> (or <code class="docutils literal notranslate"><span class="pre">Y</span></code>) aborts
+cleanly without touching the filesystem.</p>
+<p>If any of the stale files turn out to be <em>newer on disk</em> than the manifest’s
+build timestamp (typically because the user just rebuilt that DLL locally),
+a second prompt appears</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>WARNING:<span class="w"> </span>K<span class="w"> </span>of<span class="w"> </span>those<span class="w"> </span>files<span class="w"> </span>are<span class="w"> </span>NEWER<span class="w"> </span>on<span class="w"> </span>disk<span class="w"> </span>than<span class="w"> </span>the<span class="w"> </span>manifest<span class="err">&#39;</span>s
+<span class="w">         </span>build<span class="w"> </span>timestamp<span class="w"> </span><span class="o">(</span>&lt;ISO-8601&gt;<span class="o">)</span>.
+<span class="w">         </span>Replacing<span class="w"> </span>them<span class="w"> </span>would<span class="w"> </span>OVERWRITE<span class="w"> </span><span class="nb">local</span><span class="w"> </span>newer<span class="w"> </span>copies
+<span class="w">         </span><span class="o">(</span>typically<span class="w"> </span>a<span class="w"> </span>just-rebuilt<span class="w"> </span>developer<span class="w"> </span>DLL<span class="o">)</span>.
+Also<span class="w"> </span>overwrite<span class="w"> </span>the<span class="w"> </span>K<span class="w"> </span>locally-newer<span class="w"> </span>file<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="o">(</span>DOWNGRADE<span class="o">)</span>?<span class="w"> </span><span class="o">[</span>y/N<span class="o">]</span>
+</pre></div>
+</div>
+<p>A default-<code class="docutils literal notranslate"><span class="pre">no</span></code> answer keeps the local copies and tags them <code class="docutils literal notranslate"><span class="pre">KEEP-LOCAL</span></code>
+in the apply phase; the non-regression files still update.</p>
+</section>
+<section id="integrity-checks">
+<h2>Integrity checks<a class="headerlink" href="#integrity-checks" title="Link to this heading"></a></h2>
+<p>Each downloaded file is written to a temporary <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;.new</span></code> sidecar and its
+SHA-256 is recomputed before the swap.  If the hash does not match the
+manifest, the temporary file is discarded and the original is left untouched.
+The manifest is the trust anchor and must be served over HTTPS; the
+SHA-256 column binds content to identity.</p>
+</section>
+<section id="locked-files">
+<h2>Locked files<a class="headerlink" href="#locked-files" title="Link to this heading"></a></h2>
+<p>If the destination file is held open by another process (most commonly the
+<code class="docutils literal notranslate"><span class="pre">gmt.exe</span></code> you are about to upgrade, or a long-running script that has
+loaded <code class="docutils literal notranslate"><span class="pre">libgmt</span></code>), the swap is deferred:</p>
+<ul class="simple">
+<li><p>on Windows, <code class="docutils literal notranslate"><span class="pre">MoveFileExA</span></code> with <code class="docutils literal notranslate"><span class="pre">MOVEFILE_REPLACE_EXISTING</span> <span class="pre">|</span>
+<span class="pre">MOVEFILE_DELAY_UNTIL_REBOOT</span></code> is attempted, and the validated download is
+also staged next to the target as <code class="docutils literal notranslate"><span class="pre">&lt;file&gt;.pending</span></code>.  The next run of
+<code class="docutils literal notranslate"><span class="pre">gmt_update</span></code> will apply that pending file as soon as the lock is gone;</p></li>
+<li><p>on Linux/macOS, the staged <code class="docutils literal notranslate"><span class="pre">&lt;file&gt;.pending</span></code> is renamed into place on the
+next run.</p></li>
+</ul>
+<p>On Windows the updater additionally calls the Restart Manager API to report
+which process IDs currently hold each locked file.</p>
+</section>
+<section id="manifest-format">
+<h2>Manifest format<a class="headerlink" href="#manifest-format" title="Link to this heading"></a></h2>
+<p>The manifest is a plain-text file, one record per line; blank lines and
+lines starting with <code class="docutils literal notranslate"><span class="pre">#</span></code> are ignored.  Header records appear once:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>version:<span class="w"> </span>&lt;gmt-version-string&gt;
+build:<span class="w">   </span>&lt;ISO-8601<span class="w"> </span>UTC<span class="w"> </span>timestamp&gt;
+channel:<span class="w"> </span>&lt;os&gt;_&lt;arch&gt;
+</pre></div>
+</div>
+<p>Followed by one file record per updatable artefact:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file<span class="w"> </span>&lt;relpath-from-install-root&gt;<span class="w"> </span>&lt;size-bytes&gt;<span class="w"> </span>&lt;sha256-hex-64chars&gt;
+</pre></div>
+</div>
+<p>An optional fifth field on a <code class="docutils literal notranslate"><span class="pre">file</span></code> line is interpreted as a
+per-file download URL override, useful when a single file must be served
+from a different host.  When omitted (the normal case), each file is fetched
+as a sibling of the manifest URL itself.</p>
+<p>The manifest is terminated by</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>end
+</pre></div>
+</div>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p><strong>1. Check what an update would do (no changes made):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_update<span class="w"> </span>--dry-run
+</pre></div>
+</div>
+<p><strong>2. Apply the latest official release:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_update
+</pre></div>
+</div>
+<p>When run from a default Windows install, this resolves the GitHub API,
+locates the <code class="docutils literal notranslate"><span class="pre">manifest_win_x64.txt</span></code> asset of the latest release, diffs each
+listed binary against your installed <code class="docutils literal notranslate"><span class="pre">bin/gmt.exe</span></code>, <code class="docutils literal notranslate"><span class="pre">bin/gmt_w64.dll</span></code>
+and friends, prompts <code class="docutils literal notranslate"><span class="pre">Proceed?</span> <span class="pre">[y/N]</span></code>, and on <code class="docutils literal notranslate"><span class="pre">y</span></code> downloads and swaps in
+just the binaries that have actually changed.</p>
+<p><strong>3. Pin to a specific manifest URL (mirror / staging):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_update<span class="w"> </span>https://my-mirror.example.com/gmt/6.7.0/manifest_win_x64.txt
+</pre></div>
+</div>
+<p><strong>4. Inspect the diff verbosely without ever connecting to do an update:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_update<span class="w"> </span>--show
+</pre></div>
+</div>
+<p>This prints a table such as</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>current<span class="w">  </span>bin/gmt.exe<span class="w">                              </span>0a1b2c3d4e5f<span class="w"> </span>0a1b2c3d4e5f
+STALE<span class="w">    </span>bin/gmt_w64.dll<span class="w">                          </span>deadbeefcafe<span class="w"> </span>feedfacecafe<span class="w"> </span>yes
+summary:<span class="w"> </span><span class="m">1</span><span class="w"> </span>stale,<span class="w"> </span><span class="m">0</span><span class="w"> </span>missing,<span class="w"> </span><span class="m">1</span><span class="w"> </span>pending
+</pre></div>
+</div>
+<p><strong>5. Update an installation that is not where the updater lives:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_update<span class="w"> </span>--root<span class="w"> </span>D:<span class="se">\o</span>pt<span class="se">\g</span>mt-staging
+</pre></div>
+</div>
+<p><strong>6. Generate the manifest for a release you just built locally:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;release-staging&gt;
+gmt_update<span class="w"> </span>--make-manifest
+</pre></div>
+</div>
+<p>The above writes <code class="docutils literal notranslate"><span class="pre">./manifest_&lt;channel&gt;.txt</span></code> in the current directory.
+Upload that file together with the referenced binaries to the same release
+(or the same directory on a private mirror) and the consumer side is done.</p>
+<p><strong>7. Generate a manifest from a custom file list and a hand-set version:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_update<span class="w"> </span>--make-manifest<span class="w"> </span>-o<span class="w"> </span>manifest_win_x64.txt<span class="w"> </span>--files<span class="w"> </span>my_files.txt<span class="w"> </span>--version<span class="w"> </span><span class="m">6</span>.7.0_rc1
+</pre></div>
+</div>
+<p>with <code class="docutils literal notranslate"><span class="pre">my_files.txt</span></code> containing, e.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Core binaries</span>
+bin/gmt.exe
+bin/gmt_w64.dll
+bin/postscriptlight_w64.dll
+bin/gmt_plugins/supplements_w64.dll
+</pre></div>
+</div>
+</section>
+<section id="security-notes">
+<h2>Security notes<a class="headerlink" href="#security-notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The manifest is the only trust anchor.  Always serve it over HTTPS.  The
+SHA-256 column binds each binary’s identity to its content; an attacker
+who can substitute a binary but not the manifest cannot make the updater
+swap it in.</p></li>
+<li><p>The updater never executes any downloaded file; it only renames it into
+place.</p></li>
+<li><p>The GitHub REST endpoint is reached anonymously; no token is required.</p></li>
+</ul>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference external" href="https://github.com/GenericMappingTools/gmt/releases">GMT releases on GitHub</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

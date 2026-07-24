@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -192,7 +193,7 @@ You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
 cpt, and can be made continuous or discrete.  For color tables beyond the
-current GMT offerings, visit <a class="reference external" href="http://www.seaviewsensing.com/pub/cpt-city/">cpt-city</a>.</p>
+current GMT offerings, visit <a class="reference external" href="https://phillips.shef.ac.uk/pub/cpt-city/">cpt-city</a>.</p>
 <p>The CPT includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower
 than the lowest <em>z</em>-value, the foreground color (F) assigned to values
@@ -320,7 +321,7 @@ specified by the parameters <a class="reference internal" href="gmt.conf.html#te
 <a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>.
 Append <strong>z</strong> to reverse the sign of z-values in the color table.  Note that
 this change of <em>z</em>-direction happens before <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> values are used
-so the latter much be compatible with the changed <em>z</em>-range.
+so the latter must be compatible with the changed <em>z</em>-range.
 See also <a class="reference internal" href="reference/features.html#manipulating-cpts"><span class="std std-ref">Manipulating CPTs</span></a></p>
 </dd>
 </dl>
@@ -545,7 +546,7 @@ part from the hinge to the top, according to the prescribed new range.
 Hinges are either <em>hard</em> or <em>soft</em>.  Soft hinges must be <em>activated</em> by
 appending <strong>+h</strong>[<em>hinge</em>] to the CPT name.
 If the selected range does not include an activated soft or hard hinge then
-we only resample colors from the half of the CPT that pertains to the range.
+we only resample colors from the half of the CPT that pertain to the range.
 See <a class="reference internal" href="reference/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a> for more information.</p>
 </section>
 <section id="discrete-versus-continuous-cpt">
@@ -667,8 +668,8 @@ CPTs.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

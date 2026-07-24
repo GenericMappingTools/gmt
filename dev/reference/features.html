@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/togglebutton.js?v=b8b12719"></script>
         <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -2019,7 +2020,7 @@ create a continuous color table (d) with arbitrary nodes by giving <strong>-T</s
 the latter option forces a continuous CPT pinned to a given list of node values.  Now, the colors
 continuously change from red (at <em>z = 0</em>) via yellow (at <em>z = 2</em>) to purple (at <em>z = 6</em>).
 Modules that obtain the <em>z</em>-range indirectly (e.g., <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>) may use the exact data range
-to set the quivalent of a <strong>-T</strong><em>min/max</em> option.  You may append <strong>+i</strong><em>dz</em> to the
+to set the equivalent of a <strong>-T</strong><em>min/max</em> option.  You may append <strong>+i</strong><em>dz</em> to the
 color list to have the <em>min</em> and <em>max</em> values rounded down and up to nearest multiple of <em>dz</em>, respectively.</p>
 <figure class="align-center" id="id34">
 <a class="reference internal image-reference" href="../_images/GMT_colorlist.png"><img alt="../_images/GMT_colorlist.png" src="../_images/GMT_colorlist.png" style="width: 500px;" /></a>
@@ -3155,7 +3156,7 @@ conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
 read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
 <a class="reference external" href="https://cirrus.ucsd.edu/~pierce/software/ncview/index.html">ncview</a>, and <a class="reference external" href="http://www.giss.nasa.gov/tools/panoply/">Panoply</a>; others can be found on the
-<a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/software.html">netCDF website</a>.
+<a class="reference external" href="https://archive.unidata.ucar.edu/software/netcdf/software.html">netCDF website</a>.
 Note that although many additional programs can read netCDF files, some are unable
 to read netCDF 4 files (if data compression has been applied).</p>
 <p>In addition, users with some C-programming experience may add their own
@@ -3840,8 +3841,8 @@ off; see <a class="reference internal" href="../gmt.conf.html#term-PS_COMMENTS">
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

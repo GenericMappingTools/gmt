@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/togglebutton.js?v=b8b12719"></script>
         <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -212,8 +213,8 @@
 <span class="m">0</span><span class="w">	</span><span class="m">0</span><span class="w">	</span><span class="m">0</span>.6<span class="w">	</span>c<span class="w">	</span>-Gblack
 -10.8<span class="w">	</span><span class="m">29</span>.2<span class="w">	</span><span class="m">0</span>.6<span class="w">	</span>c<span class="w">	</span>-Wwhite<span class="w"> </span>-Gblack
 <span class="c1">#side</span>
-<span class="m">8</span><span class="w">	</span><span class="m">33</span>.3<span class="w">	</span>M<span class="w"> </span>-G82/93/147<span class="w"> </span>-W0.25pt/black
-<span class="c1">#8	33.3	M -G82 -W0.25pt/black</span>
+<span class="m">8</span><span class="w">	</span><span class="m">33</span>.3<span class="w">	</span>M<span class="w"> </span>-G82/93/147<span class="w"> </span>-W0.25p,black
+<span class="c1">#8	33.3	M -G82 -W0.25p,black</span>
 <span class="m">6</span><span class="w">	</span><span class="m">33</span>.5<span class="w">	</span>D
 <span class="m">4</span><span class="w">	</span><span class="m">34</span><span class="w">	</span>D
 <span class="m">4</span><span class="w">	</span><span class="m">34</span>.5<span class="w">	</span>D
@@ -238,8 +239,8 @@
 <span class="m">8</span><span class="w">	</span><span class="m">33</span>.3<span class="w">	</span>M
 
 <span class="c1">#fin</span>
-<span class="m">6</span><span class="w">	</span><span class="m">33</span>.4<span class="w">	</span>M<span class="w"> </span>-G17/26/71<span class="w"> </span>-W0.25pt/17/26/71
-<span class="c1">#6	33.4	M -G30 -W0.25pt/0</span>
+<span class="m">6</span><span class="w">	</span><span class="m">33</span>.4<span class="w">	</span>M<span class="w"> </span>-G17/26/71<span class="w"> </span>-W0.25p,17/26/71
+<span class="c1">#6	33.4	M -G30 -W0.25p,0</span>
 <span class="m">4</span><span class="w">	</span><span class="m">33</span>.9<span class="w">	</span>D
 <span class="m">4</span><span class="w">	</span><span class="m">34</span>.4<span class="w">	</span>D
 <span class="m">4</span>.2<span class="w">	</span><span class="m">34</span>.9<span class="w">	</span>D
@@ -248,7 +249,7 @@
 <span class="m">6</span><span class="w">	</span><span class="m">33</span>.5<span class="w">	</span>D
 
 <span class="c1">#belly</span>
--6<span class="w">	</span><span class="m">30</span>.4<span class="w">	</span>M<span class="w"> </span>-G250<span class="w"> </span>-W0.5pt/195
+-6<span class="w">	</span><span class="m">30</span>.4<span class="w">	</span>M<span class="w"> </span>-G250<span class="w"> </span>-W0.5p,195
 -5<span class="w">	</span><span class="m">29</span>.7<span class="w">	</span>D
 -4.2<span class="w">	</span><span class="m">29</span>.8<span class="w">	</span>D
 -4.4<span class="w">	</span><span class="m">30</span>.5<span class="w">	</span>D
@@ -278,7 +279,7 @@
 -6<span class="w">	</span><span class="m">30</span>.4<span class="w">	</span>D
 
 <span class="c1">#head</span>
--8.2<span class="w">	</span><span class="m">29</span><span class="w">	</span>M<span class="w"> </span>-Gwhite<span class="w"> </span>-W0.5pt/180
+-8.2<span class="w">	</span><span class="m">29</span><span class="w">	</span>M<span class="w"> </span>-Gwhite<span class="w"> </span>-W0.5p,180
 -8.2<span class="w">	</span><span class="m">28</span>.2<span class="w">	</span>D
 -8.5<span class="w">	</span><span class="m">28</span><span class="w">	</span>D
 -9.5<span class="w">	</span><span class="m">27</span>.7<span class="w">	</span>D
@@ -298,7 +299,7 @@
 -8.2<span class="w">	</span><span class="m">29</span><span class="w">	</span>D
 
 <span class="c1">#&quot;gall&quot; line</span>
--8.6<span class="w">	</span><span class="m">29</span>.5<span class="w">	</span>M<span class="w"> </span>-Gwhite<span class="w"> </span>-W0.25pt/0
+-8.6<span class="w">	</span><span class="m">29</span>.5<span class="w">	</span>M<span class="w"> </span>-Gwhite<span class="w"> </span>-W0.25p,0
 -8.2<span class="w">	</span><span class="m">29</span><span class="w">	</span>D
 -8.2<span class="w">	</span><span class="m">28</span>.2<span class="w">	</span>D
 -8.5<span class="w">	</span><span class="m">28</span><span class="w">	</span>D
@@ -328,8 +329,8 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

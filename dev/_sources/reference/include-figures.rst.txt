@@ -24,13 +24,13 @@ document.
 -  When the aim is to display the graphics on a computer screen or
    present it using a projector, it is wise to select
    a raster format. Although applications like
-   PowerPoint can convert PDF to a ratser for you, you can best take the
+   PowerPoint can convert PDF to a raster for you, you can best take the
    conversion into your own hands for the best results.
 
 Using GMT modern mode you simply select the format most suitable for your
-purpuse when running :doc:`/begin` or :doc:`/figure`.
+purpose when running :doc:`/begin` or :doc:`/figure`.
 
-The remainder of this Chapter will show how to include GMT classicly produced
+The remainder of this Chapter will show how to include GMT classically produced
 PostScript graphics into documents and how to achieve the best quality results.
 
 Making GMT Encapsulated PostScript Files

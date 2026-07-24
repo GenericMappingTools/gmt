@@ -136,7 +136,7 @@ Optional Arguments
     Give name of file with previously computed Delaunay information. Each record must contain
     triplets of node numbers for a triangle in the input *table* [Default computes these
     using Delaunay triangulation]. If the *indexfile* is binary and can be read the same way
-    as the binary input *table* then you can append **+b** to spead up the reading
+    as the binary input *table* then you can append **+b** to speed up the reading
     [Default reads nodes as ASCII].
 
 .. _-M:

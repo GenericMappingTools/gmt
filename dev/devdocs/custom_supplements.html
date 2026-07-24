@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom GMT Supplements --- In-Tree vs Out-of-Tree &mdash; GMT 6.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js?v=b8b12719"></script>
+        <script src="../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GMT Enhancement Proposals" href="devdocs.html" />
+    <link rel="prev" title="PostScriptLight" href="postscriptlight.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.7
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Custom Supplements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-a-gmt-supplement-actually-works">How a GMT supplement actually works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-in-tree-mechanism">The in-tree mechanism</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-custom-in-tree-supplement">Adding a custom in-tree supplement</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-out-of-tree-mechanism">The out-of-tree mechanism</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-out-of-tree-projects-must-provide">What out-of-tree projects must provide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#real-world-worked-example">Real-world worked example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-source-requirements-both-paths">Module source requirements (both paths)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-a-custom-supplement-at-runtime">Loading a custom supplement at runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-overview-in-src-custom-supp-templates">File overview in <code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Custom GMT Supplements --- In-Tree vs Out-of-Tree</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/devdocs/custom_supplements.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="custom-gmt-supplements-in-tree-vs-out-of-tree">
+<h1>Custom GMT Supplements --- In-Tree vs Out-of-Tree<a class="headerlink" href="#custom-gmt-supplements-in-tree-vs-out-of-tree" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The investigation underlying this document and the document itself
+(including the accompanying template files under
+<code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/</span></code>) were produced by Claude Opus 4.7
+(Anthropic), working from the GMT source tree and a real-world
+out-of-tree supplement port (MB-System’s <code class="docutils literal notranslate"><span class="pre">mbsystem.dll</span></code>). Treat
+the contents as a starting point that has been mechanically verified
+against the GMT source as of the date of writing but has not been
+human-reviewed for stylistic or policy fit with the GMT project.
+Corrections welcome.</p>
+</div>
+<p>This document describes the two ways to build a GMT supplemental shared
+library (“supplement” or “suppl”): the <strong>in-tree</strong> path (your supplement
+lives under <code class="file docutils literal notranslate"><span class="pre">gmt/src/&lt;name&gt;/</span></code> and is built when GMT itself is
+built) and the <strong>out-of-tree</strong> path (your supplement is built by an
+independent CMake project that links against an already-installed GMT).
+Both produce a DLL or shared module that exposes GMT modules via
+<code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--show-modules</span></code>, <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--help</span></code>, and the external-API key/group
+lookup used by Julia, Python, and MATLAB wrappers.</p>
+<p>The accompanying <code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/in-tree-template/</span></code>
+and <code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/out-of-tree-template/</span></code> directories
+contain copy-and-modify starter trees for each case.</p>
+<section id="how-a-gmt-supplement-actually-works">
+<h2>How a GMT supplement actually works<a class="headerlink" href="#how-a-gmt-supplement-actually-works" title="Link to this heading"></a></h2>
+<p>A GMT supplement is just a shared library that the GMT core loads at
+runtime through <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> / <code class="docutils literal notranslate"><span class="pre">LoadLibrary</span></code>. GMT discovers libraries
+from the <code class="docutils literal notranslate"><span class="pre">GMT_CUSTOM_LIBS</span></code> GMT default (or the built-in supplement
+path). For each loaded library, GMT looks up symbols <strong>by name</strong>, using
+the library <strong>basename</strong> as a prefix. For a supplement DLL named
+<code class="docutils literal notranslate"><span class="pre">mylib</span></code>, GMT resolves these five symbols with <code class="docutils literal notranslate"><span class="pre">dlsym</span></code>:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 65.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mylib_module_show_all</span></code></p></td>
+<td><p>Pretty-print all modules + purpose for <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--help</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mylib_module_list_all</span></code></p></td>
+<td><p>Plain list of modern module names for <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--show-modules</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mylib_module_classic_all</span></code></p></td>
+<td><p>Plain list of classic module names for <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--show-classic</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mylib_module_keys</span></code></p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_KEYS</span></code> string for an external-API consumer</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mylib_module_group</span></code></p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_LIB</span></code> string for an external-API consumer</p></td>
+</tr>
+</tbody>
+</table>
+<p>Per individual module <code class="docutils literal notranslate"><span class="pre">xxx</span></code>, GMT also looks up the actual entry point
+<code class="docutils literal notranslate"><span class="pre">GMT_xxx</span></code> (for example <code class="docutils literal notranslate"><span class="pre">GMT_grdbarb</span></code>, <code class="docutils literal notranslate"><span class="pre">GMT_psbarb</span></code>). That function
+must be exported from the DLL
+(<code class="docutils literal notranslate"><span class="pre">EXTERN_MSC</span> <span class="pre">int</span> <span class="pre">GMT_xxx(void</span> <span class="pre">*API,</span> <span class="pre">int</span> <span class="pre">mode,</span> <span class="pre">void</span> <span class="pre">*args);</span></code>).</p>
+<p>The five <code class="docutils literal notranslate"><span class="pre">_module_*</span></code> lookup functions all share a per-supplement
+table called <code class="docutils literal notranslate"><span class="pre">static</span> <span class="pre">struct</span> <span class="pre">GMT_MODULEINFO</span> <span class="pre">modules[]</span></code>, populated with
+one row per module:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">GMT_MODULEINFO</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">mname</span><span class="p">;</span><span class="w">        </span><span class="cm">/* THIS_MODULE_MODERN_NAME */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">cname</span><span class="p">;</span><span class="w">        </span><span class="cm">/* THIS_MODULE_CLASSIC_NAME */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">component</span><span class="p">;</span><span class="w">    </span><span class="cm">/* THIS_MODULE_LIB */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">purpose</span><span class="p">;</span><span class="w">      </span><span class="cm">/* THIS_MODULE_PURPOSE */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">keys</span><span class="p">;</span><span class="w">         </span><span class="cm">/* THIS_MODULE_KEYS */</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>The table is the heart of a supplement. Everything else is plumbing
+around it. The lookup-function bodies are nearly identical across all
+supplements; they just delegate to <code class="docutils literal notranslate"><span class="pre">GMT_Show_ModuleInfo</span></code> /
+<code class="docutils literal notranslate"><span class="pre">GMT_Get_ModuleInfo</span></code> from GMT’s public API.</p>
+<p>Because the body is boilerplate and the table content is derived
+mechanically from <code class="docutils literal notranslate"><span class="pre">#define</span> <span class="pre">THIS_MODULE_*</span></code> macros in each module’s
+<code class="docutils literal notranslate"><span class="pre">.c</span></code>, GMT auto-generates both during the build. That generation is
+what the in-tree mechanism gives you for free --- and what the
+out-of-tree case must reproduce by hand.</p>
+</section>
+<section id="the-in-tree-mechanism">
+<h2>The in-tree mechanism<a class="headerlink" href="#the-in-tree-mechanism" title="Link to this heading"></a></h2>
+<p>Look at <code class="file docutils literal notranslate"><span class="pre">src/windbarbs/</span></code> for the canonical, minimal example: two
+module sources (<code class="docutils literal notranslate"><span class="pre">grdbarb.c</span></code>, <code class="docutils literal notranslate"><span class="pre">psbarb.c</span></code>) plus one shared helper
+(<code class="docutils literal notranslate"><span class="pre">windbarb.c</span></code>) and a fourteen-line <code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>. That
+<code class="docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> declares only the sources --- no <code class="docutils literal notranslate"><span class="pre">add_library</span></code>, no
+glue file, no <code class="docutils literal notranslate"><span class="pre">gen_*</span></code> command:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">SUPPL_NAME</span><span class="w"> </span><span class="s">windbarbs</span><span class="p">)</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">SUPPL_PROGS_SRCS</span><span class="w"> </span><span class="s">grdbarb.c</span><span class="w"> </span><span class="s">psbarb.c</span><span class="p">)</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">SUPPL_LIB_SRCS</span><span class="w"> </span><span class="o">${</span><span class="nv">SUPPL_PROGS_SRCS</span><span class="o">}</span><span class="w"> </span><span class="s">windbarb.c</span><span class="p">)</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">SUPPL_EXAMPLE_FILES</span><span class="w"> </span><span class="s">README.windbarb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">src/CMakeLists.txt</span></code> does the rest. The loop in that file walks
+every supplement directory listed in <code class="docutils literal notranslate"><span class="pre">GMT_SUPPL_DIRS</span></code> (which by
+default includes <code class="docutils literal notranslate"><span class="pre">geodesy</span> <span class="pre">gsfml</span> <span class="pre">gshhg</span> <span class="pre">img</span> <span class="pre">mgd77</span> <span class="pre">potential</span> <span class="pre">segy</span> <span class="pre">seis</span>
+<span class="pre">spotter</span> <span class="pre">x2sys</span> <span class="pre">windbarbs</span></code> plus anything the user puts in
+<code class="docutils literal notranslate"><span class="pre">SUPPL_EXTRA_DIRS</span></code>) and for each one:</p>
+<ol class="arabic simple">
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">add_subdirectory(&lt;dir&gt;)</span></code> so the supplement’s
+<code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> sets <code class="docutils literal notranslate"><span class="pre">SUPPL_NAME</span></code>, <code class="docutils literal notranslate"><span class="pre">SUPPL_PROGS_SRCS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SUPPL_LIB_SRCS</span></code>, optionally <code class="docutils literal notranslate"><span class="pre">SUPPL_LIB_NAME</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SUPPL_EXTRA_LIBS</span></code>, <code class="docutils literal notranslate"><span class="pre">SUPPL_EXTRA_INCLUDES</span></code>, <code class="docutils literal notranslate"><span class="pre">SUPPL_DLL_RENAME</span></code>.</p></li>
+<li><p>Reads those variables back via <code class="docutils literal notranslate"><span class="pre">get_subdir_var</span></code>.</p></li>
+<li><p>Accumulates per-library source lists into
+<code class="docutils literal notranslate"><span class="pre">SUPPL_&lt;lib&gt;_PROGS_SRCS</span></code> and <code class="docutils literal notranslate"><span class="pre">SUPPL_&lt;lib&gt;_LIB_SRCS</span></code>. (Multiple
+supplement directories can contribute to one library by sharing
+<code class="docutils literal notranslate"><span class="pre">SUPPL_LIB_NAME</span></code>.)</p></li>
+<li><p>For each resulting library:</p>
+<ul class="simple">
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">gen_gmt_moduleinfo_h</span></code> from
+<code class="file docutils literal notranslate"><span class="pre">cmake/modules/GmtGenExtraHeaders.cmake</span></code>. The macro greps
+every module source for <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_MODERN_NAME</span></code>,
+<code class="docutils literal notranslate"><span class="pre">THIS_MODULE_CLASSIC_NAME</span></code>, <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_LIB</span></code>,
+<code class="docutils literal notranslate"><span class="pre">THIS_MODULE_PURPOSE</span></code>, <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_KEYS</span></code> and writes
+<code class="file docutils literal notranslate"><span class="pre">gmt_&lt;lib&gt;_moduleinfo.h</span></code> (one row per module).</p></li>
+<li><p>Runs <code class="docutils literal notranslate"><span class="pre">configure_file(gmt_glue.c.in</span> <span class="pre">gmt_&lt;lib&gt;_glue.c)</span></code> substituting
+<code class="docutils literal notranslate"><span class="pre">&#64;SHARED_LIB_NAME&#64;</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;SHARED_LIB_PURPOSE&#64;</span></code>. The generated
+<code class="docutils literal notranslate"><span class="pre">.c</span></code> <code class="docutils literal notranslate"><span class="pre">#include</span></code> s the generated <code class="docutils literal notranslate"><span class="pre">.h</span></code> to fill in <code class="docutils literal notranslate"><span class="pre">modules[]</span></code>
+and defines the five <code class="docutils literal notranslate"><span class="pre">&lt;lib&gt;_module_*</span></code> entry points as
+<code class="docutils literal notranslate"><span class="pre">EXTERN_MSC</span></code>.</p></li>
+<li><p>Builds the shared library / module from the union of accumulated
+module sources, library sources, generated glue, and generated
+header.</p></li>
+</ul>
+</li>
+<li><p>Installs the library into <code class="file docutils literal notranslate"><span class="pre">gmt/plugins/</span></code>.</p></li>
+</ol>
+<p>That is the entire mechanism. The supplement author writes only the
+module sources (with the right <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_*</span></code> macros at the top)
+plus a fourteen-line <code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code>; everything that exposes
+the modules to the runtime is generated.</p>
+<section id="adding-a-custom-in-tree-supplement">
+<h3>Adding a custom in-tree supplement<a class="headerlink" href="#adding-a-custom-in-tree-supplement" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Create <code class="file docutils literal notranslate"><span class="pre">gmt/src/&lt;myname&gt;/</span></code> containing your <code class="docutils literal notranslate"><span class="pre">.c</span></code> sources
+plus a <code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> shaped like
+<code class="file docutils literal notranslate"><span class="pre">src/windbarbs/CMakeLists.txt</span></code>. See the
+<code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/in-tree-template/</span></code> directory.</p></li>
+<li><p>Edit (or create) <code class="file docutils literal notranslate"><span class="pre">cmake/ConfigUserAdvanced.cmake</span></code> and set
+<code class="docutils literal notranslate"><span class="pre">set</span> <span class="pre">(SUPPL_EXTRA_DIRS</span> <span class="pre">&lt;myname&gt;)</span></code>. (Multiple custom supplement
+directories can be listed.)</p></li>
+<li><p>Configure and build GMT normally. Your DLL appears under
+<code class="file docutils literal notranslate"><span class="pre">gmt/plugins/</span></code> alongside the official supplements.</p></li>
+<li><p>Verify with <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--show-modules</span></code> (your module names should appear)
+and <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">&lt;yourmodule&gt;</span></code>.</p></li>
+</ol>
+<p>The five-symbol contract and the <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_*</span></code> macro requirement
+described above are non-negotiable in either path. The in-tree
+mechanism just satisfies them automatically.</p>
+</section>
+</section>
+<section id="the-out-of-tree-mechanism">
+<h2>The out-of-tree mechanism<a class="headerlink" href="#the-out-of-tree-mechanism" title="Link to this heading"></a></h2>
+<p>A custom supplement built <strong>outside</strong> the GMT source tree (as part of
+an independent project --- for example MB-System builds <code class="docutils literal notranslate"><span class="pre">mbsystem.dll</span></code>
+from its own CMake project that links against an installed GMT) does
+<strong>not</strong> get the auto-generated glue and moduleinfo header. The
+supplement author has to either:</p>
+<ol class="loweralpha simple">
+<li><p>Reproduce the generation in the host project’s CMake, or</p></li>
+<li><p>Hand-author <code class="file docutils literal notranslate"><span class="pre">gmt_&lt;lib&gt;_glue.c</span></code> and
+<code class="file docutils literal notranslate"><span class="pre">gmt_&lt;lib&gt;_moduleinfo.h</span></code> and treat them as ordinary source
+files.</p></li>
+</ol>
+<p>Option (a) is strongly recommended --- the moduleinfo header should
+track the module sources automatically, and hand-editing it is
+error-prone. The <code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/out-of-tree-template/</span></code>
+directory shows option (a) end-to-end.</p>
+<section id="what-out-of-tree-projects-must-provide">
+<h3>What out-of-tree projects must provide<a class="headerlink" href="#what-out-of-tree-projects-must-provide" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Their own copy of</strong> <code class="file docutils literal notranslate"><span class="pre">gmt_glue.c.in</span></code>. GMT does not install
+<code class="file docutils literal notranslate"><span class="pre">gmt_glue.c.in</span></code> to a public location (it lives in the source
+tree only). Vendor a copy into your project; you only need to
+change <code class="docutils literal notranslate"><span class="pre">&#64;SHARED_LIB_NAME&#64;</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;SHARED_LIB_PURPOSE&#64;</span></code>.</p></li>
+<li><p><strong>Their own moduleinfo generator.</strong> GMT’s
+<code class="file docutils literal notranslate"><span class="pre">cmake/modules/GmtGenExtraHeaders.cmake</span></code> is similarly
+source-tree-only and the <code class="docutils literal notranslate"><span class="pre">gen_gmt_moduleinfo_h</span></code> macro is tightly
+coupled to GMT’s own directory layout (it reads from
+<code class="docutils literal notranslate"><span class="pre">${GMT_SRC}/src/${prog}</span></code>). Vendor a standalone CMake <code class="docutils literal notranslate"><span class="pre">-P</span></code>
+script that does the same regex extraction over your project’s
+module sources. See
+<code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/out-of-tree-template/cmake/GenSupplModuleInfo.cmake</span></code>.</p></li>
+<li><p><strong>A CMakeLists.txt that wires up the generator → glue → library.</strong>
+See
+<code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/out-of-tree-template/CMakeLists.txt</span></code>.</p></li>
+<li><p><strong>The right library output name.</strong> GMT calls <code class="docutils literal notranslate"><span class="pre">dlsym</span></code> using the
+<strong>DLL basename</strong>, so the CMake target’s <code class="docutils literal notranslate"><span class="pre">OUTPUT_NAME</span></code> (and any
+<code class="docutils literal notranslate"><span class="pre">*_DLL_RENAME</span></code>) must match the <code class="docutils literal notranslate"><span class="pre">SHARED_LIB_NAME</span></code> you bake into
+the glue. If the DLL is <code class="file docutils literal notranslate"><span class="pre">mylib.dll</span></code>, the glue must export
+<code class="docutils literal notranslate"><span class="pre">mylib_module_list_all</span></code> etc. --- mismatch means GMT silently
+finds nothing.</p></li>
+<li><p><strong>DLL export visibility.</strong> On Windows the entry points need
+<code class="docutils literal notranslate"><span class="pre">__declspec(dllexport)</span></code>. The vendored <code class="file docutils literal notranslate"><span class="pre">gmt_glue.c.in</span></code> uses
+<code class="docutils literal notranslate"><span class="pre">EXTERN_MSC</span></code>, which GMT’s <code class="file docutils literal notranslate"><span class="pre">declspec.h</span></code> flips to
+<code class="docutils literal notranslate"><span class="pre">dllexport</span></code> when <code class="docutils literal notranslate"><span class="pre">LIBRARY_EXPORTS</span></code> is defined. Add</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">target_compile_definitions</span><span class="p">(</span><span class="s">&lt;target&gt;</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">LIBRARY_EXPORTS</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to your CMakeLists. Each module’s <code class="docutils literal notranslate"><span class="pre">GMT_&lt;modulename&gt;</span></code> entry point
+should also be declared <code class="docutils literal notranslate"><span class="pre">EXTERN_MSC</span></code> (or you can rely on CMake’s
+<code class="docutils literal notranslate"><span class="pre">CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS</span></code>, but the explicit attribute is
+cleaner and matches what in-tree supplements do).</p>
+</li>
+</ol>
+</section>
+<section id="real-world-worked-example">
+<h3>Real-world worked example<a class="headerlink" href="#real-world-worked-example" title="Link to this heading"></a></h3>
+<p>MB-System builds <code class="docutils literal notranslate"><span class="pre">mbsystem.dll</span></code> out-of-tree against an installed GMT.
+Its <code class="file docutils literal notranslate"><span class="pre">src/gmt/CMakeLists.txt</span></code> followed the recipe above (using a
+vendored <code class="docutils literal notranslate"><span class="pre">MbsysGenModuleInfo.cmake</span></code> and <code class="docutils literal notranslate"><span class="pre">gmt_mbsystem_glue.c.in</span></code>)
+after diagnosing that an earlier hand-written <code class="docutils literal notranslate"><span class="pre">mbgmt_module.c</span></code>
+exported the wrong symbol names (<code class="docutils literal notranslate"><span class="pre">gmt_mbgmt_module_show_all</span></code> instead
+of <code class="docutils literal notranslate"><span class="pre">mbsystem_module_list_all</span></code>), which is why <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--show-modules</span></code>
+showed nothing and Julia’s <code class="docutils literal notranslate"><span class="pre">GMT_Encode_Options</span></code> returned null keys.</p>
+<p>The MB-System fix is a close analogue of the
+<code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/out-of-tree-template/</span></code> provided here;
+consult that project as a secondary reference if you want to see the
+mechanism integrated into a larger codebase.</p>
+</section>
+</section>
+<section id="module-source-requirements-both-paths">
+<h2>Module source requirements (both paths)<a class="headerlink" href="#module-source-requirements-both-paths" title="Link to this heading"></a></h2>
+<p>Every module <code class="docutils literal notranslate"><span class="pre">.c</span></code> must define these macros near the top, before any
+<code class="docutils literal notranslate"><span class="pre">#include</span> <span class="pre">&quot;gmt_dev.h&quot;</span></code>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define THIS_MODULE_CLASSIC_NAME  &quot;mymodule&quot;     </span><span class="cm">/* required */</span>
+<span class="cp">#define THIS_MODULE_MODERN_NAME   &quot;mymodule&quot;     </span><span class="cm">/* required */</span>
+<span class="cp">#define THIS_MODULE_LIB           &quot;mylib&quot;        </span><span class="cm">/* must equal DLL basename */</span>
+<span class="cp">#define THIS_MODULE_PURPOSE       &quot;One-line description&quot;</span>
+<span class="cp">#define THIS_MODULE_KEYS          &quot;&lt;G{,&gt;X}&quot;      </span><span class="cm">/* API key string; &quot;&quot; if none */</span>
+<span class="cp">#define THIS_MODULE_NEEDS         &quot;Jg&quot;           </span><span class="cm">/* projection requirements; &quot;&quot; if none */</span>
+<span class="cp">#define THIS_MODULE_OPTIONS       &quot;-&gt;BJKOPRUVXY&quot; </span><span class="cm">/* common options accepted */</span>
+</pre></div>
+</div>
+<p>The legacy <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_NAME</span></code> (a single string used by very old GMT5
+ports) is <strong>not</strong> recognised by the modern generator. If you are
+porting old code, add explicit <code class="docutils literal notranslate"><span class="pre">THIS_MODULE_MODERN_NAME</span></code> and
+<code class="docutils literal notranslate"><span class="pre">THIS_MODULE_CLASSIC_NAME</span></code> (typically both equal to the old name) or
+adapt your generator to fall back. The vendored
+<code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/out-of-tree-template/cmake/GenSupplModuleInfo.cmake</span></code>
+does the fallback for convenience; the in-tree GMT generator does not.</p>
+<p>Each module must also expose:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">EXTERN_MSC</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">GMT_mymodule</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">V_API</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">mode</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">args</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>as a defined function (not just a declaration). That is what GMT
+dispatches to when the user runs <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">mymodule</span></code>.</p>
+</section>
+<section id="loading-a-custom-supplement-at-runtime">
+<h2>Loading a custom supplement at runtime<a class="headerlink" href="#loading-a-custom-supplement-at-runtime" title="Link to this heading"></a></h2>
+<p>After building and installing, point GMT at the new library. Either:</p>
+<ul class="simple">
+<li><p>Set the GMT default <code class="docutils literal notranslate"><span class="pre">GMT_CUSTOM_LIBS</span></code> to the absolute path of the
+DLL (or to a colon/semicolon separated list of paths), for example
+<code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">set</span> <span class="pre">GMT_CUSTOM_LIBS</span> <span class="pre">C:/path/to/mylib.dll</span></code>.</p></li>
+<li><p>Or drop the DLL into GMT’s default plugin directory
+(<code class="file docutils literal notranslate"><span class="pre">&lt;gmt-install&gt;/lib/gmt/plugins/</span></code> on Unix,
+<code class="file docutils literal notranslate"><span class="pre">&lt;gmt-install&gt;/bin/gmt_plugins/</span></code> on Windows).</p></li>
+</ul>
+<p>Verify:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>--show-modules<span class="w">        </span><span class="c1"># your modules should appear in the list</span>
+gmt<span class="w"> </span>mymodule<span class="w"> </span>--help<span class="w">       </span><span class="c1"># your module should run</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">--show-modules</span></code> does not list your modules but the DLL
+clearly loaded (no error printed), the most likely cause is a mismatch
+between the DLL basename and the <code class="docutils literal notranslate"><span class="pre">SHARED_LIB_NAME</span></code> baked into the
+glue. Inspect the DLL with <code class="docutils literal notranslate"><span class="pre">dumpbin</span> <span class="pre">/exports</span> <span class="pre">mylib.dll</span></code> (MSVC) or
+<code class="docutils literal notranslate"><span class="pre">nm</span> <span class="pre">-D</span> <span class="pre">mylib.so</span></code> (Unix) and confirm that <code class="docutils literal notranslate"><span class="pre">mylib_module_list_all</span></code>
+and friends are present.</p>
+</section>
+<section id="file-overview-in-src-custom-supp-templates">
+<h2>File overview in <code class="file docutils literal notranslate"><span class="pre">src/custom_supp_templates/</span></code><a class="headerlink" href="#file-overview-in-src-custom-supp-templates" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>src/custom_supp_templates/
+├── README.md                                this document (markdown copy)
+├── in-tree-template/
+│   ├── CMakeLists.txt                       drop-in for src/&lt;myname&gt;/
+│   └── mymodule.c                           skeleton module source
+└── out-of-tree-template/
+    ├── CMakeLists.txt                       standalone CMake project
+    ├── gmt_mylib_glue.c.in                  vendored from gmt_glue.c.in
+    ├── mymodule.c                           skeleton module source
+    └── cmake/
+        └── GenSupplModuleInfo.cmake         vendored moduleinfo generator
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="postscriptlight.html" class="btn btn-neutral float-left" title="PostScriptLight" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="devdocs.html" class="btn btn-neutral float-right" title="GMT Enhancement Proposals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

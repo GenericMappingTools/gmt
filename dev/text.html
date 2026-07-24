@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -166,7 +167,7 @@
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>dx</em>[/<em>dy</em>]][<strong>+to</strong>|<strong>O</strong>|<strong>c</strong>|<strong>C</strong>] ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]] ]
-[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>l</strong>|<strong>r</strong>[<em>first</em>] |<strong>t</strong><em>text</em>|<strong>z</strong>[<em>format</em>]] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>l</strong>|<strong>r</strong>[<em>first</em>]|<strong>t</strong><em>text</em>|<strong>z</strong>[<em>format</em>]] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>fill</em>][<strong>+n</strong>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> ] [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>l</strong>|<strong>u</strong> ]
@@ -194,7 +195,8 @@
 <p><strong>text</strong> plots text strings of variable size, font type, and
 orientation. Various map projections are provided, with the option to
 draw and annotate the map boundaries.</p>
-<p>Greek characters, subscript, superscript, and small
+<p>For a list of all fonts recognized by GMT see <a class="reference internal" href="reference/postscript-fonts.html"><span class="doc">PostScript Fonts Used by GMT</span></a>.
+Greek characters, subscript, superscript, and small
 caps are supported as follows:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -308,22 +310,23 @@ use modifier <strong>+t</strong> to append the shape of the textbox when using <
 <ul class="simple">
 <li><p><strong>o</strong> - Straight rectangle [Default].</p></li>
 <li><p><strong>O</strong> - Set a rounded rectangle.</p></li>
-<li><p><strong>c</strong> - (Paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> only) selects a concave rectangle.</p></li>
-<li><p><strong>C</strong> - (Paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> only) selects a convex rectangle.</p></li>
+<li><p><strong>c</strong> - Paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> only) selects a concave rectangle.</p></li>
+<li><p><strong>C</strong> - Paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> only) selects a convex rectangle.</p></li>
 </ul>
 </dd>
 </dl>
-<dl id="d">
-<dt><strong>-D</strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]]</dt><dd><p>Offsets the text from the projected (<em>x</em>,<em>y</em>) point by <em>dx</em>,<em>dy</em>
+<dl class="simple" id="d">
+<dt><strong>-D</strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+f</strong><em>offsets_file</em>][<strong>+v</strong>[<em>pen</em>]]</dt><dd><p>Offsets the text from the projected (<em>x</em>,<em>y</em>) point by <em>dx</em>,<em>dy</em>
 [0/0]. If <em>dy</em> is not specified then it is set equal to <em>dx</em>. Prepend
 an optional directive:</p>
 <ul class="simple">
 <li><p><strong>j</strong> - Offset the text away from the point instead (i.e., the
 text justification will determine the direction of the shift).</p></li>
 <li><p><strong>J</strong> - Shorten diagonal offsets at corners by <span class="math notranslate nohighlight">\(\sqrt{2}\)</span>.</p></li>
-</ul>
-<p>Optionally, append the modifier:</p>
-<ul class="simple">
+<li><p><strong>+f</strong> - Read per-record (<em>dx</em>, <em>dy</em>) offsets from <em>offsets_file</em> instead
+of using the single fixed <em>dx</em>[/<em>dy</em>] value. The file must have two
+columns, one offset pair per text record, in the same order as the input
+data. Values are in the current length unit [<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>].</p></li>
 <li><p><strong>+v</strong> - Draw a line from the original point to the shifted point;
 append a <em>pen</em> to change the attributes for this line.  <strong>Note</strong>:
 The <strong>-Dj</strong>|<strong>J</strong> selection cannot be used with paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>).</p></li>
@@ -359,7 +362,7 @@ characters then the <strong>+t</strong> modifier must be the last modifier in <a
 <li><p><strong>+z</strong> - Format incoming <em>z</em> values to a string using the supplied <em>format</em>
 [if not appended we use <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_MAP"><span class="xref std std-term">FORMAT_FLOAT_MAP</span></a>].</p></li>
 </ul>
-<p><strong>Notes</strong>: <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>+h</strong>|<strong>l</strong>|<strong>r</strong>|<strong>t</strong>| <strong>z</strong> can’t be used with <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>.</p>
+<p><strong>Notes</strong>: <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>+h</strong>|<strong>l</strong>|<strong>r</strong>|<strong>t</strong>|<strong>z</strong> can’t be used with <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>.</p>
 <p><strong>Notes</strong>: (1) If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is in effect then the <em>z</em> value used for formatting is in the
 4th, not 3rd column. If you only want a specific word from the trailing text and
 not the whole line, use <strong>-it</strong><em>word</em> to indicate which word (0 is the first word)
@@ -613,8 +616,8 @@ trailing text.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

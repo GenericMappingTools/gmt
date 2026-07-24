@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../_static/togglebutton.js?v=b8b12719"></script>
         <script src="../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -144,6 +144,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -326,90 +327,100 @@ are constants.</p>
 <td><p>Append circular arc to existing path</p></td>
 <td><p><span class="math notranslate nohighlight">\(x_c, y_c, d, \alpha_1, \alpha_2\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>drawto</p></td>
+<tr class="row-odd"><td><p>cubicbezier</p></td>
+<td><p><strong>B</strong></p></td>
+<td><p>Cubic Bezier from last point</p></td>
+<td><p><span class="math notranslate nohighlight">\(cx_1, cy_1, cx_2, cy_2, ex, ey\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>drawto</p></td>
 <td><p><strong>D</strong></p></td>
 <td><p>Draw line from previous point</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p>moveto</p></td>
+<tr class="row-odd"><td><p>moveto</p></td>
 <td><p><strong>M</strong></p></td>
 <td><p>Set a new anchor point</p></td>
 <td><p><span class="math notranslate nohighlight">\(x_0, y_0\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>rotate</p></td>
+<tr class="row-even"><td><p>rotate</p></td>
 <td><p><strong>O</strong></p></td>
 <td><p>Rotate the coordinate system</p></td>
 <td><p><span class="math notranslate nohighlight">\(\alpha\)</span>[<strong>a</strong>]</p></td>
 </tr>
-<tr class="row-even"><td><p>EPS</p></td>
+<tr class="row-odd"><td><p>EPS</p></td>
 <td><p><strong>P</strong></p></td>
 <td><p>Place an Encapsulated PostScript file</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size, name\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>stroke</p></td>
+<tr class="row-even"><td><p>stroke</p></td>
 <td><p><strong>S</strong></p></td>
 <td><p>Stroke existing path only</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>texture</p></td>
+<tr class="row-odd"><td><p>texture</p></td>
 <td><p><strong>T</strong></p></td>
 <td><p>Change current pen and fill</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>star</p></td>
+<tr class="row-even"><td><p>star</p></td>
 <td><p><strong>a</strong></p></td>
 <td><p>Plot a star</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p>circle</p></td>
+<tr class="row-odd"><td><p>circle</p></td>
 <td><p><strong>c</strong></p></td>
 <td><p>Plot a circle</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>diamond</p></td>
+<tr class="row-even"><td><p>diamond</p></td>
 <td><p><strong>d</strong></p></td>
 <td><p>Plot a diamond</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p>ellipse</p></td>
+<tr class="row-odd"><td><p>ellipse</p></td>
 <td><p><strong>e</strong></p></td>
 <td><p>Plot an ellipse</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, \alpha\)</span>,<em>major</em>,<em>minor</em></p></td>
 </tr>
-<tr class="row-odd"><td><p>octagon</p></td>
+<tr class="row-even"><td><p>octagon</p></td>
 <td><p><strong>g</strong></p></td>
 <td><p>Plot an octagon</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p>hexagon</p></td>
+<tr class="row-odd"><td><p>hexagon</p></td>
 <td><p><strong>h</strong></p></td>
 <td><p>Plot a hexagon</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>invtriangle</p></td>
+<tr class="row-even"><td><p>invtriangle</p></td>
 <td><p><strong>i</strong></p></td>
 <td><p>Plot an inverted triangle</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p>rotrectangle</p></td>
+<tr class="row-odd"><td><p>rotrectangle</p></td>
 <td><p><strong>j</strong></p></td>
 <td><p>Plot an rotated rectangle</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, \alpha, width, height\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>letter</p></td>
+<tr class="row-even"><td><p>letter</p></td>
 <td><p><strong>l</strong></p></td>
 <td><p>Plot a letter</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size, string\)</span></p></td>
 </tr>
-<tr class="row-even"><td><p>marc</p></td>
+<tr class="row-odd"><td><p>marc</p></td>
 <td><p><strong>m</strong></p></td>
 <td><p>Plot a math arc (no heads)</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, r, \alpha_1, \alpha_2\)</span></p></td>
 </tr>
-<tr class="row-odd"><td><p>pentagon</p></td>
+<tr class="row-even"><td><p>pentagon</p></td>
 <td><p><strong>n</strong></p></td>
 <td><p>Plot a pentagon</p></td>
 <td><p><span class="math notranslate nohighlight">\(x, y, size\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>quadbezier</p></td>
+<td><p><strong>Q</strong></p></td>
+<td><p>Quadratic Bezier from last point</p></td>
+<td><p><span class="math notranslate nohighlight">\(cx, cy, ex, ey\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p>rect</p></td>
 <td><p><strong>r</strong></p></td>
@@ -463,6 +474,15 @@ are constants.</p>
 </tr>
 </tbody>
 </table>
+<p>Note for <strong>B</strong> and <strong>Q</strong>: Both Bezier commands extend the current path from the
+<em>last point set by</em> <strong>M</strong> <em>or</em> <strong>D</strong> (the implicit start point <span class="math notranslate nohighlight">\(P_0\)</span>); you do not
+supply <span class="math notranslate nohighlight">\(P_0\)</span> explicitly. <strong>B</strong> takes two control points followed by the endpoint
+(<span class="math notranslate nohighlight">\(cx_1, cy_1, cx_2, cy_2, ex, ey\)</span>) and draws a cubic Bezier curve.
+<strong>Q</strong> takes one control point followed by the endpoint (<span class="math notranslate nohighlight">\(cx, cy, ex, ey\)</span>) and
+draws a quadratic Bezier curve.  Both commands are tessellated into line segments
+at render time and integrate with the normal fill/stroke pipeline, so <strong>-G</strong> and <strong>-W</strong>
+apply as usual.  Use <strong>B</strong> when converting SVG paths (SVG <code class="docutils literal notranslate"><span class="pre">C</span></code>/<code class="docutils literal notranslate"><span class="pre">c</span></code> maps directly);
+use <strong>Q</strong> for simpler arcs where one control point is sufficient.</p>
 <p>Note for <strong>O</strong>: if an <strong>a</strong> is appended to the angle then <span class="math notranslate nohighlight">\(\alpha\)</span> is considered
 to be a map azimuth; otherwise it is a Cartesian map angle.  The <strong>a</strong> modifier
 does not apply if the angle is given via a variable, in which case the type of angle
@@ -690,8 +710,8 @@ levels deep), e.g.,</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

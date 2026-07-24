@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/togglebutton.js?v=b8b12719"></script>
         <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -121,6 +121,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -248,8 +249,9 @@ but the GMT default is the architecture-independent netCDF format.</p>
 <h2>Laboratory Exercises<a class="headerlink" href="#laboratory-exercises" title="Link to this heading"></a></h2>
 <p>We will begin our adventure by making some simple plot axes and coastline basemaps. We will do this in order
 to introduce the all-important common options <strong>frame</strong>, <strong>proj</strong>, and <strong>region</strong> and to familiarize ourselves
-with a few selected GMT projections. The GMT modules we will utilize are <a class="reference internal" href="../../basemap.html"><span class="doc">basemap</span></a> and
-<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast/">basemap</a>.
+with a few selected GMT projections. The GMT modules we will utilize are
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/basemap">basemap</a> and
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast">coast</a>.
 Please consult their manual pages for reference.</p>
 <section id="linear-projection">
 <h3>Linear projection<a class="headerlink" href="#linear-projection" title="Link to this heading"></a></h3>
@@ -264,10 +266,10 @@ dimensions of 10 by 7.5 centimeters. Here’s how we do it:</p>
 </div></blockquote>
 <p>This script will open the result in a PNG viewer and it should look like <a class="reference internal" href="#gmt-tut-1-jl"><span class="std std-ref">our example 1 below</span></a>.
 Examine the <a class="reference internal" href="../../basemap.html"><span class="doc">basemap</span></a> documentation so you understand what each option means.</p>
-<figure class="align-center" id="id1">
+<figure class="align-center" id="id2">
 <span id="gmt-tut-1-jl"></span><a class="reference internal image-reference" href="../../_images/GMT_tut_1.png"><img alt="../../_images/GMT_tut_1.png" src="../../_images/GMT_tut_1.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 1.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 1.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Exercises:</p>
@@ -288,10 +290,10 @@ raw <em>x</em> data range from 3 to 9613 and that <em>y</em> ranges from 10<sup>
 </div>
 </div></blockquote>
 <p>Make sure your plot looks like <a class="reference internal" href="#gmt-tut-2-jl"><span class="std std-ref">our example 2 below</span></a></p>
-<figure class="align-center" id="id2">
+<figure class="align-center" id="id3">
 <span id="gmt-tut-2-jl"></span><a class="reference internal image-reference" href="../../_images/GMT_tut_2.png"><img alt="../../_images/GMT_tut_2.png" src="../../_images/GMT_tut_2.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 2.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 2.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Exercises:</p>
@@ -307,7 +309,7 @@ raw <em>x</em> data range from 3 to 9613 and that <em>y</em> ranges from 10<sup>
 (<strong>proj=:merc</strong>) remains the stalwart of location maps used by scientists. It is one of several cylindrical
 projections offered by GMT; here we will only have time to focus on one such projection. The complete syntax is simply</p>
 <p><strong>proj=:merc</strong></p>
-<p>To make coastline maps we use <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast/">coast</a> which automatically
+<p>To make coastline maps we use <a class="reference external" href="https://www.generic-mapping-tools.org/GMTjl_doc/documentation/modules/coast">coast</a> which automatically
 will access the GMT coastline, river and border data base derived from the GSHHG database [See <em>Wessel and Smith</em>, 1996].
 In addition to the common switches we may need to use some of several coast-specific options:</p>
 <table class="docutils align-default">
@@ -350,10 +352,10 @@ In addition to the common switches we may need to use some of several coast-spec
 </div>
 </div></blockquote>
 <p>Your plot should look like <a class="reference internal" href="#gmt-tut-3-jl"><span class="std std-ref">our example 3 below</span></a></p>
-<figure class="align-center" id="id3">
+<figure class="align-center" id="id4">
 <span id="gmt-tut-3-jl"></span><a class="reference internal image-reference" href="../../_images/GMT_tut_3.png"><img alt="../../_images/GMT_tut_3.png" src="../../_images/GMT_tut_3.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 3.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 3.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Exercises:</p>
@@ -387,10 +389,10 @@ We try the following command:</p>
 </div>
 </div></blockquote>
 <p>Your plot should look like <a class="reference internal" href="#gmt-tut-4-jl"><span class="std std-ref">our example 4 below</span></a></p>
-<figure class="align-center" id="id4">
+<figure class="align-center" id="id5">
 <span id="gmt-tut-4-jl"></span><a class="reference internal image-reference" href="../../_images/GMT_tut_4.png"><img alt="../../_images/GMT_tut_4.png" src="../../_images/GMT_tut_4.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 4.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 4.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Exercises:</p>
@@ -415,10 +417,10 @@ conformal nor equal-area. The syntax for this projection is</p>
 </div>
 </div></blockquote>
 <p>Your plot should look like <a class="reference internal" href="#gmt-tut-5-jl"><span class="std std-ref">our example 5 below</span></a></p>
-<figure class="align-center" id="id5">
+<figure class="align-center" id="id6">
 <span id="gmt-tut-5-jl"></span><a class="reference internal image-reference" href="../../_images/GMT_tut_5.png"><img alt="../../_images/GMT_tut_5.png" src="../../_images/GMT_tut_5.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 5</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 5</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Exercises:</p>
@@ -443,10 +445,10 @@ A simple Eckert VI world map is thus generated by</p>
 </div>
 </div></blockquote>
 <p>Your plot should look like <a class="reference internal" href="#gmt-tut-6-jl"><span class="std std-ref">our example 6 below</span></a></p>
-<figure class="align-center" id="id6">
+<figure class="align-center" id="id7">
 <span id="gmt-tut-6-jl"></span><a class="reference internal image-reference" href="../../_images/GMT_tut_6.png"><img alt="../../_images/GMT_tut_6.png" src="../../_images/GMT_tut_6.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 6</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 6</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Exercises:</p>
@@ -469,8 +471,8 @@ A simple Eckert VI world map is thus generated by</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

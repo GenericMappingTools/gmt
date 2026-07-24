@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nswing &mdash; GMT 6.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js?v=b8b12719"></script>
+        <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="flexure" href="../potential/gmtflexure.html" />
+    <link rel="prev" title="mgd77track" href="../mgd77/mgd77track.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            GMT
+          </a>
+              <div class="version">
+                6.7
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installing GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Technical Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/custom_supplements.html">Custom Supplements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="/dev/gmt-docs-dev.zip"><i class="fa fa-download fa-fw"></i> Documentation HTML zip</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">nswing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/nswing/nswing.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="nswing">
+<h1>nswing<a class="headerlink" href="#nswing" title="Link to this heading"></a></h1>
+<p>A tsunami maker</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading"></a></h2>
+<p><strong>nswing</strong>
+<em>bathy.grd</em> <em>initial.grd</em>
+<strong>-t</strong><em>dt</em>
+[ <strong>-1</strong><em>bat_lev1</em> ] [ <strong>-2</strong><em>bat_lev2</em> ] [ <strong>-3</strong><em>…</em> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>fname.sww</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>p</strong>][<strong>m</strong>][<strong>+a</strong>][,<em>decim</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>k</strong>[<strong>c</strong>]<em>w/e/s/n</em> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>name</em>[<strong>+m</strong>],<em>int</em> ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>[<em>momentM,momentN</em>[,<em>t</em>]] ]
+[ <a class="reference internal" href="#p"><span><strong>-P</strong></span></a></strong><em>time_jump</em>[<strong>+t</strong><em>run_time_jump</em>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<em>name1,name2</em>] ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<strong>-</strong>|<strong>+</strong>[<em>maskname</em>]] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>n_cycles</em> ]
+[ <a class="reference internal" href="#o"><span><strong>-O</strong></span></a></strong><em>BCfile</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>z_offset</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>x</strong>|<strong>y</strong>|<strong>n</strong>][<strong>+m</strong>][<strong>+s</strong>][<strong>+a</strong>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>mareg</em>|<em>x/y</em>[<strong>+o</strong><em>outmaregs</em>][<strong>+t</strong><em>int</em>] ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong><em>manning0</em>[,<em>…</em>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-x</strong><em>n</em> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note</strong>: No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h2>
+<p><strong>nswing</strong> is a Non-linear Shallow Water model that propagates a tsunami over a
+bathymetry grid. Starting from a base level bathymetry and an initial-condition
+(source) grid it integrates the shallow water equations in time and writes the
+resulting wave field (water level, velocity, momentum, energy, …) either as a
+series of GMT grids, a 3D netCDF file, or as time series sampled at virtual
+maregraph (tide-gauge) locations. Nested grids of increasing resolution may be
+used to refine the solution near the coast, and a tsunami source can be generated
+on the fly from Okada fault parameters.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><em>bathy.grd</em></dt><dd><p>The base level bathymetry grid (positive up; negative = below sea level).
+(See <a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+</dd>
+<dt><em>initial.grd</em></dt><dd><p>The initial-condition (source) grid holding the sea surface displacement at
+time zero. (See <a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-t</strong><em>dt</em></dt><dd><p>Time step (in seconds) for the simulation.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><strong>-1</strong><em>bat_lev1</em> <strong>-2</strong><em>bat_lev2</em> … <strong>-9</strong><em>bat_lev9</em></dt><dd><p>Nested bathymetry grids, one per nesting level. Each level refines the solution inside
+the area covered by its grid. Warning, the grids must be aligned and have a cell size
+that is an integer fraction of the previous level. The number of levels is determined
+by the number of <strong>-1</strong> … <strong>-9</strong> options given. These grids are not trivial to create,
+the best way is to use the Mirone TINTOL tool.</p>
+</dd>
+</dl>
+<dl class="simple" id="a">
+<dt><strong>-A</strong><em>fname.sww</em></dt><dd><p>Save the result as a <em>.sww</em> ANUGA-format file.</p>
+</dd>
+<dt><strong>-n</strong><em>base</em></dt><dd><p>Basename for MOST triplet files (no extension).</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong></dt><dd><p>Add the Coriolis effect.</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong></dt><dd><p>Write grids with the total water depth. These grids will have wave height
+on the ocean and water thickness on land.</p>
+</dd>
+</dl>
+<dl id="e">
+<dt><strong>-E</strong>[<strong>p</strong>][<strong>m</strong>][<strong>+a</strong>][,<em>decim</em>]</dt><dd><p>Write grids with energy, or with power if <strong>p</strong> is appended (<strong>-Ep</strong>).
+Append <strong>m</strong> to save only a single grid holding the max values. This can
+noticeably slow the run, so optionally append a <em>decim</em> decimator factor
+after the comma (causes aliasing visible under shaded illumination). The
+file name comes from <em>name</em> in <strong>-G</strong> complemented with a <em>_max</em>
+prefix; saving of multiple grids is then disabled.</p>
+<p>With <strong>-G</strong>’s 3D netCDF cube, Energy/Power replaces the sea-surface
+(<em>z</em>) variable unless <strong>+a</strong> is appended, in which case Energy/Power is
+written as an extra variable alongside <em>z</em> (same idea as <strong>-S</strong>’s
+<strong>+a</strong>).</p>
+</dd>
+</dl>
+<dl id="f">
+<dt><strong>-F</strong><em>x_epic/y_epic/dip/strike/rake/slip/length/width/topDepth</em></dt><dd><p>Okada fault parameters used to build the source. <em>x_epic</em>, <em>y_epic</em> are the
+x and y coordinates of the beginning of the fault trace; <em>dip</em>, <em>strike</em>
+(azimuth), <em>rake</em>, <em>slip</em> (m), <em>length</em>, <em>width</em> and <em>topDepth</em> (depth from
+the sea-bottom) follow. All dimensions must be in km.</p>
+<p>If no bathymetry grid is given, <strong>-F</strong> (or <strong>-Fk</strong>) together with <strong>-R</strong>
+and <strong>-G</strong> computes the deformation over <strong>-R</strong>’s grid geometry (e.g.
+<strong>-R</strong><em>grid</em>) and writes it straight to <strong>-G</strong>’s name: no simulation is
+run, so <strong>-t</strong> and <strong>-G</strong>’s saving interval are not needed.</p>
+</dd>
+<dt><strong>-F</strong><strong>k</strong><em>west/east/south/north</em></dt><dd><p>Build a prism source with these limits and a height of 1 meter.</p>
+<ul class="simple">
+<li><p><strong>-Fkc</strong><em>x/y/nx/ny</em> - alternatively give the prism size as centre <em>x/y</em>
+and <em>nx/ny</em> half-width cell numbers.</p></li>
+<li><p><strong>-Fk</strong><em>…</em><strong>/</strong><em>RxC</em> - loop over a matrix of size <em>R</em> by <em>C</em>
+starting at the Lower Left Corner given by <em>w/e/s/n</em>.</p></li>
+<li><p><strong>-Fk</strong><em>…</em><strong>/</strong><em>dx</em>[/<em>dy</em>] - given the <em>w/e/s/n</em> region (pixel
+registration) loop over the prisms obtained by dividing the region in
+increments of <em>dx/dy</em> (if <em>dy</em> is not given, <em>dy</em> = <em>dx</em>).</p></li>
+</ul>
+<p>Using <strong>-Fk</strong> sets the output maregraph file to netCDF, unless rows = cols = 1.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>name</em>[<strong>+m</strong>],<em>int</em></dt><dd><p>Save the water level every <em>int</em> time steps in a single 3D netCDF file
+called <em>name</em><strong>.nc</strong> (the extension is appended when <em>name</em> has none).
+Append <strong>+m</strong> to instead write each saved step as a separate grid; files
+are then named <em>name#</em><strong>.grd</strong>. When doing nested grids the finest level
+is the one saved.</p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong></dt><dd><p>Write grids with the momentum (velocity times water depth).</p>
+<ul class="simple">
+<li><p><strong>-H</strong><em>fname_momentM,fname_momentN</em>[,<em>t</em>] - hot start using these
+moment grids. The optional <em>t</em> is the hot-start time (also needs the
+surface displacement corresponding to the time of these grids).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="p">
+<dt><strong>-P</strong><em>time_jump</em>[<strong>+t</strong><em>run_time_jump</em>]</dt><dd><p>Do not write grids or maregraphs for times before <em>time_jump</em> (seconds).
+When doing nested grids, append <strong>+</strong><em>time</em> to NOT start nested-grid
+computations before this time has elapsed. Allowed forms: <strong>-P</strong><em>t1</em>,
+<strong>-P+</strong><em>t2</em>, <strong>-P</strong><em>t1</em><strong>+</strong><em>t2</em> or <strong>-P</strong><em>t1</em> <strong>-P+</strong><em>t2</em>.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong></dt><dd><p>Use the linear approximation in the moment conservation equations (faster
+but less accurate).</p>
+<ul class="simple">
+<li><p><strong>-L</strong><em>in_fname,out_fname</em> - do Lagrangian tracers, where <em>in_fname</em> is
+the tracers initial-position file and <em>out_fname</em> the file to hold the
+results.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong>[<strong>-</strong>|<strong>+</strong>[<em>maskname</em>]]</dt><dd><p>Write a grid with the max water level (name from <em>name</em> in <strong>-G</strong>, <em>_max</em>
+prefix). Append <strong>-</strong> to instead compute the maximum water retreat, written
+to a mask file (default <em>long_beach.grd</em>; append a name after <strong>-</strong> to
+change it, e.g. <strong>-M-</strong><em>beach_long.grd</em>). Append <strong>+</strong> for a mask with the
+Run In extent (behaves like <strong>-M-</strong>). <strong>-M</strong> may be repeated, e.g.
+<strong>-M -M- -M+</strong> computes all three. With <strong>-G</strong> the <em>long</em> and <em>short</em> beach
+arrays are also saved in the <em>.nc</em> file.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>n_cycles</em></dt><dd><p>Number of cycles in the simulation [Default 1010]. Total simulation time is <em>n_cycles</em> times the time step <em>dt</em>.</p>
+</dd>
+</dl>
+<dl class="simple" id="o">
+<dt><strong>-O</strong><em>BCfile</em></dt><dd><p>Name of a Boundary Condition ASCII file (experimental).</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong><em>z_offset</em></dt><dd><p>Apply a vertical offset to ALL bathymetry grids (e.g. to simulate tide).</p>
+</dd>
+</dl>
+<span class="target" id="r"></span><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</p>
+<blockquote>
+<div><p>Specify the region of interest. <strong>Note</strong>: If using modern mode and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not provided, the region
+will be set based on previous plotting commands. If this is the first plotting command in the
+<a class="reference internal" href="../../reference/features.html#gmt-modern-mode-hierarchical-levels"><span class="std std-ref">modern mode levels</span></a> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not
+provided, the region will be automatically determined based on the data in <em>table</em>
+(equivalent to using <strong>-Ra</strong>). <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+<p>The region may be specified in one of several ways:</p>
+<ol class="arabic">
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
+when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
+<li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
+making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
+and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
+rectangular map even though lines of equal longitude and latitude are not straight lines.</p></li>
+<li><p><strong>-R</strong><strong>g</strong> or <strong>-R</strong><strong>d</strong>. These forms can be used to quickly specify the global domain (0/360 for <strong>-Rg</strong>
+and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
+<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
+consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#dcw-collections"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../reference/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
+<li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
+<strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
+(e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
+region the <em>lon0</em>/<em>lat0</em> coordinates refer to and the grid dimensions <em>nx</em> and <em>ny</em> are used with grid spacings
+given via <strong>-I</strong> to create the corresponding region. This method can be used when creating grids. For example,
+<strong>-RCM</strong><em>25</em>/<em>25</em>/<em>50</em>/<em>50</em> specifies a <em>50</em>x<em>50</em> grid centered on <em>25</em>,<em>25</em>.</p></li>
+<li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending
+on the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration
+(see <a class="reference internal" href="../../reference/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
+<li><p><strong>-Ra</strong>[<strong>uto</strong>] or <strong>-Re</strong>[<strong>xact</strong>]. Under modern mode, and for <em>plotting</em> modules only, you can automatically
+determine the region from the data used. You can either get the exact area using <strong>-Re</strong> [Default if no <strong>-R</strong>
+is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
+the data range using <strong>-Ra</strong>.</p></li>
+</ol>
+</div></blockquote>
+<p>Output grids only in the sub-region enclosed by <em>west/east/south/north</em>.</p>
+<dl id="s">
+<dt><strong>-S</strong>[<strong>x</strong>|<strong>y</strong>|<strong>n</strong>][<strong>+m</strong>][<strong>+s</strong>][<strong>+a</strong>]</dt><dd><p>Write grids with the velocity (names get <em>_U</em> and <em>_V</em> suffixes). Use <strong>x</strong>
+or <strong>y</strong> to save only one component, or <strong>n</strong> for no velocity grids
+(maregraphs only). Append <strong>+m</strong> to also write velocity (vx,vy) at maregraph
+locations (needs <strong>-T</strong>). Append <strong>+s</strong> to write the max speed
+(<a href="#id2"><span class="problematic" id="id3">|v|</span></a>) (<em>_max_speed</em> suffix). Use the <strong>n</strong> flag to NOT output the U and V
+components, e.g. <strong>-Sn+s</strong>.</p>
+<p>With <strong>-G</strong>’s 3D netCDF cube, velocity is written as the only variable
+unless <strong>+a</strong> is appended, in which case the sea-surface (<em>z</em>) variable
+is also written (<em>z</em> + velocity).</p>
+</dd>
+</dl>
+<dl class="simple" id="id1">
+<dt><strong>-T</strong><em>mareg</em>|<em>x/y</em>[<strong>+o</strong><em>outmaregs</em>][<strong>+t</strong><em>int</em>]</dt><dd><p>Save time series (maregraphs) at virtual tide-gauge locations. <em>mareg</em> is
+the file with the (x y) locations of the virtual maregraphs. For a single
+maregraph the location may be given directly as <em>x/y</em> instead of a file
+name. Append <strong>+o</strong><em>outmaregs</em> to set the output file name [Default is
+<em>maregs_out.dat</em>]. A <em>.dat</em> extension is added when <em>outmaregs</em> has none;
+use a <em>.nc</em> extension to write the maregraphs as a netCDF file instead.
+Append <strong>+t</strong><em>int</em> to save every <em>int</em> simulation time steps (set by
+<strong>-t</strong>) [Default is every time step]. <strong>-T</strong> alone (without <strong>-G</strong>) is
+allowed and runs a simulation that only outputs the maregraph series.</p>
+</dd>
+</dl>
+<dl class="simple" id="x">
+<dt><strong>-X</strong><em>manning0</em>[,<em>manning1</em>[,<em>…</em>]][<strong>+</strong><em>depth</em>]</dt><dd><p>Manning friction coefficients. If only one is provided, use it for all
+nesting levels; otherwise specify one per level, comma separated. Append
+<strong>+</strong><em>depth</em> to apply Manning only at depths shallower than <em>depth</em>
+(positive up).</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../reference/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See technical reference)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-x</strong><em>n</em></dt><dd><p>Number of OpenMP threads to use [Default is all available cores]. Results
+are identical for any number of threads.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="../../gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms. Multi-threaded behavior is enabled by default.
+That covers the modules that implement the OpenMP API (required at compiling stage) and GThreads (Glib)
+for the grdfilter module.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>To propagate a tsunami over the bathymetry <em>bathy.grd</em> given the source
+<em>source.grd</em>, using a 5 second time step and saving the water level every 10
+time steps to grids named <em>wave#.grd</em>, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>nswing<span class="w"> </span>bathy.grd<span class="w"> </span>source.grd<span class="w"> </span>-t5<span class="w"> </span>-Gwave,10
+</pre></div>
+</div>
+<p>To run the same simulation but generate the source on the fly from Okada fault
+parameters and sample the wave field at the virtual maregraphs listed in
+<em>gauges.dat</em> every 5 time steps, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>nswing<span class="w"> </span>bathy.grd<span class="w"> </span>-t5<span class="w"> </span>-F-8/37/12/90/90/3/100/50/10<span class="w"> </span>-Tgauges.dat+t5
+</pre></div>
+</div>
+<p>To record only the time series at a single virtual tide gauge (no grids at
+all), give its location directly to <strong>-T</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>nswing<span class="w"> </span>bathy.grd<span class="w"> </span>source.grd<span class="w"> </span>-t5<span class="w"> </span>-T-10.7/37.3
+</pre></div>
+</div>
+<p>To compute just the Okada co-seismic deformation over the geometry of the grid
+<em>bathy.grd</em> (no simulation), try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>nswing<span class="w"> </span>-Rbathy.grd<span class="w"> </span>-F94.3/2.8/25/330/90/10/250/65/10<span class="w"> </span>-Gdeform.grd
+</pre></div>
+</div>
+<p>A less hypothetical example that generates only a few layers in the tsu.nc cube:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>grdcut<span class="w"> </span>@earth_relief_02m_g<span class="w"> </span>-R-15/-7.5/34/39.5<span class="w"> </span>-Gbat.grd
+gmt<span class="w"> </span>nswing<span class="w"> </span>-Rbat.grd<span class="w"> </span>-F-12.49593345/35.93634937/25/58.2/90/10/215/53.75/10<span class="w"> </span>-Ginit.grd
+gmt<span class="w"> </span>nswing<span class="w"> </span>bat.grd<span class="w"> </span>init.grd<span class="w"> </span>-t3<span class="w"> </span>-Gtsu,10<span class="w"> </span>-N100<span class="w"> </span>-V
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="../../grdinterpolate.html"><span class="doc">grdinterpolate</span></a></p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<p>[Validation of NSWING, a multi-core finite difference code for tsunami propagation and run-up]( <a class="reference external" href="https://www.researchgate.net/publication/275349940_Validation_of_NSWING_a_multi-core_finite_difference_code_for_tsunami_propagation_and_run-up">https://www.researchgate.net/publication/275349940_Validation_of_NSWING_a_multi-core_finite_difference_code_for_tsunami_propagation_and_run-up</a>)</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../mgd77/mgd77track.html" class="btn btn-neutral float-left" title="mgd77track" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../potential/gmtflexure.html" class="btn btn-neutral float-right" title="flexure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

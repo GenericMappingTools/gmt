@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/togglebutton.js?v=b8b12719"></script>
         <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -230,30 +231,30 @@
 <span class="m">1</span><span class="w">     </span><span class="m">4</span><span class="w">      </span>D
 <span class="m">0</span><span class="w">      </span><span class="m">4</span><span class="w">      </span>D
 <span class="m">0</span><span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="m">0</span>.6<span class="w">	</span>c<span class="w">	</span>-Gblack
-<span class="m">6</span>.5<span class="w">	</span><span class="m">7</span><span class="w">      </span><span class="m">0</span>.5<span class="w"> </span>c<span class="w">	</span>-W0.1pt/white<span class="w"> </span>-Gblack
+<span class="m">6</span>.5<span class="w">	</span><span class="m">7</span><span class="w">      </span><span class="m">0</span>.5<span class="w"> </span>c<span class="w">	</span>-W0.1p,white<span class="w"> </span>-Gblack
 
-<span class="m">8</span>.2<span class="w">    </span><span class="m">6</span>.7<span class="w">    </span><span class="m">0</span>.3<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1pt/black
-<span class="m">9</span>.4<span class="w">    </span><span class="m">7</span>.4<span class="w">    </span><span class="m">0</span>.4<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1pt/black
-<span class="m">10</span>.3<span class="w">   </span><span class="m">8</span>.2<span class="w">    </span><span class="m">0</span>.5<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1pt/black
-<span class="m">11</span>.2<span class="w">	</span><span class="m">9</span>.2<span class="w">    </span><span class="m">0</span>.6<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1pt/black
-<span class="m">12</span>.1<span class="w">	</span><span class="m">9</span>.7<span class="w">    </span><span class="m">1</span>.0<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1pt/black
-<span class="m">6</span>.0<span class="w">    </span><span class="m">7</span>.8<span class="w">    </span>M<span class="w">     </span>-G244/199/199<span class="w"> </span>-W0.1pt/black
+<span class="m">8</span>.2<span class="w">    </span><span class="m">6</span>.7<span class="w">    </span><span class="m">0</span>.3<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1p,black
+<span class="m">9</span>.4<span class="w">    </span><span class="m">7</span>.4<span class="w">    </span><span class="m">0</span>.4<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1p,black
+<span class="m">10</span>.3<span class="w">   </span><span class="m">8</span>.2<span class="w">    </span><span class="m">0</span>.5<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1p,black
+<span class="m">11</span>.2<span class="w">	</span><span class="m">9</span>.2<span class="w">    </span><span class="m">0</span>.6<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1p,black
+<span class="m">12</span>.1<span class="w">	</span><span class="m">9</span>.7<span class="w">    </span><span class="m">1</span>.0<span class="w"> </span>c<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1p,black
+<span class="m">6</span>.0<span class="w">    </span><span class="m">7</span>.8<span class="w">    </span>M<span class="w">     </span>-G244/199/199<span class="w"> </span>-W0.1p,black
 <span class="c1">#comment the former lines and uncomment the next six lines if you want white instead rose</span>
-<span class="c1">#8.2    6.7    0.3 c -Gwhite -W0.1pt/black</span>
-<span class="c1">#9.4    7.4    0.4 c -Gwhite -W0.1pt/black</span>
-<span class="c1">#10.3   8.2    0.5 c -Gwhite -W0.1pt/black</span>
-<span class="c1">#11.2	9.2    0.6 c -Gwhite -W0.1pt/black</span>
-<span class="c1">#12.1	9.7    1.0 c -Gwhite -W0.1pt/black</span>
-<span class="c1">#6.0    7.8    M     -Gwhite -W0.1pt/black</span>
+<span class="c1">#8.2    6.7    0.3 c -Gwhite -W0.1p,black</span>
+<span class="c1">#9.4    7.4    0.4 c -Gwhite -W0.1p,black</span>
+<span class="c1">#10.3   8.2    0.5 c -Gwhite -W0.1p,black</span>
+<span class="c1">#11.2	9.2    0.6 c -Gwhite -W0.1p,black</span>
+<span class="c1">#12.1	9.7    1.0 c -Gwhite -W0.1p,black</span>
+<span class="c1">#6.0    7.8    M     -Gwhite -W0.1p,black</span>
 <span class="m">5</span>.6<span class="w">    </span><span class="m">7</span>.6<span class="w">    </span>D
 <span class="m">5</span>.6<span class="w">    </span><span class="m">7</span>.2<span class="w">    </span>D
 <span class="m">5</span>.8<span class="w">    </span><span class="m">7</span><span class="w">      </span>D
 <span class="m">6</span><span class="w">      </span><span class="m">7</span>.4<span class="w">    </span>D
 <span class="m">6</span>.6<span class="w">    </span><span class="m">7</span>.6<span class="w">    </span>D
 <span class="m">6</span><span class="w">      </span><span class="m">7</span>.8<span class="w">    </span>D
-<span class="m">10</span>.5<span class="w">  </span><span class="m">11</span>.4<span class="w">   </span>M<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1pt/black
+<span class="m">10</span>.5<span class="w">  </span><span class="m">11</span>.4<span class="w">   </span>M<span class="w"> </span>-G244/199/199<span class="w"> </span>-W0.1p,black
 <span class="c1">#comment the line above and uncomment also the next line if you want white instead rose</span>
-<span class="c1">#10.5  11.4   M -Gwhite -W0.1pt/black</span>
+<span class="c1">#10.5  11.4   M -Gwhite -W0.1p,black</span>
 <span class="m">11</span><span class="w">    </span><span class="m">11</span>.8<span class="w">   </span>D
 <span class="m">12</span><span class="w">    </span><span class="m">11</span>.4<span class="w">   </span>D
 <span class="m">12</span>.8<span class="w">  </span><span class="m">11</span><span class="w">     </span>D
@@ -261,7 +262,7 @@
 <span class="m">11</span>.8<span class="w">	</span><span class="m">11</span>.2<span class="w">   </span>D
 <span class="m">10</span>.5<span class="w">  </span><span class="m">11</span>.4<span class="w">   </span>D
 <span class="c1">#belly</span>
--5.2<span class="w">	</span><span class="m">5</span><span class="w">      </span>M<span class="w"> </span>-Gwhite<span class="w"> </span>-W0.2pt/200
+-5.2<span class="w">	</span><span class="m">5</span><span class="w">      </span>M<span class="w"> </span>-Gwhite<span class="w"> </span>-W0.2p,200
 -8<span class="w">	</span><span class="m">6</span>.2<span class="w">    </span>D
 -8.6<span class="w">	</span><span class="m">7</span><span class="w">      </span>D
 -7.3<span class="w">	</span><span class="m">7</span><span class="w">      </span>D
@@ -319,8 +320,8 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

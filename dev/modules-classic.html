@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -107,6 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#gshhg">GSHHG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#img">IMG</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mgd77">MGD77</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nswing">nswing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#potential">potential</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#segy">SEGY</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#seis">seis</a></li>
@@ -134,6 +135,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -324,9 +326,9 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="supplements/gsfml/fzmodeler.html"><span class="doc">fzmodeler</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/gsfml/fzprofiler.html"><span class="doc">fzprofiler</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/gsfml/mlconverter.html"><span class="doc">mlconverter</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/gshhg/gshhg.html"><span class="doc">gshhg</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="supplements/gshhg/gshhg.html"><span class="doc">gshhg</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/img/img2grd.html"><span class="doc">img2grd</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77convert.html"><span class="doc">mgd77convert</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77header.html"><span class="doc">mgd77header</span></a></p></li>
@@ -336,9 +338,10 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77manage.html"><span class="doc">mgd77manage</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77path.html"><span class="doc">mgd77path</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/mgd77/mgd77sniffer.html"><span class="doc">mgd77sniffer</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/mgd77/mgd77track-classic.html"><span class="doc">mgd77track</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
-<li><p><a class="reference internal" href="supplements/mgd77/mgd77track-classic.html"><span class="doc">mgd77track</span></a></p></li>
+<li><p><a class="reference internal" href="supplements/nswing/nswing.html"><span class="doc">nswing</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/gmtflexure.html"><span class="doc">gmtflexure</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a></p></li>
 <li><p><a class="reference internal" href="supplements/potential/gravfft.html"><span class="doc">gravfft</span></a></p></li>
@@ -857,6 +860,16 @@ All modules are requested via a call to the <a class="reference internal" href="
 </tbody>
 </table>
 </section>
+<section id="nswing">
+<h2>nswing<a class="headerlink" href="#nswing" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="supplements/nswing/nswing.html"><span class="doc">nswing</span></a></p></td>
+<td><p>A tsunami maker</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="potential">
 <h2>potential<a class="headerlink" href="#potential" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -1035,8 +1048,8 @@ All modules are requested via a call to the <a class="reference internal" href="
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

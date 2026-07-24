@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -188,13 +189,15 @@ the inset, then give these arguments on the <strong>gmt inset begin</strong> com
 <section id="required-arguments-begin-mode">
 <h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Link to this heading"></a></h2>
 <dl id="d">
-<dt><strong>-D</strong><em>xmin/xmax/ymin/ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]] | <strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:</p>
+<dt><strong>-D</strong><em>xmin/xmax/ymin/ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]] | <strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>][<em>refpoint</em>]<strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:</p>
 <ul class="simple">
 <li><p><strong>g</strong> - Append <em>lon</em>/<em>lat</em> for <a class="reference internal" href="reference/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
 <li><p><strong>j</strong> - Append <em>code</em> to <strong>j</strong> or  <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char <a class="reference internal" href="reference/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set. Upper case means justify on the outside.</p></li>
 <li><p><strong>n</strong> - Append <em>xn</em>/<em>yn</em> for <a class="reference internal" href="reference/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
 <li><p><strong>x</strong> - Append <em>x</em>/<em>y</em> for <a class="reference internal" href="reference/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint).</p></li>
 </ul>
+<p>If <em>refpoint</em> is omitted, the map inset is placed by default in the upper-right corner of the map
+(using <strong>jTR</strong>).</p>
 <p>Alternatively, Give <em>west/east/south/north</em> of geographic rectangle bounded by parallels
 and meridians; append <strong>+r</strong> if the coordinates instead are the lower left and
 upper right corners of the desired rectangle. (Or, give <em>xmin/xmax/ymin/ymax</em>
@@ -303,6 +306,18 @@ any module-specific option (but not the GMT common options), then exits.</p>
 gmt<span class="w"> </span>end
 </pre></div>
 </div>
+<p>This example creates a main map of the Dominican Republic (DO) and adds an inset
+showing the broader Caribbean region (IHO27). The inset size is automatically
+determined from the projection specified in inset begin (-JM5c) together with the
+region (-RIHO27), preserving the map aspect ratio without requiring explicit inset dimensions.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>begin<span class="w"> </span>inset<span class="w"> </span>pdf
+<span class="w">      </span>gmt<span class="w"> </span>coast<span class="w"> </span>-RDO+R1<span class="w"> </span>-JM15c<span class="w"> </span>-Baf<span class="w"> </span>-Gbrown<span class="w"> </span>-Sazure1<span class="w"> </span>-N1<span class="w"> </span>-EDO+gbisque
+<span class="w">      </span>gmt<span class="w"> </span>inset<span class="w"> </span>begin<span class="w"> </span>-DjTR+o0.2c<span class="w"> </span>-F+gwhite+p1p+c0.1c+s<span class="w"> </span>-JM5c<span class="w"> </span>-RIHO27
+<span class="w">              </span>gmt<span class="w"> </span>coast<span class="w"> </span>-Gbrown<span class="w"> </span>-B0<span class="w"> </span>-EDO+gbisque
+<span class="w">      </span>gmt<span class="w"> </span>inset<span class="w"> </span>end
+gmt<span class="w"> </span>end
+</pre></div>
+</div>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
@@ -327,8 +342,8 @@ gmt<span class="w"> </span>end
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

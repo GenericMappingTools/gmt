@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="../../_static/togglebutton.js?v=b8b12719"></script>
         <script src="../../_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -229,7 +230,7 @@ for more details.</p>
 </dd>
 </dl>
 <dl id="h">
-<dt><strong>-H</strong><em>f_dec/f_dip/m_int/m_dec/m_dip</em> <strong>-H</strong><em>magfile</em>  <strong>-Hx</strong>|<strong>y</strong>|<strong>z</strong>|<strong>h</strong>|<strong>t</strong> <strong>-H+i</strong>|<strong>g</strong>|<strong>r</strong>|<strong>f</strong>|<strong>n</strong></dt><dd><p>Sets parameters for computation of magnetic anomaly (Can be used multiple times).</p>
+<dt><strong>-H</strong><em>f_dec/f_dip/m_int/m_dec/m_dip</em> <strong>-H</strong><em>magfile</em>  <strong>-Hx</strong>|<strong>y</strong>|<strong>z</strong>|<strong>h</strong>|<strong>t</strong>|<strong>d</strong>|<strong>i</strong> <strong>-H+i</strong>|<strong>g</strong>|<strong>r</strong>|<strong>f</strong>|<strong>n</strong></dt><dd><p>Sets parameters for computation of magnetic anomaly (Can be used multiple times).</p>
 <blockquote>
 <div><p><em>f_dec/f_dip</em> -&gt; geomagnetic declination/inclination</p>
 <p><em>m_int/m_dec/m_dip</em> -&gt; body magnetic intensity/declination/inclination</p>
@@ -245,6 +246,8 @@ for more details.</p>
 <p><strong>z</strong>|<strong>Z</strong>      to compute the Vertical component.</p>
 <p><strong>h</strong>|<strong>H</strong>      to compute the Horizontal component.</p>
 <p><strong>t</strong>|<strong>T</strong>|<strong>f</strong>|<strong>F</strong>  to compute the total field.</p>
+<p><strong>d</strong>|<strong>D</strong>  to compute the declination of the anomaly.</p>
+<p><strong>i</strong>|<strong>I</strong>  to compute the inclination of the anomaly.</p>
 </div></blockquote>
 <p>If we want to compute the magnetic anomalies over a large region where the ambient magnetic field
 can no longer be assumed to be constant we can set variable inclinations and declinations via IGRF.
@@ -388,8 +391,8 @@ polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 

@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -164,6 +165,7 @@
 <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>p</strong>|<strong>P</strong>|<strong>f</strong>|<strong>F</strong>|<strong>c</strong>|<strong>C</strong>|<strong>s</strong>|<strong>S</strong>|<strong>x</strong>]<em>n</em>[,…][<strong>+l</strong><em>length</em>][<strong>+o</strong><em>origin</em>][<strong>+r</strong>]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>condition_number</em> ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>confidence_level</em>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>+s</strong>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
@@ -258,6 +260,13 @@ will be iterative with a default confidence level of 0.51. Or choose
 your own level between 0 and 1. See remarks section.  Note that the
 model terms are added in the order they were given in <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> so you
 should place the most important terms first.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em></dt><dd><p>Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
+<strong>-T</strong><em>inc</em> is given instead we will reset <em>min</em> and <em>max</em> to the extreme <em>x</em>-values for each segment.
+To skip the model evaluation entirely, simply provide <strong>-T</strong>0.
+For details on array creation, see <a href="#id1"><span class="problematic" id="id2">`Generate 1-D Array`_</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -394,7 +403,7 @@ of uses that are common but cannot be run verbatim as written.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>trend1d<span class="w"> </span>data.xy<span class="w"> </span>-Fxm<span class="w"> </span>-NP0,P2,F3+l15<span class="w"> </span>&gt;<span class="w"> </span>model.xy
 </pre></div>
 </div>
-<p>To find out how many terms (up to 20, say in a robust Fourier
+<p>To find out how many terms (up to 20, say) in a robust Fourier
 interpolant are significant in fitting data.xy, use:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt<span class="w"> </span>trend1d<span class="w"> </span>data.xy<span class="w"> </span>-Nf20+r<span class="w"> </span>-I<span class="w"> </span>-V
 </pre></div>
@@ -428,8 +437,8 @@ Revised Edition, Academic Press, San Diego.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 24, 2026.
       </span></p>
   </div>
 
