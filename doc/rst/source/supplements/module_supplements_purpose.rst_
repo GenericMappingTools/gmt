@@ -84,7 +84,7 @@
 
 .. |pssac_purpose| replace:: Plot seismograms in SAC format
 
-.. |gmtisf_purpose| replace:: Read seismicity data in the ISF formated file
+.. |gmtisf_purpose| replace:: Read seismicity data in the ISF formatted file
 
 .. |backtracker_purpose| replace:: Generate forward and backward flowlines and hotspot tracks
 

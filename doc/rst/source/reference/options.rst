@@ -450,7 +450,7 @@ The next example shows two different ways to annotate an axis portraying 2 days 
 .. literalinclude:: /_verbatim/GMT_-B_time2.txt
 
 The lower example (Figure :ref:`cartesian_axis2`) chooses to annotate the weekdays (by
-specifying **a**\ 1\ **K**) while the upper example choses dates (by
+specifying **a**\ 1\ **K**) while the upper example chooses dates (by
 specifying **a**\ 1\ **D**). Note how the clock format only selects
 hours and minutes (no seconds) and the date format selects a month name,
 followed by one space and a two-digit day-of-month number.
