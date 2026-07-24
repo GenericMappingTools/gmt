@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Make a sphere of radius 10 using two half grids and compute volumnes
+# Make a sphere of radius 10 using two half grids and compute volumes
 # Addressing issue #895
 ps=sphere_volume.ps
 gmt grdmath -R-10.1/10.1/-10.1/10.1 -I0.1 X Y HYPOT 10 DIV ACOS SIN 10 MUL NEG = bot_half.grd

@@ -4,7 +4,7 @@
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations
 # Points are prepared that will land in various tiles, some will
 # fall exactly on tile boundaries.  One point will fall outside -R
-# but should be considered for the gridline registrated case.
+# but should be considered for the gridline registered case.
 
 ps=xy2ij.ps
 

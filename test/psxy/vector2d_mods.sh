@@ -38,13 +38,13 @@ gmt begin vector2d_mods
 	# dx, dy in specified user units with scale
 	echo 0 5 ${dx} ${dy} | gmt plot -Sv20p+e+z1q -W2p -Gred
 	echo "-0.1 5.9 Input: ${dx} ${dy} Vector: -Sv20p+e+z1q" | gmt text $textopt
-	# dx, dy in specified plot units with scale, and color based on magintude
+	# dx, dy in specified plot units with scale, and color based on magnitude
 	echo 0 6 ${dx} ${dy} | gmt plot -Sv20p+e+z${scl}q+c -W2p -C --PROJ_LENGTH_UNIT=inch
 	echo "-0.1 6.9 Input: ${dx} ${dy} Vector: -Sv20p+e+z${scl}q+c --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
-	# dx, dy in specified data units with scale, and color based on magintude
+	# dx, dy in specified data units with scale, and color based on magnitude
 	echo 0 7 ${dx1} ${dy1} | gmt plot -Sv20p+e+z${scl1}q+c -W2p -C --PROJ_LENGTH_UNIT=inch
 	echo "-0.1 7.9 Input: ${dx1} ${dy1} Vector: -Sv20p+e+z${scl1}q+c --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
-	# magnitude in specified data units with scale, and color based on magintude
+	# magnitude in specified data units with scale, and color based on magnitude
 	echo 0 8 30 25.4 | gmt plot -Sv20p+e+v${scl1}q+c -W2p+c -C --PROJ_LENGTH_UNIT=inch
 	echo "-0.1 8.9 Input: 30 25.4 Vector: -Sv20p+e+v${scl1}q+c --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
 	### GEOVECTOR
@@ -69,10 +69,10 @@ gmt begin vector2d_mods
 	# dx, dy in specific data units with scale
 	echo 0 6 ${dx2} ${dy2} | gmt plot -S=20p+e+z10q -W2p -Gred
 	echo "-0.1 6.9 Input: ${dx2} ${dy2} Vector: -S=20p+e+z10q" | gmt text $textopt
-	# dx, dy in specific data units with scale, and color based on magintude
+	# dx, dy in specific data units with scale, and color based on magnitude
 	echo 0 7 ${dx2} ${dy2} | gmt plot -S=20p+e+z10q+c -W2p -C
 	echo "-0.1 7.9 Input: ${dx2} ${dy2} Vector: -S=20p+e+z10q+c" | gmt text $textopt
-	# magnitude in specific data units with scale, and color based on magintude
+	# magnitude in specific data units with scale, and color based on magnitude
 	echo 0 8 60 10 | gmt plot -S=20p+e+v10q+c -W2p+c -C
 	echo "-0.1 8.9 Input: 60 10 Vector: -S=20p+e+v10q+c" | gmt text $textopt
 gmt end show
