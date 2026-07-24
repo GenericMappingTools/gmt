@@ -455,15 +455,15 @@ there are numerous changes:
    organization: https://www.generic-mapping-tools.org/.
 #. A new discussion forum at https://forum.generic-mapping-tools.org/.
 #. A data server in Hawaii (oceania.generic-mapping-tools.org) with plans
-   for new mirror servers around the world.  This is where the remote files
+   for new mirror servers around the world. This is where the remote files
    that start with @ come from.
 #. A new way to use GMT (*modern* mode) that eliminates many of the
-   aspects of classic GMT that perplexes users.  In modern mode, PostSCript
+   aspects of classic GMT that perplexes users. In modern mode, PostScript
    is no longer the default graphics output format and most modules that
    had names starting with **ps** have had that prefix removed.  In addition,
    a few modules have entirely different names in modern mode (*psxy* is *plot*,
    *psxyz* is *plot3d*, and *psscale* is *colorbar*).
-#. The default mode remains *classic*, the only mode previously available.  All
+#. The default mode remains *classic*, the only mode previously available. All
    existing classic mode GMT 4 and 5 scripts will run as before.
 
 Modern mode modules in GMT 6.0
