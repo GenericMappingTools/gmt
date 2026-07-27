@@ -19,7 +19,7 @@ assignees: ''
 	- [ ] MB-System
 	- [ ] GMTSAR
 	- [ ] GMT.jl (@joa-quim)
-	- [ ] PyGMT (@leouieda, @seisman, @weiji14, @maxrjones)
+	- [ ] PyGMT (@seisman, @weiji14, @maxrjones)
 	- [ ] gmtmex (@joa-quim)
 - [ ] reserve a DOI on [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@seisman)
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
@@ -39,13 +39,9 @@ assignees: ''
 **Release**:
 
 - [ ] create source tarballs (tar.gz and tar.xz)
-- [ ] create macOS bundle
 - [ ] create Windows win64 installer and portable installer (@joa-quim)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
-- [ ] check if the macOS bundles work well (@seisman, @maxrjones)
 - [ ] check if the Windows installers work well (volunteers needed!)
-- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP
-- [ ] update README and VERSION files on the GMT FTP
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
     ```bash
     # checkout master (for minor releases) or 6.x branch (for patch releases)
