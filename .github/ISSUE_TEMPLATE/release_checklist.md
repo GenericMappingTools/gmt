@@ -42,7 +42,7 @@ assignees: ''
 - [ ] create Windows win64 installer and portable installer (@joa-quim)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
 - [ ] check if the Windows installers work well (volunteers needed!)
-- [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
+- [ ] make a tag and push it to github
     ```bash
     # checkout master (for minor releases) or 6.x branch (for patch releases)
     git checkout XXXX
