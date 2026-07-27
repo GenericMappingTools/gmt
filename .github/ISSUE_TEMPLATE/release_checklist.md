@@ -38,6 +38,7 @@ assignees: ''
 
 **Release**:
 
+- [ ] Make sure that "set (DO_TESTS ON)" and "set (DO_SUPPLEMENT_TESTS ON)" **Are commented** in ConfigUser.cmake
 - [ ] create source tarballs (tar.gz and tar.xz)
 - [ ] create Windows win64 installer and portable installer (@joa-quim)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
