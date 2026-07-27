@@ -62,6 +62,7 @@ enum Seis_scaletype {
 struct SEIS_OFFSET_LINE { 
 	bool active;
 	bool convert_geo;	/* True if coupe -D+c, i.e., given geographical coordinates as alternate location */
+	bool pen_set;		/* True if +p<pen> was given (even if <pen> only had a color and/or style) */
 	unsigned int mode;	/* 0-3 as above */
 	unsigned int symbol;	/* Default to PSL_CIRCLE */
 	unsigned int fill_mode;	/* Default to SEIS_EVENT_FILL */
