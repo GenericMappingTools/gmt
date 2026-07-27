@@ -7515,7 +7515,10 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 
 	/* Processes pen specifications given as [width[,<color>[,<style>[t<unit>]]][@<transparency>] */
 
-	if (gmt_M_is_dnan (P->width)) {	/* Worry in case no width is given */
+	if (gmt_M_is_dnan (P->width) || P->width < 0.0) {	/* Worry in case no width is given.  Some callers (e.g., psmeca)
+		                                                   use a negative width as a sentinel for "not yet set"; treat
+		                                                   that the same as NaN so a color- or style-only pen string
+		                                                   (e.g., "red") is not mistaken for an explicit (bogus) width. */
 		strcpy (def_width, "0");	/* To avoid any parsing errors */
 		set_NaN = true;	/* Flag this specific case */
 	}
