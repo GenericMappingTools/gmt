@@ -29,6 +29,7 @@ WINDOWS:
 
 Windows Subsystem for Linux
 ---------------------------
+
 If you're running Windows 10 you may take advantage of the Windows Subsystem for Linux.
 This provides an easy way of setting up a functional Linux environment and required tools to build and use GMT.
 

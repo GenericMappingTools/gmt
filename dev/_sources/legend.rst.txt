@@ -118,9 +118,13 @@ Optional Arguments
     - **e**: Explicitly given information from input file(s) given on the command line (or via
       standard input).
 
-    Default is **he**, meaning we will first place any hidden auto-generated legend items (if any)
-    and then we append the explicitly given information (if present).  **Note**: For classic
-    mode an input file must be given or else we will attempt read from standard input.
+    If **-M** is not given, we will use the input file if provided, otherwise we will
+    use the auto-generated legend information if it exists.
+
+    If **-M** is given without any directives, the default is **he**, meaning we will first
+    place any hidden auto-generated legend items (if any) and then we append the explicitly
+    given information (if present). **Note**: For classic mode an input file must be given
+    or else we will attempt read from standard input.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

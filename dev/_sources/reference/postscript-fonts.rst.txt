@@ -1,5 +1,5 @@
 PostScript Fonts Used by GMT
-==============================
+============================
 
 GMT uses the standard 35 fonts that come with most
 PostScript laserwriters. If your printer does not support some of
@@ -57,7 +57,7 @@ for GMT is finished and you can proceed to create GMT maps as usual.
 An example script is discussed in Example :ref:`example_31`.
 
 Embedding fonts in PostScript and PDF
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you have Type 1 fonts in PFA (Printer Font ASCII) format you can
 embed them directly by copying them at the very top of your

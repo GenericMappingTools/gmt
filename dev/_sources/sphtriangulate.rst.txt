@@ -68,7 +68,7 @@ Optional Arguments
 .. _-C:
 
 **-C**
-    For large data set you can save some memory (at the expense of more
+    For large data sets you can save some memory (at the expense of more
     processing) by only storing one form of location coordinates
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays in memory].

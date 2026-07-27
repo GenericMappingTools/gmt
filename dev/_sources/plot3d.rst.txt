@@ -19,7 +19,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]
-[ |-G|\ *fill*\|\ **+z** ]
+[ |-G|\ *fill*\|\ **+g**\|\ **+z** ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
@@ -129,7 +129,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ *fill*\|\ **+g**\|\ **+z** :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that the module will search for |-G| and |-W| strings in all the
     segment headers and let any values thus found over-ride the command line settings.
@@ -137,6 +137,19 @@ Optional Arguments
     *z*-values obtained.  Finally, if *fill* = *auto*\ [*-segment*] or *auto-table* then
     we will cycle through the fill colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  Any *transparency* setting is unchanged.
+
+    **+g**
+        Enable vertex-based color gradients for polygons using Gouraud shading.
+        This modifier automatically detects the input data format and supports three formats:
+
+        1. **RGB format**: *x y z r g b* where RGB values are in the range 0-255.
+        2. **Color name format**: *x y z colorname* where *colorname* can be a named color (e.g., "red", "blue"),
+           hex color (e.g., "#FF0000"), slash-separated RGB (e.g., "255/0/0"), H-S-V or C/M/Y/K formats.
+        3. **CPT format**: *x y z value* where *value* is mapped to colors via the CPT specified with |-C|.
+
+        Polygons with any number of vertices are supported and automatically triangulated using a fan triangulation
+        from the first vertex. Each vertex gets its own color, and Gouraud shading creates smooth color gradients
+        across the polygon faces. Use |-W| to add an outline to the gradient polygons.
 
 .. _-H:
 

@@ -80,6 +80,7 @@ it can do.
             Debugging GMT </devdocs/debug>
             GMT C API </devdocs/api>
             PostScriptLight C API </devdocs/postscriptlight>
+            Custom Supplements </devdocs/custom_supplements>
             /devdocs/devdocs
 
 .. Add a hidden toctree to suppress "document isn't included in any toctree" warnings

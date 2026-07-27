@@ -9,7 +9,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="_static/style.css?v=32d919f4" />
 
@@ -32,7 +32,7 @@
         <script>let toggleHintShow = 'Click to show example script';</script>
         <script>let toggleHintHide = 'Click to hide';</script>
         <script>let toggleOpenOnPrint = 'true';</script>
-        <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+        <script src="_static/togglebutton.js?v=b8b12719"></script>
         <script src="_static/design-tabs.js?v=f930bc37"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
@@ -91,6 +91,13 @@
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-7">New Features in GMT 6.7</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-modules-and-programs-in-gmt-6-7">New Modules and Programs in GMT 6.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enhancements-in-gmt-6-7">Enhancements in GMT 6.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bug-fixes-in-gmt-6-7">Bug fixes in GMT 6.7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintenance-updates-in-gmt-6-7">Maintenance updates in GMT 6.7</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-6">New Features in GMT 6.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-5">New Features in GMT 6.5</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-core-module-features-in-gmt-6-5">New Core Module Features in GMT 6.5</a></li>
@@ -189,6 +196,7 @@
 <li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/custom_supplements.html">Custom Supplements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
@@ -238,6 +246,158 @@
              
   <section id="changelog">
 <span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<section id="new-features-in-gmt-6-7">
+<h2>New Features in GMT 6.7<a class="headerlink" href="#new-features-in-gmt-6-7" title="Link to this heading"></a></h2>
+<p>GMT 6.7 brings two new programs (a tsunami modeling supplement and a stand-alone updater), several new
+plotting capabilities built on smooth color gradients (Gouraud shading), Bezier curves in the custom symbol
+language, and a large number of bug fixes across the whole code base.</p>
+<ul class="simple">
+<li><p>Add quadratic (<strong>Q</strong>) and cubic (<strong>B</strong>) Bezier curve commands to the custom symbol
+macro language, enabling smooth curves in <code class="docutils literal notranslate"><span class="pre">.def</span></code> symbol files.  Both commands
+extend the path from the previous <strong>M</strong> or <strong>D</strong> point; <strong>Q</strong> takes one control point
+plus endpoint, <strong>B</strong> takes two control points plus endpoint.  See
+<span class="xref std std-ref">Custom Symbols</span> for details (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9020">#9020</a>)</p></li>
+<li><p>Support reading GeoJSON files directly by converting them to the OGR_GMT format (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8719">#8719</a>)</p></li>
+<li><p>New geological CPTs (Exxon88, GTS2004, GTS2012 eons/eras/periods/epochs/ages, GeeK07) in <code class="docutils literal notranslate"><span class="pre">share/cpt/geological</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8778">#8778</a>)</p></li>
+<li><p>Map embellishments (map scale <strong>-L</strong>, map inset <strong>-D</strong>, map rose <strong>-Td</strong>|<strong>m</strong>) now have a default reference point
+so that the <em>refpoint</em> argument may be omitted (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9079">#9079</a>),
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9077">#9077</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9074">#9074</a>)</p></li>
+<li><p>Allow the <strong>-L</strong>…<strong>+f</strong> fancy map scales also for Cartesian projections (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9069">#9069</a>)</p></li>
+<li><p>Support the <strong>-px</strong>|<strong>y</strong>… modifiers that control which perspective walls are drawn (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9047">#9047</a>)</p></li>
+<li><p>Let the PS format also be <em>croppable</em> from modern mode scripts (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8992">#8992</a>)</p></li>
+<li><p>Support the <code class="docutils literal notranslate"><span class="pre">&#64;~</span></code> (Symbol font toggle) escape in <strong>-Sq</strong> quoted line labels (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8952">#8952</a>)</p></li>
+<li><p>Add Persian (<strong>FA</strong> and <strong>FA_ASCII</strong>) to the <a class="reference internal" href="gmt.conf.html#term-GMT_LANGUAGE"><span class="xref std std-term">GMT_LANGUAGE</span></a> list (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8808">#8808</a>)</p></li>
+<li><p>Ensure consistent long-name options for the placement of all map embellishments</p></li>
+<li><p>Change the default GMT data server to <code class="docutils literal notranslate"><span class="pre">remotedata.generic-mapping-tools.org</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9102">#9102</a>)</p></li>
+<li><p>New documentation chapter on how to create custom supplement libraries (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9029">#9029</a>)</p></li>
+</ul>
+<section id="new-modules-and-programs-in-gmt-6-7">
+<h3>New Modules and Programs in GMT 6.7<a class="headerlink" href="#new-modules-and-programs-in-gmt-6-7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>New supplement <a class="reference internal" href="supplements/nswing/nswing.html"><span class="doc">nswing</span></a>: a finite-differences tsunami (shallow-water) modeling
+module (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9093">#9093</a>)</p></li>
+<li><p>New stand-alone program <a class="reference internal" href="gmt_update.html"><span class="doc">gmt_update</span></a> that updates a GMT installation between release cycles.  It
+downloads and verifies (SHA-256) the new files.  Currently tested on Windows only (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9032">#9032</a>)</p></li>
+</ul>
+</section>
+<section id="enhancements-in-gmt-6-7">
+<h3>Enhancements in GMT 6.7<a class="headerlink" href="#enhancements-in-gmt-6-7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>: Add <strong>-G+g</strong> for vertex-based color gradients (Gouraud shading) in polygons.
+Vertex colors may be given as <em>r g b</em>, as color names/hex/HSV/CMYK strings, or as <em>z</em> values mapped through
+a CPT given with <strong>-C</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8846">#8846</a>)</p></li>
+<li><p><a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>: Add the long-requested <strong>-SP</strong> sphere symbol, rendered with a radial gradient and with
+modifiers <strong>+a</strong> (light azimuth), <strong>+e</strong> (light elevation), <strong>+f</strong> (flat fill) and <strong>+n</strong> (outline only)
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8844">#8844</a>)</p></li>
+<li><p><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>: Add the <strong>-Qg</strong> surface mode that paints the tiles with Gouraud gradients.  It gives smoother
+color transitions than <strong>-Qs</strong> and produces much smaller and faster PostScript files.  Append <strong>m</strong> for mesh
+lines and <strong>a</strong> to use the alternate tile diagonal (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8848">#8848</a>)</p></li>
+<li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>: Add <em>broken</em> (right-angle elbow) arrows.  When <strong>-A</strong><strong>x</strong>|<strong>y</strong> is used together with
+<strong>-Sv</strong>, the vector is drawn along two perpendicular legs (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8967">#8967</a>)</p></li>
+<li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Add option <strong>-H</strong> to stop the automatic scaling of the annotations (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8810">#8810</a>)</p></li>
+<li><p><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a>: Add the <strong>s</strong> flag to <strong>-W</strong> so that <strong>-Ws</strong> reports the map scale in the 1:xxxxx form (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8781">#8781</a>)</p></li>
+<li><p><a class="reference internal" href="text.html"><span class="doc">text</span></a>: Add the <strong>-D+f</strong><em>file</em> modifier to read the text offsets from a file (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8965">#8965</a>)</p></li>
+<li><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>: Add the <strong>-A+i</strong> modifier that only reports the adjusted BoundingBox (width, height, x0, y0,
+x1, y1 in cm) and exits, so externals can inquire the image size without rasterizing (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8909">#8909</a>)</p></li>
+<li><p><a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a>: Add a <strong>-T</strong> option that can be used with <strong>-Fxm</strong>, like in <a class="reference internal" href="gmtregress.html"><span class="doc">regress</span></a> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8861">#8861</a>)</p></li>
+<li><p><a class="reference internal" href="gmtregress.html"><span class="doc">regress</span></a>: Report the p-value in the <strong>-Fp</strong> output (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8919">#8919</a>)</p></li>
+<li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a>: Support the <strong>-t</strong> common option (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8803">#8803</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/seis/meca.html"><span class="doc">meca</span></a>: Let <strong>-C</strong> also recognize master CPTs (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8966">#8966</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/potential/grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>: Extend <strong>-H</strong> to also compute the magnetic declination and
+inclination (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9103">#9103</a>)</p></li>
+<li><p><a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>: Check that the grid has at least two rows/columns before contouring (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9062">#9062</a>)</p></li>
+<li><p><a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>: Do not error on an unused <strong>-I</strong> when <strong>-R</strong><em>gridfile</em> is used (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8994">#8994</a>)</p></li>
+<li><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>: Do not raise an error when ghostscript is not found in the registry or in GMT/bin, and swap
+the order in which the ghostscript location is searched on Windows (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9033">#9033</a>),
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9019">#9019</a>)</p></li>
+</ul>
+</section>
+<section id="bug-fixes-in-gmt-6-7">
+<h3>Bug fixes in GMT 6.7<a class="headerlink" href="#bug-fixes-in-gmt-6-7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix wrong annotation/gridline alignment for decimal-degree geographic annotations (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9091">#9091</a>)</p></li>
+<li><p>Improve <strong>-B</strong> parsing for time axes so that fractional times with a trailing <strong>T</strong> are no longer truncated (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9096">#9096</a>)</p></li>
+<li><p>Fix the secondary annotations being plotted twice (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8969">#8969</a>)</p></li>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">-B00</span></code> ignoring <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_TYPE"><span class="xref std std-term">MAP_FRAME_TYPE</span></a>=<em>inside</em> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9053">#9053</a>)</p></li>
+<li><p>Fix an invalid annotation phase in <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9034">#9034</a>) and <strong>-Ba -Bz</strong>
+in classic mode (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8997">#8997</a>) and <strong>-A</strong> in modern mode (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8980">#8980</a>)</p></li>
+<li><p>Fix the pen style in <a class="reference internal" href="gmt.conf.html#term-MAP_GRID_PEN"><span class="xref std std-term">MAP_GRID_PEN</span></a> and <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9043">#9043</a>),
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9031">#9031</a>)</p></li>
+<li><p><a class="reference internal" href="subplot.html"><span class="doc">subplot</span></a>: Fix several <strong>-F</strong> modifier bugs (<strong>+g</strong>, <strong>+w</strong>, <strong>+c</strong>, <strong>+f</strong>) and let <strong>-B+a</strong> survive
+in the panel annotation settings (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9087">#9087</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9085">#9085</a>)</p></li>
+<li><p><a class="reference internal" href="movie.html"><span class="doc">movie</span></a>: Fix the <strong>-M</strong> frame number and the <code class="docutils literal notranslate"><span class="pre">psconvert</span></code> <strong>-N</strong> duplication when a title sequence
+(<strong>-E</strong>) is used, and make a relative title-script path survive the internal <code class="docutils literal notranslate"><span class="pre">chdir</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9084">#9084</a>)</p></li>
+<li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a>: Fix the text transparency ramp during the rise phase (<strong>-Et+r</strong>) for labels (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9090">#9090</a>)
+and the double filtering when the <strong>-q</strong> option is used (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9086">#9086</a>)</p></li>
+<li><p>Fix the auto-legend using the wrong symbol for <strong>-Sf</strong> fault decorations (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9080">#9080</a>)</p></li>
+<li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>: Fix the <strong>-M+r</strong> modifier not setting the pen thickness (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9070">#9070</a>),
+a line not being plotted in polar projections (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8984">#8984</a>), and a corrupt
+PS when plotting duplicated annotated lines (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9002">#9002</a>)</p></li>
+<li><p>Fix clipping of decorated lines where <strong>-N</strong> was ignored (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8939">#8939</a>)</p></li>
+<li><p>Fix the failure to parse multi-word labels in <strong>-Sq</strong> in-header labels (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8948">#8948</a>)</p></li>
+<li><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>: Fix the <strong>-Jq</strong> failure with <strong>-R0/360/-90/90</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9051">#9051</a>),
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9056">#9056</a>), the map tiling with oblique projections (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9041">#9041</a>),
+<strong>-A -R</strong> not extending the image (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9036">#9036</a>) and the <strong>-C</strong>…<strong>+U</strong><em>k</em>
+CPT scaling (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8977">#8977</a>)</p></li>
+<li><p><a class="reference internal" href="coast.html"><span class="doc">coast</span></a>: Fix the DCW inside/outside painting (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9015">#9015</a>), the stray lines
+with <strong>-JE</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9040">#9040</a>), crude coastlines on very large oblique maps
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9037">#9037</a>), the offset after a <strong>-p90</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8981">#8981</a>),
+<strong>-Ba</strong> in polar stereographic (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8973">#8973</a>), the water filling tiles
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8968">#8968</a>), a regression in painting country polygons
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8852">#8852</a>) and a crash when an invalid DCW code is passed (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9000">#9000</a>)</p></li>
+<li><p><a class="reference internal" href="text.html"><span class="doc">text</span></a>: Fix the text clipping by the text box (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9035">#9035</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8996">#8996</a>),
+the transparent outlines for superscripts (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9046">#9046</a>) and the <strong>-M</strong> font colors (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8995">#8995</a>)</p></li>
+<li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Fix the vertical custom annotations in vertical color bars (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9044">#9044</a>), the
+colorbar annotations in insets, and a <strong>-D</strong> parsing failure when the <em>refpoint</em> check was skipped (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8918">#8918</a>)</p></li>
+<li><p><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>: Fix a clipping failure (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9013">#9013</a>), the <strong>-Qt</strong> behavior in 3-D
+views (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8857">#8857</a>) and the default z-plane when only <strong>-N</strong> is set (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8838">#8838</a>)</p></li>
+<li><p>Fix <strong>-Xc -Yc</strong> together with <strong>-pz</strong> failing to center the plot (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9045">#9045</a>)</p></li>
+<li><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a>: Fix NaNs in gap zones (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9039">#9039</a>)</p></li>
+<li><p><a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a>: Pick the correct layer from cube files holding more than one variable (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9095">#9095</a>)</p></li>
+<li><p><a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>, <a class="reference internal" href="pscontour.html"><span class="doc">pscontour</span></a>: Fix non-annotated contours not being plotted with <strong>-Ac1,c2,c3</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9007">#9007</a>)</p></li>
+<li><p><a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>: Fix <strong>-Rg</strong> not recognizing longitudes larger than 180 (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9001">#9001</a>)</p></li>
+<li><p><a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a>: Fix Windows-specific and general errors (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8853">#8853</a>)</p></li>
+<li><p><a class="reference internal" href="surface.html"><span class="doc">surface</span></a>: Fix the issue with Cartesian units in <strong>-I</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8998">#8998</a>)</p></li>
+<li><p><a class="reference internal" href="gmtselect.html"><span class="doc">select</span></a>: Fix a missing intersection case (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8970">#8970</a>)</p></li>
+<li><p><a class="reference internal" href="gmtset.html"><span class="doc">set</span></a>: Fix a lowercase <strong>t</strong> that should be <strong>T</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9025">#9025</a>)</p></li>
+<li><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>: Restore the ability to do in-memory PS manipulations (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9004">#9004</a>), fix the
+ghostscript options passed via <strong>-C</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8983">#8983</a>) and a spurious <strong>-N</strong> warning (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8978">#8978</a>)</p></li>
+<li><p><a class="reference internal" href="image.html"><span class="doc">image</span></a>: Fix the <strong>-B+t</strong><em>title</em> issue (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9014">#9014</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9022">#9022</a>)
+and the <strong>-I</strong> inversion (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8837">#8837</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/seis/meca.html"><span class="doc">meca</span></a>: Fix the failure when the P and T axes have equal dips (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8862">#8862</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/seis/coupe.html"><span class="doc">coupe</span></a>: Fix a bug in the cross-section computation (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8804">#8804</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/potential/grdflexure.html"><span class="doc">grdflexure</span></a>: Fix the order of <em>rho_mantle</em> and <em>rho_crust</em> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8871">#8871</a>)</p></li>
+<li><p>Fix the direction of the <em>u</em> and <em>v</em> wind components (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9005">#9005</a>) and make the counting
+of directions consistent (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8771">#8771</a>)</p></li>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">gmt_get_smallcircle</span></code> for the equinox case (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8938">#8938</a>)</p></li>
+<li><p>Fix the wrong coordinates shipped by NASA in the MODIS L3 files (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8935">#8935</a>)</p></li>
+<li><p>Fix a buffer overflow (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8928">#8928</a>), a double free in <code class="docutils literal notranslate"><span class="pre">Free_Ctrl()</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8951">#8951</a>),
+a crash when reading a file with <code class="docutils literal notranslate"><span class="pre">wesn</span></code> but no <strong>-R</strong> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8860">#8860</a>) and several too-short
+static buffers (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8874">#8874</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8876">#8876</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8877">#8877</a>)</p></li>
+<li><p>Check that a file passed via <strong>-G+l</strong> has at least one numeric column (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8798">#8798</a>)</p></li>
+<li><p>Fix the pen of the <em>whale</em> symbols in the users’ symbol contributions (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8954">#8954</a>)</p></li>
+</ul>
+</section>
+<section id="maintenance-updates-in-gmt-6-7">
+<h3>Maintenance updates in GMT 6.7<a class="headerlink" href="#maintenance-updates-in-gmt-6-7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Update the projection formula, add tolerance and add tests for the Spilhaus projection (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8870">#8870</a>)</p></li>
+<li><p>Fix the DNS mirror forward redirects (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9068">#9068</a>)</p></li>
+<li><p>API: Add a bit flag to allow resetting <code class="docutils literal notranslate"><span class="pre">GMT-&gt;init.runtime_bindir</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/9018">#9018</a>)</p></li>
+<li><p>API: Add a memory-image detection macro that accesses loaded image objects directly when acquiring
+regions, bypassing <code class="docutils literal notranslate"><span class="pre">GMT_Read_Data</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8904">#8904</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8901">#8901</a>)</p></li>
+<li><p>API: Increase the size of <em>argument</em> in <code class="docutils literal notranslate"><span class="pre">GMT_Encode_Options()</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8877">#8877</a>)</p></li>
+<li><p>DCW: Let country names also carry the continent code (externals only) (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8873">#8873</a>)</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">GDALGetDataTypeSizeBytes</span></code> since <code class="docutils literal notranslate"><span class="pre">GDALGetDataTypeSize</span></code> is deprecated (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8854">#8854</a>)</p></li>
+<li><p>Build against PCRE2 instead of the deprecated PCRE (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8792">#8792</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8974">#8974</a>)</p></li>
+<li><p>Silence many new warnings issued by the MSVC and other compilers (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8770">#8770</a>), (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8768">#8768</a>),
+(<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8958">#8958</a>)</p></li>
+<li><p>Protect a call to <code class="docutils literal notranslate"><span class="pre">fstat</span></code> with a <code class="docutils literal notranslate"><span class="pre">#ifdef</span> <span class="pre">_WIN64</span></code> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/8826">#8826</a>)</p></li>
+<li><p>Many documentation improvements, link updates and typo fixes throughout, plus updated baseline images
+and CI workflow improvements (DVC caching, welcome bot migration, static data server for tests)</p></li>
+</ul>
+</section>
+</section>
 <section id="new-features-in-gmt-6-6">
 <h2>New Features in GMT 6.6<a class="headerlink" href="#new-features-in-gmt-6-6" title="Link to this heading"></a></h2>
 <p>GMT 6.6 is our first release after Paul Wessel has left us. Though we are still in a kind of orphanage state,
@@ -706,15 +866,15 @@ there are numerous changes:</p>
 organization: <a class="reference external" href="https://www.generic-mapping-tools.org/">https://www.generic-mapping-tools.org/</a>.</p></li>
 <li><p>A new discussion forum at <a class="reference external" href="https://forum.generic-mapping-tools.org/">https://forum.generic-mapping-tools.org/</a>.</p></li>
 <li><p>A data server in Hawaii (oceania.generic-mapping-tools.org) with plans
-for new mirror servers around the world.  This is where the remote files
+for new mirror servers around the world. This is where the remote files
 that start with &#64; come from.</p></li>
 <li><p>A new way to use GMT (<em>modern</em> mode) that eliminates many of the
-aspects of classic GMT that perplexes users.  In modern mode, PostSCript
+aspects of classic GMT that perplexes users. In modern mode, PostScript
 is no longer the default graphics output format and most modules that
 had names starting with <strong>ps</strong> have had that prefix removed.  In addition,
 a few modules have entirely different names in modern mode (<em>psxy</em> is <em>plot</em>,
 <em>psxyz</em> is <em>plot3d</em>, and <em>psscale</em> is <em>colorbar</em>).</p></li>
-<li><p>The default mode remains <em>classic</em>, the only mode previously available.  All
+<li><p>The default mode remains <em>classic</em>, the only mode previously available. All
 existing classic mode GMT 4 and 5 scripts will run as before.</p></li>
 </ol>
 <section id="modern-mode-modules-in-gmt-6-0">
@@ -1940,8 +2100,8 @@ simply process their PostScript files via <a class="reference internal" href="ps
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, The GMT Team.
-      <span class="lastupdated">Last updated on Oct 12, 2025.
+    <p>&#169; Copyright 2026, The GMT Team.
+      <span class="lastupdated">Last updated on Jul 27, 2026.
       </span></p>
   </div>
 

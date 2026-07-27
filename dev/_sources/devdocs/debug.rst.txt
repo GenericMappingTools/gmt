@@ -237,7 +237,7 @@ Getting started
       REPO_DIR="<path to the local GMT repository>"
       GMT_LIBRARY_PATH="${REPO_DIR}/vbuild/gmt6/lib"
       GMT_SHARE_PATH="${REPO_DIR}/vbuild/gmt6/share"
-      GMT_DATA_SERVER=https://oceania.generic-mapping-tools.org
+      GMT_DATA_SERVER=remotedata.generic-mapping-tools.org
 
 Building GMT
 ~~~~~~~~~~~~

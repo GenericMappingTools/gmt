@@ -74,7 +74,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H**\ *magfile*  **-Hx**\|\ **y**\|\ **z**\|\ **h**\|\ **t** **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n**
+**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H**\ *magfile*  **-Hx**\|\ **y**\|\ **z**\|\ **h**\|\ **t**\|\ **d**\|\ **i** **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n**
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
 
       *f_dec/f_dip* -> geomagnetic declination/inclination
@@ -96,6 +96,10 @@ Optional Arguments
       **h**\|\ **H**      to compute the Horizontal component.
 
       **t**\|\ **T**\|\ **f**\|\ **F**  to compute the total field.
+
+      **d**\|\ **D**  to compute the declination of the anomaly.
+
+      **i**\|\ **I**  to compute the inclination of the anomaly.
 
     If we want to compute the magnetic anomalies over a large region where the ambient magnetic field
     can no longer be assumed to be constant we can set variable inclinations and declinations via IGRF.

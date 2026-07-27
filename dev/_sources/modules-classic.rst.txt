@@ -145,6 +145,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     supplements/mgd77/mgd77path
     supplements/mgd77/mgd77sniffer
     supplements/mgd77/mgd77track-classic
+    supplements/nswing/nswing
     supplements/potential/gmtflexure
     supplements/potential/gmtgravmag3d
     supplements/potential/gravfft
@@ -315,6 +316,7 @@ Supplemental Modules
     - :doc:`/supplements/mgd77/mgd77path`
     - :doc:`/supplements/mgd77/mgd77sniffer`
     - :doc:`/supplements/mgd77/mgd77track-classic`
+    - :doc:`nswing </supplements/nswing/nswing>`
     - :doc:`gmtflexure </supplements/potential/gmtflexure>`
     - :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`
     - :doc:`/supplements/potential/gravfft`
@@ -673,6 +675,13 @@ MGD77
 | :doc:`/supplements/mgd77/mgd77sniffer`        | |mgd77sniffer_purpose| |
 +-----------------------------------------------+------------------------+
 | :doc:`/supplements/mgd77/mgd77track-classic`  | |mgd77track_purpose|   |
++-----------------------------------------------+------------------------+
+
+nswing
+------
+
++-----------------------------------------------+------------------------+
+| :doc:`nswing </supplements/nswing/nswing>`    | |nswing_purpose|       |
 +-----------------------------------------------+------------------------+
 
 potential

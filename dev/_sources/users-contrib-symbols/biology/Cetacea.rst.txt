@@ -178,8 +178,8 @@ In this case, please read also the points 1.2-1.3 of the file FAQ.txt
 4: Run the bash script, print/open the output postscript file myfile.ps, or convert to PDF or rasters with gmt psconvert.
 
 
-FAQ and Troubleshoting
-----------------------
+FAQ and Troubleshooting
+-----------------------
 
 The symbols are not drawn
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -216,7 +216,7 @@ The symbols are to much big!, What size should I use?
    are a little bigger than others, so play with the size in the script until you
    obtain the right for you. Remember that you can easily modify the size of the
    symbol directly in your GMT script (-Skoorca/0.8  -Skoorca/0.2) or in your file xy.
-   I recommend to use different sizes for males, females and calfs.
+   I recommend to use different sizes for males, females and calves.
 
 I don't want color symbols!
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
