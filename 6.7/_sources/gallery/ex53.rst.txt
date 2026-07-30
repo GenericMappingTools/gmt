@@ -1,0 +1,41 @@
+.. _example_53:
+
+(53) Building subplots and using per-country shading
+----------------------------------------------------
+
+This example illustrates two separate effects:
+
+#. How to automate the plotting of a large set of subplot panels
+   via a simple loop that picks up panel-specific parameters from
+   a configuration file.
+#. How to highlight a country using a DEM with darker ambient shading
+   outside the country boundaries from DCW.
+
+We use the 6 arc-minute global relief file for these plots and show
+topographic relief in an equal-area block of 3000 by 3000 km centered
+on one of the dozen most populated cities in the world. Apart from
+the metadata for each city, all subplot panels are identical, thus
+making a simple loop over the metadata preferable to writing 12
+near-identical subplot sections.  **Note**: For optimal resolution
+you should switch to the 2x2 arc-minute relief data instead.
+
+We use a small table containing longitude, latitude, population
+(in millions), ISO-2 country code, and city name for the 12 cities; see
+https://simplemaps.com/data/world-cities for the full data set.
+
+The example script then reads one line at the time from the metadata
+file and creates a DEM map for that city, embellished with a tag
+containing the city and the population, while using the ISO-2 country
+code to set up a clip path to highlight the relief inside its boundaries
+as given by the Digital Chart of the World (DCW).
+We use the city custom symbol to indicate the location of the city at the
+center of each map.
+
+.. literalinclude:: /_verbatim/ex53.txt
+   :language: bash
+
+.. figure:: https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png
+   :width: 80%
+   :align: center
+
+   Building subplots and using per-country shading.

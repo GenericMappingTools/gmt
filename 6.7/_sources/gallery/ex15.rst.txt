@@ -1,0 +1,37 @@
+.. _example_15:
+
+(15) Gridding, contouring, and masking of unconstrained areas
+-------------------------------------------------------------
+
+This example demonstrates some off the
+different ways one can use to grid data in GMT, and how to deal with
+unconstrained areas. We first convert a large remote ASCII file to binary with
+:doc:`gmtconvert </gmtconvert>` since the binary file
+will read and process much faster. Our lower left plot illustrates the
+results of gridding using a nearest neighbor technique
+(:doc:`nearneighbor </nearneighbor>`) which is a local
+method: No output is given where there are no data. Next (lower right),
+we use a minimum curvature technique
+(:doc:`surface </surface>`) which is a global method.
+Hence, the contours cover the entire map although the data are only
+available for portions of the area (indicated by the gray areas plotted
+using :doc:`mask </mask>`). The top left scenario
+illustrates how we can create a clip path (using
+:doc:`mask </mask>`) based on the data coverage to
+eliminate contours outside the constrained area. Finally (top right) we
+simply employ :doc:`coast </coast>` to overlay gray
+land masses to cover up the unwanted contours, and end by plotting a red
+star at the deepest point on the map with
+:doc:`plot </plot>`. This point was extracted from the
+grid files using :doc:`grdinfo </grdinfo>`.  Placement of the four
+panels is simplified via :doc:`subplot </subplot>`.
+
+.. literalinclude:: /_verbatim/ex15.txt
+   :language: bash
+
+.. figure:: /_images/ex15.*
+   :width: 500 px
+   :align: center
+
+   Gridding, contouring, and masking of data.
+
