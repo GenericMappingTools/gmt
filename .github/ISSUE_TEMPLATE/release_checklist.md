@@ -40,10 +40,12 @@ assignees: ''
 
 - [ ] Make sure that "set (DO_TESTS ON)" and "set (DO_SUPPLEMENT_TESTS ON)" **Are commented** in ConfigUser.cmake
 - [ ] create source tarballs (tar.gz and tar.xz)
+  This is done by `admin/build-release.sh`, and is executed by: 
+  `cmake --build . --target gmt_release` plus `cmake --build . --target gmt_release_tar`
 - [ ] create Windows win64 installer and portable installer (@joa-quim)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
 - [ ] check if the Windows installers work well (volunteers needed!)
-- [ ] make a tag and push it to github
+- [ ] make a tag and push it to github (**Must replace the old FTP with a place to upload packages**)
     ```bash
     # checkout master (for minor releases) or 6.x branch (for patch releases)
     git checkout XXXX
@@ -53,9 +55,9 @@ assignees: ''
     git push --tags
     ```
 - [ ] make a GitHub release.
-  The GitHub Actions automatically create a draft release after pushing the tag to github.
+  The GitHub Actions automatically create a draft release after pushing the tag to github (**FAILS WHILE FTP IS NOT REPLACED**).
   We need to go to the [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) page, and review it manually.
-  - [ ] 7 files are attached as release assets (2 source tarballs, 4 installers and 1 checksum file).
+  - [ ] 5 files are attached as release assets (2 source tarballs, 2 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
 - [ ] upload the tarball to [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@seisman)
