@@ -603,16 +603,19 @@ target_link_libraries (gshhg_version ${NETCDF_LIBRARIES})
 # script2verbatim for removing comments, replacing -ps from example scripts
 add_executable (script2verbatim script2verbatim.c)
 
-# gmt_update — standalone binary updater. Deliberately does NOT link against
-# libgmt/pslib so that those DLLs are NOT held open by this process and can be
-# replaced on Windows. Uses only libcurl + an embedded public-domain SHA-256.
-add_executable (gmt_update gmt_update.c sha256.c)
-target_include_directories (gmt_update PRIVATE ${CURL_INCLUDE_DIRS})
-target_link_libraries (gmt_update ${CURL_LIBRARIES})
-if (WIN32)
-	target_link_libraries (gmt_update rstrtmgr)
-endif (WIN32)
-install (TARGETS gmt_update RUNTIME DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+option(WITH_GMT_UPDATE "Build and install gmt_update executable" ON)
+if (WITH_GMT_UPDATE)
+	# gmt_update — standalone binary updater. Deliberately does NOT link against
+	# libgmt/pslib so that those DLLs are NOT held open by this process and can be
+	# replaced on Windows. Uses only libcurl + an embedded public-domain SHA-256.
+	add_executable (gmt_update gmt_update.c sha256.c)
+	target_include_directories (gmt_update PRIVATE ${CURL_INCLUDE_DIRS})
+	target_link_libraries (gmt_update ${CURL_LIBRARIES})
+	if (WIN32)
+		target_link_libraries (gmt_update rstrtmgr)
+	endif (WIN32)
+	install (TARGETS gmt_update RUNTIME DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+endif()
 
 
 ##
