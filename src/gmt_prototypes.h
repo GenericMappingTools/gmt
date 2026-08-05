@@ -64,6 +64,7 @@ EXTERN_MSC void gmt_update_keys (struct GMT_CTRL *GMT, bool arg);
 EXTERN_MSC void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC unsigned int gmt_subplot_status (struct GMTAPI_CTRL *API, int fig);
 EXTERN_MSC void gmt_round_wesn (double wesn[], bool geo);
+EXTERN_MSC void gmt_round_wesn_log (double wesn[], bool geo, bool log_axis[2]);
 EXTERN_MSC int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c);
 EXTERN_MSC void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update);
 EXTERN_MSC void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool conf_update);

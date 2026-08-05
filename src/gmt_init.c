@@ -14826,26 +14826,40 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	return true;	/* Remaining PostScript producing modules always write PostScript */
 }
 
-void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to nearest reasonable multiples */
+void gmt_round_wesn_log (double wesn[], bool geo, bool log_axis[2]) { /* Use data range to round to nearest reasonable multiples; log_axis[GMT_X|GMT_Y] forces log10 rounding for that side */
 	bool set[2] = {false, false};
 	unsigned int side, item;
 	double mag, inc, range[2] = {0.0, 0.0};
+
+       /* Handle log axes independently first, then fall through for the linear side(s) */
+       if (log_axis[GMT_X] && wesn[XLO] > 0.0 && wesn[XHI] > 0.0) {
+               wesn[XLO] = pow (10.0, floor (log10 (wesn[XLO])));
+               wesn[XHI] = pow (10.0, ceil  (log10 (wesn[XHI])));
+               set[GMT_X] = true;
+       }
+       if (log_axis[GMT_Y] && wesn[YLO] > 0.0 && wesn[YHI] > 0.0) {
+               wesn[YLO] = pow (10.0, floor (log10 (wesn[YLO])));
+               wesn[YHI] = pow (10.0, ceil  (log10 (wesn[YHI])));
+               set[GMT_Y] = true;
+       }
+
 	range[GMT_X] = wesn[XHI] - wesn[XLO];
 	range[GMT_Y] = wesn[YHI] - wesn[YLO];
 	if (geo) {	/* Special checks due to periodicity */
-		if (range[GMT_X] > 306.0) {	/* If within 15% of a full 360 we promote to 360 */
+        if (!set[GMT_X] && range[GMT_X] > 306.0) {     /* If within 15% of a full 360 we promote to 360 */
 			wesn[XLO] = 0.0;	wesn[XHI] = 360.0;
 			set[GMT_X] = true;
 		}
-		if (range[GMT_Y] > 153.0) {	/* If within 15% of a full 180 we promote to 180 */
+        if (!set[GMT_Y] && range[GMT_Y] > 153.0) {     /* If within 15% of a full 180 we promote to 180 */
 			wesn[YLO] = -90.0;	wesn[YHI] = 90.0;
 			set[GMT_Y] = true;
 		}
 	}
 	else {			/* Add a tinny pad so that the rounding algorithm always round to next fifth of decade */
 		double dx, dy;
-		dx = range[GMT_X] * 0.001;		dy = range[GMT_Y] * 0.001;
-		wesn[0] -= dx;	wesn[1] += dx;	wesn[2] -= dy;	wesn[3] += dy;
+        dx = set[GMT_X] ? 0.0 : range[GMT_X] * 0.001;   dy = set[GMT_Y] ? 0.0 : range[GMT_Y] * 0.001;
+        wesn[0] -= dx;  wesn[1] += dx;  wesn[2] -= dy;  wesn[3] += dy;
+
 	}
 	for (side = GMT_X, item = XLO; side <= GMT_Y; side++) {
 		if (set[side]) continue;	/* Done above */
@@ -14877,6 +14891,11 @@ void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to ne
 			wesn[item] = x - floor((x - wesn[item]) / one_fifth_dec) * one_fifth_dec;	item++;
 		}
 	}
+}
+
+void gmt_round_wesn (double wesn[], bool geo) { /* Backwards-compatible wrapper: no log rounding */
+       bool no_log[2] = {false, false};
+       gmt_round_wesn_log (wesn, geo, no_log);
 }
 
 GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], int *aspect) {
@@ -15097,7 +15116,12 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK)
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
-			if (!exact) gmt_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
+            if (!exact) {
+                bool log_axis[2];
+                log_axis[GMT_X] = (API->GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10);
+                log_axis[GMT_Y] = (API->GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10);
+                gmt_round_wesn_log (wesn, geo, log_axis); /* Use data range to round to nearest reasonable multiples */
+            }	
 			/* Safety valve if w == e or s == n */
 			if (doubleAlmostEqualZero (wesn[XLO], wesn[XHI])) {
 				if (gmt_M_is_zero (wesn[XLO]))	/* No info to do anything other than this */
