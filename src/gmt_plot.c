@@ -5657,7 +5657,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	unsigned int annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
 	unsigned int primary;		/* Axis item number of annotation with largest interval/unit */
 	unsigned int axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
-	unsigned int justify;
+	unsigned int justify[2];	/* Text justification for primary [0] and secondary [1] annotations */
 	unsigned int lx_just = PSL_BC, ly_just = PSL_BC;
 	bool horizontal;		/* true if axis is horizontal */
 	bool annotate = ((side & GMT_AXIS_ANNOT) > 0);
@@ -5668,16 +5668,18 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool do_annot;		/* true unless we are dealing with Gregorian weeks */
 	bool do_tick;		/* true unless we are dealing with bits of weeks */
 	bool form;			/* true for outline font */
-	bool ortho = false;		/* true if annotations are orthogonal to axes */
+	bool ortho = false;		/* true if annotations are orthogonal to axes (based on primary settings; drives axis-wide layout) */
+	bool ortho2[2];			/* Same, but independently for primary [0] and secondary [1] annotations */
 	bool flip = false;		/* true if annotations are inside axes */
 	bool MM_set = false;		/* true after we define the MM PS macro for label offsets */
-	bool angled = false;		/* True if user used +angle to select a slanted annotation */
-	bool skip = false, just_set = false;
+	bool angled[2] = {false, false};	/* True if user used +angle to select a slanted annotation, per primary/secondary */
+	bool skip2[2] = {false, false}, just_set2[2] = {false, false};
 	bool save_pi = GMT->current.plot.substitute_pi;
     bool skip_center_annot = false; /* May be set to true to avoid annotation where two graph axes intersect */
     bool center_reset = false;
+	unsigned int pr;	/* Loop variable over GMT_PRIMARY/GMT_SECONDARY */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double x, t_use, text_angle, cos_a = 0.0, sin_a = 0.0, delta;	/* Misc. variables */
+	double x, t_use, text_angle[2], cos_a[2] = {0.0, 0.0}, sin_a[2] = {0.0, 0.0}, delta;	/* Misc. variables, now per primary [0] / secondary [1] */
 	double x_angle_add = 0.0, y_angle_add = 0.0;	/* Used when dealing with perspectives */
     double x_axis_pos = 0.0, y_axis_pos = 0.0;  /* Normal starting points for drawing x or y axis */
     double skip_val = 0.0;	/* Knot value to be skipped if graph-centered is selected */
@@ -5705,10 +5707,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	horizontal = (axis == GMT_X);	/* This is a horizontal axis */
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = gmtplot_get_primary_annot (A);			/* Find primary axis items */
-	if (A->use_angle) {	/* Must honor the +a modifier */
-		if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false, just_set = true;	/* Y/Z-Annotations are parallel */
-		else if (axis != GMT_X && doubleAlmostEqualZero (A->angle, 0.0)) ortho = true, just_set = true;	/* Y/Z-Annotations are normal */
-		if (doubleAlmostEqualZero (A->angle, 0.0)) skip = true;	/* Annotations are parallel so do nothing */
+	if (A->use_angle[GMT_PRIMARY]) {	/* Must honor the +a modifier - use primary setting to drive axis-wide layout (side, offsets) */
+		if (axis != GMT_X && doubleAlmostEqualZero (A->angle[GMT_PRIMARY], 90.0)) ortho = false;	/* Y/Z-Annotations are parallel */
+		else if (axis != GMT_X && doubleAlmostEqualZero (A->angle[GMT_PRIMARY], 0.0)) ortho = true;	/* Y/Z-Annotations are normal */
 	}
 	else if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below]))
 		ortho = true;	/* Annotations are orthogonal for this axis */
@@ -5723,34 +5724,47 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				strncpy (format, format_w_phase, GMT_LEN256);
 		}
 	}
-	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
-	justify = (ortho) ? PSL_MR : PSL_BC;
-	if (A->use_angle && !skip) {	/* User override annotation angle */
-		text_angle = A->angle;
-		angled = true;
-		if (!just_set) {
-			if (text_angle > 0.0)
-				justify = (below) ? PSL_MR : PSL_ML;
-			else
-				justify = (below) ? PSL_ML : PSL_MR;
+	/* Compute angle/justify/ortho independently for primary [GMT_PRIMARY] and secondary [GMT_SECONDARY] annotations,
+	 * so -Bp...+a<angle1> and -Bs...+a<angle2> can differ (see issue #7036). */
+	for (pr = GMT_PRIMARY; pr <= GMT_SECONDARY; pr++) {
+		ortho2[pr] = ortho;	/* Start from the axis-wide default */
+		skip2[pr] = just_set2[pr] = false;
+		if (A->use_angle[pr]) {
+			if (axis != GMT_X && doubleAlmostEqualZero (A->angle[pr], 90.0)) ortho2[pr] = false, just_set2[pr] = true;
+			else if (axis != GMT_X && doubleAlmostEqualZero (A->angle[pr], 0.0)) ortho2[pr] = true, just_set2[pr] = true;
+			if (doubleAlmostEqualZero (A->angle[pr], 0.0)) skip2[pr] = true;	/* Annotations are parallel so do nothing */
 		}
-		if (axis == GMT_Y) {
-			ortho = true;
-			if (just_set && !below) justify = PSL_TC;
-		}
-		if (axis == GMT_X) {
-			cos_a = 0.5 * cosd (text_angle);	/* Half-height of text at an angle */
-			sin_a = fabs (sind (text_angle));	/* Fraction of y offset due to slanted annotation */
-		}
-		else {
-			cos_a = cosd (text_angle);	/* Full-height of text at an angle */
-			sin_a = fabs (sind (text_angle));	/* The y offset due to slanted annotation */
+		text_angle[pr] = (ortho2[pr] == horizontal) ? 90.0 : 0.0;
+		justify[pr] = (ortho2[pr]) ? PSL_MR : PSL_BC;
+		if (A->use_angle[pr] && !skip2[pr]) {	/* User override annotation angle for this level */
+			text_angle[pr] = A->angle[pr];
+			angled[pr] = true;
+			if (!just_set2[pr]) {
+				if (text_angle[pr] > 0.0)
+					justify[pr] = (below) ? PSL_MR : PSL_ML;
+				else
+					justify[pr] = (below) ? PSL_ML : PSL_MR;
+			}
+			if (axis == GMT_Y) {
+				ortho2[pr] = true;
+				if (just_set2[pr] && !below) justify[pr] = PSL_TC;
+			}
+			if (axis == GMT_X) {
+				cos_a[pr] = 0.5 * cosd (text_angle[pr]);	/* Half-height of text at an angle */
+				sin_a[pr] = fabs (sind (text_angle[pr]));	/* Fraction of y offset due to slanted annotation */
+			}
+			else {
+				cos_a[pr] = cosd (text_angle[pr]);	/* Full-height of text at an angle */
+				sin_a[pr] = fabs (sind (text_angle[pr]));	/* The y offset due to slanted annotation */
+			}
 		}
 	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
 	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */
-		if (!flip) justify = gmt_flip_justify (GMT, justify);
-		text_angle += 180.0;
+		for (pr = GMT_PRIMARY; pr <= GMT_SECONDARY; pr++) {
+			if (!flip) justify[pr] = gmt_flip_justify (GMT, justify[pr]);
+			text_angle[pr] += 180.0;
+		}
 	}
 //	else if (flip)
 //		justify = gmt_flip_justify (GMT, justify);
@@ -5919,11 +5933,11 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				}
 				else
 					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i], delta);	/* Get annotation string */
-				PSL_deftextdim (PSL, ortho ? "-w" : "-h", font.size, string);
+				PSL_deftextdim (PSL, ortho2[annot_pos] ? "-w" : "-h", font.size, string);
 				PSL_command (PSL, "mx\n");		/* Update the longest annotation stored in PSL_AH? */
 			}
 			PSL_command (PSL, "def\n");	/* Finalize the definition of longest (y-axis) or tallest (x-annotation) found */
-			if (angled && axis == GMT_X) {	/* Also need annotation width since a component of length is projected in the y-direction so label and title must be displaced by this amount */
+			if (angled[annot_pos] && axis == GMT_X) {	/* Also need annotation width since a component of length is projected in the y-direction so label and title must be displaced by this amount */
 				/* Note: PSL_slant_y will also be used when placing a Cartesian frame title */
 				PSL_command (PSL, "/PSL_slant_y ");
 				if (label_c && label_c[nx1-1] && label_c[nx1-1][0])	/* We only use the string for the max annotation value at index nx1-1 */
@@ -5931,12 +5945,12 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				else
 					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[nx1-1], delta);	/* Get annotation string */
 				PSL_deftextdim (PSL, "-w", font.size, string);	/* Compute the width */
-				PSL_command (PSL, " %.12g mul def\n", sin_a);	/* Multiply this width by sine of the angle to get the y-component */
-				//PSL_command (PSL, " %.12g mul %g add def\n", sin_a, PSL_IZ (PSL, 72.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size));	/* Multiply this width by sine of the angle to get the y-component */
+				PSL_command (PSL, " %.12g mul def\n", sin_a[annot_pos]);	/* Multiply this width by sine of the angle to get the y-component */
+				//PSL_command (PSL, " %.12g mul %g add def\n", sin_a[annot_pos], PSL_IZ (PSL, 72.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size));	/* Multiply this width by sine of the angle to get the y-component */
 			}
-			else if (angled && axis == GMT_Y) {	/* Need a slant in x and reset PSL_AH? to 0 */
-				//PSL_command (PSL, "/PSL_slant_x PSL_AH%d %.12g mul %g add def\n", annot_pos, cos_a, PSL_IZ (PSL, 72.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size));	/* Largest annotation width (or height) so far */
-				PSL_command (PSL, "/PSL_slant_x PSL_AH%d %.12g mul  def\n", annot_pos, cos_a);	/* Largest annotation width (or height) so far */
+			else if (angled[annot_pos] && axis == GMT_Y) {	/* Need a slant in x and reset PSL_AH? to 0 */
+				//PSL_command (PSL, "/PSL_slant_x PSL_AH%d %.12g mul %g add def\n", annot_pos, cos_a[annot_pos], PSL_IZ (PSL, 72.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size));	/* Largest annotation width (or height) so far */
+				PSL_command (PSL, "/PSL_slant_x PSL_AH%d %.12g mul  def\n", annot_pos, cos_a[annot_pos]);	/* Largest annotation width (or height) so far */
 				PSL_command (PSL, "/PSL_AH%d 0 def\n", annot_pos);	/* Largest annotation width (or height) so far */
 			}
 
@@ -5956,17 +5970,17 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (!is_interval && gmtplot_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
-				if (angled) {	/* Must compensate for rotated textbox sticking too close to axis */
+				if (angled[annot_pos]) {	/* Must compensate for rotated textbox sticking too close to axis */
 					if (below) /* S axis */
-						PSL_command (PSL, "0 PSL_AH%d 1 %.12g sub mul G\n", annot_pos, cos_a);
+						PSL_command (PSL, "0 PSL_AH%d 1 %.12g sub mul G\n", annot_pos, cos_a[annot_pos]);
 					else /* N axis */
-						PSL_command (PSL, "0 PSL_AH%d %.12g mul G\n", annot_pos, cos_a);
+						PSL_command (PSL, "0 PSL_AH%d %.12g mul G\n", annot_pos, cos_a[annot_pos]);
 				}
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256-1);
 				else
 					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i], delta);	/* Get annotation string */
-				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, text_angle, justify, form);
+				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, text_angle[annot_pos], justify[annot_pos], form);
 			}
 			if (!faro) PSL_command (PSL, "/PSL_A%d_y PSL_A%d_y PSL_AH%d add def\n", annot_pos, annot_pos, annot_pos);
 		}
@@ -6006,9 +6020,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		else
 			PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset[L_axis]), (neg == horizontal) ? "PSL_LH add " : "");
 		/* Move to new anchor point for label */
-		if (angled && axis == GMT_X)	/* Add offset due to angled x-annotations */
+		if ((angled[GMT_PRIMARY] || angled[GMT_SECONDARY]) && axis == GMT_X)	/* Add offset due to angled x-annotations */
 			PSL_command (PSL, "%d PSL_L_y PSL_slant_y add MM\n", PSL_IZ (PSL, 0.5 * length));
-		else if (angled && axis == GMT_Y)
+		else if ((angled[GMT_PRIMARY] || angled[GMT_SECONDARY]) && axis == GMT_Y)
 			PSL_command (PSL, "%d PSL_L_y PSL_slant_x add MM\n", PSL_IZ (PSL, 0.5 * length));
 		else
 			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
