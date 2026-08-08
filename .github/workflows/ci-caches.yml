@@ -173,7 +173,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup data version control (DVC)
-        uses: iterative/setup-dvc@v2
+        uses: iterative/setup-dvc@v3
 
       - name: Pull baseline image data from dvc remote
         env:
