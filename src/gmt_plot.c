@@ -7023,13 +7023,7 @@ unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 		outline = 2;	/* Indicates outline font is needed for filling but will not be stroked */
 	}
 	else {	/* Regular, solid text fill is set via stroke color */
-		if (F->fill.rgb[3] > 0.0) {
-			/* Honor transparency embedded in the font color (e.g. red@50), which
-			 * PSL_setcolor does not apply on its own (unlike PSL_setfill/PSL_setline). */
-			PSL_command (GMT->PSL, "%.12g %.12g /%s PSL_transp\n",
-			             1.0 - F->fill.rgb[3], 1.0 - F->fill.rgb[3], GMT->current.setting.ps_transpmode);
-		}
-		PSL_setcolor (GMT->PSL, F->fill.rgb, PSL_IS_FONT);
+	PSL_setcolor (GMT->PSL, F->fill.rgb, PSL_IS_FONT);
 		outline = 0;	/* Indicates we will fill text using "show" which takes current color (i.e., stroke color) */
 	}
 	return (outline);
