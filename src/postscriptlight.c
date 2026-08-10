@@ -5216,10 +5216,12 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	 * rgb[0] = -1: ignore. Do not change pen color. Leave untouched.
 	 * rgb[0] >= 0: rgb is the color with R G B in 0-1 range.
 	 */
+	int is_font = 0;
 	if (!rgb) return (PSL_NO_ERROR);	/* NULL args to be ignored */
 	if (mode == PSL_IS_FONT) {	/* Internally update font color but set stroke color */
 		PSL_rgb_copy (PSL->current.rgb[mode], rgb);
 		mode = PSL_IS_STROKE;
+		is_font = 1;	/* Remember this color paints text, which is filled, not stroked */
 	}
 	if (PSL_eq (rgb[0], -2.0) || PSL_eq (rgb[0], -1.0)) return (PSL_NO_ERROR);	/* Settings to be ignored */
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
@@ -5227,9 +5229,18 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	/* Guard: When setting stroke or fill with transparency, preserve the other channel's transparency */
 	if (!PSL_eq (rgb[3], 0.0) && (mode == PSL_IS_STROKE || mode == PSL_IS_FILL)) {
 		double transp[2], rgb_copy[4];
-		/* Preserve current transparencies and update only the relevant channel */
-		transp[PSL_FILL_TRANSP] = (mode == PSL_IS_FILL) ? rgb[3] : PSL->current.rgb[PSL_IS_FILL][3];
-		transp[PSL_PEN_TRANSP]  = (mode == PSL_IS_STROKE) ? rgb[3] : PSL->current.rgb[PSL_IS_STROKE][3];
+		/* Preserve current transparencies and update only the relevant channel.
+		 * Text glyphs are painted as filled shapes even though their color is
+		 * tracked in the stroke slot, so font transparency must land on the
+		 * FILL channel, not the PEN channel, or it has no visible effect. */
+		if (is_font) {
+			transp[PSL_FILL_TRANSP] = rgb[3];
+			transp[PSL_PEN_TRANSP]  = PSL->current.rgb[PSL_IS_STROKE][3];
+		}
+		else {
+			transp[PSL_FILL_TRANSP] = (mode == PSL_IS_FILL) ? rgb[3] : PSL->current.rgb[PSL_IS_FILL][3];
+			transp[PSL_PEN_TRANSP]  = (mode == PSL_IS_STROKE) ? rgb[3] : PSL->current.rgb[PSL_IS_STROKE][3];
+		}
 		/* Set transparency explicitly for both channels */
 		PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transp[PSL_FILL_TRANSP], 1.0 - transp[PSL_PEN_TRANSP], PSL->current.transparency_mode);
 		/* Make a copy with transparency zeroed out for psl_putcolor to avoid double-setting */
