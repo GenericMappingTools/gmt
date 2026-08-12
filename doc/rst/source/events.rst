@@ -458,7 +458,7 @@ variation, and all symbols are opaque.
 If trailing text is plotted (i.e., by selecting **-Et**) then only the transparency time-function
 is used and neither the plateau nor decay periods apply.  The appearance and disappearance of a
 label is thus dictated by an initial (and optional) rise time (during which the label slowly
-becomes fully visible), an normal period (where it remains visible), followed by the optional
+becomes fully visible), a normal period (where it remains visible), followed by the optional
 fade period (where the text fades out).  The figure below illustrate the setup:
 
 .. figure:: /_images/psevents_labels.*
