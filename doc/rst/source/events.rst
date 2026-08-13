@@ -241,7 +241,7 @@ Optional Arguments
     should change from when the symbol first appears, during its active duration, and optionally its fate as time
     moves past its end time. First supply the directive [default *val1* values are given in brackets]:
 
-    - **i** will modify the intensity of the color [1].
+    - **i** will modify the intensity of the color [0].
     - **s** will modify the relative size of the symbol [1].
     - **t** will modify the transparency [100].
     - **v** will modify the data value (to change symbol color via CPT lookup) during the *rise* interval [0].
@@ -515,6 +515,11 @@ a *dpu* of 80 pixels per cm (HD movie) and the projection parameters we will use
 
 **Note**: If your :term:`PROJ_LENGTH_UNIT` is set to inch then you need to use the equivalent *dpu* of 200 pixels per inch for HD,
 or you specify **-Ar**\ 200\ **i**.
+
+References
+-------------
+
+Wessel, P., Esteban, F., & Delaviel-Anger, G. (2024). The Generic Mapping Tools and Animations for the Masses. Geochemistry, Geophysics, Geosystems, 25(6). https://doi.org/10.1029/2024GC011545
 
 See Also
 --------
