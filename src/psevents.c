@@ -196,7 +196,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[-E[s|t][+o|O<dt>][+r[l|c|q]<dt>][+p<dt>][+d[l|c|q]<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
 		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2>]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
-		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -283,7 +283,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append core external <command> and required options that must include -S<format><size>. "
 		"The quoted <command> must start with [ps]coupe, [ps]meca, or [ps]velo. "
 		"(Note: The <command> cannot contain options -C, -G, -I, -J, -N, -R, -W, -t).");
-	GMT_Option (API, "a,bi2,c,di,e,f,h,i,l,p,qi,w,:,.");
+	GMT_Option (API, "a,bi2,c,di,e,f,h,i,l,p,qi,t,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
