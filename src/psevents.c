@@ -167,7 +167,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->H.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 	C->H.soff[GMT_Y] = -C->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
 	strcpy (C->H.pen, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Default outline pen */
-	/* -Mi|s|t|v val1 defaults: 1, 1, 100, 1  val2 defaults: 0, 0, 100, 0 */
+	/* -Mi|s|t|v val1 defaults: 0, 1, 100, 1  val2 defaults: 0, 0, 100, 0 */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
 	C->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1]   = C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default size scale for -Ms and dz amplitude for -Mv */
 	C->Z.Slongopt = 0;			/* Assume short-option format */
