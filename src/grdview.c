@@ -991,8 +991,8 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 	if (GMT->common.R.wesn[ZLO] == 0.0 && GMT->common.R.wesn[ZHI] == 0.0) {
 		GMT->common.R.wesn[ZLO] = Topo->header->z_min;
 		GMT->common.R.wesn[ZHI] = Topo->header->z_max;
-		if (Ctrl->N.active && Ctrl->N.level < GMT->common.R.wesn[ZLO]) GMT->common.R.wesn[ZLO] = Ctrl->N.level;
-		if (Ctrl->N.active && Ctrl->N.level > GMT->common.R.wesn[ZHI]) GMT->common.R.wesn[ZHI] = Ctrl->N.level;
+		if (Ctrl->N.active && !Ctrl->N.implicit && Ctrl->N.level < GMT->common.R.wesn[ZLO]) GMT->common.R.wesn[ZLO] = Ctrl->N.level;
+		if (Ctrl->N.active && !Ctrl->N.implicit && Ctrl->N.level > GMT->common.R.wesn[ZHI]) GMT->common.R.wesn[ZHI] = Ctrl->N.level;
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
