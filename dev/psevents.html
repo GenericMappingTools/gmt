@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>psevents &mdash; GMT 6.7.0 documentation</title>
+  <title>psevents &mdash; GMT 6.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="_static/documentation_options.js?v=2adddf63"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.7
+                6.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -377,7 +377,7 @@ polygons.</p>
 should change from when the symbol first appears, during its active duration, and optionally its fate as time
 moves past its end time. First supply the directive [default <em>val1</em> values are given in brackets]:</p>
 <ul class="simple">
-<li><p><strong>i</strong> will modify the intensity of the color [1].</p></li>
+<li><p><strong>i</strong> will modify the intensity of the color [0].</p></li>
 <li><p><strong>s</strong> will modify the relative size of the symbol [1].</p></li>
 <li><p><strong>t</strong> will modify the transparency [100].</p></li>
 <li><p><strong>v</strong> will modify the data value (to change symbol color via CPT lookup) during the <em>rise</em> interval [0].</p></li>
@@ -617,7 +617,7 @@ variation, and all symbols are opaque.</p>
 <p>If trailing text is plotted (i.e., by selecting <strong>-Et</strong>) then only the transparency time-function
 is used and neither the plateau nor decay periods apply.  The appearance and disappearance of a
 label is thus dictated by an initial (and optional) rise time (during which the label slowly
-becomes fully visible), an normal period (where it remains visible), followed by the optional
+becomes fully visible), a normal period (where it remains visible), followed by the optional
 fade period (where the text fades out).  The figure below illustrate the setup:</p>
 <figure class="align-center" id="id6">
 <a class="reference internal image-reference" href="_images/psevents_labels.png"><img alt="_images/psevents_labels.png" src="_images/psevents_labels.png" style="width: 400px;" /></a>
@@ -704,7 +704,7 @@ or you specify <strong>-Ar</strong>200<strong>i</strong>.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 27, 2026.
+      <span class="lastupdated">Last updated on Aug 20, 2026.
       </span></p>
   </div>
 
