@@ -6155,6 +6155,11 @@ GMT_LOCAL void gmtplot_get_outside_point_extension (struct GMT_CTRL *GMT, double
 		L = 0.0;
 	else	/* Safe to get width (but still truncate to width of map) */
 		L = MIN (fabs (W / tan_angle), GMT->current.map.half_width);	/* L is positive */
+	/* For lines that cross the border at a shallow (near-tangent) angle, L can blow up far beyond
+	 * the segment that defines the crossing direction, producing a visible stray line segment
+	 * (https://github.com/GenericMappingTools/gmt/issues/5954). The extension should never need
+	 * to reach further than the segment itself, so cap it at that segment's length. */
+	L = MIN (L, hypot (dx, dy));
 	/* Compute the coordinates of the point at a distance L away from clip point in the direction of angle */
 	*x_off = x_on - L * cosd (angle);
 	*y_off = y_on - L * sind (angle);
