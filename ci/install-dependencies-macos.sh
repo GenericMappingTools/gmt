@@ -17,8 +17,8 @@ PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
-packages="ninja curl pcre2 netcdf gdal geos fftw libomp ghostscript"
-conda_packages=""
+packages="ninja curl pcre2 netcdf gdal geos fftw libomp"
+conda_packages="ghostscript=10.03.0"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
@@ -42,10 +42,8 @@ fi
 brew install ${packages}
 
 # Install packages via conda
-if [ -n "${conda_packages}" ]; then
-    conda install ${conda_packages} -c conda-forge
-    echo "${CONDA}/bin" >> $GITHUB_PATH
-fi
+conda install ${conda_packages} -c conda-forge
+echo "${CONDA}/bin" >> $GITHUB_PATH
 
 # Remove pcre-config from conda's path so cmake won't find the conda's one
 rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
