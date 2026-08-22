@@ -65,24 +65,13 @@ jobs:
 
       - name: Check execute permission of bash scripts
         run: |
-          # Scripts outside doc/ and test/ are meant to be run directly
-          # (or installed as such) and must keep execute permission,
-          # except gmt_functions.sh which is meant to be sourced.
-          missing=$(find . -name "*.sh" ! -path "./doc/*" ! -path "./test/*" \
-            ! -path "./share/tools/gmt_functions.sh" ! -executable)
-          if [[ -n "$missing" ]]; then
-            echo "Following bash scripts do not have execute permission:"
-            echo "$missing"
-            exit 1
-          fi
-
-          # Example and test scripts are always run through an interpreter
-          # (e.g., 'bash gmtest ex01.sh'), so they must not have execute
-          # permission.
-          unexpected=$(find ./doc ./test -name "*.sh" -executable)
-          if [[ -n "$unexpected" ]]; then
-            echo "Following example/test scripts should not have execute permission:"
-            echo "$unexpected"
+          # All *.sh scripts are run through an interpreter (e.g., 'bash
+          # xxx.sh'), so none of them need execute permission, except
+          # gmt_functions.sh which is meant to be sourced.
+          scripts=$(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh" -executable)
+          if [[ -n "$scripts" ]]; then
+            echo "Following bash scripts should not have execute permission:"
+            echo "$scripts"
             exit 1
           fi
 
