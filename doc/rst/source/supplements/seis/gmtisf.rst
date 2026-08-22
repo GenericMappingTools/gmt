@@ -22,7 +22,7 @@ Synopsis
 Description
 -----------
 
-Reads seismicity data from an ISC (https://www.isc.ac.uk/iscbulletin) formated *file.isc* and output [lon lat depth mag ...]
+Reads seismicity data from an ISC (https://www.isc.ac.uk/iscbulletin) formatted *file.isc* and output [lon lat depth mag ...]
 to standard output.
 
 Optional Arguments

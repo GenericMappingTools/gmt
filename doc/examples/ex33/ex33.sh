@@ -18,7 +18,7 @@ gmt begin ex33
 	# Plot ridge segment and end points
 	gmt plot -Rspac_33.nc -W2p,blue ridge.txt
 	gmt plot -Sc0.25c -Gblue ridge.txt
-	# Generate cross-profiles 400 km long, spaced 10 km, samped every 2km
+	# Generate cross-profiles 400 km long, spaced 10 km, sampled every 2km
 	# and stack these using the median, write stacked profile
 	gmt grdtrack ridge.txt -Gspac_33.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
 	gmt plot -W0.5p table.txt

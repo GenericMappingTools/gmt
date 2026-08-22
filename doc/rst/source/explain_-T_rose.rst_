@@ -1,4 +1,4 @@
-**-Td**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+f**\|\ **F**\ [*level*]]\ [**+j**\ *justify*]\ 
+**-Td**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ [*refpoint*]\ [**+f**\|\ **F**\ [*level*]]\ [**+j**\ *justify*]\ 
 [**+l**\ [*w,e,s,n*]][**+o**\ *dx*\ [/*dy*]]\ [**+w**\ *width*]
 
     Draw a map directional rose on the map at the location defined by the reference (*refpoint*) and anchor point
@@ -6,6 +6,9 @@
     of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
+
+    If *refpoint* is omitted, the directional rose is placed by default in the upper-right corner of the map
+    (using **+jTR**).
 
     The following optional modifiers can be appended to |-T|\ **d**, with additional explanation and
     examples provided in the :ref:`Placing-dir-map-roses` cookbook section. Optionally, use |-F| to place a panel
@@ -29,7 +32,7 @@
 
     For further information, see the Map Embellishment section on :ref:`Directional Roses <Placing-dir-map-roses>`.
 
-**-Tm**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ 
+**-Tm**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ [*refpoint*]\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ 
 [**+j**\ *justify*][**+l**\ [*w,e,s,n*]][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]\ [**+w**\ *width*]
 
     Draw a map magnetic rose on the map at the location defined by the reference (*refpoint*) and anchor point
@@ -37,6 +40,9 @@
     of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
+
+    If *refpoint* is omitted, the directional rose is placed by default in the upper-right corner of the map
+    (using **+jTR**).
 
     The following optional modifiers can be appended to |-T|\ **m**, with additional explanation and
     examples provided in the :ref:`Placing-mag-map-roses` cookbook section. Optionally, use |-F| to place a panel

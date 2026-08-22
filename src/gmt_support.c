@@ -4973,8 +4973,17 @@ GMT_LOCAL int gmtsupport_getrose_old (struct GMT_CTRL *GMT, char option, char *t
 		snprintf (string, GMT_LEN256, "x%s/%s", txt_a, txt_b);
 	else	/* Set up ancher in geographical coordinates */
 		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
-	if ((ms->refpoint = gmt_get_refpoint (GMT, string, option)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map rose reference point was not accepted\n", option);
+	char default_ref[GMT_LEN256];
+	/* If no reference point is provided (it starts with '+' or is empty), use jTR by default */
+	if (text[1] == '+' || text[1] == '\0') {
+		snprintf(default_ref, GMT_LEN256, "jTR%s", &text[1]);
+		ms->refpoint = gmt_get_refpoint(GMT, default_ref, option);
+	} else {
+		ms->refpoint = gmt_get_refpoint(GMT, &text[1], option);
+	}
+
+	if (ms->refpoint == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Map rose reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 		return (1);	/* Failed basic parsing */
 	}
@@ -7506,7 +7515,10 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 
 	/* Processes pen specifications given as [width[,<color>[,<style>[t<unit>]]][@<transparency>] */
 
-	if (gmt_M_is_dnan (P->width)) {	/* Worry in case no width is given */
+	if (gmt_M_is_dnan (P->width) || P->width < 0.0) {	/* Worry in case no width is given.  Some callers (e.g., psmeca)
+		                                                   use a negative width as a sentinel for "not yet set"; treat
+		                                                   that the same as NaN so a color- or style-only pen string
+		                                                   (e.g., "red") is not mistaken for an explicit (bogus) width. */
 		strcpy (def_width, "0");	/* To avoid any parsing errors */
 		set_NaN = true;	/* Flag this specific case */
 	}
@@ -13944,8 +13956,9 @@ bool gmt_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSET *B) {
 	/* Parse the map inset option, which comes in two flavors:
 	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
-	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
+	 * 2) -Dg|j|J|n|x[<refpoint>]+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
 	 *    Note: the [+s<file>] is only valid in classic mode (via psbasemap)
+	 *    If <refpoint> (and its g|j|J|n|x code) is entirely omitted, we default to jTR (Top-Right inside)
 	 *
 	 * For backwards compatibility we also check the deprecated form of (1):
 	 *    [<unit>]<xmin/xmax/ymin/ymax>
@@ -13967,12 +13980,21 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 	/* Determine if we got an reference point or a region */
 
-	if (strchr (GMT_REFPOINT_CODES, text[0])) {	/* Did the reference point thing. */
+	/* Inject default reference point (jTR) if omitted by user --- */
+	char refpoint_str[GMT_LEN256];
+	char *parse_text = text;
+	/* If the user omitted the reference point (e.g., -D+w5c), inject a default one (jTR = Top-Right inside) */
+	if (text[0] == '+' || text[0] == '\0') {
+		snprintf (refpoint_str, GMT_LEN256-1, "jTR%s", text);
+		parse_text = refpoint_str;
+	}
+
+	if (strchr (GMT_REFPOINT_CODES, parse_text[0])) {	/* Did the reference point thing. */
 		/* Syntax is -Dg|j|J|n|x<refpoint>+w<width>[/<height>][+j<justify>][+o<dx>[/<dy>]][+s<file>], with +s<file> only in classic mode */
 		unsigned int last;
 		char *q[2] = {NULL, NULL};
 		size_t len;
-		if ((B->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
+		if ((B->refpoint = gmt_get_refpoint (GMT, parse_text, option)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map inset reference point was not accepted\n", option);
 			gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 			return (1);	/* Failed basic parsing */
@@ -14109,7 +14131,8 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms) {
 	/* This function parses the -L map scale syntax:
-	 *   -L[g|j|J|n|x]<refpoint>+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
+	 *   -L[g|j|J|n|x][<refpoint>]+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
+	 * If <refpoint> (and its g|j|J|n|x code) is entirely omitted, we default to jBL+o0.2c/0.4c (Bottom-Left plus a small nudge)
 	 * If the required +w is not present we call the backwards compatible parsert for the previous map scale syntax.
 	 * An optional background panel is handled by a separate option (typically -F). */
 
@@ -14130,7 +14153,22 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	ms->measure = 'k';	/* Default distance unit is km */
 	ms->alignment = (vertical) ? 'r' : 't';	/* Default label placement is on top for map scale and right for vertical scale */
 
-	if ((ms->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
+	/* Inject default reference point (jBL+o0.2c/0.4c) if omitted by user --- */
+	char refpoint_str[GMT_LEN256];
+	char *parse_text = text;
+	/* If the user omitted the reference point (e.g., -L+w100k), inject a default one (jBL = Bottom-Left inside), plus a small inward
+	 * offset of 0.2 cm horizontally and 0.4 cm vertically (+o0.2c/0.4c) so the scale does not sit flush against the map frame.
+	 * If the user already gave their own +o modifier, leave it untouched. */
+	if (text[0] == '+') {
+		char dummy[GMT_LEN256] = {""};
+		if (gmt_get_modifier (text, 'o', dummy))	/* User already specified +o<dx>/<dy>; do not override */
+			snprintf (refpoint_str, GMT_LEN256-1, "jBL%s", text);
+		else
+			snprintf (refpoint_str, GMT_LEN256-1, "jBL+o0.2c/0.4c%s", text);
+		parse_text = refpoint_str;
+	}
+
+	if ((ms->refpoint = gmt_get_refpoint (GMT, parse_text, option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Scale reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
 		return (1);	/* Failed basic parsing */
@@ -14280,19 +14318,37 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	char txt_a[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
-	/* SYNTAX is -Td|m[g|j|n|x]<refpoint>[+w<width>][+f|F[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
+	/* SYNTAX is -Td|m[g|j|n|x][<refpoint>][+w<width>][+f|F[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
 	 * 1)  +f: fancy direction rose, <kind> = 1,2,3 which is the level of directions [1]. Use +F to flip W/E/S/N so readable from south
 	 * 2)  Tm: magnetic rose.  Optionally, append +d<dec>[/<dlabel>], where <dec> is magnetic declination and dlabel its label [no declination info].
 	 * If  -Tm, optionally set annotation interval with +t
 	 */
 
 	if (!text || text[0] == '\0') {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument given\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR,  "Option -%c: No argument given\n ", option);
 		return GMT_PARSE_ERROR;
 	}
 	gmt_M_memset (ms, 1, struct GMT_MAP_ROSE);
 	ms->panel = save_panel;	/* In case it is not NULL */
-	if (!strstr (text, "+w") && (strchr ("gjn", text[1]) == NULL || strchr ("fm", text[1]))) return gmtsupport_getrose_old (GMT, option, text, ms);	/* Most likely old-style args */
+
+	/* Inject default reference point (jTR) if omitted by user --- */
+	char refpoint_str[GMT_LEN256];
+	char *parse_text = text;
+	/* If the user omitted the reference point (e.g., -Td or -Tm), inject a default one (jTR = Top-Right inside) */
+	if (text[0] == 'd' || text[0] == 'm') {
+		if (text[1] == '+' || text[1] == '\0') {
+			snprintf(refpoint_str, GMT_LEN256-1, "%cjTR%s", text[0], &text[1]);
+			parse_text = refpoint_str;
+		}
+	}
+	/* Determine if we should fallback to the old-style parser.*/
+	if (parse_text[0] != 'd' && !strstr(parse_text, "+w")) {
+		char c = parse_text[1];
+		/* Old syntax starts with f, m, x, or numeric coordinates */
+		if (c == 'f' || c == 'm' || c == 'x' || isdigit((unsigned char)c) || c == '-' || c == '.') {
+			return gmtsupport_getrose_old(GMT, option, parse_text, ms);
+		}
+	}
 
 	/* Assign default values */
 	ms->type = GMT_ROSE_DIR_PLAIN;
@@ -14308,7 +14364,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			return (-1);
 			break;
 	}
-	if ((ms->refpoint = gmt_get_refpoint (GMT, &text[1], option)) == NULL) {
+	if ((ms->refpoint = gmt_get_refpoint (GMT,  &parse_text[1], option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Map rose reference point was not accepted\n", option);
 		gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
 		return (1);	/* Failed basic parsing */

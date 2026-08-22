@@ -1602,7 +1602,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								/* Place pen and fill colors in segment header */
 								sprintf (buffer, "-Sf%s/%gi%s", B, tlen, sub);
 								if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
-								if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
+								strcat (buffer, " -W"); strcat (buffer, (txt_d[0] != '-') ? txt_d : gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Always give an explicit pen (given or default) so this segment does not inherit the previous entry's pen */
 								/* Prepare next output segment */
 								if ((D[FRONT] = pslegend_get_dataset_pointer (API, D[FRONT], GMT_IS_LINE, GMT_SMALL_CHUNK, 2U, 2U, false)) == NULL) return (API->error);
 								S[FRONT] = pslegend_get_segment (D, FRONT, n_fronts);	/* Next front segment */
@@ -1623,7 +1623,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x = 0.5 * length;
 								/* Place pen and fill colors in segment header */
 								sprintf (buffer, "-S%s", symbol);
-								if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
+								strcat (buffer, " -W"); strcat (buffer, (txt_d[0] != '-') ? txt_d : gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Always give an explicit pen (given or default) so this segment does not inherit the previous entry's pen */
 								S[QLINE] = pslegend_get_segment (D, QLINE, n_quoted_lines);	/* Next quoted line segment */
 								S[QLINE]->header = strdup (buffer);
 								GMT_Report (API, GMT_MSG_DEBUG, "QLINE: %s\n", buffer);
@@ -1642,7 +1642,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x = 0.5 * length;
 								/* Place pen and fill colors in segment header */
 								sprintf (buffer, "-S%s", symbol);
-								if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
+								strcat (buffer, " -W"); strcat (buffer, (txt_d[0] != '-') ? txt_d : gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Always give an explicit pen (given or default) so this segment does not inherit the previous entry's pen */
 								S[DLINE] = pslegend_get_segment (D, DLINE, n_decorated_lines);	/* Next decorated line segment */
 								S[DLINE]->header = strdup (buffer);
 								GMT_Report (API, GMT_MSG_DEBUG, "DLINE: %s\n", buffer);

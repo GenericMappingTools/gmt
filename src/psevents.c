@@ -167,7 +167,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->H.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 	C->H.soff[GMT_Y] = -C->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
 	strcpy (C->H.pen, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Default outline pen */
-	/* -Mi|s|t|v val1 defaults: 1, 1, 100, 1  val2 defaults: 0, 0, 100, 0 */
+	/* -Mi|s|t|v val1 defaults: 0, 1, 100, 1  val2 defaults: 0, 0, 100, 0 */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
 	C->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1]   = C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default size scale for -Ms and dz amplitude for -Mv */
 	C->Z.Slongopt = 0;			/* Assume short-option format */
@@ -196,7 +196,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[-E[s|t][+o|O<dt>][+r[l|c|q]<dt>][+p<dt>][+d[l|c|q]<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
 		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2>]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
-		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -283,7 +283,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append core external <command> and required options that must include -S<format><size>. "
 		"The quoted <command> must start with [ps]coupe, [ps]meca, or [ps]velo. "
 		"(Note: The <command> cannot contain options -C, -G, -I, -J, -N, -R, -W, -t).");
-	GMT_Option (API, "a,bi2,c,di,e,f,h,i,l,p,qi,w,:,.");
+	GMT_Option (API, "a,bi2,c,di,e,f,h,i,l,p,qi,t,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -912,6 +912,10 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	bool do_coda, finite_duration, has_text, out_segment = false, have_previous_point = false;
 
+	/* Save state for -q option to prevent double filtering in internal calls. Fixes #8460. */
+	bool q_active_in_save, q_active_out_save = false;
+	unsigned int q_mode_save = 0; 
+
 	int error;
 
 	enum gmt_col_enum time_type, end_type;
@@ -1368,7 +1372,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 					/* Labels have variable transparency during optional rise and fade, and fully opaque during normal section, and skipped otherwise unless coda */
 
 					if (Ctrl->T.now < t[PSEVENTS_T_EVENT]) {	/* We are within the rise phase */
-						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_DECAY, t, Ctrl->T.now);	/* Ramp function */
+						x = psevents_ramp (GMT, Ctrl, PSEVENTS_TEXT, PSEVENTS_RISE, t, Ctrl->T.now);	/* Ramp function */
 						out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0 - x);		/* Magnification of opacity */
 					}
 					else if (finite_duration && Ctrl->T.now < t[PSEVENTS_T_END])	/* We are within the normal phase, keep everything constant */
@@ -1390,6 +1394,14 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		if (fp_symbols) fclose (fp_symbols);	/* Close the file so symbol output is flushed */
 		if (fp_labels)  fclose (fp_labels);		/* Close the file so label output is flushed */
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from temp files in psxy or pstext below */
+		/* Save current -q state and disable it temporarily. This prevents the internal psxy/pstext calls
+		 * from applying the -q filter a second time to the already filtered temporary files (Fixes #8460). */		
+		q_mode_save = GMT->common.q.mode;
+		q_active_in_save = GMT->common.q.active[GMT_IN];
+		q_active_out_save = GMT->common.q.active[GMT_OUT];
+		GMT->common.q.mode = 0;               /* Disable row/time range checks */
+		GMT->common.q.active[GMT_IN] = false; /* Disable input filtering */
+		GMT->common.q.active[GMT_OUT] = false;/* Disable output filtering */
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up map projection */
@@ -1466,8 +1478,13 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	if (fp_symbols || fp_labels)	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	if (fp_symbols || fp_labels) {	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_reenable_bghio_opts (GMT);
+		/* Restore original -q state before re-enabling other I/O options (Fixes #8460). */
+		GMT->common.q.mode = q_mode_save;
+		GMT->common.q.active[GMT_IN] = q_active_in_save;
+		GMT->common.q.active[GMT_OUT] = q_active_out_save;
+	}
 
 	/* Finalize plot and we are done */
 

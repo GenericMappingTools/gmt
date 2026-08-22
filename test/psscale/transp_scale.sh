@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test CPTs with various levels of transparency
 ps=transp_scale.ps
-# 1. Discrete CPT with no transparenty
+# 1. Discrete CPT with no transparency
 gmt makecpt -Cturbo -T-4000/-1000/500 -D > t.cpt
 gmt psscale -Ct.cpt -R0/10/0/10 -JX15c -Y26c -Baf -Bx+l"Discrete CPT No Slices Transparent" -P -K > $ps
 # 2. Discrete CPT with all transparent colors

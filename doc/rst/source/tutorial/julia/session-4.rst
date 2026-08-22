@@ -144,13 +144,13 @@ Color images are made with `grdimage <https://www.generic-mapping-tools.org/GMTj
 which takes the usual common command options (by default the **region** is taken from the data set) and a CPT;
 the main other options are:
 
-==================== ======================================================================
-Option               Purpose
-==================== ======================================================================
-**dpi**\ =val        Sets the desired resolution of the image [Default is data resolution]
-**shade**\ =grid     Use artificial illumination using intensities from a grid or *intensfile*
-**monochrom**\ =true Force gray shade using the (television) YIQ conversion
-==================== ======================================================================
+===================== =========================================================================
+Option                Purpose
+===================== =========================================================================
+**dpi**\ =val         Sets the desired resolution of the image [Default is data resolution]
+**shade**\ =grid      Use artificial illumination using intensities from a grid or *intensfile*
+**monochrome**\ =true Force gray shade using the (television) YIQ conversion
+===================== =========================================================================
 
 We want to make a plain color map with a color bar superimposed above the plot. We try
 

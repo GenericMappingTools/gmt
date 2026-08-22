@@ -126,7 +126,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
 	GMT_Option (API, "O,P");
 	gmt_maprose_syntax (API->GMT, 'd', "Draw a north-pointing directional map rose at specified reference point.");
+	GMT_Usage (API, -2, "If <refpoint> is omitted, it defaults to the top-right corner inside the map frame.");
 	gmt_maprose_syntax (API->GMT, 'm', "Draw a north-pointing magnetic map rose at specified reference point.");
+	GMT_Usage (API, -2, "If <refpoint> is omitted, it defaults to the top-right corner inside the map frame.");
 	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (GMT_MODULE_USAGE);

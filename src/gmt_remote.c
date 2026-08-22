@@ -1469,8 +1469,9 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	}
 
 	if (c && file[0] == '\0') {	/* Some distaster, such like my typo of =W1p instead of -W1p that lead to this check to prevent SEGV */
-		if (c) c[0] = was;	c = NULL; skip_checks = true;
-		GMT_Report (API, GMT_MSG_DEBUG, "Not able to understand the file name : %s\n", file);
+		if (c) c[0] = was;
+		c = NULL;	skip_checks = true;
+		GMT_Report(API, GMT_MSG_DEBUG, "Not able to understand the file name : %s\n", file);
 	}
 
 	if (is_url) {	/* A remote file or query given via an URL never exists locally */

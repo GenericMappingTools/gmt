@@ -9,11 +9,150 @@ Changelog
 New Features in GMT 6.7
 =======================
 
+GMT 6.7 brings two new programs (a tsunami modeling supplement and a stand-alone updater), several new
+plotting capabilities built on smooth color gradients (Gouraud shading), Bezier curves in the custom symbol
+language, and a large number of bug fixes across the whole code base.
+
 * Add quadratic (**Q**) and cubic (**B**) Bezier curve commands to the custom symbol
   macro language, enabling smooth curves in ``.def`` symbol files.  Both commands
   extend the path from the previous **M** or **D** point; **Q** takes one control point
   plus endpoint, **B** takes two control points plus endpoint.  See
-  :ref:`Custom Symbols <custom-symbols>` for details.
+  :ref:`Custom Symbols <custom-symbols>` for details (`#9020 <https://github.com/GenericMappingTools/gmt/pull/9020>`_)
+* Support reading GeoJSON files directly by converting them to the OGR_GMT format (`#8719 <https://github.com/GenericMappingTools/gmt/pull/8719>`_)
+* New geological CPTs (Exxon88, GTS2004, GTS2012 eons/eras/periods/epochs/ages, GeeK07) in ``share/cpt/geological`` (`#8778 <https://github.com/GenericMappingTools/gmt/pull/8778>`_)
+* Map embellishments (map scale **-L**, map inset **-D**, map rose **-Td**\|\ **m**) now have a default reference point
+  so that the *refpoint* argument may be omitted (`#9079 <https://github.com/GenericMappingTools/gmt/pull/9079>`_),
+  (`#9077 <https://github.com/GenericMappingTools/gmt/pull/9077>`_), (`#9074 <https://github.com/GenericMappingTools/gmt/pull/9074>`_)
+* Allow the **-L**...\ **+f** fancy map scales also for Cartesian projections (`#9069 <https://github.com/GenericMappingTools/gmt/pull/9069>`_)
+* Support the **-px**\|\ **y**\ ... modifiers that control which perspective walls are drawn (`#9047 <https://github.com/GenericMappingTools/gmt/pull/9047>`_)
+* Let the PS format also be *croppable* from modern mode scripts (`#8992 <https://github.com/GenericMappingTools/gmt/pull/8992>`_)
+* Support the ``@~`` (Symbol font toggle) escape in **-Sq** quoted line labels (`#8952 <https://github.com/GenericMappingTools/gmt/pull/8952>`_)
+* Add Persian (**FA** and **FA_ASCII**) to the :term:`GMT_LANGUAGE` list (`#8808 <https://github.com/GenericMappingTools/gmt/pull/8808>`_)
+* Ensure consistent long-name options for the placement of all map embellishments
+* Change the default GMT data server to ``remotedata.generic-mapping-tools.org`` (`#9102 <https://github.com/GenericMappingTools/gmt/pull/9102>`_)
+* New documentation chapter on how to create custom supplement libraries (`#9029 <https://github.com/GenericMappingTools/gmt/pull/9029>`_)
+
+New Modules and Programs in GMT 6.7
+-----------------------------------
+
+* New supplement :doc:`/supplements/nswing/nswing`: a finite-differences tsunami (shallow-water) modeling
+  module (`#9093 <https://github.com/GenericMappingTools/gmt/pull/9093>`_)
+* New stand-alone program :doc:`gmt_update` that updates a GMT installation between release cycles.  It
+  downloads and verifies (SHA-256) the new files.  Currently tested on Windows only (`#9032 <https://github.com/GenericMappingTools/gmt/pull/9032>`_)
+
+Enhancements in GMT 6.7
+-----------------------
+
+* :doc:`plot`, :doc:`plot3d`: Add **-G+g** for vertex-based color gradients (Gouraud shading) in polygons.
+  Vertex colors may be given as *r g b*, as color names/hex/HSV/CMYK strings, or as *z* values mapped through
+  a CPT given with **-C** (`#8846 <https://github.com/GenericMappingTools/gmt/pull/8846>`_)
+* :doc:`plot3d`: Add the long-requested **-SP** sphere symbol, rendered with a radial gradient and with
+  modifiers **+a** (light azimuth), **+e** (light elevation), **+f** (flat fill) and **+n** (outline only)
+  (`#8844 <https://github.com/GenericMappingTools/gmt/pull/8844>`_)
+* :doc:`grdview`: Add the **-Qg** surface mode that paints the tiles with Gouraud gradients.  It gives smoother
+  color transitions than **-Qs** and produces much smaller and faster PostScript files.  Append **m** for mesh
+  lines and **a** to use the alternate tile diagonal (`#8848 <https://github.com/GenericMappingTools/gmt/pull/8848>`_)
+* :doc:`plot`: Add *broken* (right-angle elbow) arrows.  When **-A**\ **x**\|\ **y** is used together with
+  **-Sv**, the vector is drawn along two perpendicular legs (`#8967 <https://github.com/GenericMappingTools/gmt/pull/8967>`_)
+* :doc:`colorbar`: Add option **-H** to stop the automatic scaling of the annotations (`#8810 <https://github.com/GenericMappingTools/gmt/pull/8810>`_)
+* :doc:`mapproject`: Add the **s** flag to **-W** so that **-Ws** reports the map scale in the 1:xxxxx form (`#8781 <https://github.com/GenericMappingTools/gmt/pull/8781>`_)
+* :doc:`text`: Add the **-D+f**\ *file* modifier to read the text offsets from a file (`#8965 <https://github.com/GenericMappingTools/gmt/pull/8965>`_)
+* :doc:`psconvert`: Add the **-A+i** modifier that only reports the adjusted BoundingBox (width, height, x0, y0,
+  x1, y1 in cm) and exits, so externals can inquire the image size without rasterizing (`#8909 <https://github.com/GenericMappingTools/gmt/pull/8909>`_)
+* :doc:`trend1d`: Add a **-T** option that can be used with **-Fxm**, like in :doc:`gmtregress` (`#8861 <https://github.com/GenericMappingTools/gmt/pull/8861>`_)
+* :doc:`gmtregress`: Report the p-value in the **-Fp** output (`#8919 <https://github.com/GenericMappingTools/gmt/pull/8919>`_)
+* :doc:`events`: Support the **-t** common option (`#8803 <https://github.com/GenericMappingTools/gmt/pull/8803>`_)
+* :doc:`/supplements/seis/meca`: Let **-C** also recognize master CPTs (`#8966 <https://github.com/GenericMappingTools/gmt/pull/8966>`_)
+* :doc:`/supplements/potential/grdgravmag3d`: Extend **-H** to also compute the magnetic declination and
+  inclination (`#9103 <https://github.com/GenericMappingTools/gmt/pull/9103>`_)
+* :doc:`grdcontour`: Check that the grid has at least two rows/columns before contouring (`#9062 <https://github.com/GenericMappingTools/gmt/pull/9062>`_)
+* :doc:`grdmath`: Do not error on an unused **-I** when **-R**\ *gridfile* is used (`#8994 <https://github.com/GenericMappingTools/gmt/pull/8994>`_)
+* :doc:`psconvert`: Do not raise an error when ghostscript is not found in the registry or in GMT/bin, and swap
+  the order in which the ghostscript location is searched on Windows (`#9033 <https://github.com/GenericMappingTools/gmt/pull/9033>`_),
+  (`#9019 <https://github.com/GenericMappingTools/gmt/pull/9019>`_)
+
+Bug fixes in GMT 6.7
+--------------------
+
+* Fix wrong annotation/gridline alignment for decimal-degree geographic annotations (`#9091 <https://github.com/GenericMappingTools/gmt/pull/9091>`_)
+* Improve **-B** parsing for time axes so that fractional times with a trailing **T** are no longer truncated (`#9096 <https://github.com/GenericMappingTools/gmt/pull/9096>`_)
+* Fix the secondary annotations being plotted twice (`#8969 <https://github.com/GenericMappingTools/gmt/pull/8969>`_)
+* Fix ``-B00`` ignoring :term:`MAP_FRAME_TYPE`\ =\ *inside* (`#9053 <https://github.com/GenericMappingTools/gmt/pull/9053>`_)
+* Fix an invalid annotation phase in :doc:`basemap` (`#9034 <https://github.com/GenericMappingTools/gmt/pull/9034>`_) and **-Ba -Bz**
+  in classic mode (`#8997 <https://github.com/GenericMappingTools/gmt/pull/8997>`_) and **-A** in modern mode (`#8980 <https://github.com/GenericMappingTools/gmt/pull/8980>`_)
+* Fix the pen style in :term:`MAP_GRID_PEN` and :term:`MAP_FRAME_PEN` (`#9043 <https://github.com/GenericMappingTools/gmt/pull/9043>`_),
+  (`#9031 <https://github.com/GenericMappingTools/gmt/pull/9031>`_)
+* :doc:`subplot`: Fix several **-F** modifier bugs (**+g**, **+w**, **+c**, **+f**) and let **-B+a** survive
+  in the panel annotation settings (`#9087 <https://github.com/GenericMappingTools/gmt/pull/9087>`_), (`#9085 <https://github.com/GenericMappingTools/gmt/pull/9085>`_)
+* :doc:`movie`: Fix the **-M** frame number and the ``psconvert`` **-N** duplication when a title sequence
+  (**-E**) is used, and make a relative title-script path survive the internal ``chdir`` (`#9084 <https://github.com/GenericMappingTools/gmt/pull/9084>`_)
+* :doc:`events`: Fix the text transparency ramp during the rise phase (**-Et+r**) for labels (`#9090 <https://github.com/GenericMappingTools/gmt/pull/9090>`_)
+  and the double filtering when the **-q** option is used (`#9086 <https://github.com/GenericMappingTools/gmt/pull/9086>`_)
+* Fix the auto-legend using the wrong symbol for **-Sf** fault decorations (`#9080 <https://github.com/GenericMappingTools/gmt/pull/9080>`_)
+* :doc:`plot`: Fix the **-M+r** modifier not setting the pen thickness (`#9070 <https://github.com/GenericMappingTools/gmt/pull/9070>`_),
+  a line not being plotted in polar projections (`#8984 <https://github.com/GenericMappingTools/gmt/pull/8984>`_), and a corrupt
+  PS when plotting duplicated annotated lines (`#9002 <https://github.com/GenericMappingTools/gmt/pull/9002>`_)
+* Fix clipping of decorated lines where **-N** was ignored (`#8939 <https://github.com/GenericMappingTools/gmt/pull/8939>`_)
+* Fix the failure to parse multi-word labels in **-Sq** in-header labels (`#8948 <https://github.com/GenericMappingTools/gmt/pull/8948>`_)
+* :doc:`grdimage`: Fix the **-Jq** failure with **-R0/360/-90/90** (`#9051 <https://github.com/GenericMappingTools/gmt/pull/9051>`_),
+  (`#9056 <https://github.com/GenericMappingTools/gmt/pull/9056>`_), the map tiling with oblique projections (`#9041 <https://github.com/GenericMappingTools/gmt/pull/9041>`_),
+  **-A -R** not extending the image (`#9036 <https://github.com/GenericMappingTools/gmt/pull/9036>`_) and the **-C**...\ **+U**\ *k*
+  CPT scaling (`#8977 <https://github.com/GenericMappingTools/gmt/pull/8977>`_)
+* :doc:`coast`: Fix the DCW inside/outside painting (`#9015 <https://github.com/GenericMappingTools/gmt/pull/9015>`_), the stray lines
+  with **-JE** (`#9040 <https://github.com/GenericMappingTools/gmt/pull/9040>`_), crude coastlines on very large oblique maps
+  (`#9037 <https://github.com/GenericMappingTools/gmt/pull/9037>`_), the offset after a **-p90** (`#8981 <https://github.com/GenericMappingTools/gmt/pull/8981>`_),
+  **-Ba** in polar stereographic (`#8973 <https://github.com/GenericMappingTools/gmt/pull/8973>`_), the water filling tiles
+  (`#8968 <https://github.com/GenericMappingTools/gmt/pull/8968>`_), a regression in painting country polygons
+  (`#8852 <https://github.com/GenericMappingTools/gmt/pull/8852>`_) and a crash when an invalid DCW code is passed (`#9000 <https://github.com/GenericMappingTools/gmt/pull/9000>`_)
+* :doc:`text`: Fix the text clipping by the text box (`#9035 <https://github.com/GenericMappingTools/gmt/pull/9035>`_), (`#8996 <https://github.com/GenericMappingTools/gmt/pull/8996>`_),
+  the transparent outlines for superscripts (`#9046 <https://github.com/GenericMappingTools/gmt/pull/9046>`_) and the **-M** font colors (`#8995 <https://github.com/GenericMappingTools/gmt/pull/8995>`_)
+* :doc:`colorbar`: Fix the vertical custom annotations in vertical color bars (`#9044 <https://github.com/GenericMappingTools/gmt/pull/9044>`_), the
+  colorbar annotations in insets, and a **-D** parsing failure when the *refpoint* check was skipped (`#8918 <https://github.com/GenericMappingTools/gmt/pull/8918>`_)
+* :doc:`grdview`: Fix a clipping failure (`#9013 <https://github.com/GenericMappingTools/gmt/pull/9013>`_), the **-Qt** behavior in 3-D
+  views (`#8857 <https://github.com/GenericMappingTools/gmt/pull/8857>`_) and the default z-plane when only **-N** is set (`#8838 <https://github.com/GenericMappingTools/gmt/pull/8838>`_)
+* Fix **-Xc -Yc** together with **-pz** failing to center the plot (`#9045 <https://github.com/GenericMappingTools/gmt/pull/9045>`_)
+* :doc:`sample1d`: Fix NaNs in gap zones (`#9039 <https://github.com/GenericMappingTools/gmt/pull/9039>`_)
+* :doc:`grdinterpolate`: Pick the correct layer from cube files holding more than one variable (`#9095 <https://github.com/GenericMappingTools/gmt/pull/9095>`_)
+* :doc:`grdcontour`, :doc:`pscontour`: Fix non-annotated contours not being plotted with **-Ac1,c2,c3** (`#9007 <https://github.com/GenericMappingTools/gmt/pull/9007>`_)
+* :doc:`grdmask`: Fix **-Rg** not recognizing longitudes larger than 180 (`#9001 <https://github.com/GenericMappingTools/gmt/pull/9001>`_)
+* :doc:`grdblend`: Fix Windows-specific and general errors (`#8853 <https://github.com/GenericMappingTools/gmt/pull/8853>`_)
+* :doc:`surface`: Fix the issue with Cartesian units in **-I** (`#8998 <https://github.com/GenericMappingTools/gmt/pull/8998>`_)
+* :doc:`gmtselect`: Fix a missing intersection case (`#8970 <https://github.com/GenericMappingTools/gmt/pull/8970>`_)
+* :doc:`gmtset`: Fix a lowercase **t** that should be **T** (`#9025 <https://github.com/GenericMappingTools/gmt/pull/9025>`_)
+* :doc:`psconvert`: Restore the ability to do in-memory PS manipulations (`#9004 <https://github.com/GenericMappingTools/gmt/pull/9004>`_), fix the
+  ghostscript options passed via **-C** (`#8983 <https://github.com/GenericMappingTools/gmt/pull/8983>`_) and a spurious **-N** warning (`#8978 <https://github.com/GenericMappingTools/gmt/pull/8978>`_)
+* :doc:`image`: Fix the **-B+t**\ *title* issue (`#9014 <https://github.com/GenericMappingTools/gmt/pull/9014>`_), (`#9022 <https://github.com/GenericMappingTools/gmt/pull/9022>`_)
+  and the **-I** inversion (`#8837 <https://github.com/GenericMappingTools/gmt/pull/8837>`_)
+* :doc:`/supplements/seis/meca`: Fix the failure when the P and T axes have equal dips (`#8862 <https://github.com/GenericMappingTools/gmt/pull/8862>`_)
+* :doc:`/supplements/seis/coupe`: Fix a bug in the cross-section computation (`#8804 <https://github.com/GenericMappingTools/gmt/pull/8804>`_)
+* :doc:`/supplements/potential/grdflexure`: Fix the order of *rho_mantle* and *rho_crust* (`#8871 <https://github.com/GenericMappingTools/gmt/pull/8871>`_)
+* Fix the direction of the *u* and *v* wind components (`#9005 <https://github.com/GenericMappingTools/gmt/pull/9005>`_) and make the counting
+  of directions consistent (`#8771 <https://github.com/GenericMappingTools/gmt/pull/8771>`_)
+* Fix ``gmt_get_smallcircle`` for the equinox case (`#8938 <https://github.com/GenericMappingTools/gmt/pull/8938>`_)
+* Fix the wrong coordinates shipped by NASA in the MODIS L3 files (`#8935 <https://github.com/GenericMappingTools/gmt/pull/8935>`_)
+* Fix a buffer overflow (`#8928 <https://github.com/GenericMappingTools/gmt/pull/8928>`_), a double free in ``Free_Ctrl()`` (`#8951 <https://github.com/GenericMappingTools/gmt/pull/8951>`_),
+  a crash when reading a file with ``wesn`` but no **-R** (`#8860 <https://github.com/GenericMappingTools/gmt/pull/8860>`_) and several too-short
+  static buffers (`#8874 <https://github.com/GenericMappingTools/gmt/pull/8874>`_), (`#8876 <https://github.com/GenericMappingTools/gmt/pull/8876>`_), (`#8877 <https://github.com/GenericMappingTools/gmt/pull/8877>`_)
+* Check that a file passed via **-G+l** has at least one numeric column (`#8798 <https://github.com/GenericMappingTools/gmt/pull/8798>`_)
+* Fix the pen of the *whale* symbols in the users' symbol contributions (`#8954 <https://github.com/GenericMappingTools/gmt/pull/8954>`_)
+
+Maintenance updates in GMT 6.7
+------------------------------
+
+* Update the projection formula, add tolerance and add tests for the Spilhaus projection (`#8870 <https://github.com/GenericMappingTools/gmt/pull/8870>`_)
+* Fix the DNS mirror forward redirects (`#9068 <https://github.com/GenericMappingTools/gmt/pull/9068>`_)
+* API: Add a bit flag to allow resetting ``GMT->init.runtime_bindir`` (`#9018 <https://github.com/GenericMappingTools/gmt/pull/9018>`_)
+* API: Add a memory-image detection macro that accesses loaded image objects directly when acquiring
+  regions, bypassing ``GMT_Read_Data`` (`#8904 <https://github.com/GenericMappingTools/gmt/pull/8904>`_), (`#8901 <https://github.com/GenericMappingTools/gmt/pull/8901>`_)
+* API: Increase the size of *argument* in ``GMT_Encode_Options()`` (`#8877 <https://github.com/GenericMappingTools/gmt/pull/8877>`_)
+* DCW: Let country names also carry the continent code (externals only) (`#8873 <https://github.com/GenericMappingTools/gmt/pull/8873>`_)
+* Use ``GDALGetDataTypeSizeBytes`` since ``GDALGetDataTypeSize`` is deprecated (`#8854 <https://github.com/GenericMappingTools/gmt/pull/8854>`_)
+* Build against PCRE2 instead of the deprecated PCRE (`#8792 <https://github.com/GenericMappingTools/gmt/pull/8792>`_), (`#8974 <https://github.com/GenericMappingTools/gmt/pull/8974>`_)
+* Silence many new warnings issued by the MSVC and other compilers (`#8770 <https://github.com/GenericMappingTools/gmt/pull/8770>`_), (`#8768 <https://github.com/GenericMappingTools/gmt/pull/8768>`_),
+  (`#8958 <https://github.com/GenericMappingTools/gmt/pull/8958>`_)
+* Protect a call to ``fstat`` with a ``#ifdef _WIN64`` (`#8826 <https://github.com/GenericMappingTools/gmt/pull/8826>`_)
+* Many documentation improvements, link updates and typo fixes throughout, plus updated baseline images
+  and CI workflow improvements (DVC caching, welcome bot migration, static data server for tests)
 
 New Features in GMT 6.6
 =======================
@@ -455,15 +594,15 @@ there are numerous changes:
    organization: https://www.generic-mapping-tools.org/.
 #. A new discussion forum at https://forum.generic-mapping-tools.org/.
 #. A data server in Hawaii (oceania.generic-mapping-tools.org) with plans
-   for new mirror servers around the world.  This is where the remote files
+   for new mirror servers around the world. This is where the remote files
    that start with @ come from.
 #. A new way to use GMT (*modern* mode) that eliminates many of the
-   aspects of classic GMT that perplexes users.  In modern mode, PostSCript
+   aspects of classic GMT that perplexes users. In modern mode, PostScript
    is no longer the default graphics output format and most modules that
    had names starting with **ps** have had that prefix removed.  In addition,
    a few modules have entirely different names in modern mode (*psxy* is *plot*,
    *psxyz* is *plot3d*, and *psscale* is *colorbar*).
-#. The default mode remains *classic*, the only mode previously available.  All
+#. The default mode remains *classic*, the only mode previously available. All
    existing classic mode GMT 4 and 5 scripts will run as before.
 
 Modern mode modules in GMT 6.0

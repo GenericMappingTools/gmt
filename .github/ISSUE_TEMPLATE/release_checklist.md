@@ -16,12 +16,12 @@ assignees: ''
 - [ ] check if there are new [SCM releases](https://doi.org/10.5281/zenodo.1243862)
 - [ ] check if all tests pass on macOS, Linux and Windows
 - [ ] check if other GMT-derived projects work well
-	- [ ] MB-System (@PaulWessel)
-	- [ ] GMTSAR (@PaulWessel)
+	- [ ] MB-System
+	- [ ] GMTSAR
 	- [ ] GMT.jl (@joa-quim)
-	- [ ] PyGMT (@leouieda, @seisman, @weiji14, @maxrjones)
-	- [ ] gmtmex (@PaulWessel, @joa-quim)
-- [ ] reserve a DOI on [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@PaulWessel, @seisman)
+	- [ ] PyGMT (@seisman, @weiji14, @maxrjones)
+	- [ ] gmtmex (@joa-quim)
+- [ ] reserve a DOI on [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@seisman)
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](https://github.com/GenericMappingTools/gmt/blob/master/doc/rst/source/changes.rst)
 - [ ] update the version information in CITATION.cff
@@ -38,15 +38,14 @@ assignees: ''
 
 **Release**:
 
-- [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
-- [ ] create macOS bundle (@PaulWessel)
+- [ ] Make sure that "set (DO_TESTS ON)" and "set (DO_SUPPLEMENT_TESTS ON)" **Are commented** in ConfigUser.cmake
+- [ ] create source tarballs (tar.gz and tar.xz)
+  This is done by `admin/build-release.sh`, and is executed by: 
+  `cmake --build . --target gmt_release` plus `cmake --build . --target gmt_release_tar`
 - [ ] create Windows win64 installer and portable installer (@joa-quim)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
-- [ ] check if the macOS bundles work well (@seisman, @maxrjones)
 - [ ] check if the Windows installers work well (volunteers needed!)
-- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
-- [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
-- [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
+- [ ] make a tag and push it to github (**Must replace the old FTP with a place to upload packages**)
     ```bash
     # checkout master (for minor releases) or 6.x branch (for patch releases)
     git checkout XXXX
@@ -56,12 +55,12 @@ assignees: ''
     git push --tags
     ```
 - [ ] make a GitHub release.
-  The GitHub Actions automatically create a draft release after pushing the tag to github.
+  The GitHub Actions automatically create a draft release after pushing the tag to github (**FAILS WHILE FTP IS NOT REPLACED**).
   We need to go to the [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) page, and review it manually.
-  - [ ] 7 files are attached as release assets (2 source tarballs, 4 installers and 1 checksum file).
+  - [ ] 5 files are attached as release assets (2 source tarballs, 2 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
-- [ ] upload the tarball to [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@PaulWessel, @seisman)
+- [ ] upload the tarball to [zenodo](https://zenodo.org/doi/10.5281/zenodo.3407865) (@seisman)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
 - [ ] make announcements on the [GMT Instagram](https://www.instagram.com/genericmappingtools/)
 - [ ] update links on the main site (Download & Documentation)

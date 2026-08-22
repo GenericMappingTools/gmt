@@ -418,6 +418,24 @@ double meca_computed_mw (struct SEIS_MOMENT moment, double ms) {
 	return (mw);
 }
 
+/**********************************************************************/
+struct SEIS_MOMENT meca_computed_moment (double mw) {
+	/* Compute the scalar seismic moment M0 (as mantissa * 10^exponent, with the
+	 * mantissa normalized to [1,10)) from a given Mw magnitude.  This is simply
+	 * the inverse of meca_computed_mw and is needed for formats such as Aki &
+	 * Richards (-Sa) or principal planes (-Sp) that only carry a magnitude, yet
+	 * still wish to support the -S...+l modifier that scales symbol size by the
+	 * seismic moment instead of the magnitude [see issue #6840]. */
+
+	struct SEIS_MOMENT moment;
+	double log10_M0 = 1.5 * mw + 16.1;	/* Kanamori (1977): Mw = (2/3)(log10(M0) - 16.1) */
+
+	moment.exponent = (int)floor (log10_M0);
+	moment.mant = pow (10.0, log10_M0 - moment.exponent);
+
+	return (moment);
+}
+
 /*********************************************************************/
 static double utilmeca_computed_strike1 (struct SEIS_NODAL_PLANE NP1) {
 	/*
@@ -1059,6 +1077,7 @@ unsigned int meca_line_parse (struct GMT_CTRL *GMT, struct SEIS_OFFSET_LINE *L, 
 						L->mode |= SEIS_CART_OFFSET_FIX;
 					break;
 				case 'p':	/* Line and symbol pen */
+					L->pen_set = true;
 					if (p[1] == '\0' || gmt_getpen (GMT, &p[1], &L->pen)) {
 						gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
 						n_errors++;

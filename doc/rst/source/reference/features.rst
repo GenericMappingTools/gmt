@@ -1448,7 +1448,7 @@ create a continuous color table (d) with arbitrary nodes by giving **-T**\ 0,2,6
 the latter option forces a continuous CPT pinned to a given list of node values.  Now, the colors
 continuously change from red (at *z = 0*) via yellow (at *z = 2*) to purple (at *z = 6*).
 Modules that obtain the *z*-range indirectly (e.g., :doc:`/grdimage`) may use the exact data range
-to set the quivalent of a **-T**\ *min/max* option.  You may append **+i**\ *dz* to the
+to set the equivalent of a **-T**\ *min/max* option.  You may append **+i**\ *dz* to the
 color list to have the *min* and *max* values rounded down and up to nearest multiple of *dz*, respectively.
 
 .. figure:: /_images/GMT_colorlist.*

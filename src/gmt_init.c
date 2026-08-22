@@ -8905,6 +8905,7 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 	GMT_Usage (API, 3, "Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
+	GMT_Usage (API, -2, "If <refpoint> is omitted, the inset defaults to the top-right corner inside the map frame (using jTR).");
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
 		GMT_Usage (API, 2, "Append +s<file> to save inset lower left corner and dimensions to <file>.");
 		GMT_Usage (API, 2, "Append +t to translate plot origin to the lower left corner of the inset.");
@@ -8924,6 +8925,7 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	GMT_Usage (API, 1, "\n-%c%s", option, GMT_SCALE);
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
+	GMT_Usage (API, -2, "If <refpoint> is omitted, the scale defaults to the bottom-left corner inside the map frame, nudged slightly inward (using +jBL+o0.2/0.4c).");
 	GMT_Usage (API, -2, "Set required scale via +w<length>, and (for geographic projection) append a unit from %s [km]. Other scale modifiers are optional:",
 		GMT_LEN_UNITS2_DISPLAY);
 	GMT_Usage (API, 3, "+a Append label alignment (choose among l(eft), r(ight), t(op), and b(ottom)) [t].");
@@ -20471,6 +20473,14 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		else if (symbol == GMT_SYMBOL_CUSTOM) { /* Custom symbol */
 			fprintf (fp, "S - %c%s %s %s %s - %s\n", GMT_SYMBOL_CUSTOM, S->custom->name, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
+		else if (symbol == GMT_SYMBOL_FRONT) {	/* Front symbol: must pass along the front-type and sense modifiers or pslegend will default to +l+b (left box) for all entries */
+			char scode[GMT_LEN64] = {""};
+			static char f_type[7] = {'f', 'v', 't', 's', 'S', 'c', 'b'};	/* Maps GMT_FRONT_* enum to its -Sf modifier letter */
+			sprintf (scode, "f+%c", f_type[S->f.f_symbol]);
+			if (S->f.f_sense == GMT_FRONT_LEFT) strcat (scode, "+l");
+			else if (S->f.f_sense == GMT_FRONT_RIGHT) strcat (scode, "+r");
+			fprintf (fp, "S - %s %s %s %s - %s\n", scode, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}		
 		else
 			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
@@ -20754,6 +20764,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	unsigned int pos = 0, sides[5];
 	bool add_label = false, add_annot = false, axis_set = false, was;
 	double GMT_LETTER_HEIGHT = 0.736;
+	double map_origin[2];
 	struct GMT_OPTION *opt = NULL;
 	char *c = NULL;
 	unsigned int n_errors = 0;
@@ -20807,6 +20818,16 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	/* Because the next call will reset frame sides I will make a copy and override the override here */
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	was = GMT->current.map.frame.draw;
+	/* gmt_getdefaults below reloads gmt.conf from scratch, which will reset map_origin to the raw
+	 * MAP_ORIGIN_X|Y settings.  However, when we are called from within a subplot panel, map_origin
+	 * has already been adjusted (e.g., via -Xf/-Yf) to reflect the panel's position on the page, and
+	 * gmt_plot_init will later add the panel offset (P->dx/P->dy) on top of whatever is in map_origin.
+	 * If we let gmt_getdefaults clobber map_origin here, the user's MAP_ORIGIN_X|Y gets reintroduced
+	 * and then double-counted once the panel offset is added, throwing off -D justified placements
+	 * (most visibly for middle-justified codes like MR/ML/TC/BC).  Save and restore map_origin so
+	 * this call only affects the frame/annotation settings it is meant to inspect. */
+	map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_X];
+	map_origin[GMT_Y] = GMT->current.setting.map_origin[GMT_Y];
 	gmtinit_conf_modern_override (GMT);	/* Reset */
 	(void)gmt_getdefaults (GMT, NULL);
 	if (!GMT->parent->external || options) {	/* So that externals can send a NULL ptr for options. 'Internal' is not affected */
@@ -20821,6 +20842,8 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT parameter parsing failures for %d settings\n", n_errors);
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;
+	GMT->current.setting.map_origin[GMT_X] = map_origin[GMT_X];
+	GMT->current.setting.map_origin[GMT_Y] = map_origin[GMT_Y];
 }
 
 unsigned int gmt_count_char (struct GMT_CTRL *GMT, char *txt, char it) {

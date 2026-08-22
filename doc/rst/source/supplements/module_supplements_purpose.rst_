@@ -84,7 +84,7 @@
 
 .. |pssac_purpose| replace:: Plot seismograms in SAC format
 
-.. |gmtisf_purpose| replace:: Read seismicity data in the ISF formated file
+.. |gmtisf_purpose| replace:: Read seismicity data in the ISF formatted file
 
 .. |backtracker_purpose| replace:: Generate forward and backward flowlines and hotspot tracks
 
@@ -105,6 +105,8 @@
 .. |rotconverter_purpose| replace:: Manipulate total reconstruction and stage rotations
 
 .. |rotsmoother_purpose| replace:: Get mean rotations and covariance matrices from set of finite rotations
+
+.. |nswing_purpose| replace:: A tsunami maker
 
 .. |grdbarb_purpose| replace:: Plot wind barb field from two component grids
 

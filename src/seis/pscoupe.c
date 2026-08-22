@@ -1438,8 +1438,12 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					meca.NP1.dip    = in[4];
 					meca.NP1.rake   = in[5];
 					meca.magms      = in[6];
-					moment.mant     = meca.magms;
-					moment.exponent = 0;
+					if (Ctrl->S.linear)	/* Aki & Richards only gives us the magnitude; derive M0 for +l [#6840] */
+						moment = meca_computed_moment (meca.magms);
+					else {
+						moment.mant     = meca.magms;
+						moment.exponent = 0;
+					}
 					meca_define_second_plane (meca.NP1, &meca.NP2);
 					pscoupe_rot_meca (meca, Ctrl->A.PREF, &mecar);
 				}
@@ -1449,8 +1453,12 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					meca.NP2.str = in[5];
 					fault        = in[6];
 					meca.magms   = in[7];
-					moment.exponent = 0;
-					moment.mant = meca.magms;
+					if (Ctrl->S.linear)	/* Principal planes format only gives us the magnitude; derive M0 for +l [#6840] */
+						moment = meca_computed_moment (meca.magms);
+					else {
+						moment.exponent = 0;
+						moment.mant = meca.magms;
+					}
 					meca.NP2.dip = meca_computed_dip2 (meca.NP1.str, meca.NP1.dip, meca.NP2.str);
 					if (meca.NP2.dip == 1000.0) {
 						not_defined = true;

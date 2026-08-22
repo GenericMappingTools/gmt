@@ -29,6 +29,7 @@ void meca_get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11
 double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, struct GMT_FILL *F, struct GMT_FILL *E, int outline);
 double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, int num_of_plane);
 double meca_computed_mw(struct SEIS_MOMENT moment, double ms);
+struct SEIS_MOMENT meca_computed_moment(double mw);
 double meca_computed_dip2(double str1, double dip1, double str2);
 double meca_computed_rake2(double str1, double dip1, double str2, double dip2, double fault);
 void meca_define_second_plane(struct SEIS_NODAL_PLANE NP, struct SEIS_NODAL_PLANE *NP2);

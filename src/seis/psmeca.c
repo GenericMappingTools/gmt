@@ -78,6 +78,7 @@ struct PSMECA_CTRL {
 	} I;
 	struct PSMECA_L {	/* -L<pen> */
 		bool active;
+		bool pen_set;	/* True if a pen (even just color/style) was given */
 		struct GMT_PEN pen;
 	} L;
 	struct PSMECA_N {	/* -N */
@@ -88,6 +89,7 @@ struct PSMECA_CTRL {
 	} S;
 	struct PSMECA_T {	/* -T[<plane>][+p<pen>] */
 		bool active;
+		bool pen_set;	/* True if a pen (even just color/style) was given */
 		unsigned int n_plane;
 		struct GMT_PEN pen;
 	} T;
@@ -110,6 +112,7 @@ struct PSMECA_CTRL {
 	} G2;
 	struct PSMECA_P2 {	/* -Fp[<pen>] */
 		bool active;
+		bool pen_set;	/* True if a pen (even just color/style) was given */
 		struct GMT_PEN pen;
 	} P2;
 	struct PSMECA_R2 {	/* -Fr[<fill>] */
@@ -118,6 +121,7 @@ struct PSMECA_CTRL {
 	} R2;
 	struct PSMECA_T2 {	/* -Ft[<pen>] */
 		bool active;
+		bool pen_set;	/* True if a pen (even just color/style) was given */
 		struct GMT_PEN pen;
 	} T2;
 	struct PSMECA_O2 {	/* -Fo */
@@ -125,6 +129,7 @@ struct PSMECA_CTRL {
 	} O2;
 	struct PSMECA_Z2 {	/* -Fz[<pen>] */
 		bool active;
+		bool pen_set;	/* True if a pen (even just color/style) was given */
 		struct GMT_PEN pen;
 	} Z2;
 };
@@ -352,9 +357,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->P2.active);
-						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
-							gmt_pen_syntax (GMT, ' ', "Fp", " ", NULL, 0);
-							n_errors++;
+						if (opt->arg[1]) {
+							Ctrl->P2.pen_set = true;
+							if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
+								gmt_pen_syntax (GMT, ' ', "Fp", " ", NULL, 0);
+								n_errors++;
+							}
 						}
 						break;
 					case 'r':	/* draw box around text */
@@ -366,9 +374,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->T2.active);
-						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
-							gmt_pen_syntax (GMT, ' ', "Ft", " ", NULL, 0);
-							n_errors++;
+						if (opt->arg[1]) {
+							Ctrl->T2.pen_set = true;
+							if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
+								gmt_pen_syntax (GMT, ' ', "Ft", " ", NULL, 0);
+								n_errors++;
+							}
 						}
 						break;
 					case 'o':	/* use psvelomeca format (without depth in 3rd column) */
@@ -376,9 +387,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						break;
 					case 'z':	/* overlay zerotrace moment tensor */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Z2.active);
-						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->Z2.pen)) { /* Set pen attributes */
-							gmt_pen_syntax (GMT, ' ', "Fz", " ", NULL, 0);
-							n_errors++;
+						if (opt->arg[1]) {
+							Ctrl->Z2.pen_set = true;
+							if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->Z2.pen)) { /* Set pen attributes */
+								gmt_pen_syntax (GMT, ' ', "Fz", " ", NULL, 0);
+								n_errors++;
+							}
 						}
 						break;
 				}
@@ -406,9 +420,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'L':	/* Draw outline [set outline attributes] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					gmt_pen_syntax (GMT, 'L', NULL, " ", NULL, 0);
-					n_errors++;
+				if (opt->arg[0]) {
+					Ctrl->L.pen_set = true;
+					if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
+						gmt_pen_syntax (GMT, 'L', NULL, " ", NULL, 0);
+						n_errors++;
+					}
 				}
 				break;
 			case 'M':	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
@@ -519,13 +536,19 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				if (opt->arg[0] == '\0') continue;	/* Default plane and pen implied; move on */
-				if ((p = strstr (opt->arg, "+p")) && gmt_getpen (GMT, &p[2], &Ctrl->T.pen)) {	/* Modern modifier for pen but failed parsing the pen */
-					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
-					n_errors++;
+				if ((p = strstr (opt->arg, "+p"))) {	/* Modern modifier for pen */
+					Ctrl->T.pen_set = true;
+					if (gmt_getpen (GMT, &p[2], &Ctrl->T.pen)) {	/* Failed parsing the pen */
+						gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
+						n_errors++;
+					}
 				}
-				else if ((p = strchr (opt->arg, '/')) && gmt_getpen (GMT, &p[1], &Ctrl->T.pen)) {
-					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
-					n_errors++;
+				else if ((p = strchr (opt->arg, '/'))) {
+					Ctrl->T.pen_set = true;
+					if (gmt_getpen (GMT, &p[1], &Ctrl->T.pen)) {
+						gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
+						n_errors++;
+					}
 				}
 				if (strchr ("012", opt->arg[0])) Ctrl->T.n_plane = opt->arg[0] - '0';
 				break;
@@ -561,14 +584,27 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 	//n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.scale <= 0.0, "Option -S: must specify scale\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->O2.active, "Option -Z cannot be combined with -Fo\n");
 
-	/* Set to default pen where needed */
+	/* Set to default pen where needed.  If the option was never given a pen at all
+	 * (e.g., plain -T with no plane/pen, or -L with no argument) we fully inherit
+	 * -W's pen.  But if a pen was given, even if it only set the color and/or style
+	 * (e.g., -T0/red or -A+pred), we must not discard that; we only need to supply
+	 * a width, since none was given [see #6840]. */
+#define SEIS_PEN_UNSET(pen) (gmt_M_is_dnan ((pen).width) || (pen).width < 0.0)
 
-	if (Ctrl->A.pen.width  < 0.0) Ctrl->A.pen  = Ctrl->W.pen;
-	if (Ctrl->L.pen.width  < 0.0) Ctrl->L.pen  = Ctrl->W.pen;
-	if (Ctrl->T.pen.width  < 0.0) Ctrl->T.pen  = Ctrl->W.pen;
-	if (Ctrl->T2.pen.width < 0.0) Ctrl->T2.pen = Ctrl->W.pen;
-	if (Ctrl->P2.pen.width < 0.0) Ctrl->P2.pen = Ctrl->W.pen;
-	if (Ctrl->Z2.pen.width < 0.0) Ctrl->Z2.pen = Ctrl->W.pen;
+	if (Ctrl->A.pen_set)  { if (SEIS_PEN_UNSET (Ctrl->A.pen))  Ctrl->A.pen.width  = Ctrl->W.pen.width; }
+	else if (SEIS_PEN_UNSET (Ctrl->A.pen))  Ctrl->A.pen  = Ctrl->W.pen;
+	if (Ctrl->L.pen_set)  { if (SEIS_PEN_UNSET (Ctrl->L.pen))  Ctrl->L.pen.width  = Ctrl->W.pen.width; }
+	else if (SEIS_PEN_UNSET (Ctrl->L.pen))  Ctrl->L.pen  = Ctrl->W.pen;
+	if (Ctrl->T.pen_set)  { if (SEIS_PEN_UNSET (Ctrl->T.pen))  Ctrl->T.pen.width  = Ctrl->W.pen.width; }
+	else if (SEIS_PEN_UNSET (Ctrl->T.pen))  Ctrl->T.pen  = Ctrl->W.pen;
+	if (Ctrl->T2.pen_set) { if (SEIS_PEN_UNSET (Ctrl->T2.pen)) Ctrl->T2.pen.width = Ctrl->W.pen.width; }
+	else if (SEIS_PEN_UNSET (Ctrl->T2.pen)) Ctrl->T2.pen = Ctrl->W.pen;
+	if (Ctrl->P2.pen_set) { if (SEIS_PEN_UNSET (Ctrl->P2.pen)) Ctrl->P2.pen.width = Ctrl->W.pen.width; }
+	else if (SEIS_PEN_UNSET (Ctrl->P2.pen)) Ctrl->P2.pen = Ctrl->W.pen;
+	if (Ctrl->Z2.pen_set) { if (SEIS_PEN_UNSET (Ctrl->Z2.pen)) Ctrl->Z2.pen.width = Ctrl->W.pen.width; }
+	else if (SEIS_PEN_UNSET (Ctrl->Z2.pen)) Ctrl->Z2.pen = Ctrl->W.pen;
+
+#undef SEIS_PEN_UNSET
 
 	/* Default -Fe<fill> and -Fg<fill> to -E<fill> and -G<fill> */
 
@@ -858,6 +894,8 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;	/* Fixing the issue http://gmt.soest.hawaii.edu/issues/894 */
 					meca.magms = in[5+new_fmt];
 					meca.moment.exponent = 0;
+					if (Ctrl->S.linear)	/* Aki & Richards only gives us the magnitude; derive M0 for +l [#6840] */
+						meca.moment = meca_computed_moment (meca.magms);
 					meca_define_second_plane (meca.NP1, &meca.NP2);
 				}
 				else if (Ctrl->S.readmode == SEIS_READ_PLANES) {
@@ -871,6 +909,8 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					fault = in[5+new_fmt];
 					meca.magms = in[6+new_fmt];
 					meca.moment.exponent = 0;
+					if (Ctrl->S.linear)	/* Principal planes format only gives us the magnitude; derive M0 for +l [#6840] */
+						meca.moment = meca_computed_moment (meca.magms);
 					meca.NP2.dip = meca_computed_dip2(meca.NP1.str, meca.NP1.dip, meca.NP2.str);
 					if (meca.NP2.dip == 1000.0) {
 						not_defined = true;
