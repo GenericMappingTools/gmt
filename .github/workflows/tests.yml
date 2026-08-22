@@ -160,25 +160,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
+      # On Windows this check is done by the cmd script below instead. Running gmt.exe
+      # from Git Bash makes it die with "*** stack smashing detected ***", while the
+      # very same binary runs fine from cmd (as build.yml shows), so use the native
+      # shell there and avoid running the same checks twice.
       - name: Check a few simple commands
         if: runner.os != 'Windows'
         run: bash ci/simple-gmt-tests.sh
 
-      # Use a non-login bash on Windows. The workflow default is 'bash -el', and the
-      # login shell sources Git Bash's /etc/profile, which puts /usr/bin and
-      # /mingw64/bin ahead of the vcpkg directories in PATH. gmt.exe then loads the
-      # MSYS2/MinGW DLLs instead of the vcpkg ones it was linked against and dies with
-      # "*** stack smashing detected ***". Same shell as used in build.yml.
-      - name: Check a few simple commands (bash on Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          export PATH="$INSTALLDIR/bin:$PATH"
-          bash ci/simple-gmt-tests.sh
-
       - name: Check a few simple commands (Windows)
         shell: cmd
-        run: call ci/simple-gmt-tests.bat
+        run: |
+          where gmt
+          call ci/simple-gmt-tests.bat
         if: runner.os == 'Windows'
 
       - name: Run full tests
