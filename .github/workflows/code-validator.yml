@@ -65,10 +65,10 @@ jobs:
 
       - name: Check execute permission of bash scripts
         run: |
-          # All *.sh scripts are run through an interpreter (e.g., 'bash
-          # xxx.sh'), so none of them need execute permission, except
-          # gmt_functions.sh which is meant to be sourced.
-          scripts=$(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh" -executable)
+          # All *.sh scripts are either run through an interpreter (e.g.,
+          # 'bash xxx.sh') or sourced (e.g., gmt_functions.sh), so none of
+          # them need execute permission.
+          scripts=$(find . -name "*.sh" -executable)
           if [[ -n "$scripts" ]]; then
             echo "Following bash scripts should not have execute permission:"
             echo "$scripts"
