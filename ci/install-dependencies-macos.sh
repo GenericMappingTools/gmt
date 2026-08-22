@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Bash script to install GMT dependencies on macOS via Homebrew and conda
+# Bash script to install GMT dependencies on macOS via Homebrew and micromamba
 #
 # Environmental variables that can control the installation:
 #
@@ -18,18 +18,18 @@ PACKAGE="${PACKAGE:-false}"
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
 packages="ninja curl pcre2 netcdf gdal geos fftw libomp"
-conda_packages="ghostscript=10.03.0"
+mamba_packages="ghostscript=10.03.0"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     packages+=" pngquant"
-    conda_packages+=" sphinx dvc"
+    mamba_packages+=" sphinx dvc"
 fi
 
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
     packages+=" graphicsmagick"
-    conda_packages+=" dvc"
+    mamba_packages+=" dvc"
 fi
 
 if [ "$PACKAGE" = "true" ]; then
@@ -41,16 +41,17 @@ fi
 #brew update
 brew install ${packages}
 
-# Install packages via conda
-conda install ${conda_packages} -c conda-forge
-echo "${CONDA}/bin" >> $GITHUB_PATH
+# Install packages via micromamba into a dedicated environment
+micromamba create --yes --name gmt ${mamba_packages} -c conda-forge
+MAMBA_PREFIX="${MAMBA_ROOT_PREFIX}/envs/gmt"
+echo "${MAMBA_PREFIX}/bin" >> $GITHUB_PATH
 
-# Remove pcre-config from conda's path so cmake won't find the conda's one
-rm -f ${CONDA}/bin/pcre-config ${CONDA}/bin/pcre2-config
+# Remove pcre-config from micromamba's path so cmake won't find the micromamba's one
+rm -f ${MAMBA_PREFIX}/bin/pcre-config ${MAMBA_PREFIX}/bin/pcre2-config
 
 # Install Sphinx extensions
 if [ "$BUILD_DOCS" = "true" ]; then
-    ${CONDA}/bin/python -m pip install --user -r doc/rst/requirements.txt
+    ${MAMBA_PREFIX}/bin/python -m pip install --user -r doc/rst/requirements.txt
 fi
 
 set +x +e
