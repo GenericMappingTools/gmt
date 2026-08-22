@@ -138,7 +138,7 @@ jobs:
       - name: Check a few simple commands
         shell: bash
         run: |
-          export PATH="$INSTALLDIR/bin:$PATH"
+          export PATH="$INSTALLDIR/bin:${CONDA}/bin:$PATH"
           bash ci/simple-gmt-tests.sh
 
       - name: Check a few simple commands (Windows)
