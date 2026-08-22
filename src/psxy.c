@@ -631,7 +631,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[Note: if -C is selected then 3rd means 4th column, etc.]. "
 		"Symbols A, C, D, G, H, I, N, S, T are adjusted to have same area "
 		"as a circle of the specified diameter.");
-
+	GMT_Usage (API, 2, "\n%s Horizontal line: -SX", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "Draw a horizontal line across the entire Cartesian plot at the specified y coordinate. "
+		"If no fixed coordinate is given, the y value is read from the first input column. "
+		"Not supported with geographic or polar coordinates.");
+	GMT_Usage (API, 2, "\n%s Vertical line: -SY", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "Draw a vertical line across the entire Cartesian plot at the specified x coordinate. "
+		"If no fixed coordinate is given, the x value is read from the first input column. "
+		"Not supported with geographic or polar coordinates.");
 	GMT_Usage (API, 2, "\n%s Bar: -Sb|B[<size_x|size_y>[c|i|p|q]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Place horizontal or vertical bars. Use upper case -SB for horizontal bars "
 		"(<base> then refers to x and width may be in y-units) [Default is vertical]. Append size "
@@ -1263,6 +1270,15 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	nominal_pen = Ctrl->W.pen;
 	/* Do we plot actual symbols, or lines */
 	not_line = !(S.symbol == GMT_SYMBOL_FRONT || S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE || S.symbol == GMT_SYMBOL_LINE);
+	if (S.symbol == GMT_SYMBOL_VLINE || S.symbol == GMT_SYMBOL_HLINE) {	/* Infinite vertical/horizontal line only needs one coordinate */
+		n_cols_start = 1;
+		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Symbol -S%c is not yet supported with geographic or polar coordinates yet.\n",
+				(S.symbol == GMT_SYMBOL_VLINE) ? 'Y' : 'X');
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+
 	if (Ctrl->E.active) {	/* Set error bar parameters */
 		j = 2;	/* Normally, error bar related columns start in column 2 */
 		if (Ctrl->E.xbar != EBAR_NONE) { xy_errors[GMT_X] = j;	j += error_cols[Ctrl->E.xbar]; error_type[GMT_X] = Ctrl->E.xbar;}
@@ -1796,7 +1812,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 			}
 
-			if (!Ctrl->N.active && !Ctrl->E.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
+			if (!Ctrl->N.active && !Ctrl->E.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY && S.symbol != GMT_SYMBOL_VLINE && S.symbol != GMT_SYMBOL_HLINE) {
 				/* Skip points outside map */
 				gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 				may_intrude_inside = false;
@@ -1829,6 +1845,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_M_rgb_copy (current_pen.rgb, current_fill.rgb);
 				}
 				outline_setting = 1;
+			}
+			if (S.symbol == GMT_SYMBOL_VLINE) {	/* in[GMT_X] holds the line's x; Y is not read from file, use a safe mid-range value for the generic geo_to_xy check below */
+				in[GMT_Y] = 0.5 * (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]);
+			}
+			else if (S.symbol == GMT_SYMBOL_HLINE) {	/* in[GMT_X] actually holds the line's y; use a safe mid-range x for the generic geo_to_xy check below */
+				in[GMT_Y] = in[GMT_X];
+				in[GMT_X] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 			}
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
@@ -2052,6 +2075,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							}
 						}
 						break;
+					case GMT_SYMBOL_HLINE:
+						gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], in[GMT_Y], &x_1, &y_1);
+						gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], in[GMT_Y], &x_2, &y_2);
+						PSL_plotsegment (PSL, x_1, y_1, x_2, y_2);
+					break;
+					case GMT_SYMBOL_VLINE:
+						gmt_geo_to_xy (GMT, in[GMT_X], GMT->common.R.wesn[YLO], &x_1, &y_1);
+						gmt_geo_to_xy (GMT, in[GMT_X], GMT->common.R.wesn[YHI], &x_2, &y_2);
+						PSL_plotsegment (PSL, x_1, y_1, x_2, y_2);
+						break;						
 					case PSL_CROSS:
 					case  PSL_PLUS:
 					case PSL_DOT:
