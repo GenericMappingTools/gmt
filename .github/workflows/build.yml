@@ -139,7 +139,6 @@ jobs:
         shell: bash
         run: |
           export PATH="$INSTALLDIR/bin:${CONDA}/bin:$PATH"
-          test -x ${CONDA}/bin/gs
           ls ${CONDA}/bin/
           which gs
           bash ci/simple-gmt-tests.sh
