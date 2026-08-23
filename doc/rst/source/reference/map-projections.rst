@@ -290,6 +290,9 @@ at 0/0) is known as the *equal-area* (Schmidt) stereonet and used for
 plotting fold axes, fault planes, and the like. An *equal-angle* (Wulff)
 stereonet can be obtained by using the stereographic projection
 (discussed later). The stereonets produced by these two projections appear below.
+The :doc:`/supplements/geology/stereonet` module builds on these two projections and
+converts structural measurements (strike/dip or trend/plunge) into the coordinates they
+expect.
 
 .. _GMT_stereonets:
 
