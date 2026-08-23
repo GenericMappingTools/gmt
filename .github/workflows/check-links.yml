@@ -58,6 +58,54 @@ jobs:
           **/*.rst_
           **/*.md
 
+    - name: Remove duplicate links from the report
+      if: steps.lychee.outputs.exit_code != 0
+      shell: python3 {0}
+      run: |
+        import re
+        from pathlib import Path
+
+        report = Path("/tmp/lychee-out.md")
+        lines = report.read_text().splitlines()
+
+        # Each bullet line reports one link, e.g. "* [404] <https://example.com> (at ...)".
+        # The same link is often referenced from many files, so lychee lists it once
+        # per file. Keep only the first occurrence of each link.
+        bullet_re = re.compile(r"^\* (?:\[[^\]]+\] )?<?([^\s>]+)>?")
+
+        seen = set()
+        deduped = []
+        for line in lines:
+            if line.startswith("* "):
+                match = bullet_re.match(line)
+                if match:
+                    link = match.group(1)
+                    if link in seen:
+                        continue
+                    seen.add(link)
+            deduped.append(line)
+
+        # Drop "### ... in <file>" subsections left with no links after deduplication.
+        filtered = []
+        i = 0
+        while i < len(deduped):
+            line = deduped[i]
+            if line.startswith("### "):
+                j = i + 1
+                has_link = False
+                while j < len(deduped) and not deduped[j].startswith("##"):
+                    if deduped[j].startswith("* "):
+                        has_link = True
+                        break
+                    j += 1
+                if not has_link:
+                    i = j
+                    continue
+            filtered.append(line)
+            i += 1
+
+        report.write_text("\n".join(filtered) + "\n")
+
     - name: Get current date
       id: date
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
