@@ -57,8 +57,8 @@ jobs:
         image:
           # Test the oldest and latest Ubuntu LTS releases and also unstable Debian/Fedora
           # Ubuntu: https://en.wikipedia.org/wiki/Ubuntu_version_history#Table_of_versions
-          - ubuntu:20.04    # CMake 3.16.3 + GNU 9.3.0;  EOL: 2025-05-29
-          - ubuntu:24.04    # CMake 3.28.3 + GNU 13.2.0; EOL: 2029-05-31
+          - ubuntu:22.04    # CMake 3.22.1 + GNU 11.2.0; EOL: 2027-06-01
+          - ubuntu:26.04    # CMake 4.2.3 + GNU 15.2.0;  EOL: 2031-05-29
           - debian:sid      # rolling release with latest versions
           - fedora:rawhide  # rolling release with latest versions
 
