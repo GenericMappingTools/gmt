@@ -71,13 +71,16 @@ struct FILTER1D_CTRL {
 		bool active;
 		double value;
 	} L;
-	struct FILTER1D_N {	/* -N<t_col> or -Nc|<unit>[+a] */
+	struct FILTER1D_N {	/* -N<t_col>[+e<cols>] or -Nc|<unit>[+a] */
 		bool active;
 		bool add_col;
 		char unit;
 		unsigned int mode;
 		unsigned int spatial;
 		int col;
+		bool except[GMT_MAX_COLUMNS];	/* true for extra columns (besides t_col) to exclude from filtering */
+		uint64_t n_except;		/* How many columns were flagged in except */
+		uint64_t max_except;		/* Highest column index flagged, for range-checking against the data */
 	} N;
 	struct FILTER1D_Q {	/* -Q<factor> */
 		bool active;
@@ -121,6 +124,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	uint64_t *n_this_col;		/* Pointer to array of counters [one per column]  */
 	uint64_t *n_left;		/* Pointer to array of counters [one per column]  */
 	uint64_t *n_right;		/* Pointer to array of counters [one per column]  */
+	bool *skip_col;			/* true for t_col and any user-selected columns to pass through unfiltered  */
 	uint64_t n_cols;		/* Number of columns of input  */
 	uint64_t t_col;			/* Column of time abscissae (independent variable)  */
 	uint64_t n_f_wts;		/* Number of filter weights  */
@@ -187,7 +191,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -F<type><width>[+h] [-D<increment>] [-E] "
-		"[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][+e|i|n]] "
+		"[-L<lack_width>] [-N<t_col>[+e<cols>]] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][+e|i|n]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -228,9 +232,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-L<lack_width>");
 	GMT_Usage (API, -2, "Check for lack of data condition.  If input data has a gap exceeding "
 		"<width> then no output will be given at that point [Default does not check Lack].");
-	GMT_Usage (API, 1, "\n-N<t_col>");
+	GMT_Usage (API, 1, "\n-N<t_col>[+e<cols>]");
 	GMT_Usage (API, -2, "Set the column that contains the independent variable (time) [0]. "
 		"The left-most column is 0, the right-most is (<n_cols> - 1).");
+	GMT_Usage (API, 3, "e: Append a comma-separated list of extra column(s) or column ranges "
+		"(e.g., 1,3-5) to pass through unfiltered, in addition to <t_col>. "
+		"Requires output at the input abscissae (i.e., do not combine with -T).");
 	GMT_Usage (API, 1, "\n-Q<q_factor>");
 	GMT_Usage (API, -2, "Assess quality of output value by checking mean weight in convolution. "
 		"Append <q_factor> between 0 and 1.  If mean weight < q_factor, output is "
@@ -254,6 +261,58 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL unsigned int filter1d_parse_except_columns (struct GMT_CTRL *GMT, char option, char *list, struct FILTER1D_N *N) {
+	/* Parse a comma-separated list of columns and/or ranges (e.g., "1,3-5") that are to be
+	 * passed through unfiltered, and flag each one in N->except.  We validate strictly here
+	 * because a silently mis-parsed list would quietly filter the wrong columns. */
+	unsigned int n_errors = 0, pos = 0;
+	int64_t start, stop, col;
+	char *token = NULL, *sep = NULL;
+
+	if (list == NULL || list[0] == '\0') {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +e requires one or more columns\n", option);
+		return (1);
+	}
+	token = gmt_M_memory (GMT, NULL, strlen (list) + 1, char);	/* gmt_strtok needs room for the whole list */
+	while (gmt_strtok (list, ",", &pos, token)) {
+		if ((sep = strpbrk (token, "-:/"))) {	/* Got a range of columns, e.g., 3-5 */
+			char code = sep[0];
+			sep[0] = '\0';	/* Split the range into its two halves */
+			if (!gmt_is_integer (token) || !gmt_is_integer (&sep[1])) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +e: Bad column range %s%c%s\n", option, token, code, &sep[1]);
+				++n_errors;
+				continue;
+			}
+			start = atol (token);	stop = atol (&sep[1]);
+		}
+		else {	/* Just a single column */
+			if (!gmt_is_integer (token)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +e: Bad column %s\n", option, token);
+				++n_errors;
+				continue;
+			}
+			start = stop = atol (token);
+		}
+		if (stop < start) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +e: Column range %" PRId64 "-%" PRId64 " is not increasing\n", option, start, stop);
+			++n_errors;
+			continue;
+		}
+		if (stop >= GMT_MAX_COLUMNS) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Modifier +e: Column %" PRId64 " exceeds the maximum of %d columns\n", option, stop, GMT_MAX_COLUMNS - 1);
+			++n_errors;
+			continue;
+		}
+		for (col = start; col <= stop; col++) {
+			if (!N->except[col]) N->n_except++;	/* Ignore any repeated columns */
+			N->except[col] = true;
+			if ((uint64_t)col > N->max_except) N->max_except = (uint64_t)col;
+		}
+	}
+	gmt_M_free (GMT, token);
+	return (n_errors);
+}
+
 GMT_LOCAL char filter1d_set_unit_and_mode (const char *arg, unsigned int *mode) {
 	unsigned int k = 0;
 	*mode = GMT_GREATCIRCLE;	/* Default is great circle distances */
@@ -273,7 +332,7 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 
 	unsigned int n_errors = 0;
 	int sval = 0;
-	char *c = NULL, p, txt[GMT_LEN64] = {""}, *t_arg = NULL;
+	char *c = NULL, *e = NULL, p, txt[GMT_LEN64] = {""}, *t_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -349,8 +408,12 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
 				break;
-			case 'N':	/* Select column with independent coordinate [0] */
+			case 'N':	/* Select column with independent coordinate [0], optionally +e<cols> to exclude more columns from filtering */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				if ((e = strstr (opt->arg, "+e")) != NULL) {	/* Gave list of extra columns to exclude from filtering */
+					n_errors += filter1d_parse_except_columns (GMT, opt->option, &e[2], &Ctrl->N);
+					e[0] = '\0';	/* Chop off the modifier so the time-column parsing below is unaffected */
+				}
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 						int sval0;
@@ -389,6 +452,7 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Time column cannot be negative.\n");
 					Ctrl->N.col = sval;
 				}
+				if (e) e[0] = '+';	/* Restore the modifier we chopped off above */
 				break;
 			case 'Q':	/* Assess quality of output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -426,6 +490,8 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Option -L: Unreasonable lack-of-data interval\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Option -S: Enter a factor between 0 and 1\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Option -Q: Enter a factor between 0 and 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_except > 0 && Ctrl->T.active,
+		"Option -N+e: Cannot combine with -T; excluded columns pass through at the input abscissae only\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -658,7 +724,7 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 		for (i_col = 0; i_col < F->n_cols; ++i_col) {
 			F->n_this_col[i_col] = 0;
 			wt_sum[i_col] = data_sum[i_col] = 0.0;
-			if (i_col == F->t_col)
+			if (F->skip_col[i_col])
 				good_one[i_col] = false;
 			else if (F->check_lack)
 				good_one[i_col] = !(filter1d_lack_check (F, i_col, left, right));
@@ -719,6 +785,8 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 			for (i_col = 0; i_col < F->n_cols; ++i_col) {
 				if (i_col == F->t_col)
 					data_sum[i_col] = t_time;
+				else if (F->skip_col[i_col])
+					data_sum[i_col] = F->data[i_col][k];	/* Pass through original value unfiltered */
 				else if (good_one[i_col]) {
 					data_sum[i_col] = (F->highpass) ? F->data[i_col][k] - F->this_loc[i_col] : F->this_loc[i_col];
 					++n_good_ones;
@@ -784,6 +852,8 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (i_col == F->t_col)
 						outval[i_col] = t_time;
+					else if (F->skip_col[i_col])
+						outval[i_col] = F->data[i_col][k];	/* Pass through original value unfiltered */
 					else if (good_one[i_col]) {
 						outval[i_col] = (F->f_operator) ? data_sum[i_col] : data_sum[i_col] / wt_sum[i_col];
 						if (F->highpass) outval[i_col] = F->data[i_col][k] - outval[i_col];
@@ -809,6 +879,7 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 
 GMT_LOCAL int filter1d_allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	F->n_this_col = gmt_M_memory (GMT, NULL, F->n_cols, uint64_t);
+	F->skip_col = gmt_M_memory (GMT, NULL, F->n_cols, bool);
 	F->data = gmt_M_memory_aligned (GMT, NULL, F->n_cols, double *);
 
 	if (F->check_asym) F->n_left = gmt_M_memory (GMT, NULL, F->n_cols, uint64_t);
@@ -841,6 +912,7 @@ GMT_LOCAL void filter1d_free_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *
 	for (i = 0; i < F->n_cols; ++i)	gmt_M_free (GMT, F->data[i]);
 	gmt_M_free (GMT, F->data);
 	gmt_M_free (GMT, F->n_this_col);
+	gmt_M_free (GMT, F->skip_col);
 	gmt_M_free (GMT, F->n_left);
 	gmt_M_free (GMT, F->n_right);
 	gmt_M_free (GMT, F->min_loc);
@@ -1046,6 +1118,24 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 	}
 
 	filter1d_allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
+
+	F.skip_col[F.t_col] = true;
+	if (Ctrl->N.n_except) {	/* Flag the extra columns the user wants passed through unfiltered */
+		uint64_t n_to_filter = 0;
+		if (Ctrl->N.max_except >= F.n_cols) {
+			uint64_t bad_col = Ctrl->N.max_except, have_cols = F.n_cols;	/* Return() frees Ctrl before formatting the message below */
+			filter1d_free_space (GMT, &F);
+			Return (GMT_PARSE_ERROR, "Option -N+e: Column %" PRIu64 " is beyond the %" PRIu64 " columns found in the data\n",
+				bad_col, have_cols);
+		}
+		for (col = 0; col <= Ctrl->N.max_except; col++)
+			if (Ctrl->N.except[col]) F.skip_col[col] = true;
+		for (col = 0; col < F.n_cols; col++) if (!F.skip_col[col]) n_to_filter++;
+		if (n_to_filter == 0) {
+			filter1d_free_space (GMT, &F);
+			Return (GMT_PARSE_ERROR, "Option -N+e: No columns left to filter\n");
+		}
+	}
 
 	gmt_increase_abstime_format_precision (GMT, Ctrl->N.col, F.t_int);	/* In case we need more sub-second precision output */
 
