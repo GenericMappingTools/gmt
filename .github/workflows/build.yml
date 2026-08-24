@@ -71,8 +71,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Setup conda (macOS)
-        uses: conda-incubator/setup-miniconda@v4
+      - name: Setup micromamba (macOS)
+        uses: mamba-org/setup-micromamba@v3.1.0
         if: runner.os == 'macOS'
 
       - name: Install GMT dependencies
