@@ -160,10 +160,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      # On Windows this check is done by the cmd script below instead. Running gmt.exe
-      # from Git Bash makes it die with "*** stack smashing detected ***", while the
-      # very same binary runs fine from cmd (as build.yml shows), so use the native
-      # shell there and avoid running the same checks twice.
+      # On Windows this check is done by the cmd script below instead, so that the same
+      # checks are not run twice on that platform.
       - name: Check a few simple commands
         if: runner.os != 'Windows'
         run: bash ci/simple-gmt-tests.sh
