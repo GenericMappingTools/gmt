@@ -340,9 +340,9 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'T':	/* Number of jobs or the name of file with job information (note: file may not exist yet) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				if ((c = gmt_first_modifier (GMT, opt->arg, "psw"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "pswW"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'T', c, "psw", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'T', c, "pswW", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'p':	/* Set a fixed precision in job naming ###### */
 								n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 'p', &Ctrl->T.precision);
