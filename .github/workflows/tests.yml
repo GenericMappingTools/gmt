@@ -122,7 +122,10 @@ jobs:
           setlocal enabledelayedexpansion
           set "INSTALLDIR=%INSTALLDIR:\=/%"
           set "WINVCPKGROOT=%VCPKG_INSTALLATION_ROOT:/=\%"
-          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=!WINVCPKGROOT!\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+          rem TEMPORARY (do not merge): -g adds debug symbols on top of the usual
+          rem Release flags, so the backtrace step below can name the crashing
+          rem function. Optimisation level is unchanged, to keep the crash reproducible.
+          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=!WINVCPKGROOT!\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS=-g
           cmake --build .
           cmake --build . --target install
           set "WININSTALLDIR=!INSTALLDIR:/=\!"
@@ -159,6 +162,36 @@ jobs:
         run: gh run download -n gmt-cache -D ~/.gmt/static/
         env:
           GH_TOKEN: ${{ github.token }}
+
+      # TEMPORARY (do not merge): every gmt.exe call in the Windows test build dies
+      # with STATUS_STACK_BUFFER_OVERRUN (0xC0000409), from cmd as well as from bash,
+      # so the cause is the binary and not the CI environment. Capture a backtrace to
+      # find the offending function. OpenMP is enabled, hence all threads are dumped.
+      - name: Backtrace of the gmt crash [Windows, temporary]
+        if: runner.os == 'Windows'
+        continue-on-error: true
+        shell: bash
+        run: |
+          export PATH="$INSTALLDIR/bin:$PATH"
+          GDB="$(command -v gdb || true)"
+          if [ -z "$GDB" ] && [ -x /c/mingw64/bin/gdb.exe ]; then GDB=/c/mingw64/bin/gdb.exe; fi
+          if [ -z "$GDB" ]; then
+            echo "gdb not found; trying to install it"
+            choco install mingw --no-progress -y >/dev/null 2>&1 || true
+            GDB="$(command -v gdb || true)"
+            [ -n "$GDB" ] || GDB="$( [ -x /c/mingw64/bin/gdb.exe ] && echo /c/mingw64/bin/gdb.exe )"
+          fi
+          echo "gdb = ${GDB:-<not available>}"
+          [ -n "$GDB" ] || exit 0
+          "$GDB" --version | head -n 1
+          "$GDB" -batch \
+                 -ex "set pagination off" \
+                 -ex "set confirm off" \
+                 -ex run \
+                 -ex "bt full" \
+                 -ex "thread apply all bt" \
+                 -ex "info sharedlibrary" \
+                 --args "${INSTALLDIR}/bin/gmt"
 
       # On Windows this check is done by the cmd script below instead, so that the same
       # checks are not run twice on that platform.
