@@ -8374,8 +8374,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 					"Alternatively, give the rotation angle only for a plain rotation about the z-axis. "
 					"By default, the view rotates about the plot origin; use modifiers +w or +v to rotate "
 					"about a different point instead:");
-				GMT_Usage (API, 3, "+w Rotate about the fixed data coordinates <lon0>/<lat0>[/<z0>].");
-				GMT_Usage (API, 3, "+v Rotate about the fixed plot coordinates <x0>/<y0>.");
+				GMT_Usage (API, 3, "+w Rotate about the fixed data coordinates [region center].");
+				GMT_Usage (API, 3, "+v Rotate about the fixed plot coordinates [panel center].");
 			}
 			break;
 
