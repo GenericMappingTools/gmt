@@ -168,9 +168,7 @@ jobs:
 
       - name: Check a few simple commands (Windows)
         shell: cmd
-        run: |
-          where gmt
-          call ci/simple-gmt-tests.bat
+        run: call ci/simple-gmt-tests.bat
         if: runner.os == 'Windows'
 
       - name: Run full tests
