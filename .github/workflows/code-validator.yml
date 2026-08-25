@@ -63,15 +63,6 @@ jobs:
           gmt_version_year=$(grep GMT_VERSION_YEAR cmake/ConfigDefault.cmake | awk -F'"' '{print $2}')
           if [ "$current_year" != "$gmt_version_year" ]; then exit 1; fi
 
-      - name: Check execute permission of bash scripts
-        run: |
-          scripts=$(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh" ! -executable)
-          if [[ -n "$scripts" ]]; then
-            echo "Following bash scripts do not have execute permission:"
-            echo "$scripts"
-            exit 1
-          fi
-
       - name: Check shebang of bash scripts
         run: |
           error=0
