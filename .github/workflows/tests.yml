@@ -118,14 +118,21 @@ jobs:
         with:
           arch: x64
 
-      - name: Compile GMT (Windows)
+      - name: Compile and Install GMT (Windows)
+        if: runner.os == 'Windows'
         shell: cmd
         run: |
           mkdir build
           cd build
-          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+          setlocal enabledelayedexpansion
+          set "INSTALLDIR=%INSTALLDIR:\=/%"
+          set "WINVCPKGROOT=%VCPKG_INSTALLATION_ROOT:/=\%"
+          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=!WINVCPKGROOT!\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
           cmake --build .
-        if: runner.os == 'Windows'
+          cmake --build . --target install
+          set "WININSTALLDIR=!INSTALLDIR:/=\!"
+          echo !WININSTALLDIR!\bin>> %GITHUB_PATH%
+          endlocal
 
       - name: Pull baseline image data from dvc remote
         id: dvc-pull
@@ -145,7 +152,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Install GMT
+      - name: Install GMT (Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
           cd build
           cmake --build . --target install
