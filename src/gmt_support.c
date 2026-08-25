@@ -18677,10 +18677,12 @@ void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, 
 	}
 	else {	/* Make region be in multiples of increments, possibly with adjustment */
 		double adjust = (mode == GMT_REGION_ROUND_EXTEND) ? GMT_REGION_INCFACTOR : 0.0;
-		wesn[XLO] = floor ((wesn[XLO] - adjust * inc[XLO]) / inc[XLO]) * inc[XLO];
-		wesn[YLO] = floor ((wesn[YLO] - adjust * inc[YLO]) / inc[YLO]) * inc[YLO];
-		wesn[XHI] = ceil  ((wesn[XHI] + adjust * inc[XHI]) / inc[XHI]) * inc[XHI];
-		wesn[YHI] = ceil  ((wesn[YHI] + adjust * inc[YHI]) / inc[YHI]) * inc[YHI];
+		/* A zero increment on either axis means "leave that axis alone" - skip rounding
+		 * for that axis instead of dividing by zero (which produced NaN, see issue #6434) */
+		if (inc[XLO] > 0.0) wesn[XLO] = floor ((wesn[XLO] - adjust * inc[XLO]) / inc[XLO]) * inc[XLO];
+		if (inc[YLO] > 0.0) wesn[YLO] = floor ((wesn[YLO] - adjust * inc[YLO]) / inc[YLO]) * inc[YLO];
+		if (inc[XHI] > 0.0) wesn[XHI] = ceil  ((wesn[XHI] + adjust * inc[XHI]) / inc[XHI]) * inc[XHI];
+		if (inc[YHI] > 0.0) wesn[YHI] = ceil  ((wesn[YHI] + adjust * inc[YHI]) / inc[YHI]) * inc[YHI];
 	}
 }
 

@@ -8372,10 +8372,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 					"<azimuth>/<elevation> of the viewpoint [180/90], and "
 					"when used with -Jz|Z, optionally add /<zlevel> for basemap level [bottom of z-axis]. "
 					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
-					"For a plain rotation about the z-axis, give rotation angle only "
-					"and optionally use modifiers +w or +v to select location of axis:");
-				GMT_Usage (API, 3, "+w Specify a fixed coordinate point [region center].");
-				GMT_Usage (API, 3, "+v Set a fixed projected point [panel center].");
+					"Alternatively, give the rotation angle only for a plain rotation about the z-axis. "
+					"By default, the view rotates about the plot origin; use modifiers +w or +v to rotate "
+					"about a different point instead:");
+				GMT_Usage (API, 3, "+w Rotate about the fixed data coordinates [region center].");
+				GMT_Usage (API, 3, "+v Rotate about the fixed plot coordinates [panel center].");
 			}
 			break;
 
