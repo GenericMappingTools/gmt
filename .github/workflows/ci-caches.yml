@@ -142,7 +142,7 @@ jobs:
 
   vcpkg_cache:
     name: Cache vcpkg libraries
-    runs-on: windows-2025
+    runs-on: windows-latest
     if: github.event_name != 'push'
 
     steps:
