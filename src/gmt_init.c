@@ -4933,7 +4933,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 
 	char string[GMT_BUFSIZ] = {""}, orig_string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL, *the_axes = "xyz";
 	struct GMT_PLOT_AXIS *A = NULL;
-	unsigned int no;
+	unsigned int no, pr;
 	int k, error = 0;
 	bool side[3] = {false, false, false}, implicit = false;
 
@@ -4976,8 +4976,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		k++;
 	}
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = implicit = true;	/* If no axis were named we default to both x and y */
-	GMT->current.map.frame.axis[GMT_Z].angle = 0.0;	/* Default is plotting normal to axis for Z, i.e., will look horizontal on the plot */
-	GMT->current.map.frame.axis[GMT_Z].use_angle = true;
+	GMT->current.map.frame.axis[GMT_Z].angle[GMT_PRIMARY] = GMT->current.map.frame.axis[GMT_Z].angle[GMT_SECONDARY] = 0.0;	/* Default is plotting normal to axis for Z, i.e., will look horizontal on the plot */
+	GMT->current.map.frame.axis[GMT_Z].use_angle[GMT_PRIMARY] = GMT->current.map.frame.axis[GMT_Z].use_angle[GMT_SECONDARY] = true;
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
 	gmt_handle5_plussign(GMT, text, GMT_AXIS_MODIFIERS, 0);	/* Temporarily change any +<letter> except +L|l, +f, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +e, +f, +p, +S|s or +u */
@@ -5011,35 +5011,36 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			char p[GMT_BUFSIZ];
 			while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 				switch (p[0]) {
-					case 'a':	/* Set annotation angle */
+					case 'a':	/* Set annotation angle - independently for primary (-Bp, default) and secondary (-Bs) annotations */
 						if (gmt_M_is_geographic (GMT, GMT_IN)) {
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Cannot use +a for geographic basemaps\n");
 							error++;
 							continue;
 						}
+						pr = (GMT->current.map.frame.primary) ? GMT_PRIMARY : GMT_SECONDARY;
 						if (no == GMT_X) {	/* Variable angles for the x-axis */
 							if (p[1] == 'n')	/* +an is short for +a90 or normal to x-axis */
-								GMT->current.map.frame.axis[no].angle = 90.0;
+								GMT->current.map.frame.axis[no].angle[pr] = 90.0;
 							else if (p[1] == 'p')	/* +ap is short for +a0 or parallel to x-axis */
-								GMT->current.map.frame.axis[no].angle = 0.0;
+								GMT->current.map.frame.axis[no].angle[pr] = 0.0;
 							else	/* Assume a variable angle */
-								GMT->current.map.frame.axis[no].angle = atof (&p[1]);
+								GMT->current.map.frame.axis[no].angle[pr] = atof (&p[1]);
 						}
 						else {	/* Variable angles for the y/z-axis */
-							GMT->current.map.frame.axis[no].use_angle = true;
+							GMT->current.map.frame.axis[no].use_angle[pr] = true;
 							if (p[1] == 'n')	/* +an is code for normal to y/z-axis;*/
-								GMT->current.map.frame.axis[no].angle = 0.0;
+								GMT->current.map.frame.axis[no].angle[pr] = 0.0;
 							else if (p[1] == 'p')	/* +ap is code for normal to y/z-axis; this triggers ortho=false later */
-								GMT->current.map.frame.axis[no].angle = 90.0;
+								GMT->current.map.frame.axis[no].angle[pr] = 90.0;
 							else	/* Assume a variable angle */
-								GMT->current.map.frame.axis[no].angle = atof (&p[1]);
+								GMT->current.map.frame.axis[no].angle[pr] = atof (&p[1]);
 						}
-						if (GMT->current.map.frame.axis[no].angle < -90.0 || GMT->current.map.frame.axis[no].angle > 90.0) {
+						if (GMT->current.map.frame.axis[no].angle[pr] < -90.0 || GMT->current.map.frame.axis[no].angle[pr] > 90.0) {
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: +a<angle> must be in the -90 to +90 range\n");
 							error++;
 						}
 						else
-							GMT->current.map.frame.axis[no].use_angle = true;
+							GMT->current.map.frame.axis[no].use_angle[pr] = true;
 						break;
 					case 'f':	/* Select fancy annotations with trailing W|E|S|N */
 						if (gmt_M_x_is_lon(GMT,GMT_IN) || gmt_M_y_is_lat(GMT,GMT_IN))
