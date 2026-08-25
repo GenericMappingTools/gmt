@@ -189,6 +189,12 @@ EXTERN_MSC int GMT_gmtread (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtread main code ----------------------------*/
 
-	error = gmt_copy (API, Ctrl->T.mode, GMT_IN, Ctrl->IO.file[GMT_IN], Ctrl->IO.file[GMT_OUT]);
+	if (Ctrl->T.mode == GMT_IS_DATASET && GMT->common.R.active[RSET]) {
+		struct GMT_OPTION *opt_T = GMT_Find_Option (API, 'T', options);
+		if (GMT_Delete_Option (API, opt_T, &options)) Return (API->error);
+		error = GMT_Call_Module (API, "gmtselect", GMT_MODULE_OPT, options);
+	}
+	else
+		error = gmt_copy (API, Ctrl->T.mode, GMT_IN, Ctrl->IO.file[GMT_IN], Ctrl->IO.file[GMT_OUT]);
 	Return (error);
 }
