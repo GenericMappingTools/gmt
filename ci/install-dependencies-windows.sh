@@ -52,16 +52,6 @@ $CONDA\\Scripts\\conda.exe install ${conda_packages} -c conda-forge
 echo "$CONDA\\Library\\bin" >> $GITHUB_PATH
 echo "$CONDA\\Scripts" >> $GITHUB_PATH
 
-# GMT is compiled with the MinGW GCC in C:\mingw64, so its runtime libraries must win
-# over the ones conda drops into Library\bin. When RUN_TESTS is true we install dvc,
-# which pulls in conda-forge's libgomp built for a newer GCC; loading that instead of
-# the MinGW one makes every gmt.exe call die during DLL init with
-# STATUS_STACK_BUFFER_OVERRUN (0xC0000409). Added before the vcpkg line below so that
-# it ends up after vcpkg but ahead of conda in PATH.
-if [ -d "/c/mingw64/bin" ]; then
-    echo 'C:\mingw64\bin' >> $GITHUB_PATH
-fi
-
 # Add the vcpkg path again so it's prepended before conda's path and cmake can find
 # the vcpkg library correctly
 echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/bin" >> $GITHUB_PATH
