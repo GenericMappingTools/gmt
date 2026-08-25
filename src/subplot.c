@@ -1338,15 +1338,16 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot create file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		fprintf (fp, "# subplot information file\n");
-		cmd = GMT_Create_Cmd (API, options);
-		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_CLASSIC_NAME, cmd);
-		gmt_M_free (GMT, cmd);
-		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
-		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
-		fprintf (fp, "# DIMENSION: %g %g\n", width, height);
-		fprintf (fp, "# PARALLEL: %d\n", Ctrl->S[GMT_Y].parallel);
-		fprintf (fp, "# INSIDE: %d\n", (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 1 : 0);
+		fprintf(fp, "# subplot information file\n");
+		cmd = GMT_Create_Cmd(API, options);
+		fprintf(fp, "# Command: %s %s\n", THIS_MODULE_CLASSIC_NAME, cmd);
+		gmt_M_free(GMT, cmd);
+		if (Ctrl->T.active) fprintf(fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
+		fprintf(fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
+		fprintf(fp, "# DIMENSION: %g %g\n", width, height);
+		fprintf(fp, "# PARALLEL: %d\n", Ctrl->S[GMT_Y].parallel);
+		fprintf(fp, "# INSIDE: %d\n", (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 1 : 0);
+		fprintf(fp, "# FIXEDFIG: %d\n", (Ctrl->F.mode == SUBPLOT_FIGURE) ? 1 : 0);
 		if (Ctrl->C.active) {	/* Got common gaps setting */
 			gmt_M_memcpy (GMT->current.plot.panel.gap, Ctrl->C.gap, 4, double);
 			fprintf (fp, "# GAPS: %g %g %g %g\n", Ctrl->C.gap[XLO], Ctrl->C.gap[XHI], Ctrl->C.gap[YLO], Ctrl->C.gap[YHI]);
@@ -1435,7 +1436,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			}
 		}
 
-		/* Start the subplot with a blank canvas and place the optional title.
+		/* Start the subplot with a blank canvas.  The optional figure heading is deferred until subplot end
+		   so that the perspective extent of any 3-D panel is known when it is placed [issue #4450].
 		   The blank canvas dimensions should become the -R and -Jx1 once subplot ends */
 
 		if (Ctrl->F.fill[0] != '-' && Ctrl->F.pen[0] != '-')	/* Need to fill and draw the canvas box */
@@ -1448,36 +1450,41 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		width  += 2.0 * Ctrl->F.clearance[GMT_X];
 		height += 2.0 * Ctrl->F.clearance[GMT_Y];
 
-		if (Ctrl->T.title) {	/* Must call text to place a heading */
-			uint64_t dim[4] = {1, 1, 1, 2};	/* A single record */
-			struct GMT_DATASET *T = NULL;
-			if ((T = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Subplot: Unable to allocate a dataset\n");
-				Return (error);
+		/* plot is required, since nothing is plotted here (except for possibly the canvas fill/outline) */
+		sprintf (command, "-R0/%g/0/%g -Jx1i -T%s --GMT_HISTORY=readonly", width, height, origin_shift);
+		if (Bopt[0]) strcat (command, Bopt);	/* The -B was set above, so include it in the command */
+		GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
+		if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas */
+			Return (API->error);
+		if (Ctrl->T.title) {	/* Save exactly where and how the heading is to be plotted by subplot end [issue #4450].
+			 * We must place it there and not here since a 3-D panel may reach above the nominal figure top, which
+			 * is only known once the panels have been drawn.  The position is the one the heading would have been
+			 * given here, i.e. in the canvas frame; subplot end returns the origin to this canvas corner, which we
+			 * remember in the PostScript itself so that no assumption about -X -Y is needed. */
+			FILE *fpt = NULL;
+			sprintf (file, "%s/gmt.subplotheading.%d", API->gwf_dir, fig);
+			if ((fpt = fopen (file, "w")) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot create subplot heading file %s\n", file);
+				Return (GMT_ERROR_ON_FOPEN);
 			}
-			T->table[0]->segment[0]->data[GMT_X][0] = 0.5 * width;	/* Centered */
-			T->table[0]->segment[0]->data[GMT_Y][0] = y_heading + Ctrl->F.clearance[GMT_Y];	/* On top */
-			T->table[0]->segment[0]->text[0] = strdup (Ctrl->T.title);
-			T->table[0]->segment[0]->n_rows = 1;
-			T->n_records = T->table[0]->n_records = T->table[0]->segment[0]->n_rows = 1;
-			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, T, vfile) != GMT_NOERROR) {
-				Return (API->error);
+			/* Record: <x> <y> <width of region> <height of region> <top of figure> <title>, all in canvas inches */
+			fprintf (fpt, "%.16g %.16g %.16g %.16g %.16g %s\n", 0.5 * width, y_heading + Ctrl->F.clearance[GMT_Y],
+				width, height, height, Ctrl->T.title);
+			fclose (fpt);
+			/* Remember this canvas corner in the PostScript so subplot end can come back to it */
+			if (gmt_set_psfilename (GMT) == GMT_NOTSET) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No workflow directory\n");
+				Return (GMT_ERROR_ON_FOPEN);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s%s --GMT_HISTORY=readonly",
-				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, origin_shift);
-			if (Bopt[0] == ' ') strcat (command, Bopt);	/* The -B was set above, so include it in the command */
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for text: %s\n", command);
-			if (GMT_Call_Module (API, "text", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
-				Return (API->error);
-			if (GMT_Destroy_Data (API, &T) != GMT_OK)
-				Return (API->error);
-		}
-		else {	/* plot is required, since nothing is plotted (except for possibly the canvas fill/outline) */
-			sprintf (command, "-R0/%g/0/%g -Jx1i -T%s --GMT_HISTORY=readonly", width, height, origin_shift);
-			if (Bopt[0]) strcat (command, Bopt);	/* The -B was set above, so include it in the command */
-			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for plot: %s\n", command);
-			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
-				Return (API->error);
+			if ((fp = PSL_fopen (GMT->PSL, GMT->current.ps.filename, "a")) == NULL) {	/* The canvas was just drawn, so append */
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot open %s to append\n", GMT->current.ps.filename);
+				Return (GMT_ERROR_ON_FOPEN);
+			}
+			PSL_command (GMT->PSL, "/PSL_SUBPLOT_ox PSL_xorig def /PSL_SUBPLOT_oy PSL_yorig def\n");
+			if (PSL_fclose (GMT->PSL)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 		if (fabs (Ctrl->F.clearance[GMT_X]) > 0.0 || fabs (Ctrl->F.clearance[GMT_Y]) > 0.0) {	/* Must reset origin */
 			width  -= 2.0 * Ctrl->F.clearance[GMT_X];
@@ -1578,8 +1585,11 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		int k, id, row, col;
 		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, off[GMT_LEN32] = {""};
 		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""};
-		double legend_width = 0.0, legend_scale = 1.0;
-		FILE *fp = NULL;
+		char line[GMT_BUFSIZ] = {""}, heading[GMT_BUFSIZ] = {""};
+		double legend_width = 0.0, legend_scale = 1.0, hx = 0.0, hy = 0.0, top = -DBL_MAX, ytop = DBL_MAX, Rw = 0.0, Rh = 0.0;
+		int n_chars = 0;
+		bool have_heading = false;
+		FILE *fp = NULL, *fh = NULL;
 
 		if ((P = gmt_subplot_info (API, fig)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No subplot information file!\n");
@@ -1601,6 +1611,27 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		API->GMT->current.map.height = P->dim[GMT_Y];
 		P->active = 0;	/* Ensure subplot mode is now terminated */
 
+		/* Collect what is needed to place the figure heading now that every panel has had a chance to report its
+		 * actual perspective footprint.  subplot begin saved the exact position, region and text; the heading
+		 * itself is plotted further down, once we are truly out of subplot mode.  For 2-D figures no
+		 * gmt.subplottop file exists so the placement is the same as it always was. */
+		sprintf (file, "%s/gmt.subplotheading.%d", API->gwf_dir, fig);
+		if ((fh = fopen (file, "r")) != NULL) {
+			if (fgets (line, GMT_BUFSIZ, fh) && sscanf (line, "%lf %lf %lf %lf %lf %n", &hx, &hy, &Rw, &Rh, &ytop, &n_chars) == 5 && n_chars > 0) {
+				strncpy (heading, &line[n_chars], GMT_BUFSIZ-1);
+				gmt_chop (heading);
+				have_heading = true;
+			}
+			fclose (fh);
+			gmt_remove_file (GMT, file);
+		}
+		sprintf (file, "%s/gmt.subplottop.%d", API->gwf_dir, fig);
+		if ((fh = fopen (file, "r")) != NULL) {	/* At least one panel was 3-D, so the heading may need raising */
+			if (fscanf (fh, "%lf", &top) == 1 && top > ytop)
+				hy += (top - ytop);
+			fclose (fh);
+			gmt_remove_file (GMT, file);
+		}
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No workflow directory\n");
 			Return (GMT_ERROR_ON_FOPEN);
@@ -1611,6 +1642,12 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		/* Must force PSL_plot_completion procedure to run, if it was set */
 		PSL_command (GMT->PSL, "PSL_plot_completion /PSL_plot_completion {} def\n");	/* Run once, then make it a null function */
+		if (have_heading)	/* Remember where the panels left the origin, then put it back at the page corner so that
+			 * the deferred heading below, whose position was saved in page coordinates, lands where it belongs.
+			 * This is what -Xf does, but modern mode does not allow -Xf.  The origin is restored once the heading
+			 * has been placed, since anything following (e.g., a second subplot) shifts relative to it [#4450] */
+			PSL_command (GMT->PSL, "/PSL_SUBPLOT_x PSL_xorig def /PSL_SUBPLOT_y PSL_yorig def "
+				"PSL_SUBPLOT_ox PSL_xorig sub PSL_SUBPLOT_oy PSL_yorig sub TM\n");
 		if (PSL_fclose (GMT->PSL)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
 			Return (GMT_RUNTIME_ERROR);
@@ -1631,6 +1668,52 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				if (!access (file, F_OK)) gmt_remove_file (GMT, file);
 			}
 		}
+		if (have_heading) {	/* Must call text to place the figure heading, using the position collected above.
+			 * Note this has to happen here, after the subplot information files are gone: a plotting module
+			 * called while they are still around is set up as a panel plot by gmt_init_module, which is also
+			 * why the debug lines below are drawn at this point. */
+			uint64_t dim[4] = {1, 1, 1, 2};	/* A single record */
+			struct GMT_DATASET *T = NULL;
+			struct GMT_SUBPLOT P_save;
+			/* The panel settings must not make the text call below fit the heading into the last panel, but they
+			 * are still needed afterwards (the -R history is built from P->dim), so put them back when done */
+			gmt_M_memcpy (&P_save, &GMT->current.plot.panel, 1, struct GMT_SUBPLOT);
+			gmt_M_memset (&GMT->current.plot.panel, 1, struct GMT_SUBPLOT);
+			if ((T = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Subplot: Unable to allocate a dataset\n");
+				Return (API->error);
+			}
+			T->table[0]->segment[0]->data[GMT_X][0] = hx;	/* Centered */
+			T->table[0]->segment[0]->data[GMT_Y][0] = hy;	/* On top */
+			T->table[0]->segment[0]->text[0] = strdup (heading);
+			T->n_records = T->table[0]->n_records = T->table[0]->segment[0]->n_rows = 1;
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, T, vfile) != GMT_NOERROR) {
+				Return (API->error);
+			}
+			snprintf (command, GMT_LEN256, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -Xa0i -Ya0i --GMT_HISTORY=readonly",
+				Rw, Rh, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for text: %s\n", command);
+			if (GMT_Call_Module (API, "text", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the heading */
+				Return (API->error);
+			if (GMT_Destroy_Data (API, &T) != GMT_OK)
+				Return (API->error);
+			/* Put the origin back where the panels had left it before we placed the heading */
+			if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No workflow directory\n");
+				Return (GMT_ERROR_ON_FOPEN);
+			}
+			if ((fp = PSL_fopen (GMT->PSL, GMT->current.ps.filename, wmode[k])) == NULL) {
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot open %s with mode %s\n", GMT->current.ps.filename, wmode[k]);
+				Return (GMT_ERROR_ON_FOPEN);
+			}
+			PSL_command (GMT->PSL, "PSL_SUBPLOT_x PSL_xorig sub PSL_SUBPLOT_y PSL_yorig sub TM\n");
+			if (PSL_fclose (GMT->PSL)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			gmt_M_memcpy (&GMT->current.plot.panel, &P_save, 1, struct GMT_SUBPLOT);	/* Restore for the code below */
+		}
+
 		/* Check if we should draw debug lines */
 		sprintf (file, "%s/gmt.subplotdebug.%d", API->gwf_dir, fig);
 		if (!access (file, R_OK)) {	/* Yes, must draw debug lines on top */
