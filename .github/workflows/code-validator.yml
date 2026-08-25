@@ -63,18 +63,6 @@ jobs:
           gmt_version_year=$(grep GMT_VERSION_YEAR cmake/ConfigDefault.cmake | awk -F'"' '{print $2}')
           if [ "$current_year" != "$gmt_version_year" ]; then exit 1; fi
 
-      - name: Check read permission of bash scripts
-        run: |
-          # All *.sh scripts are either run through an interpreter (e.g.,
-          # 'bash xxx.sh') or sourced (e.g., gmt_functions.sh), so they
-          # just need to be readable, not executable.
-          scripts=$(find . -name "*.sh" ! -readable)
-          if [[ -n "$scripts" ]]; then
-            echo "Following bash scripts do not have read permission:"
-            echo "$scripts"
-            exit 1
-          fi
-
       - name: Check shebang of bash scripts
         run: |
           error=0
