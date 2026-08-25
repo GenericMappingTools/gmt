@@ -14830,28 +14830,49 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	return true;	/* Remaining PostScript producing modules always write PostScript */
 }
 
-void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to nearest reasonable multiples */
+GMT_LOCAL void gmtinit_expand_to_decades (double *lo, double *hi) {
+	/* Expand a positive range outwards to the enclosing powers of ten */
+	double p_lo = floor (log10 (*lo)), p_hi = ceil (log10 (*hi));
+	if (pow (10.0, p_lo + 1.0) <= *lo) p_lo += 1.0;	/* Avoid rounding error on an exact decade */
+	if (pow (10.0, p_hi - 1.0) >= *hi) p_hi -= 1.0;
+	*lo = pow (10.0, p_lo);
+	*hi = pow (10.0, p_hi);
+}
+
+GMT_LOCAL void gmtinit_round_wesn_log (double wesn[], bool geo, bool log_axis[2]) {
+	/* Use data range to round to nearest reasonable multiples.
+	 * log_axis[GMT_X]/[GMT_Y]: if true, round that side to enclosing powers of ten
+	 * instead, so the region never has a bound <= 0 on a log10 axis (issue #6614). */
 	bool set[2] = {false, false};
 	unsigned int side, item;
 	double mag, inc, range[2] = {0.0, 0.0};
+	if (log_axis[GMT_X] && wesn[XLO] > 0.0 && wesn[XHI] > 0.0) {
+		gmtinit_expand_to_decades (&wesn[XLO], &wesn[XHI]);
+		set[GMT_X] = true;
+	}
+	if (log_axis[GMT_Y] && wesn[YLO] > 0.0 && wesn[YHI] > 0.0) {
+		gmtinit_expand_to_decades (&wesn[YLO], &wesn[YHI]);
+		set[GMT_Y] = true;
+	}
 	range[GMT_X] = wesn[XHI] - wesn[XLO];
 	range[GMT_Y] = wesn[YHI] - wesn[YLO];
 	if (geo) {	/* Special checks due to periodicity */
-		if (range[GMT_X] > 306.0) {	/* If within 15% of a full 360 we promote to 360 */
+		if (!set[GMT_X] && range[GMT_X] > 306.0) {	/* If within 15% of a full 360 we promote to 360 */
 			wesn[XLO] = 0.0;	wesn[XHI] = 360.0;
 			set[GMT_X] = true;
 		}
-		if (range[GMT_Y] > 153.0) {	/* If within 15% of a full 180 we promote to 180 */
+		if (!set[GMT_Y] && range[GMT_Y] > 153.0) {	/* If within 15% of a full 180 we promote to 180 */
 			wesn[YLO] = -90.0;	wesn[YHI] = 90.0;
 			set[GMT_Y] = true;
 		}
 	}
 	else {			/* Add a tinny pad so that the rounding algorithm always round to next fifth of decade */
 		double dx, dy;
-		dx = range[GMT_X] * 0.001;		dy = range[GMT_Y] * 0.001;
+		dx = set[GMT_X] ? 0.0 : range[GMT_X] * 0.001;		dy = set[GMT_Y] ? 0.0 : range[GMT_Y] * 0.001;
 		wesn[0] -= dx;	wesn[1] += dx;	wesn[2] -= dy;	wesn[3] += dy;
 	}
-	for (side = GMT_X, item = XLO; side <= GMT_Y; side++) {
+	for (side = GMT_X; side <= GMT_Y; side++) {
+		item = 2 * side;	/* XLO|YLO; a skipped side below must not throw off the other side's index */
 		if (set[side]) continue;	/* Done above */
 		mag = rint (log10 (range[side])) - 1.0;
 		inc = pow (10.0, mag);
@@ -14881,6 +14902,37 @@ void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to ne
 			wesn[item] = x - floor((x - wesn[item]) / one_fifth_dec) * one_fifth_dec;	item++;
 		}
 	}
+}
+
+/*! . */
+void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to nearest reasonable multiples */
+	bool no_log[2] = {false, false};
+	gmtinit_round_wesn_log (wesn, geo, no_log);
+}
+
+GMT_LOCAL void gmtinit_get_log_axes (struct GMT_OPTION *options, bool log_axis[2]) {
+	/* Check the raw -J string for a log10 x- and/or y-axis (-Jx|X only).
+	 * -J is not parsed for real until later, so we must not call gmtinit_parse_J_option
+	 * here: that would reset column types and complain about unresolved ?-widths. */
+	struct GMT_OPTION *opt = NULL;
+	char arg[GMT_LEN128] = {""}, *slash = NULL, *plus = NULL, *ypart = NULL;
+
+	log_axis[GMT_X] = log_axis[GMT_Y] = false;
+	for (opt = options; opt; opt = opt->next)	/* Find the horizontal -J option, if any */
+		if (opt->option == 'J' && !(opt->arg[0] == 'z' || opt->arg[0] == 'Z')) break;
+	if (opt == NULL || opt->arg[0] == '\0') return;	/* No -J argument to examine */
+	if (!(opt->arg[0] == 'x' || opt->arg[0] == 'X')) return;	/* Only -Jx|X scale the axes individually */
+	strncpy (arg, &opt->arg[1], GMT_LEN128-1);	/* Skip the projection code */
+	if ((plus = strchr (arg, '+'))) plus[0] = '\0';	/* Chop off any +d<dim> modifier */
+	if ((slash = strchr (arg, '/'))) {	/* Separate y-axis specification given */
+		slash[0] = '\0';
+		ypart = &slash[1];
+	}
+	else	/* Just one specification, which then applies to both axes */
+		ypart = arg;
+	/* Only l|L can appear here for log10; the length units are c|i|p and d means degrees */
+	log_axis[GMT_X] = (strpbrk (arg,   "lL") != NULL);
+	log_axis[GMT_Y] = (strpbrk (ypart, "lL") != NULL);
 }
 
 GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], int *aspect) {
@@ -15114,7 +15166,11 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 				else
 					wesn[YLO] *= 0.9, wesn[YHI] *= 1.1;	/* +/- 10% of values */
 			}
-			if (!exact) gmt_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
+			if (!exact) {	/* Use data range to round to nearest reasonable multiples */
+				bool log_axis[2];
+				gmtinit_get_log_axes (*options, log_axis);	/* Check -J for log10 axes so we do not round a bound to <= 0 there */
+				gmtinit_round_wesn_log (wesn, geo, log_axis);
+			}
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Family %d not supported", family);
