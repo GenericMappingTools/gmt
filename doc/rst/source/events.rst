@@ -80,6 +80,8 @@ blue symbol just turns on and off.  We also delay the red symbol's label by 0.25
 Red event was plotted using -Es+rq0.25+p0.25+dq0.25+fl0.25 -Et+o0.25 while the blue event used the
 default settings (i.e., the light-blue time curve). **Note**: The time curves are plotted here just
 to illustrate what is happening under the hood. The movie we make is really about the two events only.
+**Note**: Both events here have a finite duration (|-L|); see `Events without a duration`_ for events
+with no natural end time.
 
 Required Arguments
 ------------------
@@ -189,6 +191,7 @@ Optional Arguments
     **Note 1**: The **+p** and **+d** increments do not apply to text labels, lines or polygons.
     **Note 2**: The **-Et** option is required if you wish to plot labels [Default plots symbols only].
     **Note 3**: None of the modifiers are allowed for lines.
+    **Note 4**: The **+f** (fade) increment is ignored for `Events without a duration`_.
 
 .. _-F:
 
@@ -229,9 +232,9 @@ Optional Arguments
 **-L**\ [*length*\|\ **t**]
     Specify the length (i.e., duration) of the event.  Append a *length* if all events have the same length,
     append **t** if end-times instead of lengths are given in the file after the *time* column,
-    or leave blank if lengths can be read from the input file after the *time* column.  If |-L| is not
-    given we assume events have an infinite duration. See |-A| for how duration is handled for lines and
-    polygons.
+    or leave blank if lengths can be read from the input file after the *time* column (so each event
+    may have its own duration).  If |-L| is not given at all we assume events have an infinite duration;
+    see `Events without a duration`_. See |-A| for how duration is handled for lines and polygons.
 
 .. _-M:
 
@@ -262,7 +265,8 @@ Optional Arguments
     is not given then the defaults are 0 (intensity), 0 (size), 100 (transparency) and 0 (value), meaning the symbols
     are not plotted unless you change these attributes with one or more **+c** modifiers (one per directive).
 
-   **Note**: Polygons can only use **-Mt** setting.
+    **Note 1**: Polygons can only use **-Mt** setting.
+    **Note 2**: The **+c** modifiers are ignored for `Events without a duration`_.
 
 .. _-N:
 
@@ -469,6 +473,21 @@ fade period (where the text fades out).  The figure below illustrate the setup:
    at the event begin time, staying visible for the given duration, and then finally
    fade away completely. For labels, the plateau and decay periods do not apply.
 
+
+Events without a duration
+--------------------------
+
+Not every event has a natural end time. Whenever |-L| is used (be it a fixed *length*, per-event
+lengths or end-times read from the file, or via |-A|\ **s** for lines and polygons) the event has a
+*finite* duration. If |-L| is omitted entirely then **events** assumes an *infinite* duration: the
+event, once it occurs, simply remains visible with its normal appearance for the rest of the movie or
+plot. Typical examples are earthquake epicenters or the date of a discovery, which have a start time
+but no meaningful end time.
+
+Only the *arrival* part of the time-functions (the optional rise, plateau, and decay phases set via
+|-E|; see `The four time-functions`_) applies to infinite-duration events, since there is no end time
+to fade towards or reach a coda from. The **+f** modifier in |-E| and the **+c** modifier in |-M| are
+therefore ignored for such events.
 
 Sorting the data
 ----------------
