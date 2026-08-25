@@ -4275,7 +4275,6 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 			break;
 	}
 
-	if (phase != 0.0) A->phase = phase;	/* phase must apply to entire axis */
 	if (I->active) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Axis sub-item %c set more than once (typo?)\n", flag);
 		return (GMT_NOERROR);
@@ -4293,6 +4292,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	I->type = flag;
 	I->unit = unit;
 	I->interval = val;
+	I->phase = phase;	/* Phase shift only applies to this axis item [0] */
 	I->flavor = 0;
 	I->active = true;
 	if (!custom && in[0] && val == 0.0) I->active = false;
@@ -7752,7 +7752,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a "
 				"indicates annotation and major tick interval, f minor tick interval, and g grid interval. "
 				"Here, <stride> is the spacing between ticks or annotations, the (optional, and with required sign)"
-				"<phase> specifies phase-shifted annotations/ticks by that amount, and the (optional) "
+				"<phase> shifts that item (only) by that amount, and the (optional) "
 				"<unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be "
 				"no spaces between the substrings; just append items to make one very long string. "
 				"For custom annotations or intervals, let <intervals> be c<intfile>; see documentation for details. "

@@ -1428,7 +1428,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (A->type == GMT_TIME)
 					gmt_plot_timex_grid(GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
 				else
-					gmt_linearx_grid(GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
+					gmt_linearx_grid(GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx, A->item[GMT_GRID_UPPER].phase);
 			}
 		}
 		else if (!GMT->current.map.frame.no_frame) {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
@@ -1812,7 +1812,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (A->type == GMT_TIME)
 					gmt_plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
 				else
-					gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
+					gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx, A->item[GMT_GRID_UPPER].phase);
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
 			/* Copy x-axis annotation and scale info to y-axis.  We don't need to undo this since gmt_end_module will restore it for us */

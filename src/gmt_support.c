@@ -15729,9 +15729,9 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 }
 
 /*! . */
-unsigned int gmtlib_pow_array(struct GMT_CTRL *GMT, double min, double max, double delta, unsigned int x_or_y_or_z, double **array) {
+unsigned int gmtlib_pow_array(struct GMT_CTRL *GMT, double min, double max, double delta, double phase, unsigned int x_or_y_or_z, double **array) {
 	int i, n = 0;
-	double *val = NULL, v0, v1, phase = GMT->current.map.frame.axis[x_or_y_or_z].phase;
+	double *val = NULL, v0, v1;
 
 	if (delta <= 0.0) return (0);
 
@@ -15917,13 +15917,13 @@ unsigned int gmtlib_coordinate_array(struct GMT_CTRL *GMT, double min, double ma
 
 	switch (GMT->current.proj.xyz_projection[T->parent]) {
 		case GMT_LINEAR:
-			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LINEAR, T), GMT->current.map.frame.axis[T->parent].phase, array);
+			n = gmtlib_linear_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LINEAR, T), T->phase, array);
 			break;
 		case GMT_LOG10:
 			n = gmtlib_log_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_LOG10, T), array);
 			break;
 		case GMT_POW:
-			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_POW, T), T->parent, array);
+			n = gmtlib_pow_array (GMT, min, max, gmtlib_get_map_interval (GMT, GMT_POW, T), T->phase, T->parent, array);
 			break;
 		case GMT_TIME:
 			n = gmtlib_time_array (GMT, min, max, T, array);
