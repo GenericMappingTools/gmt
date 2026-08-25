@@ -1424,9 +1424,13 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 EXTERN_MSC int GMT_histogram (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {
-		GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: histogram\n");
-		return (GMT_NOT_A_VALID_MODULE);
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC && !API->usage) {	/* See if -I was given, which is part of usage */
+		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
+		if (API->error) return (API->error);	/* Set or get option list */
+		if (!GMT_Find_Option (API, 'I', options)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: histogram\n");
+			return (GMT_NOT_A_VALID_MODULE);
+		}
 	}
 	return GMT_pshistogram (V_API, mode, args);
 }

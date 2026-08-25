@@ -53,8 +53,8 @@ fi
 # Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
 # GRAPHICSMAGICK_RMS = <custom-limit>
 GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
-if ! [ -x "${script}" ]; then
-  echo "error: cannot execute script ${script}." >&2
+if ! [ -r "${script}" ]; then
+  echo "error: cannot read script ${script}." >&2
   exit 1
 fi
 
