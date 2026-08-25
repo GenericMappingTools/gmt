@@ -826,12 +826,13 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	if (GMT->current.map.frame.draw && !GMT->current.map.frame.no_frame && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval) && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval)) do_labels = false;
 
 	if (do_fill) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
-		double dim = 2.0 * Ctrl->S.scale;
+		/* Note: Ctrl->S.scale may have been divided by max_radius above, so use the plot diameter set before that */
+		double dim = diameter, radius = 0.5 * diameter;
 		GMT->current.map.frame.paint[GMT_Z] = true;	/* Restore original setting */
 		if (half_only) {	/* Clip the bottom half of the circle */
 			double xc[4], yc[4];
-			xc[0] = xc[3] = -Ctrl->S.scale;	xc[1] = xc[2] = Ctrl->S.scale;
-			yc[0] = yc[1] = 0.0;	yc[2] = yc[3] = Ctrl->S.scale;
+			xc[0] = xc[3] = -radius;	xc[1] = xc[2] = radius;
+			yc[0] = yc[1] = 0.0;	yc[2] = yc[3] = radius;
 			PSL_beginclipping (PSL, xc, yc, 4, GMT->session.no_rgb, 3);
 		}
 		gmt_setfill (GMT, &GMT->current.map.frame.fill[GMT_Z], 0);
