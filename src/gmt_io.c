@@ -7901,9 +7901,8 @@ void gmtlib_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols) {
 		return;
 	}
 
-	/* Write command line unless suppressed via -h+n */
-	if (!GMT->common.h.no_command)
-		gmtlib_write_tableheader (GMT, fp, gmtlib_create_header_item (GMT->parent, GMT_COMMENT_IS_COMMAND | GMT_COMMENT_IS_OPTION, GMT->current.options));
+	/* Always write command line */
+	gmtlib_write_tableheader (GMT, fp, gmtlib_create_header_item (GMT->parent, GMT_COMMENT_IS_COMMAND | GMT_COMMENT_IS_OPTION, GMT->current.options));
 	if (GMT->common.h.remark) {	/* Optional remark(s) provided; could be several lines separated by \n */
 		gmtio_write_multilines (GMT, fp, GMT->common.h.remark, "Remark");
 	}
