@@ -2620,12 +2620,7 @@ GMT_LOCAL int gmtapi_add_comment (struct GMTAPI_CTRL *API, unsigned int mode, ch
 GMT_LOCAL void gmtapi_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_DATASET *D) {
 	unsigned int tbl, k;
 	struct GMT_DATATABLE *T = NULL;
-	char *txt = NULL;
-
-	if ((mode & GMT_COMMENT_IS_COMMAND) && API->GMT->common.h.no_command)
-		return;	/* User gave -h...+n so no command stamp is wanted in the output headers */
-
-	txt = gmtlib_create_header_item (API, mode, arg);
+	char *txt = gmtlib_create_header_item (API, mode, arg);
 
 	if (gmtapi_add_comment (API, mode, txt)) return;	/* Updated one -h item, or nothing */
 
