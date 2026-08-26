@@ -199,9 +199,10 @@ struct GMT_COMMON {
 		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *GMT, uint64_t);	/* Pointers to functions that compute those distances */
 		char string[GMT_LEN64];
 	} g;
-	struct h {	/* -h[i|o][<nrecs>][+d][+c][+m[<text>]][+r<remark>][+t<title>] */
+	struct h {	/* -h[i|o][<nrecs>][+d][+c][+m[<text>]][+n][+r<remark>][+t<title>] */
 		bool active;
 		bool add_colnames;
+		bool no_command;        /* true if +n was given: suppress the "# Command : ..." header on output */
 		unsigned int mode;
 		unsigned int n_recs;
 		char *title;

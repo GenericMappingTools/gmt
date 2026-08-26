@@ -1240,7 +1240,7 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 	unsigned int pos = 0;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 
-	/* Parse the -h option.  Full syntax: -h[i|o][<nrecs>][+c][+d][+r<remark>][+t<title>] */
+	/* Parse the -h option.  Full syntax: -h[i|o][<nrecs>][+c][+d][+n][+r<remark>][+t<title>] */
 
 	/* Note: This forces the io to skip the first <nrecs> records, regardless of what they are.
 	 * In addition, any record starting with # will be considered a comment.
@@ -1248,6 +1248,7 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 	 * input records we found or (b) the program writes a specific number of records built from scratch.
 	 * Use +c to add a header identifying the various columns + [colno].
 	 * Use +d to have a program delete existing headers in the input [Default appends].
+	 * Use +n to suppress the automatic "# Command : ..." header record on output.
 	 * Use +r<remark> to add a specified header remark to the output file.
 	 * Use +t<title> to add a specified header title to the output file.
 	 */
@@ -1306,6 +1307,9 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 				case 'm':	/* Add a multi-segment record plus some eventual text */
 					gmt_M_str_free (GMT->common.h.multi_segment);
 					GMT->common.h.multi_segment = strdup (&p[1]);
+					break;
+				case 'n':	/* Suppress the automatic "# Command : ..." header on output */
+					GMT->common.h.no_command = true;
 					break;
 				case 'r':	/* Add specific text remark */
 					gmt_M_str_free (GMT->common.h.remark);
@@ -8301,6 +8305,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "+c Add header record with column information [none].");
 			GMT_Usage (API, 3, "+d Delete headers before adding new ones [Default will append headers].");
 			GMT_Usage (API, 3, "+m Insert a new segment header and <segheader> content after the headers [none].");
+			GMT_Usage (API, 3, "+n Do not write the automatic \"# Command : ...\" header record on output [Default writes it].");
 			GMT_Usage (API, 3, "+r Add a <remark> comment to the output [none].");
 			GMT_Usage (API, 3, "+t Add a <title> comment to the output [none].");
 			GMT_Usage (API, -2, "Note: <remark> and <title> may contain \\n to indicate line-breaks. "
