@@ -23,6 +23,7 @@ on:
       - 'src/**'
       - '**/CMakeLists.txt'
       - '.github/workflows/docker.yml'
+  workflow_dispatch:
 
 defaults:
   run:

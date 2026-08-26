@@ -21,6 +21,7 @@ on:
       - 'src/**'
       - 'CMakeLists.txt'
       - '.github/workflows/build.yml'
+  workflow_dispatch:
 
 defaults:
   run:
