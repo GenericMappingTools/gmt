@@ -53,6 +53,20 @@ GMT_LOCAL GDALDatasetH gmtgdalread_gdal_open (struct GMT_CTRL *GMT, char *gdal_f
 	return (GDALOpen (path, GA_ReadOnly));
 }
 
+GMT_LOCAL int gmtgdalread_gmt_registration (GDALDatasetH hDataset) {
+	/* Grids saved by gmt_gdalwrite carry a GMT_REGISTRATION metadata item that states, without ambiguity,
+	   which registration the grid had.  We need it because GDAL only records AREA_OR_POINT in the file when
+	   it is "Point" ("Area" is the implicit default and is dropped, in particular for rasters that carry no
+	   referencing at all), so a pixel registered grid written to, say, a Cartesian GeoTIFF would otherwise
+	   come back as gridline registered.  Returns 1 (pixel), 0 (gridline) or GMT_NOTSET if the file has no
+	   such item, in which case the caller sticks to its own guess. */
+	const char *item = GDALGetMetadataItem (hDataset, "GMT_REGISTRATION", NULL);
+	if (item == NULL) return (GMT_NOTSET);
+	if (!strcmp (item, "pixel"))    return (1);
+	if (!strcmp (item, "gridline")) return (0);
+	return (GMT_NOTSET);
+}
+
 GMT_LOCAL int gmtgdalread_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands) {
 	unsigned int n = 0, i, start, stop, pos = 0;
 	char p[GMT_LEN256];
@@ -321,6 +335,7 @@ GMT_LOCAL int gmtgdalread_populate_metadata (struct GMT_CTRL *GMT, struct GMT_GD
 	const char  *pszProjection = NULL;
 	int     i, j;
 	int     status, bSuccess;	/* success or failure */
+	int     reg_from_gmt;		/* Registration as declared by GMT when it wrote the file, or GMT_NOTSET */
 	int     nBand, raster_count;
 	int     bGotMin, bGotMax;	/* To know if driver transmitted Min/Max */
 	bool    got_noDataValue = false, pixel_reg = false, compute_minmax = false;
@@ -685,6 +700,9 @@ GMT_LOCAL int gmtgdalread_populate_metadata (struct GMT_CTRL *GMT, struct GMT_GD
 			!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
 			pixel_reg = true;
 
+		if ((reg_from_gmt = gmtgdalread_gmt_registration (hDataset)) != GMT_NOTSET)
+			pixel_reg = (reg_from_gmt == 1);	/* File was written by GMT and it told us the registration */
+
 		Ctrl->hdr[6] = pixel_reg;
 		Ctrl->hdr[7] = adfGeoTransform[1];
 		Ctrl->hdr[8] = fabs(adfGeoTransform[5]);
@@ -751,6 +769,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int nBufXSize[2] = {0,0}, nBufYSize, buffy, startRow = 0, endRow;
 	int nRowsPerBlock, nBlocks, nYOff, row_i, row_e;
 	int k, pad_w[2] = {0,0}, pad_e[2] = {0,0}, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
+	int reg_from_gmt;	/* Registration as declared by GMT when it wrote the file, or GMT_NOTSET */
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	int error = 0, gdal_code = 0, first_layer;
 	int piece, n_pieces = 1;	/* Normally 1, but will be 2 if the desired image subset is split across a periodic boundary */
@@ -1193,6 +1212,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) &&
 					!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
 					pixel_reg = true;
+
+				if ((reg_from_gmt = gmtgdalread_gmt_registration (hDataset)) != GMT_NOTSET)
+					pixel_reg = (reg_from_gmt == 1);	/* File was written by GMT and it told us the registration */
 			}
 
 			i_x_nXYSize = i * ((size_t)nBufXSize[piece] + pad_w[piece] + pad_e[piece]) * ((size_t)nBufYSize + pad_s + pad_n);

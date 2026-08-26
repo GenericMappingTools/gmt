@@ -47,6 +47,17 @@ static char *gdal_drv[N_GDAL_EXTENSIONS] = {"GTiff", "GIF", "PNG", "JPEG", "BMP"
  *----------------------------------------------------------|
  */
 
+GMT_LOCAL bool gmtgdalwrite_is_picture_driver (const char *format) {
+	/* True for the drivers that only make pictures.  They cannot record a georeferencing-related tag in the
+	 * file itself, so asking GDAL to store one there just litters the place with .aux.xml sidecars. */
+	static const char *picture[] = {"PNG", "JPEG", "JPG", "GIF", "BMP", "WEBP", NULL};
+	unsigned int k;
+	if (format == NULL) return (false);
+	for (k = 0; picture[k]; k++)
+		if (!strcasecmp (format, picture[k])) return (true);
+	return (false);
+}
+
 int gmt_export_image(struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	/* Take the image stored in the I structure and write to file by calling gmt_gdalwrite()
 	   The image format is inferred from the image name (in *fname) file extension,
@@ -514,14 +525,19 @@ int gmt_gdalwrite(struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *
 		 * supported everywhere, when n_cols < tile_width || n_rows < tile_height */
 		if (n_cols > 3 * GDAL_TILE_SIZE && n_rows > 3 * GDAL_TILE_SIZE)
 			papszOptions = CSLAddString(papszOptions, "TILED=YES");
+	}
 
-		if (is_geog || projWKT) {
-			/* Be respectful to data type registration */
-			if (registration == 0)
-				GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Point", NULL);
-			else
-				GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Area", NULL);
-		}
+	/* Be respectful to the registration of the data we are saving: without a tag in the file a pixel registered grid
+	 * comes back gridline registered, with its region shrunk by half a cell.  Note this used to be done for GTiff
+	 * only, and then only when the grid was georeferenced and the user had passed no +c<options>, which is why plain
+	 * Cartesian grids lost their registration.  We skip the picture-only drivers, which have nowhere to put this and
+	 * would only gain a .aux.xml sidecar for it. */
+	if (!gmtgdalwrite_is_picture_driver (pszFormat)) {
+		GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", (registration == 0) ? "Point" : "Area", NULL);
+		/* AREA_OR_POINT alone is not enough: GDAL never records it when it is "Area", that being the implicit
+		 * default, and the GeoTIFF driver writes no keys at all for a raster with no referencing.  So state the
+		 * registration in a GMT item as well - that is what gmt_gdalread reads back. */
+		GDALSetMetadataItem(hDstDS, "GMT_REGISTRATION", (registration == 0) ? "gridline" : "pixel", NULL);
 	}
 	if (prhs->co_options)
 		free (prhs->co_options);		/* Was allocated with an strdup() in gmt_gdal_write_grd() */
