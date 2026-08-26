@@ -16,7 +16,8 @@ using **-h**\ [**o**] and the optional modifiers:
 - **+d** - Remove existing header records.
 - **+c** - Add a header comment with column names to the output [default is no column names].
 - **+m** - Add a segment header *segheader* to the output after the header block [default is no segment header].
-- **+n** - Do not write the automatic "# Command : ..." header record on output [Default writes it].
+- **+n** - Do not write the automatic "# Command : ..." header record on output [Default writes it]. Combined with
+  the default appending of input headers, this makes the output header an exact copy of the input header.
 - **+r** - Add a *remark* comment to the output [default is no comment]. The *remark* string may contain \\n to
   indicate line-breaks.
 - **+t** - Add a *title* comment to the output [default is no title]. The *title* string may contain \\n to indicate
