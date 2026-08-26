@@ -13,7 +13,6 @@ on:
   pull_request:
     paths:
       - '**/*.dvc'
-  workflow_dispatch:
 
 permissions:
   contents: read
