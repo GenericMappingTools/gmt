@@ -425,21 +425,6 @@ GMT_LOCAL int gmtdcw_found_collection (char *code, struct GMT_DCW_COLLECTION *GM
 #define GMT_DCW_PLOTTING	1
 #define GMT_DCW_CLIPPING	2
 
-int gmt_DCW_get_data (struct GMT_CTRL *GMT) {
-	/* Ensure the DCW (Digital Chart of the World) data files are available locally,
-	 * downloading them from the GMT data server if needed.  Returns the number of
-	 * the required files that could not be obtained (0 means success). The optional
-	 * dcw-collections.txt file is fetched too but its absence is not an error. */
-	int n_missing = 0;
-	char path[PATH_MAX] = {""};
-
-	if (!gmtdcw_get_path (GMT, "dcw-gmt", ".nc", path)) n_missing++;
-	if (!gmtdcw_get_path (GMT, "dcw-countries", ".txt", path)) n_missing++;
-	if (!gmtdcw_get_path (GMT, "dcw-states", ".txt", path)) n_missing++;
-	(void) gmtdcw_get_path (GMT, "dcw-collections", ".txt", path);	/* Optional, ok if missing */
-	return (n_missing);
-}
-
 int gmt_DCW_version(struct GMTAPI_CTRL *API, char *version) {
 	/* Write DCW version into version which must have at least 8 positions */
 	int cdfid, err;

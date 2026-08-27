@@ -586,22 +586,6 @@ char gmt_shore_adjust_res (struct GMT_CTRL *GMT, char res, bool download) {
 	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
-int gmt_shore_get_data (struct GMT_CTRL *GMT, char res) {
-	/* Ensure the GSHHG coastline, river, and border binned data sets for the given
-	 * resolution (one of c, l, i, h, f) are available locally, downloading them from
-	 * the GMT data server if needed.  Returns the number of the three files that
-	 * could not be obtained (0 means success). */
-	int j, n_missing = 0;
-	char stem[GMT_LEN64] = {""}, path[PATH_MAX] = {""}, *kind[3] = {"GSHHS", "river", "border"};
-
-	for (j = 0; j < 3; j++) {
-		snprintf (stem, GMT_LEN64, "binned_%s_%c", kind[j], res);
-		if (!gmtshore_getpathname (GMT, stem, path, true, true))
-			n_missing++;
-	}
-	return (n_missing);
-}
-
 int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *info) {
 	/* res: Resolution (f, h, i, l, c */
 	/* Opens the netcdf file and reads in all top-level attributes, IDs, and variables for all bins overlapping with wesn */

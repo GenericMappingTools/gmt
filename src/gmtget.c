@@ -90,9 +90,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"append =<dataset1,dataset2...> to only download the stated datasets.");
 	GMT_Usage (API, -2, "Alternatively, -Dall downloads both cache and all datasets. "
 		"Note: Run \"gmt docs data\" to learn about available data sets.");
-	GMT_Usage (API, 3, "gshhg: The GSHHG coastline, river, and border database. "
-		"Append =<res> to only download one or more comma-separated resolutions (c, l, i, h, f) [all].");
-	GMT_Usage (API, 3, "dcw: The DCW (Digital Chart of the World) country polygon database.");
 	GMT_Usage (API, 1, "\n-G<defaultsfile>");
 	GMT_Usage (API, -2, "Set name of specific %s file to process "
 		"Default looks for file in current directory.  If not found, "
@@ -171,9 +168,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	                                 "Option -Q: Requires -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->N.active,
 	                                 "Option -Q: -N will be ignored\n");
-	if (Ctrl->D.active && Ctrl->D.dir && !(!strcmp (Ctrl->D.dir, "all") || !strcmp (Ctrl->D.dir, "cache") || !strncmp (Ctrl->D.dir, "data", 4U)
-		|| !strncmp (Ctrl->D.dir, "gshhg", 5U) || !strcmp (Ctrl->D.dir, "dcw"))) {
-		GMT_Report (API, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>], data=<datasetlist>, gshhg[=<res>], or dcw\n");
+	if (Ctrl->D.active && Ctrl->D.dir && !(!strcmp (Ctrl->D.dir, "all") || !strcmp (Ctrl->D.dir, "cache") || !strncmp (Ctrl->D.dir, "data", 4U))) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>] or data=<datasetlist>\n");
 		n_errors++;
 	}
 
@@ -321,32 +317,6 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				gmt_download_file_if_not_found (GMT, file, GMT_AUTO_DIR);
 			}
 			fclose (fp);
-		}
-		if (!strncmp (Ctrl->D.dir, "gshhg", 5U)) {	/* Want the GSHHG coastline, river, and border data */
-			char *avail_res = "clihf";
-			if ((c = strchr (Ctrl->D.dir, '=')) && c[1]) {	/* Specific resolution(s) requested, e.g., gshhg=c,l */
-				char *string = NULL, *token = NULL, *tofree = NULL;
-				tofree = string = strdup (&c[1]);
-				while ((token = strsep (&string, ",")) != NULL) {
-					if (strlen (token) != 1 || !strchr (avail_res, token[0])) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -D: gshhg resolution must be one of c, l, i, h, or f\n");
-						continue;
-					}
-					if (gmt_shore_get_data (GMT, token[0]))
-						GMT_Report (API, GMT_MSG_WARNING, "Unable to obtain the complete GSHHG %c-resolution data set\n", token[0]);
-				}
-				gmt_M_str_free (tofree);
-			}
-			else {	/* Get all resolutions */
-				size_t k;
-				for (k = 0; k < strlen (avail_res); k++)
-					if (gmt_shore_get_data (GMT, avail_res[k]))
-						GMT_Report (API, GMT_MSG_WARNING, "Unable to obtain the complete GSHHG %c-resolution data set\n", avail_res[k]);
-			}
-		}
-		else if (!strcmp (Ctrl->D.dir, "dcw")) {	/* Want the DCW (Digital Chart of the World) data */
-			if (gmt_DCW_get_data (GMT))
-				GMT_Report (API, GMT_MSG_WARNING, "Unable to obtain the complete DCW data set\n");
 		}
 		Return (GMT_NOERROR);
 	}
