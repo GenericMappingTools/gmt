@@ -696,6 +696,7 @@ EXTERN_MSC void gmt_free_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c);
 EXTERN_MSC void gmt_free_br (struct GMT_CTRL *GMT, struct GMT_BR *c);
 EXTERN_MSC void gmt_shore_cleanup (struct GMT_CTRL *GMT, struct GMT_SHORE *c);
 EXTERN_MSC void gmt_br_cleanup (struct GMT_CTRL *GMT, struct GMT_BR *c);
+EXTERN_MSC int gmt_shore_get_data (struct GMT_CTRL *GMT, char res);
 EXTERN_MSC int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *I);
 EXTERN_MSC int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, double wesn[]);
 EXTERN_MSC int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool assemble, double west, double east, struct GMT_GSHHS_POL **pol);

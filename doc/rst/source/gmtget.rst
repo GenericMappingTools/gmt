@@ -48,7 +48,13 @@ PARAMETER
     on the server), or *all* (both *cache* and *data*).  You can further limit
     the *data* download by appending =\ *planet* or =\ *datasetlist*.  Consult
     the :doc:`/datasets` documentation to see what data sets are currently
-    available from the server as this may change over time.
+    available from the server as this may change over time.  Alternatively,
+    *selection* may be *gshhg* to download the GSHHG coastline, river, and
+    border database, or *dcw* to download the DCW (Digital Chart of the World)
+    country polygon database.  For *gshhg*, you can limit the download to one
+    or more comma-separated resolutions by appending =\ *res*, where *res* is
+    one or more of **c** (crude), **l** (low), **i** (intermediate), **h**
+    (high), or **f** (full) [Default downloads all resolutions].
 
 .. _-G:
 
@@ -109,6 +115,14 @@ To download just the Earth masks and day image data, with a cutoff at 1x1 arc mi
 To download the entire cache directory contents, try::
 
     gmt get -Dcache
+
+To download the crude and low resolution GSHHG coastline, river, and border data, try::
+
+    gmt get -Dgshhg=c,l
+
+To download the DCW country polygon database, try::
+
+    gmt get -Ddcw
 
 To list the value of the parameter :term:`PS_COMMENTS`::
 
