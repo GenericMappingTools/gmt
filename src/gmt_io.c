@@ -7720,6 +7720,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 					}
 					break;
 				case GMT_IS_Z:
+					if (!P) break;	/* No CPT given via -C so we cannot look up a fill for this z-value */
 					if (P->categorical & GMT_CPT_CATEGORICAL_KEY)
 						gmt_get_fill_from_key (GMT, P, txt, fill);
 					else
