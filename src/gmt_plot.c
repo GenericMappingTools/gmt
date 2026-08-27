@@ -9279,6 +9279,25 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		/* Consider offsets required to center the plot on the subplot panel [0/0] */
 		GMT->current.setting.map_origin[GMT_X] += (P->dx + P->gap[XLO]);
 		GMT->current.setting.map_origin[GMT_Y] += (P->dy + P->gap[YLO]);
+		if (GMT->current.proj.three_D) {
+			/* A subplot heading is laid out in figure coordinates, while a perspective panel may extend above its
+			 * nominal 2-D rectangle.  Record the highest projected y reached by any 3-D panel so that subplot end
+			 * can place the figure heading above the real perspective footprint (issue #4450). */
+			int fig = gmt_get_current_figure (GMT->parent);
+			char file[PATH_MAX] = {""};
+			double old_top = -DBL_MAX;
+			double top = GMT->current.setting.map_origin[GMT_Y] + GMT->current.proj.z_project.ymax;
+			FILE *fp_top = NULL;
+			snprintf (file, PATH_MAX, "%s/gmt.subplottop.%d", GMT->parent->gwf_dir, fig);
+			if ((fp_top = fopen (file, "r")) != NULL) {
+				if (fscanf (fp_top, "%lf", &old_top) != 1) old_top = -DBL_MAX;
+				fclose (fp_top);
+			}
+			if (top > old_top && (fp_top = fopen (file, "w")) != NULL) {
+				fprintf (fp_top, "%.16g\n", top);
+				fclose (fp_top);
+			}
+		}
 		if (P->first && O_active)	/* Run completion script, if any */
 			PSL_setexec (PSL, 1);
 	}

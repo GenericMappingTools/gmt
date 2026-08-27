@@ -23,7 +23,7 @@ mamba_packages="ghostscript=10.03.0"
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     packages+=" pngquant"
-    mamba_packages+=" sphinx dvc"
+    mamba_packages+=" sphinx dvc pip"
 fi
 
 # packages for running GMT tests

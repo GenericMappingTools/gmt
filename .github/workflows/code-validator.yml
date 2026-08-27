@@ -25,6 +25,7 @@ on:
       - 'cmake/**'
       - '**/*.sh'
       - '.github/workflows/code-validator.yml'
+  workflow_dispatch:
 
 name: Code Validator
 

@@ -1446,9 +1446,11 @@ int gmt_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
 	gmt_strncpy (h.id, "DSBB", 4U);
 	h.n_columns = (short int)header->n_columns;	 h.n_rows = (short int)header->n_rows;
-	if (header->registration == GMT_GRID_PIXEL_REG) {
+	if (header->registration == GMT_GRID_PIXEL_REG) {	/* Surfer headers only hold node coordinates */
 		h.wesn[XLO] = header->wesn[XLO] + header->inc[GMT_X]/2.0;	 h.wesn[XHI] = header->wesn[XHI] - header->inc[GMT_X]/2.0;
 		h.wesn[YLO] = header->wesn[YLO] + header->inc[GMT_Y]/2.0;	 h.wesn[YHI] = header->wesn[YHI] - header->inc[GMT_Y]/2.0;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Surfer grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Surfer grid region in file %s written as %g/%g/%g/%g\n", HH->name, h.wesn[XLO], h.wesn[XHI], h.wesn[YLO], h.wesn[YHI]);
 	}
 	else
 		gmt_M_memcpy (h.wesn, header->wesn, 4, double);
@@ -1674,9 +1676,11 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
 	gmt_strncpy (h.id, "DSBB", 4U);
 	h.n_columns = (short int)header->n_columns;	 h.n_rows = (short int)header->n_rows;
-	if (header->registration == GMT_GRID_PIXEL_REG) {
+	if (header->registration == GMT_GRID_PIXEL_REG) {	/* Surfer headers only hold node coordinates */
 		h.wesn[XLO] = header->wesn[XLO] + header->inc[GMT_X]/2;	 h.wesn[XHI] = header->wesn[XHI] - header->inc[GMT_X]/2;
 		h.wesn[YLO] = header->wesn[YLO] + header->inc[GMT_Y]/2;	 h.wesn[YHI] = header->wesn[YHI] - header->inc[GMT_Y]/2;
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Surfer grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Surfer grid region in file %s written as %g/%g/%g/%g\n", HH->name, h.wesn[XLO], h.wesn[XHI], h.wesn[YLO], h.wesn[YHI]);
 	}
 	else
 		gmt_M_memcpy (h.wesn, header->wesn, 4, double);
