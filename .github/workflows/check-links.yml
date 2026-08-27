@@ -58,6 +58,21 @@ jobs:
           **/*.rst_
           **/*.md
 
+    - name: Remove duplicate links from the report
+      if: steps.lychee.outputs.exit_code != 0
+      run: |
+        # The same link is often referenced from many files, so lychee lists it
+        # once per file. Keep the "Summary" table, then list each broken/timed-out
+        # link only once, stripping the "(at file:line)" part so duplicates collapse.
+        {
+          awk '/^## /{exit} {print}' /tmp/lychee-out.md
+          echo
+          echo "## Broken/timed-out links"
+          echo
+          grep '^\* \[' /tmp/lychee-out.md | sed -E 's/ \(at [^)]*\)//' | sort -u
+        } > /tmp/lychee-dedup.md
+        mv /tmp/lychee-dedup.md /tmp/lychee-out.md
+
     - name: Get current date
       id: date
       run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
