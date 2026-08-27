@@ -1,0 +1,6 @@
+outs:
+- md5: f8e0054ad273aef42aec65e9b7082867.dir
+  size: 156828
+  nfiles: 3
+  hash: md5
+  path: geology
