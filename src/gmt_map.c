@@ -6647,6 +6647,61 @@ GMT_LOCAL int gmtmap_init_three_D (struct GMT_CTRL *GMT) {
 	GMT->current.proj.z_project.ymin += GMT->current.proj.z_project.y_off;
 	GMT->current.proj.z_project.ymax += GMT->current.proj.z_project.y_off;
 
+	if (GMT->current.proj.three_D && GMT->current.proj.zmax > GMT->current.proj.zmin &&
+		GMT->current.plot.panel.active && GMT->current.plot.panel.fixed_figure && GMT->current.plot.panel.no_scaling == 0) {
+		/* We are in a subplot panel.  gmtmap_setxy could only fit the nominal 2-D map rectangle into the panel,
+		 * since the perspective box is not known until here, and that box is the larger of the two - so the
+		 * panels stuck out of the figure [issue #4450].  Measure the box the frame will actually occupy from
+		 * the eight corners of the region, shrink the projection until it fits the panel, and center it there.
+		 * All projected coordinates are linear in the plot scales, so the measured box scales with them. */
+		struct GMT_SUBPLOT *P = &(GMT->current.plot.panel);
+		double bx[2] = {DBL_MAX, -DBL_MAX}, by[2] = {DBL_MAX, -DBL_MAX}, bw, bh, f, xc, yc, pad;
+		unsigned int ix, iy, iz;
+		for (ix = 0; ix < 2; ix++) for (iy = 0; iy < 2; iy++) for (iz = 0; iz < 2; iz++) {
+			gmt_xyz_to_xy (GMT, gmt_x_to_xx (GMT, GMT->common.R.wesn[XLO+ix]), gmt_y_to_yy (GMT, GMT->common.R.wesn[YLO+iy]),
+				gmt_z_to_zz (GMT, GMT->common.R.wesn[ZLO+iz]), &xc, &yc);
+			bx[0] = MIN (bx[0], xc);	bx[1] = MAX (bx[1], xc);
+			by[0] = MIN (by[0], yc);	by[1] = MAX (by[1], yc);
+		}
+		if ((bx[1] - bx[0]) <= P->w && (by[1] - by[0]) <= P->h)
+			return (GMT_NOERROR);	/* The box already fits the panel, so leave this plot exactly as it was */
+
+		/* It does not fit.  The frame is annotated outside the box, so when we shrink it we must also leave room
+		 * for a tick, the annotation offset and the annotation itself, or the annotations hang out of the panel */
+		pad = GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] +
+			2.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+		bx[0] -= pad;	bx[1] += pad;	by[0] -= pad;	by[1] += 0.25 * pad;	/* Nothing is annotated above the box */
+		bw = bx[1] - bx[0];	bh = by[1] - by[0];
+		f = (bw > 0.0 && bh > 0.0) ? MIN (P->w / bw, P->h / bh) : 1.0;
+		if (f < 1.0) {	/* Too big for the panel, so scale the projection down and center what is left.
+			 * A panel that already fits is left completely alone, so such plots are unchanged. */
+			GMT->current.proj.scale[GMT_X] *= f;	GMT->current.proj.scale[GMT_Y] *= f;	GMT->current.proj.scale[GMT_Z] *= f;
+			GMT->current.proj.i_scale[GMT_X] /= f;	GMT->current.proj.i_scale[GMT_Y] /= f;	GMT->current.proj.i_scale[GMT_Z] /= f;
+			GMT->current.proj.w_r *= f;
+			GMT->current.proj.rect[XHI] *= f;	GMT->current.proj.rect[YHI] *= f;
+			GMT->current.proj.origin[GMT_X] *= f;	GMT->current.proj.origin[GMT_Y] *= f;	GMT->current.proj.origin[GMT_Z] *= f;
+			GMT->current.proj.zmax *= f;	GMT->current.proj.zmin *= f;	/* The z axis length is in plot units too */
+			GMT->current.proj.z_project.x_off *= f;	GMT->current.proj.z_project.y_off *= f;
+			GMT->current.proj.z_project.xmin *= f;	GMT->current.proj.z_project.xmax *= f;
+			GMT->current.proj.z_project.ymin *= f;	GMT->current.proj.z_project.ymax *= f;
+			GMT->current.map.width  *= f;	GMT->current.map.height *= f;
+			GMT->current.map.half_width  = 0.5 * GMT->current.map.width;
+			GMT->current.map.half_height = 0.5 * GMT->current.map.height;
+			bx[0] *= f;	bx[1] *= f;	by[0] *= f;	by[1] *= f;
+			bw *= f;	bh *= f;
+			/* Shift the projection so the box sits centered inside the panel */
+			GMT->current.proj.z_project.x_off += 0.5 * (P->w - bw) - bx[0];
+			GMT->current.proj.z_project.y_off += 0.5 * (P->h - bh) - by[0];
+			GMT->current.proj.z_project.xmin += 0.5 * (P->w - bw) - bx[0];
+			GMT->current.proj.z_project.xmax += 0.5 * (P->w - bw) - bx[0];
+			GMT->current.proj.z_project.ymin += 0.5 * (P->h - bh) - by[0];
+			GMT->current.proj.z_project.ymax += 0.5 * (P->h - bh) - by[0];
+			P->dx = P->dy = 0.0;	/* The centering is in the projection now */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Perspective panel scaled by %g to a %g x %g footprint inside its %g x %g panel\n",
+				f, bw, bh, P->w, P->h);
+		}
+	}
+
 	return (GMT_NOERROR);
 }
 
