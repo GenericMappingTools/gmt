@@ -16204,7 +16204,12 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 			zero_fix = true;
 		}
 		if (hemi_pre[0]) strcpy (label, hemi_pre);
-        use_format = (lonlat & 1 ? gmt_strrep (GMT->current.plot.format[level][type], "%3.3d", "%2.2d") :strdup (GMT->current.plot.format[level][type]));
+		/* For latitudes, the leading degree field must be shrunk from 3 to 2 digits (max latitude is 90, not 360).
+		 * Only touch that leading field: a blind gmt_strrep for "%3.3d" would also corrupt a fractional-seconds/minutes/degrees
+		 * field of exactly 3 decimals (n_sec_decimals == 3), which happens to share the same "%3.3d" text. */
+		use_format = strdup (GMT->current.plot.format[level][type]);
+		if ((lonlat & 1) && !strncmp (use_format, "%3.3d", 5U))
+			gmt_M_memcpy (use_format, "%2.2d", 5U, char);
 
 		switch (2*level+type) {
 			case 0:
