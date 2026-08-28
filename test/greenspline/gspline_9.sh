@@ -5,6 +5,9 @@
 # profile or track.  We check that this matches feeding greenspline the
 # equivalent, manually precomputed -A...+f2 (x, y, gradient, azimuth) data.
 
+# set AWK to awk if undefined
+AWK=${AWK:-awk}
+
 cat << EOF > gspline_9_data.txt
 0	0	0
 4	0	4
