@@ -1422,6 +1422,23 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 	if (c->ns > 0) p = gmt_M_memory (GMT, p, P, struct GMT_GSHHS_POL);	/* Trim memory */
 
 	for (ku = 0; ku < P; ku++) gmtshore_path_shift2 (p[ku].lon, p[ku].n, west, east, c->leftmost_bin);	/* Deal with possible longitude -/+360 issues */
+	if (c->lon_sw >= east) {	/* This bin sits at or beyond the east border, so its polygons were shifted west above.
+		 * A point that lay exactly on that border is not shifted by the test above, which tears the polygon across
+		 * the entire map: its bounding box then spans every column and the containment test paints unrelated nodes
+		 * clear across the grid [issue #8235].  A polygon cannot be wider than its bin, so when one is we know the
+		 * points left behind belong with the shifted part. */
+		for (ku = 0; ku < P; ku++) {
+			double lon_min = DBL_MAX, lon_max = -DBL_MAX;
+			unsigned int kp;
+			for (kp = 0; kp < (unsigned int)p[ku].n; kp++) {
+				if (p[ku].lon[kp] < lon_min) lon_min = p[ku].lon[kp];
+				if (p[ku].lon[kp] > lon_max) lon_max = p[ku].lon[kp];
+			}
+			if ((lon_max - lon_min) <= c->bsize) continue;	/* This one is intact */
+			for (kp = 0; kp < (unsigned int)p[ku].n; kp++)
+				if (p[ku].lon[kp] >= east && (p[ku].lon[kp] - 360.0) >= west) p[ku].lon[kp] -= 360.0;
+		}
+	}
 
 	*pol = p;
 	return (P);	/* Return list of polygons found */
