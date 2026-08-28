@@ -616,14 +616,15 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				if (col_max < col_min) col_max += (int)Grid->header->n_columns;
 			}
 			else {	/* Make sure we are inside our grid */
+				/* lon_w and lon_e are the bin's edges measured east from the grid's west edge, so they must be
+				 * wrapped against 360, not compared to the absolute wesn limits: doing the latter shifted a bin
+				 * lying east of the west edge into negative offsets, so col_max came out below col_min and the
+				 * bin painted nothing at all [issue #8235] */
 				double lon_w, lon_e;
-				lon_w = c.lon_sw - Grid->header->wesn[XLO];	lon_e = c.lon_sw + c.bsize - Grid->header->wesn[XLO];
-				if (lon_w < Grid->header->wesn[XLO] && (lon_w+360.0) < Grid->header->wesn[XHI]) {
-					lon_w += 360.0;	lon_e += 360.0;
-				}
-				else if (lon_e > Grid->header->wesn[XHI] && (lon_e-360.0) > Grid->header->wesn[XLO]) {
-					lon_w -= 360.0;	lon_e -= 360.0;
-				}
+				lon_w = c.lon_sw - Grid->header->wesn[XLO];	lon_e = lon_w + c.bsize;
+				while (lon_w < 0.0) { lon_w += 360.0;	lon_e += 360.0; }
+				while (lon_w >= 360.0) { lon_w -= 360.0;	lon_e -= 360.0; }
+				if (lon_e > 360.0) { lon_w -= 360.0;	lon_e -= 360.0; }	/* Bin straddles the seam; use its western part */
 				col_min = irint (ceil (lon_w * HH->r_inc[GMT_X] - Grid->header->xy_off));
 				col_max = irint (floor (lon_e * HH->r_inc[GMT_X] - Grid->header->xy_off));
 				if (col_min < 0) col_min = 0;
