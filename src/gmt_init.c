@@ -15101,7 +15101,6 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK)
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
-			if (!exact) gmt_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
 			/* Safety valve if w == e or s == n */
 			if (doubleAlmostEqualZero (wesn[XLO], wesn[XHI])) {
 				if (gmt_M_is_zero (wesn[XLO]))	/* No info to do anything other than this */
@@ -15115,6 +15114,7 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 				else
 					wesn[YLO] *= 0.9, wesn[YHI] *= 1.1;	/* +/- 10% of values */
 			}
+			if (!exact) gmt_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Family %d not supported", family);
