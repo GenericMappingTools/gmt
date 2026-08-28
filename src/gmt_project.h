@@ -486,6 +486,7 @@ enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis
 
 struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	double interval;		/* Distance between ticks in user units */
+	double phase;			/* Phase offset for this item's stride: (knot-phase)%interval = 0  */
 	unsigned int parent;		/* Id of axis this item belongs to (0,1,2) */
 	bool active;			/* true if we want to use this item */
 	bool generated;			/* true if this is an auto-generated interval */
@@ -505,7 +506,6 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	bool use_angle[2];		/* True if we got +a<angle>|n|p for this axis, for [GMT_PRIMARY] and [GMT_SECONDARY] annotations */
 	bool skip[2];			/* Determines if we skip annotations at the lower or upper bounds of an axis [false/false] */
 	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
-	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	double angle[2];		/* Annotations angle set by user, for [GMT_PRIMARY] and [GMT_SECONDARY] annotations (issue #7036) */
 	char label[GMT_LEN256];		/* Label of the axis */
 	char secondary_label[GMT_LEN256];	/* Optionally use this label when axis is right or top */

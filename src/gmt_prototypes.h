@@ -282,7 +282,7 @@ EXTERN_MSC double gmt_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0, d
 EXTERN_MSC bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string);
 EXTERN_MSC void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *font, char *label, double angle, int just, unsigned int form);
 EXTERN_MSC void gmt_map_title (struct GMT_CTRL *GMT, double x, double y);
-EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
+EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval, double phase);
 EXTERN_MSC int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *dest);
 EXTERN_MSC char *gmt_export2proj4 (struct GMT_CTRL *GMT);
 EXTERN_MSC char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4, int *scale_pos, char *epsg2proj);
