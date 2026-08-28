@@ -265,7 +265,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "3: X, Vmagnitude, Vangle(s).");
 	GMT_Usage (API, 3, "4: X, Vcomponents.");
 	GMT_Usage (API, 3, "5: X, Vunit-vector, Vmagnitude.");
-	GMT_Usage (API, -2, "Here, X = (x, y[, z]) is the position vector, V = (Vx, Vy[, Vz]) is the gradient vector.");
+	GMT_Usage (API, 3, "6: x, y, z (2-D only): Successive points along a profile or track.");
+	GMT_Usage (API, -2, "Here, X = (x, y[, z]) is the position vector, V = (Vx, Vy[, Vz]) is the gradient vector. "
+		"For format 6, we derive the gradient constraint at the midpoint of each pair of consecutive points "
+		"in the file, using their separation and z-difference to get the gradient magnitude and azimuth "
+		"(same as format 2). A new profile or track starts whenever a data gap or segment header is found.");
 	GMT_Usage (API, 1, "\n-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]");
 	GMT_Usage (API, -2, "Solve by SVD and control how many eigenvalues to use. Optionally append a directive and value:");
 	GMT_Usage (API, 3, "n: Only use the largest <val> eigenvalues [all].");
@@ -801,7 +805,8 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Option -A: Cannot read file %s!\n", Ctrl->A.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 5, "Option -A: format must be in 0-5 range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 6, "Option -A: format must be in 0-6 range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode == 6 && Ctrl->dimension != 2, "Option -A: format 6 only applies to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && dimension != 2, "The -C +c+i modifiers only apply to 2-D gridding\n");
@@ -1885,6 +1890,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 					case 3:	n_A_cols = 4; break; /* (x, y, direction, gradient) */
 					case 4:	n_A_cols = 4; break; /* (x, y, gx, gy) */
 					case 5:	n_A_cols = 5; break; /* (x, y, nx, ny, gradient) */
+					case 6:	n_A_cols = 3; break; /* (x, y, z) profile data; gradient and azimuth are derived */
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Bad gradient mode selected for 2-D data (%d) - aborting!\n", Ctrl->A.mode);
 						gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
@@ -1921,7 +1927,16 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i -o were used at all) */
-		m = Din->n_records;	/* Total number of gradient constraints */
+		if (Ctrl->A.mode == 6) {	/* Each pair of consecutive points in a segment yields one gradient constraint */
+			uint64_t n_short = 0;
+			for (m = seg = 0; seg < Din->n_segments; seg++) {
+				if (Din->table[0]->segment[seg]->n_rows < 2) { n_short++; continue; }
+				m += Din->table[0]->segment[seg]->n_rows - 1;
+			}
+			if (n_short) GMT_Report (API, GMT_MSG_WARNING, "Option -A: %" PRIu64 " segment(s) in %s have fewer than 2 points and yield no gradient constraint\n", n_short, Ctrl->A.file);
+		}
+		else
+			m = Din->n_records;	/* Total number of gradient constraints */
 		nm += m;		/* New total of linear equations to solve */
 		X = gmt_M_memory (GMT, X, nm, double *);
 		for (k = n; k < nm; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
@@ -1933,57 +1948,68 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		n_skip = n_read = 0;
 		for (seg = k = 0, p = n; seg < Din->n_segments; seg++) {
 			Slp = Din->table[0]->segment[seg];
-			for (row = 0; row < (openmp_int)Slp->n_rows; row++, k++, p++) {
-				for (ii = 0; ii < n_cols; ii++) X[p][ii] = Slp->data[ii][row];
-				switch (dimension) {
-					case 1:	/* 1-D: x, slope */
-						D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
-						obs[p] = Slp->data[dimension][row];
-						break;
-					case 2:	/* 2-D */
-						switch (Ctrl->A.mode) {
-							case 1:	/* (x, y, az, gradient) */
-								az = D2R * Slp->data[2][row];
-								obs[p] = Slp->data[3][row];
-								break;
-							case 2:	/* (x, y, gradient, azimuth) */
-								az = D2R * Slp->data[3][row];
-								obs[p] = Slp->data[2][row];
-								break;
-							case 3:	/* (x, y, direction, gradient) */
-								az = M_PI_2 - D2R * Slp->data[2][row];
-								obs[p] = Slp->data[3][row];
-								break;
-							case 4:	/* (x, y, gx, gy) */
-								az = atan2 (Slp->data[2][row], Slp->data[3][row]);		/* Get azimuth of gradient */
-								obs[p] = hypot (Slp->data[3][row], Slp->data[3][row]);	/* Get magnitude of gradient */
-								break;
-							case 5:	/* (x, y, nx, ny, gradient) */
-								az = atan2 (Slp->data[2][row], Slp->data[3][row]);		/* Get azimuth of gradient */
-								obs[p] = Slp->data[4][row];	/* Magnitude of gradient */
-								break;
-						}
-						sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
-						break;
-					case 3:	/* 3-D */
-						switch (Ctrl->A.mode) {
-							case 4:	/* (x, y, z, gx, gy, gz) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = Slp->data[3+ii][row];	/* Get the gradient vector */
-								obs[p] = gmt_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
-								gmt_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
-								break;
-							case 5: /* (x, y, z, nx, ny, nz, gradient) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = Slp->data[3+ii][row];	/* Get the unit vector */
-								obs[p] = Slp->data[6][row];	/* This is the gradient magnitude */
-								break;
-						}
-						break;
-					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Bad dimension selected (%d) - aborting!\n", dimension);
-						for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
-						gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
-						Return (GMT_DATA_READ_ERROR);
-						break;
+			for (row = (Ctrl->A.mode == 6) ? 1 : 0; row < (openmp_int)Slp->n_rows; row++, k++, p++) {
+				if (Ctrl->A.mode == 6) {	/* Derive midpoint, gradient, and azimuth from this and the previous point */
+					double dz = Slp->data[GMT_Z][row] - Slp->data[GMT_Z][row-1];
+					double ds = gmt_distance (GMT, Slp->data[GMT_X][row-1], Slp->data[GMT_Y][row-1], Slp->data[GMT_X][row], Slp->data[GMT_Y][row]);
+					X[p][GMT_X] = 0.5 * (Slp->data[GMT_X][row-1] + Slp->data[GMT_X][row]);
+					X[p][GMT_Y] = 0.5 * (Slp->data[GMT_Y][row-1] + Slp->data[GMT_Y][row]);
+					az = D2R * gmt_az_backaz (GMT, Slp->data[GMT_X][row-1], Slp->data[GMT_Y][row-1], Slp->data[GMT_X][row], Slp->data[GMT_Y][row], false);
+					obs[p] = gmt_M_is_zero (ds) ? GMT->session.d_NaN : dz / ds;
+					sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
+				}
+				else {
+					for (ii = 0; ii < n_cols; ii++) X[p][ii] = Slp->data[ii][row];
+					switch (dimension) {
+						case 1:	/* 1-D: x, slope */
+							D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
+							obs[p] = Slp->data[dimension][row];
+							break;
+						case 2:	/* 2-D */
+							switch (Ctrl->A.mode) {
+								case 1:	/* (x, y, az, gradient) */
+									az = D2R * Slp->data[2][row];
+									obs[p] = Slp->data[3][row];
+									break;
+								case 2:	/* (x, y, gradient, azimuth) */
+									az = D2R * Slp->data[3][row];
+									obs[p] = Slp->data[2][row];
+									break;
+								case 3:	/* (x, y, direction, gradient) */
+									az = M_PI_2 - D2R * Slp->data[2][row];
+									obs[p] = Slp->data[3][row];
+									break;
+								case 4:	/* (x, y, gx, gy) */
+									az = atan2 (Slp->data[2][row], Slp->data[3][row]);		/* Get azimuth of gradient */
+									obs[p] = hypot (Slp->data[3][row], Slp->data[3][row]);	/* Get magnitude of gradient */
+									break;
+								case 5:	/* (x, y, nx, ny, gradient) */
+									az = atan2 (Slp->data[2][row], Slp->data[3][row]);		/* Get azimuth of gradient */
+									obs[p] = Slp->data[4][row];	/* Magnitude of gradient */
+									break;
+							}
+							sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
+							break;
+						case 3:	/* 3-D */
+							switch (Ctrl->A.mode) {
+								case 4:	/* (x, y, z, gx, gy, gz) */
+									for (ii = 0; ii < 3; ii++) D[k][ii] = Slp->data[3+ii][row];	/* Get the gradient vector */
+									obs[p] = gmt_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
+									gmt_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
+									break;
+								case 5: /* (x, y, z, nx, ny, nz, gradient) */
+									for (ii = 0; ii < 3; ii++) D[k][ii] = Slp->data[3+ii][row];	/* Get the unit vector */
+									obs[p] = Slp->data[6][row];	/* This is the gradient magnitude */
+									break;
+							}
+							break;
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Bad dimension selected (%d) - aborting!\n", dimension);
+							for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
+							gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
+							Return (GMT_DATA_READ_ERROR);
+							break;
+					}
 				}
 				/* Check for duplicates as well as co-registered slopes with data constraints */
 				skip = false;

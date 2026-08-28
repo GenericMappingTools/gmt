@@ -14,7 +14,7 @@ Synopsis
 
 **gmt greenspline** [ *table* ]
 |-G|\ *grdfile*
-[ |-A|\ *gradfile*\ **+f**\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
+[ |-A|\ *gradfile*\ **+f**\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**\|\ **6** ]
 [ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*][**+r**\ *reportfile*] ]
@@ -131,7 +131,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *gradfile*\ **+f**\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**
+**-A**\ *gradfile*\ **+f**\ **0**\|\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5**\|\ **6**
     The solution will partly be constrained by surface gradients
     :math:`\mathbf{v} = v \hat{\mathbf{n}}`, where :math:`v` is the gradient
     magnitude and :math:`\hat{\mathbf{n}}` its unit vector direction.
@@ -139,7 +139,7 @@ Optional Arguments
     (either unit vector :math:`\hat{\mathbf{n}}` and magnitude :math:`v` separately
     or gradient components :math:`\mathbf{v}` directly) or
     angles w.r.t. the coordinate axes. Append name of ASCII file with
-    the surface gradients.  Use modifier **+f** to select one of five input
+    the surface gradients.  Use modifier **+f** to select one of six input
     formats:
 
     - **0** - For 1-D data there is no direction, just gradient magnitude (slope) so
@@ -149,11 +149,17 @@ Optional Arguments
     - **2** - Records contain *x*, *y*, :math:`v`, *azimuth* (*azimuth* in degrees is
       measured clockwise from the vertical (north);  2-D data set).
     - **3** - Records contain **x**, *direction(s)*, :math:`v` (*direction(s)* in degrees
-      are measured counter-clockwise from the horizontal, and for 3-D the vertical axis 
+      are measured counter-clockwise from the horizontal, and for 3-D the vertical axis
       (2-D or 3-D data set).
     - **4** - Records contain **x**, :math:`\mathbf{v}` (2-D or 3-D data set).
     - **5** - Records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v` (2-D or 3-D data set).
-    
+    - **6** - Records contain *x*, *y*, *z*: successive points along a profile or track
+      (2-D data set only). For each pair of consecutive points we derive a gradient
+      constraint at their midpoint, using their separation and z-difference to obtain
+      the gradient magnitude :math:`v` and azimuth (equivalent to format **2**). A data
+      gap or segment header starts a new profile, so no gradient constraint is derived
+      across such a break.
+
     **Note**: The slope constraints must not be at the same locations as the
     data constraints. That scenario has not yet been implemented.
 
