@@ -15101,9 +15101,7 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK)
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
-			/* Safety valve if w == e or s == n (e.g., a single data point, or points that only vary in
-			 * one dimension) - must be done before gmt_round_wesn, which otherwise takes log10 of a
-			 * zero range and turns wesn into NaNs. */
+			/* Safety valve if w == e or s == n */
 			if (doubleAlmostEqualZero (wesn[XLO], wesn[XHI])) {
 				if (gmt_M_is_zero (wesn[XLO]))	/* No info to do anything other than this */
 					wesn[XLO] = -1.0, wesn[XHI] = +1.0;
