@@ -81,7 +81,7 @@ jobs:
             curl -LO https://github.com/cli/cli/releases/download/v2.49.0/gh_2.49.0_linux_amd64.deb
             apt install ./gh_2.49.0_linux_amd64.deb
           elif [[ "$os" = "fedora" ]]; then
-            dnf install -y \
+            dnf install -y --disablerepo=fedora-cisco-openh264 \
                 cmake ninja-build \
                 libcurl-devel netcdf-devel gdal-devel gdal \
                 fftw3-devel pcre2-devel lapack-devel openblas-devel glib2-devel \
