@@ -54,4 +54,4 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`pslegend`,
-:doc:`psimage`, :doc:`psscale`, :doc:`psxy`
+:doc:`psimage <image>`, :doc:`psscale`, :doc:`psxy`
