@@ -93,17 +93,46 @@ jobs:
                 @earth_mask_30s_p"
           # Use the static server
           export GMT_DATA_SERVER=static
-          # Download remote data multiple times to make sure all are downloaded
-          gmt which -Ga $data
-          gmt which -Ga $data
-          gmt which -Ga $data
-          # Download cache files multiple times to make sure all are downloaded
+
+          # Both "gmt which -Ga" and "gmt get -Dcache" exit 0 even when a download
+          # fails: gmtwhich.c only prints "File ... not found!" and gmtget.c discards
+          # the return value of gmt_download_file_if_not_found(). So the exit status
+          # tells us nothing and we have to scan the output instead. Without this an
+          # incomplete cache is uploaded silently and then reused by every test run
+          # until the next refresh, which shows up as unrelated tests failing with
+          # "Remote download is currently deactivated".
+          failures='Unable to obtain remote file|not found!|Remote download is currently deactivated'
+
+          # Retry until nothing is missing; already-downloaded files are skipped, so
+          # each attempt only fetches what the previous one failed to get.
+          download() {  # $1: log file, $2...: command to run
+            local log=$1; shift
+            local attempt status
+            for attempt in 1 2 3; do
+              if [ ${attempt} -gt 1 ]; then
+                echo "Some files are still missing; retrying in 60s (attempt ${attempt}/3)."
+                sleep 60
+              fi
+              status=0
+              "$@" > "${log}" 2>&1 || status=$?
+              cat "${log}"
+              # A non-zero status never happens for a failed download (see above), but
+              # would mean the command itself died, which is a failure all the same.
+              [ ${status} -eq 0 ] && ! grep -Eq "${failures}" "${log}" && return 0
+            done
+            echo "::error::Failed to download all files after 3 attempts:"
+            grep -E "${failures}" "${log}" || echo "last exit status: ${status}"
+            return 1
+          }
+
+          # Note: "shell: bash -l {0}" does not imply -e, so failures must be explicit.
+          # Download remote data
+          download data.log gmt which -Ga $data || exit 1
           # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
           mv ~/.gmt/gmt_data_server.txt ~/.gmt/server/
           mv ~/.gmt/gmt_hash_server.txt ~/.gmt/server/
-          gmt get -Dcache
-          gmt get -Dcache
-          gmt get -Dcache
+          # Download cache files
+          download cache.log gmt get -Dcache || exit 1
           # Workaroud for https://github.com/GenericMappingTools/gmt/issues/8437.
           mkdir ~/.gmt/static/
           mv ~/.gmt/server ~/.gmt/static/
