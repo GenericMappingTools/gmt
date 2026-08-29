@@ -351,8 +351,13 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
 		gmt_setpen (GMT, &save[pol].pen);
+		/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 		way = gmt_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
-		if (I->label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
+		if (way == GMT_POL_IS_CW) {	/* So far this has been found to be the wrong way so we switch */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_polygon_centroid found CW polygon (by mistake?), switch to CCW\n");
+			way = GMT_POL_IS_CCW;
+		}
+		if (I->label) {
 			if (mode & 1) {
 				form = gmt_setfont (GMT, &save[pol].font);
 				PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, PSL_MC, form);
