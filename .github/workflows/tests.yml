@@ -92,7 +92,13 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download GSHHG and DCW data
-        run: gh run download -n coastline-cache -D coastline
+        uses: nick-fields/retry-action@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 30
+          shell: bash
+          command: gh run download -n coastline-cache -D coastline
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -137,18 +143,30 @@ jobs:
       - name: Pull baseline image data from dvc remote
         id: dvc-pull
         continue-on-error: true
-        run: |
-          dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
-          dvc pull --remote origin --no-run-cache --force
+        uses: nick-fields/retry-action@v3
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_wait_seconds: 30
+          shell: bash
+          command: |
+            dvc remote modify origin url https://${DAGSHUB_TOKEN}@dagshub.com/GenericMappingTools/gmt.dvc --local
+            dvc pull --remote origin --no-run-cache --force
         env:
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
       - name: Download DVC cache from GitHub Artifacts and restore baseline image data
         if: steps.dvc-pull.outcome == 'failure'
-        run: |
-          rm -rf .dvc/cache
-          gh run download -n dvc-cache -D .dvc/cache/
-          dvc checkout --force
+        uses: nick-fields/retry-action@v3
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_wait_seconds: 30
+          shell: bash
+          command: |
+            rm -rf .dvc/cache
+            gh run download -n dvc-cache -D .dvc/cache/
+            dvc checkout --force
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -161,7 +179,13 @@ jobs:
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        run: gh run download -n gmt-cache -D ~/.gmt/static/
+        uses: nick-fields/retry-action@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 30
+          shell: bash
+          command: gh run download -n gmt-cache -D ~/.gmt/static/
         env:
           GH_TOKEN: ${{ github.token }}
 
