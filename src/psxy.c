@@ -1509,7 +1509,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
 		if (S.v.status & PSL_VEC_FILL2) {	/* Gave +g<fill> to set head fill; odd, but overrides -G (and sets -G true) */
-			current_fill = S.v.fill;	/* Override any -G<fill> with specified head fill */
+			current_fill = Ctrl->G.fill = S.v.fill;	/* Override any -G<fill> with specified head fill, and let auto-legend see it too */
 			if (S.v.status & PSL_VEC_FILL) Ctrl->G.active = true;
 		}
 		else if (S.v.status & PSL_VEC_FILL) {
