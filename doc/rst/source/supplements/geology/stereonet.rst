@@ -22,7 +22,7 @@ Synopsis
 [ |-M|\ [**c**\|\ **p**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *symbol*\ [*size*] ]
-[ |-T|\ [**d**\|\ **l**\|\ **p**][**+u**] ]
+[ |-T|\ [**d**\|\ **l**\|\ **p**][**+r**][**+u**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -61,7 +61,9 @@ trend and plunge of a line.
 For each plane we can draw its **cyclographic trace**, i.e., the great circle where the
 plane cuts the hemisphere (selected with |-W|), and the **pole** to the plane, i.e., the
 point where the normal to the plane pierces the hemisphere (selected with |-S|).  For
-each line we only draw the point where it pierces the hemisphere.
+each line we only draw the point where it pierces the hemisphere.  Instead of the pole,
+|-T|\ **+r** lets you plot a lineation that lies *on* the plane (e.g., a slickenline),
+given by its **rake** (also called *pitch*) in a third input column.
 
 A stereonet is not a separate map projection: it is simply one hemisphere of a unit
 sphere seen from above, centered on the nadir.  We therefore use one of the two standard
@@ -140,19 +142,20 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
     coordinates that this module would have plotted and write them to standard output, so
     that you can build a custom figure with :doc:`plot </plot>` or process the geometry
     with other modules.  Append **c** to write the cyclographic traces as a multiple
-    segment data set, or **p** to write the poles (or the lines, if **-Tl**) as a single
-    segment [Default writes the traces for planes and the points for lines].
+    segment data set, or **p** to write the poles (or their rake points if **-T+r** was
+    set, or the lines, if **-Tl**) as a single segment [Default writes the traces for
+    planes and the points for lines].
 
 .. _-S:
 
 **-S**\ *symbol*\ [*size*]
-    Plot the pole to each plane, or the line itself if **-Tl**, using this symbol; see
-    :doc:`plot </plot>` for the available symbol codes [**-Sc**\ 0.15c].  Without |-S| no
-    symbols are plotted for planes.
+    Plot the pole to each plane (or the rake point if **-T+r** was set, or the line
+    itself if **-Tl**) using this symbol; see :doc:`plot </plot>` for the available
+    symbol codes [**-Sc**\ 0.15c].  Without |-S| no symbols are plotted for planes.
 
 .. _-T:
 
-**-T**\ [**d**\|\ **l**\|\ **p**][**+u**]
+**-T**\ [**d**\|\ **l**\|\ **p**][**+r**][**+u**]
     Select what the two input angles mean:
 
     - **d** - Planes given as dip direction and dip.
@@ -160,8 +163,15 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
     - **p** - Planes given as strike and dip, with the strike following the right-hand
       rule so that the plane dips to the right of the strike direction [Default].
 
-    Append **+u** to plot the data on the upper hemisphere [Default is the lower
-    hemisphere, which is the convention in structural geology].
+    Optionally, append one or both modifiers:
+
+    - **+r** - Expect a third column with the **rake** (also called *pitch*) of a
+      lineation on the plane, e.g., a slickenline, in degrees measured from the strike
+      azimuth: 0 is the strike azimuth itself, 90 is the down-dip direction, and 180 is
+      the opposite end of the strike.  Plot that point instead of the pole.  Not allowed
+      with **-Tl**, since a line has no plane to measure the rake on.
+    - **+u** - Plot the data on the upper hemisphere [Default is the lower hemisphere,
+      which is the convention in structural geology].
 
 .. |Add_-Rgeo| replace:: A stereonet always covers a full hemisphere, so you should not
     need this option [**-Rg**].
@@ -234,6 +244,9 @@ Notes
 #. To draw an empty net, give no input records, e.g., ``gmt stereonet -JA12c < /dev/null``.
 #. Field notebooks often list a name before the two angles; use, e.g., **-i**\ 1,2 to skip
    such a leading column.
+#. The rake given via **-T+r** must be in the 0-180 range; negative rakes or rakes above
+   180 are not accepted, since the rake of a lineation is conventionally always measured
+   this way (see the References below).
 
 .. module_common_ends
 
@@ -273,6 +286,12 @@ To only convert the strike and dip of the faults into the longitudes and latitud
 poles, so that you can plot them yourself, try::
 
     gmt stereonet faults.txt -i1,2 -Mp > poles.txt
+
+To plot fault-slip data, i.e., a fault plane together with the rake of its slickenline
+(here strike 315, dip 30, rake 25 measured from the northwest end of the strike, hence a
+rake of 180-25=155 in the 0-180 convention used by **-T+r**), try::
+
+    echo 315 30 155 | gmt stereonet -JA10c -Tp+r -W1p,green -Sc0.2c -Ggreen
 
 References
 ----------

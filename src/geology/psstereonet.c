@@ -38,7 +38,11 @@
  *
  * while the cyclographic trace (great circle) of a plane with strike S and dip
  * D is the meridian lon = 90-D rotated by S about the x-axis, i.e., about the
- * axis that points at the center of the net.
+ * axis that points at the center of the net.  A point on that trace is given
+ * by sweeping a parameter t from -90 to +90; since the standard geological
+ * rake (or pitch) R of a lineation on the plane runs from 0 at the strike
+ * azimuth, through 90 at the down-dip direction, to 180 at the opposite end
+ * of the strike, the two parameters are simply related by t = 90-R.
  *
  * Author:	Federico Esteban
  * Date:	22-AUG-2026
@@ -109,9 +113,10 @@ struct PSSTEREONET_CTRL {
 		bool active;
 		char *string;	/* Since we will simply pass this on to plot */
 	} S;
-	struct PSSTEREONET_T {	/* -T[d|l|p][+u] */
+	struct PSSTEREONET_T {	/* -T[d|l|p][+r][+u] */
 		bool active;
 		bool upper;	/* True if +u, i.e., plot on the upper hemisphere */
+		bool rake;	/* True if +r, i.e., a third column gives the rake of a lineation on the plane */
 		unsigned int mode;
 	} T;
 	struct PSSTEREONET_W {	/* -W<pen> */
@@ -155,7 +160,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S[0/0/]<width>] [-A[<annot>[/<tick>]]] [%s] [-C<cpt>] "
-		"[-G<fill>] %s[-L<pen>] [-M[c|p]] %s%s[%s] [-S<symbol>[<size>]] [-T[d|l|p][+u]] [%s] [%s] "
+		"[-G<fill>] %s[-L<pen>] [-M[c|p]] %s%s[%s] [-S<symbol>[<size>]] [-T[d|l|p][+r][+u]] [%s] [%s] "
 		"[-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
@@ -167,8 +172,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<table>");
 	GMT_Usage (API, -2, "One or more data files with two columns holding a pair of angles in degrees. What "
-		"the two angles mean is set by -T [the strike and dip of planes]. A third column with a z-value "
-		"is expected if -C is used. If no files are given we read standard input.");
+		"the two angles mean is set by -T [the strike and dip of planes]. If -T+r was used, a third column "
+		"gives the rake of a lineation on the plane. A further column with a z-value is expected if -C is "
+		"used. If no files are given we read standard input.");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-JA|S[0/0/]<width>");
@@ -196,19 +202,24 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Do not plot; instead write the converted longitude, latitude coordinates to "
 		"standard output. Append which data set to write:");
 	GMT_Usage (API, 3, "c: The cyclographic traces of the planes, as a multiple segment data set.");
-	GMT_Usage (API, 3, "p: The poles to the planes, or the lines themselves if -Tl was set.");
+	GMT_Usage (API, 3, "p: The poles to the planes (or their rake points if -T+r was set), or the lines "
+		"themselves if -Tl was set.");
 	GMT_Usage (API, -2, "[Default writes the traces for planes and the points for lines].");
 	GMT_Usage (API, 1, "\n-S<symbol>[<size>]");
-	GMT_Usage (API, -2, "Plot the pole to each plane (or the line itself if -Tl) with this symbol; see the "
-		"plot module for the available symbol codes [%s]. Without -S no symbols are plotted for planes.",
-		PSSTEREONET_DEF_SYMBOL);
-	GMT_Usage (API, 1, "\n-T[d|l|p][+u]");
+	GMT_Usage (API, -2, "Plot the pole to each plane (or the line itself if -Tl, or the rake point if -T+r "
+		"was used) with this symbol; see the plot module for the available symbol codes [%s]. Without -S "
+		"no symbols are plotted for planes.", PSSTEREONET_DEF_SYMBOL);
+	GMT_Usage (API, 1, "\n-T[d|l|p][+r][+u]");
 	GMT_Usage (API, -2, "Select what the two input angles mean:");
 	GMT_Usage (API, 3, "d: Planes given as dip direction and dip.");
 	GMT_Usage (API, 3, "l: Lines given as trend and plunge.");
 	GMT_Usage (API, 3, "p: Planes given as strike and dip, with the strike following the right-hand rule, "
 		"i.e., the plane dips to the right of the strike direction [Default].");
-	GMT_Usage (API, -2, "Optionally, append a modifier:");
+	GMT_Usage (API, -2, "Optionally, append one or both modifiers:");
+	GMT_Usage (API, 3, "+r Expect a third column with the rake (pitch) of a lineation on the plane, in "
+		"degrees measured from the strike azimuth [0-180]; 0 is the strike azimuth itself, 90 is the "
+		"down-dip direction, and 180 is the opposite end of the strike. Plot that point instead of the "
+		"pole. Not allowed with -Tl, since a line has no plane to measure the rake on.");
 	GMT_Usage (API, 3, "+u Plot the data on the upper hemisphere [Default is the lower hemisphere].");
 	GMT_Usage (API, 1, "\n-W<pen>");
 	GMT_Usage (API, -2, "Set the pen used to draw the cyclographic traces (great circles) of the planes "
@@ -294,9 +305,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 				break;
 			case 'T':	/* What the two input angles mean */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				if ((c = gmt_first_modifier (GMT, opt->arg, "u"))) {	/* Got the +u modifier */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "ru"))) {	/* Got the +r and/or +u modifiers */
+					if (gmt_get_modifier (c, 'r', NULL)) Ctrl->T.rake = true;
 					if (gmt_get_modifier (c, 'u', NULL)) Ctrl->T.upper = true;
-					c[0] = '\0';	/* Temporarily chop off the modifier */
+					c[0] = '\0';	/* Temporarily chop off the modifiers */
 				}
 				switch (opt->arg[0]) {
 					case '\0': case 'p': Ctrl->T.mode = PSSTEREONET_PLANE;  break;
@@ -346,6 +358,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 	if (Ctrl->T.mode == PSSTEREONET_LINE) {	/* Lines have no cyclographic trace */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.mode == PSSTEREONET_DUMP_TRACE,
 			"Option -Mc: Lines (-Tl) have no cyclographic trace\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.rake, "Option -T+r: Lines (-Tl) have no plane to measure a rake on\n");
 		if (Ctrl->W.active && !Ctrl->L.active) {	/* Be kind and use it as the symbol pen instead */
 			GMT_Report (API, GMT_MSG_WARNING, "Option -W: Lines (-Tl) have no cyclographic trace; using the pen to outline the symbols\n");
 			Ctrl->L.string = strdup (Ctrl->W.string);	Ctrl->L.active = true;
@@ -442,9 +455,11 @@ GMT_LOCAL int psstereonet_convert (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL
 	/* Convert the (azimuth, dip) pairs in D to the great circles and points that we can plot on the net.
 	 * Trace gets one segment per plane [NULL if -Tl], Point gets a single segment with one row per input
 	 * record, and Zval gets the third column, if any, with one value per plane [for plot -Z]. */
-	bool do_trace = (Ctrl->T.mode != PSSTEREONET_LINE), do_z = (Ctrl->C.active && D->n_columns > 2U);
+	bool do_trace = (Ctrl->T.mode != PSSTEREONET_LINE);
+	unsigned int zcol = 2 + (Ctrl->T.rake ? 1 : 0);	/* The rake, if present, shifts the z-column out by one */
+	bool do_z = (Ctrl->C.active && D->n_columns > zcol);
 	uint64_t tbl, seg, row, p, n = 0, dim[4] = {1, 1, 0, 2};
-	double azimuth, dip, strike = 0.0, trend, plunge, lon, lat;
+	double azimuth, dip, rake, strike = 0.0, trend, plunge, lon, lat;
 	struct GMT_DATASEGMENT *S = NULL, *Sout = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -475,23 +490,31 @@ GMT_LOCAL int psstereonet_convert (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL
 				if (Ctrl->T.upper) azimuth += 180.0;
 				if (Ctrl->T.mode == PSSTEREONET_LINE) {	/* The two angles are the trend and plunge of a line */
 					trend = azimuth;	plunge = dip;
+					psstereonet_line_to_lonlat (trend, plunge, &lon, &lat);
 				}
-				else {	/* A plane: get the right-hand-rule strike, then the trace and the pole */
+				else {	/* A plane: get the right-hand-rule strike, then the trace and the pole (or the rake) */
 					strike = (Ctrl->T.mode == PSSTEREONET_DIPDIR) ? azimuth - 90.0 : azimuth;
 					for (p = 0; p < PSSTEREONET_N_TRACE; p++) {	/* Walk along the cyclographic trace */
 						psstereonet_plane_to_lonlat (strike, dip, -90.0 + 180.0 * p / (PSSTEREONET_N_TRACE - 1), &lon, &lat);
 						(*Trace)->table[0]->segment[n]->data[GMT_X][p] = lon;
 						(*Trace)->table[0]->segment[n]->data[GMT_Y][p] = lat;
 					}
-					/* The pole plunges 90-dip in the direction opposite to the dip direction */
-					trend = strike - 90.0;	plunge = 90.0 - dip;
+					if (Ctrl->T.rake) {	/* Plot the lineation given by its rake instead of the pole; rake
+					                     * runs 0-180 from the strike azimuth, through the down-dip direction
+					                     * at 90, to the opposite end of the strike at 180 - i.e., t = 90-rake */
+						rake = S->data[2][row];
+						psstereonet_plane_to_lonlat (strike, dip, 90.0 - rake, &lon, &lat);
+					}
+					else {	/* The pole plunges 90-dip in the direction opposite to the dip direction */
+						trend = strike - 90.0;	plunge = 90.0 - dip;
+						psstereonet_line_to_lonlat (trend, plunge, &lon, &lat);
+					}
 				}
-				psstereonet_line_to_lonlat (trend, plunge, &lon, &lat);
 				Sout->data[GMT_X][n] = lon;
 				Sout->data[GMT_Y][n] = lat;
 				if (do_z) {
-					Sout->data[GMT_Z][n] = S->data[GMT_Z][row];
-					(*Zval)->table[0]->segment[0]->data[GMT_X][n] = S->data[GMT_Z][row];
+					Sout->data[GMT_Z][n] = S->data[zcol][row];
+					(*Zval)->table[0]->segment[0]->data[GMT_X][n] = S->data[zcol][row];
 				}
 			}
 		}
@@ -550,7 +573,7 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Expecting the %s\n", (Ctrl->T.mode == PSSTEREONET_LINE) ? "trend and plunge of lines" :
 		((Ctrl->T.mode == PSSTEREONET_DIPDIR) ? "dip direction and dip of planes" : "strike and dip of planes"));
 
-	if (GMT_Set_Columns (API, GMT_IN, 2 + (Ctrl->C.active ? 1 : 0), GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
+	if (GMT_Set_Columns (API, GMT_IN, 2 + (Ctrl->T.rake ? 1 : 0) + (Ctrl->C.active ? 1 : 0), GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
 		Return (API->error);
 	gmt_set_cartesian (GMT, GMT_IN);	/* The input angles are plain numbers, not longitudes and latitudes */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Register data input */

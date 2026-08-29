@@ -43,7 +43,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 		  GMT_TP_STANDARD },
 	{ 0, 'T', "type",
 	          "d,l,p",             "dipdir|dip_direction,line,plane",
-	          "u",                 "upper",
+	          "r,u",               "rake,upper",
 		  GMT_TP_STANDARD },
 	GMT_W_PEN_KW,
 	{ 0, '\0', "", "", "", "", "", 0 }  /* End of list marked with empty option and strings */
