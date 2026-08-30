@@ -2423,14 +2423,21 @@ GMT_LOCAL void gmtmap_setinfo (struct GMT_CTRL *GMT, double xmin, double xmax, d
 	w = (xmax - xmin) * GMT->current.proj.scale[GMT_X];
 	h = (ymax - ymin) * GMT->current.proj.scale[GMT_Y];
 
-	if (GMT->current.proj.gave_map_width == 1)	/* Must rescale to given width */
-		factor = scl / w;
-	else if (GMT->current.proj.gave_map_width == 2)	/* Must rescale to given height */
-		factor = scl / h;
-	else if (GMT->current.proj.gave_map_width == 3)	/* Must rescale to max dimension */
-		factor = scl / MAX (w, h);
-	else if (GMT->current.proj.gave_map_width == 4)	/* Must rescale to min dimension */
-		factor = scl / MIN (w, h);
+	if (GMT->current.proj.gave_map_width) {	/* Gave a map dimension (1 = width, 2 = height, 3 = max, 4 = min) that the plot must match */
+		static char *kind[5] = {"", "width", "height", "maximum dimension", "minimum dimension"};
+		unsigned int type = GMT->current.proj.gave_map_width;
+		double big = MAX(w, h), dim = (type == 1) ? w : ((type == 2) ? h : ((type == 3) ? big : MIN(w, h)));
+		if (big > 0.0 && dim < GMT_CONV4_LIMIT * big) {
+			/* The dimension we were asked to match is nothing but round-off, e.g., a thin polar sector rotated to
+			 * lie along the other axis.  Matching it would blow the scale up to absurdity, so use the other one */
+			GMT_Report(GMT->parent, GMT_MSG_WARNING, "Your map has no %s to speak of (%g %% of its other dimension) so the given size cannot set it; sizing the other dimension instead.\n",
+			            kind[type], 100.0 * dim / big);
+			if (GMT->current.proj.projection == GMT_POLAR)
+				GMT_Report(GMT->parent, GMT_MSG_WARNING, "For polar plots, -Jp<scale> sets the radial scale directly and is not affected by the +t rotation.\n");
+			dim = big;
+		}
+		if (dim > 0.0) factor = scl / dim;
+	}
 	GMT->current.proj.scale[GMT_X] *= factor;
 	GMT->current.proj.scale[GMT_Y] *= factor;
 	GMT->current.proj.w_r *= factor;
@@ -5383,8 +5390,9 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 
 	/* Search for extreme lon/lat coordinates by matching along the rectangular boundary */
 
-	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
-	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
+	/* Need at least a couple of nodes along each side, even if the map has no width or height to speak of */
+	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = MAX(2, urint(GMT->current.map.width / GMT->current.setting.map_line_step));
+	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = MAX(2, urint(GMT->current.map.height / GMT->current.setting.map_line_step));
 
 	if (GMT->current.map.width > 400.0 && gmt_M_is_grdmapproject (GMT)) {	/* ***project calling with true scale, probably. Reset to sane values */
 		GMT->current.map.n_lon_nodes = MIN (GMT->current.map.n_lon_nodes, 360);
@@ -10126,8 +10134,9 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		if (GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI] && (GMT->current.proj.central_meridian - 360.0) >= GMT->common.R.wesn[XLO]) GMT->current.proj.central_meridian -= 360.0;
 	}
 
-	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
-	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
+	/* Need at least a couple of nodes along each side, even if the map has no width or height to speak of */
+	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = MAX(2, urint(GMT->current.map.width / GMT->current.setting.map_line_step));
+	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = MAX(2, urint(GMT->current.map.height / GMT->current.setting.map_line_step));
 
 	error = gmtmap_init_three_D (GMT);
 
@@ -10204,8 +10213,9 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		MAX (GMT->current.map.frame.axis[GMT_X].item[i].interval, GMT->current.map.frame.axis[GMT_Y].item[i].interval);
 	}
 
-	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
-	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
+	/* Need at least a couple of nodes along each side, even if the map has no width or height to speak of */
+	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = MAX(2, urint(GMT->current.map.width / GMT->current.setting.map_line_step));
+	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = MAX(2, urint(GMT->current.map.height / GMT->current.setting.map_line_step));
 
 	GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 	GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
