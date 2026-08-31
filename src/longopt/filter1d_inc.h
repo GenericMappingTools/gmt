@@ -33,7 +33,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = {
 	          "h,l,u",             "highpass,lower,upper",
 		  GMT_TP_STANDARD },
 	{ 0, 'L', "gap_width",         "", "", "", "", GMT_TP_STANDARD },
-	{ 0, 'N', "time_column|time_col",          "", "", "", "", GMT_TP_STANDARD },
+	{ 0, 'N', "time_column|time_col",          "", "", "e", "exclude", GMT_TP_STANDARD },
 	{ 0, 'Q', "quality",           "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'S', "symmetry",          "", "", "", "", GMT_TP_STANDARD },
 	{ 0, 'T', "range|series",

@@ -4275,7 +4275,6 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 			break;
 	}
 
-	if (phase != 0.0) A->phase = phase;	/* phase must apply to entire axis */
 	if (I->active) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Axis sub-item %c set more than once (typo?)\n", flag);
 		return (GMT_NOERROR);
@@ -4293,6 +4292,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	I->type = flag;
 	I->unit = unit;
 	I->interval = val;
+	I->phase = phase;	/* Phase shift only applies to this axis item [0] */
 	I->flavor = 0;
 	I->active = true;
 	if (!custom && in[0] && val == 0.0) I->active = false;
@@ -7752,7 +7752,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a "
 				"indicates annotation and major tick interval, f minor tick interval, and g grid interval. "
 				"Here, <stride> is the spacing between ticks or annotations, the (optional, and with required sign)"
-				"<phase> specifies phase-shifted annotations/ticks by that amount, and the (optional) "
+				"<phase> shifts that item (only) by that amount, and the (optional) "
 				"<unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be "
 				"no spaces between the substrings; just append items to make one very long string. "
 				"For custom annotations or intervals, let <intervals> be c<intfile>; see documentation for details. "
@@ -14719,6 +14719,8 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 				P->parallel = atoi (&line[12]);
 			else if (!strncmp (line, "# INSIDE:", 9U))
 				P->inside = atoi (&line[10]);
+			else if (!strncmp (line, "# FIXEDFIG:", 11U))
+				P->fixed_figure = atoi (&line[12]);
 			else if (!strncmp (line, "# DIRECTION:", 12U))
 				sscanf (&line[13], "%d %d", &P->dir[GMT_X], &P->dir[GMT_Y]);
 			else if (!strncmp (line, "# GAPS:", 7U))
@@ -15099,7 +15101,6 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK)
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
-			if (!exact) gmt_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
 			/* Safety valve if w == e or s == n */
 			if (doubleAlmostEqualZero (wesn[XLO], wesn[XHI])) {
 				if (gmt_M_is_zero (wesn[XLO]))	/* No info to do anything other than this */
@@ -15113,6 +15114,7 @@ GMT_LOCAL int gmtinit_get_region_from_data(struct GMTAPI_CTRL *API, int family, 
 				else
 					wesn[YLO] *= 0.9, wesn[YHI] *= 1.1;	/* +/- 10% of values */
 			}
+			if (!exact) gmt_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Family %d not supported", family);

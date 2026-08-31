@@ -109,7 +109,7 @@ static size_t GMT_alloc_annotations[4] = {0, 0, 0, 0};
 static double *GMT_x_annotation[4] = {NULL, NULL, NULL, NULL}, *GMT_y_annotation[4] = {NULL, NULL, NULL, NULL};
 
 /* THese functions are public but used in a static function so declared here to avoid resorting */
-void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval);
+void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval, double phase);
 
 /* Get bitmapped 600 dpi GMT glyph for timestamp.  The glyph is a 90 x 220 pixel 1-bit image
 	and it is here represented as ceil (220 / 8) * 90 = 2520 bytes */
@@ -677,7 +677,7 @@ GMT_LOCAL void gmtplot_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	gmt_M_free (GMT, llat);
 }
 
-GMT_LOCAL void gmtplot_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
+GMT_LOCAL void gmtplot_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval, double phase) {
 	/* x gridlines in oblique coordinates for all but the Oblique Mercator projection [which already is oblique] */
 	double *x = NULL, *lon = NULL, *lat = NULL, *lat_obl = NULL, tval, p_cap, s_cap;
 	unsigned int idup = 0, i, j, k, nx, np, nc1 = 0, nc2, npc, np1;
@@ -695,7 +695,7 @@ GMT_LOCAL void gmtplot_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	cap = !doubleAlmostEqual (p_cap, 90.0);	/* true if we have a polar cap specified */
 	tval = (n - s) * GMT->current.setting.map_line_step / GMT->current.map.height;
 
-	nx = gmtlib_linear_array (GMT, 0.0, TWO_PI, D2R * dval, D2R * GMT->current.map.frame.axis[GMT_X].phase, &x);
+	nx = gmtlib_linear_array (GMT, 0.0, TWO_PI, D2R * dval, D2R * phase, &x);
 	np = gmtlib_linear_array (GMT, -90.0, 90.0, tval, 0.0, &lat_obl);
 	np1 = nc2 = np - 1;	/* Nominal number of points in path */
 	lon = gmt_M_memory (GMT, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
@@ -727,7 +727,7 @@ GMT_LOCAL void gmtplot_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	}
 	if (nx) gmt_M_free (GMT, x);
 	if (cap) {	/* Draw the polar cap(s) meridians with a separate lon spacing */
-		nx = gmtlib_linear_array (GMT, 0.0, TWO_PI, D2R * GMT->current.setting.map_polar_cap[1], D2R * GMT->current.map.frame.axis[GMT_X].phase, &x);
+		nx = gmtlib_linear_array (GMT, 0.0, TWO_PI, D2R * GMT->current.setting.map_polar_cap[1], D2R * phase, &x);
 		for (i = 0; i < nx - idup; i++) {
 			for (k = j = 0; k < np; k++, j++) {
 				gmtlib_iobl (GMT, &lon[j], &lat[j], x[i], D2R * lat_obl[k]);	/* Get regular coordinates of this point */
@@ -755,16 +755,16 @@ GMT_LOCAL void gmtplot_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	gmt_M_free (GMT, lat);
 }
 
-GMT_LOCAL void gmtplot_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
+GMT_LOCAL void gmtplot_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval, double phase) {
 	double *y = NULL;
 	char *type = (gmt_M_y_is_lat (GMT, GMT_IN)) ? "parallel" : "y";
 	unsigned int i, ny = 0;
 
 	if (GMT->current.proj.z_down) {
 		if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
-			ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
+			ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dval, phase, &y);
 		else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
-			ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
+			ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dval, phase, &y);
 		for (i = 0; i < ny; i++) {
 			if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
 				y[i] = GMT->current.proj.z_radius - y[i];	/* These are the z values needed for positioning */
@@ -773,7 +773,7 @@ GMT_LOCAL void gmtplot_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 		}
 	}
 	else
-		ny = gmtlib_linear_array (GMT, s, n, dval, GMT->current.map.frame.axis[GMT_Y].phase, &y);
+		ny = gmtlib_linear_array (GMT, s, n, dval, phase, &y);
 	for (i = 0; i < ny; i++) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, y[i], w, e);
 		gmtplot_map_latline (GMT, PSL, y[i], w, e);
@@ -797,7 +797,7 @@ GMT_LOCAL void gmtplot_x_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	}
 }
 
-GMT_LOCAL void gmtplot_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
+GMT_LOCAL void gmtplot_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval, double phase) {
 	/* y gridlines in oblique coordinates for all but the Oblique Mercator projection [which already is oblique] */
 
 	double *y = NULL, *lon = NULL, *lon_obl = NULL, *lat = NULL, tval, p_cap;
@@ -809,7 +809,7 @@ GMT_LOCAL void gmtplot_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	 * create oblique coordinates for the full 0/360/-90/90, convert to regular coordinates and
 	 * then truncate points outside the actual w/e/s/n */
 
-	ny = gmtlib_linear_array (GMT, -M_PI_2, M_PI_2, D2R * dval, D2R * GMT->current.map.frame.axis[GMT_Y].phase, &y);
+	ny = gmtlib_linear_array (GMT, -M_PI_2, M_PI_2, D2R * dval, D2R * phase, &y);
 	tval = (e - w) * GMT->current.setting.map_line_step / GMT->current.map.width;
 	np = gmtlib_linear_array (GMT, 0.0, TWO_PI, D2R * tval, 0.0, &lon_obl);
 	lon = gmt_M_memory (GMT, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
@@ -896,20 +896,20 @@ GMT_LOCAL void gmtplot_logy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	if (y) gmt_M_free (GMT, y);
 }
 
-GMT_LOCAL void gmtplot_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
+GMT_LOCAL void gmtplot_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval, double phase) {
 	unsigned int nx;
 	double *x = NULL;
 
-	nx = gmtlib_pow_array (GMT, w, e, dval, 0, &x);
+	nx = gmtlib_pow_array (GMT, w, e, dval, phase, 0, &x);
 	gmtplot_x_grid (GMT, PSL, s, n, x, nx);
 	if (x) gmt_M_free (GMT, x);
 }
 
-GMT_LOCAL void gmtplot_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
+GMT_LOCAL void gmtplot_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval, double phase) {
 	unsigned int ny;
 	double *y = NULL;
 
-	ny = gmtlib_pow_array (GMT, s, n, dval, 1, &y);
+	ny = gmtlib_pow_array (GMT, s, n, dval, phase, 1, &y);
 	gmtplot_y_grid (GMT, PSL, w, e, y, ny);
 	if (y) gmt_M_free (GMT, y);
 }
@@ -971,8 +971,8 @@ GMT_LOCAL void gmtplot_fancy_frame_straightlon_checkers (struct GMT_CTRL *GMT, s
 		T = &GMT->current.map.frame.axis[GMT_X].item[item[k]];
 		if (T->active) {
 			dx = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, T);
-			shade = (urint (floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/ dx))) % 2;
-			w1 = floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/ dx) * dx + GMT->current.map.frame.axis[GMT_X].phase;
+			shade = (urint (floor ((w - T->phase)/ dx))) % 2;
+			w1 = floor ((w - T->phase)/ dx) * dx + T->phase;
 			nx = (w1 > e) ? -1 : irint (((e - w1) / dx + GMT_CONV4_LIMIT));
 			for (i = 0; i <= nx; i++) {
 				shade = !shade;
@@ -1015,8 +1015,8 @@ GMT_LOCAL void gmtplot_fancy_frame_curvedlon_checkers (struct GMT_CTRL *GMT, str
 		T = &GMT->current.map.frame.axis[GMT_X].item[item[k]];
 		if (T->active) {
 			dx = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, T);
-			shade = urint (floor ((w - GMT->current.map.frame.axis[GMT_X].phase) / dx)) % 2;
-			w1 = floor ((w - GMT->current.map.frame.axis[GMT_X].phase)/dx) * dx + GMT->current.map.frame.axis[GMT_X].phase;
+			shade = urint (floor ((w - T->phase) / dx)) % 2;
+			w1 = floor ((w - T->phase)/dx) * dx + T->phase;
 			nx = (w1 > e) ? -1 : irint ((e-w1) / dx + GMT_CONV4_LIMIT);
 			for (i = 0; i <= nx; i++) {
 				shade = !shade;
@@ -1082,8 +1082,8 @@ GMT_LOCAL void gmtplot_fancy_frame_straightlat_checkers (struct GMT_CTRL *GMT, s
 		T = &GMT->current.map.frame.axis[GMT_Y].item[item[k]];
 		if (T->active) {
 			dy = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, T);
-			shade = urint (floor ((s - GMT->current.map.frame.axis[GMT_Y].phase) / dy)) % 2;
-			s1 = floor((s - GMT->current.map.frame.axis[GMT_Y].phase)/dy) * dy + GMT->current.map.frame.axis[GMT_Y].phase;
+			shade = urint (floor ((s - T->phase) / dy)) % 2;
+			s1 = floor((s - T->phase)/dy) * dy + T->phase;
 			ny = (s1 > n) ? -1 : irint ((n-s1) / dy + GMT_CONV4_LIMIT);
 			for (i = 0; i <= ny; i++) {
 				shade = !shade;
@@ -1990,7 +1990,7 @@ GMT_LOCAL int gmtplot_get_current_gridlines (struct GMT_CTRL *GMT, double *dx, d
 
 GMT_LOCAL void gmtplot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int k, i, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
-	double dx, dy, *v = NULL;
+	double dx, dy, px, py, *v = NULL;
 	bool reset = false;
 	struct GMT_PLOT_AXIS *A[2] = {NULL, NULL};
 
@@ -2014,6 +2014,8 @@ GMT_LOCAL void gmtplot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		A[GMT_Y] = &GMT->current.map.frame.axis[GMT_Y];	/* Short-hand for y-axis */
 		dx = gmtlib_get_map_interval (GMT, A[GMT_X]->type, &A[GMT_X]->item[item[k]]);	/* x grid spacing; will be 0 if custom intervals */
 		dy = gmtlib_get_map_interval (GMT, A[GMT_Y]->type, &A[GMT_Y]->item[item[k]]);	/* y grid spacing; will be 0 if custom intervals */
+		px = A[GMT_X]->item[item[k]].phase;	/* Phase shift of the x gridlines only */
+		py = A[GMT_Y]->item[item[k]].phase;	/* Phase shift of the y gridlines only */
 
 		if (!(A[GMT_X]->item[item[k]].active || A[GMT_Y]->item[item[k]].active)) continue;	/* Neither is active */
 
@@ -2031,11 +2033,11 @@ GMT_LOCAL void gmtplot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
 			gmtplot_logx_grid (GMT, PSL, w, e, s, n, dx);
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_POW)
-			gmtplot_powx_grid (GMT, PSL, w, e, s, n, dx);
+			gmtplot_powx_grid (GMT, PSL, w, e, s, n, dx, px);
 		else if (GMT->current.map.frame.obl_grid)	/* Draw oblique grid lines that go S to N */
-			gmtplot_linearx_oblgrid (GMT, PSL, w, e, s, n, dx);
+			gmtplot_linearx_oblgrid (GMT, PSL, w, e, s, n, dx, px);
 		else	/* Draw grid lines that go S to N */
-			gmt_linearx_grid (GMT, PSL, w, e, s, n, dx);
+			gmt_linearx_grid (GMT, PSL, w, e, s, n, dx, px);
 
 		if (A[GMT_Y]->item[item[k]].special && (np = gmtlib_load_custom_annot(GMT, &GMT->current.map.frame.axis[GMT_Y], 'g', &v, NULL, k))) {
 			gmtplot_y_grid (GMT, PSL, w, e, v, np);
@@ -2047,11 +2049,11 @@ GMT_LOCAL void gmtplot_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		else if (GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10)
 			gmtplot_logy_grid (GMT, PSL, w, e, s, n, dy);
 		else if (GMT->current.proj.xyz_projection[GMT_Y] == GMT_POW)
-			gmtplot_powy_grid (GMT, PSL, w, e, s, n, dy);
+			gmtplot_powy_grid (GMT, PSL, w, e, s, n, dy, py);
 		else if (GMT->current.map.frame.obl_grid)	/* Draw oblique grid lines that go S to N */
-			gmtplot_lineary_oblgrid (GMT, PSL, w, e, s, n, dx);
+			gmtplot_lineary_oblgrid (GMT, PSL, w, e, s, n, dx, py);
 		else	/* Draw grid lines that go E to W */
-			gmtplot_lineary_grid (GMT, PSL, w, e, s, n, dy);
+			gmtplot_lineary_grid (GMT, PSL, w, e, s, n, dy, py);
 
 		PSL_setdash (PSL, NULL, 0);
 	}
@@ -2263,7 +2265,7 @@ GMT_LOCAL void gmtplot_map_gridticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			double limit[2] = {s, n}, sign[2] = {-1.0, +1.0}, *xp = NULL, *yp = NULL;
 
 			/* Do coarser meridional lines inside polar cap */
-			nx_p = gmtlib_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], GMT->current.map.frame.axis[GMT_X].phase, &xp);
+			nx_p = gmtlib_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], GMT->current.map.frame.axis[GMT_X].item[item[k]].phase, &xp);
 			for (cap = 0; cap < 2; cap++) {	/* For south and north cap */
 				if (GMT->current.setting.map_polar_cap[0] < fabs (limit[cap])) {	/* Tick this polar cap */
 					yj = sign[cap] * GMT->current.setting.map_polar_cap[0];
@@ -2372,7 +2374,7 @@ GMT_LOCAL void gmtplot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 		if (GMT->current.map.frame.axis[GMT_X].file_custom[item & 1])
 			nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &val, NULL);
 		else
-			nx = gmtlib_linear_array (GMT, w, e, dx, GMT->current.map.frame.axis[GMT_X].phase, &val);
+			nx = gmtlib_linear_array (GMT, w, e, dx, GMT->current.map.frame.axis[GMT_X].item[item].phase, &val);
 		for (i = 0; i < nx; i++)  {
 			shift = gmtplot_shift_gridline (GMT, val[i], GMT_X);
 			gmtplot_map_lontick (GMT, PSL, val[i] + shift, s, n, len);
@@ -2385,9 +2387,9 @@ GMT_LOCAL void gmtplot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			if (GMT->current.map.frame.axis[GMT_Y].file_custom[item & 1])
 				ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[item], &val, NULL);
 			else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
-				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
+				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].item[item].phase, &val);
 			else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* r = rp - z */
-				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
+				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].item[item].phase, &val);
 			for (i = 0; i < ny; i++) {
 				if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
 					val[i] = GMT->current.proj.z_radius - val[i];	/* These are the z values needed for positioning */
@@ -2399,7 +2401,7 @@ GMT_LOCAL void gmtplot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			if (GMT->current.map.frame.axis[GMT_Y].file_custom[item & 1])
 				ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &val, NULL);
 			else
-				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
+				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].item[item].phase, &val);
 		}
 		for (i = 0; i < ny; i++) {
 			if (gmtplot_skip_polar_apex_annotation (GMT, i, val, ny)) continue;
@@ -2523,9 +2525,9 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 			if (GMT->current.map.frame.axis[GMT_Y].file_custom[0])
 				ny = gmtlib_coordinate_array (GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &tval, &label_c);
 			else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
-				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+				ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].phase, &tval);
 			else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
-				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+				ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].phase, &tval);
 			val = gmt_M_memory (GMT, NULL, ny, double);
 			for (i = 0; i < ny; i++) {
 				if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
@@ -2538,7 +2540,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 			if (GMT->current.map.frame.axis[GMT_Y].file_custom[0])
 				ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
 			else
-				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].phase, &val);
+				ny = gmtlib_linear_array (GMT, s, n, dy, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].phase, &val);
 			tval = val;	/* Here they are the same thing */
 		}
 
@@ -2618,7 +2620,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 		if (GMT->current.map.frame.axis[GMT_X].file_custom[0])
 			nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER], &val, &label_c);
 		else
-			nx = gmtlib_linear_array (GMT, w, e, dx, GMT->current.map.frame.axis[GMT_X].phase, &val);
+			nx = gmtlib_linear_array (GMT, w, e, dx, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].phase, &val);
 		//if (nx && doubleAlmostEqualZero (val[0], w)) first = 1;
 		if (nx && doubleAlmostEqualZero (val[nx-1], e)) nx--;
 
@@ -2853,7 +2855,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			if (GMT->current.map.frame.axis[GMT_X].file_custom[k])
 				nx = gmtlib_coordinate_array(GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER+k], &val, &label_c);
 			else
-				nx = gmtlib_linear_array (GMT, w, e, dx[k], GMT->current.map.frame.axis[GMT_X].phase, &val);
+				nx = gmtlib_linear_array (GMT, w, e, dx[k], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER+k].phase, &val);
 			last = nx - 1;
 			for (i = 0; i < nx; i++) {	/* Worry that we do not try to plot 0 and 360 OR -180 and +180 on top of each other */
 				if (check_edges && ((i == 0 && val[i] == w) || (i == last && val[i] == e)))
@@ -2916,9 +2918,9 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 				if (GMT->current.map.frame.axis[GMT_Y].file_custom[k])
 					ny = gmtlib_coordinate_array(GMT, 0.0, GMT->current.proj.z_radius-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER+k], &tval, &label_c);
 				else if (GMT->current.proj.z_down == GMT_ZDOWN_Z) /* z = n - r */
-					ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+					ny = gmtlib_linear_array (GMT, 0.0, GMT->current.proj.z_radius-s, dy[k], GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER+k].phase, &tval);
 				else if (GMT->current.proj.z_down == GMT_ZDOWN_ZP) /* z = n - r */
-					ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
+					ny = gmtlib_linear_array (GMT, GMT->current.proj.z_radius-n, GMT->current.proj.z_radius-s, dy[k], GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER+k].phase, &tval);
 				val = gmt_M_memory (GMT, NULL, ny, double);
 				for (i = 0; i < ny; i++) {
 					if (GMT->current.proj.z_down == GMT_ZDOWN_ZP)
@@ -2931,7 +2933,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 				if (GMT->current.map.frame.axis[GMT_Y].file_custom[k])
 					ny = gmtlib_coordinate_array(GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER+k], &val, &label_c);
 				else
-					ny = gmtlib_linear_array (GMT, s, n, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &val);
+					ny = gmtlib_linear_array (GMT, s, n, dy[k], GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER+k].phase, &val);
 				tval = val;	/* Here they are the same thing */
 			}
 			PSL_command (PSL, "/PSL_AH1 0\n");	/* Initiate annotation width  */
@@ -5717,9 +5719,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
 	if (A->type != GMT_TIME) {						/* Set the annotation format template */
 		int n_dec = gmt_get_format (GMT, gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
-		if (!doubleAlmostEqualZero (A->phase, 0.0)) {	/* Phase is nonzero, must see if adding it gives more decimals */
+		if (!doubleAlmostEqualZero (A->item[GMT_ANNOT_UPPER].phase, 0.0)) {	/* Phase is nonzero, must see if adding it gives more decimals */
 			char format_w_phase[GMT_LEN256] = {""};	/* Format used if phase is added */
-			int ndec_p = gmt_get_format (GMT, gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_ANNOT_UPPER]) + A->phase, A->unit, A->prefix, format_w_phase);
+			int ndec_p = gmt_get_format (GMT, gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_ANNOT_UPPER]) + A->item[GMT_ANNOT_UPPER].phase, A->unit, A->prefix, format_w_phase);
 			if (ndec_p > n_dec)	/* Use the phase format which has more decimals */
 				strncpy (format, format_w_phase, GMT_LEN256);
 		}
@@ -6338,7 +6340,7 @@ void gmt_xy_axis2 (struct GMT_CTRL *GMT, double x0, double y0, double length, do
 	gmt_xy_axis (GMT, x0, y0, length, val0, val1, A, below, side);
 }
 
-void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
+void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval, double phase) {
 	double *x = NULL, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
 	unsigned int idup = 0, i, nx;
 	bool cap = false;
@@ -6368,7 +6370,7 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		ys = s;
 		yn = n;
 	}
-	nx = gmtlib_linear_array (GMT, w, e, dval, GMT->current.map.frame.axis[GMT_X].phase, &x);
+	nx = gmtlib_linear_array (GMT, w, e, dval, phase, &x);
 	if (idup && !gmt_M_360_range(x[0],x[nx-1])) idup = 0;	/* Probably due to phase we don't need to remove any duplicate */
 	for (i = 0; i < nx - idup; i++)  {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, x[i], ys, yn);
@@ -6379,7 +6381,7 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	if (cap) {	/* Also draw the polar cap(s) */
 		nx = 0;
 		if (s < -GMT->current.setting.map_polar_cap[0]) {	/* Must draw some or all of the S polar cap */
-			nx = gmtlib_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], GMT->current.map.frame.axis[GMT_X].phase, &x);
+			nx = gmtlib_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], phase, &x);
 			for (i = 0; i < nx - idup; i++) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw S polar cap %s = %g from %g to %g\n", type, x[i], ys, yn);
 				gmtplot_map_lonline (GMT, PSL, x[i], cap_start[0], cap_stop[0]);
@@ -6387,7 +6389,7 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			gmtplot_map_latline (GMT, PSL, -p_cap, w, e);
 		}
 		if (n > GMT->current.setting.map_polar_cap[0]) {	/* Must draw some or all of the N polar cap */
-			if (nx == 0) nx = gmtlib_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], GMT->current.map.frame.axis[GMT_X].phase, &x);
+			if (nx == 0) nx = gmtlib_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], phase, &x);
 			for (i = 0; i < nx - idup; i++) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw N polar cap %s = %g from %g to %g\n", type, x[i], ys, yn);
 				gmtplot_map_lonline (GMT, PSL, x[i], cap_start[1], cap_stop[1]);
@@ -9277,6 +9279,25 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		/* Consider offsets required to center the plot on the subplot panel [0/0] */
 		GMT->current.setting.map_origin[GMT_X] += (P->dx + P->gap[XLO]);
 		GMT->current.setting.map_origin[GMT_Y] += (P->dy + P->gap[YLO]);
+		if (GMT->current.proj.three_D) {
+			/* A subplot heading is laid out in figure coordinates, while a perspective panel may extend above its
+			 * nominal 2-D rectangle.  Record the highest projected y reached by any 3-D panel so that subplot end
+			 * can place the figure heading above the real perspective footprint (issue #4450). */
+			int fig = gmt_get_current_figure (GMT->parent);
+			char file[PATH_MAX] = {""};
+			double old_top = -DBL_MAX;
+			double top = GMT->current.setting.map_origin[GMT_Y] + GMT->current.proj.z_project.ymax;
+			FILE *fp_top = NULL;
+			snprintf (file, PATH_MAX, "%s/gmt.subplottop.%d", GMT->parent->gwf_dir, fig);
+			if ((fp_top = fopen (file, "r")) != NULL) {
+				if (fscanf (fp_top, "%lf", &old_top) != 1) old_top = -DBL_MAX;
+				fclose (fp_top);
+			}
+			if (top > old_top && (fp_top = fopen (file, "w")) != NULL) {
+				fprintf (fp_top, "%.16g\n", top);
+				fclose (fp_top);
+			}
+		}
 		if (P->first && O_active)	/* Run completion script, if any */
 			PSL_setexec (PSL, 1);
 	}

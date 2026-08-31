@@ -768,14 +768,20 @@ GMT_LOCAL bool gmtio_ogr_data_parser (struct GMT_CTRL *GMT, char *record) {
 }
 
 /*! Simplify aspatial data grabbing when -a is used */
-GMT_LOCAL void gmtio_align_ogr_values (struct GMT_CTRL *GMT) {
+GMT_LOCAL bool gmtio_align_ogr_values (struct GMT_CTRL *GMT) {
 	unsigned int k;
 	int id;
-	if (!GMT->common.a.active) return;	/* Nothing selected with -a */
+	if (!GMT->common.a.active) return true;	/* Nothing selected with -a */
 	for (k = 0; k < GMT->common.a.n_aspatial; k++) {	/* Process the requested columns */
 		id = gmt_get_ogr_id (GMT->current.io.OGR, GMT->common.a.name[k]);	/* See what order in the OGR struct this -a column appear */
+		if (id == GMT_NOTSET) {	/* No aspatial field by that name - bail before it is used as an array index */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -a: No such named aspatial item: %s\n", GMT->common.a.name[k]);
+			GMT->current.io.ogr = GMT_OGR_FALSE;
+			return false;
+		}
 		GMT->common.a.ogr[k] = id;
 	}
+	return true;
 }
 
 GMT_LOCAL void gmtio_ogr_check_if_geographic (struct GMT_CTRL *GMT) {
@@ -830,7 +836,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 	if (record[0] != '#') return (false);			/* Not a comment record so no point looking any further */
 	if (GMT->current.io.ogr == GMT_OGR_TRUE && !strncmp (record, "# FEATURE_DATA", 14)) {	/* It IS an OGR file and we found end of OGR header section and start of feature data */
 		GMT->current.io.ogr_parser = &gmtio_ogr_data_parser;	/* From now on only parse for feature tags */
-		gmtio_align_ogr_values (GMT);	/* Simplify copy from aspatial values to input columns as per -a option */
+		if (!gmtio_align_ogr_values (GMT)) return (false);	/* Simplify copy from aspatial values to input columns as per -a option */
 		gmtio_ogr_check_if_geographic (GMT);	/* Check if we should set -fg */
 		return (true);
 	}
@@ -3805,6 +3811,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 
 		if (GMT->common.a.active && GMT->current.io.ogr == GMT_OGR_FALSE) {	/* Cannot give -a and not be reading an OGR/GMT file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Aspatial associations set with -a but input file is not in OGR/GMT format!\n");
+			*status = gmtio_reached_EOF (GMT);
 			return NULL;
 		}
 
@@ -7713,6 +7720,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 					}
 					break;
 				case GMT_IS_Z:
+					if (!P) break;	/* No CPT given via -C so we cannot look up a fill for this z-value */
 					if (P->categorical & GMT_CPT_CATEGORICAL_KEY)
 						gmt_get_fill_from_key (GMT, P, txt, fill);
 					else

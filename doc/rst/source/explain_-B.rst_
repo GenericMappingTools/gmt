@@ -162,8 +162,10 @@ direction of increasing coordinates (i.e., to make the y-axis positive down).
    [**a**\|\ **f**\|\ **g**]\ [*stride*][*phase*][*unit*].
 
 The choice of **a**\|\ **f**\|\ **g** sets the axis item of interest, which are detailed in the Table
-:ref:`interval types <tbl-inttype>`. Optionally, append *phase* to shift the annotations by that amount (positive or
-negative with the sign being required). Optionally, append *unit* to specify the units of *stride*, where *unit* is one
+:ref:`interval types <tbl-inttype>`. Optionally, append *phase* to shift that item by that amount (positive or
+negative with the sign being required); the shift only affects the item it is appended to, so
+**-Ba5f1g1+0.5** offsets the grid lines only while **-Ba5+0.5f1+0.5g1+0.5** offsets annotations, ticks and grid
+lines alike. Optionally, append *unit* to specify the units of *stride*, where *unit* is one
 of the 18 supported :ref:`unit codes <tbl-units>`. For custom annotations and intervals, *intervals* can be given as
 **c**\ *intfile*, where *intfile* contains any number of records with *coord* *type* [*label*]. See the section
 :ref:`Custom axes <custom_axes>` for more details.
