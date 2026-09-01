@@ -45,6 +45,7 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 
 #define PSL_MaxOpStack_Size	300000	/* As of GhostSCript 9.50; see declaration in gs_init.ps */
@@ -401,6 +402,7 @@ struct PSL_CTRL {
 		int deflate_level; 		/* Compression level for DEFLATE (1-9, default 0) */
 		int call_level; 		/* Level in a series of module calls from GMT */
 		int color_mode;			/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
+		bool no_quantization;		/* Skip RGB image quantization and indexed-color output [false] */
 		int line_cap;			/* 0, 1, or 2 for butt, round, or square [butt]	*/
 		int line_join;			/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/
 		int miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */

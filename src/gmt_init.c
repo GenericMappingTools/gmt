@@ -6972,6 +6972,7 @@ EXTERN_MSC void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	gmtinit_load_encoding (GMT);
 	/* PS_COLOR_MODEL */
 	GMT->current.setting.ps_color_mode = PSL_RGB;
+	GMT->current.setting.ps_color_no_quantization = false;
 	/* PS_IMAGE_COMPRESS */
 	if (GMT->PSL) {	/* Only when using PSL in this session */
 #ifdef HAVE_ZLIB
@@ -11750,14 +11751,26 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			gmt_M_compat_translate ("PS_COLOR_MODEL");
 			break;
 		case GMTCASE_PS_COLOR_MODEL:
-			if (!strcmp (lower_value, "rgb"))
+			if (!strcmp (lower_value, "rgb")) {
 				GMT->current.setting.ps_color_mode = PSL_RGB;
-			else if (!strcmp (lower_value, "cmyk"))
+				GMT->current.setting.ps_color_no_quantization = false;
+			}
+			else if (!strcmp (lower_value, "rgbnoquant")) {
+				GMT->current.setting.ps_color_mode = PSL_RGB;
+				GMT->current.setting.ps_color_no_quantization = true;
+			}
+			else if (!strcmp (lower_value, "cmyk")) {
 				GMT->current.setting.ps_color_mode = PSL_CMYK;
-			else if (!strcmp (lower_value, "hsv"))
+				GMT->current.setting.ps_color_no_quantization = false;
+			}
+			else if (!strcmp (lower_value, "hsv")) {
 				GMT->current.setting.ps_color_mode = PSL_HSV;
-			else if (!strcmp (lower_value, "gray") || !strcmp (lower_value, "grey"))
+				GMT->current.setting.ps_color_no_quantization = false;
+			}
+			else if (!strcmp (lower_value, "gray") || !strcmp (lower_value, "grey")) {
 				GMT->current.setting.ps_color_mode = PSL_GRAY;
+				GMT->current.setting.ps_color_no_quantization = false;
+			}
 			else
 				error = true;
 			break;
@@ -13261,7 +13274,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_PS_COLOR_MODEL:
-			if (GMT->current.setting.ps_color_mode == PSL_RGB)
+			if (GMT->current.setting.ps_color_no_quantization)
+				strcpy (value, "rgbnoquant");
+			else if (GMT->current.setting.ps_color_mode == PSL_RGB)
 				strcpy (value, "rgb");
 			else if (GMT->current.setting.ps_color_mode == PSL_CMYK)
 				strcpy (value, "cmyk");

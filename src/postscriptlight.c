@@ -3888,7 +3888,9 @@ int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, 
 	/* Colormask or interpolate */
 	it = nx < 0 ? 1 : (nbits < 0 ? 2 : 0);
 
-	if (PSL->internal.color_mode != PSL_GRAY && (image = psl_makecolormap (PSL, buffer, nx, ny, nbits))) {
+	if (!PSL->internal.no_quantization &&
+	    PSL->internal.color_mode != PSL_GRAY &&
+	    (image = psl_makecolormap (PSL, buffer, nx, ny, nbits))) {
 		/* Creation of colormap was successful */
 		nbits = psl_bitreduce (PSL, image->buffer, nx, ny, image->colormap->ncolors);
 
