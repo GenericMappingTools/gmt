@@ -5,7 +5,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Standardized command line options &mdash; GMT 6.7.0 documentation</title>
+  <title>4. Standardized command line options &mdash; GMT 6.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=9cce70e7"></script>
+        <script src="../_static/documentation_options.js?v=2adddf63"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -62,7 +62,7 @@
             GMT
           </a>
               <div class="version">
-                6.7
+                6.8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -937,8 +937,10 @@ direction of increasing coordinates (i.e., to make the y-axis positive down).</p
 <div><p>[<strong>a</strong>|<strong>f</strong>|<strong>g</strong>][<em>stride</em>][<em>phase</em>][<em>unit</em>].</p>
 </div></blockquote>
 <p>The choice of <strong>a</strong>|<strong>f</strong>|<strong>g</strong> sets the axis item of interest, which are detailed in the Table
-<a class="reference internal" href="#tbl-inttype"><span class="std std-ref">interval types</span></a>. Optionally, append <em>phase</em> to shift the annotations by that amount (positive or
-negative with the sign being required). Optionally, append <em>unit</em> to specify the units of <em>stride</em>, where <em>unit</em> is one
+<a class="reference internal" href="#tbl-inttype"><span class="std std-ref">interval types</span></a>. Optionally, append <em>phase</em> to shift that item by that amount (positive or
+negative with the sign being required); the shift only affects the item it is appended to, so
+<strong>-Ba5f1g1+0.5</strong> offsets the grid lines only while <strong>-Ba5+0.5f1+0.5g1+0.5</strong> offsets annotations, ticks and grid
+lines alike. Optionally, append <em>unit</em> to specify the units of <em>stride</em>, where <em>unit</em> is one
 of the 18 supported <a class="reference internal" href="#tbl-units"><span class="std std-ref">unit codes</span></a>. For custom annotations and intervals, <em>intervals</em> can be given as
 <strong>c</strong><em>intfile</em>, where <em>intfile</em> contains any number of records with <em>coord</em> <em>type</em> [<em>label</em>]. See the section
 <a class="reference internal" href="#custom-axes"><span class="std std-ref">Custom axes</span></a> for more details.</p>
@@ -2122,16 +2124,17 @@ horizontal plain (using <strong>z</strong>) [default is <strong>z</strong>].</p>
 <li><p><em>/zlevel</em> to indicate the z-level at which all 2D material, like the plot frame, is plotted (only valid when <strong>-p</strong>
 is used in consort with <strong>-Jz</strong> or <strong>-JZ</strong>) [Default is at the bottom of the z-axis].</p></li>
 </ul>
-<p>For frames used for animation, we fix the center of your data domain. Specify another center using one of the following
-modifiers:</p>
+<p>By default, the view rotates about the plotting origin. Whether you set a full perspective view
+(<em>azim</em>/<em>elev</em>[/<em>zlevel</em>]) or just a plain rotation about the z-axis (<em>azim</em> only), you can rotate about a
+different point instead, given in either data or plot coordinates, with one of the following modifiers:</p>
 <ul class="simple">
-<li><p><strong>+w</strong> - Project <em>lon0</em>/<em>lat0</em> (and <em>z0</em> if applicable) to the center of the page size.</p></li>
-<li><p><strong>+v</strong> - Specify the coordinates of the projected 2-D view point as <em>x0</em>/<em>y0</em>.</p></li>
+<li><p><strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>] - Rotate about the fixed data coordinates <em>lon0</em>/<em>lat0</em> (and <em>z0</em> if applicable)
+instead of the plotting origin.</p></li>
+<li><p><strong>+v</strong><em>x0</em>/<em>y0</em> - Rotate about the fixed plot coordinates <em>x0</em>/<em>y0</em> instead of the plotting origin.</p></li>
 </ul>
 <p>When <strong>-p</strong> is used without any further arguments, the values from the last use of <strong>-p</strong> in a previous GMT command
 will be used (in modern mode this also supplies the previous <strong>-Jz</strong> or <strong>-JZ</strong> if doing a 3-D region). Alternatively,
-you can perform a simple rotation about the z-axis by just giving the rotation angle. Optionally, use <strong>+v</strong> or <strong>+w</strong>
-to select another axis location than the plot origin.</p>
+you can perform a simple rotation about the z-axis by just giving the rotation angle, without <em>elev</em> or <em>zlevel</em>.</p>
 </section>
 <section id="data-row-selection-the-q-option">
 <span id="option-q"></span><h2><span class="section-number">4.21. </span>Data row selection: The <strong>-q</strong> option<a class="headerlink" href="#data-row-selection-the-q-option" title="Link to this heading"></a></h2>
@@ -2634,7 +2637,7 @@ context they are considered “other”. Thus, when we refer to
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, The GMT Team.
-      <span class="lastupdated">Last updated on Jul 27, 2026.
+      <span class="lastupdated">Last updated on Sep 01, 2026.
       </span></p>
   </div>
 
