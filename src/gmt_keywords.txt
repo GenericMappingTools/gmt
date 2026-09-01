@@ -152,7 +152,7 @@ PROJ_SCALE_FACTOR		# Scale factor for UTM maps
 # PS Group:	PostScript settings
 #-------------------------------------------------------
 PS_CHAR_ENCODING		# Character encoding vector to use in PS plots
-PS_COLOR_MODEL			# Color model in use (RGB, HSV, CMYK, GRAY)
+PS_COLOR_MODEL			# Color model in use (RGB, RGBnoQUANT, HSV, CMYK, GRAY)
 PS_DPI				# The dots-pr-inch setting [obsolete - not in gmt.conf]
 PS_IMAGE_COMPRESS		# Compression algorithm for images
 PS_LINE_CAP			# Line cap setting

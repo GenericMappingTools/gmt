@@ -192,6 +192,7 @@ struct GMT_DEFAULTS {
 	double ps_transparency;			/* Later transparency [0] */
 	double ps_penwidth;			/* Current pen width */
 	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
+	bool ps_color_no_quantization;	/* Skip RGB image quantization and indexed-color output [false] */
 	unsigned int ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
 	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
 	unsigned int ps_orientation;			/* Orientation of page [PSL_LANDSCAPE (0)] or PSL_PORTRAIT (1) */
