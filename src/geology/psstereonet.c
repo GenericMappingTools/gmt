@@ -160,9 +160,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S[0/0/]<width>] [-A[<annot>[/<tick>]]] [%s] [-C<cpt>] "
-		"[-G<fill>] %s[-L<pen>] [-M[c|p]] %s%s[%s] [-S<symbol>[<size>]] [-T[d|l|p][+r][+u]] [%s] [%s] "
+		"[-G<fill>] %s[-L<pen>] [-M[c|p]] %s%s[-S<symbol>[<size>]] [-T[d|l|p][+r][+u]] [%s] [%s] "
 		"[-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT,
+		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT,
 		GMT_PAR_OPT);
@@ -395,10 +395,12 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	}
 	if (dump) return (GMT_NOERROR);	/* The remaining settings only matter for a plot */
 
-	if (GMT_Find_Option (API, 'R', *options) == NULL) {	/* A stereonet always covers a full hemisphere */
-		if ((opt = GMT_Make_Option (API, 'R', "g")) == NULL) return (GMT_PARSE_ERROR);
-		if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
+	if ((opt = GMT_Find_Option (API, 'R', *options))) {	/* A stereonet always covers a full hemisphere, so -R has no effect */
+		GMT_Report (API, GMT_MSG_ERROR, "Option -R: A stereonet always covers a full hemisphere and cannot be restricted\n");
+		return (GMT_PARSE_ERROR);
 	}
+	if ((opt = GMT_Make_Option (API, 'R', "g")) == NULL) return (GMT_PARSE_ERROR);
+	if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
 
 	if (GMT_Find_Option (API, 'B', *options) == NULL) {	/* Lay down the classic two-level mesh of a stereonet */
 		for (k = 0; k < PSSTEREONET_DEF_FRAME; k++) {

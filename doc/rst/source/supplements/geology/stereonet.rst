@@ -20,7 +20,6 @@ Synopsis
 [ |-G|\ *fill* ]
 [ |-L|\ *pen* ]
 [ |-M|\ [**c**\|\ **p**] ]
-[ |SYN_OPT-R| ]
 [ |-S|\ *symbol*\ [*size*] ]
 [ |-T|\ [**d**\|\ **l**\|\ **p**][**+r**][**+u**] ]
 [ |SYN_OPT-U| ]
@@ -175,10 +174,6 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
     - **+u** - Plot the data on the upper hemisphere [Default is the lower hemisphere,
       which is the convention in structural geology].
 
-.. |Add_-Rgeo| replace:: A stereonet always covers a full hemisphere, so you should not
-    need this option [**-Rg**].
-.. include:: ../../explain_-Rgeo.rst_
-
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
     :start-after: **Syntax**
@@ -250,6 +245,8 @@ Notes
    the only physically meaningful values.  An out-of-range angle is reported as an error
    rather than plotted, since it would otherwise project onto the far hemisphere and be
    silently clipped away.
+#. There is no **-R** option: a stereonet always covers a full hemisphere, and giving one
+   is rejected as an error rather than silently ignored.
 
 .. module_common_ends
 
