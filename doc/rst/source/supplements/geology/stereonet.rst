@@ -260,21 +260,21 @@ Examples
 
 .. include:: ../../oneliner_info.rst_
 
-To plot eight fault planes given as *name strike dip* on a 12-centimeter-wide Schmidt net,
+To plot eight fault planes given as *strike dip* on a 12-centimeter-wide Schmidt net,
 drawing the cyclographic traces in red and the poles as blue crosses, try::
 
     cat << EOF > faults.txt
-    FAULT_1  90 30
-    FAULT_2 180 45
-    FAULT_3 270 60
-    FAULT_4   0 15
-    FAULT_5  30 45
-    FAULT_6 120 48
-    FAULT_7 225 27
-    FAULT_8 350 80
+    90 30
+    180 45
+    270 60
+    0 15
+    30 45
+    120 48
+    225 27
+    350 80
     EOF
     gmt begin faults
-      gmt stereonet faults.txt -i1,2 -JA12c -W1p,red -Sx0.3c -L1p,blue \
+      gmt stereonet faults.txt -JA12c -W1p,red -Sx0.3c -L1p,blue \
         -l"Fault plane" -l"Pole" --MAP_GRID_PEN_PRIMARY=0.25p,gray
     gmt end show
 
@@ -286,15 +286,18 @@ Wulff net without the azimuth ring, try::
     gmt end show
 
 To only convert the strike and dip of the faults into the longitudes and latitudes of their
-poles, so that you can plot them yourself, try::
+poles, so that you can plot them yourself, try (no ``gmt begin``/``gmt end`` is needed since
+``-M`` does not plot anything)::
 
-    gmt stereonet faults.txt -i1,2 -Mp > poles.txt
+    gmt psstereonet faults.txt -Mp > poles.txt
 
 To plot fault-slip data, i.e., a fault plane together with the rake of its slickenline
 (here strike 315, dip 30, rake 25 measured from the northwest end of the strike, hence a
 rake of 180-25=155 in the 0-180 convention used by **-T+r**), try::
 
-    echo 315 30 155 | gmt stereonet -JA10c -Tp+r -W1p,green -Sc0.2c -Ggreen
+    gmt begin faultslip
+      echo 315 30 155 | gmt stereonet -JA10c -Tp+r -W1p,green -Sc0.2c -Ggreen
+    gmt end show
 
 References
 ----------

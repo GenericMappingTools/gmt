@@ -57,10 +57,10 @@ Examples
 
 .. include:: ../../explain_example.rst_
 
-To plot eight fault planes given as *name strike dip* on a 12-centimeter-wide Schmidt net,
+To plot eight fault planes given as *strike dip* on a 12-centimeter-wide Schmidt net,
 drawing the cyclographic traces in red and the poles as blue crosses, try::
 
-    gmt psstereonet faults.txt -i1,2 -JA12c -W1p,red -Sx0.3c -L1p,blue -P > faults.ps
+    gmt psstereonet faults.txt -JA12c -W1p,red -Sx0.3c -L1p,blue -P > faults.ps
 
 See Also
 --------
