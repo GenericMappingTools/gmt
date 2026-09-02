@@ -218,8 +218,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Optionally, append one or both modifiers:");
 	GMT_Usage (API, 3, "+r Expect a third column with the rake (pitch) of a lineation on the plane, in "
 		"degrees measured from the strike azimuth [0-180]; 0 is the strike azimuth itself, 90 is the "
-		"down-dip direction, and 180 is the opposite end of the strike. Plot that point instead of the "
-		"pole. Not allowed with -Tl, since a line has no plane to measure the rake on.");
+		"down-dip direction, and 180 is the opposite end of the strike. A negative rake is taken to be "
+		"measured from that opposite end and is folded into the 0-180 range. Plot that point instead of "
+		"the pole. Not allowed with -Tl, since a line has no plane to measure the rake on.");
 	GMT_Usage (API, 3, "+u Plot the data on the upper hemisphere [Default is the lower hemisphere].");
 	GMT_Usage (API, 1, "\n-W<pen>");
 	GMT_Usage (API, -2, "Set the pen used to draw the cyclographic traces (great circles) of the planes "
@@ -359,7 +360,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.mode == PSSTEREONET_DUMP_TRACE,
 			"Option -Mc: Lines (-Tl) have no cyclographic trace\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.rake, "Option -T+r: Lines (-Tl) have no plane to measure a rake on\n");
-		if (Ctrl->W.active && !Ctrl->L.active) {	/* Be kind and use it as the symbol pen instead */
+		if (Ctrl->W.active && Ctrl->W.string && !Ctrl->L.active) {	/* Be kind and use it as the symbol pen instead */
 			GMT_Report (API, GMT_MSG_WARNING, "Option -W: Lines (-Tl) have no cyclographic trace; using the pen to outline the symbols\n");
 			Ctrl->L.string = strdup (Ctrl->W.string);	Ctrl->L.active = true;
 		}
@@ -486,6 +487,14 @@ GMT_LOCAL int psstereonet_convert (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL
 			for (row = 0; row < S->n_rows; row++, n++) {
 				azimuth = S->data[GMT_X][row];
 				dip = S->data[GMT_Y][row];
+				/* A dip or plunge is 0-90 by definition.  An impossible value would silently project
+				 * onto the far hemisphere, where it is clipped away, so we stop rather than hand back
+				 * a figure that is quietly missing data.  Azimuths need no such check since they wrap. */
+				if (dip < 0.0 || dip > 90.0) {
+					GMT_Report (API, GMT_MSG_ERROR, "Record %" PRIu64 ": %s of %g is outside the 0-90 range\n",
+						n, (Ctrl->T.mode == PSSTEREONET_LINE) ? "Plunge" : "Dip", dip);
+					return (GMT_RUNTIME_ERROR);
+				}
 				/* The upper hemisphere is the lower one reflected through the center of the net */
 				if (Ctrl->T.upper) azimuth += 180.0;
 				if (Ctrl->T.mode == PSSTEREONET_LINE) {	/* The two angles are the trend and plunge of a line */
@@ -503,6 +512,14 @@ GMT_LOCAL int psstereonet_convert (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL
 					                     * runs 0-180 from the strike azimuth, through the down-dip direction
 					                     * at 90, to the opposite end of the strike at 180 - i.e., t = 90-rake */
 						rake = S->data[2][row];
+						/* A negative rake is the common shorthand for measuring from the other end of
+						 * the strike line, so fold it into our 0-180 range instead of rejecting it */
+						if (rake < 0.0) rake += 180.0;
+						if (rake < 0.0 || rake > 180.0) {
+							GMT_Report (API, GMT_MSG_ERROR, "Record %" PRIu64 ": Rake of %g is outside the 0-180 range\n",
+								n, S->data[2][row]);
+							return (GMT_RUNTIME_ERROR);
+						}
 						psstereonet_plane_to_lonlat (strike, dip, 90.0 - rake, &lon, &lat);
 					}
 					else {	/* The pole plunges 90-dip in the direction opposite to the dip direction */

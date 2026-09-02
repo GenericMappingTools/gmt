@@ -168,8 +168,10 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
     - **+r** - Expect a third column with the **rake** (also called *pitch*) of a
       lineation on the plane, e.g., a slickenline, in degrees measured from the strike
       azimuth: 0 is the strike azimuth itself, 90 is the down-dip direction, and 180 is
-      the opposite end of the strike.  Plot that point instead of the pole.  Not allowed
-      with **-Tl**, since a line has no plane to measure the rake on.
+      the opposite end of the strike.  A negative rake is the common shorthand for a rake
+      measured from that opposite end, and is folded into the 0-180 range (so -25 is read
+      as 155).  Plot that point instead of the pole.  Not allowed with **-Tl**, since a
+      line has no plane to measure the rake on.
     - **+u** - Plot the data on the upper hemisphere [Default is the lower hemisphere,
       which is the convention in structural geology].
 
@@ -244,9 +246,10 @@ Notes
 #. To draw an empty net, give no input records, e.g., ``gmt stereonet -JA12c < /dev/null``.
 #. Field notebooks often list a name before the two angles; use, e.g., **-i**\ 1,2 to skip
    such a leading column.
-#. The rake given via **-T+r** must be in the 0-180 range; negative rakes or rakes above
-   180 are not accepted, since the rake of a lineation is conventionally always measured
-   this way (see the References below).
+#. Dips (and plunges) must lie in the 0-90 range and rakes in the 0-180 range, as those are
+   the only physically meaningful values.  An out-of-range angle is reported as an error
+   rather than plotted, since it would otherwise project onto the far hemisphere and be
+   silently clipped away.
 
 .. module_common_ends
 

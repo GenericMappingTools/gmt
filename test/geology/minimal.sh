@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
-# Minimal, hand-checkable example with only two planes.
-# A horizontal plane (dip 0) must have its pole exactly at the center of the
-# net.  A vertical plane (dip 90) must plot as a straight diameter line
-# through the center, with its pole exactly on the rim, 90 degrees away
-# from the strike.
+# Minimal, hand-checkable example: three planes all striking due north, with
+# dips of 0, 45 and 90, drawn as traces (-W) plus their poles (-S).
+# The horizontal plane (dip 0) traces the rim and has its pole at the center;
+# the vertical plane (dip 90) traces a straight N-S diameter and has its pole
+# on the rim due west; the 45 degree plane sits halfway between the two.
 ps=minimal.ps
 
 cat << EOF > minimal.txt
 0	0
-0	90
 0	45
+0	90
 EOF
 
-gmt begin minimal png
-	gmt psstereonet minimal.txt -JA8c -Sc0.25c -Gblue -W1,red
-gmt end
+gmt psstereonet minimal.txt -JA8c -W1p,red -Sc0.25c -Gblue -P \
+	--MAP_GRID_PEN_PRIMARY=0.25p,gray > $ps
