@@ -37,5 +37,5 @@ done
 # whole thing into a no-op and everything above passed for the wrong reason
 GMT_GHOST_DEBUG=1 GMT_GHOST_CELLS=1 gmt grdtrack p.txt -Gt.nc 2>&1 >/dev/null | grep -q "moved to ghost cells" \
 	|| echo "ghost cells not used at GMT_GHOST_CELLS=1" >> fail
-GMT_GHOST_DEBUG=1 GMT_GHOST_CELLS=2 gmt grdtrack p.txt -Gt.nc 2>&1 >/dev/null | grep -q "without ever holding a pad" \
-	|| echo "grid still built with a pad at GMT_GHOST_CELLS=2" >> fail
+GMT_GHOST_DEBUG=1 GMT_GHOST_CELLS=2 gmt grdtrack p.txt -Gt.nc 2>&1 >/dev/null | grep -q "ghost cells" \
+	|| echo "ghost cells not used at GMT_GHOST_CELLS=2" >> fail

@@ -224,9 +224,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
-	/* Ensure space for BCs in case an API passed pad == 0.  With ghost cells the halo lives
-	 * outside the data matrix, so the grid needs no pad at all and we leave it pad-free (#4358) */
-	if (!gmtlib_ghost_no_new_pad (GMT)) gmt_set_pad (GMT, 2U);
+	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0; the grid is moved to ghost cells right after it is read, so it ends up pad-free anyway (#4358) */
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
