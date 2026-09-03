@@ -759,7 +759,9 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 	pad_mode = (GMT->common.n.interpolant > BCR_BILINEAR) ? GMT_GRID_NEEDS_PAD2 : 0;
 	if (pad_mode) {
 		gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
-		gmt_set_pad (GMT, 2U);	/* Ensure space for BCR BCs in case an API passed pad == 0 */
+		/* Ensure space for BCR BCs in case an API passed pad == 0.  With ghost cells the halo
+		 * lives outside the data matrix, so we leave the grid pad-free (#4358) */
+		if (!gmtlib_ghost_no_new_pad (GMT)) gmt_set_pad (GMT, 2U);
 	}
 	else {
 		gmt_grd_set_datapadding (GMT, false);	/* Turn off gridpadding when reading a subset */

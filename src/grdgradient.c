@@ -506,7 +506,9 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	gmt_M_memset (s, 3, double);
 	gmt_M_memset (wesn, 4, double);
-	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	/* Ensure space for BCs in case an API passed pad == 0.  With ghost cells the halo lives
+	 * outside the data matrix, so the grid needs no pad at all and we leave it pad-free (#4358) */
+	if (!gmtlib_ghost_no_new_pad (GMT)) gmt_set_pad (GMT, 2U);
 
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */
 		if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* Got variable azimuth(s) */

@@ -208,9 +208,12 @@ GMT_LOCAL void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, 
 }
 #endif
 
-GMT_LOCAL double grdview_get_intensity (struct GMT_GRID *I, uint64_t k) {
-	/* Returns the average intensity for this tile */
-	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
+GMT_LOCAL double grdview_get_intensity (struct GMT_GRID *I, int64_t row, int64_t col) {
+	/* Returns the average intensity for this tile.  The four nodes are addressed by (row,col) in
+	 * the intensity grid itself: it is a grid of its own and need not share the topography grid's
+	 * layout, and a tile on the north or east edge reaches into its halo (issue #4358). */
+	return (0.25 * (gmt_grd_get_node(I->header, I->data, row, col) + gmt_grd_get_node(I->header, I->data, row, col + 1) +
+	                gmt_grd_get_node(I->header, I->data, row - 1, col) + gmt_grd_get_node(I->header, I->data, row - 1, col + 1)));
 }
 
 GMT_LOCAL unsigned int grdview_pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, int64_t bin, int bin_inc[]) {
@@ -906,6 +909,7 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, n_max = 0;
 
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
+	int64_t t_row = 0, t_col = 0;	/* Row,col of the current tile, for indexing grids that need not share Topo's layout */
 	int start[2], stop[2], inc[2];
 
 	uint64_t sw, se, nw, ne, n, pt, ij, bin;
@@ -1824,12 +1828,14 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 				if (id[0] == GMT_Y) {
 					y_bottom = yval[j];
 					x_left = xval[i];
+					t_row = j;	t_col = i;	/* Node of this tile in row,col terms, for grids other than Topo */
 					bin = gmt_M_ij0(Topo->header, j, i);
 					ij = gmt_M_ijp(Topo->header, j, i);
 				}
 				else {
 					y_bottom = yval[i];
 					x_left = xval[j];
+					t_row = i;	t_col = j;
 					bin = gmt_M_ij0 (Topo->header, i, j);
 					ij = gmt_M_ijp (Topo->header, i, j);
 				}
@@ -1848,7 +1854,7 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 
 				if (Ctrl->I.active) {
 					if (use_intensity_grid) {
-						this_intensity = grdview_get_intensity (Intens, ij);
+						this_intensity = grdview_get_intensity (Intens, t_row, t_col);
 						if (gmt_M_is_dnan (this_intensity)) continue;
 					}
 					else

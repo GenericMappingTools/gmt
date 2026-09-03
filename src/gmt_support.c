@@ -12905,21 +12905,27 @@ GMT_LOCAL void gmtsupport_poison_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G) 
 int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction) {
 	/* Front for the real BC setter; see gmtsupport_poison_pad above for why */
 	int error;
-	bool borrow_pad = false;
-	unsigned int k, keep, pad2[4] = {2U, 2U, 2U, 2U};
+	bool thin_pad = false;
+	unsigned int k;
 	struct GMT_GRID_HEADER_HIDDEN *HH = (G && G->header) ? gmt_get_H_hidden (G->header) : NULL;
 
-	/* A grid that never had a pad still needs boundary conditions, and the code that
-	 * computes them works on a padded matrix.  Until that code fills the halo slabs
-	 * directly, borrow a pad for the duration: correct, and no worse than what an
-	 * external pad-less grid costs GMT today (issue #4358). */
+	/* A grid with no pad still needs boundary conditions, and the code that computes them
+	 * works on a padded matrix.  Compute them on a private padded copy and keep only the
+	 * halo, so that the grid itself is never given a pad and its data matrix - which may
+	 * belong to Julia, Python or MATLAB - is never reallocated (issue #4358). */
 	if (direction == GMT_IN && HH && G->data && HH->ghost == NULL && !HH->no_ghost && !HH->no_BC &&
 	    !(G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) && gmtlib_ghost_wanted (GMT) && !gmtlib_ghost_is_suspended ()) {
-		for (k = 0; !borrow_pad && k < 4; k++) if (G->header->pad[k] < 2) borrow_pad = true;
-		if (borrow_pad) {
-			keep = HH->no_ghost;
-			gmt_grd_pad_on (GMT, G, pad2);	/* Sets no_ghost, which is exactly what we do not want here */
-			HH->no_ghost = keep;
+		for (k = 0; !thin_pad && k < 4; k++) if (G->header->pad[k] < 2) thin_pad = true;
+		if (thin_pad) {	/* Too thin for the BC code to work in, so it works in a copy instead */
+			unsigned int pad2[4] = {2U, 2U, 2U, 2U};
+			struct GMT_GRID *P = NULL;
+			if ((P = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA)) == NULL) return (GMT_MEMORY_ERROR);
+			gmt_grd_pad_on (GMT, P, pad2);	/* The copy carries the pad that the BC code needs */
+			error = gmtsupport_grd_BC_set (GMT, P, direction);
+			gmtsupport_poison_pad (GMT, P);
+			gmtlib_ghost_from_grid (GMT, G, P);	/* Keep the halo it computed, drop the padded copy */
+			gmt_free_grid (GMT, &P, true);
+			return (error);
 		}
 	}
 

@@ -792,6 +792,7 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	if (Hto->command) gmt_M_str_free (Hto->command);			/* Since we will duplicate via from */
 	if (Hto->remark) gmt_M_str_free (Hto->remark);			/* Since we will duplicate via from */
 	if (Hto->cpt) gmt_M_str_free (Hto->cpt);				/* Since we will duplicate via from */
+	gmtlib_ghost_free (GMT, to);	/* Release any halo of the destination first: the memcpy below overwrites the pointer to it */
 	gmt_M_memcpy (to, from, 1, struct GMT_GRID_HEADER);		/* Copies full contents but also duplicates the hidden address */
 	to->hidden = Hto;	/* Restore the original hidden address in to */
 	gmt_M_memcpy (to->hidden, from->hidden, 1, struct GMT_GRID_HEADER_HIDDEN);	/* Copies full contents of hidden area */
