@@ -297,7 +297,7 @@ GMT_LOCAL void grdview_add_node (bool used[], double x[], double y[], double z[]
 
 GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P,
                                           struct GMT_GRID *I, double *xmesh, double *ymesh,
-                                          gmt_grdfloat *Z_vert, int64_t row, int64_t col, const int *corner_row, const int *corner_col,
+                                          gmt_grdfloat *Z_vert, uint64_t ij, int *ij_inc,
                                           bool use_intensity, bool monochrome, int diagonal) {
 	/* Paint a single grid tile using vertex-based Gouraud shading
 	 * xmesh, ymesh: projected 2D coordinates of 4 tile corners [already projected]
@@ -321,9 +321,8 @@ GMT_LOCAL void grdview_paint_gouraud_tile(struct GMT_CTRL *GMT, struct PSL_CTRL 
 			PH = gmt_get_C_hidden(P);
 
 		if (use_intensity) {
-			/* The intensity grid is a grid of its own and a tile on the north or east edge reaches
-			 * into its halo, wherever that lives (issue #4358) */
-			intens = gmt_grd_get_node(I->header, I->data, row + corner_row[k], col + corner_col[k]);
+			intens = I->data[ij + ij_inc[k]];  /* Actual vertex intensity.  Not routed through the grid
+			 * accessors yet: doing so crashed -Qg, so the Gouraud path still assumes a pad (#4358) */
 			gmt_illuminate(GMT, intens, &rgb_vert[k*3]);
 		}
 
@@ -2156,7 +2155,7 @@ EXTERN_MSC int GMT_grdview(void *V_API, int mode, void *args) {
 
 					if (Ctrl->Q.gouraud) {
 						/* Gouraud shading - vertex-based colors */
-						grdview_paint_gouraud_tile(GMT, PSL, P, Intens, xmesh, ymesh, Z_vert, t_row, t_col, corner_row, corner_col,
+						grdview_paint_gouraud_tile(GMT, PSL, P, Intens, xmesh, ymesh, Z_vert, ij, ij_inc,
 						                           Ctrl->I.active, Ctrl->Q.monochrome, Ctrl->Q.diagonal);
 						/* Draw contour lines if desired */
 						pen_set = false;
