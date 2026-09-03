@@ -220,6 +220,14 @@
 #include <stdarg.h>
 #include "gmt_gsformats.h"
 
+#ifdef _WIN32
+#	include <io.h>
+#	define gmt_isatty(fd) _isatty(fd)
+#else
+#	include <unistd.h>
+#	define gmt_isatty(fd) isatty(fd)
+#endif
+
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
 #endif
@@ -7868,6 +7876,10 @@ GMT_LOCAL int gmtapi_init_import (struct GMTAPI_CTRL *API, enum GMT_enum_family 
 	/* Note that n_reg can have changed if we added file args above */
 
 	if ((mode & GMT_ADD_STDIO_ALWAYS) || ((mode & GMT_ADD_STDIO_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
+		if (n_reg == 0 && gmt_isatty (fileno (stdin))) {
+			GMT_Report (API, GMT_MSG_ERROR, "No input file given and standard input is a terminal - refusing to wait forever. Provide a file or pipe/redirect data.\n");
+			return_value (API, GMT_RUNTIME_ERROR, GMT_NOTSET);
+		}
 		if ((object_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_STREAM, geometry, GMT_IN, NULL, API->GMT->session.std[GMT_IN])) == GMT_NOTSET)
 			return_value (API, API->error, GMT_NOTSET);	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
