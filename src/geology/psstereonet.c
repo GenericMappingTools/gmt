@@ -159,8 +159,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S[0/0/]<width>] [-A[<annot>[/<tick>]]] [%s] [-C<cpt>] "
-		"[-G<fill>] %s[-L<pen>] [-M[c|p]] %s%s[-S<symbol>[<size>]] [-T[d|l|p][+r][+u]] [%s] [%s] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S[0/0/]<width>] [-A[<annot>[/<tick>]]] [%s] "
+		"[-G<fill>] %s[-L<pen>] %s%s[-S<symbol>[<size>]] [-T[d|l|p][+u]] [%s] [%s] "
 		"[-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
@@ -172,9 +172,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<table>");
 	GMT_Usage (API, -2, "One or more data files with two columns holding a pair of angles in degrees. What "
-		"the two angles mean is set by -T [the strike and dip of planes]. If -T+r was used, a third column "
-		"gives the rake of a lineation on the plane. A further column with a z-value is expected if -C is "
-		"used. If no files are given we read standard input.");
+		"the two angles mean is set by -T [the strike and dip of planes]. If no files are given we read "
+		"standard input.");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-JA|S[0/0/]<width>");
@@ -193,34 +192,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"cyclographic traces of planes striking N-S with dips in steps of the grid interval, while the "
 		"parallels are the small circles of constant plunge. Since the net has no meaningful longitude "
 		"or latitude annotations you will normally only ask for gridlines [-Bpg10 -Bsg30].");
-	GMT_Usage (API, 1, "\n-C<cpt>");
-	GMT_Usage (API, -2, "Use CPT to assign colors based on the z-value in the third input column.");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fill for the symbols.");
 	GMT_Usage (API, 1, "\n-L<pen>");
 	GMT_Usage (API, -2, "Set the pen used to outline the symbols [%s].", PSSTEREONET_DEF_PEN);
-	GMT_Usage (API, 1, "\n-M[c|p]");
-	GMT_Usage (API, -2, "Do not plot; instead write the converted longitude, latitude coordinates to "
-		"standard output. Append which data set to write:");
-	GMT_Usage (API, 3, "c: The cyclographic traces of the planes, as a multiple segment data set.");
-	GMT_Usage (API, 3, "p: The poles to the planes (or their rake points if -T+r was set), or the lines "
-		"themselves if -Tl was set.");
-	GMT_Usage (API, -2, "[Default writes the traces for planes and the points for lines].");
 	GMT_Usage (API, 1, "\n-S<symbol>[<size>]");
-	GMT_Usage (API, -2, "Plot the pole to each plane (or the line itself if -Tl, or the rake point if -T+r "
-		"was used) with this symbol; see the plot module for the available symbol codes [%s]. Without -S "
-		"no symbols are plotted for planes.", PSSTEREONET_DEF_SYMBOL);
-	GMT_Usage (API, 1, "\n-T[d|l|p][+r][+u]");
+	GMT_Usage (API, -2, "Plot the pole to each plane (or the line itself if -Tl) with this symbol; see the "
+		"plot module for the available symbol codes [%s]. Without -S no symbols are plotted for planes.",
+		PSSTEREONET_DEF_SYMBOL);
+	GMT_Usage (API, 1, "\n-T[d|l|p][+u]");
 	GMT_Usage (API, -2, "Select what the two input angles mean:");
 	GMT_Usage (API, 3, "d: Planes given as dip direction and dip.");
 	GMT_Usage (API, 3, "l: Lines given as trend and plunge.");
 	GMT_Usage (API, 3, "p: Planes given as strike and dip, with the strike following the right-hand rule, "
 		"i.e., the plane dips to the right of the strike direction [Default].");
-	GMT_Usage (API, -2, "Optionally, append one or both modifiers:");
-	GMT_Usage (API, 3, "+r Expect a third column with the rake (pitch) of a lineation on the plane, in "
-		"degrees measured from the strike azimuth [0-180]; 0 is the strike azimuth itself, 90 is the "
-		"down-dip direction, and 180 is the opposite end of the strike. A negative rake is taken to be "
-		"measured from that opposite end and is folded into the 0-180 range. Plot that point instead of "
-		"the pole. Not allowed with -Tl, since a line has no plane to measure the rake on.");
+	GMT_Usage (API, -2, "Optionally, append modifier:");
 	GMT_Usage (API, 3, "+u Plot the data on the upper hemisphere [Default is the lower hemisphere].");
 	GMT_Usage (API, 1, "\n-W<pen>");
 	GMT_Usage (API, -2, "Set the pen used to draw the cyclographic traces (great circles) of the planes "
@@ -360,9 +345,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.mode == PSSTEREONET_DUMP_TRACE,
 			"Option -Mc: Lines (-Tl) have no cyclographic trace\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.rake, "Option -T+r: Lines (-Tl) have no plane to measure a rake on\n");
-		if (Ctrl->W.active && Ctrl->W.string && !Ctrl->L.active) {	/* Be kind and use it as the symbol pen instead */
-			GMT_Report (API, GMT_MSG_WARNING, "Option -W: Lines (-Tl) have no cyclographic trace; using the pen to outline the symbols\n");
-			Ctrl->L.string = strdup (Ctrl->W.string);	Ctrl->L.active = true;
+		if (Ctrl->W.active) {	/* -W has nothing to draw here; use -L to outline the symbols instead */
+			GMT_Report (API, GMT_MSG_WARNING, "Option -W: Lines (-Tl) have no cyclographic trace; ignored (use -L to outline the symbols)\n");
+			Ctrl->W.active = false;
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.string == NULL, "Option -S: Must specify a symbol\n");

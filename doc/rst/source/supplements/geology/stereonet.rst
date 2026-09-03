@@ -16,12 +16,10 @@ Synopsis
 [ |-J|\ **A**\|\ **S**\ [0/0/]\ *width* ]
 [ |-A|\ [*annot*\ [/*tick*]] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-L|\ *pen* ]
-[ |-M|\ [**c**\|\ **p**] ]
 [ |-S|\ *symbol*\ [*size*] ]
-[ |-T|\ [**d**\|\ **l**\|\ **p**][**+r**][**+u**] ]
+[ |-T|\ [**d**\|\ **l**\|\ **p**][**+u**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -50,7 +48,7 @@ Synopsis
 Description
 -----------
 
-Reads pairs of angles in degrees (plus an optional *z*-value) from *table* [or standard
+Reads pairs of angles in degrees from *table* [or standard
 input] and plots them on a **stereonet**, the diagram that structural geologists use to
 display the orientation of planes and lines.  Depending on |-T| the two angles are read
 as the strike and dip of a plane (using the right-hand rule, so that the plane dips to
@@ -60,9 +58,7 @@ trend and plunge of a line.
 For each plane we can draw its **cyclographic trace**, i.e., the great circle where the
 plane cuts the hemisphere (selected with |-W|), and the **pole** to the plane, i.e., the
 point where the normal to the plane pierces the hemisphere (selected with |-S|).  For
-each line we only draw the point where it pierces the hemisphere.  Instead of the pole,
-|-T|\ **+r** lets you plot a lineation that lies *on* the plane (e.g., a slickenline),
-given by its **rake** (also called *pitch*) in a third input column.
+each line we only draw the point where it pierces the hemisphere.
 
 A stereonet is not a separate map projection: it is simply one hemisphere of a unit
 sphere seen from above, centered on the nadir.  We therefore use one of the two standard
@@ -104,14 +100,6 @@ stereonet traditionally shows is obtained by giving both a primary and a seconda
 interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
 ``--MAP_GRID_PEN_PRIMARY=0.25p,gray`` to make the fine mesh recede into the background.
 
-.. _-C:
-
-**-C**\ *cpt*
-    Give a CPT or specify **-C**\ *color1,color2*\ [*,color3*\ ,...] to build a linear
-    continuous CPT from those colors automatically.  The color of each symbol and each
-    cyclographic trace is then determined by the *z*-value expected in the third input
-    column.  If no argument is given then we select the current CPT.
-
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -134,27 +122,16 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
 **-L**\ *pen* :ref:`(more ...) <-Wpen_attrib>`
     Set the pen used to outline the symbols selected with |-S|.
 
-.. _-M:
-
-**-M**\ [**c**\|\ **p**]
-    Do no plotting.  Instead, convert the input angles to the longitude, latitude
-    coordinates that this module would have plotted and write them to standard output, so
-    that you can build a custom figure with :doc:`plot </plot>` or process the geometry
-    with other modules.  Append **c** to write the cyclographic traces as a multiple
-    segment data set, or **p** to write the poles (or their rake points if **-T+r** was
-    set, or the lines, if **-Tl**) as a single segment [Default writes the traces for
-    planes and the points for lines].
-
 .. _-S:
 
 **-S**\ *symbol*\ [*size*]
-    Plot the pole to each plane (or the rake point if **-T+r** was set, or the line
-    itself if **-Tl**) using this symbol; see :doc:`plot </plot>` for the available
-    symbol codes [**-Sc**\ 0.15c].  Without |-S| no symbols are plotted for planes.
+    Plot the pole to each plane (or the line itself if **-Tl**) using this symbol; see
+    :doc:`plot </plot>` for the available symbol codes [**-Sc**\ 0.15c].  Without |-S| no
+    symbols are plotted for planes.
 
 .. _-T:
 
-**-T**\ [**d**\|\ **l**\|\ **p**][**+r**][**+u**]
+**-T**\ [**d**\|\ **l**\|\ **p**][**+u**]
     Select what the two input angles mean:
 
     - **d** - Planes given as dip direction and dip.
@@ -162,15 +139,8 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
     - **p** - Planes given as strike and dip, with the strike following the right-hand
       rule so that the plane dips to the right of the strike direction [Default].
 
-    Optionally, append one or both modifiers:
+    Optionally, append modifier:
 
-    - **+r** - Expect a third column with the **rake** (also called *pitch*) of a
-      lineation on the plane, e.g., a slickenline, in degrees measured from the strike
-      azimuth: 0 is the strike azimuth itself, 90 is the down-dip direction, and 180 is
-      the opposite end of the strike.  A negative rake is the common shorthand for a rake
-      measured from that opposite end, and is folded into the 0-180 range (so -25 is read
-      as 155).  Plot that point instead of the pole.  Not allowed with **-Tl**, since a
-      line has no plane to measure the rake on.
     - **+u** - Plot the data on the upper hemisphere [Default is the lower hemisphere,
       which is the convention in structural geology].
 
@@ -188,15 +158,14 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
 
 **-W**\ *pen* :ref:`(more ...) <-Wpen_attrib>`
     Set the pen used to draw the cyclographic traces of the planes.  Ignored if **-Tl**,
-    since a line has no trace, in which case the pen is used to outline the symbols
-    instead.
+    since a line has no trace; use |-L| to outline the symbols instead.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 2 input columns, or 3 if |-C| is used].
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_
 
 .. include:: ../../explain_-c.rst_
@@ -241,10 +210,9 @@ Notes
 #. To draw an empty net, give no input records, e.g., ``gmt stereonet -JA12c < /dev/null``.
 #. Field notebooks often list a name before the two angles; use, e.g., **-i**\ 1,2 to skip
    such a leading column.
-#. Dips (and plunges) must lie in the 0-90 range and rakes in the 0-180 range, as those are
-   the only physically meaningful values.  An out-of-range angle is reported as an error
-   rather than plotted, since it would otherwise project onto the far hemisphere and be
-   silently clipped away.
+#. Dips (and plunges) must lie in the 0-90 range, as that is the only physically meaningful
+   value.  An out-of-range angle is reported as an error rather than plotted, since it would
+   otherwise project onto the far hemisphere and be silently clipped away.
 #. There is no **-R** option: a stereonet always covers a full hemisphere, and giving one
    is rejected as an error rather than silently ignored.
 
@@ -280,20 +248,6 @@ Wulff net without the azimuth ring, try::
 
     gmt begin bedding
       gmt stereonet bedding.txt -JS10c -Tl -A0 -Sc0.2c -Gred
-    gmt end show
-
-To only convert the strike and dip of the faults into the longitudes and latitudes of their
-poles, so that you can plot them yourself, try (no ``gmt begin``/``gmt end`` is needed since
-``-M`` does not plot anything)::
-
-    gmt psstereonet faults.txt -Mp > poles.txt
-
-To plot fault-slip data, i.e., a fault plane together with the rake of its slickenline
-(here strike 315, dip 30, rake 25 measured from the northwest end of the strike, hence a
-rake of 180-25=155 in the 0-180 convention used by **-T+r**), try::
-
-    gmt begin faultslip
-      echo 315 30 155 | gmt stereonet -JA10c -Tp+r -W1p,green -Sc0.2c -Ggreen
     gmt end show
 
 References
