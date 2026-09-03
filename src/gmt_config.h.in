@@ -100,6 +100,8 @@
 #cmakedefine HAVE_FCNTL
 #cmakedefine HAVE_FILENO
 #cmakedefine HAVE__FILENO
+#cmakedefine HAVE_ISATTY
+#cmakedefine HAVE__ISATTY
 #cmakedefine HAVE_FSEEKO
 #cmakedefine HAVE_FTELLO
 #cmakedefine HAVE__FSEEKI64

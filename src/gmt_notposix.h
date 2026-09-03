@@ -495,6 +495,13 @@
 #	define fileno _fileno
 #endif
 
+/* isatty is usually in unistd.h; we use a macro here
+ * since the same function under WIN32 is prefixed with _
+ * and defined in io.h */
+#if defined HAVE__ISATTY && !defined HAVE_ISATTY
+#	define isatty _isatty
+#endif
+
 /* rmdir is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in direct.h */
