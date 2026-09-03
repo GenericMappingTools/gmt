@@ -12909,16 +12909,23 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	unsigned int k;
 	struct GMT_GRID_HEADER_HIDDEN *HH = (G && G->header) ? gmt_get_H_hidden (G->header) : NULL;
 
-	/* A grid with no pad still needs boundary conditions, and the code that computes them
-	 * works on a padded matrix.  Compute them on a private padded copy and keep only the
-	 * halo, so that the grid itself is never given a pad and its data matrix - which may
-	 * belong to Julia, Python or MATLAB - is never reallocated (issue #4358). */
-	if (direction == GMT_IN && HH && G->data && HH->ghost == NULL && !HH->no_ghost && !HH->no_BC &&
+	/* A grid with no pad still needs boundary conditions, and the code that computes them works on a
+	 * padded matrix.  Compute them on a private padded copy and keep only the halo, so that the grid
+	 * itself is never given a pad and its data matrix - which may belong to Julia, Python or MATLAB -
+	 * is never reallocated (issue #4358).
+	 *
+	 * This is done in both directions.  On the way out a module hands the caller a grid whose halo
+	 * must describe the data the grid now holds - the gradient, not the relief it was computed from -
+	 * so any halo it still carries is recomputed rather than kept; skipping that left every grid
+	 * produced by one module and sampled by another with no halo at all. */
+	if (HH && G->data && !HH->no_ghost && !HH->no_BC && (direction == GMT_OUT || HH->ghost == NULL) &&
 	    !(G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) && gmtlib_ghost_wanted (GMT) && !gmtlib_ghost_is_suspended ()) {
 		for (k = 0; !thin_pad && k < 4; k++) if (G->header->pad[k] < 2) thin_pad = true;
 		if (thin_pad) {	/* Too thin for the BC code to work in, so it works in a copy instead */
 			unsigned int pad2[4] = {2U, 2U, 2U, 2U};
 			struct GMT_GRID *P = NULL;
+			/* The copy inherits the halo, so a side that holds real data (GMT_BC_IS_DATA) survives
+			 * the round trip and only the sides the BC code actually sets are recomputed */
 			if ((P = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA)) == NULL) return (GMT_MEMORY_ERROR);
 			gmt_grd_pad_on (GMT, P, pad2);	/* The copy carries the pad that the BC code needs */
 			error = gmtsupport_grd_BC_set (GMT, P, direction);
