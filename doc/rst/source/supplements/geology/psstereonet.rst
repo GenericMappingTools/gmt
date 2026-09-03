@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt psstereonet** [ *table* ]
-[ |-J|\ **A**\|\ **S**\ [0/0/]\ *width* ]
+[ |-J|\ **A**\|\ **S**\ *width* ]
 [ |-A|\ [*annot*\ [/*tick*]] ]
 [ |SYN_OPT-B| ]
 [ |-G|\ *fill* ]

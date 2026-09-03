@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt stereonet** [ *table* ]
-[ |-J|\ **A**\|\ **S**\ [0/0/]\ *width* ]
+[ |-J|\ **A**\|\ **S**\ *width* ]
 [ |-A|\ [*annot*\ [/*tick*]] ]
 [ |SYN_OPT-B| ]
 [ |-G|\ *fill* ]
@@ -107,15 +107,15 @@ interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
 
 .. _-J:
 
-**-JA**\|\ **S**\ [0/0/]\ *width*
+**-JA**\|\ **S**\ *width*
     Select the type of net, where *width* is its diameter:
 
     - **A** - Lambert azimuthal equal-area, i.e., a Schmidt net [Default].
     - **S** - Stereographic (equal-angle), i.e., a Wulff net.
 
-    Both projections must be centered on 0/0 and use the default 90-degree horizon, so you
-    may skip the center and simply give **-JA**\ *width* or **-JS**\ *width*
-    [**-JA**\ 15c].  Any other projection is an error.
+    Both projections use the default 90-degree horizon [**-JA**\ 15c].  The net is always
+    centered on 0/0, so give the width only, without a center: any other projection, or an
+    explicit center, is an error.
 
 .. _-L:
 

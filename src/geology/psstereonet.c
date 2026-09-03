@@ -159,7 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S[0/0/]<width>] [-A[<annot>[/<tick>]]] [%s] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-JA|S<width>] [-A[<annot>[/<tick>]]] [%s] "
 		"[-G<fill>] %s[-L<pen>] %s%s[-S<symbol>[<size>]] [-T[d|l|p][+u]] [%s] [%s] "
 		"[-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
@@ -176,13 +176,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"standard input.");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-JA|S[0/0/]<width>");
+	GMT_Usage (API, 1, "\n-JA|S<width>");
 	GMT_Usage (API, -2, "A stereonet is just a hemisphere seen from above, so select one of the two "
-		"azimuthal projections centered on 0/0 whose default 90-degree horizon is a full hemisphere:");
+		"azimuthal projections whose default 90-degree horizon is a full hemisphere:");
 	GMT_Usage (API, 3, "A: Lambert azimuthal equal-area, i.e., a Schmidt net [equal-area; Default].");
 	GMT_Usage (API, 3, "S: Stereographic, i.e., a Wulff net [equal-angle].");
-	GMT_Usage (API, -2, "Note: <width> is the diameter of the net. You may skip the 0/0 center and just "
-		"give -JA<width> or -JS<width> [-JA%gc].", PSSTEREONET_DEF_WIDTH);
+	GMT_Usage (API, -2, "Note: <width> is the diameter of the net [-JA%gc]. The net is always centered on "
+		"0/0, so give the width only, without a center.", PSSTEREONET_DEF_WIDTH);
 	GMT_Usage (API, 1, "\n-A[<annot>[/<tick>]]");
 	GMT_Usage (API, -2, "Annotate the azimuth around the perimeter of the net every <annot> degrees, with "
 		"ticks every <tick> degrees [%g/%g]. Use -A0 to skip the azimuth ring altogether.",
@@ -368,9 +368,15 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	unsigned int k;
 
 	if ((opt = GMT_Find_Option (API, 'J', *options))) {	/* Expand the -JA|S<width> shorthand, if that is what we got */
-		if (strchr ("AaSs", opt->arg[0]) && opt->arg[1] && !strchr (opt->arg, '/')) {
-			sprintf (string, "%c0/0/%s", opt->arg[0], &opt->arg[1]);
-			if (GMT_Update_Option (API, opt, string)) return (GMT_PARSE_ERROR);
+		if (strchr ("AaSs", opt->arg[0])) {
+			if (opt->arg[1] && !strchr (opt->arg, '/'))
+				sprintf (string, "%c0/0/%s", opt->arg[0], &opt->arg[1]);
+			else if (strchr (opt->arg, '/')) {	/* An explicit center was given; the net is always centered on 0/0 */
+				GMT_Report (API, GMT_MSG_ERROR, "Option -J: A stereonet is always centered on 0/0; give the width "
+					"only, e.g. -JA<width> or -JS<width>\n");
+				return (GMT_PARSE_ERROR);
+			}
+			if (string[0] && GMT_Update_Option (API, opt, string)) return (GMT_PARSE_ERROR);
 		}
 	}
 	else if (!dump) {	/* No -J given, so default to a Schmidt net */
