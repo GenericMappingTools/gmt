@@ -7868,10 +7868,9 @@ GMT_LOCAL int gmtapi_init_import (struct GMTAPI_CTRL *API, enum GMT_enum_family 
 	/* Note that n_reg can have changed if we added file args above */
 
 	if ((mode & GMT_ADD_STDIO_ALWAYS) || ((mode & GMT_ADD_STDIO_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
-		if (n_reg == 0 && isatty (fileno (API->GMT->session.std[GMT_IN]))) {
-			GMT_Report (API, GMT_MSG_ERROR, "No input file given and standard input is a terminal - refusing to wait forever. Provide a file or pipe/redirect data.\n");
-			return_value (API, GMT_RUNTIME_ERROR, GMT_NOTSET);
-		}
+		if (n_reg == 0 && isatty (fileno (API->GMT->session.std[GMT_IN])))
+			GMT_Report (API, GMT_MSG_WARNING, "No input file given - reading table data from standard input (this terminal). "
+				"Type your data and press Ctrl-D when done, or provide a file, or pipe/redirect data instead.\n");
 		if ((object_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_STREAM, geometry, GMT_IN, NULL, API->GMT->session.std[GMT_IN])) == GMT_NOTSET)
 			return_value (API, API->error, GMT_NOTSET);	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
