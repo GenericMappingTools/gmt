@@ -6152,8 +6152,12 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			for (k = k0; k <= k1; k++) {	/* Read the required layers into individual grid structures */
 				/* Get the k'th layer from 3D cube possibly via a selected variable name */
 				sprintf (file, "%s?%s[%" PRIu64 "]", HH->name, U_obj->name, k);
-				/* Read in the layer as a temporary grid */
-				if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, S_obj->wesn, file, NULL)) == NULL) {
+				/* Read in the layer as a temporary grid.  It is copied into the cube striding by
+				 * the padded layer size, so it must keep its pad (issue #4358) */
+				gmtlib_ghost_suspend (true);
+				G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, S_obj->wesn, file, NULL);
+				gmtlib_ghost_suspend (false);
+				if (G == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to read layer %" PRIu64 " from file %s.\n", k, file);
 					gmtlib_free_cube (GMT, &U_obj, true);
 					return_null (API, GMT_GRID_READ_ERROR);
@@ -8424,6 +8428,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	API->verbose = (mode >> GMT_MSG_BITSHIFT);	/* Pick up any -V settings from gmt.c */
 	API->remote_id = GMT_NOTSET;     /* Not read a remote grid yet */
 	API->pad = pad;     /* Preserve the default pad value for this session */
+	if (gmtlib_ghost_no_new_pad (NULL)) API->pad = 0;	/* Ghost cells: nothing in this session gets a pad */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
 	API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */

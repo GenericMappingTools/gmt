@@ -107,6 +107,18 @@ EXTERN_MSC int gmtlib_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 EXTERN_MSC int gmtlib_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC unsigned int gmtlib_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid);
+
+/* Ghost cells (gmt_ghost.c) - see gmt_ghost.h for the layout */
+EXTERN_MSC bool gmtlib_ghost_wanted (struct GMT_CTRL *GMT);
+EXTERN_MSC bool gmtlib_ghost_no_new_pad (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmtlib_ghost_suspend (bool on);
+EXTERN_MSC bool gmtlib_ghost_is_suspended (void);
+EXTERN_MSC struct GMT_GRID_GHOST *gmtlib_ghost_alloc (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int pad[]);
+EXTERN_MSC void gmtlib_ghost_free (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
+EXTERN_MSC int gmtlib_ghost_from_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G);
+EXTERN_MSC int gmtlib_ghost_to_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G);
+EXTERN_MSC int gmtlib_ghost_duplicate (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, struct GMT_GRID_HEADER *from);
+
 EXTERN_MSC void gmtlib_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned int n_rows, unsigned int *f, double *r, size_t *s, double *t);
 EXTERN_MSC int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type type, struct GMT_OGR *S);
 EXTERN_MSC size_t gmtlib_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloat *nan_value);

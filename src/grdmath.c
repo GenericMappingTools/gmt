@@ -564,8 +564,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 
 GMT_LOCAL struct GMT_GRID *grdmath_alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Template) {
 	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
+	/* The stack grid must have the same shape as the template, pad included: every operator
+	 * indexes it with node numbers computed from info->G (issue #4358) */
 	struct GMT_GRID *New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Template->header->wesn, Template->header->inc, \
-		Template->header->registration, GMT_NOTSET, NULL);
+		Template->header->registration, (int)Template->header->pad[XLO], NULL);
 	return (New);
 }
 
@@ -7154,6 +7156,8 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 				if (GMT_Read_Data (API, GMT_IS_GRID|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, stack[nstack]->G) == NULL) {	/* Get data */
 					Return (API->error);
 				}
+				if (!gmt_M_grd_same_pad (GMT, stack[nstack]->G, info.G))	/* Every stack item is indexed with node numbers computed from info.G, so it must share its layout */
+					gmt_grd_pad_on (GMT, stack[nstack]->G, info.G->header->pad);
 			}
 			nstack++;
 			continue;

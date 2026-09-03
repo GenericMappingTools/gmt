@@ -803,6 +803,8 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	if (Hfrom->command) Hto->command = strdup (Hfrom->command);
 	if (Hfrom->remark) Hto->remark = strdup (Hfrom->remark);
 	if (Hfrom->cpt) Hto->cpt = strdup (Hfrom->cpt);
+	/* The ghost-cell halo belongs to a specific data matrix, so a copied header never inherits it */
+	Hto->ghost = NULL;
 }
 
 /*! gmt_grd_is_global returns true for a geographic grid with exactly 360-degree range (with or without repeating column) */
@@ -2862,6 +2864,13 @@ void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	struct GMT_GRID_HEADER *h = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
+	/* A caller asking for a pad wants the halo inside the matrix, so fold any ghost
+	 * cells back in first.  The values are moved, not recomputed, so a module that has
+	 * not been converted yet sees exactly the halo it would have seen before, and it
+	 * keeps its pad from here on (issue #4358). */
+	if (HH->ghost) gmtlib_ghost_to_pad (GMT, G);
+	HH->no_ghost = 1;
+
 	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Calling gmt_grd_pad_off on interleaved complex grid! Programming error?\n");
 		return;
@@ -2977,6 +2986,8 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, gmt_grdfloat);
 		}
 
+		if (mode & GMT_DUPLICATE_DATA) gmtlib_ghost_duplicate (GMT, Gnew->header, G->header);	/* The halo travels with the data */
+
 		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
 		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
 		GHnew->xy_alloc_mode[GMT_X] = GHnew->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
@@ -2996,6 +3007,7 @@ void gmt_free_header (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER **header) {
 		gmt_M_str_free (h->ProjRefWKT);
 		gmt_M_str_free (h->ProjRefPROJ4);
 	}
+	gmtlib_ghost_free (GMT, h);	/* Release the ghost-cell halo, if any */
 	gmt_M_str_free (HH->pocket);
 	if (HH->title)   gmt_M_str_free (HH->title);
 	if (HH->command) gmt_M_str_free (HH->command);

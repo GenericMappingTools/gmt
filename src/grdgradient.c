@@ -420,6 +420,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
+	int nb_row[4], nb_col[4];
+	bool separate_out = false;
+	gmt_grdfloat *out = NULL, z_e, z_w, z_n, z_s;
 	openmp_int row, col;
 	unsigned int n, orig_pad[4];
 	uint64_t ij, ij0, n_used = 0;
@@ -578,7 +581,9 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	separate = true;	/* Cannot use input grid to hold output grid when doing things in parallel */
 #endif
 #endif
-	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 2, In, &Grid);	/* true if input is a read-only array */
+	/* Ask for no minimum pad: the 4-star neighbours are fetched through the grid accessors,
+	 * which read a halo wherever it lives, so this works with or without a pad (issue #4358) */
+	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 0, In, &Grid);	/* true if input is a read-only array */
 	if (new_grid) GMT_Report (API, GMT_MSG_DEBUG, "Input grid duplicated as it was read-only\n");
 
 	/* If new_grid is true then Grid points to a duplicate of In but will have two boundary rows,columns padding.
@@ -613,9 +618,23 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 		y_factor *= cos (Ctrl->A.azimuth[0]);
 	}
 
-	/* Index offset of 4-star points relative to current node in Grid */
-	mx = Grid->header->mx;	/* Need a signed mx for p[3] in line below */
-	p[0] = 1;	p[1] = -1;	p[2] = mx;	p[3] = -mx;
+	/* Row,col offsets of the 4-star points relative to the current node */
+	mx = Grid->header->mx;	/* Still wanted for the pad bookkeeping further down */
+	gmt_M_unused (p);
+	nb_row[0] =  0;	nb_col[0] =  1;		/* East  */
+	nb_row[1] =  0;	nb_col[1] = -1;		/* West  */
+	nb_row[2] =  1;	nb_col[2] =  0;		/* South */
+	nb_row[3] = -1;	nb_col[3] =  0;		/* North */
+
+	/* If the grid has no pad then the old trick of writing the answer into the leading,
+	 * pad-free part of the same array would overwrite nodes the next column still has to
+	 * read, since there ij0 and ij are the same node.  Use a separate array in that case. */
+	if (Grid->header->pad[XLO] == 0) {
+		if ((out = gmt_M_memory (GMT, NULL, Grid->header->nm, gmt_grdfloat)) == NULL) Return (GMT_MEMORY_ERROR);
+		separate_out = true;
+	}
+	else
+		out = Grid->data;
 
 	min_gradient = DBL_MAX;	max_gradient = -DBL_MAX;	ave_gradient = 0.0;
 	if (Ctrl->E.mode == 3) {
@@ -650,25 +669,31 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 			if (Ctrl->A.mode == GRDGRADIENT_FIX && Ctrl->A.two) x_factor2 = x_factor2_set;
 		}
 		for (col = 0; col < (openmp_int)Grid->header->n_columns; col++, ij0++) {
-			ij = gmt_M_ijp (Grid->header, row, col);	/* Index into padded grid (with at least 1 row/col padding) */
-			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Grid->data[ij+p[n]])) bad = true;
+			ij = gmt_M_ijp (Grid->header, row, col);	/* Index of this node in Grid */
+			for (n = 0, bad = false; !bad && n < 4; n++)	/* Note the casts: row and col are unsigned, so col-1 at col 0 would wrap */
+				if (gmt_M_is_fnan (gmt_grd_get_node (Grid->header, Grid->data, (int64_t)row + nb_row[n], (int64_t)col + nb_col[n]))) bad = true;
 			if (bad) {	/* One of the 4-star corners = NaN; assign NaN answer and skip to next node */
-				Grid->data[ij0] = GMT->session.f_NaN;
+				out[ij0] = GMT->session.f_NaN;
 				if (Ctrl->S.active) Slope->data[ij] = GMT->session.f_NaN;
 				continue;
 			}
 			if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* Must update azimuth for every node */
-				Ctrl->A.azimuth[0] = A->data[ij] * D2R;
+				/* A is a grid of its own and need not share Grid's pad, so index it with its own header */
+				Ctrl->A.azimuth[0] = A->data[gmt_M_ijp (A->header, row, col)] * D2R;
 				x_factor = x_factor_set * sin (Ctrl->A.azimuth[0]);
 				y_factor = y_factor_set * cos (Ctrl->A.azimuth[0]);
 			}
 
 			/* We can now evaluate the central finite differences */
-			dzdx = (Grid->data[ij+1] - Grid->data[ij-1]) * x_factor;
-			dzdy = (Grid->data[ij-Grid->header->mx] - Grid->data[ij+Grid->header->mx]) * y_factor;
+			z_e = gmt_grd_get_node (Grid->header, Grid->data, (int64_t)row, (int64_t)col + 1);
+			z_w = gmt_grd_get_node (Grid->header, Grid->data, (int64_t)row, (int64_t)col - 1);
+			z_n = gmt_grd_get_node (Grid->header, Grid->data, (int64_t)row - 1, (int64_t)col);
+			z_s = gmt_grd_get_node (Grid->header, Grid->data, (int64_t)row + 1, (int64_t)col);
+			dzdx = (z_e - z_w) * x_factor;
+			dzdy = (z_n - z_s) * y_factor;
 			if (Ctrl->A.two) {
-				dzdx2 = (Grid->data[ij+1] - Grid->data[ij-1]) * x_factor2;
-				dzdy2 = (Grid->data[ij-Grid->header->mx] - Grid->data[ij+Grid->header->mx]) * y_factor2;
+				dzdx2 = (z_e - z_w) * x_factor2;
+				dzdy2 = (z_n - z_s) * y_factor2;
 			}
 
 			/* Write output to unused NW corner */
@@ -718,16 +743,22 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 				r_min = MIN (r_min, output);
 				r_max = MAX (r_max, output);
 			}
-			Grid->data[ij0] = (gmt_grdfloat)output;
+			out[ij0] = (gmt_grdfloat)output;
 			n_used++;
 		}
 	}
 
-	/* Now deal with the fact that the result is unpadded in a padded array */
-	gmt_M_memcpy (orig_pad, Grid->header->pad, 4, unsigned int);	/* This can be either 1/1/1/1/ or 2/2/2/2, depending on circumstances */
-	Grid->header->mx = Grid->header->n_columns;	Grid->header->my = Grid->header->n_rows;	/* Since there is no pad as far as the computed grid is concerned */
-	gmt_M_memset (Grid->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad back in */
-	gmt_grd_pad_on (GMT, Grid, orig_pad);	/* Now reinstate the original pad */
+	if (separate_out) {	/* The answer is already in the grid's own shape; just move it across */
+		gmt_M_memcpy (Grid->data, out, Grid->header->nm, gmt_grdfloat);
+		gmt_M_free (GMT, out);
+		gmtlib_ghost_free (GMT, Grid->header);	/* The halo described the input, not the gradient */
+	}
+	else {	/* Now deal with the fact that the result is unpadded in a padded array */
+		gmt_M_memcpy (orig_pad, Grid->header->pad, 4, unsigned int);	/* This can be either 1/1/1/1/ or 2/2/2/2, depending on circumstances */
+		Grid->header->mx = Grid->header->n_columns;	Grid->header->my = Grid->header->n_rows;	/* Since there is no pad as far as the computed grid is concerned */
+		gmt_M_memset (Grid->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad back in */
+		gmt_grd_pad_on (GMT, Grid, orig_pad);	/* Now reinstate the original pad */
+	}
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Data is geographic */
 		double sum;

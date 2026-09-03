@@ -7611,6 +7611,9 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	gmtinit_init_zproject (GMT);	/* Init 3-D view to plain 2-D view */
 	for (i = 0; i < 4; i++) GMT->current.proj.edge[i] = true;
 	gmtlib_grdio_init (GMT);
+	/* With GMT_GHOST_CELLS=2 the halo lives outside the matrix, so no grid in this
+	 * session is created with a pad at all (issue #4358) */
+	if (gmtlib_ghost_no_new_pad (GMT)) pad = 0;
 	gmt_set_pad (GMT, pad); /* Sets default number of rows/cols for boundary padding in this session */
 	GMT->current.proj.f_horizon = 90.0;
 	if ((GMT->current.proj.proj4 = gmt_M_memory (GMT, NULL, GMT_N_PROJ4, struct GMT_PROJ4)) == NULL)
