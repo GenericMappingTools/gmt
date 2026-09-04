@@ -134,7 +134,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSSTEREONET_CTRL);
 
-	C->A.draw = true;
+	C->A.draw = false;	/* Only annotate the azimuth ring if -A was actually given */
 	C->A.annot = PSSTEREONET_DEF_ANNOT;
 	C->A.tick  = PSSTEREONET_DEF_TICK;
 
@@ -185,13 +185,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"0/0, so give the width only, without a center.", PSSTEREONET_DEF_WIDTH);
 	GMT_Usage (API, 1, "\n-A[<annot>[/<tick>]]");
 	GMT_Usage (API, -2, "Annotate the azimuth around the perimeter of the net every <annot> degrees, with "
-		"ticks every <tick> degrees [%g/%g]. Use -A0 to skip the azimuth ring altogether.",
+		"ticks every <tick> degrees [%g/%g if -A is given with no argument]. Without -A no azimuth ring "
+		"is drawn at all; -A0 is the same as omitting -A.",
 		PSSTEREONET_DEF_ANNOT, PSSTEREONET_DEF_TICK);
 	GMT_Option (API, "B-");
 	GMT_Usage (API, -2, "Note: The gridlines requested via -B are the net itself: the meridians are the "
 		"cyclographic traces of planes striking N-S with dips in steps of the grid interval, while the "
 		"parallels are the small circles of constant plunge. Since the net has no meaningful longitude "
-		"or latitude annotations you will normally only ask for gridlines [-Bpg10 -Bsg30].");
+		"or latitude annotations you will normally only ask for gridlines. Without -B no frame at all is "
+		"drawn, not even the perimeter of the net; give a bare -B for the classic two-level mesh "
+		"[-Bpg10 -Bsg30].");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fill for the symbols.");
 	GMT_Usage (API, 1, "\n-L<pen>");
 	GMT_Usage (API, -2, "Set the pen used to outline the symbols [%s].", PSSTEREONET_DEF_PEN);
@@ -246,6 +249,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSTEREONET_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Azimuth annotations around the perimeter */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				Ctrl->A.draw = true;	/* -A was given, so annotate using the default or given intervals */
 				if (opt->arg[0] == '\0') break;	/* Just use the default intervals */
 				if ((n = sscanf (opt->arg, "%lg/%lg", &Ctrl->A.annot, &Ctrl->A.tick)) < 1) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -A: Unable to parse <annot>[/<tick>] from %s\n", opt->arg);
@@ -393,7 +397,9 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	if ((opt = GMT_Make_Option (API, 'R', "g")) == NULL) return (GMT_PARSE_ERROR);
 	if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
 
-	if (GMT_Find_Option (API, 'B', *options) == NULL) {	/* Lay down the classic two-level mesh of a stereonet */
+	if ((opt = GMT_Find_Option (API, 'B', *options)) != NULL && opt->arg[0] == '\0') {
+		/* A bare -B was given, so lay down the classic two-level mesh of a stereonet */
+		GMT_Delete_Option (API, opt, options);
 		for (k = 0; k < PSSTEREONET_DEF_FRAME; k++) {
 			if ((opt = GMT_Make_Option (API, 'B', frame[k])) == NULL) return (GMT_PARSE_ERROR);
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);

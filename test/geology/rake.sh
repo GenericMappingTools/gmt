@@ -12,5 +12,5 @@ cat << EOF > rake.txt
 315	30	180
 EOF
 
-gmt psstereonet rake.txt -JA10c -Tp+r -W1p,green -Sc0.25c -Ggreen -P \
+gmt psstereonet rake.txt -JA10c -B -Tp+r -W1p,green -Sc0.25c -Ggreen -P \
 	--MAP_GRID_PEN_PRIMARY=0.25p,gray > $ps

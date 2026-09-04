@@ -83,8 +83,9 @@ Optional Arguments
 
 **-A**\ [*annot*\ [/*tick*]]
     Annotate the azimuth around the perimeter of the net every *annot* degrees, with tick
-    marks every *tick* degrees [30/10].  If only *annot* is given then *tick* defaults to
-    one third of *annot*.  Use **-A0** to leave the perimeter unannotated.
+    marks every *tick* degrees [30/10 if **-A** is given with no argument].  If only *annot*
+    is given then *tick* defaults to one third of *annot*.  Without **-A** no azimuth ring
+    is drawn at all; **-A0** is the same as omitting **-A**.
 
 .. _-B:
 
@@ -97,8 +98,10 @@ of planes striking N-S whose dips step by the grid interval, and the parallels a
 small circles of constant plunge.  Since the net has no meaningful longitude or latitude
 annotations you will normally only ask for gridlines, and the two-level mesh that a
 stereonet traditionally shows is obtained by giving both a primary and a secondary
-interval, e.g., **-Bpg10 -Bsg30** [Default].  Add, e.g.,
-``--MAP_GRID_PEN_PRIMARY=0.25p,gray`` to make the fine mesh recede into the background.
+interval, e.g., **-Bpg10 -Bsg30**.  Without |-B| no frame at all is drawn, not even the
+perimeter of the net; give a bare **-B** for the classic two-level mesh [-Bpg10 -Bsg30].
+Add, e.g., ``--MAP_GRID_PEN_PRIMARY=0.25p,gray`` to make the fine mesh recede into the
+background.
 
 .. _-G:
 
@@ -207,7 +210,8 @@ Notes
 
 #. Repeat **-l** to label both items: the first label goes with the cyclographic traces and
    the second with the symbols.
-#. To draw an empty net, give no input records, e.g., ``gmt stereonet -JA12c < /dev/null``.
+#. To draw an empty net, give no input records, e.g., ``gmt stereonet -JA12c -B < /dev/null``.
+   Without **-B** no frame at all is drawn, not even the perimeter of the net.
 #. Field notebooks often list a name before the two angles; use, e.g., **-i**\ 1,2 to skip
    such a leading column.
 #. Dips (and plunges) must lie in the 0-90 range, as that is the only physically meaningful
@@ -239,7 +243,7 @@ drawing the cyclographic traces in red and the poles as blue crosses, try::
     350 80
     EOF
     gmt begin faults
-      gmt stereonet faults.txt -JA12c -W1p,red -Sx0.3c -L1p,blue \
+      gmt stereonet faults.txt -JA12c -B -W1p,red -Sx0.3c -L1p,blue \
         -l"Fault plane" -l"Pole" --MAP_GRID_PEN_PRIMARY=0.25p,gray
     gmt end show
 
@@ -247,7 +251,7 @@ To plot the poles to bedding, measured as *trend plunge*, as red circles on a 10
 Wulff net without the azimuth ring, try::
 
     gmt begin bedding
-      gmt stereonet bedding.txt -JS10c -Tl -A0 -Sc0.2c -Gred
+      gmt stereonet bedding.txt -JS10c -B -Tl -A0 -Sc0.2c -Gred
     gmt end show
 
 References

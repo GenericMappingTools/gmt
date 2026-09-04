@@ -14,5 +14,5 @@ cat << EOF > planes.txt
 350	80
 EOF
 
-gmt psstereonet planes.txt -JS8c -Td+u -A45/15 -W1p,red -Sx0.3c -L1p,blue -P \
+gmt psstereonet planes.txt -JS8c -B -Td+u -A45/15 -W1p,red -Sx0.3c -L1p,blue -P \
 	--MAP_GRID_PEN_PRIMARY=0.25p,gray > $ps

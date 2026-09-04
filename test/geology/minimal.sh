@@ -12,5 +12,5 @@ cat << EOF > minimal.txt
 0	90
 EOF
 
-gmt psstereonet minimal.txt -JA8c -W1p,red -Sc0.25c -Gblue -P \
+gmt psstereonet minimal.txt -JA8c -B -W1p,red -Sc0.25c -Gblue -P \
 	--MAP_GRID_PEN_PRIMARY=0.25p,gray > $ps
