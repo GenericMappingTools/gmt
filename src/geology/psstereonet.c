@@ -403,6 +403,21 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL void psstereonet_geo_format (double annot, char *fmt, size_t len) {
+	/* Build a FORMAT_GEO_MAP template with just enough decimal digits to show <annot> exactly,
+	 * so that a fractional annotation interval (e.g., -A22.5) is not rounded to whole degrees. */
+	unsigned int n = 0;
+	double scaled = annot;
+	while (n < 3 && fabs (scaled - rint (scaled)) > GMT_CONV6_LIMIT) {
+		scaled *= 10.0;
+		n++;
+	}
+	if (n == 0)
+		snprintf (fmt, len, "+ddd");
+	else
+		snprintf (fmt, len, "+ddd.%.*s", n, "xxx");
+}
+
 GMT_LOCAL void psstereonet_add_option (char *cmd, size_t len, char option, char *arg) {
 	/* Append -<option><arg> to the command we build for the plot module.  Arguments such as a legend
 	 * label may contain spaces, so those must be passed on inside quotes to survive the option parser. */
@@ -679,9 +694,13 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.draw) {	/* Annotate azimuth around the perimeter via a matching polar basemap */
 		/* MAP_FRAME_AXES must go back to auto so that the polar projection picks the outer arc to annotate,
-		 * and FORMAT_GEO_MAP must use the 0-360 range so that azimuths are not reported as 0-180 west/east */
-		snprintf (cmd, GMT_LEN1024, "-R0/360/0/1 -JP%gi+a -Bxa%gf%g -O -K --MAP_FRAME_AXES=auto --FORMAT_GEO_MAP=+ddd",
-			GMT->current.map.width, Ctrl->A.annot, Ctrl->A.tick);
+		 * and FORMAT_GEO_MAP must use the 0-360 range so that azimuths are not reported as 0-180 west/east.
+		 * The format itself must carry enough decimals for a fractional -A (e.g., -A22.5), or the annotation
+		 * would round to the nearest whole degree even though the tick lands exactly on the given azimuth. */
+		char geo_fmt[GMT_LEN16] = {""};
+		psstereonet_geo_format (Ctrl->A.annot, geo_fmt, GMT_LEN16);
+		snprintf (cmd, GMT_LEN1024, "-R0/360/0/1 -JP%gi+a -Bxa%gf%g -O -K --MAP_FRAME_AXES=auto --FORMAT_GEO_MAP=%s",
+			GMT->current.map.width, Ctrl->A.annot, Ctrl->A.tick, geo_fmt);
 		gmt_init_B (GMT);
 		/* Forget our own two-level -B or the polar basemap would inherit a secondary axis with no intervals,
 		 * and rewind the basemap order since we already used up both of our before/after passes above */
