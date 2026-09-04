@@ -341,7 +341,7 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Message(API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage(API, 1, "\n-1<grd> -2<grd> ... -9<grd> Nested bathymetry grids (one per nesting level).");
 	GMT_Usage(API, 1, "\n-A<name> Save result as a .SWW ANUGA format file.");
-	//GMT_Usage(API, 1, "\n-n<base> Basename for MOST triplet files (no extension).");
+	GMT_Usage(API, 1, "\n-n<base> Basename for MOST triplet files (no extension).");
 	GMT_Usage(API, 1, "\n-C Add Coriolis effect.");
 	GMT_Usage(API, 1, "\n-D Write grids with the total water depth.");
 	GMT_Usage(API, -2, "These grids will have wave height on ocean and water thickness on land.");
@@ -466,7 +466,6 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	int     last_nested_level = -1;
 	size_t  len;
 	bool    cumpt = false, do_2Dgrids = false, do_maxs = false, mareg_xy = false;
-	double  mareg_x = 0, mareg_y = 0;
 	bool    out_energy = false, max_energy = false, out_power = false, max_power = false;
 	bool    out_sww = false, out_most = false, out_3D = false;
 	bool    surf_level = true, max_level = false, max_velocity = false, water_depth = false;
@@ -492,6 +491,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	char   *pch, *tok;
 	char   *nesteds[10] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	char    txt[128];
+	double  mareg_x = 0, mareg_y = 0;
 	double  add_const = 0, time_h = 0;
 	double  dxKb = 0, dyKb = 0;
 	double  z_offset = 0;
@@ -955,7 +955,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 		}
 
 		if (nest.do_Coriolis && !isGeog && nest.lat_min4Coriolis == -100) {
-			GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: Error -C option. For cartesian grids must provide the South latitude. Ignoring Corilis request.\n");
+			GMT_Report(GMT->parent, GMT_MSG_WARNING, "NSWING: Error -C option. For cartesian grids must provide the South latitude. Ignoring Coriolis request.\n");
 			nest.do_Coriolis = false;
 		}
 	}
@@ -2395,27 +2395,37 @@ int check_paternity(void *API, struct nestContainer *nest) {
 		if (check_binning(nest->hdr[k-1].wesn[XLO], nest->hdr[k].wesn[XLO], nest->hdr[k-1].inc[GMT_X],
 		                  nest->hdr[k].inc[GMT_X], nest->hdr[k-1].inc[GMT_X] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
-				"X_MIN should be (in grid registration):\n\t%f\n", suggest);
+				"X_MIN should be (in grid registration):\n\t%f\tbut is %f\n", suggest, nest->hdr[k].wesn[XLO]);
 			error++;
 		}
 		if (check_binning(nest->hdr[k-1].wesn[YLO], nest->hdr[k].wesn[YLO], nest->hdr[k-1].inc[GMT_Y],
 		                  nest->hdr[k].inc[GMT_Y], nest->hdr[k-1].inc[GMT_Y] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Lower left corner of doughter grid does not obey to the nesting rules.\n"
-				"Y_MIN should be (in grid registration):\n\t%f\n", suggest);
+				"Y_MIN should be (in grid registration):\n\t%f\tbut is %f\n", suggest, nest->hdr[k].wesn[YLO]);
 			error++;
 		}
 		/* Check nesting at UpperRight corner */
 		if (check_binning(nest->hdr[k-1].wesn[XLO], nest->hdr[k].wesn[XHI], nest->hdr[k-1].inc[GMT_X],
 		                  -nest->hdr[k].inc[GMT_X], nest->hdr[k-1].inc[GMT_X] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
-				"X_MAX should be (in grid registration):\n\t%f\n", suggest);
+				"X_MAX should be (in grid registration):\n\t%f\tbut is %f\n", suggest, nest->hdr[k].wesn[XHI]);
 			error++;
 		}
 		if (check_binning(nest->hdr[k-1].wesn[YLO], nest->hdr[k].wesn[YHI], nest->hdr[k-1].inc[GMT_Y],
 		                  -nest->hdr[k].inc[GMT_Y], nest->hdr[k-1].inc[GMT_Y] / 4, &suggest)) {
 			GMT_Report(API, GMT_MSG_ERROR, "Upper right corner of doughter grid does not obey to the nesting rules.\n"
-				"Y_MAX should be (in grid registration):\n\t%f\n", suggest);
+				"Y_MAX should be (in grid registration):\n\t%f\tbut is %f\n", suggest, nest->hdr[k].wesn[YHI]);
 			error++;
+		}
+
+		if (k == 1) {	/* Only warn: a tight fit is legal (benchmark 1 uses it) but is a classic trouble source */
+			double margin_w = (nest->hdr[0].wesn[XLO] - nest->hdr[1].wesn[XLO]) / nest->hdr[0].inc[GMT_X];
+			double margin_e = (nest->hdr[1].wesn[XHI] - nest->hdr[0].wesn[XHI]) / nest->hdr[0].inc[GMT_X];
+			double margin_s = (nest->hdr[0].wesn[YLO] - nest->hdr[1].wesn[YLO]) / nest->hdr[0].inc[GMT_Y];
+			double margin_n = (nest->hdr[1].wesn[YHI] - nest->hdr[0].wesn[YHI]) / nest->hdr[0].inc[GMT_Y];
+			if (margin_w > -2 || margin_e > -2 || margin_s > -2 || margin_n > -2)
+				GMT_Report(API, GMT_MSG_WARNING, "NSWING: First nested grid is less than 2 bathymetry cells inside the "
+				           "bathymetry grid. Legal (benchmark 1 is such a case) but may cause trouble.\n");
 		}
 
 		if (error)		/* Abort since any further info would be false/useless */
