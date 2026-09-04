@@ -137,7 +137,9 @@ jobs:
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        run: gh run download -n gmt-cache -D ~/.gmt/static/
+        run: |
+          gh run download -n gmt-cache -D ~/.gmt/static/
+          touch ~/.gmt/static/gmt_data_server.txt ~/.gmt/static/gmt_hash_server.txt
         env:
           GH_TOKEN: ${{ github.token }}
 
