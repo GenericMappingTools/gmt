@@ -118,9 +118,10 @@ background.
     - **A** - Lambert azimuthal equal-area, i.e., a Schmidt net [Default].
     - **S** - Stereographic (equal-angle), i.e., a Wulff net.
 
-    Both projections use the default 90-degree horizon [**-JA**\ 15c].  The net is always
-    centered on 0/0, so give the width only, without a center: any other projection, or an
-    explicit center, is an error.
+    Both projections use the default 90-degree horizon.  The net is always centered on 0/0,
+    so give the width only, without a center: any other projection, or an explicit center,
+    is an error.  If |-J| is skipped we inherit the net of an earlier **stereonet** in the
+    same figure, else we default to **-JA**\ 15c.
 
 .. _-L:
 

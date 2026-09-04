@@ -182,8 +182,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"azimuthal projections whose default 90-degree horizon is a full hemisphere:");
 	GMT_Usage (API, 3, "A: Lambert azimuthal equal-area, i.e., a Schmidt net [equal-area; Default].");
 	GMT_Usage (API, 3, "S: Stereographic, i.e., a Wulff net [equal-angle].");
-	GMT_Usage (API, -2, "Note: <width> is the diameter of the net [-JA%gc]. The net is always centered on "
-		"0/0, so give the width only, without a center.", PSSTEREONET_DEF_WIDTH);
+	GMT_Usage (API, -2, "Note: <width> is the diameter of the net. The net is always centered on 0/0, so "
+		"give the width only, without a center. If -J is skipped we inherit the net of an earlier "
+		"stereonet in this figure, else we default to -JA%gc.", PSSTEREONET_DEF_WIDTH);
 	GMT_Usage (API, 1, "\n-A[<annot>[/<tick>]]");
 	GMT_Usage (API, -2, "Annotate the azimuth around the perimeter of the net every <annot> degrees, with "
 		"ticks every <tick> degrees [%g/%g if -A is given with no argument]. Without -A no azimuth ring "
@@ -386,10 +387,16 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 			if (string[0] && GMT_Update_Option (API, opt, string)) return (GMT_PARSE_ERROR);
 		}
 	}
-	else if (!dump) {	/* No -J given, so default to a Schmidt net */
-		sprintf (string, "A0/0/%gc", PSSTEREONET_DEF_WIDTH);
-		if ((opt = GMT_Make_Option (API, 'J', string)) == NULL) return (GMT_PARSE_ERROR);
-		if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
+	else if (!dump) {	/* No -J given, so we must either inherit one or default to a Schmidt net */
+		/* An earlier net in this figure is remembered in the history, and GMT hands that on to a later
+		 * call that omits -J, so only fall back to our own default if there is no such net to inherit */
+		int id = gmt_get_option_id (0, "J");	/* The generic -J history entry holds the projection code */
+		bool inherit = (id >= 0 && API->GMT->init.history[id] && strchr ("AaSs", API->GMT->init.history[id][0]));
+		if (!inherit) {
+			sprintf (string, "A0/0/%gc", PSSTEREONET_DEF_WIDTH);
+			if ((opt = GMT_Make_Option (API, 'J', string)) == NULL) return (GMT_PARSE_ERROR);
+			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
+		}
 	}
 	if (dump) return (GMT_NOERROR);	/* The remaining settings only matter for a plot */
 
