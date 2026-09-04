@@ -1466,9 +1466,6 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 		do_nestum = (num_of_nestGrids) ? true : false;
 	}
 
-	/* Check if nesting grids fit nicely within each others */
-	if (do_nestum && check_paternity(API, &nest)) Return(-1);
-
 	if (writeLevel > num_of_nestGrids) {
 		GMT_Report(API, GMT_MSG_ERROR, "Requested save grid level is higher that actual number of nested grids. Using last\n");
 		writeLevel = num_of_nestGrids;
@@ -1672,6 +1669,9 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 			if (initialize_nestum(API, &nest, isGeog, k))
 				{free_arrays(&nest, isGeog, num_of_nestGrids); Return(-1);}
 		}
+		/* Check if nesting grids fit nicely within each others. Only here because check_paternity's
+		 * loop is gated on nest->level[], which is set by initialize_nestum just above. */
+		if (check_paternity(API, &nest)) Return(-1);
 		nest.time_h = time_h;
 		/* Resample eta(s) in descendent grids to avoid initial jumps at borders */
 		resamplegrid(&nest, num_of_nestGrids);
@@ -2434,7 +2434,7 @@ int check_binning(double x0P, double x0D, double dxP, double dxD, double tol, do
 	double x, dec;
 
 	x = (x0D - x0P) / dxP;
-	n_incs = rint(x);
+	n_incs = (int)floor(x);
 	dec = (x0D - (x0P + n_incs * dxP));
 	if (fabs(dec - (dxP / 2 + dxD / 2)) > tol) {
 		*suggest = x0P + n_incs * dxP + dxP / 2 + dxD / 2;		/* Suggested location for x0D */
