@@ -100,6 +100,8 @@ annotations you will normally only ask for gridlines, and the two-level mesh tha
 stereonet traditionally shows is obtained by giving both a primary and a secondary
 interval, e.g., **-Bpg10 -Bsg30**.  Without |-B| no frame at all is drawn, not even the
 perimeter of the net; give a bare **-B** for the classic two-level mesh [-Bpg10 -Bsg30].
+A |-B| that only carries frame settings, such as a **-B+t**\ *title*, gets that same mesh,
+so you can title a default net without spelling out the intervals.
 Add, e.g., ``--MAP_GRID_PEN_PRIMARY=0.25p,gray`` to make the fine mesh recede into the
 background.
 

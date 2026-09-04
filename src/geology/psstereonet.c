@@ -53,6 +53,7 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_internals.h"	/* For gmtlib_B_is_frame, so we can tell a -B frame setting from axis intervals */
 #include "longopt/psstereonet_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psstereonet"
@@ -194,7 +195,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"parallels are the small circles of constant plunge. Since the net has no meaningful longitude "
 		"or latitude annotations you will normally only ask for gridlines. Without -B no frame at all is "
 		"drawn, not even the perimeter of the net; give a bare -B for the classic two-level mesh "
-		"[-Bpg10 -Bsg30].");
+		"[-Bpg10 -Bsg30]. A -B that only carries frame settings, such as a -B+t<title>, gets that same "
+		"mesh, so you can title a default net without spelling out the intervals.");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fill for the symbols.");
 	GMT_Usage (API, 1, "\n-L<pen>");
 	GMT_Usage (API, -2, "Set the pen used to outline the symbols [%s].", PSSTEREONET_DEF_PEN);
@@ -366,8 +368,9 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	 * we fill in the parts of -J and -R that the user should not have to think about, and we default to a
 	 * grid-only frame since the net has no meaningful longitude or latitude annotations. */
 	bool dump = (GMT_Find_Option (API, 'M', *options) != NULL);	/* If -M we are not plotting at all */
+	bool got_B = false, got_axis = false;
 	char string[GMT_LEN64] = {""};
-	struct GMT_OPTION *opt = NULL;
+	struct GMT_OPTION *opt = NULL, *bare = NULL;
 	static char *frame[PSSTEREONET_DEF_FRAME] = {"pg10", "sg30"};
 	unsigned int k;
 
@@ -397,9 +400,19 @@ GMT_LOCAL unsigned int psstereonet_prep_options (struct GMTAPI_CTRL *API, struct
 	if ((opt = GMT_Make_Option (API, 'R', "g")) == NULL) return (GMT_PARSE_ERROR);
 	if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
 
-	if ((opt = GMT_Find_Option (API, 'B', *options)) != NULL && opt->arg[0] == '\0') {
-		/* A bare -B was given, so lay down the classic two-level mesh of a stereonet */
-		GMT_Delete_Option (API, opt, options);
+	/* Scan any -B settings: we only lay down our own default mesh if the user asked for no axis
+	 * intervals of their own, so that a -B that just carries frame settings (e.g., -B+t<title>)
+	 * still gets the classic net drawn under its title. */
+	for (opt = *options; opt; opt = opt->next) {
+		if (opt->option != 'B') continue;
+		got_B = true;
+		if (opt->arg[0] == '\0')	/* A bare -B only asks for our default mesh, so it has served its purpose */
+			bare = opt;
+		else if (!gmtlib_B_is_frame (API->GMT, opt->arg))
+			got_axis = true;	/* The user gave their own intervals, so leave the frame alone */
+	}
+	if (got_B && !got_axis) {	/* Lay down the classic two-level mesh of a stereonet */
+		if (bare) GMT_Delete_Option (API, bare, options);
 		for (k = 0; k < PSSTEREONET_DEF_FRAME; k++) {
 			if ((opt = GMT_Make_Option (API, 'B', frame[k])) == NULL) return (GMT_PARSE_ERROR);
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return (GMT_PARSE_ERROR);
@@ -631,6 +644,11 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 	}
 
 	/* Here we are plotting a stereonet */
+
+	/* The angles have been read, so undo the Cartesian input setting: the frame machinery keys off the
+	 * input column types, and while they say the data are plain numbers it will quietly skip the -B
+	 * annotations and any -B+t title since it cannot tell we are on a geographic projection */
+	gmt_set_geographic (GMT, GMT_IN);
 
 	/* The input-related common options only concern the angles we just read, so make sure they do not
 	 * also get applied when plot reads back the coordinates we computed from them */
