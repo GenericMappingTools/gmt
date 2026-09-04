@@ -49,6 +49,7 @@ struct PSMECA_CTRL {
 	struct SEIS_OFFSET_LINE A; 	/* -A[+g<fill>][+o[<dx>[/<dy>]]][+p<pen>][+s<size>] */
 	struct PSMECA_C {	/* -C<cpt> */
 		bool active;
+		bool master;	/* True if a master CPT name was given, hence we may stretch it to the depth range */
 		char *file;
 	} C;
 	struct PSMECA_D {	/* -D<min/max> */
@@ -263,12 +264,30 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL bool psmeca_is_cpt_master (struct GMT_CTRL *GMT, char *arg) {
+	/* Return true if arg is the name of a master CPT (e.g., batlow).  Such a CPT only has the
+	 * default 0-1 range so it must be stretched to the depth range of the events [see #8966]. */
+	char *master = NULL;
+	if (arg == NULL || arg[0] == '\0') return false;	/* Modern mode -C means use the current CPT, which has its own range */
+	if (strstr (arg, GMT_CPT_EXTENSION)) return false;	/* Clearly a CPT file given, so it has its own range */
+	if ((master = gmt_is_cpt_master (GMT, arg)) == NULL) return false;
+	gmt_M_str_free (master);
+	return true;
+}
+
+GMT_LOCAL void psmeca_set_cpt (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, char *arg) {
+	/* Set the CPT given in -C (or the deprecated -Z) and note whether it is a master CPT name */
+	if (arg[0] == '\0') return;	/* Modern mode -C with no argument means use the current CPT */
+	Ctrl->C.file = strdup (arg);
+	Ctrl->C.master = psmeca_is_cpt_master (GMT, arg);
+}
+
 GMT_LOCAL bool psmeca_is_old_C_option (struct GMT_CTRL *GMT, char *arg) {
-	if (strstr(arg, ".cpt")) return false;	/* Clearly a CPT file given */
-	if (strstr(arg, "+s") || strchr(arg, 'P')) return true;	/* Clearly setting the circle diameter in old -C */
+	if (strstr (arg, GMT_CPT_EXTENSION)) return false;	/* Clearly a CPT file given */
+	if (strstr (arg, "+s") || strchr (arg, 'P')) return true;	/* Clearly setting the circle diameter in old -C */
 	if (GMT->current.setting.run_mode == GMT_CLASSIC && arg[0] == '\0') return true;	/* A blank -C in classic mode is clearly the old -C with no settings */
-	if (arg[0] && !gmt_is_cpt_master(GMT, arg)) return true;	/* Whatever this is, it is for -A to deal with */
-	GMT_Report(GMT->parent, GMT_MSG_INFORMATION, "Option -C: Must assume under modern mode that -C here means use current CPT\n");
+	if (arg[0] && !psmeca_is_cpt_master (GMT, arg)) return true;	/* Whatever this is, it is for -A to deal with */
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Option -C: Must assume under modern mode that -C here means use current CPT\n");
 	return false;	/* This assumes nobody would use just -C in modern mode but actually mean the old -C */
 }
 
@@ -307,7 +326,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				}
 				else {	/* Here we have the modern -C<cpt> parsing */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+					psmeca_set_cpt (GMT, Ctrl, opt->arg);
 				}
 				break;
 			case 'D':	/* Plot events between depmin and depmax deep */
@@ -563,7 +582,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				if (gmt_M_compat_check (GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-Z is deprecated from 6.2.0; use -C instead.\n");
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+					psmeca_set_cpt (GMT, Ctrl, opt->arg);
 				}
 				else {
 					n_errors += gmt_default_option_error (GMT, opt);
@@ -744,24 +763,25 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	if (D->n_records == 0)
 		GMT_Report (API, GMT_MSG_WARNING, "No data records provided\n");
 
-	if (Ctrl->C.active && !Ctrl->O2.active && CPT) {
-		/* Resample the CPT to span the actual depth range of the events to be plotted */
+	if (Ctrl->C.master && !Ctrl->O2.active && CPT) {
+		/* A master CPT name was given in -C (e.g., -Cbatlow) so it has the default 0-1 range; stretch it to
+		 * span the actual depth range of the events to be plotted [see #8966].  Note: A real CPT file, or the
+		 * current CPT in modern mode (e.g., made by makecpt), is used as is since the user set its range [#9176]. */
 		double dep_min = DBL_MAX, dep_max = -DBL_MAX, d;
 		for (tbl = 0; tbl < D->n_tables; tbl++)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++)
 				for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
 					d = D->table[tbl]->segment[seg]->data[GMT_Z][row];
-					if (gmt_M_is_dnan(d) || d < Ctrl->D.depmin || d > Ctrl->D.depmax) continue;
+					if (gmt_M_is_dnan (d) || d < Ctrl->D.depmin || d > Ctrl->D.depmax) continue;
 					if (d < dep_min) dep_min = d;
 					if (d > dep_max) dep_max = d;
 				}
 		if (dep_min < dep_max) {
-			unsigned int k;
-			double *z_new = gmt_M_memory(GMT, NULL, CPT->n_colors + 1, double);
-			for (k = 0; k <= CPT->n_colors; k++)
-				z_new[k] = dep_min + k * (dep_max - dep_min) / CPT->n_colors;
-			CPT = gmt_sample_cpt(GMT, CPT, z_new, (int)(CPT->n_colors + 1), CPT->is_continuous, false, false, false);
-			gmt_M_free(GMT, z_new);
+			/* Prevent slight round-off from placing the extreme depths outside the stretched CPT range,
+			 * which would give those events the background or foreground color instead */
+			double noise = (dep_max - dep_min) * GMT_CONV8_LIMIT;
+			GMT_Report (API, GMT_MSG_INFORMATION, "Stretch master CPT %s to fit the depth range %g/%g\n", Ctrl->C.file, dep_min, dep_max);
+			gmt_stretch_cpt (GMT, CPT, dep_min - noise, dep_max + noise);
 		}
 	}
 
