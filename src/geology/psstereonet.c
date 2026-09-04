@@ -728,9 +728,14 @@ EXTERN_MSC int GMT_psstereonet (void *V_API, int mode, void *args) {
 		 * and FORMAT_GEO_MAP must use the 0-360 range so that azimuths are not reported as 0-180 west/east.
 		 * The format itself must carry enough decimals for a fractional -A (e.g., -A22.5), or the annotation
 		 * would round to the nearest whole degree even though the tick lands exactly on the given azimuth. */
+		/* The +t0 is not redundant: -JP never sets its own rotation, so it would inherit whatever the
+		 * previous projection left behind, and -JS on the equator is nudged off 0 by 0.001 degrees to
+		 * dodge an infinite loop (see gmtmap_init_stereo).  That leftover tilt lands the 270-degree
+		 * annotation a hair past the 180-degree boundary that decides which way a label is flipped,
+		 * so on a Wulff net it would come out upside down. */
 		char geo_fmt[GMT_LEN16] = {""};
 		psstereonet_geo_format (Ctrl->A.annot, geo_fmt, GMT_LEN16);
-		snprintf (cmd, GMT_LEN1024, "-R0/360/0/1 -JP%gi+a -Bxa%gf%g -O -K --MAP_FRAME_AXES=auto --FORMAT_GEO_MAP=%s",
+		snprintf (cmd, GMT_LEN1024, "-R0/360/0/1 -JP%gi+a+t0 -Bxa%gf%g -O -K --MAP_FRAME_AXES=auto --FORMAT_GEO_MAP=%s",
 			GMT->current.map.width, Ctrl->A.annot, Ctrl->A.tick, geo_fmt);
 		gmt_init_B (GMT);
 		/* Forget our own two-level -B or the polar basemap would inherit a secondary axis with no intervals,
