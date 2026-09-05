@@ -113,6 +113,43 @@ union {uint64_t i; double d;} loc_nan = {0x7ff8000000000000};
 
 static double EPS4 = EPS4_;		/* Kinda trick to be able to change EPS4 via a command line option */
 
+/* ------------------------------------------------------------------------------------------ *
+ * Progress reporting to an external caller (iGMT, GMT.jl, ...) that drives us in-process.
+ * Neither stdout nor a file is involved: the caller either registers a callback that we invoke
+ * on every waitbar tick (push), or polls nswing_get_progress() from another thread (pull).
+ * Both are updated from the serial part of the main loop only, never from inside an OpenMP
+ * region, so the callback runs on the same thread that entered GMT_nswing.
+ * ------------------------------------------------------------------------------------------ */
+typedef void (*nswing_progress_fn)(int percent, int cycle, int n_cycles, double model_time, void *data);
+
+/* A caller that drives us OUT-OF-PROCESS (iGMT runs a detached `gmt nswing`, so its window never
+ * blocks) cannot see the statics or the callback above.  For those, -W<file> is rewritten in place
+ * once per tick.  Losing progress must never fail a run, so a file that cannot be opened is only a
+ * warning. */
+
+
+static nswing_progress_fn nswing_progress_cb = NULL;
+static void  *nswing_progress_data = NULL;
+static int    nswing_prog_percent = 0, nswing_prog_cycle = 0, nswing_prog_n_cycles = 0;
+static double nswing_prog_time = 0.0;
+
+EXTERN_MSC void nswing_set_progress_callback(nswing_progress_fn fn, void *data) {
+	nswing_progress_cb = fn;	nswing_progress_data = data;
+}
+
+EXTERN_MSC void nswing_get_progress(int *percent, int *cycle, int *n_cycles, double *model_time) {
+	if (percent)    *percent    = nswing_prog_percent;
+	if (cycle)      *cycle      = nswing_prog_cycle;
+	if (n_cycles)   *n_cycles   = nswing_prog_n_cycles;
+	if (model_time) *model_time = nswing_prog_time;
+}
+
+GMT_LOCAL void nswing_report_progress(int percent, int cycle, int n_cycles, double model_time) {
+	nswing_prog_percent = percent;		nswing_prog_cycle = cycle;
+	nswing_prog_n_cycles = n_cycles;	nswing_prog_time = model_time;
+	if (nswing_progress_cb) nswing_progress_cb(percent, cycle, n_cycles, model_time, nswing_progress_data);
+}
+
 #define MAXRUNUP -50 	/* Do not waste time computing flood above this altitude */
 #define V_LIMIT   20	/* Upper limit of maximum velocity */
 
@@ -405,6 +442,9 @@ GMT_LOCAL int usage(struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage(API, -2, "Manning friction coefficients. If only one is provided, use it for all nesting levels; "
 		"otherwise specify one per level, comma separated. Append +<depth> to apply Manning only at depths "
 		"shallower than <depth> (positive up).");
+	GMT_Usage(API, 1, "\n-W<file> Report the run progress to another process.");
+	GMT_Usage(API, -2, "The file is rewritten in place once per tick; its payload is: "
+	                   "percent, cycle, n_cycles, model time.");
 	GMT_Usage(API, 1, "\n-x<n>");
 	GMT_Usage(API, -2, "Number of cores to use in a parallel run [Default is the max in the machine].");
 	GMT_Option(API, "V,f,.");
@@ -424,7 +464,7 @@ struct NSWING_CTRL {
 	bool    verbose, out_velocity, out_velocity_x, out_velocity_y, out_velocity_r, out_maregs_velocity;
 	bool    cumpt, do_2Dgrids, do_maxs, mareg_xy;
 	bool    append_z;
-	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file;
+	char   *bathy, *fonte, *fname_sww, *basename_most, *bnc_file, *prog_file;
 	char   *nesteds[10];
 	char    hcum[256];
 	char    maregs[256];
@@ -484,6 +524,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	char   *fname3D = NULL;
 	char   *fonte = NULL;
 	char   *bnc_file = NULL;
+	char   *prog_file = NULL;
 	char    fname_mask_lbeach[256] = "";
 	char    fname_mask_sbeach[256] = "";
 	char    tracers_infile[256] = "", tracers_outfile[256] = "";
@@ -842,6 +883,14 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 			case 'U':
 				nest.do_upscale = true;
 				break;
+			case 'W':	/* Report our advance to an external caller: -W<file> */
+				if (opt->arg[0] == '\0') {
+					GMT_Report(GMT->parent, GMT_MSG_ERROR, "NSWING: Error, -W option. Must provide a file name\n");
+					error++;
+					break;
+				}
+				prog_file = opt->arg;
+				break;
 			case 'v':	/* Undocumented: prints only the NSWING setup/diagnostics block */
 				verbose = true;
 				break;
@@ -1035,6 +1084,7 @@ GMT_LOCAL int parse(struct GMT_CTRL *GMT, struct NSWING_CTRL *Ctrl, struct nestC
 	Ctrl->fname_sww = fname_sww;
 	Ctrl->basename_most = basename_most;
 	Ctrl->bnc_file = bnc_file;
+	Ctrl->prog_file = prog_file;
 	strcpy(Ctrl->hcum, hcum);
 	strcpy(Ctrl->maregs, maregs);
 	strcpy(Ctrl->stem, stem);
@@ -1105,6 +1155,8 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	char   *fname3D  = NULL;             /* Name pointer for the 3D netCDF file */
 	char   *fonte    = NULL;             /* Name pointer for tsunami source file */
 	char   *bnc_file = NULL;             /* Name pointer for a boundary condition file */
+	char   *prog_file = NULL;            /* Name pointer for the -W progress file */
+	FILE   *fp_prog = NULL;              /* ... and its handle, kept open for the whole run */
 	char    fname_mask_lbeach[256] = ""; /* Name pointer for the "long_beach" mask grid */
 	char    fname_mask_sbeach[256] = ""; /* Name pointer for the "short_beach" mask grid */
 	char    tracers_infile[256] = "", tracers_outfile[256] = "";	/* Names for in and out tracers files */
@@ -1241,6 +1293,7 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 	fname_sww = Ctrl->fname_sww;
 	basename_most = Ctrl->basename_most;
 	bnc_file = Ctrl->bnc_file;
+	prog_file = Ctrl->prog_file;
 	strcpy(hcum, Ctrl->hcum);
 	strcpy(maregs, Ctrl->maregs);
 	strcpy(stem, Ctrl->stem);
@@ -1842,6 +1895,11 @@ EXTERN_MSC int GMT_nswing(void *V_API, int mode, void *args) {
 
 	one_100 = (double)(n_of_cycles) / 100.0;
 
+	nswing_report_progress(0, 0, n_of_cycles, 0.0);	/* Reset, so a second run in the same session does not start at 100 */
+
+	if (prog_file && (fp_prog = fopen(prog_file, "w")) == NULL)	/* Not fatal: losing progress must not kill a run */
+		GMT_Report(API, GMT_MSG_WARNING, "NSWING: Could not create progress file %s. Proceeding without it.\n", prog_file);
+
 LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. Sorry but have to. */
 	/* --------------------------------------------------------------------------------------- */
 	/* Begin main iteration */
@@ -1852,9 +1910,19 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 			prc = (double)iprc / 100.;
 			iprc++;
 			prc = (double)(k+1) / (double)n_of_cycles;
-			/* GMT_Message ignores the message level, so -v shows the progress without -V's chatter */
-			if (verbose || gmt_M_is_verbose(API->GMT, GMT_MSG_INFORMATION))
+			/* GMT_Message ignores the message level, so -v shows the progress without -V's chatter.
+			 * Flush it: when our stream is a pipe (an external caller capturing us) the CRT switches
+			 * to full buffering and this line, having no '\n', would only surface when we exit. */
+			if (verbose || gmt_M_is_verbose(API->GMT, GMT_MSG_INFORMATION)) {
 				GMT_Message(API, GMT_TIME_NONE, "\t%d %%\r", iprc);
+				fflush(API->GMT->session.std[GMT_ERR]);
+			}
+			nswing_report_progress(iprc, k+1, n_of_cycles, nest.time_h);
+			if (fp_prog) {		/* Rewrite the progress file in place so pollers always read one short line */
+				rewind(fp_prog);
+				fprintf(fp_prog, "%d %d %d %.3f\n", iprc, k+1, n_of_cycles, nest.time_h);
+				fflush(fp_prog);
+			}
 		}
 
 		/* ------------------------------------------------------------------------------------ */
@@ -2308,8 +2376,17 @@ LoopKabas:		/* When computing a grid of Kabas we use a GOTO to simulate a loop. 
 		free(oranges);
 	}
 
-	if (verbose || gmt_M_is_verbose(API->GMT, GMT_MSG_INFORMATION))
+	if (verbose || gmt_M_is_verbose(API->GMT, GMT_MSG_INFORMATION)) {
 		GMT_Message(API, GMT_TIME_NONE, "\t100 %%\tCPU secs/ticks = %.3f\n", (double)(clock() - tic));
+		fflush(API->GMT->session.std[GMT_ERR]);
+	}
+	nswing_report_progress(100, n_of_cycles, n_of_cycles, nest.time_h);
+	if (fp_prog) {		/* Final 100% so a poller sees completion without having to watch the process */
+		rewind(fp_prog);
+		fprintf(fp_prog, "%d %d %d %.3f\n", 100, n_of_cycles, n_of_cycles, nest.time_h);
+		fclose(fp_prog);
+		fp_prog = NULL;
+	}
 
 	if (cumpt) {
 		if (fp) fclose(fp);	/* Not opened when maregraphs went to netCDF */
