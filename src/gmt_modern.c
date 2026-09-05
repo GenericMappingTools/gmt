@@ -47,7 +47,8 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	if (L >= 32U) return module;	/* Safety valve to protect modname array from oversize */
 
 	/* First check for modern names and set the classic name in modname */
-	if      (!strncmp (module, "histogram",    9U)) { strcpy (modname, "pshistogram"); return module; }
+	if      (!strncmp (module, "stereonet",   9U)) { strcpy (modname, "psstereonet"); return module; }
+	else if (!strncmp (module, "histogram",    9U)) { strcpy (modname, "pshistogram"); return module; }
 	else if (!strncmp (module, "colorbar",     8U)) { strcpy (modname, "psscale");     return module; }
 	else if (!strncmp (module, "ternary",      7U)) { strcpy (modname, "psternary");   return module; }
 	else if (!strncmp (module, "contour",      7U)) { strcpy (modname, "pscontour");   return module; }
@@ -73,6 +74,7 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	else if (!strncmp (module, "barb",         4U)) { strcpy (modname, "psbarb");      return module; }
 	else if (!strncmp (module, "sac",          3U)) { strcpy (modname, "pssac");       return module; }
 	/* Then look for modules that now have a different modern mode name */
+	else if (!strncmp (module, "psstereonet", 11U)) { strcpy (modname, module); return "stereonet"; }
 	else if (!strncmp (module, "pshistogram", 11U)) { strcpy (modname, module); return "histogram"; }
 	else if (!strncmp (module, "psternary",    9U)) { strcpy (modname, module); return "ternary";   }
 	else if (!strncmp (module, "pscontour",    9U)) { strcpy (modname, module); return "contour";   }
@@ -137,7 +139,8 @@ const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module)
 	if (!API->GMT->current.setting.use_modern_name)
 		return module;
 	/* Look for classic modules that now have a different modern mode name */
-	if      (!strncmp (module, "pshistogram", 11U)) return "histogram";
+	if      (!strncmp (module, "psstereonet", 11U)) return "stereonet";
+	else if (!strncmp (module, "pshistogram", 11U)) return "histogram";
 	else if (!strncmp (module, "psternary",    9U)) return "ternary";
 	else if (!strncmp (module, "pscontour",    9U)) return "contour";
 	else if (!strncmp (module, "psbasemap",    9U)) return "basemap";
@@ -171,7 +174,8 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module) {
 	/* Returns true if module is a modern name */
 
 	/* Look for modern mode name modules  */
-	if      (!strncmp (module, "histogram", 11U)) is_modern = true;
+	if      (!strncmp (module, "stereonet",  9U)) is_modern = true;
+	else if (!strncmp (module, "histogram", 11U)) is_modern = true;
 	else if (!strncmp (module, "ternary",    9U)) is_modern = true;
 	else if (!strncmp (module, "contour",    9U)) is_modern = true;
 	else if (!strncmp (module, "basemap",    9U)) is_modern = true;
