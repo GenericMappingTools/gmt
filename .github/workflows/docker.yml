@@ -68,8 +68,8 @@ jobs:
     steps:
       - name: Install GMT dependencies
         run: |
-          os=$(grep -E "^ID=" /etc/os-release | cut -d= -f2)
-          if [[ "$os" = "ubuntu" || "$os" = "debian" ]]; then
+          . /etc/os-release
+          if [[ "$ID" = "ubuntu" || "$ID" = "debian" ]]; then
             apt-get update
             DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
             apt-get install -y --no-install-recommends --no-install-suggests \
@@ -79,12 +79,12 @@ jobs:
                  ghostscript curl git
             apt reinstall -y ca-certificates
             update-ca-certificates
-            # Install gh from binary deb package
+            # Install gh from binary deb package.
             curl -LO https://github.com/cli/cli/releases/download/v2.100.0/gh_2.100.0_linux_amd64.deb
             apt install -y ./gh_2.100.0_linux_amd64.deb
-          elif [[ "$os" = "fedora" ]]; then
+          elif [[ "$ID" = "fedora" ]]; then
             dnf install -y --disablerepo=fedora-cisco-openh264 \
-                cmake gcc git ninja-build \
+                gcc git cmake ninja-build \
                 libcurl-devel netcdf-devel gdal-devel \
                 fftw3-devel pcre2-devel lapack-devel openblas-devel glib2-devel \
                 ghostscript gh
