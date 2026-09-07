@@ -27,8 +27,11 @@ on:
 
 defaults:
   run:
-    # default to use bash shell
     shell: bash
+
+permissions:
+  contents: read
+  actions: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.image }}
+    timeout-minutes: 30
 
     env:
       # directories
@@ -47,10 +51,8 @@ jobs:
       INSTALLDIR: ${{ github.workspace }}/gmt-install-dir
       # disable auto-display of GMT plots
       GMT_END_SHOW: off
-      # Compile only
-      BUILD_DOCS  : false
-      PACKAGE     : false
-      RUN_TESTS   : false
+      # Compile only. Used by ci/config-gmt-unix.sh
+      RUN_TESTS: false
 
     strategy:
       fail-fast: false
@@ -66,8 +68,8 @@ jobs:
     steps:
       - name: Install GMT dependencies
         run: |
-          os=$(grep -E "^ID=" /etc/os-release | cut -d= -f2)
-          if [[ "$os" = "ubuntu" || "$os" = "debian" ]]; then
+          . /etc/os-release
+          if [[ "$ID" = "ubuntu" || "$ID" = "debian" ]]; then
             apt-get update
             DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
             apt-get install -y --no-install-recommends --no-install-suggests \
@@ -77,22 +79,20 @@ jobs:
                  ghostscript curl git
             apt reinstall -y ca-certificates
             update-ca-certificates
-            # Install gh from binary deb package
-            curl -LO https://github.com/cli/cli/releases/download/v2.49.0/gh_2.49.0_linux_amd64.deb
-            apt install ./gh_2.49.0_linux_amd64.deb
-          elif [[ "$os" = "fedora" ]]; then
+            # Install gh from binary deb package.
+            curl -LO https://github.com/cli/cli/releases/download/v2.100.0/gh_2.100.0_linux_amd64.deb
+            apt install -y ./gh_2.100.0_linux_amd64.deb
+          elif [[ "$ID" = "fedora" ]]; then
             dnf install -y --disablerepo=fedora-cisco-openh264 \
-                cmake ninja-build \
-                libcurl-devel netcdf-devel gdal-devel gdal \
+                gcc git cmake ninja-build \
+                libcurl-devel netcdf-devel gdal-devel \
                 fftw3-devel pcre2-devel lapack-devel openblas-devel glib2-devel \
-                ghostscript openssl gh
+                ghostscript gh
           fi
 
       - name: Checkout
         uses: actions/checkout@v6.0.2
 
-      # Fix the git error:
-      # "failed to run git: fatal: detected dubious ownership in repository at '/__w/gmt/gmt'"
       - name: Fixup git
         run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
