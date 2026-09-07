@@ -37,8 +37,12 @@ fi
 if [ "$RUN_TESTS" = "true" ]; then
     conda_packages+=" dvc"
 
-    # Install graphicsmagick via choco
-    choco install graphicsmagick --version 1.3.42 --no-progress
+    # Install graphicsmagick via choco (retry: SourceForge download occasionally times out)
+    for i in 1 2 3; do
+        choco install graphicsmagick --version 1.3.42 --no-progress && break
+        [ "$i" -lt 3 ] || { echo "choco install graphicsmagick failed after $i attempts" >&2; exit 1; }
+        sleep 15
+    done
     echo 'C:\Program Files\GraphicsMagick-1.3.42-Q8\' >> $GITHUB_PATH
 fi
 
