@@ -12918,7 +12918,12 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	 * must describe the data the grid now holds - the gradient, not the relief it was computed from -
 	 * so any halo it still carries is recomputed rather than kept; skipping that left every grid
 	 * produced by one module and sampled by another with no halo at all. */
+	/* Only build a halo for a grid that would have had a pad.  When the module has asked for no pad at
+	 * all - grdmix, grdpaste and friends set the session pad to zero because they want none - the padded
+	 * layout computes no boundary conditions either, so computing them here is work nobody asked for,
+	 * and it perturbs what those modules read back out of the header (issue #4358). */
 	if (HH && G->data && !HH->no_ghost && !HH->no_BC && (direction == GMT_OUT || HH->ghost == NULL) &&
+	    GMT->current.io.pad[XLO] >= 2 && GMT->current.io.pad[YHI] >= 2 &&
 	    !(G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) && gmtlib_ghost_wanted (GMT) && !gmtlib_ghost_is_suspended ()) {
 		for (k = 0; !thin_pad && k < 4; k++) if (G->header->pad[k] < 2) thin_pad = true;
 		if (thin_pad) {	/* Too thin for the BC code to work in, so it works in a copy instead */

@@ -8428,7 +8428,11 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	API->verbose = (mode >> GMT_MSG_BITSHIFT);	/* Pick up any -V settings from gmt.c */
 	API->remote_id = GMT_NOTSET;     /* Not read a remote grid yet */
 	API->pad = pad;     /* Preserve the default pad value for this session */
-	if (gmtlib_ghost_no_new_pad (NULL)) API->pad = 0;	/* Ghost cells: nothing in this session gets a pad */
+	/* Ghost cells used to zero the session pad here (GMT_GHOST_CELLS=2).  That cannot work: a grid read
+	 * with data padding fills its pad with the real neighbouring columns from the file, and with nowhere
+	 * to put them the halo falls back to a computed boundary condition - exactly the accuracy the issue
+	 * does not want to lose.  Grids are read through a transient pad and moved to ghost cells right
+	 * afterwards, so they are pad-free in memory either way (issue #4358). */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
 	API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */

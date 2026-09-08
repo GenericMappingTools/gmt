@@ -104,9 +104,9 @@ moves, the conversion is wrong.
 | 0 | **Inventory.** Poison the pad, sweep the tests, record what actually reads the halo. | **done** — `GHOST_INVENTORY.md` |
 | 1 | **Infrastructure.** `GMT_GRID_GHOST`, alloc/free/duplicate, accessors, layout switch. | **done** |
 | 3 | **`gmt_bcr.c`.** Stencil walks `(row,col)` through the accessors. | **done** — grdtrack, grdsample, grdproject verified bit-identical with no pad |
-| 2 | **Boundary conditions fill the halo directly**, instead of filling a pad that is then moved. | **partial** — a borrowed pad makes it correct; the native fill is still to write |
-| 4 | **Remaining sites**, one at a time, from the inventory. | in progress — 24 test scripts still differ |
-| 5 | **Flip the defaults.** No pad anywhere, in or out of the API. | reachable at `GMT_GHOST_CELLS=2` today |
+| 2 | **Boundary conditions fill the halo directly**, instead of filling a pad that is then moved. | **partial** — a private padded copy makes it correct; the in-place fill was written and reverted, see §8 |
+| 4 | **Remaining sites**, one at a time, from the inventory. | **done** — 186 of 189 test scripts identical; the 3 exceptions are remote-data or non-reproducible, see §6 |
+| 5 | **Flip the defaults.** Pad-free grids in and out of the API. | not yet — needs images, cubes and complex grids (§8) |
 
 Two things changed from the original ordering.
 
@@ -128,12 +128,19 @@ differently and needed to be measured apart:
 ```
 GMT_GHOST_CELLS=0   legacy padded layout (default; nothing changes)
 GMT_GHOST_CELLS=1   grids move to ghost cells once their BCs are set
-GMT_GHOST_CELLS=2   as 1, and no grid in the session is created with a pad
+GMT_GHOST_CELLS=2   as 1; see below for what this level turned out to mean
 ```
 
-Level 1 is the interesting number for "does the halo still work". Level 2 is
-the issue's own experiment — `GMT_Create_Session` with pad 0 — and is what
-externals would actually get.
+Level 1 is the interesting number for "does the halo still work". Level 2 began as the issue's
+own experiment — `GMT_Create_Session` with pad 0 — and that experiment **failed for a reason
+worth recording**: a grid read with data padding fills its pad with the real neighbouring
+columns from the file, and with no pad there is nowhere to put them, so the halo silently falls
+back to a computed boundary condition. That is exactly the accuracy issue #4358 does not want to
+lose, and on a coarse global grid the error is gross rather than subtle. Grids are therefore
+read through a transient pad and moved to ghost cells immediately afterwards — pad-free in
+memory either way — which is why levels 1 and 2 now measure the same. An external handing GMT a
+pad-free matrix still gets the pad-free path, since such a grid arrives with no pad whatever the
+session default happens to be.
 
 ## 4. The safety net
 
@@ -167,84 +174,181 @@ a half-converted GMT is a correct GMT.
 
 ## 6. Where it stands, measured
 
-Every grid-using test script in `test/` that needs no remote data (257 of them)
-was run in each layout and every file it produced compared against the same
-script run in the legacy layout. PostScript is compared ignoring `%` comment
-lines; everything else byte for byte.
+Every grid-using test script in `test/` that needs no remote data (189 of them, over
+`grdtrack`, `grdsample`, `grdproject`, `grdgradient`, `grdfilter`, `grdmath`, `grdimage`,
+`grdview`, `grdcontour`, `grdblend`, `grdclip`, `grdcut`, `grdedit`, `grdpaste`, `grdvolume`,
+`grd2xyz`, `xyz2grd`, `surface`, `grdlandmask`, `grdmask`, `grdinterpolate`, `grdfill` and
+`grdinfo`) was run in each layout and every file it produced compared against the same script
+run in the legacy layout. PostScript is compared ignoring `%` comment lines; everything else
+byte for byte.
 
-| layout | identical | differ | real failures |
-|---|---|---|---|
-| `GMT_GHOST_CELLS=1` — halo outside the matrix | **256–257** | 0–1 | **0** |
-| `GMT_GHOST_CELLS=2` — and no pad created anywhere | 245 | 12 | 11 |
+| layout | identical | differ |
+|---|---|---|
+| `GMT_GHOST_CELLS=1` — halo outside the matrix | **186 / 189** | 3 |
+| `GMT_GHOST_CELLS=2` | **186 / 189** | 3 |
+| determinism control — level 2 run twice | 187 / 189 | 2 |
 
-Level 1 is complete: with the pad gone from every grid that carries a boundary
-halo, the whole suite is byte-identical. The one script that sometimes shows up
-is `test/grdtrack/crosstrack_geo.sh`, which is not reproducible run to run in
-*any* layout — established by running every script twice in the legacy layout —
-so it is subtracted rather than counted, in both rows.
+Levels 1 and 2 now give the same answers as each other (see §3), and the same three scripts
+account for both:
 
-Level 2 — `GMT_Create_Session` with pad 0, the experiment the issue proposes —
-is at 245 of 257, with 11 real failures. They are concentrated in the two areas
-this work has not entered: cubes and images.
+* `test/grdimage/rounding.sh` and `test/grdimage/twogrids.sh` need the remote tiled
+  `earth_relief` datasets. They were never reproducible outside the test harness, so they are
+  **unverified**, not known-bad.
+* `test/grdview/texture2_modern.sh` is not reproducible run to run — it also fails the
+  determinism control, producing no output in one run of two.
 
-Spot checks that matter more than the totals, all bit-identical with the pad
-gone: `grdtrack` sampling at the exact grid corners, where the halo is the only
-thing being read; `grdsample`; `grdproject`; and every `grdgradient` test,
-which is the module that reads the halo hardest. Poisoning the pad with a
-sentinel still shows up in the ghost-layout answer, which proves the halo is
-genuinely what those samplers read rather than a leftover pad.
+The determinism control additionally flags `test/grdfill/gridfill.sh` as varying run to run at
+one and the same layout. Neither of those two is a layout difference.
+
+**How the harness must be run.** Two earlier rounds of this measurement produced numbers that
+were pure noise, in both directions, and neither was caught by comparing layouts alone:
+
+1. Six test scripts running in parallel shared one GMT user directory, so `gmt set -Du` and
+   `gmt.history` raced each other. Every run needs its own `GMT_USERDIR` (a shared
+   `GMT_CACHEDIR` is fine, and keeps remote downloads to one).
+2. A comparison is only meaningful **within one sweep against one binary**. Grids carry the GMT
+   version and commit hash in their netCDF header, so two builds always differ byte-wise on
+   every `.nc` file even when the data is identical.
+3. Always run one layout twice and compare that too. The level-2-twice control is what exposed
+   `png_image`/`rgb_grids` as *non-deterministic* rather than merely different, which pointed
+   straight at the cause.
+
+Spot checks that matter more than the totals, all bit-identical with the pad gone: `grdtrack`
+sampling at the exact grid corners, where the halo is the only thing being read; `grdsample`;
+`grdproject`; `grdgradient`; and polar sampling on global grids in five different shapes
+(gridline and pixel registration, with and without a pole row). `test/api/ghost_cells.sh`
+checks the first four in all three layouts on every build, and asserts that the layout is
+actually live — an early version of one guard silently turned the whole thing into a no-op and
+the suite went green for the wrong reason.
 
 ## 7. What changing the layout turned up
 
-Four bugs that were already in GMT, hidden by the fact that every grid happened
-to have the same pad:
+Seven bugs that were already in GMT, each hidden by the fact that every grid happened to have
+the same pad, or that a pad was there at all:
 
-* **grdgradient** indexed the `-A` azimuth grid with node numbers computed from
-  the *input* grid's header. Wrong whenever the two grids differ in pad.
-* **grdfilter** did the same twice: the input grid and the variable filter-width
-  grid were both indexed with the *output* grid's node number. The comment even
-  said `[Here we know ij_out == ij_in]` — true only by coincidence of layout.
-* **gmt_customio.c** positioned the GDAL write pointer with a hardwired
-  `2 * mx`, i.e. it assumed the pad is always two deep. On a small grid with no
-  pad it stepped past the data and NaNs came back as zeros.
+* **grdgradient** indexed the `-A` azimuth grid with node numbers computed from the *input*
+  grid's header. Wrong whenever the two grids differ in pad.
+* **grdfilter** did the same twice: the input grid and the variable filter-width grid were both
+  indexed with the *output* grid's node number. The comment even said
+  `[Here we know ij_out == ij_in]` — true only by coincidence of layout.
+* **grdview** averaged the four tile corners of the intensity grid, and read the drape and
+  relief grids, with node numbers computed from another grid's header plus offsets built from a
+  third's `mx`.
+* **gmt_customio.c** positioned the GDAL write pointer with a hardwired `2 * mx`, i.e. it
+  assumed the pad is always two deep. On a small grid with no pad it stepped past the data and
+  NaNs came back as zeros.
+* **grdlandmask** accepted a node one past the last row or column — the bounds test read
+  `row > n_rows` rather than `>=` — and wrote to it. With a pad that write landed in the pad and
+  was invisible; with no pad, `col == n_columns` wraps onto the first node of the next row and
+  corrupts real data.
+* **grdimage** computed the z-range over the nodes inside `-R` by temporarily inflating the
+  grid's pad, which only works when there is a pad to inflate.
+* **gmt_copy_gridheader** overwrote the destination's halo pointer without freeing it.
 
-And one trap for anyone converting further call sites: `openmp_int` is
-**unsigned** everywhere except MSVC, so `col - 1` at column 0 hands an accessor
-4294967295 rather than -1. Cast at every call site; `GMT_GHOST_STRICT` builds
-assert on it rather than computing a wild pointer.
+And one trap for anyone converting further call sites: `openmp_int` is **unsigned** everywhere
+except MSVC, so `col - 1` at column 0 hands an accessor 4294967295 rather than -1. Cast at every
+call site; `GMT_GHOST_STRICT` builds assert on it rather than computing a wild pointer.
+
+Two pre-existing oddities were found *inside* the boundary-condition code and deliberately left
+exactly as they are, because correcting either would move existing output. Both are flagged in
+comments where they sit:
+
+* The pole phase shift is computed from the **padded** column index —
+  `i180 = pad[XLO] + ((i + nxp2) % nxp)` — so the 180-degree partner of a column depends on how
+  the grid is stored, which it should not.
+* In the south-side natural-BC block of the x-periodic case, two tests read `set[YHI]` where
+  `set[YLO]` is plainly meant. It only bites when the two sides differ, i.e. when one side holds
+  real data.
 
 ## 8. Open items
 
-* **Level 2 only (11 scripts).** These pass at level 1, so the halo is not the
-  problem; grids *created* without a pad by code that expects one are.
-  - **Cubes (4).** Only the written cube's `v_min` moves; every plot made from
-    the cube is identical, so the data agree and it is the reported range that
-    differs. The legacy value is negative for a field whose true minimum is
-    ~0.03, which suggests the padded run is picking up a boundary-condition node
-    — worth a look on its own terms, since if so it is a bug that predates this
-    work.
-  - **grdimage (4)** and **grdmask, sph** — these run through grdmix and the
-    image machinery, which still keeps its pad, so grids and images disagree
-    about layout.
-  - **surface/periodic** — the grids it writes are now identical; only the plot
-    made from them differs.
-* **Phase 2 proper** — `gmt_grd_BC_set` still borrows a pad instead of filling
-  the halo slabs directly. That is the remaining memory win.
-* **Cubes** need a halo of their own; `gmtlib_ghost_suspend` is scaffolding and
-  is named so it is easy to find.
-* **Images** keep their pad; `gmtlib_bcr_get_img` still walks the padded array.
+* **Phase 2 proper — the memory win is not yet banked.** `gmt_grd_BC_set` still computes the
+  conditions on a private padded copy of a pad-free grid and keeps only the halo. That is
+  correct, and it never touches the caller's matrix, but it costs one temporary grid copy per
+  pad-free boundary-condition set. Converting `gmtsupport_grd_BC_set` (some 420 lines of flat
+  `j + i` arithmetic) to the `(row,col)` accessors removes that copy. **This was attempted and
+  reverted**: the conversion builds and passes the targeted tests, but moves 21 scripts at
+  level 2 for reasons not established — the pole phase shift and a dropped incoming-halo guard
+  were both ruled out by experiment. The work is preserved on branch
+  `ghost-cells-bc-inplace` and needs its cause found before it can return.
+* **`grdview -Qg` with an intensity grid** is the one path in grdview still assuming the halo is
+  inside the matrix. Routing `grdview_paint_gouraud_tile` through the accessors crashed
+  `grdview -Qg` outright (truncated PostScript, non-zero exit, no message); the hunk was backed
+  out and the cause not identified. It needs a debugger, not another guess.
+* **Images** keep their pad. `gmtlib_bcr_get_img` and `gmtlib_image_BC_set` still walk a padded
+  array and `GMT_IMAGE` has no halo of its own. Nothing fails because of this, so it is now a
+  consistency and memory question rather than a correctness one. Note that forcing images to
+  carry a pad in a pad-free session is **not** the answer — it was tried and it corrupted
+  `grdmix`, which deliberately works with no pad at all.
+* **Cubes** need a halo of their own; `gmtlib_ghost_suspend` is scaffolding and is named so it
+  is easy to find.
 * **Complex grids** are skipped by the conversion entirely.
-* **grdfft / gravfft / grdpaste** use the pad as *working space*, not as boundary
-  conditions — grdpaste gives each input a pad the height of the other so the two
-  land in one array. `gmtlib_ghost_from_pad` leaves any asymmetric or oversized
-  pad alone for that reason. Those modules want an explicitly allocated larger
-  array, which is a separate change.
+* **grdfft / gravfft / grdpaste** use the pad as *working space*, not as boundary conditions —
+  grdpaste gives each input a pad the height of the other so the two land in one array. Those
+  modules want an explicitly allocated larger array, which is a separate change, and
+  `gmtlib_ghost_from_pad` leaves any asymmetric or oversized pad alone for that reason.
+* **Unrelated GMT bug found on the way, diagnosed and not fixed:** a cube written as a single
+  3-D netCDF file reports a v-range taken from the padded layer arrays, read with the wrong
+  stride, so the reported minimum can lie outside the data. Written up separately in
+  `CUBE_VMIN_BUG.md`; the correct function (`gmt_cube_vminmax`) already exists in
+  `gmt_grdio.c` and has no callers.
 
 ## 9. Status
 
 - [x] Phase 0 — inventory
 - [x] Phase 1 — infrastructure
-- [x] Phase 3 — gmt_bcr.c
-- [~] Phase 2 — boundary conditions (borrowed pad works; native fill pending)
-- [x] Phase 4 — level 1 clean: no real failures in 257 test scripts
-- [~] Phase 5 — level 2 at 245 of 257, 11 real failures
+- [x] Phase 3 — `gmt_bcr.c`
+- [~] Phase 2 — boundary conditions (private copy works; the in-place fill is reverted, see §8)
+- [x] Phase 4 — remaining sites: 186 of 189 scripts identical, the 3 exceptions being remote-data
+      or non-reproducible rather than layout differences
+- [~] Phase 5 — flipping the default still needs images, cubes and complex grids
+
+## 10. Summary for a pull request
+
+**What this adds.** A grid's boundary halo can be held *outside* the data matrix, so that
+`G->data` is a plain contiguous `n_columns * n_rows` array with `h->pad` all zero. That makes
+`gmt_M_ijp` degenerate to `row * n_columns + col`, so every interior loop in GMT keeps working
+unmodified, and it is what allows a grid to be shared with Julia, Python or MATLAB without a
+copy (issue #4358). New files: `gmt_ghost.h` (the layout and the accessors) and `gmt_ghost.c`
+(alloc, free, duplicate, convert).
+
+**Nothing changes by default.** The layout is selected by the `GMT_GHOST_CELLS` environment
+variable, `0` (legacy) being the default. With it unset, the only code that behaves differently
+is the seven bug fixes listed in §7 — and each of those is verified byte-identical on the test
+suite in the padded layout, because in that layout the accessors compile down to exactly the
+expression the old code computed by hand.
+
+**Converted so far:** `gmt_bcr.c` — which carries grdtrack, grdsample, grdproject, grdimage and
+grdview — plus grdgradient, grdfilter, grdmath, grdpaste, grdview's tile loops, the GDAL writer
+and the cube import paths. Unconverted code keeps working because `gmt_grd_pad_on` folds any
+halo back into the matrix, moving the values rather than recomputing them.
+
+**Verification.** 189 grid test scripts, three layouts, every produced file compared:
+**186 / 189 identical** at both `GMT_GHOST_CELLS=1` and `=2`; the three exceptions need remote
+data or are not reproducible run to run (§6). A determinism control and a per-run
+`GMT_USERDIR` are both necessary to get trustworthy numbers — see the warning in §6 before
+re-running this. `test/api/ghost_cells.sh` is included and asserts both bit-identity across
+layouts and that the layout is actually live.
+
+**Two design conclusions worth carrying into review:**
+
+1. **"No pad anywhere" is the wrong goal.** The original level 2 zeroed the session pad. That
+   cannot work: a global grid read *with data padding* fills its pad with the real neighbouring
+   columns from the file, and with nowhere to put them the halo falls back to a computed
+   boundary condition — precisely the accuracy the issue does not want to lose. Grids are now
+   read through a transient pad and moved to ghost cells immediately afterwards, so they are
+   pad-free in memory either way, and the pad exists only for the duration of the read. This is
+   why levels 1 and 2 now measure the same.
+2. **Ghost cells replace the pad only where a pad would have existed.** Several modules
+   (grdmix, grdpaste and friends) set the session pad to zero because they want no halo at all,
+   and the padded layout computes no boundary conditions for them either. Building a halo for
+   those grids is work nobody asked for, and it perturbed what those modules read back out of
+   the header — visible as *run-to-run* variation, not just a layout difference.
+
+**Suggested review order:** `gmt_ghost.h` (layout and accessors), then `gmt_bcr.c` as the model
+conversion, then `gmt_grd_BC_set` in `gmt_support.c` (where the halo comes from), then the
+per-module fixes, which are independent of each other and each defensible on its own.
+
+**Independently useful without any of this machinery:** the seven fixes in §7. If the layout
+change is considered too large to land at once, those can go in on their own, since each is a
+real bug in current GMT.
