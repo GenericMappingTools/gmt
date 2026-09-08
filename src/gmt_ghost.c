@@ -237,3 +237,46 @@ int gmtlib_ghost_to_pad (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	gmt_M_free (GMT, g);
 	return (GMT_NOERROR);
 }
+
+/*! Copy the halo that sits in P's pad into G's ghost slabs.  Used when the boundary
+ * conditions have been computed on a private padded copy of a grid that must not be
+ * given a pad itself - the caller's data matrix is then never reallocated, which is
+ * what makes a matrix owned by Julia/Python/MATLAB usable in place (issue #4358).
+ * G and P must have the same n_columns and n_rows; only P carries a pad. */
+int gmtlib_ghost_from_grid(struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *P) {
+	struct GMT_GRID_HEADER *h = NULL, *ph = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL, *PHH = NULL;
+	struct GMT_GRID_GHOST *g = NULL;
+	int64_t row, col, col_lo, col_hi;
+	gmt_grdfloat *slot = NULL;
+	unsigned int k;
+
+	if (G == NULL || P == NULL || P->data == NULL || (h = G->header) == NULL || (ph = P->header) == NULL) return (GMT_NOERROR);
+	if (h->n_columns != ph->n_columns || h->n_rows != ph->n_rows) return (GMT_NOERROR);	/* Not the same grid after all */
+	HH = gmt_get_H_hidden(h);	PHH = gmt_get_H_hidden(ph);
+	if ((ph->pad[XLO] + ph->pad[XHI] + ph->pad[YLO] + ph->pad[YHI]) == 0) return (GMT_NOERROR);	/* No halo was computed */
+	gmtlib_ghost_free(GMT, h);	/* In case it already had one */
+	if ((g = gmtlib_ghost_alloc(GMT, h, ph->pad)) == NULL) return (GMT_MEMORY_ERROR);
+
+	col_lo = -(int64_t)ph->pad[XLO];
+	col_hi = (int64_t)(h->n_columns + ph->pad[XHI]);
+	for (row = -(int64_t)ph->pad[YHI]; row < 0; row++)	/* North slab, corners included */
+		for (col = col_lo; col < col_hi; col++)
+			if ((slot = gmt_ghost_slot(h, g, row, col))) *slot = P->data[gmt_M_ijp(ph, row, col)];
+	for (row = (int64_t)h->n_rows; row < (int64_t)(h->n_rows + ph->pad[YLO]); row++)	/* South slab, corners included */
+		for (col = col_lo; col < col_hi; col++)
+			if ((slot = gmt_ghost_slot(h, g, row, col))) *slot = P->data[gmt_M_ijp(ph, row, col)];
+	for (row = 0; row < (int64_t)h->n_rows; row++) {	/* West and east sides on the interior rows */
+		for (col = col_lo; col < 0; col++)
+			if ((slot = gmt_ghost_slot(h, g, row, col))) *slot = P->data[gmt_M_ijp(ph, row, col)];
+		for (col = (int64_t)h->n_columns; col < col_hi; col++)
+			if ((slot = gmt_ghost_slot(h, g, row, col))) *slot = P->data[gmt_M_ijp(ph, row, col)];
+	}
+	for (k = 0; k < 4; k++) HH->BC[k] = PHH->BC[k];	/* The grid now has the boundary conditions that were computed on the copy */
+	g->mode = PHH->BC[XLO];
+	HH->ghost = g;
+	if (getenv("GMT_GHOST_DEBUG"))
+		fprintf(stderr, "gmtlib_ghost_from_grid: %s [%u x %u] got a halo %u/%u/%u/%u without ever holding a pad\n",
+			HH->name[0] ? HH->name : "<memory>", h->n_columns, h->n_rows, ph->pad[XLO], ph->pad[XHI], ph->pad[YLO], ph->pad[YHI]);
+	return (GMT_NOERROR);
+}
