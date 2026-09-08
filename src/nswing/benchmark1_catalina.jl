@@ -241,7 +241,7 @@ function run_nswing(bat::GMTgrid, src::GMTgrid, nests::Vector{<:GMTgrid}, pato::
 	push!(args, "-t$(dt)")
 	#push!(args, "-T$(maregs_pos[1])/$(maregs_pos[2])+o$(outfile)+t$(mareg_interval)")
 
-	cmd = "nswing -V " * join(args, " ")
+	cmd = "nswing -v " * join(args, " ")
 	println(cmd)
 	gmt(cmd, bat, src, nests...)
 	return nothing

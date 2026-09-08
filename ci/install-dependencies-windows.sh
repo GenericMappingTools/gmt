@@ -45,6 +45,8 @@ fi
 # we need the GNU tar for packaging
 if [ "$PACKAGE" = "true" ]; then
     echo 'C:\Program Files\Git\usr\bin\' >> $GITHUB_PATH
+    # Install NSIS for building Windows installer
+    choco install nsis --no-progress
 fi
 
 # install more packages using conda

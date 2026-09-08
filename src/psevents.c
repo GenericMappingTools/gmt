@@ -31,7 +31,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot event symbols, lines, polygons and labels for one moment in time"
 #define THIS_MODULE_KEYS	"<D{,CC(,>?}"
-#define THIS_MODULE_NEEDS	"JR"
+#define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhilpqtw"
 
 enum Psevent {	/* Misc. named array indices */

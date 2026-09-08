@@ -70,7 +70,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 
       - name: Setup micromamba
-        uses: mamba-org/setup-micromamba@v3.1.0
+        uses: mamba-org/setup-micromamba@v3.2.1
         if: runner.os == 'macOS'
 
       - name: Install GMT dependencies
@@ -161,7 +161,9 @@ jobs:
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        run: gh run download -n gmt-cache -D ~/.gmt/static/
+        run: |
+          gh run download -n gmt-cache -D ~/.gmt/static/
+          touch ~/.gmt/static/gmt_data_server.txt ~/.gmt/static/gmt_hash_server.txt
         env:
           GH_TOKEN: ${{ github.token }}
 
